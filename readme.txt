@@ -1,5 +1,5 @@
-=== Live Weather Station ===
-Contributors: pierrelannoy 
+=== Live Weather Station for Netatmo ===
+Contributors: PierreLannoy 
 Tags: wordpress, widget, weather, shortcode, netatmo, meteo, live, lcd, gauge
 Requires at least: 4.0
 Tested up to: 4.3.1
