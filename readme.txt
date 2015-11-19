@@ -1,9 +1,9 @@
-=== Live Weather Station for Netatmo ===
-Contributors: PierreLannoy 
+=== Live Weather Station ===
+Contributors: pierrelannoy 
 Tags: wordpress, widget, weather, shortcode, netatmo, meteo, live, lcd, gauge
 Requires at least: 4.0
-Tested up to: 4.3.1
-Stable tag: 1.0.0
+Tested up to: 4.4
+Stable tag: 1.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,7 +12,7 @@ A plugin to display, in many different and elegant ways, the meteorological data
 == Description ==
 
 **DISCLAIMER:** *This plugin is developed and maintained by me, [Pierre Lannoy](https://pierre.lannoy.fr "Pierre Lannoy"). This plugin IS NOT an official software from [Netatmo](http://www.netatmo.com "Netatmo Homepage") and is not endorsed or supported by this company.
-Moreover, I am not a Netatmo employee and I'm not in business with this company. I'm just a happy customer/user of their products and a fan of meteorology.*
+Moreover, I am not a partner, employee, affiliate, or licensee of Netatmo. I'm just a happy customer/user of their products and a fan of meteorology.*
 
 = Live Weather Station for Netatmo =
 Live Weather Station for Netatmo is a plugin that allows you to display, on your WordPress site, meteorological data from the Netatmo weather stations you have access to.
@@ -31,11 +31,11 @@ The use of Live Weather Station for Netatmo requires no knowledge in programming
 Just set it, insert (in a page or an article) the provided shortcodes. And it works!
 
 = How does it work? =
-Once you have connected the plugin to your Netatmo account (via the admin panel of your WordPress site), the data you have access to (your stations, plus all those for which you have permission) are collected every 10 minutes and stored in the database of your WordPress site.
-The various controls and viewers (like widget or LCD Panel) now will seek their data in this database with the certainty of having fresh and cached data.
+Once you have connected the plugin to your Netatmo account (via the dashboard of your WordPress site), the data you have access to (your stations, plus all those for which you have permission) are collected every 10 minutes and stored in the database of your WordPress site.
+The various controls and viewers (like widget or LCD Panel) now will get their data from this database with the certainty of having fresh and cached data.
 
 = Supported devices & modules =
-Live Weather Station for Netatmo support all current devices and modules from Netatmo. This includes, in addition to the main station base:
+Live Weather Station for Netatmo supports all current devices and modules from Netatmo. This includes, in addition to the main station base:
 
 * indoor modules
 * outdoor modules
@@ -62,14 +62,15 @@ Anyway, I'll be glad to help you if you encounter issues when using this plugin.
 
 = From your WordPress dashboard =
 
-1. Visit 'Plugins > Add New'
-2. Search for 'Live Weather Station for Netatmo'
-3. Activate Live Weather Station for Netatmo from your Plugins page.
+1. Visit 'Plugins > Add New'.
+2. Search for 'Live Weather Station for Netatmo'.
+3. Click on the 'Install Now' button.
+4. Activate Live Weather Station for Netatmo.
 
 = From WordPress.org =
 
 1. Download Live Weather Station for Netatmo.
-2. Upload the 'live-weather-station' directory to your '/wp-content/plugins/' directory, using your favorite method (ftp, sftp, scp, etc...)
+2. Upload the 'live-weather-station' directory to your '/wp-content/plugins/' directory, using your favorite method (ftp, sftp, scp, etc...).
 3. Activate Live Weather Station for Netatmo from your Plugins page.
 
 = Once Activated =
@@ -81,21 +82,39 @@ Anyway, I'll be glad to help you if you encounter issues when using this plugin.
 
 = Where can I get support? =
 
-Support is provided via the support section on this plugin page.
+Support is provided via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 = Where can I find documentation? =
 
-You can find instructions in english for this plugin [here](https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/).
+You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/).
+Vous trouverez des instructions en français [ici](https://pierre.lannoy.fr/wordpress-live-weather-station-pour-netatmo/).
 
 = Where can I report a bug? =
 
-You can report bugs and suggest ideas via the support section on this plugin page.
+You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 == Changelog ==
 
-= 1.0 =
+= 1.1.0 =
+* Added dew point and frost point computing ([what is it?](https://en.wikipedia.org/wiki/Dew_point)): available in widget, textual shortcodes and live controls (as outdoor values)
+* Added heat index (USA, humidity based) computing ([what is it?](https://en.wikipedia.org/wiki/Heat_index)): available in widget, textual shortcodes and live controls (as outdoor values)
+* Added humidex (Canada, dew point based) computing ([what is it?](https://en.wikipedia.org/wiki/Humidex)): available in widget, textual shortcodes and live controls (as outdoor values)
+* Added temperature trend: data collecting and output rendering in all shortcodes
+* Added pressure trend: data collecting and output rendering in all shortcodes
+* Added altitude of the main station base: data collecting and output rendering in textual shortcodes
+* Added coordinates (latitude and longitude)of the main station base: data collecting and output rendering in textual shortcodes
+* Added device/module firmware revision: data collecting and output rendering in textual shortcodes
+* New options for widget: background opacity and show/hide borders
+* New option for live controls: show/hide computed values
+* Improved readme.txt
+
+= 1.0.0 =
 * First public version
 
 == Upgrade Notice ==
 
+= 1.1.0 =
+Live Weather Station for Netatmo now : computes dew & frost points, heat index and humidex; supports temperature & pressure trends; supports altitute and coordinates for the main station base; supports firmware version for all module types; improves look & feel of its widget.
+
+= 1.0.0 =
 Initial version.
