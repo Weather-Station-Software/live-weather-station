@@ -1,9 +1,9 @@
-=== Live Weather Station ===
-Contributors: pierrelannoy 
+=== Live Weather Station for Netatmo ===
+Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, netatmo, meteo, live, lcd, gauge
 Requires at least: 4.0
 Tested up to: 4.4
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -86,14 +86,17 @@ Support is provided via the [support section](https://wordpress.org/support/plug
 
 = Where can I find documentation? =
 
-You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/).
-Vous trouverez des instructions en français [ici](https://pierre.lannoy.fr/wordpress-live-weather-station-pour-netatmo/).
+You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/). Vous trouverez des instructions en français [ici](https://pierre.lannoy.fr/wordpress-live-weather-station-pour-netatmo/).
 
 = Where can I report a bug? =
 
 You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 == Changelog ==
+
+= 1.1.1 =
+* Bug fix: wrong border style when widget was displayed in content (not in sidebar)
+* Improved readme.txt
 
 = 1.1.0 =
 * Added dew point and frost point computing ([what is it?](https://en.wikipedia.org/wiki/Dew_point)): available in widget, textual shortcodes and live controls (as outdoor values)
@@ -113,8 +116,8 @@ You can report bugs and suggest ideas via the [support section](https://wordpres
 
 == Upgrade Notice ==
 
-= 1.1.0 =
+= 1.1.X =
 Live Weather Station for Netatmo now : computes dew & frost points, heat index and humidex; supports temperature & pressure trends; supports altitute and coordinates for the main station base; supports firmware version for all module types; improves look & feel of its widget.
 
-= 1.0.0 =
+= 1.0.X =
 Initial version.
