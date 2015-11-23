@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, netatmo, meteo, live, lcd, gauge
 Requires at least: 4.0
 Tested up to: 4.4
-Stable tag: 1.1.1
+Stable tag: 1.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -92,29 +92,56 @@ You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-l
 
 You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
+= What are the requirements for this to work? =
+
+You need WordPress 4.X and a PHP version greater than or equal to 5.4.
+
 == Changelog ==
 
+= 1.2.0 =
+
+Release Date: November 23rd, 2015
+
+* Added wind chill computing ([what is it?](https://en.wikipedia.org/wiki/Wind_chill)): available in widget, textual shortcodes and live controls (as outdoor values)
+* Added cloud base (above ground level) computing ([what is it?](https://en.wikipedia.org/wiki/Cloud_base)): available in widget, textual shortcodes and live controls (as outdoor values)
+* New option for altitude displaying: metric or imperial system
+* Bug fix: PHP notice when not updating widget settings after Live Weather Station update
+* Bug fix: wrong battery level and signal quality stored for virtual modules
+* Improved readme.txt
+
 = 1.1.1 =
+
+Release Date: November 19th, 2015
+
 * Bug fix: wrong border style when widget was displayed in content (not in sidebar)
 * Improved readme.txt
 
 = 1.1.0 =
+
+Release Date: November 19th, 2015
+
 * Added dew point and frost point computing ([what is it?](https://en.wikipedia.org/wiki/Dew_point)): available in widget, textual shortcodes and live controls (as outdoor values)
 * Added heat index (USA, humidity based) computing ([what is it?](https://en.wikipedia.org/wiki/Heat_index)): available in widget, textual shortcodes and live controls (as outdoor values)
 * Added humidex (Canada, dew point based) computing ([what is it?](https://en.wikipedia.org/wiki/Humidex)): available in widget, textual shortcodes and live controls (as outdoor values)
 * Added temperature trend: data collecting and output rendering in all shortcodes
 * Added pressure trend: data collecting and output rendering in all shortcodes
 * Added altitude of the main station base: data collecting and output rendering in textual shortcodes
-* Added coordinates (latitude and longitude)of the main station base: data collecting and output rendering in textual shortcodes
+* Added coordinates (latitude and longitude) of the main station base: data collecting and output rendering in textual shortcodes
 * Added device/module firmware revision: data collecting and output rendering in textual shortcodes
 * New options for widget: background opacity and show/hide borders
 * New option for live controls: show/hide computed values
 * Improved readme.txt
 
 = 1.0.0 =
+
+Release Date: November 14th, 2015
+
 * First public version
 
 == Upgrade Notice ==
+
+= 1.2.X =
+Live Weather Station for Netatmo now computes wind chill and cloud base altitude.
 
 = 1.1.X =
 Live Weather Station for Netatmo now : computes dew & frost points, heat index and humidex; supports temperature & pressure trends; supports altitute and coordinates for the main station base; supports firmware version for all module types; improves look & feel of its widget.
