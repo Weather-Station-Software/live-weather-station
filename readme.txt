@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, netatmo, meteo, live, lcd, gauge
 Requires at least: 4.0
 Tested up to: 4.4
-Stable tag: 1.2.1
+Stable tag: 1.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,7 +48,7 @@ Right now, Live Weather Station support the following languages:
 * English / default
 * French
 
-Multilingualism is provided by the use of .po files (the standard way), so it is fully translatable in your language. If you have translated this plugin in a new language, get in touch with me, I will include it in the next release.
+Multilingualism is provided by the use of .po files (the standard way), so it is fully translatable in your language. If you have translated this plugin in a new language, get in touch with me, I will include it in the next release or, if you want you can translate the plugin directly with [GlotPress](https://translate.wordpress.org/projects/wp-plugins/live-weather-station) (use the 'stable' column).
 
 = Instructions =
 You can find a more in-depth description and instructions to configure [on this page](https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/).
@@ -78,7 +78,7 @@ Anyway, I'll be glad to help you if you encounter issues when using this plugin.
 1. Visit 'Settings > Live Weather Station' and set your Netatmo credentials.
 2. Enjoy!
 
-== Frequently Asked Questions ==
+== Frequently Asked Questions == 
 
 = Where can I get support? =
 
@@ -98,12 +98,27 @@ You need WordPress 4.X and a PHP version greater than or equal to 5.4.
 
 == Changelog ==
 
+= 1.2.2 =
+
+Release Date: November 25th, 2015
+
+* Added an "about box" in dashboard
+* Improvement: widget now shows max wind strength of the day
+* Improvement: widget tooltip now shows the wind direction in plain text
+* Improvement: better handling of wind direction when strength is null
+* Improvement: secured handling of wind strength historic and max wind strength
+* Improvement: for some unknown reason, some netatmo rain gauge doesn't aggregate hour/daily values. The widget now take care of this...
+* Improvement: readme.txt
+* Bug fix: a <a> tag was not closed in some circumstances in the admin panel
+* Bug fix: wrong displaying in the admin panel when there was more than one station to show
+* Bug fix: color picker was not working with some themes delaying JQuery loading
+
 = 1.2.1 =
 
 Release Date: November 24th, 2015
 
 * Bug fix: wrong settings when not updating widget after Live Weather Station update
-* Bug fix: no icon in widget when it is displayed in content (not in sidebar)
+* Bug fix: no icon in widget when it was displayed in content (not in sidebar)
 * Improved readme.txt
 
 = 1.2.0 =
