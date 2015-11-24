@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, netatmo, meteo, live, lcd, gauge
 Requires at least: 4.0
 Tested up to: 4.4
-Stable tag: 1.2.0
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -97,6 +97,14 @@ You can report bugs and suggest ideas via the [support section](https://wordpres
 You need WordPress 4.X and a PHP version greater than or equal to 5.4.
 
 == Changelog ==
+
+= 1.2.1 =
+
+Release Date: November 24th, 2015
+
+* Bug fix: wrong settings when not updating widget after Live Weather Station update
+* Bug fix: no icon in widget when it is displayed in content (not in sidebar)
+* Improved readme.txt
 
 = 1.2.0 =
 
