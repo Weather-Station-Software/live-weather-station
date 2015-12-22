@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, co2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill
 Requires at least: 4.0
 Tested up to: 4.4
-Stable tag: 2.0.0
+Stable tag: 2.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -11,7 +11,7 @@ Display, in many different and elegant ways, the meteorological data collected b
 
 == Description ==
 
-> This 2.0.0 version is a new major release of Live Weather Station plugin. You can now display weather data even if you don't have a Netatmo station, simply by getting a free OpenWeatherMap API key. Of course, this plugin works always as well with all your Netatmo stations.
+> Since 2.0 version of Live Weather Station plugin you can now display weather data even if you don't have a Netatmo station, simply by getting [a free OpenWeatherMap API key](http://openweathermap.org/appid). Of course, this plugin works always as well with all your Netatmo stations.
 
 
 = Live Weather Station =
@@ -110,6 +110,13 @@ You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-l
 You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 == Changelog ==
+
+= 2.0.1 =
+
+Release date: December 22nd, 2015
+
+* Improvement: `readme.txt`
+* Bug fix: PHP notice while collecting non-existent rain or snow values from OpenWeatherMap.
 
 = 2.0.0 =
 
