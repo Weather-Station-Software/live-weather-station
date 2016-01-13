@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, co2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill
 Requires at least: 4.0
 Tested up to: 4.4
-Stable tag: 2.0.1
+Stable tag: 2.1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,14 +20,11 @@ To date, you can display data as follows:
 
 * a "classical" configurable widget that displays outdoor weather data
 * an "ephemeris" configurable widget that displays astronomical computed values
-* a highly configurable LCD panel control which displays the weather data you have selected
+* a highly configurable LCD panel control which displays the live weather data you have selected
+* a highly configurable clean gauge control which displays the live weather data you have selected
 * textual and numerical values you can insert in articles and pages via configurable shortcodes
 
 To see it in action, go to the [demo page](https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo-demo/).
-
-Note that more controls and viewers will be launched in the coming months.
-
-
 
 = Simple and efficient =
 The use of Live Weather Station requires no knowledge in programming and does not requires writing code.
@@ -55,6 +52,7 @@ Right now, Live Weather Station supports the following languages:
 
 Multilingualism is provided by the use of .po files (the standard way), so it is fully translatable - by you - in your language. If you have translated this plugin in a new language, get in touch with me, I will include it in the next release or, if you want you can translate the plugin directly with [GlotPress](https://translate.wordpress.org/projects/wp-plugins/live-weather-station) (use the 'stable' column).
 
+An effort from some members to begin the **german** translation have been done. If you speak german, you can contibute to this translation [here](https://translate.wordpress.org/locale/de/default/wp-plugins/live-weather-station) (choose 'stable' row) to finish it and include german language in the last release of the plugin.
 
 = Instructions =
 You can find a more in-depth description and instructions to configure [on this page](https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/).
@@ -110,6 +108,20 @@ You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-l
 You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 == Changelog ==
+
+= 2.1.0 =
+
+Release date: January 13th, 2015
+
+* Added: new clean gauges to display "live" values
+* New option for outdoor weather widget: you can now choose to hide obsolete data
+* Improvement: pressure displayed in inHg have now reasonable accuracy with 2 decimals
+* Improvement: the data collecting method for Netatmo & OpenWeatherMap is now "bullet-proof"
+* Improvement: an improved connection mode that should avoid unwanted disconnections (on Netatmo servers temporary errors)
+* Improvement: refresh cycle for live controls goes from 5 minutes to 2 minutes - datas are fresher than ever ;)
+* Improvement: the "about box" is now much more readable
+* Improvement: `readme.txt`
+* Bug fix: some typos in french translation.
 
 = 2.0.1 =
 
@@ -213,6 +225,9 @@ Release date: November 14th, 2015
 
 == Upgrade Notice ==
 
+= 2.1.X =
+New clean gauges to display measurements and many improvements.
+
 = 2.0.X =
 New major release with tones of new features and options. It is no longer necessary to have a Netatmo station to use the plugin: it also becomes suitable for use with OpenWeatherMap!
 
@@ -232,5 +247,8 @@ Initial version.
 3. A compact widget displaying ephemeris in flat design.
 4. Using collected data shortcodes, to fill TablePress tables with textual values.
 5. A LCD panel to display current temperatures. Note that you can customize which data are displayed, colors, design, etc.
-6. A view of the plugin dashboard.
-7. Configuration of a shortcode to show a LCD panel.
+6. 3 clean gauges to display current temperatures. Note that you can customize which data are displayed, colors, design, etc.
+7. 2 clean gauges on a dark background.
+8. A view of the plugin dashboard.
+9. Configuration of a shortcode to show a LCD panel.
+10. Configuration of a shortcode to show a clean gauge.
