@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, co2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill
 Requires at least: 4.0
 Tested up to: 4.4
-Stable tag: 2.1.0
+Stable tag: 2.2.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -20,8 +20,9 @@ To date, you can display data as follows:
 
 * a "classical" configurable widget that displays outdoor weather data
 * an "ephemeris" configurable widget that displays astronomical computed values
-* a highly configurable LCD panel control which displays the live weather data you have selected
+* a highly configurable LCD panel which displays selected weather data
 * a highly configurable clean gauge control which displays the live weather data you have selected
+* a hugely configurable steel meter control which displays the live weather data you have selected
 * textual and numerical values you can insert in articles and pages via configurable shortcodes
 
 To see it in action, go to the [demo page](https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo-demo/).
@@ -33,7 +34,7 @@ Just set it, insert (in a page or an article) the provided shortcodes. And it wo
 = How does it work? =
 Once you have connected the plugin to your Netatmo account (via the dashboard of your WordPress site), the data you have access to (your stations, plus all those for which you have permission) are collected every 10 minutes and stored in the database of your WordPress site.
 For OpenWeatherMap the process is the same: after entering your free API key, the weather data are collected every 15 minutes and stored in the database of your WordPress site.
-The various controls and viewers (like widget or LCD Panel) now will get their data from this database with the certainty of having fresh and cached data.
+The various controls and viewers (like widgets, LCD panel, gauges, etc.) now will get their data from this database with the certainty of having fresh and cached data.
 
 = Supported data, devices & modules =
 Live Weather Station supports all measured values coming from OpenWeatherMap excluding UV index, brightness and radiations.
@@ -52,7 +53,7 @@ Right now, Live Weather Station supports the following languages:
 
 Multilingualism is provided by the use of .po files (the standard way), so it is fully translatable - by you - in your language. If you have translated this plugin in a new language, get in touch with me, I will include it in the next release or, if you want you can translate the plugin directly with [GlotPress](https://translate.wordpress.org/projects/wp-plugins/live-weather-station) (use the 'stable' column).
 
-An effort from some members to begin the **german** translation have been done. If you speak german, you can contibute to this translation [here](https://translate.wordpress.org/locale/de/default/wp-plugins/live-weather-station) (choose 'stable' row) to finish it and include german language in the last release of the plugin.
+An effort from some members to begin the **german** translation have been done. If you speak german, you can contribute to this translation [here](https://translate.wordpress.org/locale/de/default/wp-plugins/live-weather-station) (choose 'stable' row) to finish it and include german language in the last release of the plugin.
 
 = Instructions =
 You can find a more in-depth description and instructions to configure [on this page](https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/).
@@ -108,6 +109,15 @@ You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-l
 You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 == Changelog ==
+
+= 2.2.0 =
+
+Release date: January 25th, 2015
+
+* Added: new steel meters, with tons of customization parameters, to display "live" values
+* Improvement: using of subscript character for carbon dioxide, now displayed as CO₂ (previously, it was CO2)
+* Improvement: in clean gauges it's now possible to choose to display the shortened measurement type as title or label
+* Improvement: `readme.txt`
 
 = 2.1.0 =
 
@@ -225,6 +235,9 @@ Release date: November 14th, 2015
 
 == Upgrade Notice ==
 
+= 2.2.X =
+New steel meters with tons of customization options to display measurements and some improvements.
+
 = 2.1.X =
 New clean gauges to display measurements and many improvements.
 
@@ -235,7 +248,7 @@ New major release with tones of new features and options. It is no longer necess
 Live Weather Station for Netatmo now computes wind chill and cloud base altitude.
 
 = 1.1.X =
-Live Weather Station for Netatmo now : computes dew & frost points, heat index and humidex; supports temperature & pressure trends; supports altitute and coordinates for the main station base; supports firmware version for all module types; improves look & feel of its widget.
+Live Weather Station for Netatmo now: computes dew & frost points, heat index and humidex; supports temperature & pressure trends; supports altitute and coordinates for the main station base; supports firmware version for all module types; improves look & feel of its widget.
 
 = 1.0.X =
 Initial version.
@@ -249,6 +262,8 @@ Initial version.
 5. A LCD panel to display current temperatures. Note that you can customize which data are displayed, colors, design, etc.
 6. 3 clean gauges to display current temperatures. Note that you can customize which data are displayed, colors, design, etc.
 7. 2 clean gauges on a dark background.
-8. A view of the plugin dashboard.
-9. Configuration of a shortcode to show a LCD panel.
-10. Configuration of a shortcode to show a clean gauge.
+8. Some types of steel meters.
+9. A view of the plugin dashboard.
+10. Configuration of a shortcode to show a LCD panel.
+11. Configuration of a shortcode to show a clean gauge.
+12. Configuration of a shortcode to show a steel meter.
