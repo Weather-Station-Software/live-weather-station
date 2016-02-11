@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, co2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill
 Requires at least: 4.0
 Tested up to: 4.4
-Stable tag: 2.2.0
+Stable tag: 2.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -110,9 +110,18 @@ You can report bugs and suggest ideas via the [support section](https://wordpres
 
 == Changelog ==
 
+= 2.2.1 =
+
+Release date: February 11th, 2016
+
+* Improvement: `readme.txt`
+* Bug fix: error in some steel meters while displaying obsolete data.
+* Bug fix: LCD font is not correctly displayed (in steel meters) when current value is out of range.
+* Bug fix: some typos in carbon dioxide strings.
+
 = 2.2.0 =
 
-Release date: January 25th, 2015
+Release date: January 25th, 2016
 
 * Added: new steel meters, with tons of customization parameters, to display "live" values
 * Improvement: using of subscript character for carbon dioxide, now displayed as CO₂ (previously, it was CO2)
@@ -121,7 +130,7 @@ Release date: January 25th, 2015
 
 = 2.1.0 =
 
-Release date: January 13th, 2015
+Release date: January 13th, 2016
 
 * Added: new clean gauges to display "live" values
 * New option for outdoor weather widget: you can now choose to hide obsolete data
