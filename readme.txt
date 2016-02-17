@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, co2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill
 Requires at least: 4.0
 Tested up to: 4.4
-Stable tag: 2.2.1
+Stable tag: 2.2.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,7 +90,7 @@ Anyway, I'll be glad to help you if you encounter issues when using this plugin.
 
 = What are the requirements for this plugin to work? =
 
-You need **WordPress 4.X** and at least **PHP 5.4**.
+You need **WordPress 4.X** and at least **PHP 5.4** (with internationalisation module).
 
 = Can this plugin work on multisite? =
 
@@ -109,6 +109,13 @@ You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-l
 You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 == Changelog ==
+
+= 2.2.2 =
+
+Release date: February 17th, 2016
+
+* Improvement: `readme.txt`
+* Bug fix: live controls are no correctly displayed when `wp-admin` directory is not at the root of the site.
 
 = 2.2.1 =
 
