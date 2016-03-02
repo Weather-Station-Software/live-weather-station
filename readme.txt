@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, co2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill
 Requires at least: 4.0
 Tested up to: 4.4
-Stable tag: 2.2.2
+Stable tag: 2.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -49,11 +49,12 @@ It supports all current devices and modules from Netatmo. This includes, in addi
 Right now, Live Weather Station supports the following languages:
 
 * English / default
+* English / Australia (thanks to [Stephen Edgar](https://profiles.wordpress.org/netweb))
 * French
 
 Multilingualism is provided by the use of .po files (the standard way), so it is fully translatable - by you - in your language. If you have translated this plugin in a new language, get in touch with me, I will include it in the next release or, if you want you can translate the plugin directly with [GlotPress](https://translate.wordpress.org/projects/wp-plugins/live-weather-station) (use the 'stable' column).
 
-An effort from some members to begin the **german** translation have been done. If you speak german, you can contribute to this translation [here](https://translate.wordpress.org/locale/de/default/wp-plugins/live-weather-station) (choose 'stable' row) to finish it and include german language in the last release of the plugin.
+An effort from some members to begin the **german** translation have been done. If you speak german, you can contribute to this translation [here](https://translate.wordpress.org/locale/de/default/wp-plugins/live-weather-station) (choose 'stable' row) to finish it and I will include german language in the last release of the plugin.
 
 = Instructions =
 You can find a more in-depth description and instructions to configure [on this page](https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/).
@@ -90,7 +91,7 @@ Anyway, I'll be glad to help you if you encounter issues when using this plugin.
 
 = What are the requirements for this plugin to work? =
 
-You need **WordPress 4.X** and at least **PHP 5.4** (with internationalisation module).
+You need **WordPress 4.X** and at least **PHP 5.4** (with internationalisation extension).
 
 = Can this plugin work on multisite? =
 
@@ -110,18 +111,31 @@ You can report bugs and suggest ideas via the [support section](https://wordpres
 
 == Changelog ==
 
+= 2.3.0 =
+
+Release date: March 2nd, 2016
+
+* New language: English / Australia.
+* Improvement: all live controls and widgets now makes distinction between (and shows correct units and labels for) rain rates and rainfalls.
+* Improvement: steel meters can now shows accumulated rainfall for today (Netatmo) and last 3 hours (OpenWeatherMap).
+* Improvement: Live Weather Station now supports empty responses sent sometimes by OpenWeatherMap servers.
+* Improvement: Live Weather Station now supports erroneous data sent sometimes by Netatmo servers.
+* Improvement: a warning is now displayed in the site dashboard when php internationalisation extension is not installed (it is a requirement to run Live Weather Station, see [FAQ](https://wordpress.org/plugins/live-weather-station/faq/)).
+* Improvement: `readme.txt`.
+* Bug fix: rainfalls and snowfalls are not correctly shown in LCD panel when their values are null.
+
 = 2.2.2 =
 
 Release date: February 17th, 2016
 
-* Improvement: `readme.txt`
+* Improvement: `readme.txt`.
 * Bug fix: live controls are no correctly displayed when `wp-admin` directory is not at the root of the site.
 
 = 2.2.1 =
 
 Release date: February 11th, 2016
 
-* Improvement: `readme.txt`
+* Improvement: `readme.txt`.
 * Bug fix: error in some steel meters while displaying obsolete data.
 * Bug fix: LCD font is not correctly displayed (in steel meters) when current value is out of range.
 * Bug fix: some typos in carbon dioxide strings.
@@ -130,30 +144,30 @@ Release date: February 11th, 2016
 
 Release date: January 25th, 2016
 
-* Added: new steel meters, with tons of customization parameters, to display "live" values
-* Improvement: using of subscript character for carbon dioxide, now displayed as CO₂ (previously, it was CO2)
-* Improvement: in clean gauges it's now possible to choose to display the shortened measurement type as title or label
-* Improvement: `readme.txt`
+* Added: new steel meters, with tons of customization parameters, to display "live" values.
+* Improvement: using of subscript character for carbon dioxide, now displayed as CO₂ (previously, it was CO2).
+* Improvement: in clean gauges it's now possible to choose to display the shortened measurement type as title or label.
+* Improvement: `readme.txt`.
 
 = 2.1.0 =
 
 Release date: January 13th, 2016
 
-* Added: new clean gauges to display "live" values
-* New option for outdoor weather widget: you can now choose to hide obsolete data
-* Improvement: pressure displayed in inHg have now reasonable accuracy with 2 decimals
-* Improvement: the data collecting method for Netatmo & OpenWeatherMap is now "bullet-proof"
-* Improvement: an improved connection mode that should avoid unwanted disconnections (on Netatmo servers temporary errors)
-* Improvement: refresh cycle for live controls goes from 5 minutes to 2 minutes - datas are fresher than ever ;)
-* Improvement: the "about box" is now much more readable
-* Improvement: `readme.txt`
+* Added: new clean gauges to display "live" values.
+* New option for outdoor weather widget: you can now choose to hide obsolete data.
+* Improvement: pressure displayed in inHg have now reasonable accuracy with 2 decimals.
+* Improvement: the data collecting method for Netatmo & OpenWeatherMap is now "bullet-proof".
+* Improvement: an improved connection mode that should avoid unwanted disconnections (on Netatmo servers temporary errors).
+* Improvement: refresh cycle for live controls goes from 5 minutes to 2 minutes - datas are fresher than ever ;).
+* Improvement: the "about box" is now much more readable.
+* Improvement: `readme.txt`.
 * Bug fix: some typos in french translation.
 
 = 2.0.1 =
 
 Release date: December 22nd, 2015
 
-* Improvement: `readme.txt`
+* Improvement: `readme.txt`.
 * Bug fix: PHP notice while collecting non-existent rain or snow values from OpenWeatherMap.
 
 = 2.0.0 =
@@ -250,6 +264,9 @@ Release date: November 14th, 2015
 * First public version.
 
 == Upgrade Notice ==
+
+= 2.3.X =
+Many optimizations and improvements.
 
 = 2.2.X =
 New steel meters with tons of customization options to display measurements and some improvements.
