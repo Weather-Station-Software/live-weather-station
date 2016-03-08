@@ -48,8 +48,9 @@ It supports all current devices and modules from Netatmo. This includes, in addi
 = Supported languages =
 Right now, Live Weather Station supports the following languages:
 
-* English / default
+* English (default)
 * English / Australia (thanks to [Stephen Edgar](https://profiles.wordpress.org/netweb))
+* English / New Zealand (thanks to [webaware](https://profiles.wordpress.org/webaware))
 * French
 
 Multilingualism is provided by the use of .po files (the standard way), so it is fully translatable - by you - in your language. If you have translated this plugin in a new language, get in touch with me, I will include it in the next release or, if you want you can translate the plugin directly with [GlotPress](https://translate.wordpress.org/projects/wp-plugins/live-weather-station) (use the 'stable' column).
@@ -110,6 +111,16 @@ You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-l
 You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 == Changelog ==
+
+= 2.4.0 =
+
+Release date: March 8th, 2016
+
+* New language: English / New Zealand.
+* Improvement: Netatmo servers are now queried every five minutes (it was every ten minutes in previous versions).
+* Improvement: `readme.txt`.
+* Bug fix: a string of the "about" box is not translatable.
+* Bug fix: name collision for Color Class with other unknown plugin.
 
 = 2.3.0 =
 
