@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, co2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill
 Requires at least: 4.0
 Tested up to: 4.4
-Stable tag: 2.4.0
+Stable tag: 2.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,7 +55,7 @@ Right now, Live Weather Station supports the following languages:
 
 Multilingualism is provided by the use of .po files (the standard way), so it is fully translatable - by you - in your language. If you have translated this plugin in a new language, get in touch with me, I will include it in the next release or, if you want you can translate the plugin directly with [GlotPress](https://translate.wordpress.org/projects/wp-plugins/live-weather-station) (use the 'stable' column).
 
-An effort from some members to begin the **german** translation have been done. If you speak german, you can contribute to this translation [here](https://translate.wordpress.org/locale/de/default/wp-plugins/live-weather-station) (choose 'stable' row) to finish it and I will include german language in the last release of the plugin.
+An effort from some members to begin the **Norwegian** and the **German** translation have been done. If you speak German or Norwegian, you can contribute to this translation [here](https://translate.wordpress.org/locale/de/default/wp-plugins/live-weather-station) and [here](https://translate.wordpress.org/locale/nb/default/wp-plugins/live-weather-station) (choose 'stable' row) to finish it and I will include these languages in the last release of the plugin.
 
 = Instructions =
 You can find a more in-depth description and instructions to configure [on this page](https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/).
@@ -111,6 +111,17 @@ You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-l
 You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 == Changelog ==
+
+= 2.4.1 =
+
+Release date: March 14th, 2016
+
+* Improvement: an error window now shows the reason when it's not possible to generate a shortcode (mostly for OpenWeatherMap errors).
+* Improvement: `readme.txt`.
+* Bug fix: unable to generate shortcodes when OpenWeatherMap servers sends empty responses.
+* Bug fix: unable to connect a Netatmo account with a password containing quotes, double-quotes or backslashes.
+* Bug fix: station names containing html special characters, quotes, double-quotes or backslashes are not correctly displayed in widgets and admin panel.
+
 
 = 2.4.0 =
 
@@ -275,6 +286,9 @@ Release date: November 14th, 2015
 * First public version.
 
 == Upgrade Notice ==
+
+= 2.4.X =
+New frequency for updating Netatmo values. Many optimizations and improvements.
 
 = 2.3.X =
 Many optimizations and improvements.
