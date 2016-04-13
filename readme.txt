@@ -2,10 +2,11 @@
 Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, co2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill
 Requires at least: 4.0
-Tested up to: 4.4
-Stable tag: 2.4.1
+Tested up to: 4.5
+Stable tag: 2.5.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Donate link: https://support.laquadrature.net/
 
 Display, in many different and elegant ways, the meteorological data collected by your Netatmo weather station or coming from OpenWeatherMap.
 
@@ -32,11 +33,11 @@ The use of Live Weather Station requires no knowledge in programming and does no
 Just set it, insert (in a page or an article) the provided shortcodes. And it works!
 
 = How does it work? =
-Once you have connected the plugin to your Netatmo account (via the dashboard of your WordPress site), the data you have access to (your stations, plus all those for which you have permission) are collected every 10 minutes and stored in the database of your WordPress site.
+Once you have connected the plugin to your Netatmo account (via the dashboard of your WordPress site), the data you have access to (your stations, plus all those for which you have permission) are collected every 5 minutes and stored in the database of your WordPress site.
 For OpenWeatherMap the process is the same: after entering your free API key, the weather data are collected every 15 minutes and stored in the database of your WordPress site.
 The various controls and viewers (like widgets, LCD panel, gauges, etc.) now will get their data from this database with the certainty of having fresh and cached data.
 
-= Supported data, devices & modules =
+= Supported data, devices, modules & services =
 Live Weather Station supports all measured values coming from OpenWeatherMap excluding UV index, brightness and radiations.
 It supports all current devices and modules from Netatmo. This includes, in addition to the main station base:
 
@@ -44,6 +45,11 @@ It supports all current devices and modules from Netatmo. This includes, in addi
 * outdoor modules
 * rain gauges
 * wind gauges
+
+Live Weather Station allows you to send your Netatmo outdoor data to the following services:
+
+* [Met Office](http://wow.metoffice.gov.uk/) weather observations website
+* [PWS Weather](http://www.pwsweather.com/)
 
 = Supported languages =
 Right now, Live Weather Station supports the following languages:
@@ -64,6 +70,9 @@ You can find a more in-depth description and instructions to configure [on this 
 This plugin is free and provided without warranty of any kind. Use it at your own risk, I'm not responsible for any improper use of this plugin, nor for any damage it might cause to your site. Always backup all your data before installing a new plugin.
 
 Anyway, I'll be glad to help you if you encounter issues when using this plugin. Just use the support section of this plugin page.
+
+= Donation =
+If you like this plugin or find it useful and want to thank me for the work done, please consider making a donation to [La Quadrature Du Net](https://www.laquadrature.net/en) which is an advocacy group defending the rights and freedoms of citizens on the Internet. By supporting them, you help the daily actions they perform to defend our fundamental freedoms!
 
 > **DISCLAIMER:** *This plugin is developed and maintained by me, [Pierre Lannoy](https://pierre.lannoy.fr "Pierre Lannoy"). This plugin **IS NOT** an official software from [Netatmo](http://www.netatmo.com "Netatmo Homepage") or [OpenWeatherMap](http://openweathermap.org/) and is not endorsed or supported by these companies. Moreover, I am not a partner, employee, affiliate, or licensee of Netatmo or OpenWeatherMap. I'm just a happy customer/user of their products and a fan of meteorology.*
 
@@ -111,6 +120,19 @@ You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-l
 You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 == Changelog ==
+
+= 2.5.0 =
+
+Release date: April 13th, 2016
+
+* Added: Live Weather Station can now send outdoor Netatmo data to [Met Office](http://wow.metoffice.gov.uk/) and [PWS Weather](http://www.pwsweather.com/) services.
+* New option for wind direction icons: it's now possible to choose the semantics of the icons (towards or from).
+* Improvement: steel meters can now shows accumulated rainfall for last hour (Netatmo).
+* Improvement: support for Wordpress 4.5.
+* Improvement: `readme.txt`.
+* Bug fix: in some circumstances, Live Weather Station are not able to obtain correct geolocation of Netatmo stations.
+* Bug fix: database and PHP warnings when updating plugin in some cases.
+* Bug fix: PHP warning when in Netatmo & OWM mode and there is no specified OWM station.
 
 = 2.4.1 =
 
@@ -286,6 +308,9 @@ Release date: November 14th, 2015
 * First public version.
 
 == Upgrade Notice ==
+
+= 2.5.X =
+Added the possibility to send outdoor data from Netatmo stations to some online weather services. Many optimizations and improvements.
 
 = 2.4.X =
 New frequency for updating Netatmo values. Many optimizations and improvements.
