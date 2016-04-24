@@ -1,9 +1,9 @@
 === Live Weather Station ===
 Contributors: PierreLannoy
-Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, co2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill
+Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, co2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill, weather plugin, wordpress widget, wind gauge, rain gauge, pws, met office, personal weather station, weather underground, wunderground, weather observations website, wow, observation
 Requires at least: 4.0
 Tested up to: 4.5
-Stable tag: 2.5.0
+Stable tag: 2.6.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://support.laquadrature.net/
@@ -46,10 +46,11 @@ It supports all current devices and modules from Netatmo. This includes, in addi
 * rain gauges
 * wind gauges
 
-Live Weather Station allows you to send your Netatmo outdoor data to the following services:
+Live Weather Station allows you to send your Netatmo outdoor data, at a 10 minutes frequency, to the following services:
 
 * [Met Office](http://wow.metoffice.gov.uk/) weather observations website
 * [PWS Weather](http://www.pwsweather.com/)
+* [Weather Underground](https://www.wunderground.com/)
 
 = Supported languages =
 Right now, Live Weather Station supports the following languages:
@@ -120,6 +121,19 @@ You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-l
 You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 == Changelog ==
+
+= 2.6.0 =
+
+Release date: April 24th, 2016
+
+* Added: Live Weather Station can now send outdoor Netatmo data to [Weather Underground](https://www.wunderground.com/) service.
+* New option for rain and snow displaying: metric or imperial system.
+* Improvement: textual shortcodes can now display units (symbol/abbrev. or full unit name) for measurement types.
+* Improvement: unit for snow in metric system is now automatic (millimeters or centimeters).
+* Improvement: `readme.txt`.
+* Bug fix: LCD panel doesn't shows the right unit for snowfall in some cases.
+* Bug fix: impossible to disable data sending to Met Office or PWS Weather when station is correctly synchronized.
+* Bug fix: some typos in french translation.
 
 = 2.5.0 =
 
@@ -308,6 +322,9 @@ Release date: November 14th, 2015
 * First public version.
 
 == Upgrade Notice ==
+
+= 2.6.X =
+Added the possibility to send outdoor data from Netatmo stations to Weather Underground. Many optimizations and improvements.
 
 = 2.5.X =
 Added the possibility to send outdoor data from Netatmo stations to some online weather services. Many optimizations and improvements.
