@@ -1,0 +1,29 @@
+***********************
+*  UPCOMING FEATURES  *
+***********************
+
+ * 2.x - Querying icons texts via shortcodes
+ * 3.x - 4 hours forecasting
+ * 3.x - 5 days forecasting
+ * 3.x - Forest fire weather index computing
+ * 3.x - Aridity index computing
+ * 3.x - Logging facilities
+ 
+ 
+***********************
+*  UPCOMING CONTROLS  *
+***********************
+
+ * 2.x - Icons dashboard
+ * 3.x - Pollution widget
+ * 4.x - Widget with changing background
+
+
+***********************
+* FUTURE IMPROVEMENTS *
+***********************
+
+ * 3.x - Ability to (re)order displayed datas in controls like LCD Panel
+ * 3.X - Ability to change text color in clean gauges
+
+ --
