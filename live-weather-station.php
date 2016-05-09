@@ -8,7 +8,7 @@
  * Plugin Name:       Live Weather Station
  * Plugin URI:        https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/
  * Description:       Display, in many different and elegant ways, the meteorological data collected by your Netatmo weather station or coming from OpenWeatherMap.
- * Version:           2.7.0
+ * Version:           2.7.1
  * Author:            Pierre Lannoy
  * Author URI:        https://pierre.lannoy.fr
  * License:           GPLv2 or later
@@ -43,7 +43,7 @@ function is_i18n_loaded() {
     return (class_exists('Locale') && class_exists('DateTimeZone'));
 }
 
-define( 'LWS_VERSION', '2.7.0' );
+define( 'LWS_VERSION', '2.7.1' );
 
 
 define( 'LWS_MINIMUM_WP_VERSION', '4.0' );
