@@ -1,9 +1,9 @@
 === Live Weather Station ===
 Contributors: PierreLannoy
-Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, co2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill, weather plugin, wordpress widget, wind gauge, rain gauge, pws, met office, personal weather station, weather underground, wunderground, weather observations website, wow, observation
+Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, CO2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill, weather plugin, wordpress widget, wind gauge, rain gauge, pws, met office, personal weather station, weather underground, wunderground, weather observations website, wow, observation, pollution, CO₂, CO, O3, O₃, ozone, carbon dioxide, carbon monoxide
 Requires at least: 4.0
 Tested up to: 4.5
-Stable tag: 2.6.0
+Stable tag: 2.7.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://support.laquadrature.net/
@@ -121,6 +121,21 @@ You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-l
 You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 == Changelog ==
+
+= 2.7.0 =
+
+Release date: May 9th, 2016
+
+* Added: Live Weather Station can now collects polution data for ozone (O₃) and carbon monoxide (C0) and display it in textual shortcodes, LCD Panel, clean gauges and steel meter. It is an experimental feature, [see notes](https://wordpress.org/support/topic/new-pollution-data-types-units-and-limitations).
+* Improvement: new "bullet-proof" mode for cron jobs.
+* Improvement: steel meters have now adaptative decimal numbers for labels.
+* Improvement: LCD panel now displays the correct number of decimal digits depending on the measurement type.
+* Improvement: clean gauge and steel meters now supports values smaller than 1.
+* Improvement: better min/max values handling in clean gauges.
+* Improvement: sample urls for related services redirects now to Netatmo stations.
+* Improvement: `readme.txt`.
+* Bug fix: some MySQL warnings while activating the plugin.
+* Bug fix: in some circumstances, cron jobs are disappearing (and data updates are not done) - many thanks to [Atle](https://wordpress.org/support/profile/atlehogberg) to have pointed out this annoying issue.
 
 = 2.6.0 =
 
@@ -322,6 +337,9 @@ Release date: November 14th, 2015
 * First public version.
 
 == Upgrade Notice ==
+
+= 2.7.X =
+New pollution data collecting from OpenWeatherMap. New cron jobs mode. Many optimizations, improvements and bug fixes.
 
 = 2.6.X =
 Added the possibility to send outdoor data from Netatmo stations to Weather Underground. Many optimizations and improvements.
