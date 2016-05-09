@@ -1,0 +1,64 @@
+img.lws-logo {
+    max-height: 26px;
+    max-width: 24px;
+}
+
+span.lws-module-name {
+    vertical-align: super;
+    margin-left: 6px;
+}
+
+table.lws-settings {
+    width: 100%;
+}
+
+.lws-settings th:first-child {
+    vertical-align: top;
+    padding-top: 15px;
+}
+
+.lws-settings th.lws-login {
+    vertical-align: middle;
+    padding-top: 0;
+}
+
+.lws-settings input[type=text] {
+    width: 100%;
+}
+
+.lws-settings th.lws-password {
+    vertical-align: middle;
+    padding-top: 0;
+}
+
+.lws-settings input[type=password] {
+    width: 100%;
+}
+
+.lws-settings th.lws-option {
+    vertical-align: middle;
+    padding-top: 0;
+}
+
+.lws-settings span.note{
+    float: left;
+    padding-left: 23px;
+    font-size: 75%;
+    margin-top: -10px;
+}
+
+select.option-select {
+    width:400px;
+}
+
+select.option-at-100 {
+    width:100%;
+}
+
+.clearfix {
+    clear:both;
+}
+
+#submitted-on {
+    position: relative;
+}
