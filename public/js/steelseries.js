@@ -1,8 +1,8 @@
 /*!
- * Name          : steelseries.js
- * Authors       : Gerrit Grunwald, Mark Crossley
- * Last modified : 01.12.2015
- * Revision      : 0.14.16
+ * - Name          : steelseries.js
+ * - Authors       : Gerrit Grunwald, Mark Crossley
+ * - Last modified : 01.12.2015
+ * - Revision      : 0.14.16
  *
  * Copyright (c) 2011, Gerrit Grunwald, Mark Crossley
  * All rights reserved.
@@ -23,7 +23,7 @@
  */
 
 
-var steelseries = (function () {
+var steelseries = ( function () {
     // Constants
     var HALF_PI     = Math.PI * 0.5,
         TWO_PI      = Math.PI * 2,
