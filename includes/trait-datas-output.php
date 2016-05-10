@@ -42,7 +42,7 @@ trait Datas_Output {
             return __(LWS_PLUGIN_NAME, 'live-weather-station').' - '.$name['condition']['message'];
         }
         $name = substr($name, 0, 20);
-        wp_enqueue_script( 'lws-lcd.js' );
+        wp_enqueue_script('lws-lcd.js',false, array(),$this->version);
         $result  = '<div id="'.$uniq.'"></div>'.PHP_EOL;
         $result .= '<script language="javascript" type="text/javascript">'.PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
@@ -491,7 +491,7 @@ trait Datas_Output {
                 break;
         }
         $style = 'width:'.$w.';height:'.$h.';';
-        wp_enqueue_script( 'justgage.js' );
+        wp_enqueue_script('justgage.js',false, array(),$this->version);
         $result  = '<div id="'.$uniq.'" style="'.$style.'"></div>'.PHP_EOL;
         $result .= '<script language="javascript" type="text/javascript">'.PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
@@ -1048,7 +1048,7 @@ trait Datas_Output {
         }
 
         $style = 'width:'.$w.';height:'.$h.';';
-        wp_enqueue_script( 'steelseries.js' );
+        wp_enqueue_script('steelseries.js',false, array(),$this->version);
         $result  = '<canvas id="'.$uniq.'" style="'.$style.'"></canvas>'.PHP_EOL;
         $result .= '<script language="javascript" type="text/javascript">'.PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
