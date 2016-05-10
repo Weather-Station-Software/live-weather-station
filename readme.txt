@@ -122,6 +122,13 @@ You can report bugs and suggest ideas via the [support section](https://wordpres
 
 == Changelog ==
 
+= 2.7.2 =
+
+Release date: May xxth, 2016
+
+* Improvement: better javascript files refreshing after updating the plugin.
+* Improvement: `readme.txt`.
+
 = 2.7.1 =
 
 Release date: May 10th, 2016
