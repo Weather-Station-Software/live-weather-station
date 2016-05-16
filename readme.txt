@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, CO2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill, weather plugin, wordpress widget, wind gauge, rain gauge, pws, met office, personal weather station, weather underground, wunderground, weather observations website, wow, observation, pollution, CO₂, CO, O3, O₃, ozone, carbon dioxide, carbon monoxide
 Requires at least: 4.0
 Tested up to: 4.5
-Stable tag: 2.7.1
+Stable tag: 2.7.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://support.laquadrature.net/
@@ -59,6 +59,8 @@ Right now, Live Weather Station supports the following languages:
 * English / Australia (thanks to [Stephen Edgar](https://profiles.wordpress.org/netweb))
 * English / New Zealand (thanks to [webaware](https://profiles.wordpress.org/webaware))
 * French
+* French / Belgium
+* French / Canada
 
 Multilingualism is provided by the use of .po files (the standard way), so it is fully translatable - by you - in your language. If you have translated this plugin in a new language, get in touch with me, I will include it in the next release or, if you want you can translate the plugin directly with [GlotPress](https://translate.wordpress.org/projects/wp-plugins/live-weather-station) (use the 'stable' column).
 
@@ -122,9 +124,15 @@ You can report bugs and suggest ideas via the [support section](https://wordpres
 
 == Changelog ==
 
+= 2.7.3 =
+
+Release date: May 16th, 2016
+
+* Improvement: `readme.txt`.
+
 = 2.7.2 =
 
-Release date: May xxth, 2016
+Release date: May 16th, 2016
 
 * New language: French / Belgium.
 * New language: French / Canada.
