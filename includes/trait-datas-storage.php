@@ -159,6 +159,7 @@ trait Datas_Storage {
         $sql = "CREATE TABLE IF NOT EXISTS ".$table_name;
         $sql .= " (station_id varchar(17) NOT NULL,";
         $sql .= " station_name varchar(60) DEFAULT '' NOT NULL,";
+        $sql .= " txt_sync boolean DEFAULT 0 NOT NULL,";
         $sql .= " owm_user varchar(60) DEFAULT '' NOT NULL,";
         $sql .= " owm_password varchar(60) DEFAULT '' NOT NULL,";
         $sql .= " owm_id varchar(60) DEFAULT '' NOT NULL,";
@@ -226,6 +227,7 @@ trait Datas_Storage {
         }
 
         // VERSION 2.6.0
+        $table_name = $wpdb->prefix.self::live_weather_station_infos_table();
         if (self::is_empty_table($table_name)) {
             $sql = 'DROP TABLE '.$table_name;
             $wpdb->query($sql);
@@ -242,6 +244,17 @@ trait Datas_Storage {
         $sql = "ALTER TABLE ".$table_name." CHANGE module_type";
         $sql .= " module_type varchar(12) DEFAULT '<unknown>' NOT NULL";
         $wpdb->query($sql);
+
+        // VERSION 2.7.2
+        $table_name = $wpdb->prefix.self::live_weather_station_infos_table();
+        if (self::is_empty_table($table_name)) {
+            $sql = 'DROP TABLE '.$table_name;
+            $wpdb->query($sql);
+            self::create_live_weather_station_infos_table();
+        }
+        else {
+            self::safe_add_column($table_name, 'txt_sync', "ALTER TABLE ".$table_name." ADD txt_sync boolean DEFAULT 0 NOT NULL;");
+        }
         
     }
 

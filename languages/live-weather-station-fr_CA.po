@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Live Weather Station\n"
 "POT-Creation-Date: 2016-05-09 16:23+0200\n"
-"PO-Revision-Date: 2016-05-10 22:51+0200\n"
+"PO-Revision-Date: 2016-05-16 22:14+0200\n"
 "Last-Translator: Pierre Lannoy <pierre@lannoy.fr>\n"
 "Language-Team: \n"
 "Language: fr_CA\n"
@@ -36,7 +36,7 @@ msgid ""
 "again on the button <em>%s</em>!"
 msgstr ""
 "Voici les coordonnées que nous avons trouvé %s. Vous pouvez les confirmer en "
-"cliquant à nouveau sur le bouton <em>%s</em> !"
+"cliquant à nouveau sur le bouton <em>%s</em>&nbsp;!"
 
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:10
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:112
@@ -60,7 +60,7 @@ msgstr "Modifier une station OpenWeatherMap"
 
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:24
 msgid "Some required fields are missing!"
-msgstr "Certains champs obligatoires sont manquant !"
+msgstr "Certains champs obligatoires sont manquant&nbsp;!"
 
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:30
 #: includes/trait-javascript-array.php:262
@@ -109,14 +109,14 @@ msgid ""
 "location. Please, enter them here - or try an other location:"
 msgstr ""
 "Malgré tous nos efforts, nous n’avons pu trouver les coordonnées de cet "
-"emplacement. Merci de les saisir ici - ou essayez un autre endroit :"
+"emplacement. Merci de les saisir ici - ou essayez un autre endroit&nbsp;:"
 
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:95
 msgid ""
 "The coordinates you have entered are not valid. Please, retry or left blank:"
 msgstr ""
 "Les coordonnées que vous avez saisi ne sont pas valides. Veuillez réessayer "
-"ou laisser les champs vides :"
+"ou laisser les champs vides&nbsp;:"
 
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:102
 #: includes/trait-type-description.php:199
@@ -178,13 +178,13 @@ msgid ""
 "You can find help and explanation about this plugin on <a href=\"https://"
 "pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/\">this page</a>."
 msgstr ""
-"Vous pourrez trouver de l’aide et des explications sur ce plugin sur <a href="
-"\"https://pierre.lannoy.fr/wordpress-live-weather-station-pour-netatmo/"
-"\">cette page</a>."
+"Vous pourrez trouver de l’aide et des explications sur cette extension sur "
+"<a href=\"https://pierre.lannoy.fr/wordpress-live-weather-station-pour-"
+"netatmo/\">cette page</a>."
 
 #: admin/partials/live-weather-station-admin-config-about.php:23
 msgid "Plugin"
-msgstr "Plugin"
+msgstr "Extension"
 
 #: admin/partials/live-weather-station-admin-config-about.php:26
 msgid ""
@@ -192,8 +192,8 @@ msgid ""
 "href=\"https://wordpress.org/support/view/plugin-reviews/live-weather-station"
 "\">write a review</a>."
 msgstr ""
-"<em>Live Weather Station</em> vous est utile ? Je serais très heureux que "
-"vous veniez écrire <a href=\"https://wordpress.org/support/view/plugin-"
+"<em>Live Weather Station</em> vous est utile&nbsp;? Je serais très heureux "
+"que vous veniez écrire <a href=\"https://wordpress.org/support/view/plugin-"
 "reviews/live-weather-station\">une recommandation</a>."
 
 #: admin/partials/live-weather-station-admin-config-about.php:29
@@ -206,9 +206,9 @@ msgid ""
 "\"https://translate.wordpress.org/projects/wp-plugins/live-weather-station"
 "\">GlotPress</a> (please, use the 'stable' column)."
 msgstr ""
-"Si vous souhaitez aider à traduire ce plugin, vous pouvez le faire via <a "
-"href=\"https://translate.wordpress.org/projects/wp-plugins/live-weather-"
-"station\">GlotPress</a> (merci d’utiliser la colonne 'stable')."
+"Si vous souhaitez aider à traduire cette extension, vous pouvez le faire via "
+"<a href=\"https://translate.wordpress.org/projects/wp-plugins/live-weather-"
+"station\">GlotPress</a> (merci d’utiliser la colonne «&nbsp;stable&nbsp;»)."
 
 #: admin/partials/live-weather-station-admin-config-about.php:35
 msgid "Thanks to"
@@ -233,12 +233,13 @@ msgid ""
 "Christian Flach, phpcolors by Arlo Carreon, moonrise/moonset calculation "
 "from Matt \"dxprog\" Hackmann and moon phase calculation from Samir Shah."
 msgstr ""
-"<em>Live Weather Station</em> est un plugin gratuit et open source pour "
+"<em>Live Weather Station</em> est une extension gratuite et open source pour "
 "WordPress. Il incorpore d’autres travaux gratuits et open source tels que le "
 "projet Weather Icons de Erik Flowers, EnzoJS et SteelSeries de Gerrit "
 "Grunwald, JustGage de Bojan Đuričić, OpenWeatherMap PHP API de Christian "
 "Flach, phpcolors de Arlo Carreon, les calculs de lever et coucher de lune de "
-"Matt « dxprog » Heckmann et les calculs de phase de la lune de Samir Shah."
+"Matt «&nbsp;dxprog&nbsp;» Heckmann et les calculs de phase de la lune de "
+"Samir Shah."
 
 #: admin/partials/live-weather-station-admin-config-about.php:47
 msgid "Data"
@@ -350,9 +351,9 @@ msgid ""
 "shortcode. This is normally a temporary error so, please, retry again later."
 msgstr ""
 "Les serveurs OpenWeatherMap ont renvoyé une réponse vide pour cette station "
-"météo. Pour cette raison, il est actuellement impossible de générer un "
-"shortcode. Ceci est normalement une erreur temporaire. Merci de réessayer "
-"plus tard."
+"météo. Pour cette raison, il est actuellement impossible de générer un code "
+"court. Ceci est normalement une erreur temporaire. Merci de réessayer plus "
+"tard."
 
 #: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:27
 #: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:103
@@ -364,7 +365,7 @@ msgstr ""
 #: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:311
 #: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:77
 msgid "Shortcodes for"
-msgstr "Shortcodes pour"
+msgstr "Codes courts pour"
 
 #: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:27
 #: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:27
@@ -379,7 +380,7 @@ msgstr "compteur métallique"
 #: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:42
 #: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:15
 msgid "1. Set parameters for the shortcode"
-msgstr "1. Réglez les paramètres du shortcode"
+msgstr "1. Réglez les paramètres du code court"
 
 #: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:47
 #: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:47
@@ -426,7 +427,7 @@ msgstr "2. Vérifiez le rendu"
 #: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:655
 #: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:136
 msgid "3. Copy the following shortcode"
-msgstr "3. Copiez le shortcode suivant"
+msgstr "3. Copiez le code court suivant"
 
 #: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:174
 #: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:317
@@ -434,7 +435,7 @@ msgstr "3. Copiez le shortcode suivant"
 #: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:661
 #: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:142
 msgid "This shortcode is ready for use."
-msgstr "Ce shortcode est prêt à l’emploi."
+msgstr "Ce code court est prêt à l’emploi."
 
 #: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:177
 #: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:320
@@ -624,7 +625,7 @@ msgstr "Éphéméride"
 
 #: admin/partials/live-weather-station-admin-config-stations.php:167
 msgid "Get shortcodes for "
-msgstr "Obtenir les shortcodes pour"
+msgstr "Obtenir les codes courts pour"
 
 #: admin/partials/live-weather-station-admin-config-stations.php:180
 msgid "Get started"
@@ -648,13 +649,13 @@ msgstr ""
 "em></strong> doit être connecté à votre compte Netatmo et/ou disposer d’une "
 "clé d’API OpenWeatherMap...<br/><strong>Si vous avez une station Netatmo</"
 "strong> (ou accès à des stations d’amis) merci de saisir votre identifiant "
-"et mot de passe Netatmo dans la boite \"Réglages\". <em>Notez que, dans le "
-"respect des recommandations du constructeur, vos identifiants ne seront pas "
-"stockés dans votre site WordPress.</em><br/><strong>Si vous n’avez pas de "
-"station Netatmo</strong> ou si vous souhaitez améliorer la restitution des "
-"données issues de votre station Netatmo, vous devez vous procurer <a href="
-"\"http://openweathermap.org/appid\" target=\"_blank\">une clé gratuite "
-"OpenWeatherMap</a> et la saisir dans la boite \"Réglages\". "
+"et mot de passe Netatmo dans la boite «&nbsp;Réglages&nbsp;». <em>Notez que, "
+"dans le respect des recommandations du constructeur, vos identifiants ne "
+"seront pas stockés dans votre site WordPress.</em><br/><strong>Si vous "
+"n’avez pas de station Netatmo</strong> ou si vous souhaitez améliorer la "
+"restitution des données issues de votre station Netatmo, vous devez vous "
+"procurer <a href=\"http://openweathermap.org/appid\" target=\"_blank\">une "
+"clé gratuite OpenWeatherMap</a> et la saisir dans la boite \"Réglages\". "
 
 #: admin/partials/live-weather-station-admin-config-stations.php:191
 msgid "There is no Netatmo weather station associated with your account."
@@ -678,8 +679,8 @@ msgid ""
 "mode in the \"Options\" box."
 msgstr ""
 "Pour voir les données correspondantes à des stations OpenWeatherMap, vous "
-"devez choisir un autre mode de collecte des données dans la boite "
-"\"Options »."
+"devez choisir un autre mode de collecte des données dans la boite «&nbsp;"
+"Options&nbsp;»."
 
 #: admin/partials/live-weather-station-admin-config-summary.php:12
 msgid "Summary"
@@ -768,11 +769,11 @@ msgstr "Suppression de stations OpenWeatherMap"
 
 #: admin/partials/live-weather-station-admin-delete-owm.php:20
 msgid "You have chosen to delete this station:"
-msgstr "Vous avez choisi de supprimer cette station :"
+msgstr "Vous avez choisi de supprimer cette station&nbsp;:"
 
 #: admin/partials/live-weather-station-admin-delete-owm.php:22
 msgid "You have chosen to remove these stations:"
-msgstr "Vous avez choisi de supprimer ces stations :"
+msgstr "Vous avez choisi de supprimer ces stations&nbsp;:"
 
 #: admin/partials/live-weather-station-admin-delete-owm.php:29
 msgid "Confirm Delete"
@@ -859,7 +860,7 @@ msgstr "Après quelques heures, vous obtiendrez quelque chose"
 #: admin/partials/live-weather-station-admin-edit-netatmo.php:62
 #: admin/partials/live-weather-station-admin-edit-netatmo.php:92
 msgid "like this!"
-msgstr "comme cela !"
+msgstr "comme cela&nbsp;!"
 
 #: admin/partials/live-weather-station-admin-edit-netatmo.php:36
 msgid ""
@@ -867,7 +868,7 @@ msgid ""
 "following error:"
 msgstr ""
 "Impossible d’activer ce service. Les serveurs Met Office ont renvoyé "
-"l’erreur suivante :"
+"l’erreur suivante&nbsp;:"
 
 #: admin/partials/live-weather-station-admin-edit-netatmo.php:47
 msgid "Push data to Met Office"
@@ -876,7 +877,7 @@ msgstr "Envoyer les données à Met Office"
 #: admin/partials/live-weather-station-admin-edit-netatmo.php:56
 msgid "To obtain Station ID from PWS please, follow these steps:"
 msgstr ""
-"Pour obtenir votre Station ID depuis le site PWS, procédez comme suit :"
+"Pour obtenir votre Station ID depuis le site PWS, procédez comme suit&nbsp;:"
 
 #: admin/partials/live-weather-station-admin-edit-netatmo.php:58
 msgid "on the PWS website"
@@ -901,7 +902,7 @@ msgid ""
 "error:"
 msgstr ""
 "Impossible d’activer ce service. Les serveurs PWS ont renvoyé l’erreur "
-"suivante :"
+"suivante&nbsp;:"
 
 #: admin/partials/live-weather-station-admin-edit-netatmo.php:77
 msgid "Push data to PWS"
@@ -912,7 +913,7 @@ msgid ""
 "To obtain Station ID from Weather Underground please, follow these steps:"
 msgstr ""
 "Pour obtenir votre Station ID depuis le site Weather Underground, procédez "
-"comme suit :"
+"comme suit&nbsp;:"
 
 #: admin/partials/live-weather-station-admin-edit-netatmo.php:88
 msgid "on the Weather Underground website"
@@ -930,7 +931,7 @@ msgid ""
 "the following error:"
 msgstr ""
 "Impossible d’activer ce service. Les serveurs Weather Underground ont "
-"renvoyé l’erreur suivante :"
+"renvoyé l’erreur suivante&nbsp;:"
 
 #: admin/partials/live-weather-station-admin-edit-netatmo.php:107
 msgid "Push data to Weather Underground"
@@ -1087,7 +1088,7 @@ msgstr "Cacher les mesures périmées"
 
 #: includes/class-live-weather-station-list-table.php:56
 msgid "List View"
-msgstr "Affichage Liste"
+msgstr "Vue Liste"
 
 #: includes/class-live-weather-station-list-table.php:57
 msgid "Excerpt View"
@@ -1226,7 +1227,7 @@ msgstr "Rafale"
 
 #: includes/trait-datas-output.php:1129
 msgid "Malformed shortcode. Please verify it!"
-msgstr "Shortcode malformé. Merci de le vérifier !"
+msgstr "Code court malformé. Merci de le vérifier&nbsp;!"
 
 #: includes/trait-datas-output.php:1256 includes/trait-datas-output.php:1261
 #: includes/trait-datas-output.php:1266 includes/trait-datas-output.php:1271
@@ -1559,7 +1560,8 @@ msgstr "nuages"
 
 #: includes/trait-datas-output.php:2754
 msgid "All data have been filtered: nothing to show"
-msgstr "Toutes les donnée ont été filtrées : il n’y a plus rien à afficher"
+msgstr ""
+"Toutes les donnée ont été filtrées&nbsp;: il n’y a plus rien à afficher"
 
 #: includes/trait-datas-query.php:103
 msgid "is not running..."
@@ -3500,100 +3502,3 @@ msgstr "Pierre Lannoy"
 #. Author URI of the plugin/theme
 msgid "https://pierre.lannoy.fr"
 msgstr "https://pierre.lannoy.fr"
-
-#~ msgid "CO₂ level"
-#~ msgstr "Niveau de CO₂"
-
-#~ msgid "Temperature unit"
-#~ msgstr "Unité de température"
-
-#~ msgid "Pressure unit"
-#~ msgstr "Unité de pression"
-
-#~ msgid "Windspeed unit"
-#~ msgstr "Unité de vitesse du vent"
-
-#~ msgid "Wind icon semantics"
-#~ msgstr "Signification de l’icone du vent"
-
-#~ msgid "Altitude unit"
-#~ msgstr "Unité d’altitude"
-
-#~ msgid "Distance unit"
-#~ msgstr "Unité de distance"
-
-#~ msgid "After registration, log in and "
-#~ msgstr "Après l’enregistrement, connectez-vous et "
-
-#~ msgid "After a few hours you'll get something "
-#~ msgstr "Après quelques heures, vous obtiendrez quelque chose "
-
-#~ msgid ""
-#~ "All meteorological data provided by OpenWeatherMap are distributed under "
-#~ "terms of the <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\" "
-#~ "target=\"_blank\">Creative Commons CC:BY-SA 2.0 license</a>."
-#~ msgstr ""
-#~ "Les données météorologiques fournies par OpenWeatherMap sont distribuées "
-#~ "selon les termes de la <a href=\"http://creativecommons.org/licenses/by-"
-#~ "sa/2.0/\" target=\"_blank\">licence Creative Commons CC:BY-SA 2.0</a>."
-
-#~ msgid "lst hr"
-#~ msgstr "dep 1h"
-
-#~ msgid "C0₂"
-#~ msgstr "C0₂"
-
-#~ msgid "C0₂ level"
-#~ msgstr "Niveau CO₂"
-
-#~ msgid ""
-#~ "<em>Live Weather Station</em> is a free and open source plugin for "
-#~ "WordPress. It integrates other free and open source works (as-is or "
-#~ "modified) like Weather Icons project by Erik Flowers, EnzoJS by Gerrit "
-#~ "Grunwald, JustGage by Bojan Đuričić, OpenWeatherMap PHP API by Christian "
-#~ "Flach, phpcolors by Arlo Carreon, moonrise/moonset calculation from Matt "
-#~ "\"dxprog\" Hackmann and moon phase calculation from Samir Shah."
-#~ msgstr ""
-#~ "<em>Live Weather Station</em> est un plugin gratuit et open source pour "
-#~ "WordPress. Il incorpore d’autres travaux gratuits et open source tels que "
-#~ "le projet Weather Icons de Erik Flowers, EnzoJS de Gerrit Grunwald, "
-#~ "JustGage de Bojan Đuričić, OpenWeatherMap PHP API de Christian Flach, "
-#~ "phpcolors de Arlo Carreon, les calculs de lever et coucher de lune de "
-#~ "Matt « dxprog » Hackmann et les calculs de phase de la lune de Samir Shah."
-
-#~ msgid "co2"
-#~ msgstr "co2"
-
-#~ msgid "Numerical wind compass"
-#~ msgstr "Compas de vent numérique"
-
-#~ msgid "Complementary"
-#~ msgstr "Complémentaire"
-
-#~ msgid "Inverted complementary"
-#~ msgstr "Complémentaire inversé"
-
-#~ msgid "C02 level"
-#~ msgstr "Niveau de CO2"
-
-#~ msgid ""
-#~ "<em>Live Weather Station</em> is a free and open source plugin for "
-#~ "WordPress. It integrates other free and open source works (as-is or "
-#~ "modified) like Weather Icons project by Erik Flowers, EnzoJS by Gerrit "
-#~ "Grunwald, OpenWeatherMap PHP API by Christian Flach, phpcolors by Arlo "
-#~ "Carreon, moonrise/moonset calculation from Matt \"dxprog\" Hackmann and "
-#~ "moon phase calculation from Samir Shah."
-#~ msgstr ""
-#~ "<em>Live Weather Station</em> est un plugin gratuit et open source pour "
-#~ "WordPress. Il incorpore d’autres travaux gratuits et open source tels que "
-#~ "le projet Weather Icons de Erik Flowers, EnzoJS de Gerrit Grunwald, "
-#~ "OpenWeatherMap PHP API de Christian Flach, phpcolors de Arlo Carreon, les "
-#~ "calculs de lever et coucher de lune de Matt « dxprog » Hackmann et les "
-#~ "calculs de phase de la lune de Samir Shah."
-
-#~ msgid ""
-#~ "This shortcode is ready to insert (in article or page) without "
-#~ "modification."
-#~ msgstr ""
-#~ "Ce shortcode est prêt à l’emploi (pour les pages ou articles), sans "
-#~ "modification."
