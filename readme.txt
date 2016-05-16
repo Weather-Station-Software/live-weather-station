@@ -126,6 +126,9 @@ You can report bugs and suggest ideas via the [support section](https://wordpres
 
 Release date: May xxth, 2016
 
+* New language: French / Belgium.
+* New language: French / Canada.
+* Improvement: French translation now complies with french typography rules and main wordpress-fr recommendations.
 * Improvement: better javascript files refreshing after updating the plugin.
 * Improvement: `readme.txt`.
 
