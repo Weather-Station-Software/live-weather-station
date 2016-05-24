@@ -15,18 +15,22 @@ trait Datetime_Conversion {
      *
      * @param   integer $ts The UTC timestamp to be converted.
      * @param   string  $tz Optional. The timezone.
+     * @param   string  $format Optional. The date format.
      * @return  string  Formatted date relative to the given timezone.
      * @since    1.0.0
      * @access   protected
      */
-    public static function get_date_from_utc($ts, $tz='') {
+    public static function get_date_from_utc($ts, $tz='', $format='-') {
+        if ($format == '-') {
+            $format = get_option('date_format');
+        }
         if ( $tz != '') {
             $datetime = new DateTime(date('Y-m-d H:i:s',$ts), new DateTimeZone('UTC'));
             $datetime->setTimezone(new DateTimeZone($tz));
-            return date_i18n(get_option('date_format'), strtotime($datetime->format('Y-m-d H:i:s')));
+            return date_i18n($format, strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
-            return date_i18n( get_option('date_format'), strtotime( get_date_from_gmt(date('Y-m-d H:i:s',$ts))) );
+            return date_i18n($format, strtotime( get_date_from_gmt(date('Y-m-d H:i:s',$ts))) );
         }
     }
 
@@ -35,18 +39,22 @@ trait Datetime_Conversion {
      *
      * @param   string  $ts The UTC MySql datetime to be converted.
      * @param   string  $tz Optional. The timezone.
+     * @param   string  $format Optional. The date format.
      * @return  string   Formatted date relative to the given timezone.
      * @since    1.0.0
      * @access   protected
      */
-    public static function get_date_from_mysql_utc($ts, $tz='') {
-        if ( $tz != '') {
+    public static function get_date_from_mysql_utc($ts, $tz='', $format='-') {
+        if ($format == '-') {
+            $format = get_option('date_format');
+        }
+        if ($tz != '') {
             $datetime = new DateTime($ts, new DateTimeZone('UTC'));
             $datetime->setTimezone(new DateTimeZone($tz));
-            return date_i18n(get_option('date_format'), strtotime($datetime->format('Y-m-d H:i:s')));
+            return date_i18n($format, strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
-            return date_i18n( get_option('date_format'), strtotime( get_date_from_gmt($ts)) );
+            return date_i18n($format, strtotime( get_date_from_gmt($ts)) );
         }
     }
 
@@ -55,18 +63,22 @@ trait Datetime_Conversion {
      *
      * @param   integer $ts The UTC timestamp to be converted.
      * @param   string  $tz Optional. The timezone.
+     * @param   string  $format Optional. The time format.
      * @return  string  Formatted time relative to the given timezone.
      * @since    1.0.0
      * @access   protected
      */
-    public static function get_time_from_utc($ts, $tz='') {
-        if ( $tz != '') {
+    public static function get_time_from_utc($ts, $tz='', $format='-') {
+        if ($format == '-') {
+            $format = get_option('time_format');
+        }
+        if ($tz != '') {
             $datetime = new DateTime(date('Y-m-d H:i:s',$ts), new DateTimeZone('UTC'));
             $datetime->setTimezone(new DateTimeZone($tz));
-            return date_i18n(get_option('time_format'), strtotime($datetime->format('Y-m-d H:i:s')));
+            return date_i18n($format, strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
-            return date_i18n( get_option('time_format'), strtotime( get_date_from_gmt(date('Y-m-d H:i:s',$ts))) );
+            return date_i18n($format, strtotime( get_date_from_gmt(date('Y-m-d H:i:s',$ts))));
         }
     }
 
@@ -75,18 +87,22 @@ trait Datetime_Conversion {
      *
      * @param   string  $ts The UTC MySql datetime to be converted.
      * @param   string  $tz Optional. The timezone.
+     * @param   string  $format Optional. The time format.
      * @return  string  Formatted time relative to the local timezone.
      * @since    1.0.0
      * @access   protected
      */
-    public static function get_time_from_mysql_utc($ts, $tz='') {
-        if ( $tz != '') {
+    public static function get_time_from_mysql_utc($ts, $tz='', $format='-') {
+        if ($format == '-') {
+            $format = get_option('time_format');
+        }
+        if ($tz != '') {
             $datetime = new DateTime($ts, new DateTimeZone('UTC'));
             $datetime->setTimezone(new DateTimeZone($tz));
-            return date_i18n(get_option('time_format'), strtotime($datetime->format('Y-m-d H:i:s')));
+            return date_i18n($format, strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
-            return date_i18n( get_option('time_format'), strtotime(get_date_from_gmt($ts)));
+            return date_i18n($format, strtotime(get_date_from_gmt($ts)));
         }
     }
 

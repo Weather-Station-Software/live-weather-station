@@ -49,7 +49,6 @@ class Live_Weather_Station {
 		$this->load_dependencies();
 		$this->set_locale();
 		$this->define_admin_hooks();
-        //$this->define_cron_hooks();
 		$this->define_public_hooks();
 	}
 
@@ -107,25 +106,6 @@ class Live_Weather_Station {
 		$this->loader->add_action( 'widgets_init', 'Live_Weather_Station_Widget_Ephemeris', 'widget_registering' );
         $this->loader->add_filter( 'plugin_action_links_'.plugin_basename(LWS_PLUGIN_DIR.'live-weather-station.php'), $plugin_admin, 'admin_settings_link' );
 	}
-
-    /**
-     * Register all of the hooks related to the cron functionalities.
-     *
-     * @since    1.0.0
-     * @access   private
-     */
-    private function define_cron_hooks() {
-        /*$plugin_netatmo_cron = new Netatmo_Updater( $this->get_Live_Weather_Station(), $this->get_version() );
-		$plugin_owm_cron = new Owm_Current_Updater( $this->get_Live_Weather_Station(), $this->get_version() );
-        $plugin_pusher_cron = new Netatmo_Pusher( $this->get_Live_Weather_Station(), $this->get_version() );
-        $this->loader->add_action( self::$netatmo_update_schedule_name, $plugin_netatmo_cron, 'cron_run' );
-		$this->loader->add_action( self::$owm_update_schedule_name, $plugin_owm_cron, 'cron_run' );
-        $this->loader->add_action( self::$netatmo_push_schedule_name, $plugin_pusher_cron, 'cron_run' );
-        $this->loader->add_filter( 'cron_schedules', 'Live_Weather_Station', 'add_cron_05_minutes_interval' );
-		$this->loader->add_filter( 'cron_schedules', 'Live_Weather_Station', 'add_cron_10_minutes_interval' );
-        $this->loader->add_filter( 'cron_schedules', 'Live_Weather_Station', 'add_cron_15_minutes_interval' );
-        $this->loader->add_filter( 'cron_schedules', 'Live_Weather_Station', 'add_cron_30_minutes_interval' );*/
-    }
 
 	/**
 	 * Register all of the hooks related to the public front functionality

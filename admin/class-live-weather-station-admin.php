@@ -340,6 +340,7 @@ class Live_Weather_Station_Admin {
             }
             else {
                 $this->update_infos_table($station);
+                flush_rewrite_rules();
             }
         }
         if ( isset( $_GET['action'] ) && $_GET['action'] == 'disconnect-netatmo' ) {
@@ -693,7 +694,7 @@ class Live_Weather_Station_Admin {
                     $n = $netatmo->get_datas();
                     $weather = new Weather_Computer();
                     $w = $weather->compute();
-                    $datas = $this->merge_data($n, array(), $w, array());
+                    $datas = $this->merge_data($n, array(), array(), $w, array());
                     foreach ($this->pushers as $pusher) {
                         $key = strtolower($pusher) . '_sync';
                         if (array_key_exists($key, $_POST)) {

@@ -56,11 +56,13 @@ Live Weather Station allows you to send your Netatmo outdoor data, at a 10 minut
 Right now, Live Weather Station supports the following languages:
 
 * English (default)
-* English / Australia (thanks to [Stephen Edgar](https://profiles.wordpress.org/netweb))
-* English / New Zealand (thanks to [webaware](https://profiles.wordpress.org/webaware))
-* French
-* French / Belgium
-* French / Canada
+* English / Australia (thanks to [translation team](https://translate.wordpress.org/locale/en-au/default/wp-plugins/live-weather-station))
+* English / New Zealand (thanks to [translation team](https://translate.wordpress.org/locale/en-nz/default/wp-plugins/live-weather-station))
+* English / UK (thanks to [translation team](https://translate.wordpress.org/locale/en-gb/default/wp-plugins/live-weather-station))
+* French / Belgium (thanks to [translation team](https://translate.wordpress.org/locale/fr-be/default/wp-plugins/live-weather-station))
+* French / Canada (thanks to [translation team](https://translate.wordpress.org/locale/fr-ca/default/wp-plugins/live-weather-station))
+* French / France (thanks to [translation team](https://translate.wordpress.org/locale/fr/default/wp-plugins/live-weather-station))
+
 
 Multilingualism is provided by the use of .po files (the standard way), so it is fully translatable - by you - in your language. If you have translated this plugin in a new language, get in touch with me, I will include it in the next release or, if you want you can translate the plugin directly with [GlotPress](https://translate.wordpress.org/projects/wp-plugins/live-weather-station) (use the 'stable' column).
 
@@ -123,6 +125,15 @@ You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-l
 You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 == Changelog ==
+
+= 2.7.4 =
+
+Release date: May 24th, 2016
+
+* New language: English / UK.
+* Improvement: `readme.txt`.
+* Bug fix: PHP warning when saving empty associated services for a Netatmo station.
+* Bug fix: some typos in french translations (be, ca and fr).
 
 = 2.7.3 =
 

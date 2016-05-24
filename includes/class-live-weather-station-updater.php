@@ -12,11 +12,13 @@
  */
 
 require_once(plugin_dir_path( __FILE__ ) . 'trait-datas-storage.php');
+
+require_once(plugin_dir_path( __FILE__ ) . 'trait-url-manipulation.php');
 require_once(plugin_dir_path( __FILE__ ) . 'class-watchdog.php');
 
 class Live_Weather_Station_Updater {
 
-    use Datas_Storage;
+    use Datas_Storage, Url_Manipulation;
 
     /**
      * Updates the plugin.
