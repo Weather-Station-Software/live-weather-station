@@ -17,6 +17,7 @@ trait Datas_Query {
 
     private $dont_filter = array('temperature_max', 'temperature_min', 'temperature_trend', 'pressure_trend', 'loc_latitude',
                                  'loc_longitude', 'loc_altitude', 'windstrength_day_max', 'windangle_hour_max', 'windangle_day_max');
+    //private $strict_exclusion = array('battery', 'firmware', 'loc_latitude', 'loc_longitude', 'loc_altitude', 'loc_timezone', 'signal');
 
     /**
      * Filter data.
@@ -314,14 +315,15 @@ trait Datas_Query {
      *
      * @param   string      $device_id                  The device ID.
      * @param   boolean     $obsolescence_filtering     Don't return obsolete data.
+     * @param   boolean     $strict_filtering           Don't return not necessary data.
      * @return  array   An array containing the outdoor datas.
      * @since    1.0.0
      * @access   protected
      */
-    protected function get_outdoor_datas($device_id, $obsolescence_filtering=false) {
+    protected function get_outdoor_datas($device_id, $obsolescence_filtering=false, $strict_filtering=false) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
-        $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAMain' OR module_type='NAComputed' OR module_type='NACurrent' OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NAModule3') ORDER BY module_id ASC" ;
+        $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAMain' OR module_type='NAComputed' " . ($strict_filtering ? "OR module_type='NAEphemer' " : "OR module_type='NACurrent' ") . "OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NAModule3') ORDER BY module_id ASC" ;
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;

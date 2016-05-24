@@ -30,3 +30,9 @@
  * 3.X - Ability to change text color in clean gauges
 
  --
+
+ ***********************
+ *  TESTING FEATURES   *
+ ***********************
+
+  * Generate txt files for services requiring it

@@ -14,6 +14,18 @@ require_once(dirname(__FILE__) . '/class-live-weather-station-standalone.php');
 
 class Generator_Page extends Live_Weather_Station_Standalone {
 
+    /**
+     * Get available args.
+     *
+     * @since    3.0.0
+     */
+    protected function available_args() {
+        $result = array();
+        $result['type'] = ['stickertags'];
+        $result['fields'] = ['station'];
+        $result['variables']['station'] = '@/([A-F0-9]{2}:[A-F0-9]{2}:[A-F0-9]{2}:[A-F0-9]{2}:[A-F0-9]{2}:[a-fA-F0-9]{2})/@i';
+        return $result;
+    }
 
     /**
      * Use the right generator to render the file.

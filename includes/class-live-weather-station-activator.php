@@ -13,10 +13,11 @@
 
 require_once(plugin_dir_path( __FILE__ ) . 'trait-datas-storage.php');
 require_once(plugin_dir_path( __FILE__ ) . 'trait-options-manipulation.php');
+require_once(plugin_dir_path( __FILE__ ) . 'trait-url-manipulation.php');
 
 class Live_Weather_Station_Activator {
 
-    use Datas_Storage, Options_Manipulation;
+    use Datas_Storage, Options_Manipulation, Url_Manipulation;
 
 	/**
 	 * Activates the plugin.

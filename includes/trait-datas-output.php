@@ -2319,6 +2319,28 @@ trait Datas_Output {
     }
 
     /**
+     * Get the trend in standard readable text.
+     *
+     * @param   integer $value  The value of the trend.
+     * @return  string   The trend level in standard readable text.
+     * @since    3.0.0
+     * @access   protected
+     */
+    protected function get_standard_trend_text($value) {
+        switch (strtolower($value)) {
+            case 'up':
+                $result = 'Rising';
+                break;
+            case 'down':
+                $result = 'Falling';
+                break;
+            default:
+                $result = 'Steady';
+        }
+        return $result;
+    }
+
+    /**
      * Get the moon phase in human readable text.
      *
      * @param   integer $value  The decimal value of the moon phase.
@@ -2760,6 +2782,129 @@ trait Datas_Output {
     }
 
     /**
+     * Format the selected datas for stickertags usage.
+     *
+     * @param   array   $datas  An array containing the selected datas.
+     * @return  string   The formated datas, ready to be outputed as stickertags.txt file.
+     * @since    3.0.0
+     *
+     */
+    protected function format_stickertags_data($datas) {
+        $tz = get_option('timezone_string');
+        $ts = time();
+        $tr = 0;
+        $hr = 0;
+        $dr = 0;
+        $values = array('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
+        if (count($datas) == 0) {
+            $values[0] = $this->get_time_from_utc($ts, $tz, 'H:i');
+            $values[1] = $this->get_date_from_utc($ts, $tz, 'd/m/Y');
+        }
+        else {
+            foreach ($datas as $data) {
+                switch ($data['measure_type']) {
+                    case 'loc_timezone':
+                        $tz = $data['measure_value'];
+                        $ts = strtotime($data['measure_timestamp']);
+                        break;
+                    case 'temperature_ref':
+                        $tr = $data['measure_value'];
+                        break;
+                    case 'humidity_ref':
+                        $hr = $data['measure_value'];
+                        break;
+                    case 'dew_point':
+                        $dr = $data['measure_value'];
+                        break;
+                }
+            }
+            if ((time() - $ts > 240) && (time() - $ts < 900)) {
+                $ts = time() - 240;
+            }
+            $values[0] = $this->get_time_from_utc($ts, $tz, 'H:i');
+            $values[1] = $this->get_date_from_utc($ts, $tz, 'd/m/Y');
+            foreach ($datas as $data) {
+                switch ($data['measure_type']) {
+                    case 'temperature':
+                        if (strtolower($data['module_type']) == 'namodule1') {
+                            $values[2] = sprintf('%.1F', round($data['measure_value'], 1));
+                        }
+                        break;
+                    case 'heat_index':
+                        if (strtolower($data['module_type']) == 'nacomputed') {
+                            if ($this->is_valid_heat_index($tr, $hr, $dr)) {
+                                $values[3] = sprintf('%.1F', round($data['measure_value'], 1));
+                            }
+                        }
+                        break;
+                    case 'wind_chill':
+                        if (strtolower($data['module_type']) == 'nacomputed') {
+                            if ($this->is_valid_wind_chill($tr, $data['measure_value'])) {
+                                $values[4] = sprintf('%.1F', round($data['measure_value'], 1));
+                            }
+                        }
+                        break;
+                    case 'humidity':
+                        if (strtolower($data['module_type']) == 'namodule1') {
+                            $values[5] = sprintf('%.1F', round($data['measure_value'], 1));
+                        }
+                        break;
+                    case 'dew_point':
+                        if (strtolower($data['module_type']) == 'nacomputed') {
+                            if ($this->is_valid_dew_point($tr)) {
+                                $values[6] = sprintf('%.1F', round($data['measure_value'], 1));
+                            }
+                        }
+                        break;
+                    case 'pressure':
+                        if (strtolower($data['module_type']) == 'namain') {
+                            $values[7] = sprintf('%.1F', round($data['measure_value'], 1));
+                        }
+                        break;
+                    case 'pressure_trend':
+                        if (strtolower($data['module_type']) == 'namain') {
+                            $values[8] = $this->get_standard_trend_text($data['measure_value']);
+                        }
+                        break;
+                    case 'windstrength':
+                        if (strtolower($data['module_type']) == 'namodule2') {
+                            $values[9] = sprintf('%.1F', round($data['measure_value'], 1));
+                        }
+                        break;
+                    case 'windangle':
+                        if (strtolower($data['module_type']) == 'namodule2') {
+                            $values[10] = str_replace('-', '', $this->get_angle_text($data['measure_value']));
+                        }
+                        break;
+                    case 'rain_day_aggregated':
+                        if (strtolower($data['module_type']) == 'namodule3') {
+                            $values[11] = sprintf('%.1F', round($data['measure_value'], 1));
+                        }
+                        break;
+                    case 'sunrise':
+                        if (strtolower($data['module_type']) == 'naephemer') {
+                            $values[12] = $this->get_time_from_utc($data['measure_value'], $tz, 'H:i');
+                        }
+                        break;
+                    case 'sunset':
+                        if (strtolower($data['module_type']) == 'naephemer') {
+                            $values[13] = $this->get_time_from_utc($data['measure_value'], $tz, 'H:i');
+                        }
+                        break;
+                    case 'guststrength':
+                        if (strtolower($data['module_type']) == 'namodule2') {
+                            $values[15] = sprintf('%.1F', round($data['measure_value'], 1));
+                        }
+                        break;
+                }
+
+            }
+        }
+        $values[16] = 'C|km/h|hPa|mm';
+        return implode(',', $values);
+    }
+
+    /**
      * Indicates if rain is valid (i.e. must be displayed).
      *
      * @param   integer   $temp_ref      Reference temperature in celcius degrees.
@@ -2827,7 +2972,7 @@ trait Datas_Output {
      * @return  boolean   True if wind chill is valid, false otherwise.
      * @since    1.1.0
      */
-    protected function is_valid_wind_chill($temp_ref, $wind_chill=-200) {
+    protected function is_valid_wind_chill($temp_ref, $wind_chill=-200.0) {
         $result = false;
         if ($temp_ref < 10 && $temp_ref > $wind_chill) {
             $result = true;

@@ -37,15 +37,7 @@ class Stickertags_Generator extends Live_Weather_Station_Txt_Generator {
                  throw new Exception('', 400);
              }
              if (array_key_exists('txt_sync', $station) && $station['txt_sync'] == 1) {
-                 $result = '';
-                 $result = print_r($station, true);
-
-
-
-
-
-
-
+                 $result = $this->format_stickertags_data($this->get_outdoor_datas($params['station'], false, true));
              }
              else {
                  throw new Exception('The station does not publish its data via this method/format.', 405);

@@ -57,7 +57,7 @@ abstract class Live_Weather_Station_Standalone {
      *
      * @since    3.0.0
      */
-    protected function load() {
+    protected function load($available) {
         $args = add_query_arg(null, null);
         if (strpos($args, '?') > 0) {
             $args = substr($args, strpos($args, '?') + 1, 2500);
@@ -70,6 +70,28 @@ abstract class Live_Weather_Station_Standalone {
                 }
                 elseif (!is_array($val) && !empty($val)) {
                     $this->params[$key] = $val;
+                }
+            }
+        }
+        $filled = false;
+        foreach ($available['fields'] as $field) {
+            if (array_key_exists($field, $this->params)) {
+                $filled = true;
+                break;
+            }
+        }
+        if ($this->type == 'unknown' || !$filled) {
+            foreach ($available['type'] as $type) {
+                if (strpos($args, '/'.$type.'/')) {
+                    $this->type = $type;
+                    break;
+                }
+            }
+            foreach ($available['fields'] as $field) {
+                if (preg_match($available['variables'][$field], $args, $matches) ==1 ) {
+                    if (sizeof($matches) > 1) {
+                        $this->params[$field] = $matches[1];
+                    }
                 }
             }
         }
@@ -94,7 +116,7 @@ abstract class Live_Weather_Station_Standalone {
     public function run() {
         if($this->init()) {
             run_Live_Weather_Station();
-            $this->load();
+            $this->load($this->available_args());
             $this->generate();
             exit();
         }
@@ -105,7 +127,14 @@ abstract class Live_Weather_Station_Standalone {
     }
 
     /**
-     * Use the right generator.
+     * Get available args.
+     *
+     * @since    3.0.0
+     */
+    abstract protected function available_args();
+
+    /**
+     * Use the generator to render the file.
      *
      * @since    3.0.0
      */
