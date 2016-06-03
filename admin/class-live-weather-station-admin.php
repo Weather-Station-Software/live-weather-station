@@ -66,6 +66,7 @@ class Live_Weather_Station_Admin {
 	public function enqueue_styles() {
 		wp_enqueue_style( $this->Live_Weather_Station, LWS_ADMIN_URL.'css/live-weather-station-admin.min.css', array(), $this->version, 'all' );
         wp_enqueue_style( 'live-weather-station-public.css', LWS_PUBLIC_URL.'css/live-weather-station-public.min.css', array(), $this->version, 'all' );
+        wp_enqueue_style( 'font-awesome.css', LWS_PUBLIC_URL.'css/font-awesome.min.css', array(), '4.6.3', 'all' );
         wp_enqueue_style( 'thickbox' );
 	}
 
@@ -127,6 +128,9 @@ class Live_Weather_Station_Admin {
         if ( $page == 'manage_netatmo' ) {
             $args = array( 'page' => 'lws-config', 'view' => 'manage-netatmo', 'action' => 'manage-netatmo');
         }
+        if ( $page == 'list_logs' ) {
+            $args = array( 'page' => 'lws-config', 'view' => 'list-logs', 'action' => 'list-logs');
+        }
         $url = add_query_arg( $args, admin_url( 'options-general.php' )  );
         return $url;
     }
@@ -140,7 +144,7 @@ class Live_Weather_Station_Admin {
      * @access   protected
      */
     protected function view_page( $name, array $args = array() ) {
-        foreach ( $args AS $key => $val ) {
+        foreach ($args as $key => $val) {
             $$key = $val;
         }
         wp_dequeue_script('media-upload');
@@ -307,6 +311,7 @@ class Live_Weather_Station_Admin {
         $view = 'config';
         $args = array();
         $owm_station_id = 0;
+        $log_entry = 0;
         $netatmo_station_id = '';
         $owm_station_error = 0;
         $netatmo_station_error = array();
@@ -354,6 +359,12 @@ class Live_Weather_Station_Admin {
                 $owm_station_id = $_GET['owm-station'];
             }
         }
+        if ( isset( $_GET['action'] ) && ($_GET['action'] == 'view-log' || $_GET['action'] == 'view-log')) {
+            $view = 'view-log';
+            if (isset($_GET['log-entry'])) {
+                $log_entry = $_GET['log-entry'];
+            }
+        }
         if ( isset( $_GET['action'] ) && ($_GET['action'] == 'edit-netatmo' || $_GET['action'] == 'edit-netatmo')) {
             if (isset($_GET['netatmo-station'])) {
                 $netatmo_station_id = $_GET['netatmo-station'];
@@ -385,8 +396,6 @@ class Live_Weather_Station_Admin {
                 $view = 'delete-owm';
             }
         }
-
-
         switch ($view) {
             case 'config':
                 $temperature = $this->get_temperature_unit_name_array();
@@ -497,6 +506,23 @@ class Live_Weather_Station_Admin {
                     }
                 }
                 $args = compact('stations');
+                break;
+            case 'view-log':
+                if ($log_entry != 0) {
+                    $logarray = $this->get_log_detail($log_entry);
+                }
+                else {
+                    $logarray = null;
+                }
+                if (is_array($logarray)) {
+                    $log = $logarray[0];
+                    $log['displayed_timestamp'] = $this->get_date_from_mysql_utc($log['timestamp'], '', 'Y-m-d H:i:s') ;
+                    $log['displayed_timestamp'] .= ' (' . $this->get_time_diff_from_mysql_utc($log['timestamp']) .')';
+                }
+                else {
+                    $log = array();
+                }
+                $args = compact('log');
                 break;
         }
         $this->view_page($view, $args);

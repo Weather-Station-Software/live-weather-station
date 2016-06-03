@@ -71,6 +71,7 @@ class Watchdog {
     public static function stop() {
         self::delete_schedules();
         wp_clear_scheduled_hook(self::$watchdog_name);
+        Logger::notice(get_called_class(),null,null,null,null,null,null,'Service stopped.');
     }
 
     /**
@@ -91,6 +92,7 @@ class Watchdog {
     public static function launch() {
         if (!wp_next_scheduled(self::$watchdog_name)) {
             wp_schedule_event(time() + 5, 'three_minutes', self::$watchdog_name);
+            Logger::info(get_called_class(),null,null,null,null,null,null,'Service started.');
         }
     }
 

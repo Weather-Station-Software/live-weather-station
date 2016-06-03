@@ -123,7 +123,12 @@ trait Datas_Query {
             foreach ($query_a as $val) {
                 $result[] = (array)$val;
             }
-            return $result[0];
+            if (is_array($result) && !empty($result)) {
+                return $result[0];
+            }
+            else {
+                return array();
+            }
         } catch (Exception $ex) {
             return array();
         }
@@ -201,6 +206,113 @@ trait Datas_Query {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_owm_stations_table();
         $sql = "SELECT * FROM ".$table_name ;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $result = array();
+            foreach ($query_a as $val) {
+                $result[] = (array)$val;
+            }
+            return $result;
+        }
+        catch(Exception $ex) {
+            return array() ;
+        }
+    }
+
+    /**
+     * Get "where" clause for log table.
+     *
+     * @param   array   $filters    Optional. An array of filters.
+     * @return  string   The "where" clause.
+     * @since    3.0.0
+     */
+    private function get_log_where_clause($filters = array()) {
+        $result = '';
+        if (count($filters) > 0) {
+            $w = array();
+            foreach ($filters as $key => $filter) {
+                if ($key == 'level') {
+                    $l = array();
+                    foreach (Logger::$severity as $sev => $severity) {
+                        if ($severity <= Logger::$severity[$filter]) {
+                            $l[] = "'".$sev."'";
+                        }
+                    }
+                    $w[] = $key . ' IN (' . implode(',', $l) . ')';
+                }
+                else {
+                    $w[] = $key . '="' . $filter . '"';
+                }
+            }
+            $result = 'WHERE (' . implode(' AND ', $w) . ')';
+        }
+        return $result;
+    }
+
+    /**
+     * Get list of logged errors.
+     *
+     * @param   array   $filters    Optional. An array of filters.
+     * @return  array   An array containing the filtered logged errors.
+     * @since    3.0.0
+     */
+    protected function get_log_list($filters = array(), $offset = null, $rowcount = null) {
+        $limit = '';
+        if (!is_null($offset) && !is_null($rowcount)) {
+            $limit = 'LIMIT ' . $offset . ',' . $rowcount;
+        }
+        global $wpdb;
+        $table_name = $wpdb->prefix.self::live_weather_station_log_table();
+        $sql = "SELECT * FROM " . $table_name . " " . $this->get_log_where_clause($filters) . " ORDER BY id DESC " . $limit;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $result = array();
+            foreach ($query_a as $val) {
+                $result[] = (array)$val;
+            }
+            return $result;
+        }
+        catch(Exception $ex) {
+            return array() ;
+        }
+    }
+
+    /**
+     * Count logged errors.
+     *
+     * @param   array   $filters    Optional. An array of filters.
+     * @return  integer   The count of the filtered logged errors.
+     * @since    3.0.0
+     */
+    protected function get_log_count($filters = array()) {
+        global $wpdb;
+        $table_name = $wpdb->prefix.self::live_weather_station_log_table();
+        $sql = "SELECT COUNT(*) FROM " . $table_name . " " . $this->get_log_where_clause($filters);
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $query_t = (array)$query_a[0];
+            $result = $query_t['COUNT(*)'];
+            return $result;
+        }
+        catch(Exception $ex) {
+            return 0;
+        }
+    }
+
+    /**
+     * Get a specific log line.
+     *
+     * @param   integer   $log_entry    The specific log entry to load.
+     * @return  array   An array containing the filtered logged errors.
+     * @since    3.0.0
+     */
+    protected function get_log_detail($log_entry) {
+        global $wpdb;
+        $table_name = $wpdb->prefix.self::live_weather_station_log_table();
+        $sql = "SELECT * FROM " . $table_name . " WHERE id=" . $log_entry ;
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -440,6 +552,97 @@ trait Datas_Query {
         catch(Exception $ex) {
             return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
         }
+    }
+
+    /**
+     * Get id and names of all stations.
+     *
+     * @return  array  The id and name of all stations.
+     * @since    3.0.0
+     * @access   protected
+     */
+    protected function get_stations_array() {
+        $result = array();
+        $result['00:00:00:00:00:00'] = 'N/A';
+        global $wpdb;
+        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name ;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $query_t = array();
+            foreach ($query_a as $val) {
+                $query_t[] = (array)$val;
+            }
+            foreach ($query_t as $val) {
+                $result[$val['device_id']] = $val['device_name'];
+            }
+        }
+        catch(Exception $ex) {
+            return array();
+        }
+        return $result;
+    }
+
+    /**
+     * Get all services names.
+     *
+     * @return  array  The names of all services.
+     * @since    3.0.0
+     * @access   protected
+     */
+    protected function get_services_array() {
+        $result = array();
+        $result['N/A'] = 'N/A';
+        global $wpdb;
+        $table_name = $wpdb->prefix.self::live_weather_station_log_table();
+        $sql = "SELECT DISTINCT service FROM ".$table_name ;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $query_t = array();
+            foreach ($query_a as $val) {
+                $query_t[] = (array)$val;
+            }
+            foreach ($query_t as $val) {
+                if ($val['service'] != 'N/A') {
+                    $result[$val['service']] = $val['service'];
+                }
+            }
+        }
+        catch(Exception $ex) {
+            return array();
+        }
+        return $result;
+    }
+
+    /**
+     * Get all system names.
+     *
+     * @return  array  The names of all systems.
+     * @since    3.0.0
+     * @access   protected
+     */
+    protected function get_systems_array() {
+        $result = array();
+        global $wpdb;
+        $table_name = $wpdb->prefix.self::live_weather_station_log_table();
+        $sql = "SELECT DISTINCT system FROM ".$table_name ;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $query_t = array();
+            foreach ($query_a as $val) {
+                $query_t[] = (array)$val;
+            }
+            foreach ($query_t as $val) {
+                $result[$val['system']] = $val['system'];
+            }
+        }
+        catch(Exception $ex) {
+            return array();
+        }
+        return $result;
     }
 
     /**

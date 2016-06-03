@@ -29,8 +29,10 @@ class Live_Weather_Station_Activator {
      * @static
 	 */
 	public static function activate() {
+		Logger::notice('Activator',null,null,null,null,null,null,'Starting Live Weather Station installation and initialization.');
 		self::create_tables();
         self::init_options();
+        Logger::notice('Activator',null,null,null,null,null,null,'Live Weather Station successfully installed and initialized.');
 	}
 
 }

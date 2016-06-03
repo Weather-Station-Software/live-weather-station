@@ -31,21 +31,28 @@ function is_i18n_loaded() {
 }
 
 
-define( 'LWS_VERSION', '2.7.4' );
-define( 'LWS_MINIMUM_WP_VERSION', '4.0' );
-define( 'LWS_PLUGIN_ID', 'live-weather-station' );
-define( 'LWS_PLUGIN_NAME', 'Live Weather Station' );
-define( 'LWS_PLUGIN_SIGNATURE', LWS_PLUGIN_NAME . ' v' . LWS_VERSION );
-define( 'LWS_PLUGIN_DIR', plugin_dir_path(__FILE__) );
-define( 'LWS_PLUGIN_URL', plugin_dir_url(__FILE__) );
-define( 'LWS_RELATIVE_PLUGIN_URL', str_replace(get_site_url().'/', '', plugin_dir_url(__FILE__)) );
-define( 'LWS_ADMIN_DIR', plugin_dir_path(__FILE__).'admin/');
-define( 'LWS_ADMIN_URL', plugin_dir_url(__FILE__).'admin/');
-define( 'LWS_AJAX_URL', ajax_dir_relative_url() );
-define( 'LWS_PUBLIC_DIR', plugin_dir_path(__FILE__).'public/');
-define( 'LWS_PUBLIC_URL', plugin_dir_url(__FILE__).'public/');
-define( 'LWS_INCLUDES_DIR', plugin_dir_path(__FILE__).'includes/');
-define( 'LWS_I18N_LOADED', is_i18n_loaded());
+define('LWS_VERSION', '2.7.5');
+define('LWS_MINIMUM_WP_VERSION', '4.0');
+define('LWS_PLUGIN_ID', 'live-weather-station');
+define('LWS_PLUGIN_NAME', 'Live Weather Station');
+define('LWS_PLUGIN_SIGNATURE', LWS_PLUGIN_NAME . ' v' . LWS_VERSION);
+define('LWS_PLUGIN_DIR', plugin_dir_path(__FILE__));
+define('LWS_PLUGIN_URL', plugin_dir_url(__FILE__));
+define('LWS_RELATIVE_PLUGIN_URL', str_replace(get_site_url().'/', '', plugin_dir_url(__FILE__)));
+define('LWS_ADMIN_DIR', plugin_dir_path(__FILE__).'admin/');
+define('LWS_ADMIN_URL', plugin_dir_url(__FILE__).'admin/');
+define('LWS_AJAX_URL', ajax_dir_relative_url());
+define('LWS_PUBLIC_DIR', plugin_dir_path(__FILE__).'public/');
+define('LWS_PUBLIC_URL', plugin_dir_url(__FILE__).'public/');
+define('LWS_INCLUDES_DIR', plugin_dir_path(__FILE__).'includes/');
+define('LWS_I18N_LOADED', is_i18n_loaded());
+
+/**
+ * The Logger clas that is responsible for logging.
+ *
+ * @since    3.0.0
+ */
+require_once LWS_INCLUDES_DIR.'class-logger.php';
 
 /**
  * The core plugin class that is used to define internationalization,

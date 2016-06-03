@@ -15,6 +15,7 @@ trait Options_Manipulation {
     private static $live_weather_station_netatmo_account = array('', '',false) ;
     private static $live_weather_station_owm_account = array('', 0) ;
     private static $live_weather_station_settings = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) ;
+    private static $live_weather_station_logger_level = 6 ;
 
     /**
      * Drop options of the plugin.
@@ -28,6 +29,8 @@ trait Options_Manipulation {
         delete_option('live_weather_station_netatmo_account');
         delete_option('live_weather_station_owm_account');
         delete_option('live_weather_station_settings');
+        delete_option('live_weather_station_logger_installed');
+        delete_option('live_weather_station_logger_level');
     }
 
     /**
@@ -41,6 +44,7 @@ trait Options_Manipulation {
         update_option('live_weather_station_netatmo_account', self::$live_weather_station_netatmo_account);
         update_option('live_weather_station_owm_account', self::$live_weather_station_owm_account);
         update_option('live_weather_station_settings', self::$live_weather_station_settings);
+        update_option('live_weather_station_logger_level', self::$live_weather_station_logger_level);
     }
 
     /**

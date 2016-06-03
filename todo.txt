@@ -27,7 +27,8 @@
 ***********************
 
  * 3.x - Ability to (re)order displayed datas in controls like LCD Panel
- * 3.X - Ability to change text color in clean gauges
+ * 3.x - Ability to change text color in clean gauges
+ * 3.x - About box have a direct link to the relevant GlotPress page
 
  --
 
@@ -36,3 +37,12 @@
  ***********************
 
   * Generate txt files for services requiring it
+
+
+ ***********************
+ *  3.0.0 FEATURES     *
+ ***********************
+
+  * Generation of stickertags
+  * Redesign of about box
+  * Redesign of dashboard

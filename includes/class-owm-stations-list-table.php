@@ -40,7 +40,12 @@ class Owm_Stations_List_Table extends Live_Weather_Station_List_Table {
     }
 
     public function get_columns(){
-        $columns = array('cb' => '<input type="checkbox" />', 'title' => 'Name', 'tz' => 'Time zone', 'latitude' => 'Latitude', 'longitude' => 'Longitude', 'altitude' => 'Altitude');
+        $columns = array('cb' => '<input type="checkbox" />',
+            'title' => __('Station', 'live-weather-station'),
+            'tz' => __('Time zone', 'live-weather-station'),
+            'latitude' => __('Latitude', 'live-weather-station'),
+            'longitude' => __('Longitude', 'live-weather-station'),
+            'altitude' => __('Altitude', 'live-weather-station'));
         return $columns;
     }
 

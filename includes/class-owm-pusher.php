@@ -15,6 +15,16 @@ require_once(LWS_INCLUDES_DIR.'class-live-weather-station-pusher.php');
 class OWM_Pusher extends Live_Weather_Station_Pusher {
 
     /**
+     * Get the service Name.
+     *
+     * @return  string   The service name.
+     * @since   3.0.0
+     */
+    protected function get_service_name() {
+        return 'OpenWeatherMap';
+    }
+
+    /**
      * Format Netatmo data to be pushed.
      *
      * @param   array   $data      Collected Netatmo datas.
@@ -150,7 +160,6 @@ class OWM_Pusher extends Live_Weather_Station_Pusher {
      */
     protected function process_result($content, $station) {
         $body = $content['body'];
-        //error_log($body);
         $error = false;
         $code = 0;
         $message = 'Unknown error';
@@ -192,7 +201,7 @@ class OWM_Pusher extends Live_Weather_Station_Pusher {
         else {
             $error = true;
             $code = 418;
-            $message = 'I’m a teapot';
+            $message = '';
         }
         if ($error) {
             throw new Exception($message, $code);

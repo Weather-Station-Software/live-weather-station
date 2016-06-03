@@ -18,6 +18,15 @@ abstract class Live_Weather_Station_Pusher {
     use Datas_Query, Unit_Conversion;
 
     public $time_shift = 1200;  // consider data as obsolete after 20 minutes
+    public $facility = 'Pusher';
+
+    /**
+     * Get the service Name.
+     *
+     * @return  string   The service name.
+     * @since   3.0.0
+     */
+    abstract protected function get_service_name();
 
     /**
      * Format Netatmo data to be pushed.
@@ -129,6 +138,8 @@ abstract class Live_Weather_Station_Pusher {
             }
             if (array_key_exists($station['station_id'], $devices)) {
                 $device = $devices[$station['station_id']];
+                $sid = $station['station_id'];
+                $sname = $station['station_name'];
                 if (!empty($device)) {
                     $values = $this->complete_pushed_data($device, $station);
                     $auth = $this->get_userpwd($station);
@@ -139,20 +150,23 @@ abstract class Live_Weather_Station_Pusher {
                         }
                         $args['body'] = $values;
                         $content = wp_remote_post($this->get_post_url(), $args);
+                        Logger::debug($this->facility, $this->get_service_name(), $sid, $sname, null, null, 999, 'Raw data: ' . print_r($content,true));
                         if (is_wp_error($content)) {
                             throw new Exception($content->get_error_message());
                         }
                         $this->process_result($content, $station);
                         if ($test) {
+                            Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, null, 'Service connectivity test: OK.');
                             return '';
                         }
                     }
                     catch (Exception $ex) {
                         if ($test) {
+                            Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, $ex->getCode(), 'Service connectivity test: KO / ' . $ex->getMessage());
                             return $ex->getMessage();
                         }
                         else {
-                            error_log(LWS_PLUGIN_NAME . ' / ' . LWS_VERSION . ' / ' . get_class() . ' / ' . get_class($this) . ' / Error code: ' . $ex->getCode() . ' / Error message: ' . $ex->getMessage());
+                            Logger::error($this->facility, $this->get_service_name(), $sid, $sname, null, null, $ex->getCode(), $ex->getMessage());
                         }
                     }
                 }

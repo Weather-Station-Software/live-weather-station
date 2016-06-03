@@ -3,8 +3,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Live Weather Station\n"
-"POT-Creation-Date: 2016-05-09 16:28+0200\n"
-"PO-Revision-Date: 2016-05-09 16:28+0200\n"
+"POT-Creation-Date: 2016-06-03 14:17+0200\n"
+"PO-Revision-Date: 2016-06-03 14:17+0200\n"
 "Last-Translator: Pierre Lannoy <pierre@lannoy.fr>\n"
 "Language-Team: Stephen Edgar (netweb)\n"
 "Language: en_AU\n"
@@ -12,10 +12,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 1.8.7\n"
+"X-Generator: Poedit 1.8.8\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 
-#: admin/class-live-weather-station-admin.php:106
+#: admin/class-live-weather-station-admin.php:107
 #: admin/partials/live-weather-station-admin-config-accounts-settings.php:13
 msgid "Settings"
 msgstr "Settings"
@@ -82,6 +82,7 @@ msgstr "Country"
 
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:48
 #: admin/partials/live-weather-station-admin-config-stations.php:28
+#: includes/class-owm-stations-list-table.php:45
 #: includes/trait-type-description.php:207
 msgid "Time zone"
 msgstr "Time zone"
@@ -113,6 +114,7 @@ msgstr ""
 "The coordinates you have entered are not valid. Please, retry or left blank:"
 
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:102
+#: includes/class-owm-stations-list-table.php:46
 #: includes/trait-type-description.php:199
 msgid "Latitude"
 msgstr "Latitude"
@@ -122,6 +124,7 @@ msgid "(eg 49.85)"
 msgstr "(e.g. 49.85)"
 
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:106
+#: includes/class-owm-stations-list-table.php:47
 #: includes/trait-type-description.php:203
 msgid "Longitude"
 msgstr "Longitude"
@@ -376,6 +379,7 @@ msgstr "1. Set parameters for the shortcode"
 #: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:47
 #: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:47
 #: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:20
+#: admin/partials/live-weather-station-admin-view-log.php:30
 msgid "Module"
 msgstr "Module"
 
@@ -918,6 +922,32 @@ msgstr ""
 msgid "Push data to Weather Underground"
 msgstr "Push data to Weather Underground"
 
+#: admin/partials/live-weather-station-admin-list-logs-bottom.php:11
+msgid "Number of lines to display"
+msgstr "Number of lines to display"
+
+#: admin/partials/live-weather-station-admin-list-logs-bottom.php:17
+#: admin/partials/live-weather-station-admin-list-logs-top.php:29
+#: includes/class-live-weather-station-list-table.php:193
+msgid "Apply"
+msgstr "Apply"
+
+#: admin/partials/live-weather-station-admin-list-logs-top.php:11
+msgid "Filter systems to display"
+msgstr "Filter systems to display"
+
+#: admin/partials/live-weather-station-admin-list-logs-top.php:17
+msgid "Filter services to display"
+msgstr "Filter services to display"
+
+#: admin/partials/live-weather-station-admin-list-logs-top.php:23
+msgid "Filter stations to display"
+msgstr "Filter stations to display"
+
+#: admin/partials/live-weather-station-admin-list-logs.php:16
+msgid "Events log"
+msgstr "Events log"
+
 #: admin/partials/live-weather-station-admin-manage-netatmo.php:16
 msgid "Netatmo stations"
 msgstr "Netatmo stations"
@@ -929,6 +959,34 @@ msgstr "Add"
 #: admin/partials/live-weather-station-admin-manage-owm.php:17
 msgid "OpenWeatherMap stations"
 msgstr "OpenWeatherMap stations"
+
+#: admin/partials/live-weather-station-admin-view-log.php:21
+msgid "Timestamp"
+msgstr "Timestamp"
+
+#: admin/partials/live-weather-station-admin-view-log.php:23
+msgid "System"
+msgstr "System"
+
+#: admin/partials/live-weather-station-admin-view-log.php:25
+#: includes/class-log-list-table.php:95
+msgid "Service"
+msgstr "Service"
+
+#: admin/partials/live-weather-station-admin-view-log.php:28
+#: includes/class-log-list-table.php:96
+#: includes/class-netatmo-stations-list-table.php:42
+#: includes/class-owm-stations-list-table.php:44
+msgid "Station"
+msgstr "Station"
+
+#: admin/partials/live-weather-station-admin-view-log.php:33
+msgid "Error code"
+msgstr "Error code"
+
+#: admin/partials/live-weather-station-admin-view-log.php:35
+msgid "Full message"
+msgstr "Full message"
 
 #: admin/partials/live-weather-station-widget-ephemeris-settings.php:10
 #: admin/partials/live-weather-station-widget-outdoor-settings.php:10
@@ -1087,10 +1145,6 @@ msgstr "Select bulk action"
 msgid "Bulk Actions"
 msgstr "Bulk Actions"
 
-#: includes/class-live-weather-station-list-table.php:193
-msgid "Apply"
-msgstr "Apply"
-
 #: includes/class-live-weather-station-list-table.php:223
 #: includes/class-live-weather-station-list-table.php:639
 msgid "Show more details"
@@ -1155,25 +1209,113 @@ msgstr ""
 "Display outdoor measurements of a Netatmo and/or OpenWeatherMap weather "
 "station."
 
+#: includes/class-log-list-table.php:48
+msgid "See detail in new window"
+msgstr "See detail in new window"
+
+#: includes/class-log-list-table.php:49
+msgid "code"
+msgstr "code"
+
+#: includes/class-log-list-table.php:55 includes/class-log-list-table.php:80
+#: includes/trait-datas-output.php:1256 includes/trait-datas-output.php:1261
+#: includes/trait-datas-output.php:1266 includes/trait-datas-output.php:1271
+#: includes/trait-datas-output.php:1276
+msgid "N/A"
+msgstr "N/A"
+
+#: includes/class-log-list-table.php:93
+msgid "Event"
+msgstr "Event"
+
+#: includes/class-log-list-table.php:94
+msgid "Time"
+msgstr "Time"
+
+#: includes/class-log-list-table.php:97
+msgid "Message"
+msgstr "Message"
+
+#: includes/class-log-list-table.php:190
+msgid "All"
+msgstr "All"
+
+#: includes/class-log-list-table.php:192
+msgid "Notices &amp; beyond"
+msgstr "Notices &amp; beyond"
+
+#: includes/class-log-list-table.php:194
+msgid "Errors &amp; beyond"
+msgstr "Errors &amp; beyond"
+
+#: includes/class-log-list-table.php:237
+#, php-format
+msgid "Show %d lines per page"
+msgstr "Show %d lines per page"
+
+#: includes/class-log-list-table.php:248
+msgid "All systems"
+msgstr "All systems"
+
+#: includes/class-log-list-table.php:265
+msgid "All services"
+msgstr "All services"
+
+#: includes/class-log-list-table.php:282
+msgid "All stations"
+msgstr "All stations"
+
+#: includes/class-logger.php:369
+msgid "Emergency"
+msgstr "Emergency"
+
+#: includes/class-logger.php:372
+msgid "Alert"
+msgstr "Alert"
+
+#: includes/class-logger.php:375
+msgid "Critical error"
+msgstr "Critical error"
+
+#: includes/class-logger.php:378
+msgid "Error"
+msgstr "Error"
+
+#: includes/class-logger.php:381
+msgid "Warning"
+msgstr "Warning"
+
+#: includes/class-logger.php:384
+msgid "Notice"
+msgstr "Notice"
+
+#: includes/class-logger.php:387
+msgid "Information"
+msgstr "Information"
+
+#: includes/class-logger.php:390
+msgid "Debug information"
+msgstr "Debug information"
+
 #: includes/class-netatmo-stations-list-table.php:31
 msgid "Manage services"
 msgstr "Manage services"
 
-#: includes/class-netatmo-stations-list-table.php:70
-#: includes/class-netatmo-stations-list-table.php:77
-#: includes/class-netatmo-stations-list-table.php:84
-msgid "No"
-msgstr "No"
-
-#: includes/class-netatmo-stations-list-table.php:72
-#: includes/class-netatmo-stations-list-table.php:79
-#: includes/class-netatmo-stations-list-table.php:86
-msgid "Yes"
-msgstr "Yes"
-
 #: includes/class-netatmo-stations-list-table.php:74
 #: includes/class-netatmo-stations-list-table.php:81
 #: includes/class-netatmo-stations-list-table.php:88
+msgid "No"
+msgstr "No"
+
+#: includes/class-netatmo-stations-list-table.php:76
+#: includes/class-netatmo-stations-list-table.php:83
+#: includes/class-netatmo-stations-list-table.php:90
+msgid "Yes"
+msgstr "Yes"
+
+#: includes/class-netatmo-stations-list-table.php:78
+#: includes/class-netatmo-stations-list-table.php:85
+#: includes/class-netatmo-stations-list-table.php:92
 msgid "see it"
 msgstr "see it"
 
@@ -1186,9 +1328,14 @@ msgid "Verify on a map"
 msgstr "Verify on a map"
 
 #: includes/class-owm-stations-list-table.php:33
-#: includes/class-owm-stations-list-table.php:53
+#: includes/class-owm-stations-list-table.php:58
 msgid "Delete"
 msgstr "Delete"
+
+#: includes/class-owm-stations-list-table.php:48
+#: includes/trait-type-description.php:195
+msgid "Altitude"
+msgstr "Altitude"
 
 #: includes/trait-datas-output.php:186
 msgid "Outdoor"
@@ -1210,12 +1357,6 @@ msgstr "Gust"
 #: includes/trait-datas-output.php:1129
 msgid "Malformed shortcode. Please verify it!"
 msgstr "Malformed shortcode. Please verify it!"
-
-#: includes/trait-datas-output.php:1256 includes/trait-datas-output.php:1261
-#: includes/trait-datas-output.php:1266 includes/trait-datas-output.php:1271
-#: includes/trait-datas-output.php:1276
-msgid "N/A"
-msgstr "N/A"
 
 #: includes/trait-datas-output.php:1731 includes/trait-datas-output.php:1856
 msgid "now"
@@ -1489,86 +1630,91 @@ msgstr "Falling"
 msgid "Stable"
 msgstr "Stable"
 
-#: includes/trait-datas-output.php:2329 includes/trait-datas-output.php:2337
+#: includes/trait-datas-output.php:2351 includes/trait-datas-output.php:2359
 msgid "New Moon"
 msgstr "New Moon"
 
-#: includes/trait-datas-output.php:2330
+#: includes/trait-datas-output.php:2352
 msgid "Waxing Crescent"
 msgstr "Waxing Crescent"
 
-#: includes/trait-datas-output.php:2331
+#: includes/trait-datas-output.php:2353
 msgid "First Quarter"
 msgstr "First Quarter"
 
-#: includes/trait-datas-output.php:2332
+#: includes/trait-datas-output.php:2354
 msgid "Waxing Gibbous"
 msgstr "Waxing Gibbous"
 
-#: includes/trait-datas-output.php:2333
+#: includes/trait-datas-output.php:2355
 msgid "Full Moon"
 msgstr "Full Moon"
 
-#: includes/trait-datas-output.php:2334
+#: includes/trait-datas-output.php:2356
 msgid "Waning Gibbous"
 msgstr "Waning Gibbous"
 
-#: includes/trait-datas-output.php:2335
+#: includes/trait-datas-output.php:2357
 msgid "Third Quarter"
 msgstr "Third Quarter"
 
-#: includes/trait-datas-output.php:2336
+#: includes/trait-datas-output.php:2358
 msgid "Waning Crescent"
 msgstr "Waning Crescent"
 
-#: includes/trait-datas-output.php:2393 includes/trait-datas-output.php:2512
+#: includes/trait-datas-output.php:2415 includes/trait-datas-output.php:2534
 msgid "Successful operation"
 msgstr "Successful operation"
 
-#: includes/trait-datas-output.php:2396 includes/trait-datas-output.php:2515
-#: includes/trait-datas-query.php:335 includes/trait-datas-query.php:362
-#: includes/trait-datas-query.php:388 includes/trait-datas-query.php:415
-#: includes/trait-datas-query.php:439 includes/trait-datas-query.php:466
+#: includes/trait-datas-output.php:2418 includes/trait-datas-output.php:2537
+#: includes/trait-datas-query.php:449 includes/trait-datas-query.php:476
+#: includes/trait-datas-query.php:502 includes/trait-datas-query.php:529
+#: includes/trait-datas-query.php:553 includes/trait-datas-query.php:671
 msgid "Database contains inconsistent datas"
 msgstr "Database contains inconsistent datas"
 
-#: includes/trait-datas-output.php:2578 includes/trait-datas-output.php:2585
+#: includes/trait-datas-output.php:2600 includes/trait-datas-output.php:2607
 msgid "O/DR"
 msgstr "O/DR"
 
-#: includes/trait-datas-output.php:2653
+#: includes/trait-datas-output.php:2675
 msgid "clouds"
 msgstr "clouds"
 
-#: includes/trait-datas-output.php:2754
+#: includes/trait-datas-output.php:2776
 msgid "All data have been filtered: nothing to show"
 msgstr "All data have been filtered: nothing to show"
 
-#: includes/trait-datas-query.php:103
+#: includes/trait-datas-query.php:104
 msgid "is not running..."
 msgstr "is not running..."
 
-#: includes/trait-datetime-conversion.php:103
 #: includes/trait-datetime-conversion.php:119
+#: includes/trait-datetime-conversion.php:135
+#: includes/trait-datetime-conversion.php:151
 #, php-format
 msgid "%s ago"
 msgstr "%s ago"
 
-#: includes/trait-datetime-conversion.php:106
 #: includes/trait-datetime-conversion.php:122
+#: includes/trait-datetime-conversion.php:154
 #, php-format
 msgid "in %s"
 msgstr "in %s"
 
-#: includes/trait-datetime-conversion.php:216
+#: includes/trait-datetime-conversion.php:138
+msgid "currently"
+msgstr "currently"
+
+#: includes/trait-datetime-conversion.php:248
 msgid "days"
 msgstr "days"
 
-#: includes/trait-datetime-conversion.php:216
+#: includes/trait-datetime-conversion.php:248
 msgid "hours"
 msgstr "hours"
 
-#: includes/trait-ephemeris-client.php:44
+#: includes/trait-ephemeris-client.php:46
 #: includes/trait-type-description.php:51
 msgid "[Ephemeris]"
 msgstr "[Ephemeris]"
@@ -2676,36 +2822,36 @@ msgstr "Inverted complementary - Soft"
 msgid "Inverted complementary - Hard"
 msgstr "Inverted complementary - Hard"
 
-#: includes/trait-netatmo-client.php:53 includes/trait-netatmo-client.php:174
+#: includes/trait-netatmo-client.php:56 includes/trait-netatmo-client.php:178
 msgid "Wrong credentials. Please, verify your login and password."
 msgstr "Wrong credentials. Please, verify your login and password."
 
-#: includes/trait-netatmo-client.php:181
+#: includes/trait-netatmo-client.php:186
 msgid "Application deactivated. Please contact support."
 msgstr "Application deactivated. Please contact support."
 
-#: includes/trait-netatmo-client.php:184
+#: includes/trait-netatmo-client.php:190
 msgid "Too many users with this IP."
 msgstr "Too many users with this IP."
 
-#: includes/trait-netatmo-client.php:187
+#: includes/trait-netatmo-client.php:194
 msgid ""
 "Temporary unable to contact Netatmo servers. Retry will be done shortly."
 msgstr ""
 "Temporary unable to contact Netatmo servers. Retry will be done shortly."
 
-#: includes/trait-owm-current-client.php:90
+#: includes/trait-owm-current-client.php:91
 #: includes/trait-type-description.php:42
 msgid "[OpenWeatherMap Records]"
 msgstr "[OpenWeatherMap Records]"
 
-#: includes/trait-owm-current-client.php:189
-#: includes/trait-owm-pollution-client.php:184
+#: includes/trait-owm-current-client.php:194
+#: includes/trait-owm-pollution-client.php:189
 msgid "Wrong OpenWeatherMap API key."
 msgstr "Wrong OpenWeatherMap API key."
 
-#: includes/trait-owm-current-client.php:193
-#: includes/trait-owm-pollution-client.php:188
+#: includes/trait-owm-current-client.php:200
+#: includes/trait-owm-pollution-client.php:195
 msgid ""
 "OpenWeatherMap servers have returned empty response for some weather "
 "stations. Retry will be done shortly."
@@ -2713,8 +2859,8 @@ msgstr ""
 "OpenWeatherMap servers have returned empty response for some weather "
 "stations. Retry will be done shortly."
 
-#: includes/trait-owm-current-client.php:196
-#: includes/trait-owm-pollution-client.php:191
+#: includes/trait-owm-current-client.php:203
+#: includes/trait-owm-pollution-client.php:198
 msgid ""
 "Temporary unable to contact OpenWeatherMap servers. Retry will be done "
 "shortly."
@@ -2722,7 +2868,7 @@ msgstr ""
 "Temporary unable to contact OpenWeatherMap servers. Retry will be done "
 "shortly."
 
-#: includes/trait-owm-pollution-client.php:151
+#: includes/trait-owm-pollution-client.php:152
 #: includes/trait-type-description.php:45
 msgid "[OpenWeatherMap Pollution]"
 msgstr "[OpenWeatherMap Pollution]"
@@ -2767,7 +2913,7 @@ msgstr "Wind gauge"
 msgid "Indoor module"
 msgstr "Indoor module"
 
-#: includes/trait-type-description.php:39 includes/trait-weather-client.php:164
+#: includes/trait-type-description.php:39 includes/trait-weather-client.php:166
 msgid "[Computed Values]"
 msgstr "[Computed Values]"
 
@@ -2974,10 +3120,6 @@ msgstr "Wind direction for the maximal wind strength for the last hour"
 #: includes/trait-type-description.php:191
 msgid "Maximal wind strength for the last hour"
 msgstr "Maximal wind strength for the last hour"
-
-#: includes/trait-type-description.php:195
-msgid "Altitude"
-msgstr "Altitude"
 
 #: includes/trait-type-description.php:207
 msgid "TZ"

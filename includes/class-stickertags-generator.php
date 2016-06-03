@@ -34,17 +34,18 @@ class Stickertags_Generator extends Live_Weather_Station_Txt_Generator {
                  }
              }
              catch (Exception $e) {
-                 throw new Exception('', 400);
+                 throw new LoggableException('error', 'Stickertags Renderer', null, $params['station'], null, null, null , 400, 'Not a valid station ID.');
              }
              if (array_key_exists('txt_sync', $station) && $station['txt_sync'] == 1) {
                  $result = $this->format_stickertags_data($this->get_outdoor_datas($params['station'], false, true));
+                 Logger::info('Stickertags Renderer', null, $station['station_id'], $station['station_name'], null, null , 0, 'Success while rendering data.');
              }
              else {
-                 throw new Exception('The station does not publish its data via this method/format.', 405);
+                 throw new LoggableException('error', 'Stickertags Renderer', null, $station['station_id'], $station['station_name'], null, null , 405, 'The station does not publish its data via this method/format.');
              }
          }
          else {
-             throw new Exception('', 400);
+             throw new LoggableException('error', 'Stickertags Renderer', null, null, null, null, null , 400, 'Not a valid station ID.');
          }
          return $result;
      }

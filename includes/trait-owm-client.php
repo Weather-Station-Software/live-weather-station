@@ -16,7 +16,8 @@ require_once(LWS_INCLUDES_DIR.'trait-id-manipulation.php');
 trait Owm_Client {
 
     use Dashboard_Manipulation, Id_Manipulation;
-    
+
+    protected $service_name = 'OpenWeatherMap';
 
     /**
      * Synchronize main table with station table.

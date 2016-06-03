@@ -36,6 +36,14 @@ trait Datas_Storage {
     }
 
     /**
+     *
+     * @since    3.0.0
+     */
+    protected static function live_weather_station_log_table() {
+        return 'live_weather_station_log';
+    }
+
+    /**
      * Performs a safe add column.
      *
      * @since    2.5.0
@@ -182,6 +190,34 @@ trait Datas_Storage {
     }
 
     /**
+     * Creates table for the plugin logging system.
+     *
+     * @since    3.0.0
+     */
+    private static function create_live_weather_station_log_table() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        $table_name = $wpdb->prefix . self::live_weather_station_log_table();
+        $sql = "CREATE TABLE IF NOT EXISTS " . $table_name;
+        $sql .= " (`id` int(11) NOT NULL AUTO_INCREMENT,";
+        $sql .= " `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',";
+        $sql .= " `level` enum('emergency','alert','critical','error','warning','notice','info','debug','unknown') NOT NULL DEFAULT 'unknown',";
+        $sql .= " `plugin` varchar(20) NOT NULL DEFAULT 'Live Weather Station',";
+        $sql .= " `version` varchar(10) NOT NULL DEFAULT 'N/A',";
+        $sql .= " `system` varchar(50) NOT NULL DEFAULT 'N/A',";
+        $sql .= " `service` varchar(50) NOT NULL DEFAULT 'N/A',";
+        $sql .= " `device_id` varchar(17) NOT NULL DEFAULT '00:00:00:00:00:00',";
+        $sql .= " `device_name` varchar(60) NOT NULL DEFAULT 'N/A',";
+        $sql .= " `module_id` varchar(17) NOT NULL DEFAULT '00:00:00:00:00:00',";
+        $sql .= " `module_name` varchar(60) NOT NULL DEFAULT 'N/A',";
+        $sql .= " `code` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `message` varchar(15000) NOT NULL DEFAULT '-',";
+        $sql .= " PRIMARY KEY (`id`)";
+        $sql .= ") $charset_collate;";
+        $wpdb->query($sql); 
+    }
+
+    /**
      * Creates tables for the plugin.
      *
      * @since    1.0.0
@@ -190,6 +226,7 @@ trait Datas_Storage {
         self::create_live_weather_station_datas_table();
         self::create_live_weather_station_owm_stations_table();
         self::create_live_weather_station_infos_table();
+        //self::create_live_weather_station_log_table();
     }
 
     /**
@@ -290,6 +327,21 @@ trait Datas_Storage {
         $table_name = $wpdb->prefix.self::live_weather_station_infos_table();
         $sql = 'DROP TABLE '.$table_name;
         $wpdb->query($sql);
+        $table_name = $wpdb->prefix.self::live_weather_station_log_table();
+        $sql = 'DROP TABLE '.$table_name;
+        $wpdb->query($sql);
+    }
+
+    /**
+     * Update table with current value line.
+     *
+     * @param   string  $table_name The table to update.
+     * @param   array   $value  The values to update or insert in the table
+     * @since    2.0.0
+     */
+    private static function insert_table($table_name, $value) {
+        global $wpdb;
+        $wpdb->insert($wpdb->prefix.$table_name,$value);
     }
 
     /**

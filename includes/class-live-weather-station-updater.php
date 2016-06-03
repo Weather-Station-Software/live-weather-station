@@ -27,9 +27,12 @@ class Live_Weather_Station_Updater {
      *
      * @since    2.0.0
      */
-    public static function update() {
+    public static function update($oldversion) {
+        Logger::notice('Updater',null,null,null,null,null,null,'Starting Live Weather Station update.', $oldversion);
         self::create_tables();
         self::update_tables();
+        Logger::notice('Updater',null,null,null,null,null,null,'Restarting Live Weather Station.', $oldversion);
+        Logger::notice('Updater',null,null,null,null,null,null,'Live Weather Station successfully updated from version ' . $oldversion . ' to version ' . LWS_VERSION . '.');
         Watchdog::restart();
     }
 }

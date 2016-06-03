@@ -21,6 +21,8 @@ trait Weather_Client {
 
     private $delta_time = 30;
     private $value_unknown = -9999;
+    protected $facility = 'Weather Computer';
+    protected $service_name = null;
 
 
     /**
@@ -213,6 +215,7 @@ trait Weather_Client {
         foreach ($result as $data) {
             $this->get_dashboard($data['device_id'], $data['device_name'], $data['_id'], $data['module_name'],
                 $data['type'], $data['data_type'], $data['dashboard_data']);
+            Logger::debug($this->facility, $this->service_name, $data['device_id'], $data['device_name'], $data['_id'], $data['module_name'], 0, 'Success while computing weather indexes.');
         }
         return $result;
     }

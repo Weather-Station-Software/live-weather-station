@@ -40,9 +40,10 @@ class Owm_Pollution_Updater {
     public function cron_run(){
         try {
             $this->get_datas();
+            Logger::info('Cron Engine', 'OpenWeatherMap', null, null, null, null, 0, 'Success while collecting pollution data.');
         }
         catch (Exception $ex) {
-            error_log(LWS_PLUGIN_NAME . ' / ' . LWS_VERSION . ' / OWM Pollution Updater / Error code: ' . $ex->getCode() . ' / Error message: ' . $ex->getMessage());
+            Logger::critical('Cron Engine', 'OpenWeatherMap', null, null, null, null, $ex->getCode(), 'Error while collecting pollution data: ' . $ex->getMessage());
         }
     }
 }

@@ -74,25 +74,34 @@ class Netatmo_Pusher {
      */
     public function cron_run(){
         $err = '';
+        $svc = null;
         try {
-            $err = 'Get Data';
+            $err = 'obtaining';
+            $svc = 'Netatmo';
             $netatmo = new Netatmo_Collector();
             $n = $netatmo->get_datas();
-            $err = 'Compute Weather';
+            $err = 'computing';
+            $svc = null;
             $weather = new Weather_Computer();
             $w = $weather->compute();
             $datas = $this->merge_data($n, $w);
+            $err = 'pushing';
+            $svc = 'OpenWeatherMap';
             $owmp = new OWM_Pusher();
             $owmp->post_data($datas);
+            $svc = 'PWS Weather';
             $pwsp = new PWS_Pusher();
             $pwsp->post_data($datas);
+            $svc = 'WOW Met Office';
             $wowp = new WOW_Pusher();
             $wowp->post_data($datas);
+            $svc = 'Weather Underground';
             $wugp = new WUG_Pusher();
             $wugp->post_data($datas);
+            Logger::info('Cron Engine', null, null, null, null, null, 0, 'Success while obtaining, computing and pushing weather data.');
         }
         catch (Exception $ex) {
-            error_log(LWS_PLUGIN_NAME . ' / ' . LWS_VERSION . ' / Pusher Updater / ' . $err . ' / Error code: ' . $ex->getCode() . ' / Error message: ' . $ex->getMessage());
+            Logger::critical('Cron Engine', $svc, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' weather data for push: ' . $ex->getMessage());
         }
     }
 }

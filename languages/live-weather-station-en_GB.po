@@ -2,101 +2,297 @@
 # This file is distributed under the same license as the Stable (latest release) package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2016-05-24 17:03+0200\n"
+"Project-Id-Version: Live Weather Station\n"
+"POT-Creation-Date: 2016-06-03 14:16+0200\n"
+"PO-Revision-Date: 2016-06-03 14:17+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en_GB\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 1.8.7\n"
-"Project-Id-Version: Live Weather Station\n"
-"POT-Creation-Date: \n"
-"Last-Translator: \n"
-"Language-Team: \n"
-"Language: en_GB\n"
+"X-Generator: Poedit 1.8.8\n"
 
-#: admin/partials/live-weather-station-admin-config-options.php:116
-#: includes/trait-type-description.php:84
-msgid "Carbon monoxide"
-msgstr "Carbon monoxide"
+#: admin/class-live-weather-station-admin.php:107
+#: admin/partials/live-weather-station-admin-config-accounts-settings.php:13
+msgid "Settings"
+msgstr "Settings"
 
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:103
-msgid "icon datas"
-msgstr "icon datas"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:9
+msgid "verify on a map"
+msgstr "verify on a map"
 
-#: admin/partials/live-weather-station-admin-config-stations.php:97
-msgid "OpenWeatherMap pollution"
-msgstr "OpenWeatherMap pollution"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:10
+#, php-format
+msgid ""
+"Here are the coordinates we've found %s. You can confirm it by clicking "
+"again on the button <em>%s</em>!"
+msgstr ""
+"Here are the coordinates we've found %s. You can confirm it by clicking "
+"again on the button <em>%s</em>!"
 
-#: includes/trait-datas-output.php:1938 includes/trait-type-description.php:84
-#: includes/trait-type-description.php:90
-msgid "CO"
-msgstr "CO"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:10
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:112
+msgid "Add This Station"
+msgstr "Add This Station"
 
-#: includes/trait-datas-output.php:1941 includes/trait-type-description.php:87
-#: includes/trait-type-description.php:93
-msgid "O₃"
-msgstr "O₃"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:10
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:115
+#: admin/partials/live-weather-station-admin-config-options.php:186
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:113
+msgid "Save Changes"
+msgstr "Save Changes"
 
-#: includes/trait-owm-pollution-client.php:151
-#: includes/trait-type-description.php:45
-msgid "[OpenWeatherMap Pollution]"
-msgstr "[OpenWeatherMap Pollution]"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:18
+msgid "Add an OpenWeatherMap station"
+msgstr "Add an OpenWeatherMap station"
 
-#: includes/trait-schedules-manipulation.php:148
-msgid "Every three minutes"
-msgstr "Every three minutes"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:21
+msgid "Edit an OpenWeatherMap station"
+msgstr "Edit an OpenWeatherMap station"
 
-#: includes/trait-type-description.php:48
-msgid "[OpenWeatherMap Forecast]"
-msgstr "[OpenWeatherMap Forecast]"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:24
+msgid "Some required fields are missing!"
+msgstr "Some required fields are missing!"
 
-#: includes/trait-type-description.php:81
-msgid "Carbon dioxide"
-msgstr "Carbon dioxide"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:30
+#: includes/trait-javascript-array.php:262
+#: includes/trait-javascript-array.php:801
+#: includes/trait-javascript-array.php:806
+msgid "Station name"
+msgstr "Station name"
 
-#: includes/trait-type-description.php:87
-msgid "Ozone"
-msgstr "Ozone"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:30
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:34
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:38
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:48
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:83
+msgid "(required)"
+msgstr "(required)"
 
-#: includes/trait-type-description.php:90
-msgid "CO probe distance"
-msgstr "CO probe distance"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:34
+msgid "City"
+msgstr "City"
 
-#: includes/trait-type-description.php:93
-msgid "O₃ probe distance"
-msgstr "O₃ probe distance"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:38
+msgid "Country"
+msgstr "Country"
 
-#: includes/trait-unit-description.php:298
-msgid "DU"
-msgstr "DU"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:48
+#: admin/partials/live-weather-station-admin-config-stations.php:28
+#: includes/class-owm-stations-list-table.php:45
+#: includes/trait-type-description.php:207
+msgid "Time zone"
+msgstr "Time zone"
 
-#: includes/trait-unit-description.php:310
-msgid "dobson unit"
-msgstr "dobson unit"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:83
+msgid "Altitude (in meters)"
+msgstr "Altitude (in metres)"
 
-#: includes/trait-unit-description.php:324
-msgid "Pa"
-msgstr "Pa"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:88
+msgid ""
+"If you know the exact coordinates of this location, enter them here. "
+"Otherwise, we will try to find them for you..."
+msgstr ""
+"If you know the exact coordinates of this location, enter them here. "
+"Otherwise, we will try to find them for you..."
 
-#: includes/trait-unit-description.php:327
-msgid "μg/g"
-msgstr "μg/g"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:91
+msgid ""
+"Despite our best efforts, we were unable to find the coordinates of this "
+"location. Please, enter them here - or try an other location:"
+msgstr ""
+"Despite our best efforts, we were unable to find the coordinates of this "
+"location. Please enter them here - or try an other location:"
 
-#: includes/trait-unit-description.php:330
-msgid "ppmv"
-msgstr "ppmv"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:95
+msgid ""
+"The coordinates you have entered are not valid. Please, retry or left blank:"
+msgstr ""
+"The coordinates you have entered are not valid. Please retry or leave blank:"
 
-#: includes/trait-unit-description.php:346
-msgid "pascal"
-msgstr "pascal"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:102
+#: includes/class-owm-stations-list-table.php:46
+#: includes/trait-type-description.php:199
+msgid "Latitude"
+msgstr "Latitude"
 
-#: includes/trait-unit-description.php:349
-msgid "microgram per gram"
-msgstr "microgram per gram"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:102
+msgid "(eg 49.85)"
+msgstr "(e.g. 49.85)"
 
-#: includes/trait-unit-description.php:352
-msgid "part per million by volume"
-msgstr "part per million by volume"
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:106
+#: includes/class-owm-stations-list-table.php:47
+#: includes/trait-type-description.php:203
+msgid "Longitude"
+msgstr "Longitude"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:106
+msgid "(eg -1.6)"
+msgstr "(e.g. -1.6)"
+
+#: admin/partials/live-weather-station-admin-config-about.php:11
+#: admin/partials/live-weather-station-admin-config-accounts-settings.php:12
+#: admin/partials/live-weather-station-admin-config-options.php:11
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:14
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:41
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:154
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:167
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:14
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:41
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:310
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:330
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:14
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:41
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:196
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:209
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:14
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:41
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:641
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:654
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:14
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:124
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:135
+#: admin/partials/live-weather-station-admin-config-stations.php:14
+#: admin/partials/live-weather-station-admin-config-stations.php:179
+#: admin/partials/live-weather-station-admin-config-summary.php:11
+msgid "Click to toggle"
+msgstr "Click to toggle"
+
+#: admin/partials/live-weather-station-admin-config-about.php:12
+#: admin/partials/live-weather-station-admin-config-about.php:41
+msgid "About"
+msgstr "About"
+
+#: admin/partials/live-weather-station-admin-config-about.php:17
+msgid "Help"
+msgstr "Help"
+
+#: admin/partials/live-weather-station-admin-config-about.php:20
+msgid ""
+"You can find help and explanation about this plugin on <a href=\"https://"
+"pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/\">this page</a>."
+msgstr ""
+"You can find help and explanations about this plugin on <a href=\"https://"
+"pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/\">this page</a>."
+
+#: admin/partials/live-weather-station-admin-config-about.php:23
+msgid "Plugin"
+msgstr "Plugin"
+
+#: admin/partials/live-weather-station-admin-config-about.php:26
+msgid ""
+"Is <em>Live Weather Station</em> helpful? I would be pleased that you <a "
+"href=\"https://wordpress.org/support/view/plugin-reviews/live-weather-station"
+"\">write a review</a>."
+msgstr ""
+"Is <em>Live Weather Station</em> helpful? I would be pleased if you could <a "
+"href=\"https://wordpress.org/support/view/plugin-reviews/live-weather-station"
+"\">write a review</a>."
+
+#: admin/partials/live-weather-station-admin-config-about.php:29
+msgid "Translations"
+msgstr "Translations"
+
+#: admin/partials/live-weather-station-admin-config-about.php:32
+msgid ""
+"If you want to help to translate this plugin, you can do it with  <a href="
+"\"https://translate.wordpress.org/projects/wp-plugins/live-weather-station"
+"\">GlotPress</a> (please, use the 'stable' column)."
+msgstr ""
+"If you want to help to translate this plugin, you can do it with  <a href="
+"\"https://translate.wordpress.org/projects/wp-plugins/live-weather-station"
+"\">GlotPress</a> (please use the 'stable' column)."
+
+#: admin/partials/live-weather-station-admin-config-about.php:35
+msgid "Thanks to"
+msgstr "Thanks to"
+
+#: admin/partials/live-weather-station-admin-config-about.php:38
+msgid ""
+"<a href=\"https://twitter.com/cyril_lakech\">Cyril Lakech</a>, for its tools "
+"and its reactivity and <a href=\"https://profiles.wordpress.org/bergjet"
+"\">Martin Punz</a> for tests and kindness from Austria."
+msgstr ""
+"<a href=\"https://twitter.com/cyril_lakech\">Cyril Lakech</a>, for his tools "
+"and reactivity, and <a href=\"https://profiles.wordpress.org/bergjet"
+"\">Martin Punz</a> for tests and kindness from Austria."
+
+#: admin/partials/live-weather-station-admin-config-about.php:44
+msgid ""
+"<em>Live Weather Station</em> is a free and open source plugin for "
+"WordPress. It integrates other free and open source works (as-is or "
+"modified) like Weather Icons project by Erik Flowers, EnzoJS and SteelSeries "
+"by Gerrit Grunwald, JustGage by Bojan Đuričić, OpenWeatherMap PHP API by "
+"Christian Flach, phpcolors by Arlo Carreon, moonrise/moonset calculation "
+"from Matt \"dxprog\" Hackmann and moon phase calculation from Samir Shah."
+msgstr ""
+"<em>Live Weather Station</em> is a free and open source plugin for "
+"WordPress. It integrates other free and open source works (as-is or "
+"modified) like the Weather Icons project by Erik Flowers, EnzoJS and "
+"SteelSeries by Gerrit Grunwald, JustGage by Bojan Đuričić, OpenWeatherMap "
+"PHP API by Christian Flach, phpcolors by Arlo Carreon, moonrise/moonset "
+"calculation from Matt \"dxprog\" Hackmann and moon phase calculation from "
+"Samir Shah."
+
+#: admin/partials/live-weather-station-admin-config-about.php:47
+msgid "Data"
+msgstr "Data"
+
+#: admin/partials/live-weather-station-admin-config-about.php:50
+msgid ""
+"All meteorological data provided by OpenWeatherMap are distributed under the "
+"terms of the <a href=\"http://creativecommons.org/licenses/by-sa/4.0/\" "
+"target=\"_blank\">Creative Commons CC:BY-SA 4.0 license</a>."
+msgstr ""
+"All meteorological data provided by OpenWeatherMap are distributed under the "
+"terms of the <a href=\"http://creativecommons.org/licenses/by-sa/4.0/\" "
+"target=\"_blank\">Creative Commons CC:BY-SA 4.0 licence</a>."
+
+#: admin/partials/live-weather-station-admin-config-about.php:50
+msgid ""
+"If you use OpenWeatherMap data on your site, the name of OpenWeatherMap must "
+"be mentioned as a weather source on pages where data are shown."
+msgstr ""
+"If you use OpenWeatherMap data on your site, the OpenWeatherMap name must be "
+"mentioned as a weather source on pages where data are shown."
+
+#: admin/partials/live-weather-station-admin-config-accounts-settings.php:20
+msgid "Netatmo login"
+msgstr "Netatmo login"
+
+#: admin/partials/live-weather-station-admin-config-accounts-settings.php:27
+msgid "Netatmo password"
+msgstr "Netatmo password"
+
+#: admin/partials/live-weather-station-admin-config-accounts-settings.php:36
+msgid "OpenWeatherMap key"
+msgstr "OpenWeatherMap key"
+
+#: admin/partials/live-weather-station-admin-config-accounts-settings.php:49
+msgid "Connect"
+msgstr "Connect"
+
+#: admin/partials/live-weather-station-admin-config-options.php:12
+msgid "Options"
+msgstr "Options"
+
+#: admin/partials/live-weather-station-admin-config-options.php:18
+msgid "Collected data"
+msgstr "Collected data"
+
+#: admin/partials/live-weather-station-admin-config-options.php:31
+msgid "Live controls displays"
+msgstr "Live controls displays"
+
+#: admin/partials/live-weather-station-admin-config-options.php:44
+msgid "Data obsolescence"
+msgstr "Data obsolescence"
+
+#: admin/partials/live-weather-station-admin-config-options.php:57
+msgid "Gauges boundaries"
+msgstr "Gauges boundaries"
 
 #: admin/partials/live-weather-station-admin-config-options.php:77
 msgid "Temperatures"
@@ -109,6 +305,11 @@ msgstr "Pressures"
 #: admin/partials/live-weather-station-admin-config-options.php:103
 msgid "Windspeeds"
 msgstr "Windspeeds"
+
+#: admin/partials/live-weather-station-admin-config-options.php:116
+#: includes/trait-type-description.php:84
+msgid "Carbon monoxide"
+msgstr "Carbon monoxide"
 
 #: admin/partials/live-weather-station-admin-config-options.php:129
 msgid "Wind icon"
@@ -126,278 +327,6 @@ msgstr "Altitudes"
 msgid "Distances"
 msgstr "Distances"
 
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:86
-msgid "To obtain Station ID from Weather Underground please, follow these steps:"
-msgstr "To obtain the Station ID from Weather Underground, please follow these steps:"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:88
-msgid "on the Weather Underground website"
-msgstr "on the Weather Underground website"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:89
-msgid "add a new station by following the 4 steps registration form"
-msgstr "add a new station by following the 4 steps registration form"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:96
-msgid "Unable to activate this service. Weather Underground servers have returned the following error:"
-msgstr "Unable to activate this service. Weather Underground servers have returned the following error:"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:107
-msgid "Push data to Weather Underground"
-msgstr "Push data to Weather Underground"
-
-#: includes/trait-javascript-array.php:117
-msgid "Unit symbol or abbreviation"
-msgstr "Unit symbol or abbreviation"
-
-#: includes/trait-javascript-array.php:118
-msgid "Unit with complement (if any)"
-msgstr "Unit with complement (if any)"
-
-#: includes/trait-javascript-array.php:119
-msgid "Unit name"
-msgstr "Unit name"
-
-#: includes/trait-unit-description.php:34
-#: includes/trait-unit-description.php:56
-#: includes/trait-unit-description.php:102
-msgid "percent"
-msgstr "percent"
-
-#: includes/trait-unit-description.php:78
-#: includes/trait-unit-description.php:378
-msgid "degree"
-msgstr "degree"
-
-#: includes/trait-unit-description.php:126
-msgid "percent of capacity"
-msgstr "percent of capacity"
-
-#: includes/trait-unit-description.php:150
-msgid "percent of strength"
-msgstr "percent of strength"
-
-#: includes/trait-unit-description.php:189
-msgid "millimeter per hour"
-msgstr "millimetre per hour"
-
-#: includes/trait-unit-description.php:192
-#: includes/trait-unit-description.php:233
-msgid "inch"
-msgstr "inch"
-
-#: includes/trait-unit-description.php:195
-msgid "inch per hour"
-msgstr "inch per hour"
-
-#: includes/trait-unit-description.php:198
-msgid "millimeter"
-msgstr "millimetre"
-
-#: includes/trait-unit-description.php:236
-msgid "centimeter"
-msgstr "centimetre"
-
-#: includes/trait-unit-description.php:262
-msgid "decibel"
-msgstr "decibel"
-
-#: includes/trait-unit-description.php:286
-msgid "part per million"
-msgstr "part per million"
-
-#: includes/trait-unit-description.php:414
-msgid "inch of mercury"
-msgstr "inch of mercury"
-
-#: includes/trait-unit-description.php:417
-msgid "millimeter of mercury"
-msgstr "millimetre of mercury"
-
-#: includes/trait-unit-description.php:420
-msgid "hectopascal"
-msgstr "hectopascal"
-
-#: includes/trait-unit-description.php:455
-msgid "fahrenheit degree"
-msgstr "fahrenheit degree"
-
-#: includes/trait-unit-description.php:458
-msgid "celcius degree"
-msgstr "celcius degree"
-
-#: includes/trait-unit-description.php:502
-msgid "mile per hour"
-msgstr "mile per hour"
-
-#: includes/trait-unit-description.php:505
-msgid "meter per second"
-msgstr "metre per second"
-
-#: includes/trait-unit-description.php:508
-msgid "beaufort"
-msgstr "beaufort"
-
-#: includes/trait-unit-description.php:511
-msgid "knot"
-msgstr "knot"
-
-#: includes/trait-unit-description.php:514
-msgid "kilometer per hour"
-msgstr "kilometre per hour"
-
-#: includes/trait-unit-description.php:549
-msgid "foot"
-msgstr "foot"
-
-#: includes/trait-unit-description.php:552
-msgid "meter"
-msgstr "metre"
-
-#: includes/trait-unit-description.php:587
-msgid "mile"
-msgstr "mile"
-
-#: includes/trait-unit-description.php:590
-msgid "kilometer"
-msgstr "kilometre"
-
-#: includes/trait-unit-description.php:170
-msgid "in/h"
-msgstr "in/h"
-
-#: includes/trait-unit-description.php:847
-msgid "Towards... (points to the degree)"
-msgstr "Towards... (points to the degree)"
-
-#: includes/trait-unit-description.php:848
-msgid "From... (points directly away from the degree)"
-msgstr "From... (points directly away from the degree)"
-
-#: includes/class-netatmo-stations-list-table.php:74
-#: includes/class-netatmo-stations-list-table.php:81
-#: includes/class-netatmo-stations-list-table.php:88
-msgid "see it"
-msgstr "see it"
-
-#: includes/trait-unit-description.php:167
-#: includes/trait-unit-description.php:214
-msgid "in"
-msgstr "in"
-
-#: includes/class-netatmo-stations-list-table.php:72
-#: includes/class-netatmo-stations-list-table.php:79
-#: includes/class-netatmo-stations-list-table.php:86
-msgid "Yes"
-msgstr "Yes"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:28
-msgid "on the Weather Observations Website from Met Office"
-msgstr "on the Weather Observations Website from Met Office"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:29
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:59
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:89
-msgid "After registration, log in and"
-msgstr "After registration, log in and"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:29
-msgid "create a site"
-msgstr "create a site"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:30
-msgid "Then, copy and paste <em>Site ID</em> and <em>AWS 6-digit PIN</em> in the following fields, and activate push."
-msgstr "Then, copy and paste <em>Site ID</em> and <em>AWS 6-digit PIN</em> in the following fields, and activate push."
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:32
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:62
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:92
-msgid "After a few hours you'll get something"
-msgstr "After a few hours you'll get something"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:32
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:62
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:92
-msgid "like this!"
-msgstr "like this!"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:36
-msgid "Unable to activate this service. Met Office servers have returned the following error:"
-msgstr "Unable to activate this service. Met Office servers have returned the following error:"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:47
-msgid "Push data to Met Office"
-msgstr "Push data to Met Office"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:56
-msgid "To obtain Station ID from PWS please, follow these steps:"
-msgstr "To obtain Station ID from PWS please, follow these steps:"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:58
-msgid "on the PWS website"
-msgstr "on the PWS website"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:59
-msgid "add a new station"
-msgstr "add a new station"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:60
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:90
-msgid "Then, copy and paste <em>Station ID</em> in the corresponding following field, set your password and activate push."
-msgstr "Then, copy and paste <em>Station ID</em> in the corresponding following field, set your password and activate push."
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:66
-msgid "Unable to activate this service. PWS servers have returned the following error:"
-msgstr "Unable to activate this service. PWS servers have returned the following error:"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:77
-msgid "Push data to PWS"
-msgstr "Push data to PWS"
-
-#: admin/partials/live-weather-station-admin-manage-netatmo.php:16
-msgid "Netatmo stations"
-msgstr "Netatmo stations"
-
-#: includes/class-netatmo-stations-list-table.php:31
-msgid "Manage services"
-msgstr "Manage services"
-
-#: includes/class-netatmo-stations-list-table.php:70
-#: includes/class-netatmo-stations-list-table.php:77
-#: includes/class-netatmo-stations-list-table.php:84
-msgid "No"
-msgstr "No"
-
-#: admin/partials/live-weather-station-admin-config-summary.php:20
-msgid "manage related services"
-msgstr "manage related services"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:11
-msgid "Manage services for"
-msgstr "Manage services for"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:14
-msgid "Some services could not be activated. See details in the following sections..."
-msgstr "Some services could not be activated. See details in the following sections..."
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:16
-msgid "You can participate in the dissemination and sharing of data collected by your Netatmo weather station by enabling Live Weather Station to send, every 10 minutes, outdoor data<sup>*</sup> like temperature, pressure, humidity, dew point, wind and rain to the following services. To obtain help for each service, please click on logos."
-msgstr "You can participate in the dissemination and sharing of data collected by your Netatmo weather station by enabling Live Weather Station to send, every 10 minutes, outdoor data<sup>*</sup> like temperature, pressure, humidity, dew point, wind and rain to the following services. To obtain help for each service, please click on logos."
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:17
-msgid "Note that no data from inside your home (noise, temperature, CO₂ ...) are transmitted to these services."
-msgstr "Note that no data from inside your home (noise, temperature, CO₂ ...) are transmitted to these services."
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:26
-msgid "To obtain Site ID and AWS 6-digit PIN from Met Office please, follow these steps:"
-msgstr "To obtain Site ID and AWS 6-digit PIN from the Met Office, please follow these steps:"
-
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:28
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:58
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:88
-msgid "Create an account"
-msgstr "Create an account"
-
 #: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:15
 #: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:15
 #: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:15
@@ -409,480 +338,161 @@ msgstr "OpenWeatherMap error"
 #: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:17
 #: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:17
 #: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:17
-msgid "OpenWeatherMap servers have returned an empty response for this weather station. For this reason, it is currently not possible to generate a shortcode. This is normally a temporary error so, please, retry again later."
-msgstr "OpenWeatherMap servers have returned an empty response for this weather station. For this reason, it is currently not possible to generate a shortcode. This is normally a temporary error, so please retry again later."
-
-#: includes/trait-schedules-manipulation.php:161
-msgid "Every five minutes"
-msgstr "Every five minutes"
-
-#: includes/trait-schedules-manipulation.php:200
-msgid "Every thirty minutes"
-msgstr "Every thirty minutes"
-
-#: admin/partials/live-weather-station-admin-config-about.php:50
-msgid "If you use OpenWeatherMap data on your site, the name of OpenWeatherMap must be mentioned as a weather source on pages where data are shown."
-msgstr "If you use OpenWeatherMap data on your site, the OpenWeatherMap name must be mentioned as a weather source on pages where data are shown."
-
-#: admin/partials/live-weather-station-admin-config-summary.php:84
-msgid "PHP warning"
-msgstr "PHP warning"
-
-#: admin/partials/live-weather-station-admin-config-summary.php:86
-msgid "Internationalisation extension is not installed. You can not manage OWM stations..."
-msgstr "Internationalisation extension is not installed. You cannot manage OWM stations..."
-
-#: includes/trait-datas-output.php:1731 includes/trait-datas-output.php:1856
-msgid "now"
-msgstr "now"
-
-#: includes/trait-datas-output.php:1733 includes/trait-datas-output.php:1762
-msgid "/ 3 hr"
-msgstr "/ 3 hr"
-
-#: includes/trait-datas-output.php:1743
-msgid "/ 1 hr"
-msgstr "/ 1 hr"
-
-#: includes/trait-owm-current-client.php:193
-#: includes/trait-owm-pollution-client.php:188
-msgid "OpenWeatherMap servers have returned empty response for some weather stations. Retry will be done shortly."
-msgstr "OpenWeatherMap servers have returned an empty response for some weather stations. Retry will be done shortly."
-
-#: includes/trait-type-description.php:156
-msgid "Rain rate"
-msgstr "Rain rate"
-
-#: includes/trait-type-description.php:159
-msgid "Accumulated rainfall for the last 3 hours"
-msgstr "Accumulated rainfall for the last 3 hours"
-
-#: includes/trait-type-description.php:163
-msgid "Accumulated snowfall for the last 3 hours"
-msgstr "Accumulated snowfall for the last 3 hours"
-
-#: includes/trait-unit-description.php:164
-msgid "mm/h"
-msgstr "mm/h"
-
-#: includes/trait-type-description.php:213
-msgid "outdoor"
-msgstr "outdoor"
-
-#: includes/trait-type-description.php:228
-msgid "Age"
-msgstr "Age"
-
-#: includes/trait-type-description.php:231
-msgid "Phase"
-msgstr "Phase"
-
-#: includes/trait-type-description.php:234
-msgid "Illumination"
-msgstr "Illumination"
-
-#: includes/trait-type-description.php:237
-#: includes/trait-type-description.php:243
-msgid "Distance"
-msgstr "Distance"
-
-#: includes/trait-type-description.php:249
-msgid "?"
-msgstr "?"
-
-#: includes/trait-javascript-array.php:1124
-msgid "Plain - Translucent"
-msgstr "Plain - Translucent"
-
-#: includes/trait-javascript-array.php:1125
-msgid "Plain - Liquid"
-msgstr "Plain - Liquid"
-
-#: includes/trait-javascript-array.php:1126
-msgid "Plain - Soft"
-msgstr "Plain - Soft"
-
-#: includes/trait-javascript-array.php:1127
-msgid "Plain - Hard"
-msgstr "Plain - Hard"
-
-#: includes/trait-javascript-array.php:1128
-msgid "Fade-in - Translucent"
-msgstr "Fade-in - Translucent"
-
-#: includes/trait-javascript-array.php:1129
-msgid "Fade-in - Liquid"
-msgstr "Fade-in - Liquid"
-
-#: includes/trait-javascript-array.php:1130
-msgid "Fade-in - Soft"
-msgstr "Fade-in - Soft"
-
-#: includes/trait-javascript-array.php:1131
-msgid "Fade-in - Hard"
-msgstr "Fade-in - Hard"
-
-#: includes/trait-javascript-array.php:1132
-msgid "Fade-out - Translucent"
-msgstr "Fade-out - Translucent"
-
-#: includes/trait-javascript-array.php:1133
-msgid "Fade-out - Liquid"
-msgstr "Fade-out - Liquid"
-
-#: includes/trait-javascript-array.php:1134
-msgid "Fade-out - Soft"
-msgstr "Fade-out - Soft"
-
-#: includes/trait-javascript-array.php:1135
-msgid "Fade-out - Hard"
-msgstr "Fade-out - Hard"
-
-#: includes/trait-javascript-array.php:1136
-msgid "Complementary - Translucent"
-msgstr "Complementary - Translucent"
-
-#: includes/trait-javascript-array.php:1137
-msgid "Complementary - Liquid"
-msgstr "Complementary - Liquid"
-
-#: includes/trait-javascript-array.php:1138
-msgid "Complementary - Soft"
-msgstr "Complementary - Soft"
-
-#: includes/trait-javascript-array.php:1139
-msgid "Complementary - Hard"
-msgstr "Complementary - Hard"
-
-#: includes/trait-javascript-array.php:1140
-msgid "Inverted complementary - Translucent"
-msgstr "Inverted complementary - Translucent"
-
-#: includes/trait-javascript-array.php:1141
-msgid "Inverted complementary - Liquid"
-msgstr "Inverted complementary - Liquid"
-
-#: includes/trait-javascript-array.php:1142
-msgid "Inverted complementary - Soft"
-msgstr "Inverted complementary - Soft"
-
-#: includes/trait-javascript-array.php:1143
-msgid "Inverted complementary - Hard"
-msgstr "Inverted complementary - Hard"
-
-#: includes/trait-type-description.php:72
-msgid "Firmware"
-msgstr "Firmware"
-
-#: includes/trait-type-description.php:75
-msgid "Battery"
-msgstr "Battery"
-
-#: includes/trait-type-description.php:78
-msgid "WiFi"
-msgstr "WiFi"
-
-#: includes/trait-type-description.php:102
-msgid "Noise"
-msgstr "Noise"
-
-#: includes/trait-type-description.php:105
-#: includes/trait-type-description.php:108
-msgid "Pressure"
-msgstr "Pressure"
-
-#: includes/trait-type-description.php:138
-msgid "Heat"
-msgstr "Heat"
-
-#: includes/trait-type-description.php:147
-msgid "Cloud base"
-msgstr "Cloud base"
-
-#: includes/trait-type-description.php:156
-#: includes/trait-type-description.php:159
-#: includes/trait-type-description.php:167
-#: includes/trait-type-description.php:171
-msgid "Rain"
-msgstr "Rain"
-
-#: includes/trait-type-description.php:163
-msgid "Snow"
-msgstr "Snow"
-
-#: includes/trait-type-description.php:207
-msgid "TZ"
-msgstr "TZ"
-
-#: includes/trait-type-description.php:210
-msgid "all"
-msgstr "all"
-
-#: includes/trait-javascript-array.php:1110
-msgid "Silver"
-msgstr "Silver"
-
-#: includes/trait-javascript-array.php:1102
-msgid "Teal"
-msgstr "Teal"
-
-#: includes/trait-javascript-array.php:1103
-msgid "Aqua"
-msgstr "Aqua"
-
-#: includes/trait-javascript-array.php:1104
-msgid "Light blue"
-msgstr "Light blue"
-
-#: includes/trait-javascript-array.php:1106
-msgid "Navy"
-msgstr "Navy"
-
-#: includes/trait-javascript-array.php:1107
-msgid "Fuchsia"
-msgstr "Fuchsia"
-
-#: includes/trait-javascript-array.php:1108
-msgid "Purple"
-msgstr "Purple"
-
-#: includes/trait-javascript-array.php:1083
-msgid "Horizontal"
-msgstr "Horizontal"
-
-#: includes/trait-javascript-array.php:1084
-msgid "Tangent"
-msgstr "Tangent"
-
-#: includes/trait-javascript-array.php:1097
-msgid "Maroon"
-msgstr "Maroon"
-
-#: includes/trait-javascript-array.php:1100
-msgid "Lime"
-msgstr "Lime"
-
-#: includes/trait-javascript-array.php:998
-msgid "Plain - Black"
-msgstr "Plain - Black"
-
-#: includes/trait-javascript-array.php:999
-msgid "Plain - Brass"
-msgstr "Plain - Brass"
-
-#: includes/trait-javascript-array.php:1000
-msgid "Plain - Silver"
-msgstr "Plain - Silver"
-
-#: includes/trait-javascript-array.php:1001
-msgid "Embossed - Black"
-msgstr "Embossed - Black"
-
-#: includes/trait-javascript-array.php:1002
-msgid "Embossed - Brass"
-msgstr "Embossed - Brass"
-
-#: includes/trait-javascript-array.php:1003
-msgid "Embossed - Silver"
-msgstr "Embossed - Silver"
-
-#: includes/trait-javascript-array.php:1069
-msgid "Cursors"
-msgstr "Cursors"
-
-#: includes/trait-javascript-array.php:1081
-msgid "Automatic"
-msgstr "Automatic"
-
-#: includes/trait-javascript-array.php:1082
-msgid "Normal"
-msgstr "Normal"
-
-#: includes/trait-javascript-array.php:978
-msgid "JUG Green"
-msgstr "JUG Green"
-
-#: includes/trait-javascript-array.php:979
-msgid "Green LCD"
-msgstr "Green LCD"
-
-#: includes/trait-javascript-array.php:980
-#: includes/trait-javascript-array.php:1020
-msgid "Cyan"
-msgstr "Cyan"
-
-#: includes/trait-javascript-array.php:981
-msgid "Raith"
-msgstr "Raith"
-
-#: includes/trait-javascript-array.php:983
-#: includes/trait-javascript-array.php:1022
-msgid "Magenta"
-msgstr "Magenta"
-
-#: includes/trait-javascript-array.php:985
-#: includes/trait-javascript-array.php:1111
-msgid "Gray"
-msgstr "Grey"
-
-#: includes/trait-javascript-array.php:976
-#: includes/trait-javascript-array.php:1018
-#: includes/trait-javascript-array.php:1099
-msgid "Yellow"
-msgstr "Yellow"
-
-#: includes/trait-javascript-array.php:913
-msgid "Mud"
-msgstr "Mud"
-
-#: includes/trait-javascript-array.php:914
-msgid "Punched sheet"
-msgstr "Punched sheet"
-
-#: includes/trait-javascript-array.php:915
-msgid "Carbon"
-msgstr "Carbon"
-
-#: includes/trait-javascript-array.php:916
-msgid "Stainless"
-msgstr "Stainless"
-
-#: includes/trait-javascript-array.php:917
-msgid "Brushed metal"
-msgstr "Brushed metal"
-
-#: includes/trait-javascript-array.php:918
-msgid "Brushed stainless"
-msgstr "Brushed stainless"
-
-#: includes/trait-javascript-array.php:919
-msgid "Turned"
-msgstr "Turned"
-
-#: includes/trait-javascript-array.php:931
-msgid "Standard glass"
-msgstr "Standard glass"
-
-#: includes/trait-javascript-array.php:932
-msgid "Crystal"
-msgstr "Crystal"
-
-#: includes/trait-javascript-array.php:933
-msgid "Sapphire crystal"
-msgstr "Sapphire crystal"
-
-#: includes/trait-javascript-array.php:934
-msgid "Plexiglass"
-msgstr "Plexiglass"
-
-#: includes/trait-javascript-array.php:935
-msgid "Rhodoid"
-msgstr "Rhodoid"
-
-#: includes/trait-javascript-array.php:947
-msgid "Thin triangle"
-msgstr "Thin triangle"
-
-#: includes/trait-javascript-array.php:948
-msgid "Fat Triangle"
-msgstr "Fat Triangle"
-
-#: includes/trait-javascript-array.php:949
-msgid "3D triangle"
-msgstr "3D triangle"
-
-#: includes/trait-javascript-array.php:950
-msgid "Clipped"
-msgstr "Clipped"
-
-#: includes/trait-javascript-array.php:951
-msgid "Double clipped"
-msgstr "Double clipped"
-
-#: includes/trait-javascript-array.php:952
-msgid "Flat clipped"
-msgstr "Flat clipped"
-
-#: includes/trait-javascript-array.php:953
-msgid "Thin rod"
-msgstr "Thin rod"
-
-#: includes/trait-javascript-array.php:954
-msgid "Fat rod"
-msgstr "Fat rod"
-
-#: includes/trait-javascript-array.php:955
-msgid "Thin curved triangle"
-msgstr "Thin curved triangle"
-
-#: includes/trait-javascript-array.php:956
-msgid "3D curved triangle"
-msgstr "3D curved triangle"
-
-#: includes/trait-javascript-array.php:957
-msgid "Double needle"
-msgstr "Double needle"
-
-#: includes/trait-javascript-array.php:958
-msgid "Culbuto"
-msgstr "Culbuto"
-
-#: includes/trait-javascript-array.php:959
-msgid "Cessna"
-msgstr "Cessna"
-
-#: includes/trait-javascript-array.php:960
-msgid "Volvo"
-msgstr "Volvo"
-
-#: includes/trait-javascript-array.php:961
-msgid "Ferrari"
-msgstr "Ferrari"
-
-#: includes/trait-javascript-array.php:962
-msgid "Ferrari arched"
-msgstr "Ferrari arched"
-
-#: includes/trait-javascript-array.php:975
-#: includes/trait-javascript-array.php:1017
-#: includes/trait-javascript-array.php:1098
-msgid "Orange"
-msgstr "Orange"
-
-#: includes/trait-javascript-array.php:910
-#: includes/trait-javascript-array.php:977
-#: includes/trait-javascript-array.php:1019
-#: includes/trait-javascript-array.php:1101
-msgid "Green"
-msgstr "Green"
-
-#: includes/trait-javascript-array.php:911
-#: includes/trait-javascript-array.php:982
-#: includes/trait-javascript-array.php:1021
-#: includes/trait-javascript-array.php:1105
-msgid "Blue"
-msgstr "Blue"
-
-#: includes/trait-javascript-array.php:909
-#: includes/trait-javascript-array.php:974
-#: includes/trait-javascript-array.php:1016
-#: includes/trait-javascript-array.php:1096
-msgid "Red"
-msgstr "Red"
-
-#: includes/trait-javascript-array.php:907
-msgid "Beige"
-msgstr "Beige"
-
-#: includes/trait-javascript-array.php:908
-msgid "Brown"
-msgstr "Brown"
-
-#: includes/trait-javascript-array.php:906
-#: includes/trait-javascript-array.php:986
-#: includes/trait-javascript-array.php:1112
-msgid "Black"
-msgstr "Black"
+msgid ""
+"OpenWeatherMap servers have returned an empty response for this weather "
+"station. For this reason, it is currently not possible to generate a "
+"shortcode. This is normally a temporary error so, please, retry again later."
+msgstr ""
+"OpenWeatherMap servers have returned an empty response for this weather "
+"station. For this reason, it is currently not possible to generate a "
+"shortcode. This is normally a temporary error, so please retry again later."
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:103
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:180
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:141
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:311
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:77
+msgid "Shortcodes for"
+msgstr "Shortcodes for"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:311
+#: admin/partials/live-weather-station-admin-config-stations.php:168
+msgid "steel meter"
+msgstr "steel meter"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:42
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:42
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:42
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:42
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:15
+msgid "1. Set parameters for the shortcode"
+msgstr "1. Set parameters for the shortcode"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:47
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:47
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:47
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:47
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:20
+#: admin/partials/live-weather-station-admin-view-log.php:30
+msgid "Module"
+msgstr "Module"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:60
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:60
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:60
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:60
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:33
+msgid "Measurement"
+msgstr "Measurement"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:70
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:43
+msgid "Element"
+msgstr "Element"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:80
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:53
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:18
+msgid "Format"
+msgstr "Format"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:103
+msgid "icon datas"
+msgstr "icon datas"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:155
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:331
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:197
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:642
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:125
+msgid "2. Verify the generated output"
+msgstr "2. Verify the generated output"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:168
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:311
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:210
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:655
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:136
+msgid "3. Copy the following shortcode"
+msgstr "3. Copy the following shortcode"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:174
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:317
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:216
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:661
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:142
+msgid "This shortcode is ready for use."
+msgstr "This shortcode is ready for use."
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:177
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:320
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:219
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:664
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:145
+msgid "Copy"
+msgstr "Copy"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:180
+#: admin/partials/live-weather-station-admin-config-stations.php:168
+msgid "clean gauge"
+msgstr "clean gauge"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:70
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:70
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:70
+msgid "Design"
+msgstr "Design"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:83
+msgid "Colors"
+msgstr "Colours"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:96
+msgid "Pointer"
+msgstr "Pointer"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:109
+msgid "Title"
+msgstr "Title"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:122
+msgid "Label"
+msgstr "Label"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:135
+msgid "Unit"
+msgstr "Unit"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:148
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:83
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:279
+#: includes/trait-type-description.php:240
+#: includes/trait-type-description.php:246
+msgid "Size"
+msgstr "Size"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:355
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:203
+msgid "This controls will be dynamically resized to fit its parent's size."
+msgstr "This control will be dynamically resized to fit its parent's size."
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:141
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:188
+#: admin/partials/live-weather-station-admin-config-stations.php:168
+msgid "LCD display"
+msgstr "LCD display"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:96
+msgid "Speed"
+msgstr "Speed"
 
 #: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:83
 msgid "Bezel"
@@ -940,800 +550,465 @@ msgstr "Index colour"
 msgid "Glass"
 msgstr "Glass"
 
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:27
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:27
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:311
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:77
 #: admin/partials/live-weather-station-admin-config-stations.php:168
-msgid "steel meter"
-msgstr "steel meter"
-
-#: includes/trait-datas-output.php:929 includes/trait-type-description.php:180
-#: includes/trait-type-description.php:183
-msgid "Gust"
-msgstr "Gust"
-
-#: includes/trait-datas-output.php:1935 includes/trait-type-description.php:81
-msgid "CO₂"
-msgstr "CO₂"
-
-#: includes/trait-javascript-array.php:705
-msgid "Gigantic"
-msgstr "Gigantic"
-
-#: includes/trait-javascript-array.php:803
-#: includes/trait-javascript-array.php:808
-msgid "Short measurement type"
-msgstr "Short measurement type"
-
-#: includes/trait-javascript-array.php:854
-msgid "Analog - 1/4"
-msgstr "Analog - 1/4"
-
-#: includes/trait-javascript-array.php:855
-msgid "Analog - half"
-msgstr "Analog - half"
-
-#: includes/trait-javascript-array.php:856
-msgid "Analog - 3/4"
-msgstr "Analog - 3/4"
-
-#: includes/trait-javascript-array.php:857
-msgid "Analog - full"
-msgstr "Analog - full"
-
-#: includes/trait-javascript-array.php:858
-msgid "Digital - 1/4"
-msgstr "Digital - 1/4"
-
-#: includes/trait-javascript-array.php:859
-msgid "Digital - half"
-msgstr "Digital - half"
-
-#: includes/trait-javascript-array.php:860
-msgid "Digital - 3/4"
-msgstr "Digital - 3/4"
-
-#: includes/trait-javascript-array.php:861
-msgid "Digital - full"
-msgstr "Digital - full"
-
-#: includes/trait-javascript-array.php:862
-msgid "Top meter"
-msgstr "Top meter"
-
-#: includes/trait-javascript-array.php:863
-msgid "Left meter"
-msgstr "Left meter"
-
-#: includes/trait-javascript-array.php:864
-msgid "Right meter"
-msgstr "Right meter"
-
-#: includes/trait-javascript-array.php:865
-msgid "Vintage wind compass"
-msgstr "Vintage wind compass"
-
-#: includes/trait-javascript-array.php:866
-msgid "Standard wind compass"
-msgstr "Standard wind compass"
-
-#: includes/trait-javascript-array.php:867
-msgid "Modern wind compass"
-msgstr "Modern wind compass"
-
-#: includes/trait-javascript-array.php:868
-msgid "Altimeter"
-msgstr "Altimeter"
-
-#: includes/trait-javascript-array.php:880
-msgid "Black metal"
-msgstr "Black metal"
-
-#: includes/trait-javascript-array.php:881
-msgid "Metal"
-msgstr "Metal"
-
-#: includes/trait-javascript-array.php:882
-msgid "Shiny metal"
-msgstr "Shiny metal"
-
-#: includes/trait-javascript-array.php:883
-msgid "Glossy metal"
-msgstr "Glossy metal"
-
-#: includes/trait-javascript-array.php:884
-#: includes/trait-javascript-array.php:912
-msgid "Anthracite"
-msgstr "Anthracite"
-
-#: includes/trait-javascript-array.php:885
-msgid "Tilted gray"
-msgstr "Tilted grey"
-
-#: includes/trait-javascript-array.php:886
-msgid "Tilted black"
-msgstr "Tilted black"
-
-#: includes/trait-javascript-array.php:887
-msgid "Brass"
-msgstr "Brass"
-
-#: includes/trait-javascript-array.php:888
-msgid "Steel"
-msgstr "Steel"
-
-#: includes/trait-javascript-array.php:889
-msgid "Chrome"
-msgstr "Chrome"
-
-#: includes/trait-javascript-array.php:890
-msgid "Gold"
-msgstr "Gold"
-
-#: includes/trait-javascript-array.php:902
-msgid "Dark gray"
-msgstr "Dark grey"
-
-#: includes/trait-javascript-array.php:903
-msgid "Satin gray"
-msgstr "Satin grey"
-
-#: includes/trait-javascript-array.php:904
-msgid "Light gray"
-msgstr "Light grey"
-
-#: includes/trait-javascript-array.php:905
-#: includes/trait-javascript-array.php:984
-#: includes/trait-javascript-array.php:1109
-msgid "White"
-msgstr "White"
-
-#: includes/trait-javascript-array.php:785
-msgid "Full - 3D - Standard"
-msgstr "Full - 3D - Standard"
-
-#: includes/trait-javascript-array.php:786
-msgid "Full - 3D - Fat"
-msgstr "Full - 3D - Fat"
-
-#: includes/trait-javascript-array.php:787
-msgid "Full - 3D - Pie"
-msgstr "Full - 3D - Pie"
-
-#: includes/trait-javascript-array.php:805
-#: includes/trait-javascript-array.php:808
-#: includes/trait-javascript-array.php:809
-#: includes/trait-javascript-array.php:823
-msgid "Measurement unit"
-msgstr "Measurement unit"
-
-#: includes/trait-javascript-array.php:836
-msgid "Test with actual background"
-msgstr "Test with actual background"
-
-#: includes/trait-javascript-array.php:837
-msgid "Test with white background"
-msgstr "Test with white background"
-
-#: includes/trait-javascript-array.php:838
-msgid "Test with light background"
-msgstr "Test with light background"
-
-#: includes/trait-javascript-array.php:839
-msgid "Test with medium background"
-msgstr "Test with medium background"
-
-#: includes/trait-javascript-array.php:840
-msgid "Test with dark background"
-msgstr "Test with dark background"
-
-#: includes/trait-javascript-array.php:841
-msgid "Test with black background"
-msgstr "Test with black background"
-
-#: includes/trait-unit-description.php:833
-msgid "Fixed min & max"
-msgstr "Fixed min & max"
-
-#: includes/trait-unit-description.php:834
-msgid "Adapted min & max when possible"
-msgstr "Adapted min & max when possible"
-
-#: includes/trait-javascript-array.php:758
-msgid "External"
-msgstr "External"
-
-#: includes/trait-javascript-array.php:759
-msgid "Internal"
-msgstr "Internal"
-
-#: includes/trait-javascript-array.php:772
-msgid "Half - Flat - Thin"
-msgstr "Half - Flat - Thin"
-
-#: includes/trait-javascript-array.php:773
-msgid "Half - Flat - Standard"
-msgstr "Half - Flat - Standard"
-
-#: includes/trait-javascript-array.php:774
-msgid "Half - Flat - Fat"
-msgstr "Half - Flat - Fat"
-
-#: includes/trait-javascript-array.php:775
-msgid "Half - Flat - Pie"
-msgstr "Half - Flat - Pie"
-
-#: includes/trait-javascript-array.php:776
-msgid "Half - 3D - Thin"
-msgstr "Half - 3D - Thin"
-
-#: includes/trait-javascript-array.php:777
-msgid "Half - 3D - Standard"
-msgstr "Half - 3D - Standard"
-
-#: includes/trait-javascript-array.php:778
-msgid "Half - 3D - Fat"
-msgstr "Half - 3D - Fat"
-
-#: includes/trait-javascript-array.php:779
-msgid "Half - 3D - Pie"
-msgstr "Half - 3D - Pie"
-
-#: includes/trait-javascript-array.php:780
-msgid "Full - Flat - Thin"
-msgstr "Full - Flat - Thin"
-
-#: includes/trait-javascript-array.php:781
-msgid "Full - Flat - Standard"
-msgstr "Full - Flat - Standard"
-
-#: includes/trait-javascript-array.php:782
-msgid "Full - Flat - Fat"
-msgstr "Full - Flat - Fat"
-
-#: includes/trait-javascript-array.php:783
-msgid "Full - Flat - Pie"
-msgstr "Full - Flat - Pie"
-
-#: includes/trait-javascript-array.php:784
-msgid "Full - 3D - Thin"
-msgstr "Full - 3D - Thin"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:135
-msgid "Unit"
-msgstr "Unit"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:27
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:180
-#: admin/partials/live-weather-station-admin-config-stations.php:168
-msgid "clean gauge"
-msgstr "clean gauge"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:174
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:317
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:216
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:661
-#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:142
-msgid "This shortcode is ready for use."
-msgstr "This shortcode is ready for use."
-
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:61
-msgid "Hide obsolete measurements"
-msgstr "Hide obsolete measurements"
-
-#: includes/trait-datas-output.php:186
-msgid "Outdoor"
-msgstr "Outdoor"
-
-#: includes/trait-javascript-array.php:696
-msgid "Miniature"
-msgstr "Miniature"
-
-#: includes/trait-javascript-array.php:719
-msgid "Standard (for light background)"
-msgstr "Standard (for light background)"
-
-#: includes/trait-javascript-array.php:720
-msgid "Standard (for dark background)"
-msgstr "Standard (for dark background)"
-
-#: includes/trait-javascript-array.php:721
-msgid "Flag (for light background)"
-msgstr "Flag (for light background)"
-
-#: includes/trait-javascript-array.php:722
-msgid "Flag (for dark background)"
-msgstr "Flag (for dark background)"
-
-#: includes/trait-javascript-array.php:723
-msgid "Pinky (for light background)"
-msgstr "Pinky (for light background)"
-
-#: includes/trait-javascript-array.php:724
-msgid "Pinky (for dark background)"
-msgstr "Pinky (for dark background)"
-
-#: includes/trait-javascript-array.php:725
-msgid "Aquamarine (for light background)"
-msgstr "Aquamarine (for light background)"
-
-#: includes/trait-javascript-array.php:726
-msgid "Aquamarine (for dark background)"
-msgstr "Aquamarine (for dark background)"
-
-#: includes/trait-javascript-array.php:727
-msgid "B&W (for light background)"
-msgstr "B&W (for light background)"
-
-#: includes/trait-javascript-array.php:728
-msgid "B&W (for dark background)"
-msgstr "B&W (for dark background)"
-
-#: includes/trait-javascript-array.php:729
-msgid "Solid red (for light background)"
-msgstr "Solid red (for light background)"
-
-#: includes/trait-javascript-array.php:730
-msgid "Solid red (for dark background)"
-msgstr "Solid red (for dark background)"
-
-#: includes/trait-javascript-array.php:731
-msgid "Solid orange (for light background)"
-msgstr "Solid orange (for light background)"
-
-#: includes/trait-javascript-array.php:732
-msgid "Solid orange (for dark background)"
-msgstr "Solid orange (for dark background)"
-
-#: includes/trait-javascript-array.php:733
-msgid "Solid yellow (for light background)"
-msgstr "Solid yellow (for light background)"
-
-#: includes/trait-javascript-array.php:734
-msgid "Solid yellow (for dark background)"
-msgstr "Solid yellow (for dark background)"
-
-#: includes/trait-javascript-array.php:735
-msgid "Solid green (for light background)"
-msgstr "Solid green (for light background)"
-
-#: includes/trait-javascript-array.php:736
-msgid "Solid green (for dark background)"
-msgstr "Solid green (for dark background)"
-
-#: includes/trait-javascript-array.php:737
-msgid "Solid blue (for light background)"
-msgstr "Solid blue (for light background)"
-
-#: includes/trait-javascript-array.php:738
-msgid "Solid blue (for dark background)"
-msgstr "Solid blue (for dark background)"
-
-#: includes/trait-javascript-array.php:739
-msgid "Solid purple (for light background)"
-msgstr "Solid purple (for light background)"
-
-#: includes/trait-javascript-array.php:740
-msgid "Solid purple (for dark background)"
-msgstr "Solid purple (for dark background)"
-
-#: includes/trait-javascript-array.php:741
-msgid "Solid black (for light background)"
-msgstr "Solid black (for light background)"
-
-#: includes/trait-javascript-array.php:742
-msgid "Solid black (for dark background)"
-msgstr "Solid black (for dark background)"
-
-#: includes/trait-javascript-array.php:743
-msgid "Transparent (for light background)"
-msgstr "Transparent (for light background)"
-
-#: includes/trait-javascript-array.php:744
-msgid "Transparent (for dark background)"
-msgstr "Transparent (for dark background)"
-
-#: includes/trait-javascript-array.php:757
-#: includes/trait-javascript-array.php:800
-#: includes/trait-javascript-array.php:822
-#: includes/trait-javascript-array.php:1015
-#: includes/trait-javascript-array.php:1034
-#: includes/trait-javascript-array.php:1068
-#: includes/trait-javascript-array.php:1123
-msgid "None"
-msgstr "None"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:122
-msgid "Label"
-msgstr "Label"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:96
-msgid "Pointer"
-msgstr "Pointer"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:109
-msgid "Title"
-msgstr "Title"
-
-#: admin/partials/live-weather-station-admin-config-options.php:57
-msgid "Gauges boundaries"
-msgstr "Gauges boundaries"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:83
-msgid "Colors"
-msgstr "Colours"
-
-#: includes/trait-unit-description.php:816
-msgid "After 30 minutes"
-msgstr "After 30 minutes"
-
-#: includes/trait-unit-description.php:817
-msgid "After 1 hour"
-msgstr "After 1 hour"
-
-#: includes/trait-unit-description.php:818
-msgid "After 2 hours"
-msgstr "After 2 hours"
-
-#: includes/trait-unit-description.php:819
-msgid "After 4 hours"
-msgstr "After 4 hours"
-
-#: includes/trait-unit-description.php:820
-msgid "After 12 hours"
-msgstr "After 12 hours"
-
-#: includes/trait-unit-description.php:821
-msgid "After 24 hours"
-msgstr "After 24 hours"
-
-#: public/class-live-weather-station-public.php:110
-#: public/class-live-weather-station-public.php:135
-msgid "No data"
-msgstr "No data"
-
-#: public/partials/live-weather-station-widget-ephemeris-display.php:29
-msgid "Sunrise & sunset"
-msgstr "Sunrise & sunset"
-
-#: public/partials/live-weather-station-widget-ephemeris-display.php:52
-msgid "Moon"
-msgstr "Moon"
-
-#: public/partials/live-weather-station-widget-ephemeris-display.php:106
-msgid "Sun distance and angular size"
-msgstr "Sun distance and angular size"
-
-#: public/partials/live-weather-station-widget-ephemeris-display.php:129
-msgid "Moon illumination, phase & age"
-msgstr "Moon illumination, phase & age"
-
-#: public/partials/live-weather-station-widget-ephemeris-display.php:180
-msgid "Moon distance and angular size"
-msgstr "Moon distance and angular size"
-
-#. Plugin Name of the plugin/theme
-msgid "Live Weather Station"
-msgstr "Live Weather Station"
-
-#. Description of the plugin/theme
-msgid "Display, in many different and elegant ways, the meteorological data collected by your Netatmo weather station or coming from OpenWeatherMap."
-msgstr "Display, in many different and elegant ways, the meteorological data collected by your Netatmo weather station or coming from OpenWeatherMap."
-
-#: includes/trait-type-description.php:222
-#: public/partials/live-weather-station-widget-ephemeris-display.php:165
-msgid "Moonrise"
-msgstr "Moonrise"
-
-#: includes/trait-type-description.php:225
-#: public/partials/live-weather-station-widget-ephemeris-display.php:152
-msgid "Moonset"
-msgstr "Moonset"
-
-#: includes/trait-type-description.php:228
-msgid "Moon age"
-msgstr "Moon age"
-
-#: includes/trait-type-description.php:231
-msgid "Moon phase"
-msgstr "Moon phase"
-
-#: includes/trait-type-description.php:234
-msgid "Moon illumination"
-msgstr "Moon illumination"
-
-#: includes/trait-type-description.php:237
-msgid "Moon distance"
-msgstr "Moon distance"
-
-#: includes/trait-type-description.php:240
-msgid "Moon angular size"
-msgstr "Moon angular size"
-
-#: includes/trait-type-description.php:243
-msgid "Sun distance"
-msgstr "Sun distance"
-
-#: includes/trait-type-description.php:246
-msgid "Sun angular size"
-msgstr "Sun angular size"
-
-#: includes/trait-unit-description.php:217
-msgid "cm"
-msgstr "cm"
-
-#: includes/trait-unit-description.php:568
-msgid "mi"
-msgstr "mi"
-
-#: includes/trait-unit-description.php:571
-msgid "km"
-msgstr "km"
-
-#: includes/trait-unit-description.php:800
-msgid "Netatmo and OpenWeatherMap"
-msgstr "Netatmo and OpenWeatherMap"
-
-#: includes/trait-unit-description.php:801
-msgid "Only Netatmo"
-msgstr "Only Netatmo"
-
-#: includes/trait-unit-description.php:802
-msgid "Only OpenWeatherMap"
-msgstr "Only OpenWeatherMap"
-
-#: includes/trait-unit-description.php:815
-msgid "Never"
-msgstr "Never"
-
-#: includes/trait-javascript-array.php:266
-msgid "Measurement timestamp"
-msgstr "Measurement timestamp"
-
-#: includes/trait-javascript-array.php:268
-#: includes/trait-javascript-array.php:804
-#: includes/trait-javascript-array.php:807
-#: includes/trait-javascript-array.php:809
-msgid "Measurement type"
-msgstr "Measurement type"
-
-#: includes/trait-javascript-array.php:272
-#: includes/trait-javascript-array.php:279
-#: includes/trait-javascript-array.php:285
-#: includes/trait-javascript-array.php:288
-#: includes/trait-javascript-array.php:292
-#: includes/trait-javascript-array.php:296
-#: includes/trait-javascript-array.php:303
-#: includes/trait-javascript-array.php:309
-#: includes/trait-javascript-array.php:312
-msgid "Measurement value"
-msgstr "Measurement value"
-
-#: includes/trait-netatmo-client.php:53 includes/trait-netatmo-client.php:174
-msgid "Wrong credentials. Please, verify your login and password."
-msgstr "Wrong credentials. Please, verify your login and password."
-
-#: includes/trait-netatmo-client.php:181
-msgid "Application deactivated. Please contact support."
-msgstr "Application deactivated. Please contact support."
-
-#: includes/trait-netatmo-client.php:184
-msgid "Too many users with this IP."
-msgstr "Too many users with this IP."
-
-#: includes/trait-owm-current-client.php:90
-#: includes/trait-type-description.php:42
-msgid "[OpenWeatherMap Records]"
-msgstr "[OpenWeatherMap Records]"
-
-#: includes/trait-owm-current-client.php:189
-#: includes/trait-owm-pollution-client.php:184
-msgid "Wrong OpenWeatherMap API key."
-msgstr "Wrong OpenWeatherMap API key."
-
-#: includes/trait-owm-current-client.php:196
-#: includes/trait-owm-pollution-client.php:191
-msgid "Temporary unable to contact OpenWeatherMap servers. Retry will be done shortly."
-msgstr "Temporarily unable to contact OpenWeatherMap servers. Retry will be done shortly."
-
-#: includes/trait-schedules-manipulation.php:187
-msgid "Every fifteen minutes"
-msgstr "Every fifteen minutes"
-
-#: includes/trait-type-description.php:117
-msgid "Reference wind strength"
-msgstr "Reference wind strength"
-
-#: public/partials/live-weather-station-widget-outdoor-display.php:177
-msgid "Snowfall"
-msgstr "Snowfall"
-
-#: includes/trait-type-description.php:216
-#: public/partials/live-weather-station-widget-ephemeris-display.php:78
-msgid "Sunrise"
-msgstr "Sunrise"
-
-#: includes/trait-type-description.php:219
-#: public/partials/live-weather-station-widget-ephemeris-display.php:91
-msgid "Sunset"
-msgstr "Sunset"
-
-#: includes/trait-datetime-conversion.php:216
-msgid "hours"
-msgstr "hours"
-
-#: includes/trait-ephemeris-client.php:44
-#: includes/trait-type-description.php:51
-msgid "[Ephemeris]"
-msgstr "[Ephemeris]"
-
-#: includes/trait-javascript-array.php:101
-msgid "Elapsed or remaining approximative time"
-msgstr "Elapsed or remaining approximative time"
-
-#: includes/trait-javascript-array.php:184
-msgid "Abbreviation"
-msgstr "Abbreviation"
-
-#: includes/trait-datas-output.php:1955
-msgid "snow"
-msgstr "snow"
-
-#: includes/trait-datas-output.php:1987
-msgid "cloudiness"
-msgstr "cloudiness"
-
-#: includes/trait-datas-output.php:2162
-msgid "Northeast"
-msgstr "Northeast"
-
-#: includes/trait-datas-output.php:2166
-msgid "Southeast"
-msgstr "Southeast"
-
-#: includes/trait-datas-output.php:2170
-msgid "Southwest"
-msgstr "Southwest"
-
-#: includes/trait-datas-output.php:2174
-msgid "Northwest"
-msgstr "Northwest"
-
-#: includes/trait-datas-output.php:2329 includes/trait-datas-output.php:2337
-msgid "New Moon"
-msgstr "New Moon"
-
-#: includes/trait-datas-output.php:2330
-msgid "Waxing Crescent"
-msgstr "Waxing Crescent"
-
-#: includes/trait-datas-output.php:2331
-msgid "First Quarter"
-msgstr "First Quarter"
-
-#: includes/trait-datas-output.php:2332
-msgid "Waxing Gibbous"
-msgstr "Waxing Gibbous"
-
-#: includes/trait-datas-output.php:2333
-msgid "Full Moon"
-msgstr "Full Moon"
-
-#: includes/trait-datas-output.php:2334
-msgid "Waning Gibbous"
-msgstr "Waning Gibbous"
-
-#: includes/trait-datas-output.php:2335
-msgid "Third Quarter"
-msgstr "Third Quarter"
-
-#: includes/trait-datas-output.php:2336
-msgid "Waning Crescent"
-msgstr "Waning Crescent"
-
-#: includes/trait-datas-output.php:2653
-msgid "clouds"
-msgstr "clouds"
-
-#: includes/trait-datas-output.php:2754
-msgid "All data have been filtered: nothing to show"
-msgstr "All data have been filtered: nothing to show"
-
-#: includes/trait-datetime-conversion.php:106
-#: includes/trait-datetime-conversion.php:122
-msgid "in %s"
-msgstr "in %s"
-
-#: includes/trait-datetime-conversion.php:216
-msgid "days"
-msgstr "days"
-
-#: includes/class-owm-stations-list-table.php:32
-msgid "Verify on a map"
-msgstr "Verify on a map"
-
-#: includes/class-owm-stations-list-table.php:33
-#: includes/class-owm-stations-list-table.php:53
-msgid "Delete"
-msgstr "Delete"
-
-#: includes/class-live-weather-station-widget-ephemeris.php:38
-msgid "Display ephemeris for sun and moon at the location of a Netatmo and/or OpenWeatherMap weather station."
-msgstr "Display ephemeris for sun and moon at the location of a Netatmo and/or OpenWeatherMap weather station."
-
-#: includes/class-live-weather-station-widget-outdoor.php:41
-msgid "Display outdoor measurements of a Netatmo and/or OpenWeatherMap weather station."
-msgstr "Display outdoor measurements of a Netatmo and/or OpenWeatherMap weather station."
-
-#: includes/class-owm-stations-list-table.php:31
-msgid "Edit"
-msgstr "Edit"
-
-#: includes/class-live-weather-station-list-table.php:353
-msgid "Last page"
-msgstr "Last page"
-
-#: includes/class-live-weather-station-list-table.php:473
-msgid "Select All"
-msgstr "Select All"
-
-#: includes/class-live-weather-station-list-table.php:343
-msgid "Next page"
-msgstr "Next page"
-
-#: includes/class-live-weather-station-list-table.php:327
-#: includes/class-live-weather-station-list-table.php:330
-msgid "Current Page"
-msgstr "Current Page"
-
-#: includes/class-live-weather-station-list-table.php:336
-msgctxt "paging"
-msgid "%1$s of %2$s"
-msgstr "%1$s of %2$s"
-
-#: includes/class-live-weather-station-list-table.php:320
-msgid "Previous page"
-msgstr "Previous page"
-
-#: includes/class-live-weather-station-list-table.php:310
-msgid "First page"
-msgstr "First page"
-
-#: includes/class-live-weather-station-list-table.php:275
-#: includes/class-live-weather-station-list-table.php:657
-msgid "%s item"
-msgid_plural "%s items"
-msgstr[0] "%s item"
-msgstr[1] "%s items"
-
-#: includes/class-live-weather-station-list-table.php:223
-#: includes/class-live-weather-station-list-table.php:639
-msgid "Show more details"
-msgstr "Show more details"
-
+msgid "textual datas"
+msgstr "textual data"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:130
+msgid ""
+"This value is for illustration only and is not the precise value that will "
+"be computed at runtime."
+msgstr ""
+"This value is for illustration only and is not the precise value that will "
+"be computed at runtime."
+
+#: admin/partials/live-weather-station-admin-config-stations.php:25
+msgid "Location"
+msgstr "Location"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:26
+msgid "Geolocation informations found"
+msgstr "Geolocation informations found"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:26
+msgid "Geolocation informations not found"
+msgstr "Geolocation informations not found"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:31
+#: admin/partials/live-weather-station-admin-config-stations.php:57
+#: includes/trait-type-description.php:75
+msgid "Battery level"
+msgstr "Battery level"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:31
+msgid "WiFi signal"
+msgstr "WiFi signal"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:32
+msgid "Last seen on"
+msgstr "Last seen on"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:32
+msgid "at"
+msgstr "at"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:57
+msgid "Radio signal"
+msgstr "Radio signal"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:75
+msgid "OpenWeatherMap records"
+msgstr "OpenWeatherMap records"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:97
+msgid "OpenWeatherMap pollution"
+msgstr "OpenWeatherMap pollution"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:118
+msgid "Computed values"
+msgstr "Computed values"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:138
+#: includes/class-live-weather-station-widget-ephemeris.php:37
+msgid "Ephemeris"
+msgstr "Ephemeris"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:167
+msgid "Get shortcodes for "
+msgstr "Get shortcodes for "
+
+#: admin/partials/live-weather-station-admin-config-stations.php:180
+msgid "Get started"
+msgstr "Get started"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:186
+msgid ""
+"In order to display weather data, <strong><em>Live Weather Station</em></"
+"strong> must be connected to your Netatmo account and/or it must have a "
+"valid OpenWeatherMap API key...<br/><strong>If you have a Netatmo weather "
+"station</strong> (or have access to some friends stations) please enter your "
+"Netatmo login and password in the \"Settings\" box. <em>Note that, in "
+"accordance with the manufacturer recommendations, these credentials will not "
+"be stored in your WordPress site.</em><br/><strong>If you do not have a "
+"Netatmo account</strong> or if you want to enhance the rendedred datas of "
+"your Netatmo station, you must <a href=\"http://openweathermap.org/appid\" "
+"target=\"_blank\">get a free OpenWeatherMap API key</a> and paste it in the "
+"\"Settings\" box."
+msgstr ""
+"In order to display weather data, <strong><em>Live Weather Station</em></"
+"strong> must be connected to your Netatmo account and/or it must have a "
+"valid OpenWeatherMap API key...<br/><strong>If you have a Netatmo weather "
+"station</strong> (or have access to some friends' stations) please enter "
+"your Netatmo login and password in the \"Settings\" box. <em>Note that, in "
+"accordance with the manufacturer's recommendations, these credentials will "
+"not be stored in your WordPress site.</em><br/><strong>If you do not have a "
+"Netatmo account</strong> or if you want to enhance the rendered data of your "
+"Netatmo station, you must <a href=\"http://openweathermap.org/appid\" target="
+"\"_blank\">get a free OpenWeatherMap API key</a> and paste it in the "
+"\"Settings\" box."
+
+#: admin/partials/live-weather-station-admin-config-stations.php:191
+msgid "There is no Netatmo weather station associated with your account."
+msgstr "There is no Netatmo weather station associated with your account."
+
+#: admin/partials/live-weather-station-admin-config-stations.php:196
+msgid ""
+"You have not created any OpenWeatherMap station at the moment, this is why "
+"nothing appears here. To add your first station, visit"
+msgstr ""
+"You have not created any OpenWeatherMap station at the moment, this is why "
+"nothing appears here. To add your first station, visit"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:196
+msgid "the stations management page"
+msgstr "the stations' management page"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:201
+msgid ""
+"To see data from OpenWeatherMap stations, you must choose another collection "
+"mode in the \"Options\" box."
+msgstr ""
+"To see data from OpenWeatherMap stations, you must choose another collection "
+"mode in the \"Options\" box."
+
+#: admin/partials/live-weather-station-admin-config-summary.php:12
+msgid "Summary"
+msgstr "Summary"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:18
+#: admin/partials/live-weather-station-admin-config-summary.php:31
+msgid "Netatmo status"
+msgstr "Netatmo status"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:20
+#: admin/partials/live-weather-station-admin-config-summary.php:55
+msgid "Up and running"
+msgstr "Up and running"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:20
+#: admin/partials/live-weather-station-admin-config-summary.php:55
+msgid "Connected but inactive"
+msgstr "Connected but inactive"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:20
+#: admin/partials/live-weather-station-admin-config-summary.php:55
+msgid "disconnect"
+msgstr "disconnect"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:20
+#: admin/partials/live-weather-station-admin-config-summary.php:55
+msgid "or"
+msgstr "or"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:20
+msgid "manage related services"
+msgstr "manage related services"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:24
+msgid "Netatmo warning"
+msgstr "Netatmo warning"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:33
+#: admin/partials/live-weather-station-admin-config-summary.php:49
+#: admin/partials/live-weather-station-admin-config-summary.php:69
+msgid "Not connected"
+msgstr "Not connected"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:37
+msgid "Netatmo error"
+msgstr "Netatmo error"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:47
+#: admin/partials/live-weather-station-admin-config-summary.php:53
+#: admin/partials/live-weather-station-admin-config-summary.php:67
+msgid "OWM status"
+msgstr "OWM status"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:55
+msgid "manage stations"
+msgstr "manage stations"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:60
+msgid "OWM warning"
+msgstr "OWM warning"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:72
+msgid "OWM error"
+msgstr "OWM error"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:78
+msgid "Version"
+msgstr "Version"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:84
+msgid "PHP warning"
+msgstr "PHP warning"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:86
+msgid ""
+"Internationalisation extension is not installed. You can not manage OWM "
+"stations..."
+msgstr ""
+"Internationalisation extension is not installed. You cannot manage OWM "
+"stations..."
+
+#: admin/partials/live-weather-station-admin-delete-owm.php:12
+msgid "Deleteting OpenWeatherMap stations"
+msgstr "Deleting OpenWeatherMap stations"
+
+#: admin/partials/live-weather-station-admin-delete-owm.php:20
+msgid "You have chosen to delete this station:"
+msgstr "You have chosen to delete this station:"
+
+#: admin/partials/live-weather-station-admin-delete-owm.php:22
+msgid "You have chosen to remove these stations:"
+msgstr "You have chosen to remove these stations:"
+
+#: admin/partials/live-weather-station-admin-delete-owm.php:29
+msgid "Confirm Delete"
+msgstr "Confirm Delete"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:11
+msgid "Manage services for"
+msgstr "Manage services for"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:14
+msgid ""
+"Some services could not be activated. See details in the following "
+"sections..."
+msgstr ""
+"Some services could not be activated. See details in the following "
+"sections..."
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:16
+msgid ""
+"You can participate in the dissemination and sharing of data collected by "
+"your Netatmo weather station by enabling Live Weather Station to send, every "
+"10 minutes, outdoor data<sup>*</sup> like temperature, pressure, humidity, "
+"dew point, wind and rain to the following services. To obtain help for each "
+"service, please click on logos."
+msgstr ""
+"You can participate in the dissemination and sharing of data collected by "
+"your Netatmo weather station by enabling Live Weather Station to send, every "
+"10 minutes, outdoor data<sup>*</sup> like temperature, pressure, humidity, "
+"dew point, wind and rain to the following services. To obtain help for each "
+"service, please click on logos."
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:17
+msgid ""
+"Note that no data from inside your home (noise, temperature, CO₂ ...) are "
+"transmitted to these services."
+msgstr ""
+"Note that no data from inside your home (noise, temperature, CO₂ ...) are "
+"transmitted to these services."
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:26
+msgid ""
+"To obtain Site ID and AWS 6-digit PIN from Met Office please, follow these "
+"steps:"
+msgstr ""
+"To obtain Site ID and AWS 6-digit PIN from the Met Office, please follow "
+"these steps:"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:28
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:58
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:88
+msgid "Create an account"
+msgstr "Create an account"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:28
+msgid "on the Weather Observations Website from Met Office"
+msgstr "on the Weather Observations Website from Met Office"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:29
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:59
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:89
+msgid "After registration, log in and"
+msgstr "After registration, log in and"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:29
+msgid "create a site"
+msgstr "create a site"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:30
+msgid ""
+"Then, copy and paste <em>Site ID</em> and <em>AWS 6-digit PIN</em> in the "
+"following fields, and activate push."
+msgstr ""
+"Then, copy and paste <em>Site ID</em> and <em>AWS 6-digit PIN</em> in the "
+"following fields, and activate push."
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:32
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:62
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:92
+msgid "After a few hours you'll get something"
+msgstr "After a few hours you'll get something"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:32
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:62
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:92
+msgid "like this!"
+msgstr "like this!"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:36
+msgid ""
+"Unable to activate this service. Met Office servers have returned the "
+"following error:"
+msgstr ""
+"Unable to activate this service. Met Office servers have returned the "
+"following error:"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:47
+msgid "Push data to Met Office"
+msgstr "Push data to Met Office"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:56
+msgid "To obtain Station ID from PWS please, follow these steps:"
+msgstr "To obtain Station ID from PWS please, follow these steps:"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:58
+msgid "on the PWS website"
+msgstr "on the PWS website"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:59
+msgid "add a new station"
+msgstr "add a new station"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:60
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:90
+msgid ""
+"Then, copy and paste <em>Station ID</em> in the corresponding following "
+"field, set your password and activate push."
+msgstr ""
+"Then, copy and paste <em>Station ID</em> in the corresponding following "
+"field, set your password and activate push."
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:66
+msgid ""
+"Unable to activate this service. PWS servers have returned the following "
+"error:"
+msgstr ""
+"Unable to activate this service. PWS servers have returned the following "
+"error:"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:77
+msgid "Push data to PWS"
+msgstr "Push data to PWS"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:86
+msgid ""
+"To obtain Station ID from Weather Underground please, follow these steps:"
+msgstr ""
+"To obtain the Station ID from Weather Underground, please follow these steps:"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:88
+msgid "on the Weather Underground website"
+msgstr "on the Weather Underground website"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:89
+msgid "add a new station by following the 4 steps registration form"
+msgstr "add a new station by following the 4 steps registration form"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:96
+msgid ""
+"Unable to activate this service. Weather Underground servers have returned "
+"the following error:"
+msgstr ""
+"Unable to activate this service. Weather Underground servers have returned "
+"the following error:"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:107
+msgid "Push data to Weather Underground"
+msgstr "Push data to Weather Underground"
+
+#: admin/partials/live-weather-station-admin-list-logs-bottom.php:11
+msgid "Number of lines to display"
+msgstr "Number of lines to display"
+
+#: admin/partials/live-weather-station-admin-list-logs-bottom.php:17
+#: admin/partials/live-weather-station-admin-list-logs-top.php:29
 #: includes/class-live-weather-station-list-table.php:193
 msgid "Apply"
 msgstr "Apply"
 
-#: includes/class-live-weather-station-list-table.php:183
-msgid "Bulk Actions"
-msgstr "Bulk Actions"
+#: admin/partials/live-weather-station-admin-list-logs-top.php:11
+msgid "Filter systems to display"
+msgstr "Filter systems to display"
 
-#: includes/class-live-weather-station-list-table.php:181
-msgid "Select bulk action"
-msgstr "Select bulk action"
+#: admin/partials/live-weather-station-admin-list-logs-top.php:17
+msgid "Filter services to display"
+msgstr "Filter services to display"
 
-#: includes/class-live-weather-station-list-table.php:57
-msgid "Excerpt View"
-msgstr "Excerpt View"
+#: admin/partials/live-weather-station-admin-list-logs-top.php:23
+msgid "Filter stations to display"
+msgstr "Filter stations to display"
 
-#: includes/class-live-weather-station-list-table.php:124
-msgid "No items found."
-msgstr "No items found."
+#: admin/partials/live-weather-station-admin-list-logs.php:16
+msgid "Events log"
+msgstr "Events log"
+
+#: admin/partials/live-weather-station-admin-manage-netatmo.php:16
+msgid "Netatmo stations"
+msgstr "Netatmo stations"
+
+#: admin/partials/live-weather-station-admin-manage-owm.php:13
+msgid "Add"
+msgstr "Add"
+
+#: admin/partials/live-weather-station-admin-manage-owm.php:17
+msgid "OpenWeatherMap stations"
+msgstr "OpenWeatherMap stations"
+
+#: admin/partials/live-weather-station-admin-view-log.php:21
+msgid "Timestamp"
+msgstr "Timestamp"
+
+#: admin/partials/live-weather-station-admin-view-log.php:23
+msgid "System"
+msgstr "System"
+
+#: admin/partials/live-weather-station-admin-view-log.php:25
+#: includes/class-log-list-table.php:95
+msgid "Service"
+msgstr "Service"
+
+#: admin/partials/live-weather-station-admin-view-log.php:28
+#: includes/class-log-list-table.php:96
+#: includes/class-netatmo-stations-list-table.php:42
+#: includes/class-owm-stations-list-table.php:44
+msgid "Station"
+msgstr "Station"
+
+#: admin/partials/live-weather-station-admin-view-log.php:33
+msgid "Error code"
+msgstr "Error code"
+
+#: admin/partials/live-weather-station-admin-view-log.php:35
+msgid "Full message"
+msgstr "Full message"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:10
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:10
+msgid "Station to display"
+msgstr "Station to display"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:20
+msgid "Compact"
+msgstr "Compact"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:21
+msgid "Standard"
+msgstr "Standard"
 
 #: admin/partials/live-weather-station-widget-ephemeris-settings.php:22
 msgid "Extended"
 msgstr "Extended"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:26
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:65
+msgid "Displayed name"
+msgstr "Displayed name"
 
 #: admin/partials/live-weather-station-widget-ephemeris-settings.php:30
 #: admin/partials/live-weather-station-widget-outdoor-settings.php:69
@@ -1759,595 +1034,6 @@ msgstr "Station coordinates (if known)"
 #: admin/partials/live-weather-station-widget-outdoor-settings.php:77
 msgid "Max width (in px)"
 msgstr "Max width (in px)"
-
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:19
-msgid "Display current weather conditions (if available)"
-msgstr "Display current weather conditions (if available)"
-
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:34
-msgid "Display snowfall (if available)"
-msgstr "Display snowfall (if available)"
-
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:40
-msgid "Display cloud cover (if available)"
-msgstr "Display cloud cover (if available)"
-
-#: includes/class-live-weather-station-list-table.php:56
-msgid "List View"
-msgstr "List View"
-
-#: admin/partials/live-weather-station-admin-manage-owm.php:17
-msgid "OpenWeatherMap stations"
-msgstr "OpenWeatherMap stations"
-
-#: admin/partials/live-weather-station-widget-ephemeris-settings.php:20
-msgid "Compact"
-msgstr "Compact"
-
-#: admin/partials/live-weather-station-widget-ephemeris-settings.php:21
-msgid "Standard"
-msgstr "Standard"
-
-#: admin/partials/live-weather-station-admin-config-summary.php:55
-msgid "manage stations"
-msgstr "manage stations"
-
-#: admin/partials/live-weather-station-admin-config-summary.php:60
-msgid "OWM warning"
-msgstr "OWM warning"
-
-#: admin/partials/live-weather-station-admin-config-summary.php:72
-msgid "OWM error"
-msgstr "OWM error"
-
-#: admin/partials/live-weather-station-admin-delete-owm.php:12
-msgid "Deleteting OpenWeatherMap stations"
-msgstr "Deleting OpenWeatherMap stations"
-
-#: admin/partials/live-weather-station-admin-delete-owm.php:20
-msgid "You have chosen to delete this station:"
-msgstr "You have chosen to delete this station:"
-
-#: admin/partials/live-weather-station-admin-delete-owm.php:22
-msgid "You have chosen to remove these stations:"
-msgstr "You have chosen to remove these stations:"
-
-#: admin/partials/live-weather-station-admin-delete-owm.php:29
-msgid "Confirm Delete"
-msgstr "Confirm Delete"
-
-#: admin/partials/live-weather-station-admin-manage-owm.php:13
-msgid "Add"
-msgstr "Add"
-
-#: admin/partials/live-weather-station-admin-config-options.php:18
-msgid "Collected data"
-msgstr "Collected data"
-
-#: admin/partials/live-weather-station-admin-config-options.php:44
-msgid "Data obsolescence"
-msgstr "Data obsolescence"
-
-#: admin/partials/live-weather-station-admin-config-stations.php:75
-msgid "OpenWeatherMap records"
-msgstr "OpenWeatherMap records"
-
-#: admin/partials/live-weather-station-admin-config-stations.php:118
-msgid "Computed values"
-msgstr "Computed values"
-
-#: admin/partials/live-weather-station-admin-config-stations.php:138
-#: includes/class-live-weather-station-widget-ephemeris.php:37
-msgid "Ephemeris"
-msgstr "Ephemeris"
-
-#: admin/partials/live-weather-station-admin-config-stations.php:180
-msgid "Get started"
-msgstr "Get started"
-
-#: admin/partials/live-weather-station-admin-config-stations.php:186
-msgid "In order to display weather data, <strong><em>Live Weather Station</em></strong> must be connected to your Netatmo account and/or it must have a valid OpenWeatherMap API key...<br/><strong>If you have a Netatmo weather station</strong> (or have access to some friends stations) please enter your Netatmo login and password in the \"Settings\" box. <em>Note that, in accordance with the manufacturer recommendations, these credentials will not be stored in your WordPress site.</em><br/><strong>If you do not have a Netatmo account</strong> or if you want to enhance the rendedred datas of your Netatmo station, you must <a href=\"http://openweathermap.org/appid\" target=\"_blank\">get a free OpenWeatherMap API key</a> and paste it in the \"Settings\" box."
-msgstr "In order to display weather data, <strong><em>Live Weather Station</em></strong> must be connected to your Netatmo account and/or it must have a valid OpenWeatherMap API key...<br/><strong>If you have a Netatmo weather station</strong> (or have access to some friends' stations) please enter your Netatmo login and password in the \"Settings\" box. <em>Note that, in accordance with the manufacturer's recommendations, these credentials will not be stored in your WordPress site.</em><br/><strong>If you do not have a Netatmo account</strong> or if you want to enhance the rendered data of your Netatmo station, you must <a href=\"http://openweathermap.org/appid\" target=\"_blank\">get a free OpenWeatherMap API key</a> and paste it in the \"Settings\" box."
-
-#: admin/partials/live-weather-station-admin-config-stations.php:191
-msgid "There is no Netatmo weather station associated with your account."
-msgstr "There is no Netatmo weather station associated with your account."
-
-#: admin/partials/live-weather-station-admin-config-stations.php:196
-msgid "You have not created any OpenWeatherMap station at the moment, this is why nothing appears here. To add your first station, visit"
-msgstr "You have not created any OpenWeatherMap station at the moment, this is why nothing appears here. To add your first station, visit"
-
-#: admin/partials/live-weather-station-admin-config-stations.php:196
-msgid "the stations management page"
-msgstr "the stations' management page"
-
-#: admin/partials/live-weather-station-admin-config-stations.php:201
-msgid "To see data from OpenWeatherMap stations, you must choose another collection mode in the \"Options\" box."
-msgstr "To see data from OpenWeatherMap stations, you must choose another collection mode in the \"Options\" box."
-
-#: admin/partials/live-weather-station-admin-config-summary.php:18
-#: admin/partials/live-weather-station-admin-config-summary.php:31
-msgid "Netatmo status"
-msgstr "Netatmo status"
-
-#: admin/partials/live-weather-station-admin-config-summary.php:20
-#: admin/partials/live-weather-station-admin-config-summary.php:55
-msgid "Connected but inactive"
-msgstr "Connected but inactive"
-
-#: admin/partials/live-weather-station-admin-config-summary.php:20
-#: admin/partials/live-weather-station-admin-config-summary.php:55
-msgid "disconnect"
-msgstr "disconnect"
-
-#: admin/partials/live-weather-station-admin-config-summary.php:24
-msgid "Netatmo warning"
-msgstr "Netatmo warning"
-
-#: admin/partials/live-weather-station-admin-config-summary.php:37
-msgid "Netatmo error"
-msgstr "Netatmo error"
-
-#: admin/partials/live-weather-station-admin-config-summary.php:47
-#: admin/partials/live-weather-station-admin-config-summary.php:53
-#: admin/partials/live-weather-station-admin-config-summary.php:67
-msgid "OWM status"
-msgstr "OWM status"
-
-#: admin/partials/live-weather-station-admin-config-summary.php:20
-#: admin/partials/live-weather-station-admin-config-summary.php:55
-msgid "or"
-msgstr "or"
-
-#: admin/partials/live-weather-station-admin-config-about.php:50
-msgid "All meteorological data provided by OpenWeatherMap are distributed under the terms of the <a href=\"http://creativecommons.org/licenses/by-sa/4.0/\" target=\"_blank\">Creative Commons CC:BY-SA 4.0 license</a>."
-msgstr "All meteorological data provided by OpenWeatherMap are distributed under the terms of the <a href=\"http://creativecommons.org/licenses/by-sa/4.0/\" target=\"_blank\">Creative Commons CC:BY-SA 4.0 licence</a>."
-
-#: admin/partials/live-weather-station-admin-config-accounts-settings.php:36
-msgid "OpenWeatherMap key"
-msgstr "OpenWeatherMap key"
-
-#: admin/partials/live-weather-station-admin-config-accounts-settings.php:49
-msgid "Connect"
-msgstr "Connect"
-
-#: admin/partials/live-weather-station-admin-config-options.php:12
-msgid "Options"
-msgstr "Options"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:48
-#: admin/partials/live-weather-station-admin-config-stations.php:28
-#: includes/trait-type-description.php:207
-msgid "Time zone"
-msgstr "Time zone"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:83
-msgid "Altitude (in meters)"
-msgstr "Altitude (in metres)"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:88
-msgid "If you know the exact coordinates of this location, enter them here. Otherwise, we will try to find them for you..."
-msgstr "If you know the exact coordinates of this location, enter them here. Otherwise, we will try to find them for you..."
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:91
-msgid "Despite our best efforts, we were unable to find the coordinates of this location. Please, enter them here - or try an other location:"
-msgstr "Despite our best efforts, we were unable to find the coordinates of this location. Please enter them here - or try an other location:"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:95
-msgid "The coordinates you have entered are not valid. Please, retry or left blank:"
-msgstr "The coordinates you have entered are not valid. Please retry or leave blank:"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:102
-msgid "(eg 49.85)"
-msgstr "(e.g. 49.85)"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:106
-msgid "(eg -1.6)"
-msgstr "(e.g. -1.6)"
-
-#: admin/partials/live-weather-station-admin-config-about.php:44
-msgid "<em>Live Weather Station</em> is a free and open source plugin for WordPress. It integrates other free and open source works (as-is or modified) like Weather Icons project by Erik Flowers, EnzoJS and SteelSeries by Gerrit Grunwald, JustGage by Bojan Đuričić, OpenWeatherMap PHP API by Christian Flach, phpcolors by Arlo Carreon, moonrise/moonset calculation from Matt \"dxprog\" Hackmann and moon phase calculation from Samir Shah."
-msgstr "<em>Live Weather Station</em> is a free and open source plugin for WordPress. It integrates other free and open source works (as-is or modified) like the Weather Icons project by Erik Flowers, EnzoJS and SteelSeries by Gerrit Grunwald, JustGage by Bojan Đuričić, OpenWeatherMap PHP API by Christian Flach, phpcolors by Arlo Carreon, moonrise/moonset calculation from Matt \"dxprog\" Hackmann and moon phase calculation from Samir Shah."
-
-#: admin/partials/live-weather-station-admin-config-about.php:47
-msgid "Data"
-msgstr "Data"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:34
-msgid "City"
-msgstr "City"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:38
-msgid "Country"
-msgstr "Country"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:9
-msgid "verify on a map"
-msgstr "verify on a map"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:10
-msgid "Here are the coordinates we've found %s. You can confirm it by clicking again on the button <em>%s</em>!"
-msgstr "Here are the coordinates we've found %s. You can confirm it by clicking again on the button <em>%s</em>!"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:10
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:112
-msgid "Add This Station"
-msgstr "Add This Station"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:18
-msgid "Add an OpenWeatherMap station"
-msgstr "Add an OpenWeatherMap station"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:21
-msgid "Edit an OpenWeatherMap station"
-msgstr "Edit an OpenWeatherMap station"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:24
-msgid "Some required fields are missing!"
-msgstr "Some required fields are missing!"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:30
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:34
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:38
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:48
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:83
-msgid "(required)"
-msgstr "(required)"
-
-#: includes/trait-datas-output.php:2173
-msgid "West-Northwest"
-msgstr "West-Northwest"
-
-#: includes/trait-datas-output.php:2175
-msgid "North-Northwest"
-msgstr "North-Northwest"
-
-#: public/partials/live-weather-station-widget-outdoor-display.php:103
-#: public/partials/live-weather-station-widget-outdoor-display.php:125
-msgid "Wind from"
-msgstr "Wind from"
-
-#: admin/partials/live-weather-station-admin-config-about.php:32
-msgid "If you want to help to translate this plugin, you can do it with  <a href=\"https://translate.wordpress.org/projects/wp-plugins/live-weather-station\">GlotPress</a> (please, use the 'stable' column)."
-msgstr "If you want to help to translate this plugin, you can do it with  <a href=\"https://translate.wordpress.org/projects/wp-plugins/live-weather-station\">GlotPress</a> (please use the 'stable' column)."
-
-#: admin/partials/live-weather-station-admin-config-about.php:35
-msgid "Thanks to"
-msgstr "Thanks to"
-
-#: admin/partials/live-weather-station-admin-config-about.php:38
-msgid "<a href=\"https://twitter.com/cyril_lakech\">Cyril Lakech</a>, for its tools and its reactivity and <a href=\"https://profiles.wordpress.org/bergjet\">Martin Punz</a> for tests and kindness from Austria."
-msgstr "<a href=\"https://twitter.com/cyril_lakech\">Cyril Lakech</a>, for his tools and reactivity, and <a href=\"https://profiles.wordpress.org/bergjet\">Martin Punz</a> for tests and kindness from Austria."
-
-#: includes/trait-datas-output.php:2160 includes/trait-datas-output.php:2176
-msgid "North"
-msgstr "North"
-
-#: includes/trait-datas-output.php:2161
-msgid "North-Northeast"
-msgstr "North-Northeast"
-
-#: includes/trait-datas-output.php:2163
-msgid "East-Northeast"
-msgstr "East-Northeast"
-
-#: includes/trait-datas-output.php:2164
-msgid "East"
-msgstr "East"
-
-#: includes/trait-datas-output.php:2165
-msgid "East-Southeast"
-msgstr "East-Southeast"
-
-#: includes/trait-datas-output.php:2167
-msgid "South-Southeast"
-msgstr "South-Southeast"
-
-#: includes/trait-datas-output.php:2168
-msgid "South"
-msgstr "South"
-
-#: includes/trait-datas-output.php:2169
-msgid "South-Southwest"
-msgstr "South-Southwest"
-
-#: includes/trait-datas-output.php:2171
-msgid "West-Southwest"
-msgstr "West-Southwest"
-
-#: includes/trait-datas-output.php:2172
-msgid "West"
-msgstr "West"
-
-#: admin/partials/live-weather-station-admin-config-about.php:26
-msgid "Is <em>Live Weather Station</em> helpful? I would be pleased that you <a href=\"https://wordpress.org/support/view/plugin-reviews/live-weather-station\">write a review</a>."
-msgstr "Is <em>Live Weather Station</em> helpful? I would be pleased if you could <a href=\"https://wordpress.org/support/view/plugin-reviews/live-weather-station\">write a review</a>."
-
-#: admin/partials/live-weather-station-admin-config-about.php:29
-msgid "Translations"
-msgstr "Translations"
-
-#: admin/partials/live-weather-station-admin-config-about.php:20
-msgid "You can find help and explanation about this plugin on <a href=\"https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/\">this page</a>."
-msgstr "You can find help and explanations about this plugin on <a href=\"https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/\">this page</a>."
-
-#: admin/partials/live-weather-station-admin-config-about.php:23
-msgid "Plugin"
-msgstr "Plugin"
-
-#: admin/partials/live-weather-station-admin-config-about.php:17
-msgid "Help"
-msgstr "Help"
-
-#: admin/partials/live-weather-station-admin-config-about.php:12
-#: admin/partials/live-weather-station-admin-config-about.php:41
-msgid "About"
-msgstr "About"
-
-#: admin/class-live-weather-station-admin.php:106
-#: admin/partials/live-weather-station-admin-config-accounts-settings.php:13
-msgid "Settings"
-msgstr "Settings"
-
-#: admin/partials/live-weather-station-admin-config-about.php:11
-#: admin/partials/live-weather-station-admin-config-accounts-settings.php:12
-#: admin/partials/live-weather-station-admin-config-options.php:11
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:14
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:41
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:154
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:167
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:14
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:41
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:310
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:330
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:14
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:41
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:196
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:209
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:14
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:41
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:641
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:654
-#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:14
-#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:124
-#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:135
-#: admin/partials/live-weather-station-admin-config-stations.php:14
-#: admin/partials/live-weather-station-admin-config-stations.php:179
-#: admin/partials/live-weather-station-admin-config-summary.php:11
-msgid "Click to toggle"
-msgstr "Click to toggle"
-
-#: admin/partials/live-weather-station-admin-config-options.php:31
-msgid "Live controls displays"
-msgstr "Live controls displays"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:10
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:115
-#: admin/partials/live-weather-station-admin-config-options.php:186
-#: admin/partials/live-weather-station-admin-edit-netatmo.php:113
-msgid "Save Changes"
-msgstr "Save Changes"
-
-#: admin/partials/live-weather-station-admin-config-accounts-settings.php:20
-msgid "Netatmo login"
-msgstr "Netatmo login"
-
-#: admin/partials/live-weather-station-admin-config-accounts-settings.php:27
-msgid "Netatmo password"
-msgstr "Netatmo password"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:42
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:42
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:42
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:42
-#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:15
-msgid "1. Set parameters for the shortcode"
-msgstr "1. Set parameters for the shortcode"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:47
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:47
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:47
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:47
-#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:20
-msgid "Module"
-msgstr "Module"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:60
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:60
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:60
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:60
-#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:33
-msgid "Measurement"
-msgstr "Measurement"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:70
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:70
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:70
-msgid "Design"
-msgstr "Design"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:148
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:83
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:279
-#: includes/trait-type-description.php:240
-#: includes/trait-type-description.php:246
-msgid "Size"
-msgstr "Size"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:96
-msgid "Speed"
-msgstr "Speed"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:27
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:103
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:27
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:180
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:27
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:141
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:27
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:311
-#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:77
-msgid "Shortcodes for"
-msgstr "Shortcodes for"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:27
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:141
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:188
-#: admin/partials/live-weather-station-admin-config-stations.php:168
-msgid "LCD display"
-msgstr "LCD display"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:155
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:331
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:197
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:642
-#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:125
-msgid "2. Verify the generated output"
-msgstr "2. Verify the generated output"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:355
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:203
-msgid "This controls will be dynamically resized to fit its parent's size."
-msgstr "This control will be dynamically resized to fit its parent's size."
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:168
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:311
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:210
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:655
-#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:136
-msgid "3. Copy the following shortcode"
-msgstr "3. Copy the following shortcode"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:177
-#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:320
-#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:219
-#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:664
-#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:145
-msgid "Copy"
-msgstr "Copy"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:70
-#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:43
-msgid "Element"
-msgstr "Element"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:80
-#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:53
-#: admin/partials/live-weather-station-widget-ephemeris-settings.php:18
-msgid "Format"
-msgstr "Format"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:77
-#: admin/partials/live-weather-station-admin-config-stations.php:168
-msgid "textual datas"
-msgstr "textual data"
-
-#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:130
-msgid "This value is for illustration only and is not the precise value that will be computed at runtime."
-msgstr "This value is for illustration only and is not the precise value that will be computed at runtime."
-
-#: admin/partials/live-weather-station-admin-config-stations.php:25
-msgid "Location"
-msgstr "Location"
-
-#: admin/partials/live-weather-station-admin-config-stations.php:31
-#: admin/partials/live-weather-station-admin-config-stations.php:57
-#: includes/trait-type-description.php:75
-msgid "Battery level"
-msgstr "Battery level"
-
-#: admin/partials/live-weather-station-admin-config-stations.php:31
-msgid "WiFi signal"
-msgstr "WiFi signal"
-
-#: admin/partials/live-weather-station-admin-config-stations.php:32
-msgid "Last seen on"
-msgstr "Last seen on"
-
-#: admin/partials/live-weather-station-admin-config-stations.php:32
-msgid "at"
-msgstr "at"
-
-#: admin/partials/live-weather-station-admin-config-stations.php:57
-msgid "Radio signal"
-msgstr "Radio signal"
-
-#: admin/partials/live-weather-station-admin-config-stations.php:167
-msgid "Get shortcodes for "
-msgstr "Get shortcodes for "
-
-#: admin/partials/live-weather-station-admin-config-summary.php:12
-msgid "Summary"
-msgstr "Summary"
-
-#: admin/partials/live-weather-station-admin-config-summary.php:20
-#: admin/partials/live-weather-station-admin-config-summary.php:55
-msgid "Up and running"
-msgstr "Up and running"
-
-#: admin/partials/live-weather-station-admin-config-summary.php:33
-#: admin/partials/live-weather-station-admin-config-summary.php:49
-#: admin/partials/live-weather-station-admin-config-summary.php:69
-msgid "Not connected"
-msgstr "Not connected"
-
-#: admin/partials/live-weather-station-admin-config-summary.php:78
-msgid "Version"
-msgstr "Version"
-
-#: admin/partials/live-weather-station-widget-ephemeris-settings.php:10
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:10
-msgid "Station to display"
-msgstr "Station to display"
-
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:22
-msgid "Display temperatures (if available)"
-msgstr "Display temperatures (if available)"
-
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:25
-msgid "Display atmospheric pressure (if available)"
-msgstr "Display atmospheric pressure (if available)"
-
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:28
-msgid "Display humidity (if available)"
-msgstr "Display humidity (if available)"
-
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:31
-msgid "Display rainfall (if available)"
-msgstr "Display rainfall (if available)"
-
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:37
-msgid "Display wind (if available)"
-msgstr "Display wind (if available)"
-
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:43
-msgid "Display cloud base altitude (if available)"
-msgstr "Display cloud base altitude (if available)"
-
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:46
-msgid "Display dew point (if available)"
-msgstr "Display dew point (if available)"
-
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:49
-msgid "Display frost point (if available)"
-msgstr "Display frost point (if available)"
-
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:52
-msgid "Display heat index (if available)"
-msgstr "Display heat index (if available)"
-
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:55
-msgid "Display humidex (if available)"
-msgstr "Display humidex (if available)"
-
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:58
-msgid "Display wind chill (if available)"
-msgstr "Display wind chill (if available)"
-
-#: admin/partials/live-weather-station-widget-ephemeris-settings.php:26
-#: admin/partials/live-weather-station-widget-outdoor-settings.php:65
-msgid "Displayed name"
-msgstr "Displayed name"
 
 #: admin/partials/live-weather-station-widget-ephemeris-settings.php:42
 #: admin/partials/live-weather-station-widget-outdoor-settings.php:81
@@ -2379,23 +1065,310 @@ msgstr "Show tooltips"
 msgid "Flat design"
 msgstr "Flat design"
 
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:19
+msgid "Display current weather conditions (if available)"
+msgstr "Display current weather conditions (if available)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:22
+msgid "Display temperatures (if available)"
+msgstr "Display temperatures (if available)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:25
+msgid "Display atmospheric pressure (if available)"
+msgstr "Display atmospheric pressure (if available)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:28
+msgid "Display humidity (if available)"
+msgstr "Display humidity (if available)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:31
+msgid "Display rainfall (if available)"
+msgstr "Display rainfall (if available)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:34
+msgid "Display snowfall (if available)"
+msgstr "Display snowfall (if available)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:37
+msgid "Display wind (if available)"
+msgstr "Display wind (if available)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:40
+msgid "Display cloud cover (if available)"
+msgstr "Display cloud cover (if available)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:43
+msgid "Display cloud base altitude (if available)"
+msgstr "Display cloud base altitude (if available)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:46
+msgid "Display dew point (if available)"
+msgstr "Display dew point (if available)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:49
+msgid "Display frost point (if available)"
+msgstr "Display frost point (if available)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:52
+msgid "Display heat index (if available)"
+msgstr "Display heat index (if available)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:55
+msgid "Display humidex (if available)"
+msgstr "Display humidex (if available)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:58
+msgid "Display wind chill (if available)"
+msgstr "Display wind chill (if available)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:61
+msgid "Hide obsolete measurements"
+msgstr "Hide obsolete measurements"
+
+#: includes/class-live-weather-station-list-table.php:56
+msgid "List View"
+msgstr "List View"
+
+#: includes/class-live-weather-station-list-table.php:57
+msgid "Excerpt View"
+msgstr "Excerpt View"
+
+#: includes/class-live-weather-station-list-table.php:124
+msgid "No items found."
+msgstr "No items found."
+
+#: includes/class-live-weather-station-list-table.php:181
+msgid "Select bulk action"
+msgstr "Select bulk action"
+
+#: includes/class-live-weather-station-list-table.php:183
+msgid "Bulk Actions"
+msgstr "Bulk Actions"
+
+#: includes/class-live-weather-station-list-table.php:223
+#: includes/class-live-weather-station-list-table.php:639
+msgid "Show more details"
+msgstr "Show more details"
+
+#: includes/class-live-weather-station-list-table.php:275
+#: includes/class-live-weather-station-list-table.php:657
+#, php-format
+msgid "%s item"
+msgid_plural "%s items"
+msgstr[0] "%s item"
+msgstr[1] "%s items"
+
+#: includes/class-live-weather-station-list-table.php:310
+msgid "First page"
+msgstr "First page"
+
+#: includes/class-live-weather-station-list-table.php:320
+msgid "Previous page"
+msgstr "Previous page"
+
+#: includes/class-live-weather-station-list-table.php:327
+#: includes/class-live-weather-station-list-table.php:330
+msgid "Current Page"
+msgstr "Current Page"
+
+#: includes/class-live-weather-station-list-table.php:336
+#, php-format
+msgctxt "paging"
+msgid "%1$s of %2$s"
+msgstr "%1$s of %2$s"
+
+#: includes/class-live-weather-station-list-table.php:343
+msgid "Next page"
+msgstr "Next page"
+
+#: includes/class-live-weather-station-list-table.php:353
+msgid "Last page"
+msgstr "Last page"
+
+#: includes/class-live-weather-station-list-table.php:473
+msgid "Select All"
+msgstr "Select All"
+
+#: includes/class-live-weather-station-widget-ephemeris.php:38
+msgid ""
+"Display ephemeris for sun and moon at the location of a Netatmo and/or "
+"OpenWeatherMap weather station."
+msgstr ""
+"Display ephemeris for sun and moon at the location of a Netatmo and/or "
+"OpenWeatherMap weather station."
+
 #: includes/class-live-weather-station-widget-outdoor.php:40
 msgid "Outdoor weather summary"
 msgstr "Outdoor weather summary"
 
-#: includes/trait-datas-query.php:103
-msgid "is not running..."
-msgstr "is not running..."
+#: includes/class-live-weather-station-widget-outdoor.php:41
+msgid ""
+"Display outdoor measurements of a Netatmo and/or OpenWeatherMap weather "
+"station."
+msgstr ""
+"Display outdoor measurements of a Netatmo and/or OpenWeatherMap weather "
+"station."
 
-#: includes/trait-datas-output.php:1129
-msgid "Malformed shortcode. Please verify it!"
-msgstr "Malformed shortcode. Please verify it!"
+#: includes/class-log-list-table.php:48
+msgid "See detail in new window"
+msgstr "See detail in new window"
 
+#: includes/class-log-list-table.php:49
+msgid "code"
+msgstr "code"
+
+#: includes/class-log-list-table.php:55 includes/class-log-list-table.php:80
 #: includes/trait-datas-output.php:1256 includes/trait-datas-output.php:1261
 #: includes/trait-datas-output.php:1266 includes/trait-datas-output.php:1271
 #: includes/trait-datas-output.php:1276
 msgid "N/A"
 msgstr "N/A"
+
+#: includes/class-log-list-table.php:93
+msgid "Event"
+msgstr "Event"
+
+#: includes/class-log-list-table.php:94
+msgid "Time"
+msgstr "Time"
+
+#: includes/class-log-list-table.php:97
+msgid "Message"
+msgstr "Message"
+
+#: includes/class-log-list-table.php:190
+msgid "All"
+msgstr "All"
+
+#: includes/class-log-list-table.php:192
+msgid "Notices &amp; beyond"
+msgstr "Notices &amp; beyond"
+
+#: includes/class-log-list-table.php:194
+msgid "Errors &amp; beyond"
+msgstr "Errors &amp; beyond"
+
+#: includes/class-log-list-table.php:237
+#, php-format
+msgid "Show %d lines per page"
+msgstr "Show %d lines per page"
+
+#: includes/class-log-list-table.php:248
+msgid "All systems"
+msgstr "All systems"
+
+#: includes/class-log-list-table.php:265
+msgid "All services"
+msgstr "All services"
+
+#: includes/class-log-list-table.php:282
+msgid "All stations"
+msgstr "All stations"
+
+#: includes/class-logger.php:369
+msgid "Emergency"
+msgstr "Emergency"
+
+#: includes/class-logger.php:372
+msgid "Alert"
+msgstr "Alert"
+
+#: includes/class-logger.php:375
+msgid "Critical error"
+msgstr "Critical error"
+
+#: includes/class-logger.php:378
+msgid "Error"
+msgstr "Error"
+
+#: includes/class-logger.php:381
+msgid "Warning"
+msgstr "Warning"
+
+#: includes/class-logger.php:384
+msgid "Notice"
+msgstr "Notice"
+
+#: includes/class-logger.php:387
+msgid "Information"
+msgstr "Information"
+
+#: includes/class-logger.php:390
+msgid "Debug information"
+msgstr "Debug information"
+
+#: includes/class-netatmo-stations-list-table.php:31
+msgid "Manage services"
+msgstr "Manage services"
+
+#: includes/class-netatmo-stations-list-table.php:74
+#: includes/class-netatmo-stations-list-table.php:81
+#: includes/class-netatmo-stations-list-table.php:88
+msgid "No"
+msgstr "No"
+
+#: includes/class-netatmo-stations-list-table.php:76
+#: includes/class-netatmo-stations-list-table.php:83
+#: includes/class-netatmo-stations-list-table.php:90
+msgid "Yes"
+msgstr "Yes"
+
+#: includes/class-netatmo-stations-list-table.php:78
+#: includes/class-netatmo-stations-list-table.php:85
+#: includes/class-netatmo-stations-list-table.php:92
+msgid "see it"
+msgstr "see it"
+
+#: includes/class-owm-stations-list-table.php:31
+msgid "Edit"
+msgstr "Edit"
+
+#: includes/class-owm-stations-list-table.php:32
+msgid "Verify on a map"
+msgstr "Verify on a map"
+
+#: includes/class-owm-stations-list-table.php:33
+#: includes/class-owm-stations-list-table.php:58
+msgid "Delete"
+msgstr "Delete"
+
+#: includes/class-owm-stations-list-table.php:48
+#: includes/trait-type-description.php:195
+msgid "Altitude"
+msgstr "Altitude"
+
+#: includes/trait-datas-output.php:186
+msgid "Outdoor"
+msgstr "Outdoor"
+
+#: includes/trait-datas-output.php:929 includes/trait-type-description.php:117
+#: includes/trait-type-description.php:174
+#: includes/trait-type-description.php:177
+#: includes/trait-type-description.php:187
+#: includes/trait-type-description.php:191
+msgid "Wind"
+msgstr "Wind"
+
+#: includes/trait-datas-output.php:929 includes/trait-type-description.php:180
+#: includes/trait-type-description.php:183
+msgid "Gust"
+msgstr "Gust"
+
+#: includes/trait-datas-output.php:1129
+msgid "Malformed shortcode. Please verify it!"
+msgstr "Malformed shortcode. Please verify it!"
+
+#: includes/trait-datas-output.php:1731 includes/trait-datas-output.php:1856
+msgid "now"
+msgstr "now"
+
+#: includes/trait-datas-output.php:1733 includes/trait-datas-output.php:1762
+msgid "/ 3 hr"
+msgstr "/ 3 hr"
+
+#: includes/trait-datas-output.php:1743
+msgid "/ 1 hr"
+msgstr "/ 1 hr"
 
 #: includes/trait-datas-output.php:1752
 #: public/partials/live-weather-station-widget-outdoor-display.php:154
@@ -2405,6 +1378,20 @@ msgstr "today"
 #: includes/trait-datas-output.php:1783 includes/trait-datas-output.php:1799
 msgid "gust"
 msgstr "gust"
+
+#: includes/trait-datas-output.php:1935 includes/trait-type-description.php:81
+msgid "CO₂"
+msgstr "CO₂"
+
+#: includes/trait-datas-output.php:1938 includes/trait-type-description.php:84
+#: includes/trait-type-description.php:90
+msgid "CO"
+msgstr "CO"
+
+#: includes/trait-datas-output.php:1941 includes/trait-type-description.php:87
+#: includes/trait-type-description.php:93
+msgid "O₃"
+msgstr "O₃"
 
 #: includes/trait-datas-output.php:1944
 msgid "humidity"
@@ -2417,6 +1404,10 @@ msgstr "noise"
 #: includes/trait-datas-output.php:1952
 msgid "rain"
 msgstr "rain"
+
+#: includes/trait-datas-output.php:1955
+msgid "snow"
+msgstr "snow"
 
 #: includes/trait-datas-output.php:1963
 msgid "wind"
@@ -2449,6 +1440,10 @@ msgstr "wind chill"
 #: includes/trait-datas-output.php:1984
 msgid "cloud base"
 msgstr "cloud base"
+
+#: includes/trait-datas-output.php:1987
+msgid "cloudiness"
+msgstr "cloudiness"
 
 #: includes/trait-datas-output.php:1992
 msgid "temperature"
@@ -2551,6 +1546,70 @@ msgstr "NW"
 msgid "N-NW"
 msgstr "N-NW"
 
+#: includes/trait-datas-output.php:2160 includes/trait-datas-output.php:2176
+msgid "North"
+msgstr "North"
+
+#: includes/trait-datas-output.php:2161
+msgid "North-Northeast"
+msgstr "North-Northeast"
+
+#: includes/trait-datas-output.php:2162
+msgid "Northeast"
+msgstr "Northeast"
+
+#: includes/trait-datas-output.php:2163
+msgid "East-Northeast"
+msgstr "East-Northeast"
+
+#: includes/trait-datas-output.php:2164
+msgid "East"
+msgstr "East"
+
+#: includes/trait-datas-output.php:2165
+msgid "East-Southeast"
+msgstr "East-Southeast"
+
+#: includes/trait-datas-output.php:2166
+msgid "Southeast"
+msgstr "Southeast"
+
+#: includes/trait-datas-output.php:2167
+msgid "South-Southeast"
+msgstr "South-Southeast"
+
+#: includes/trait-datas-output.php:2168
+msgid "South"
+msgstr "South"
+
+#: includes/trait-datas-output.php:2169
+msgid "South-Southwest"
+msgstr "South-Southwest"
+
+#: includes/trait-datas-output.php:2170
+msgid "Southwest"
+msgstr "Southwest"
+
+#: includes/trait-datas-output.php:2171
+msgid "West-Southwest"
+msgstr "West-Southwest"
+
+#: includes/trait-datas-output.php:2172
+msgid "West"
+msgstr "West"
+
+#: includes/trait-datas-output.php:2173
+msgid "West-Northwest"
+msgstr "West-Northwest"
+
+#: includes/trait-datas-output.php:2174
+msgid "Northwest"
+msgstr "Northwest"
+
+#: includes/trait-datas-output.php:2175
+msgid "North-Northwest"
+msgstr "North-Northwest"
+
 #: includes/trait-datas-output.php:2250
 msgid "No RF Signal"
 msgstr "No RF Signal"
@@ -2571,25 +1630,94 @@ msgstr "Falling"
 msgid "Stable"
 msgstr "Stable"
 
-#: includes/trait-datas-output.php:2393 includes/trait-datas-output.php:2512
+#: includes/trait-datas-output.php:2351 includes/trait-datas-output.php:2359
+msgid "New Moon"
+msgstr "New Moon"
+
+#: includes/trait-datas-output.php:2352
+msgid "Waxing Crescent"
+msgstr "Waxing Crescent"
+
+#: includes/trait-datas-output.php:2353
+msgid "First Quarter"
+msgstr "First Quarter"
+
+#: includes/trait-datas-output.php:2354
+msgid "Waxing Gibbous"
+msgstr "Waxing Gibbous"
+
+#: includes/trait-datas-output.php:2355
+msgid "Full Moon"
+msgstr "Full Moon"
+
+#: includes/trait-datas-output.php:2356
+msgid "Waning Gibbous"
+msgstr "Waning Gibbous"
+
+#: includes/trait-datas-output.php:2357
+msgid "Third Quarter"
+msgstr "Third Quarter"
+
+#: includes/trait-datas-output.php:2358
+msgid "Waning Crescent"
+msgstr "Waning Crescent"
+
+#: includes/trait-datas-output.php:2415 includes/trait-datas-output.php:2534
 msgid "Successful operation"
 msgstr "Successful operation"
 
-#: includes/trait-datas-output.php:2396 includes/trait-datas-output.php:2515
-#: includes/trait-datas-query.php:335 includes/trait-datas-query.php:362
-#: includes/trait-datas-query.php:388 includes/trait-datas-query.php:415
-#: includes/trait-datas-query.php:439 includes/trait-datas-query.php:466
+#: includes/trait-datas-output.php:2418 includes/trait-datas-output.php:2537
+#: includes/trait-datas-query.php:449 includes/trait-datas-query.php:476
+#: includes/trait-datas-query.php:502 includes/trait-datas-query.php:529
+#: includes/trait-datas-query.php:553 includes/trait-datas-query.php:671
 msgid "Database contains inconsistent datas"
 msgstr "Database contains inconsistent data"
 
-#: includes/trait-datas-output.php:2578 includes/trait-datas-output.php:2585
+#: includes/trait-datas-output.php:2600 includes/trait-datas-output.php:2607
 msgid "O/DR"
 msgstr "O/DR"
 
-#: includes/trait-datetime-conversion.php:103
+#: includes/trait-datas-output.php:2675
+msgid "clouds"
+msgstr "clouds"
+
+#: includes/trait-datas-output.php:2776
+msgid "All data have been filtered: nothing to show"
+msgstr "All data have been filtered: nothing to show"
+
+#: includes/trait-datas-query.php:104
+msgid "is not running..."
+msgstr "is not running..."
+
 #: includes/trait-datetime-conversion.php:119
+#: includes/trait-datetime-conversion.php:135
+#: includes/trait-datetime-conversion.php:151
+#, php-format
 msgid "%s ago"
 msgstr "%s ago"
+
+#: includes/trait-datetime-conversion.php:122
+#: includes/trait-datetime-conversion.php:154
+#, php-format
+msgid "in %s"
+msgstr "in %s"
+
+#: includes/trait-datetime-conversion.php:138
+msgid "currently"
+msgstr "currently"
+
+#: includes/trait-datetime-conversion.php:248
+msgid "days"
+msgstr "days"
+
+#: includes/trait-datetime-conversion.php:248
+msgid "hours"
+msgstr "hours"
+
+#: includes/trait-ephemeris-client.php:46
+#: includes/trait-type-description.php:51
+msgid "[Ephemeris]"
+msgstr "[Ephemeris]"
 
 #: includes/trait-javascript-array.php:27
 #: includes/trait-javascript-array.php:55
@@ -2628,6 +1756,22 @@ msgstr "Formatted local date"
 msgid "Formated local time"
 msgstr "Formatted local time"
 
+#: includes/trait-javascript-array.php:101
+msgid "Elapsed or remaining approximative time"
+msgstr "Elapsed or remaining approximative time"
+
+#: includes/trait-javascript-array.php:117
+msgid "Unit symbol or abbreviation"
+msgstr "Unit symbol or abbreviation"
+
+#: includes/trait-javascript-array.php:118
+msgid "Unit with complement (if any)"
+msgstr "Unit with complement (if any)"
+
+#: includes/trait-javascript-array.php:119
+msgid "Unit name"
+msgstr "Unit name"
+
 #: includes/trait-javascript-array.php:134
 #: includes/trait-javascript-array.php:150
 #: includes/trait-javascript-array.php:165
@@ -2646,6 +1790,10 @@ msgstr "Converted value with unit"
 #: includes/trait-javascript-array.php:247
 msgid "Plain text"
 msgstr "Plain text"
+
+#: includes/trait-javascript-array.php:184
+msgid "Abbreviation"
+msgstr "Abbreviation"
 
 #: includes/trait-javascript-array.php:228
 msgid "Geodetic system WGS 84"
@@ -2671,13 +1819,6 @@ msgstr "DMS ending with cardinal"
 msgid "Station ID"
 msgstr "Station ID"
 
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:30
-#: includes/trait-javascript-array.php:262
-#: includes/trait-javascript-array.php:801
-#: includes/trait-javascript-array.php:806
-msgid "Station name"
-msgstr "Station name"
-
 #: includes/trait-javascript-array.php:263
 msgid "Module ID"
 msgstr "Module ID"
@@ -2693,21 +1834,32 @@ msgstr "Module type"
 msgid "Module name"
 msgstr "Module name"
 
+#: includes/trait-javascript-array.php:266
+msgid "Measurement timestamp"
+msgstr "Measurement timestamp"
+
+#: includes/trait-javascript-array.php:268
+#: includes/trait-javascript-array.php:804
+#: includes/trait-javascript-array.php:807
+#: includes/trait-javascript-array.php:809
+msgid "Measurement type"
+msgstr "Measurement type"
+
+#: includes/trait-javascript-array.php:272
+#: includes/trait-javascript-array.php:279
+#: includes/trait-javascript-array.php:285
+#: includes/trait-javascript-array.php:288
+#: includes/trait-javascript-array.php:292
+#: includes/trait-javascript-array.php:296
+#: includes/trait-javascript-array.php:303
+#: includes/trait-javascript-array.php:309
+#: includes/trait-javascript-array.php:312
+msgid "Measurement value"
+msgstr "Measurement value"
+
 #: includes/trait-javascript-array.php:558
 msgid "[all modules]"
 msgstr "[all modules]"
-
-#: includes/trait-javascript-array.php:698
-msgid "Small"
-msgstr "Small"
-
-#: includes/trait-javascript-array.php:700
-msgid "Large"
-msgstr "Large"
-
-#: includes/trait-javascript-array.php:702
-msgid "Scalable"
-msgstr "Scalable"
 
 #: includes/trait-javascript-array.php:613
 msgid "Fast"
@@ -2959,17 +2111,787 @@ msgstr "Flat - Silver"
 msgid "Flat - Clouds"
 msgstr "Flat - Clouds"
 
-#: includes/trait-netatmo-client.php:187
-msgid "Temporary unable to contact Netatmo servers. Retry will be done shortly."
-msgstr "Temporarily unable to contact Netatmo servers. Retry will be done shortly."
+#: includes/trait-javascript-array.php:696
+msgid "Miniature"
+msgstr "Miniature"
 
-#: includes/trait-type-description.php:39 includes/trait-weather-client.php:164
-msgid "[Computed Values]"
-msgstr "[Computed Values]"
+#: includes/trait-javascript-array.php:698
+msgid "Small"
+msgstr "Small"
+
+#: includes/trait-javascript-array.php:700
+msgid "Large"
+msgstr "Large"
+
+#: includes/trait-javascript-array.php:702
+msgid "Scalable"
+msgstr "Scalable"
+
+#: includes/trait-javascript-array.php:705
+msgid "Gigantic"
+msgstr "Gigantic"
+
+#: includes/trait-javascript-array.php:719
+msgid "Standard (for light background)"
+msgstr "Standard (for light background)"
+
+#: includes/trait-javascript-array.php:720
+msgid "Standard (for dark background)"
+msgstr "Standard (for dark background)"
+
+#: includes/trait-javascript-array.php:721
+msgid "Flag (for light background)"
+msgstr "Flag (for light background)"
+
+#: includes/trait-javascript-array.php:722
+msgid "Flag (for dark background)"
+msgstr "Flag (for dark background)"
+
+#: includes/trait-javascript-array.php:723
+msgid "Pinky (for light background)"
+msgstr "Pinky (for light background)"
+
+#: includes/trait-javascript-array.php:724
+msgid "Pinky (for dark background)"
+msgstr "Pinky (for dark background)"
+
+#: includes/trait-javascript-array.php:725
+msgid "Aquamarine (for light background)"
+msgstr "Aquamarine (for light background)"
+
+#: includes/trait-javascript-array.php:726
+msgid "Aquamarine (for dark background)"
+msgstr "Aquamarine (for dark background)"
+
+#: includes/trait-javascript-array.php:727
+msgid "B&W (for light background)"
+msgstr "B&W (for light background)"
+
+#: includes/trait-javascript-array.php:728
+msgid "B&W (for dark background)"
+msgstr "B&W (for dark background)"
+
+#: includes/trait-javascript-array.php:729
+msgid "Solid red (for light background)"
+msgstr "Solid red (for light background)"
+
+#: includes/trait-javascript-array.php:730
+msgid "Solid red (for dark background)"
+msgstr "Solid red (for dark background)"
+
+#: includes/trait-javascript-array.php:731
+msgid "Solid orange (for light background)"
+msgstr "Solid orange (for light background)"
+
+#: includes/trait-javascript-array.php:732
+msgid "Solid orange (for dark background)"
+msgstr "Solid orange (for dark background)"
+
+#: includes/trait-javascript-array.php:733
+msgid "Solid yellow (for light background)"
+msgstr "Solid yellow (for light background)"
+
+#: includes/trait-javascript-array.php:734
+msgid "Solid yellow (for dark background)"
+msgstr "Solid yellow (for dark background)"
+
+#: includes/trait-javascript-array.php:735
+msgid "Solid green (for light background)"
+msgstr "Solid green (for light background)"
+
+#: includes/trait-javascript-array.php:736
+msgid "Solid green (for dark background)"
+msgstr "Solid green (for dark background)"
+
+#: includes/trait-javascript-array.php:737
+msgid "Solid blue (for light background)"
+msgstr "Solid blue (for light background)"
+
+#: includes/trait-javascript-array.php:738
+msgid "Solid blue (for dark background)"
+msgstr "Solid blue (for dark background)"
+
+#: includes/trait-javascript-array.php:739
+msgid "Solid purple (for light background)"
+msgstr "Solid purple (for light background)"
+
+#: includes/trait-javascript-array.php:740
+msgid "Solid purple (for dark background)"
+msgstr "Solid purple (for dark background)"
+
+#: includes/trait-javascript-array.php:741
+msgid "Solid black (for light background)"
+msgstr "Solid black (for light background)"
+
+#: includes/trait-javascript-array.php:742
+msgid "Solid black (for dark background)"
+msgstr "Solid black (for dark background)"
+
+#: includes/trait-javascript-array.php:743
+msgid "Transparent (for light background)"
+msgstr "Transparent (for light background)"
+
+#: includes/trait-javascript-array.php:744
+msgid "Transparent (for dark background)"
+msgstr "Transparent (for dark background)"
+
+#: includes/trait-javascript-array.php:757
+#: includes/trait-javascript-array.php:800
+#: includes/trait-javascript-array.php:822
+#: includes/trait-javascript-array.php:1015
+#: includes/trait-javascript-array.php:1034
+#: includes/trait-javascript-array.php:1068
+#: includes/trait-javascript-array.php:1123
+msgid "None"
+msgstr "None"
+
+#: includes/trait-javascript-array.php:758
+msgid "External"
+msgstr "External"
+
+#: includes/trait-javascript-array.php:759
+msgid "Internal"
+msgstr "Internal"
+
+#: includes/trait-javascript-array.php:772
+msgid "Half - Flat - Thin"
+msgstr "Half - Flat - Thin"
+
+#: includes/trait-javascript-array.php:773
+msgid "Half - Flat - Standard"
+msgstr "Half - Flat - Standard"
+
+#: includes/trait-javascript-array.php:774
+msgid "Half - Flat - Fat"
+msgstr "Half - Flat - Fat"
+
+#: includes/trait-javascript-array.php:775
+msgid "Half - Flat - Pie"
+msgstr "Half - Flat - Pie"
+
+#: includes/trait-javascript-array.php:776
+msgid "Half - 3D - Thin"
+msgstr "Half - 3D - Thin"
+
+#: includes/trait-javascript-array.php:777
+msgid "Half - 3D - Standard"
+msgstr "Half - 3D - Standard"
+
+#: includes/trait-javascript-array.php:778
+msgid "Half - 3D - Fat"
+msgstr "Half - 3D - Fat"
+
+#: includes/trait-javascript-array.php:779
+msgid "Half - 3D - Pie"
+msgstr "Half - 3D - Pie"
+
+#: includes/trait-javascript-array.php:780
+msgid "Full - Flat - Thin"
+msgstr "Full - Flat - Thin"
+
+#: includes/trait-javascript-array.php:781
+msgid "Full - Flat - Standard"
+msgstr "Full - Flat - Standard"
+
+#: includes/trait-javascript-array.php:782
+msgid "Full - Flat - Fat"
+msgstr "Full - Flat - Fat"
+
+#: includes/trait-javascript-array.php:783
+msgid "Full - Flat - Pie"
+msgstr "Full - Flat - Pie"
+
+#: includes/trait-javascript-array.php:784
+msgid "Full - 3D - Thin"
+msgstr "Full - 3D - Thin"
+
+#: includes/trait-javascript-array.php:785
+msgid "Full - 3D - Standard"
+msgstr "Full - 3D - Standard"
+
+#: includes/trait-javascript-array.php:786
+msgid "Full - 3D - Fat"
+msgstr "Full - 3D - Fat"
+
+#: includes/trait-javascript-array.php:787
+msgid "Full - 3D - Pie"
+msgstr "Full - 3D - Pie"
+
+#: includes/trait-javascript-array.php:803
+#: includes/trait-javascript-array.php:808
+msgid "Short measurement type"
+msgstr "Short measurement type"
+
+#: includes/trait-javascript-array.php:805
+#: includes/trait-javascript-array.php:808
+#: includes/trait-javascript-array.php:809
+#: includes/trait-javascript-array.php:823
+msgid "Measurement unit"
+msgstr "Measurement unit"
+
+#: includes/trait-javascript-array.php:836
+msgid "Test with actual background"
+msgstr "Test with actual background"
+
+#: includes/trait-javascript-array.php:837
+msgid "Test with white background"
+msgstr "Test with white background"
+
+#: includes/trait-javascript-array.php:838
+msgid "Test with light background"
+msgstr "Test with light background"
+
+#: includes/trait-javascript-array.php:839
+msgid "Test with medium background"
+msgstr "Test with medium background"
+
+#: includes/trait-javascript-array.php:840
+msgid "Test with dark background"
+msgstr "Test with dark background"
+
+#: includes/trait-javascript-array.php:841
+msgid "Test with black background"
+msgstr "Test with black background"
+
+#: includes/trait-javascript-array.php:854
+msgid "Analog - 1/4"
+msgstr "Analog - 1/4"
+
+#: includes/trait-javascript-array.php:855
+msgid "Analog - half"
+msgstr "Analog - half"
+
+#: includes/trait-javascript-array.php:856
+msgid "Analog - 3/4"
+msgstr "Analog - 3/4"
+
+#: includes/trait-javascript-array.php:857
+msgid "Analog - full"
+msgstr "Analog - full"
+
+#: includes/trait-javascript-array.php:858
+msgid "Digital - 1/4"
+msgstr "Digital - 1/4"
+
+#: includes/trait-javascript-array.php:859
+msgid "Digital - half"
+msgstr "Digital - half"
+
+#: includes/trait-javascript-array.php:860
+msgid "Digital - 3/4"
+msgstr "Digital - 3/4"
+
+#: includes/trait-javascript-array.php:861
+msgid "Digital - full"
+msgstr "Digital - full"
+
+#: includes/trait-javascript-array.php:862
+msgid "Top meter"
+msgstr "Top meter"
+
+#: includes/trait-javascript-array.php:863
+msgid "Left meter"
+msgstr "Left meter"
+
+#: includes/trait-javascript-array.php:864
+msgid "Right meter"
+msgstr "Right meter"
+
+#: includes/trait-javascript-array.php:865
+msgid "Vintage wind compass"
+msgstr "Vintage wind compass"
+
+#: includes/trait-javascript-array.php:866
+msgid "Standard wind compass"
+msgstr "Standard wind compass"
+
+#: includes/trait-javascript-array.php:867
+msgid "Modern wind compass"
+msgstr "Modern wind compass"
+
+#: includes/trait-javascript-array.php:868
+msgid "Altimeter"
+msgstr "Altimeter"
+
+#: includes/trait-javascript-array.php:880
+msgid "Black metal"
+msgstr "Black metal"
+
+#: includes/trait-javascript-array.php:881
+msgid "Metal"
+msgstr "Metal"
+
+#: includes/trait-javascript-array.php:882
+msgid "Shiny metal"
+msgstr "Shiny metal"
+
+#: includes/trait-javascript-array.php:883
+msgid "Glossy metal"
+msgstr "Glossy metal"
+
+#: includes/trait-javascript-array.php:884
+#: includes/trait-javascript-array.php:912
+msgid "Anthracite"
+msgstr "Anthracite"
+
+#: includes/trait-javascript-array.php:885
+msgid "Tilted gray"
+msgstr "Tilted grey"
+
+#: includes/trait-javascript-array.php:886
+msgid "Tilted black"
+msgstr "Tilted black"
+
+#: includes/trait-javascript-array.php:887
+msgid "Brass"
+msgstr "Brass"
+
+#: includes/trait-javascript-array.php:888
+msgid "Steel"
+msgstr "Steel"
+
+#: includes/trait-javascript-array.php:889
+msgid "Chrome"
+msgstr "Chrome"
+
+#: includes/trait-javascript-array.php:890
+msgid "Gold"
+msgstr "Gold"
+
+#: includes/trait-javascript-array.php:902
+msgid "Dark gray"
+msgstr "Dark grey"
+
+#: includes/trait-javascript-array.php:903
+msgid "Satin gray"
+msgstr "Satin grey"
+
+#: includes/trait-javascript-array.php:904
+msgid "Light gray"
+msgstr "Light grey"
+
+#: includes/trait-javascript-array.php:905
+#: includes/trait-javascript-array.php:984
+#: includes/trait-javascript-array.php:1109
+msgid "White"
+msgstr "White"
+
+#: includes/trait-javascript-array.php:906
+#: includes/trait-javascript-array.php:986
+#: includes/trait-javascript-array.php:1112
+msgid "Black"
+msgstr "Black"
+
+#: includes/trait-javascript-array.php:907
+msgid "Beige"
+msgstr "Beige"
+
+#: includes/trait-javascript-array.php:908
+msgid "Brown"
+msgstr "Brown"
+
+#: includes/trait-javascript-array.php:909
+#: includes/trait-javascript-array.php:974
+#: includes/trait-javascript-array.php:1016
+#: includes/trait-javascript-array.php:1096
+msgid "Red"
+msgstr "Red"
+
+#: includes/trait-javascript-array.php:910
+#: includes/trait-javascript-array.php:977
+#: includes/trait-javascript-array.php:1019
+#: includes/trait-javascript-array.php:1101
+msgid "Green"
+msgstr "Green"
+
+#: includes/trait-javascript-array.php:911
+#: includes/trait-javascript-array.php:982
+#: includes/trait-javascript-array.php:1021
+#: includes/trait-javascript-array.php:1105
+msgid "Blue"
+msgstr "Blue"
+
+#: includes/trait-javascript-array.php:913
+msgid "Mud"
+msgstr "Mud"
+
+#: includes/trait-javascript-array.php:914
+msgid "Punched sheet"
+msgstr "Punched sheet"
+
+#: includes/trait-javascript-array.php:915
+msgid "Carbon"
+msgstr "Carbon"
+
+#: includes/trait-javascript-array.php:916
+msgid "Stainless"
+msgstr "Stainless"
+
+#: includes/trait-javascript-array.php:917
+msgid "Brushed metal"
+msgstr "Brushed metal"
+
+#: includes/trait-javascript-array.php:918
+msgid "Brushed stainless"
+msgstr "Brushed stainless"
+
+#: includes/trait-javascript-array.php:919
+msgid "Turned"
+msgstr "Turned"
+
+#: includes/trait-javascript-array.php:931
+msgid "Standard glass"
+msgstr "Standard glass"
+
+#: includes/trait-javascript-array.php:932
+msgid "Crystal"
+msgstr "Crystal"
+
+#: includes/trait-javascript-array.php:933
+msgid "Sapphire crystal"
+msgstr "Sapphire crystal"
+
+#: includes/trait-javascript-array.php:934
+msgid "Plexiglass"
+msgstr "Plexiglass"
+
+#: includes/trait-javascript-array.php:935
+msgid "Rhodoid"
+msgstr "Rhodoid"
+
+#: includes/trait-javascript-array.php:947
+msgid "Thin triangle"
+msgstr "Thin triangle"
+
+#: includes/trait-javascript-array.php:948
+msgid "Fat Triangle"
+msgstr "Fat Triangle"
+
+#: includes/trait-javascript-array.php:949
+msgid "3D triangle"
+msgstr "3D triangle"
+
+#: includes/trait-javascript-array.php:950
+msgid "Clipped"
+msgstr "Clipped"
+
+#: includes/trait-javascript-array.php:951
+msgid "Double clipped"
+msgstr "Double clipped"
+
+#: includes/trait-javascript-array.php:952
+msgid "Flat clipped"
+msgstr "Flat clipped"
+
+#: includes/trait-javascript-array.php:953
+msgid "Thin rod"
+msgstr "Thin rod"
+
+#: includes/trait-javascript-array.php:954
+msgid "Fat rod"
+msgstr "Fat rod"
+
+#: includes/trait-javascript-array.php:955
+msgid "Thin curved triangle"
+msgstr "Thin curved triangle"
+
+#: includes/trait-javascript-array.php:956
+msgid "3D curved triangle"
+msgstr "3D curved triangle"
+
+#: includes/trait-javascript-array.php:957
+msgid "Double needle"
+msgstr "Double needle"
+
+#: includes/trait-javascript-array.php:958
+msgid "Culbuto"
+msgstr "Culbuto"
+
+#: includes/trait-javascript-array.php:959
+msgid "Cessna"
+msgstr "Cessna"
+
+#: includes/trait-javascript-array.php:960
+msgid "Volvo"
+msgstr "Volvo"
+
+#: includes/trait-javascript-array.php:961
+msgid "Ferrari"
+msgstr "Ferrari"
+
+#: includes/trait-javascript-array.php:962
+msgid "Ferrari arched"
+msgstr "Ferrari arched"
+
+#: includes/trait-javascript-array.php:975
+#: includes/trait-javascript-array.php:1017
+#: includes/trait-javascript-array.php:1098
+msgid "Orange"
+msgstr "Orange"
+
+#: includes/trait-javascript-array.php:976
+#: includes/trait-javascript-array.php:1018
+#: includes/trait-javascript-array.php:1099
+msgid "Yellow"
+msgstr "Yellow"
+
+#: includes/trait-javascript-array.php:978
+msgid "JUG Green"
+msgstr "JUG Green"
+
+#: includes/trait-javascript-array.php:979
+msgid "Green LCD"
+msgstr "Green LCD"
+
+#: includes/trait-javascript-array.php:980
+#: includes/trait-javascript-array.php:1020
+msgid "Cyan"
+msgstr "Cyan"
+
+#: includes/trait-javascript-array.php:981
+msgid "Raith"
+msgstr "Raith"
+
+#: includes/trait-javascript-array.php:983
+#: includes/trait-javascript-array.php:1022
+msgid "Magenta"
+msgstr "Magenta"
+
+#: includes/trait-javascript-array.php:985
+#: includes/trait-javascript-array.php:1111
+msgid "Gray"
+msgstr "Grey"
+
+#: includes/trait-javascript-array.php:998
+msgid "Plain - Black"
+msgstr "Plain - Black"
+
+#: includes/trait-javascript-array.php:999
+msgid "Plain - Brass"
+msgstr "Plain - Brass"
+
+#: includes/trait-javascript-array.php:1000
+msgid "Plain - Silver"
+msgstr "Plain - Silver"
+
+#: includes/trait-javascript-array.php:1001
+msgid "Embossed - Black"
+msgstr "Embossed - Black"
+
+#: includes/trait-javascript-array.php:1002
+msgid "Embossed - Brass"
+msgstr "Embossed - Brass"
+
+#: includes/trait-javascript-array.php:1003
+msgid "Embossed - Silver"
+msgstr "Embossed - Silver"
+
+#: includes/trait-javascript-array.php:1069
+msgid "Cursors"
+msgstr "Cursors"
+
+#: includes/trait-javascript-array.php:1081
+msgid "Automatic"
+msgstr "Automatic"
+
+#: includes/trait-javascript-array.php:1082
+msgid "Normal"
+msgstr "Normal"
+
+#: includes/trait-javascript-array.php:1083
+msgid "Horizontal"
+msgstr "Horizontal"
+
+#: includes/trait-javascript-array.php:1084
+msgid "Tangent"
+msgstr "Tangent"
+
+#: includes/trait-javascript-array.php:1097
+msgid "Maroon"
+msgstr "Maroon"
+
+#: includes/trait-javascript-array.php:1100
+msgid "Lime"
+msgstr "Lime"
+
+#: includes/trait-javascript-array.php:1102
+msgid "Teal"
+msgstr "Teal"
+
+#: includes/trait-javascript-array.php:1103
+msgid "Aqua"
+msgstr "Aqua"
+
+#: includes/trait-javascript-array.php:1104
+msgid "Light blue"
+msgstr "Light blue"
+
+#: includes/trait-javascript-array.php:1106
+msgid "Navy"
+msgstr "Navy"
+
+#: includes/trait-javascript-array.php:1107
+msgid "Fuchsia"
+msgstr "Fuchsia"
+
+#: includes/trait-javascript-array.php:1108
+msgid "Purple"
+msgstr "Purple"
+
+#: includes/trait-javascript-array.php:1110
+msgid "Silver"
+msgstr "Silver"
+
+#: includes/trait-javascript-array.php:1124
+msgid "Plain - Translucent"
+msgstr "Plain - Translucent"
+
+#: includes/trait-javascript-array.php:1125
+msgid "Plain - Liquid"
+msgstr "Plain - Liquid"
+
+#: includes/trait-javascript-array.php:1126
+msgid "Plain - Soft"
+msgstr "Plain - Soft"
+
+#: includes/trait-javascript-array.php:1127
+msgid "Plain - Hard"
+msgstr "Plain - Hard"
+
+#: includes/trait-javascript-array.php:1128
+msgid "Fade-in - Translucent"
+msgstr "Fade-in - Translucent"
+
+#: includes/trait-javascript-array.php:1129
+msgid "Fade-in - Liquid"
+msgstr "Fade-in - Liquid"
+
+#: includes/trait-javascript-array.php:1130
+msgid "Fade-in - Soft"
+msgstr "Fade-in - Soft"
+
+#: includes/trait-javascript-array.php:1131
+msgid "Fade-in - Hard"
+msgstr "Fade-in - Hard"
+
+#: includes/trait-javascript-array.php:1132
+msgid "Fade-out - Translucent"
+msgstr "Fade-out - Translucent"
+
+#: includes/trait-javascript-array.php:1133
+msgid "Fade-out - Liquid"
+msgstr "Fade-out - Liquid"
+
+#: includes/trait-javascript-array.php:1134
+msgid "Fade-out - Soft"
+msgstr "Fade-out - Soft"
+
+#: includes/trait-javascript-array.php:1135
+msgid "Fade-out - Hard"
+msgstr "Fade-out - Hard"
+
+#: includes/trait-javascript-array.php:1136
+msgid "Complementary - Translucent"
+msgstr "Complementary - Translucent"
+
+#: includes/trait-javascript-array.php:1137
+msgid "Complementary - Liquid"
+msgstr "Complementary - Liquid"
+
+#: includes/trait-javascript-array.php:1138
+msgid "Complementary - Soft"
+msgstr "Complementary - Soft"
+
+#: includes/trait-javascript-array.php:1139
+msgid "Complementary - Hard"
+msgstr "Complementary - Hard"
+
+#: includes/trait-javascript-array.php:1140
+msgid "Inverted complementary - Translucent"
+msgstr "Inverted complementary - Translucent"
+
+#: includes/trait-javascript-array.php:1141
+msgid "Inverted complementary - Liquid"
+msgstr "Inverted complementary - Liquid"
+
+#: includes/trait-javascript-array.php:1142
+msgid "Inverted complementary - Soft"
+msgstr "Inverted complementary - Soft"
+
+#: includes/trait-javascript-array.php:1143
+msgid "Inverted complementary - Hard"
+msgstr "Inverted complementary - Hard"
+
+#: includes/trait-netatmo-client.php:56 includes/trait-netatmo-client.php:178
+msgid "Wrong credentials. Please, verify your login and password."
+msgstr "Wrong credentials. Please, verify your login and password."
+
+#: includes/trait-netatmo-client.php:186
+msgid "Application deactivated. Please contact support."
+msgstr "Application deactivated. Please contact support."
+
+#: includes/trait-netatmo-client.php:190
+msgid "Too many users with this IP."
+msgstr "Too many users with this IP."
+
+#: includes/trait-netatmo-client.php:194
+msgid ""
+"Temporary unable to contact Netatmo servers. Retry will be done shortly."
+msgstr ""
+"Temporarily unable to contact Netatmo servers. Retry will be done shortly."
+
+#: includes/trait-owm-current-client.php:91
+#: includes/trait-type-description.php:42
+msgid "[OpenWeatherMap Records]"
+msgstr "[OpenWeatherMap Records]"
+
+#: includes/trait-owm-current-client.php:194
+#: includes/trait-owm-pollution-client.php:189
+msgid "Wrong OpenWeatherMap API key."
+msgstr "Wrong OpenWeatherMap API key."
+
+#: includes/trait-owm-current-client.php:200
+#: includes/trait-owm-pollution-client.php:195
+msgid ""
+"OpenWeatherMap servers have returned empty response for some weather "
+"stations. Retry will be done shortly."
+msgstr ""
+"OpenWeatherMap servers have returned an empty response for some weather "
+"stations. Retry will be done shortly."
+
+#: includes/trait-owm-current-client.php:203
+#: includes/trait-owm-pollution-client.php:198
+msgid ""
+"Temporary unable to contact OpenWeatherMap servers. Retry will be done "
+"shortly."
+msgstr ""
+"Temporarily unable to contact OpenWeatherMap servers. Retry will be done "
+"shortly."
+
+#: includes/trait-owm-pollution-client.php:152
+#: includes/trait-type-description.php:45
+msgid "[OpenWeatherMap Pollution]"
+msgstr "[OpenWeatherMap Pollution]"
+
+#: includes/trait-schedules-manipulation.php:148
+msgid "Every three minutes"
+msgstr "Every three minutes"
+
+#: includes/trait-schedules-manipulation.php:161
+msgid "Every five minutes"
+msgstr "Every five minutes"
 
 #: includes/trait-schedules-manipulation.php:174
 msgid "Every ten minutes"
 msgstr "Every ten minutes"
+
+#: includes/trait-schedules-manipulation.php:187
+msgid "Every fifteen minutes"
+msgstr "Every fifteen minutes"
+
+#: includes/trait-schedules-manipulation.php:200
+msgid "Every thirty minutes"
+msgstr "Every thirty minutes"
 
 #: includes/trait-type-description.php:24
 msgid "Base station"
@@ -2991,17 +2913,53 @@ msgstr "Wind gauge"
 msgid "Indoor module"
 msgstr "Indoor module"
 
+#: includes/trait-type-description.php:39 includes/trait-weather-client.php:166
+msgid "[Computed Values]"
+msgstr "[Computed Values]"
+
+#: includes/trait-type-description.php:48
+msgid "[OpenWeatherMap Forecast]"
+msgstr "[OpenWeatherMap Forecast]"
+
 #: includes/trait-type-description.php:54
 msgid "Unknonw module"
 msgstr "Unknonw module"
 
 #: includes/trait-type-description.php:72
+msgid "Firmware"
+msgstr "Firmware"
+
+#: includes/trait-type-description.php:72
 msgid "Firmware version"
 msgstr "Firmware version"
+
+#: includes/trait-type-description.php:75
+msgid "Battery"
+msgstr "Battery"
+
+#: includes/trait-type-description.php:78
+msgid "WiFi"
+msgstr "WiFi"
 
 #: includes/trait-type-description.php:78
 msgid "RF/WiFi signal quality"
 msgstr "RF/WiFi signal quality"
+
+#: includes/trait-type-description.php:81
+msgid "Carbon dioxide"
+msgstr "Carbon dioxide"
+
+#: includes/trait-type-description.php:87
+msgid "Ozone"
+msgstr "Ozone"
+
+#: includes/trait-type-description.php:90
+msgid "CO probe distance"
+msgstr "CO probe distance"
+
+#: includes/trait-type-description.php:93
+msgid "O₃ probe distance"
+msgstr "O₃ probe distance"
 
 #: includes/trait-type-description.php:96
 #: includes/trait-type-description.php:99
@@ -3014,8 +2972,17 @@ msgid "Reference humidity"
 msgstr "Reference humidity"
 
 #: includes/trait-type-description.php:102
+msgid "Noise"
+msgstr "Noise"
+
+#: includes/trait-type-description.php:102
 msgid "Noise level"
 msgstr "Noise level"
+
+#: includes/trait-type-description.php:105
+#: includes/trait-type-description.php:108
+msgid "Pressure"
+msgstr "Pressure"
 
 #: includes/trait-type-description.php:105
 #: public/partials/live-weather-station-widget-outdoor-display.php:73
@@ -3040,6 +3007,10 @@ msgstr "Temperature"
 msgid "Reference temperature"
 msgstr "Reference temperature"
 
+#: includes/trait-type-description.php:117
+msgid "Reference wind strength"
+msgstr "Reference wind strength"
+
 #: includes/trait-type-description.php:121
 msgid "Highest temperature of the day"
 msgstr "Highest temperature of the day"
@@ -3063,6 +3034,10 @@ msgid "Frost point"
 msgstr "Frost point"
 
 #: includes/trait-type-description.php:138
+msgid "Heat"
+msgstr "Heat"
+
+#: includes/trait-type-description.php:138
 #: public/partials/live-weather-station-widget-outdoor-display.php:252
 msgid "Heat index"
 msgstr "Heat index"
@@ -3078,14 +3053,41 @@ msgid "Wind chill"
 msgstr "Wind chill"
 
 #: includes/trait-type-description.php:147
+msgid "Cloud base"
+msgstr "Cloud base"
+
+#: includes/trait-type-description.php:147
 #: public/partials/live-weather-station-widget-outdoor-display.php:207
 msgid "Cloud base altitude"
 msgstr "Cloud base altitude"
 
-#: public/partials/live-weather-station-widget-outdoor-display.php:140
-#: public/partials/live-weather-station-widget-outdoor-display.php:162
-msgid "Rainfall"
-msgstr "Rainfall"
+#: includes/trait-type-description.php:152
+#: public/partials/live-weather-station-widget-outdoor-display.php:192
+msgid "Cloudiness"
+msgstr "Cloudiness"
+
+#: includes/trait-type-description.php:156
+#: includes/trait-type-description.php:159
+#: includes/trait-type-description.php:167
+#: includes/trait-type-description.php:171
+msgid "Rain"
+msgstr "Rain"
+
+#: includes/trait-type-description.php:156
+msgid "Rain rate"
+msgstr "Rain rate"
+
+#: includes/trait-type-description.php:159
+msgid "Accumulated rainfall for the last 3 hours"
+msgstr "Accumulated rainfall for the last 3 hours"
+
+#: includes/trait-type-description.php:163
+msgid "Snow"
+msgstr "Snow"
+
+#: includes/trait-type-description.php:163
+msgid "Accumulated snowfall for the last 3 hours"
+msgstr "Accumulated snowfall for the last 3 hours"
 
 #: includes/trait-type-description.php:167
 msgid "Accumulated rainfall for the last hour"
@@ -3119,27 +3121,94 @@ msgstr "Wind direction for the maximal wind strength for the last hour"
 msgid "Maximal wind strength for the last hour"
 msgstr "Maximal wind strength for the last hour"
 
-#: includes/trait-type-description.php:195
-msgid "Altitude"
-msgstr "Altitude"
+#: includes/trait-type-description.php:207
+msgid "TZ"
+msgstr "TZ"
 
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:102
-#: includes/trait-type-description.php:199
-msgid "Latitude"
-msgstr "Latitude"
-
-#: admin/partials/live-weather-station-admin-add-edit-owm.php:106
-#: includes/trait-type-description.php:203
-msgid "Longitude"
-msgstr "Longitude"
+#: includes/trait-type-description.php:210
+msgid "all"
+msgstr "all"
 
 #: includes/trait-type-description.php:210
 msgid "[all measures]"
 msgstr "[all measures]"
 
 #: includes/trait-type-description.php:213
+msgid "outdoor"
+msgstr "outdoor"
+
+#: includes/trait-type-description.php:213
 msgid "[outdoor measures]"
 msgstr "[outdoor measures]"
+
+#: includes/trait-type-description.php:216
+#: public/partials/live-weather-station-widget-ephemeris-display.php:78
+msgid "Sunrise"
+msgstr "Sunrise"
+
+#: includes/trait-type-description.php:219
+#: public/partials/live-weather-station-widget-ephemeris-display.php:91
+msgid "Sunset"
+msgstr "Sunset"
+
+#: includes/trait-type-description.php:222
+#: public/partials/live-weather-station-widget-ephemeris-display.php:165
+msgid "Moonrise"
+msgstr "Moonrise"
+
+#: includes/trait-type-description.php:225
+#: public/partials/live-weather-station-widget-ephemeris-display.php:152
+msgid "Moonset"
+msgstr "Moonset"
+
+#: includes/trait-type-description.php:228
+msgid "Age"
+msgstr "Age"
+
+#: includes/trait-type-description.php:228
+msgid "Moon age"
+msgstr "Moon age"
+
+#: includes/trait-type-description.php:231
+msgid "Phase"
+msgstr "Phase"
+
+#: includes/trait-type-description.php:231
+msgid "Moon phase"
+msgstr "Moon phase"
+
+#: includes/trait-type-description.php:234
+msgid "Illumination"
+msgstr "Illumination"
+
+#: includes/trait-type-description.php:234
+msgid "Moon illumination"
+msgstr "Moon illumination"
+
+#: includes/trait-type-description.php:237
+#: includes/trait-type-description.php:243
+msgid "Distance"
+msgstr "Distance"
+
+#: includes/trait-type-description.php:237
+msgid "Moon distance"
+msgstr "Moon distance"
+
+#: includes/trait-type-description.php:240
+msgid "Moon angular size"
+msgstr "Moon angular size"
+
+#: includes/trait-type-description.php:243
+msgid "Sun distance"
+msgstr "Sun distance"
+
+#: includes/trait-type-description.php:246
+msgid "Sun angular size"
+msgstr "Sun angular size"
+
+#: includes/trait-type-description.php:249
+msgid "?"
+msgstr "?"
 
 #: includes/trait-type-description.php:249
 msgid "Unknown measurement"
@@ -3153,22 +3222,119 @@ msgstr "Unknown measurement"
 msgid "%"
 msgstr "%"
 
-#: includes/trait-unit-description.php:173
-msgid "mm"
-msgstr "mm"
-
-#: includes/trait-unit-description.php:250
-msgid "dB"
-msgstr "dB"
-
-#: includes/trait-unit-description.php:274
-msgid "ppm"
-msgstr "ppm"
+#: includes/trait-unit-description.php:34
+#: includes/trait-unit-description.php:56
+#: includes/trait-unit-description.php:102
+msgid "percent"
+msgstr "percent"
 
 #: includes/trait-unit-description.php:67
 #: includes/trait-unit-description.php:366
 msgid "°"
 msgstr "°"
+
+#: includes/trait-unit-description.php:78
+#: includes/trait-unit-description.php:378
+msgid "degree"
+msgstr "degree"
+
+#: includes/trait-unit-description.php:126
+msgid "percent of capacity"
+msgstr "percent of capacity"
+
+#: includes/trait-unit-description.php:150
+msgid "percent of strength"
+msgstr "percent of strength"
+
+#: includes/trait-unit-description.php:164
+msgid "mm/h"
+msgstr "mm/h"
+
+#: includes/trait-unit-description.php:167
+#: includes/trait-unit-description.php:214
+msgid "in"
+msgstr "in"
+
+#: includes/trait-unit-description.php:170
+msgid "in/h"
+msgstr "in/h"
+
+#: includes/trait-unit-description.php:173
+msgid "mm"
+msgstr "mm"
+
+#: includes/trait-unit-description.php:189
+msgid "millimeter per hour"
+msgstr "millimetre per hour"
+
+#: includes/trait-unit-description.php:192
+#: includes/trait-unit-description.php:233
+msgid "inch"
+msgstr "inch"
+
+#: includes/trait-unit-description.php:195
+msgid "inch per hour"
+msgstr "inch per hour"
+
+#: includes/trait-unit-description.php:198
+msgid "millimeter"
+msgstr "millimetre"
+
+#: includes/trait-unit-description.php:217
+msgid "cm"
+msgstr "cm"
+
+#: includes/trait-unit-description.php:236
+msgid "centimeter"
+msgstr "centimetre"
+
+#: includes/trait-unit-description.php:250
+msgid "dB"
+msgstr "dB"
+
+#: includes/trait-unit-description.php:262
+msgid "decibel"
+msgstr "decibel"
+
+#: includes/trait-unit-description.php:274
+msgid "ppm"
+msgstr "ppm"
+
+#: includes/trait-unit-description.php:286
+msgid "part per million"
+msgstr "part per million"
+
+#: includes/trait-unit-description.php:298
+msgid "DU"
+msgstr "DU"
+
+#: includes/trait-unit-description.php:310
+msgid "dobson unit"
+msgstr "dobson unit"
+
+#: includes/trait-unit-description.php:324
+msgid "Pa"
+msgstr "Pa"
+
+#: includes/trait-unit-description.php:327
+msgid "μg/g"
+msgstr "μg/g"
+
+#: includes/trait-unit-description.php:330
+msgid "ppmv"
+msgstr "ppmv"
+
+#: includes/trait-unit-description.php:346
+msgid "pascal"
+msgstr "pascal"
+
+#: includes/trait-unit-description.php:349
+msgid "microgram per gram"
+msgstr "microgram per gram"
+
+#: includes/trait-unit-description.php:352
+msgid "part per million by volume"
+msgstr "part per million by volume"
 
 #: includes/trait-unit-description.php:392
 #: includes/trait-unit-description.php:606
@@ -3184,6 +3350,18 @@ msgstr "mmHg"
 msgid "hPa"
 msgstr "hPa"
 
+#: includes/trait-unit-description.php:414
+msgid "inch of mercury"
+msgstr "inch of mercury"
+
+#: includes/trait-unit-description.php:417
+msgid "millimeter of mercury"
+msgstr "millimetre of mercury"
+
+#: includes/trait-unit-description.php:420
+msgid "hectopascal"
+msgstr "hectopascal"
+
 #: includes/trait-unit-description.php:436
 msgid "°F"
 msgstr "°F"
@@ -3191,6 +3369,14 @@ msgstr "°F"
 #: includes/trait-unit-description.php:439
 msgid "°C"
 msgstr "°C"
+
+#: includes/trait-unit-description.php:455
+msgid "fahrenheit degree"
+msgstr "fahrenheit degree"
+
+#: includes/trait-unit-description.php:458
+msgid "celcius degree"
+msgstr "celcius degree"
 
 #: includes/trait-unit-description.php:474
 #: includes/trait-unit-description.php:685
@@ -3215,6 +3401,26 @@ msgstr "kts"
 msgid "km/h"
 msgstr "km/h"
 
+#: includes/trait-unit-description.php:502
+msgid "mile per hour"
+msgstr "mile per hour"
+
+#: includes/trait-unit-description.php:505
+msgid "meter per second"
+msgstr "metre per second"
+
+#: includes/trait-unit-description.php:508
+msgid "beaufort"
+msgstr "beaufort"
+
+#: includes/trait-unit-description.php:511
+msgid "knot"
+msgstr "knot"
+
+#: includes/trait-unit-description.php:514
+msgid "kilometer per hour"
+msgstr "kilometre per hour"
+
 #: includes/trait-unit-description.php:530
 msgid "ft"
 msgstr "ft"
@@ -3222,6 +3428,30 @@ msgstr "ft"
 #: includes/trait-unit-description.php:533
 msgid "m"
 msgstr "m"
+
+#: includes/trait-unit-description.php:549
+msgid "foot"
+msgstr "foot"
+
+#: includes/trait-unit-description.php:552
+msgid "meter"
+msgstr "metre"
+
+#: includes/trait-unit-description.php:568
+msgid "mi"
+msgstr "mi"
+
+#: includes/trait-unit-description.php:571
+msgid "km"
+msgstr "km"
+
+#: includes/trait-unit-description.php:587
+msgid "mile"
+msgstr "mile"
+
+#: includes/trait-unit-description.php:590
+msgid "kilometer"
+msgstr "kilometre"
 
 #: includes/trait-unit-description.php:612
 msgid "hPa / mbar"
@@ -3261,35 +3491,129 @@ msgstr "Measured and computed values"
 msgid "Only measured values"
 msgstr "Only measured values"
 
+#: includes/trait-unit-description.php:800
+msgid "Netatmo and OpenWeatherMap"
+msgstr "Netatmo and OpenWeatherMap"
+
+#: includes/trait-unit-description.php:801
+msgid "Only Netatmo"
+msgstr "Only Netatmo"
+
+#: includes/trait-unit-description.php:802
+msgid "Only OpenWeatherMap"
+msgstr "Only OpenWeatherMap"
+
+#: includes/trait-unit-description.php:815
+msgid "Never"
+msgstr "Never"
+
+#: includes/trait-unit-description.php:816
+msgid "After 30 minutes"
+msgstr "After 30 minutes"
+
+#: includes/trait-unit-description.php:817
+msgid "After 1 hour"
+msgstr "After 1 hour"
+
+#: includes/trait-unit-description.php:818
+msgid "After 2 hours"
+msgstr "After 2 hours"
+
+#: includes/trait-unit-description.php:819
+msgid "After 4 hours"
+msgstr "After 4 hours"
+
+#: includes/trait-unit-description.php:820
+msgid "After 12 hours"
+msgstr "After 12 hours"
+
+#: includes/trait-unit-description.php:821
+msgid "After 24 hours"
+msgstr "After 24 hours"
+
+#: includes/trait-unit-description.php:833
+msgid "Fixed min & max"
+msgstr "Fixed min & max"
+
+#: includes/trait-unit-description.php:834
+msgid "Adapted min & max when possible"
+msgstr "Adapted min & max when possible"
+
+#: includes/trait-unit-description.php:847
+msgid "Towards... (points to the degree)"
+msgstr "Towards... (points to the degree)"
+
+#: includes/trait-unit-description.php:848
+msgid "From... (points directly away from the degree)"
+msgstr "From... (points directly away from the degree)"
+
 #: public/class-live-weather-station-public.php:106
 #: public/class-live-weather-station-public.php:131
 msgid "Error code "
 msgstr "Error code "
 
+#: public/class-live-weather-station-public.php:110
+#: public/class-live-weather-station-public.php:135
+msgid "No data"
+msgstr "No data"
+
+#: public/partials/live-weather-station-widget-ephemeris-display.php:29
+msgid "Sunrise & sunset"
+msgstr "Sunrise & sunset"
+
+#: public/partials/live-weather-station-widget-ephemeris-display.php:52
+msgid "Moon"
+msgstr "Moon"
+
+#: public/partials/live-weather-station-widget-ephemeris-display.php:106
+msgid "Sun distance and angular size"
+msgstr "Sun distance and angular size"
+
+#: public/partials/live-weather-station-widget-ephemeris-display.php:129
+msgid "Moon illumination, phase & age"
+msgstr "Moon illumination, phase & age"
+
+#: public/partials/live-weather-station-widget-ephemeris-display.php:180
+msgid "Moon distance and angular size"
+msgstr "Moon distance and angular size"
+
 #: public/partials/live-weather-station-widget-outdoor-display.php:13
 msgid "Current weather conditions"
 msgstr "Current weather conditions"
 
-#: includes/trait-datas-output.php:929 includes/trait-type-description.php:117
-#: includes/trait-type-description.php:174
-#: includes/trait-type-description.php:177
-#: includes/trait-type-description.php:187
-#: includes/trait-type-description.php:191
-msgid "Wind"
-msgstr "Wind"
+#: public/partials/live-weather-station-widget-outdoor-display.php:103
+#: public/partials/live-weather-station-widget-outdoor-display.php:125
+msgid "Wind from"
+msgstr "Wind from"
 
 #: public/partials/live-weather-station-widget-outdoor-display.php:117
 msgid "max"
 msgstr "max"
 
-#: includes/trait-type-description.php:152
-#: public/partials/live-weather-station-widget-outdoor-display.php:192
-msgid "Cloudiness"
-msgstr "Cloudiness"
+#: public/partials/live-weather-station-widget-outdoor-display.php:140
+#: public/partials/live-weather-station-widget-outdoor-display.php:162
+msgid "Rainfall"
+msgstr "Rainfall"
+
+#: public/partials/live-weather-station-widget-outdoor-display.php:177
+msgid "Snowfall"
+msgstr "Snowfall"
+
+#. Plugin Name of the plugin/theme
+msgid "Live Weather Station"
+msgstr "Live Weather Station"
 
 #. Plugin URI of the plugin/theme
 msgid "https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/"
 msgstr "https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/"
+
+#. Description of the plugin/theme
+msgid ""
+"Display, in many different and elegant ways, the meteorological data "
+"collected by your Netatmo weather station or coming from OpenWeatherMap."
+msgstr ""
+"Display, in many different and elegant ways, the meteorological data "
+"collected by your Netatmo weather station or coming from OpenWeatherMap."
 
 #. Author of the plugin/theme
 msgid "Pierre Lannoy"

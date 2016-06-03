@@ -38,7 +38,11 @@ class Netatmo_Stations_List_Table extends Live_Weather_Station_List_Table {
     }
 
     public function get_columns(){
-        $columns = array('cb' => '<input type="checkbox" />', 'title' => 'Name', 'pws' => 'PWS Weather', 'wow' => 'WOW Met Office', 'wug' => 'Weather Underground');
+        $columns = array('cb' => '<input type="checkbox" />',
+            'title' => __('Station', 'live-weather-station'),
+            'pws' => 'PWS Weather',
+            'wow' => 'WOW Met Office',
+            'wug' => 'Weather Underground');
         return $columns;
     }
 

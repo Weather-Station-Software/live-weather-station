@@ -24,6 +24,9 @@ trait Netatmo_Client {
     protected $netatmo_client;
     protected $netatmo_datas;
 
+    protected $facility = 'Weather Collector';
+    protected $service_name = 'Netatmo';
+
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     // these API keys are property of NetAtmo licensed to Pierre Lannoy, you CAN'T use them for your apps.
     // If you are thinking to develop something, get your API Keys here: https://dev.netatmo.com
@@ -73,6 +76,7 @@ trait Netatmo_Client {
             {
                 $this->get_netatmo_dashboard($device['_id'], $device['station_name'], $module['_id'], $module['module_name'],
                     $module['type'], $module['data_type'], $module['dashboard_data'], null, $module['rf_status'], $module['firmware'], $module['battery_vp']);
+                Logger::debug($this->facility, $this->service_name, $device['_id'], $device['station_name'], $module['_id'], $module['module_name'], 0, 'Success while collecting module records.');
             }
         }
     }
@@ -175,25 +179,27 @@ trait Netatmo_Client {
                         if ($connect_mode) {
                             update_option('live_weather_station_netatmo_account', array('', '', false));
                         }
+                        Logger::critical($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your login and password.');
                         break;
                     case 5:
                     case 22:
                         $this->last_netatmo_error = __('Application deactivated. Please contact support.', 'live-weather-station');
+                        Logger::emergency($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Application deactivated. Please contact support.');
                         break;
                     case 20:
                         $this->last_netatmo_error = __('Too many users with this IP.', 'live-weather-station');
+                        Logger::error($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Too many users with this IP.');
                         break;
                     default:
                         $this->last_netatmo_warning = __('Temporary unable to contact Netatmo servers. Retry will be done shortly.', 'live-weather-station');
+                        Logger::warning($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Temporary unable to contact Netatmo servers. Retry will be done shortly.');
                 }
-                //error_log('#### '.$ex->getCode() . ' - ' . $ex->getMessage());
                 return array();
             }
         }
         else {
-            //error_log('#### Unable to find access tokens');
+            Logger::alert($this->facility, $this->service_name, null, null, null, null, 0, 'Unable to find or obtain access tokens.');
         }
-        //error_log(print_r($this->netatmo_datas,true));
         return $this->netatmo_datas;
     }
 }

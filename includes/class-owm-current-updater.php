@@ -40,15 +40,21 @@ class Owm_Current_Updater {
      * @access   public
      */
     public function cron_run(){
+        $err = '';
         try {
+            $err = 'collecting weather';
+            $svc = 'OpenWeatherMap';
             $this->get_datas();
+            $err = 'computing weather';
             $weather = new Weather_Computer();
             $weather->compute();
+            $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
             $ephemeris->compute();
+            Logger::info('Cron Engine', 'OpenWeatherMap', null, null, null, null, 0, 'Success while collecting and computing weather and ephemeris data.');
         }
         catch (Exception $ex) {
-            error_log(LWS_PLUGIN_NAME . ' / ' . LWS_VERSION . ' / OWM Current Weather Updater / Error code: ' . $ex->getCode() . ' / Error message: ' . $ex->getMessage());
+            Logger::critical('Cron Engine', 'OpenWeatherMap', null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
         }
     }
 }
