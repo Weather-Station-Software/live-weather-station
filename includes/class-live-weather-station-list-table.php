@@ -550,8 +550,8 @@ class Live_Weather_Station_List_Table {
         return array( 'widefat', 'fixed', 'striped', $this->_args['plural'] );
     }
     protected function display_tablenav( $which ) {
-        if ( 'top' == $which )
-            wp_nonce_field( 'bulk-' . $this->_args['plural'] );
+        /*if ( 'top' == $which )
+            wp_nonce_field( 'bulk-' . $this->_args['plural'] );*/
         ?>
         <div class="tablenav <?php echo esc_attr( $which ); ?>">
 

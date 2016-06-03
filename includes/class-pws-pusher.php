@@ -15,6 +15,16 @@ require_once(LWS_INCLUDES_DIR.'class-live-weather-station-pusher.php');
 class PWS_Pusher extends Live_Weather_Station_Pusher {
 
     /**
+     * Get the service Name.
+     *
+     * @return  string   The service name.
+     * @since   3.0.0
+     */
+    protected function get_service_name() {
+        return 'PWS Weather';
+    }
+
+    /**
      * Format Netatmo data to be pushed.
      *
      * @param   array   $data      Collected Netatmo datas.

@@ -12,6 +12,7 @@
 
 abstract class Live_Weather_Station_Standalone {
 
+    
     protected $type = 'unknown';
     protected $params = array();
 
@@ -105,6 +106,9 @@ abstract class Live_Weather_Station_Standalone {
      */
     private function init() {
         $result = $this->load_wp();
+        if ($result) {
+            require_once(LWS_INCLUDES_DIR.'/class-live-weather-station-http.php');
+        }
         return $result;
     }
 
@@ -118,6 +122,7 @@ abstract class Live_Weather_Station_Standalone {
             run_Live_Weather_Station();
             $this->load($this->available_args());
             $this->generate();
+            Logger::info('Page Generator', null, null, null, null, null , 0, 'Success while rendering file.' . Live_Weather_Station_Http::get_request_detail_as_text());
             exit();
         }
         else {
@@ -154,19 +159,14 @@ abstract class Live_Weather_Station_Standalone {
             $header = 'Content-type: text/plain; charset=utf-8';
         }
         header($header);
-        if ($message == '' && $code == 501) {
-            $message = LWS_PLUGIN_NAME . ' / Service Not Implemented / 501';
-        }
-        if ($message == '' && $code == 400) {
-            $message = LWS_PLUGIN_NAME . ' / Bad Request / 400';
-        }
-        if ($message == '' && $code == 403) {
-            $message = LWS_PLUGIN_NAME . ' / Forbidden / 403';
+        if ($code != 0) {
+            $message = Live_Weather_Station_Http::get_http_status($code);
         }
         if ($message == '') {
             $message = 'Error Code ' . $code;
         }
-        echo $message;
+        echo LWS_PLUGIN_NAME . ' / ' . $message;
+        Logger::critical('Page Generator', null, null, null, null, null , $code, 'Unable to generate the requested page. Header "'. $message .'" sent to client.'  . Live_Weather_Station_Http::get_request_detail_as_text());
         exit();
     }
     

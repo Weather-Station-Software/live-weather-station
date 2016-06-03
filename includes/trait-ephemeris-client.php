@@ -22,6 +22,8 @@ trait Ephemeris_Client {
     use Id_Manipulation, Datetime_Conversion, Dashboard_Manipulation;
 
     protected $ephemeris_datas;
+    protected $facility = 'Ephemeris Computer';
+    protected $service_name = null;
 
 
     /**
@@ -122,6 +124,7 @@ trait Ephemeris_Client {
         foreach ($result as $data) {
             $this->get_dashboard($data['device_id'], $data['device_name'], $data['_id'], $data['module_name'],
                 $data['type'], $data['data_type'], $data['dashboard_data']);
+            Logger::debug($this->facility, $this->service_name, $data['device_id'], $data['device_name'], $data['_id'], $data['module_name'], 0, 'Success while computing ephemeris.');
         }
         return $result;
     }

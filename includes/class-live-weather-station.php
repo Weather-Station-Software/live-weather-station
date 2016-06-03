@@ -142,11 +142,11 @@ class Live_Weather_Station {
 	 */
 	private function check_and_perfom_update() {
         self::verify_options();
-        if (get_option('live_weather_station_version') != LWS_VERSION) {
+        if (get_option('live_weather_station_version') != LWS_VERSION && get_option('live_weather_station_version') != '-') {
             require_once LWS_INCLUDES_DIR.'class-live-weather-station-updater.php';
-            Live_Weather_Station_Updater::update();
-            update_option('live_weather_station_version', LWS_VERSION);
+            Live_Weather_Station_Updater::update(get_option('live_weather_station_version'));
         }
+		update_option('live_weather_station_version', LWS_VERSION);
     }
 
     /**

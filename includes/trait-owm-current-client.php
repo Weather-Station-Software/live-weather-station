@@ -35,6 +35,7 @@ trait Owm_Current_Client {
     public $last_owm_warning = '';
     protected $owm_client;
     protected $owm_datas;
+    protected $facility = 'Weather Collector';
 
     /**
      * Get station's datas.
@@ -158,6 +159,10 @@ trait Owm_Current_Client {
                 $result['data_type'][] = 'is_day';
             }
             $result['dashboard_data'] = $dashboard;
+            Logger::debug($this->facility, $this->service_name, $result['device_id'], $result['device_name'], $result['_id'], $result['module_name'], 0, 'Success while collecting pollution data.');
+        }
+        else {
+            Logger::notice($this->facility, $this->service_name, $result['device_id'], $result['device_name'], $result['_id'], $result['module_name'], 0, 'Data are empty or irrelevant.');
         }
         return $result;
     }
@@ -187,16 +192,18 @@ trait Owm_Current_Client {
             {
                 if (strpos($ex->getMessage(), 'Invalid API key') > -1) {
                     $this->last_owm_error = __('Wrong OpenWeatherMap API key.', 'live-weather-station');
+                    Logger::critical($this->facility, $this->service_name, $station['device_id'], $station['device_name'], null, null, $ex->getCode(), 'Wrong credentials. Please, verify your OpenWeatherMap API key.');
                     return array();
                 }
                 if (strpos($ex->getMessage(), 'JSON /') > -1) {
+                    Logger::warning($this->facility, $this->service_name, $station['device_id'], $station['device_name'], null, null, $ex->getCode(), 'OpenWeatherMap servers has returned empty response. Retry will be done shortly.');
                     $this->last_owm_warning = __('OpenWeatherMap servers have returned empty response for some weather stations. Retry will be done shortly.', 'live-weather-station');
                 }
                 else {
                     $this->last_owm_warning = __('Temporary unable to contact OpenWeatherMap servers. Retry will be done shortly.', 'live-weather-station');
+                    Logger::warning($this->facility, $this->service_name, $station['device_id'], $station['device_name'], null, null, $ex->getCode(), 'Temporary unable to contact OpenWeatherMap servers. Retry will be done shortly.');
                     return array();
                 }
-
             }
             if (isset($values) && is_array($values)) {
                 $this->owm_datas[] = $values;

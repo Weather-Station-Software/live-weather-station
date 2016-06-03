@@ -57,6 +57,7 @@ Right now, Live Weather Station supports the following languages:
 
 * English (default)
 * English / Australia (thanks to [translation team](https://translate.wordpress.org/locale/en-au/default/wp-plugins/live-weather-station))
+* English / Canada (thanks to [translation team](https://translate.wordpress.org/locale/en-ca/default/wp-plugins/live-weather-station))
 * English / New Zealand (thanks to [translation team](https://translate.wordpress.org/locale/en-nz/default/wp-plugins/live-weather-station))
 * English / UK (thanks to [translation team](https://translate.wordpress.org/locale/en-gb/default/wp-plugins/live-weather-station))
 * French / Belgium (thanks to [translation team](https://translate.wordpress.org/locale/fr-be/default/wp-plugins/live-weather-station))
@@ -125,6 +126,18 @@ You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-l
 You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 == Changelog ==
+
+= 2.7.5 =
+
+Release date: June xxxth, 2016
+
+* New language: English / Canada.
+* Improvement: `readme.txt`.
+* Improvement: code refactory for provisioning 3.X version.
+* Improvement: new way of error handling for some processes.
+* Bug fix: connectivity test for PWS Weather services may fails in some cases.
+* Bug fix: remaining or elapsed approximate time maybe wrong under one minute.
+* Bug fix: titles of columns are not translatable in stations views.
 
 = 2.7.4 =
 
@@ -302,7 +315,7 @@ Release date: December 17th, 2015
 * Improvement: reference wind strength for wind chill computing can now be displayed via shortcodes.
 * Improvement: stations time zone can now be displayed via shortcodes.
 * Improvement: for some unknown reason, some netatmo wind gauges doesn't have historical values nor gusts values. The widget now take care of this...
-* Improvement: in textual shortcodes, timestamps can now be displayed in remaining or elapsed approximative time.
+* Improvement: in textual shortcodes, timestamps can now be displayed in remaining or elapsed approximate time.
 * Improvement: times and dates in widgets, textual shortcodes and site dashboard are now local to station (in previous version it was local to server).
 * Improvement: more meaningful error message if no data to show in LCD Panel.
 * Improvement: `readme.txt`

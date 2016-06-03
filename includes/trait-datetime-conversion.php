@@ -30,7 +30,7 @@ trait Datetime_Conversion {
             return date_i18n($format, strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
-            return date_i18n($format, strtotime( get_date_from_gmt(date('Y-m-d H:i:s',$ts))) );
+            return date_i18n($format, strtotime(get_date_from_gmt(date('Y-m-d H:i:s',$ts))) );
         }
     }
 
@@ -54,7 +54,7 @@ trait Datetime_Conversion {
             return date_i18n($format, strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
-            return date_i18n($format, strtotime( get_date_from_gmt($ts)) );
+            return date_i18n($format, strtotime(get_date_from_gmt($ts)));
         }
     }
 
@@ -78,7 +78,7 @@ trait Datetime_Conversion {
             return date_i18n($format, strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
-            return date_i18n($format, strtotime( get_date_from_gmt(date('Y-m-d H:i:s',$ts))));
+            return date_i18n($format, strtotime(get_date_from_gmt(date('Y-m-d H:i:s',$ts))));
         }
     }
 
@@ -114,7 +114,7 @@ trait Datetime_Conversion {
      * @since    1.0.0
      * @access   protected
      */
-    public static function get_time_diff_from_utc( $from ) {
+    public static function get_time_diff_from_utc($from) {
         if ($from < time()) {
             return sprintf( __('%s ago', 'live-weather-station'), human_time_diff($from));
         }
@@ -124,18 +124,34 @@ trait Datetime_Conversion {
     }
 
     /**
-     * Get the difference between now and a date, in human readable style (like "8 minutes ago" or "in 19 seconds").
+     * Get the difference between now and a date, in human readable style (like "8 minutes ago" or "now").
      *
-     * @param   integer $from The UTC timestamp from which the difference must be computed (as today).
+     * @param   string $from The UTC MySql datetime from which the difference must be computed (as today).
      * @return  string  Human readable time difference.
      * @since    1.0.0
      */
-    public static function get_time_diff_from_mysql_utc( $from ) {
-        if ($from < time()) {
-            return sprintf( __('%s ago', 'live-weather-station'), human_time_diff(strtotime(get_date_from_gmt($from))));
+    public static function get_positive_time_diff_from_mysql_utc($from) {
+        if (strtotime($from) < time()) {
+            return sprintf( __('%s ago', 'live-weather-station'), human_time_diff(strtotime($from)));
         }
         else {
-            return sprintf( __('in %s', 'live-weather-station'), human_time_diff(strtotime(get_date_from_gmt($from))));
+            return __('currently', 'live-weather-station');
+        }
+    }
+
+    /**
+     * Get the difference between now and a date, in human readable style (like "8 minutes ago" or "in 19 seconds").
+     *
+     * @param   string $from The UTC MySql datetime from which the difference must be computed (as today).
+     * @return  string  Human readable time difference.
+     * @since    1.0.0
+     */
+    public static function get_time_diff_from_mysql_utc($from) {
+        if (strtotime($from) < time()) {
+            return sprintf( __('%s ago', 'live-weather-station'), human_time_diff(strtotime($from)));
+        }
+        else {
+            return sprintf( __('in %s', 'live-weather-station'), human_time_diff(strtotime($from)));
         }
     }
 
@@ -147,7 +163,7 @@ trait Datetime_Conversion {
      * @since    2.0.0
      * @access   protected
      */
-    public static function get_minute_diff_from_utc( $from ) {
+    public static function get_minute_diff_from_utc($from) {
         return round ((abs( strtotime(get_date_from_gmt(date('Y-m-d H:i:s'))) - $from ))/60);
     }
 
@@ -172,7 +188,7 @@ trait Datetime_Conversion {
      * @return  string  Formatted time relative to the given timezone.
      * @since    2.0.0
      */
-    public static function get_rise_set_short_from_utc($ts, $tz='', $comp=false ) {
+    public static function get_rise_set_short_from_utc($ts, $tz='', $comp=false) {
         $result = self::get_time_from_utc($ts, $tz);
         $now = time();
         if ($comp) {
@@ -226,7 +242,7 @@ trait Datetime_Conversion {
      * @return  string  Formatted age in years, month, days, hour and minutes.
      * @since    2.0.0
      */
-    public static function get_age_from_days( $age ) {
+    public static function get_age_from_days($age) {
         $days = floor($age);
         $hours = round(($age-$days)*24);
         $result = $days.' '.__('days', 'live-weather-station').', '.$hours.' '.__('hours', 'live-weather-station');

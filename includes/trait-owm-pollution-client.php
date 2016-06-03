@@ -17,6 +17,7 @@ trait Owm_Pollution_Client {
 
     private $api_url = 'http://api.openweathermap.org/pollution/v1';
     private $indexes = ['o3', 'co'];
+    protected $facility = 'Pollution Collector';
     protected $owm_datas;
 
     /**
@@ -44,19 +45,19 @@ trait Owm_Pollution_Client {
      * @return  string  Error string if any.
      * @since    2.5.0
      */
-    private function get_pollution_data($lat, $long, $index, $round=0) {
+    private function get_pollution_data($st, $lat, $long, $index, $round=0) {
         try {
             $url = $this->api_url . '/' . $index . '/' . round($lat, $round) . ',' . round($long, $round) . '/current.json?appid=' . get_option('live_weather_station_owm_account')[0];
             $content = wp_remote_get($url);
             if (is_wp_error($content)) {
                 throw new Exception($content->get_error_message());
             }
-            //error_log(print_r($content,true));
+            Logger::debug($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], 999, 'Raw data: ' . print_r($content,true));
             return $content;
 
         }
         catch (Exception $ex) {
-            error_log(LWS_PLUGIN_NAME . ' / ' . LWS_VERSION . ' / ' . get_class() . ' / ' . get_class($this) . ' / Error code: ' . $ex->getCode() . ' / Error message: ' . $ex->getMessage());
+            Logger::warning($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], $ex->getCode(), $ex->getMessage());
         }
     }
 
@@ -156,12 +157,12 @@ trait Owm_Pollution_Client {
             $st['dashboard_data'] = array();
             try {
                 foreach ($this->indexes as $index) {
-                    $values = $this->get_owm_datas_array($this->get_pollution_data($station['loc_latitude'], $station['loc_longitude'], $index, 2), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
+                    $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index, 2), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
                     if (empty($values)) {
-                        $values = $this->get_owm_datas_array($this->get_pollution_data($station['loc_latitude'], $station['loc_longitude'], $index, 1), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
+                        $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index, 1), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
                     }
                     if (empty($values)) {
-                        $values = $this->get_owm_datas_array($this->get_pollution_data($station['loc_latitude'], $station['loc_longitude'], $index), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
+                        $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
                     }
                     if (!empty($values)) {
                         foreach ($values as $k => $v) {
@@ -176,22 +177,28 @@ trait Owm_Pollution_Client {
                 if (!empty($st['dashboard_data'])) {
                     $st['dashboard_data']['time_utc'] = time();
                     $this->owm_datas[] = $st;
+                    Logger::debug($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], 0, 'Success while collecting pollution data.');
+                }
+                else {
+                    Logger::notice($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], 0, 'Data are empty or irrelevant.');
                 }
             }
             catch(Exception $ex)
             {
                 if (strpos($ex->getMessage(), 'Invalid API key') > -1) {
                     $this->last_owm_error = __('Wrong OpenWeatherMap API key.', 'live-weather-station');
+                    Logger::critical($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], $ex->getCode(), 'Wrong credentials. Please, verify your OpenWeatherMap API key.');
                     return array();
                 }
                 if (strpos($ex->getMessage(), 'JSON /') > -1) {
+                    Logger::warning($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], $ex->getCode(), 'OpenWeatherMap servers has returned empty response. Retry will be done shortly.');
                     $this->last_owm_warning = __('OpenWeatherMap servers have returned empty response for some weather stations. Retry will be done shortly.', 'live-weather-station');
                 }
                 else {
                     $this->last_owm_warning = __('Temporary unable to contact OpenWeatherMap servers. Retry will be done shortly.', 'live-weather-station');
+                    Logger::warning($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], $ex->getCode(), 'Temporary unable to contact OpenWeatherMap servers. Retry will be done shortly.');
                     return array();
                 }
-
             }
         }
         if (!empty($this->owm_datas)) {

@@ -34,12 +34,27 @@ class Generator_Page extends Live_Weather_Station_Standalone {
      */
     protected function generate() {
         try {
-            if (!include(LWS_INCLUDES_DIR . 'class-' . $this->type . '-generator.php')) {
+            $file = LWS_INCLUDES_DIR . 'class-' . $this->type . '-generator.php';
+            if (!file_exists($file)) {
+                $this->error();
+            }
+            if (!include($file)) {
                 $this->error();
             }
             $classname = ucfirst($this->type) . '_Generator';
             $generator = new $classname;
             $generator->send($this->params);
+        }
+        catch(LoggableException $ex) {
+            Logger::exception($ex);
+            $code = $ex->getCode();
+            $message = $ex->getMessage();
+            if ($code != 0) {
+                $this->error($code, $message);
+            }
+            else {
+                $this->error();
+            }
         }
         catch(Exception $ex) {
             $code = $ex->getCode();
