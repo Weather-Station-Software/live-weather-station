@@ -12,6 +12,7 @@ require_once(LWS_INCLUDES_DIR.'trait-datas-output.php');
 require_once(LWS_INCLUDES_DIR.'trait-options-manipulation.php');
 require_once(LWS_INCLUDES_DIR.'trait-javascript-array.php');
 require_once(LWS_INCLUDES_DIR.'class-netatmo-collector.php');
+require_once(LWS_INCLUDES_DIR.'class-owm-collector.php');
 require_once(LWS_INCLUDES_DIR.'class-owm-current-collector.php');
 require_once(LWS_INCLUDES_DIR.'class-owm-pollution-collector.php');
 require_once(LWS_INCLUDES_DIR.'class-weather-computer.php');
@@ -23,7 +24,7 @@ require_once(LWS_INCLUDES_DIR.'class-wug-pusher.php');
 
 class Live_Weather_Station_Admin {
 
-    use Options_manipulation, Javascript_Array, Datas_Output {
+    use Options_Manipulation, Javascript_Array, Datas_Output {
         Datas_Output::get_module_type insteadof Javascript_Array;
         Datas_Output::get_measurement_type insteadof Javascript_Array;
     }
@@ -32,6 +33,8 @@ class Live_Weather_Station_Admin {
 	private $version;
     private $netatmo_error = '';
     private $netatmo_warning = '';
+    private $owm_error = '';
+    private $owm_warning = '';
     private $pushers = array('owm', 'pws', 'wow', 'wug');
 
     /**
@@ -428,8 +431,18 @@ class Live_Weather_Station_Admin {
                 else {
                     $warning = $this->netatmo_warning; 
                 }
-                $oerror = $owm->last_owm_error;
-                $owarning = $owm->last_owm_warning;
+                if ($this->owm_error == '') {
+                    $oerror = $owm->last_owm_error;
+                }
+                else {
+                    $oerror = $this->owm_error;
+                }
+                if ($this->owm_warning == '') {
+                    $owarning = $owm->last_owm_warning;
+                }
+                else {
+                    $owarning = $this->owm_warning;
+                }
                 if (count($datas) > 0) {
                     $js_array_textual = $this->get_js_array($datas, true, false, false, true);
                     $js_array_icon = $this->get_js_array($datas, true, false, false, true);
@@ -573,7 +586,12 @@ class Live_Weather_Station_Admin {
             $password = stripslashes($_POST['password']);
             if ($login != '' && $password != '') {
                 $netatmo = new Netatmo_Collector();
-                $netatmo->authentication($login, $password);
+                if ($netatmo->authentication($login, $password)) {
+                    Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly connected to service.');
+                }
+                else {
+                    Logger::error('Authentication', 'Netatmo', null, null, null, null, null, 'Unable to connect to service.');
+                }
                 $this->netatmo_error = $netatmo->last_netatmo_error;
                 $this->netatmo_warning = $netatmo->last_netatmo_warning;
                 $reboot = true;
@@ -584,6 +602,17 @@ class Live_Weather_Station_Admin {
             if (get_option('live_weather_station_owm_account')[0] != $key) {
                 $array_account = array($key, get_option('live_weather_station_owm_account')[1]);
                 update_option('live_weather_station_owm_account', $array_account);
+                $owm = new Owm_Collector();
+                if ($owm->authentication()) {
+                    Logger::notice('Authentication', 'OpenWeatherMap', null, null, null, null, null, 'Correctly connected to service.');
+                }
+                else {
+                    Logger::error('Authentication', 'OpenWeatherMap', null, null, null, null, null, 'Unable to connect to service.');
+                    $array_account = array('', get_option('live_weather_station_owm_account')[1]);
+                    update_option('live_weather_station_owm_account', $array_account);
+                }
+                $this->owm_error = $owm->last_owm_error;
+                $this->owm_warning = $owm->last_owm_warning;
                 $reboot = true;
             }
         }
@@ -607,6 +636,7 @@ class Live_Weather_Station_Admin {
      */
     protected function disconnect_netatmo() {
         update_option('live_weather_station_netatmo_account', array('', '', false));
+        Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly disconnected from service.');
         $this->reboot();
     }
 
@@ -618,6 +648,7 @@ class Live_Weather_Station_Admin {
     protected function disconnect_owm() {
         $array_account = array('', get_option('live_weather_station_owm_account')[1]);
         update_option('live_weather_station_owm_account', $array_account);
+        Logger::notice('Authentication', 'OpenWeatherMap', null, null, null, null, null, 'Correctly disconnected from service.');
         $this->reboot();
     }
 

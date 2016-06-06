@@ -98,10 +98,10 @@ class Netatmo_Pusher {
             $svc = 'Weather Underground';
             $wugp = new WUG_Pusher();
             $wugp->post_data($datas);
-            Logger::info('Cron Engine', null, null, null, null, null, 0, 'Success while obtaining, computing and pushing weather data.');
+            Logger::info('Cron Engine', null, null, null, null, null, 0, 'Job done: obtaining, computing and pushing weather data.');
         }
         catch (Exception $ex) {
-            Logger::critical('Cron Engine', $svc, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' weather data for push: ' . $ex->getMessage());
+            Logger::critical('Cron Engine', $svc, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' weather data: ' . $ex->getMessage());
         }
     }
 }

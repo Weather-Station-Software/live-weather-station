@@ -192,9 +192,15 @@
                         </tr>
                     <?php } ?>
                     <?php if (get_option('live_weather_station_owm_account')[1] != 1 && $status['o_enabled']) { ?>
-                        <tr>
-                            <td align="left"> <span><?php echo __( 'You have not created any OpenWeatherMap station at the moment, this is why nothing appears here. To add your first station, visit', 'live-weather-station').' <a href="'.esc_url($this->get_page_url('manage_owm')).'">'.__( 'the stations management page', 'live-weather-station').'</a>.';?></span></td>
-                        </tr>
+                        <?php if ( !LWS_I18N_LOADED ): ?>
+                            <tr>
+                                <td align="left"> <span><?php esc_html_e( 'Internationalisation extension is not installed. You can not manage OWM stations...', 'live-weather-station' );?></span></td>
+                            </tr>
+                        <?php else: ?>
+                            <tr>
+                                <td align="left"> <span><?php echo __( 'You have not created any OpenWeatherMap station at the moment, this is why nothing appears here. To add your first station, visit', 'live-weather-station').' <a href="'.esc_url($this->get_page_url('manage_owm')).'">'.__( 'the stations management page', 'live-weather-station').'</a>.';?></span></td>
+                            </tr>
+                        <?php endif; ?>
                     <?php } ?>
                     <?php if (get_option('live_weather_station_owm_account')[1] == 1 && $status['o_enabled'] && !$status['enabled']) { ?>
                         <tr>

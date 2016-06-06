@@ -89,5 +89,11 @@
                 </tbody>
             </table>
         </div>
+        <div id="major-publishing-actions">
+            <div>
+                <a href="<?php echo esc_url( $this->get_page_url('list_logs') ); ?>"><?php esc_html_e('Events log', 'live-weather-station'); ?></a>
+            </div>
+            <div class="clear"></div>
+        </div>
     </div>
 </div>

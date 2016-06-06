@@ -3,7 +3,7 @@
  * @package    Live_Weather_Station
  * @subpackage Live_Weather_Station/admin/partials
  * @author     Pierre Lannoy <https://pierre.lannoy.fr/>
- * @since      3.0.0
+ * @since      2.8.0
  */
 
 require_once(LWS_INCLUDES_DIR.'class-log-list-table.php');

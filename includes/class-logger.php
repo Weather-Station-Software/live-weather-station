@@ -3,13 +3,13 @@
 /**
  * This class add log capacity to the plugin.
  *
- * @since      3.0.0
+ * @since      2.8.0
  * @package    Live_Weather_Station
  * @subpackage Live_Weather_Station/includes
  * @author     Pierre Lannoy <https://pierre.lannoy.fr/>
  */
 
-require_once(LWS_INCLUDES_DIR.'trait-datas-storage.php');
+require_once(LWS_INCLUDES_DIR.'trait-datas-query.php');
 
 class LoggableException extends Exception {
 
@@ -43,15 +43,30 @@ class LoggableException extends Exception {
 
 class Logger {
 
-    use Datas_Storage;
+    use Datas_Query;
 
     public static $severity = array('emergency' => 0, 'alert' => 1, 'critical' => 2,'error' => 3,'warning' => 4,
         'notice' => 5,'info' => 6,'debug' =>7, 'unknown' => 8);
+    private $Live_Weather_Station;
+    private $version;
+
+    /**
+     * Initialize the class and set its properties.
+     *
+     * @since    2.8.0
+     * @param      string    $Live_Weather_Station       The name of this plugin.
+     * @param      string    $version    The version of this plugin.
+     * @access   public
+     */
+    public function __construct($Live_Weather_Station, $version) {
+        $this->Live_Weather_Station = $Live_Weather_Station;
+        $this->version = $version;
+    }
     
     /**
      * Init table where to log events.
      *
-     * @since    3.0.0
+     * @since    2.8.0
      */
     public static function init() {
         if (!get_option('live_weather_station_logger_installed', false)) {
@@ -59,6 +74,41 @@ class Logger {
             self::create_live_weather_station_log_table();
             self::notice(get_called_class(),null,null,null,null,null,null,'Logger successfully installed and initialized.');
         }
+    }
+
+    /**
+     * Delete old records.
+     *
+     * @since    2.8.0
+     */
+    public function rotate() {
+        $count = 0;
+        $max = get_option('live_weather_station_logger_rotate');
+        if (!$max) {
+            $max = 50000;
+        }
+        $current = $this->get_log_count();
+        if ($current > $max) {
+            $count = $current - $max;
+        }
+        if ($count > 0) {
+            $done = $this->rotate_table(self::live_weather_station_log_table() , 'id', $count);
+            if (!$done) {
+                self::error('Logger',null,null,null,null,null,null,'Unable to delete ' . $count . ' old records.');
+            }
+            else {
+                if ($count == 1) {
+                    self::notice('Logger',null,null,null,null,null,null,'1 old record deleted.');
+                }
+                if ($count > 1) {
+                    self::notice('Logger',null,null,null,null,null,null,$count . ' old records deleted.');
+                }
+            }
+        }
+        else {
+            self::info('Logger',null,null,null,null,null,null,'No old records to delete.');
+        }
+
     }
 
     /**
@@ -75,7 +125,7 @@ class Logger {
      * @param   $message        string      Optional. The error message.
      * @param   $version        string      Optional. Plugin version override.
      *
-     * @since    3.0.0
+     * @since    2.8.0
      */
     private static function _log($level = 'unknown', $system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
         if (get_option('live_weather_station_logger_level', 6) >= self::$severity[$level]) {
@@ -117,7 +167,7 @@ class Logger {
      *
      * @param   $e        LoggableException      Plugin version override.
      *
-     * @since    3.0.0
+     * @since    2.8.0
      */
     public static function exception($e) {
         self::_log($e->getLevel(), $e->getSystem(), $e->getService(), $e->getDeviceId(), $e->getDeviceName(), $e->getModuleId(), $e->getModuleName(), $e->getCode(), $e->getMessage());
@@ -136,7 +186,7 @@ class Logger {
      * @param   $message        string      Optional. The error message.
      * @param   $version        string      Optional. Plugin version override.
      *
-     * @since    3.0.0
+     * @since    2.8.0
      */
     public static function emergency($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
         self::_log('emergency', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
@@ -155,7 +205,7 @@ class Logger {
      * @param   $message        string      Optional. The error message.
      * @param   $version        string      Optional. Plugin version override.
      *
-     * @since    3.0.0
+     * @since    2.8.0
      */
     public static function alert($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
         self::_log('alert', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
@@ -174,7 +224,7 @@ class Logger {
      * @param   $message        string      Optional. The error message.
      * @param   $version        string      Optional. Plugin version override.
      *
-     * @since    3.0.0
+     * @since    2.8.0
      */
     public static function critical($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
         self::_log('critical', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
@@ -193,7 +243,7 @@ class Logger {
      * @param   $message        string      Optional. The error message.
      * @param   $version        string      Optional. Plugin version override.
      *
-     * @since    3.0.0
+     * @since    2.8.0
      */
     public static function error($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
         self::_log('error', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
@@ -212,7 +262,7 @@ class Logger {
      * @param   $message        string      Optional. The error message.
      * @param   $version        string      Optional. Plugin version override.
      *
-     * @since    3.0.0
+     * @since    2.8.0
      */
     public static function warning($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
         self::_log('warning', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
@@ -231,7 +281,7 @@ class Logger {
      * @param   $message        string      Optional. The error message.
      * @param   $version        string      Optional. Plugin version override.
      *
-     * @since    3.0.0
+     * @since    2.8.0
      */
     public static function notice($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
         self::_log('notice', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
@@ -250,7 +300,7 @@ class Logger {
      * @param   $message        string      Optional. The error message.
      * @param   $version        string      Optional. Plugin version override.
      *
-     * @since    3.0.0
+     * @since    2.8.0
      */
     public static function info($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
         self::_log('info', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
@@ -269,7 +319,7 @@ class Logger {
      * @param   $message        string      Optional. The error message.
      * @param   $version        string      Optional. Plugin version override.
      *
-     * @since    3.0.0
+     * @since    2.8.0
      */
     public static function debug($system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
         self::_log('debug', $system, $service, $device_id, $device_name, $module_id, $module_name, $code, $message, $version);
@@ -281,7 +331,7 @@ class Logger {
      * @param   $level          string      Optional. A level of error in ('emergency','alert','critical','error','warning','notice','info','debug').
      * @return  string      The icon string (awesome icon font).
      *
-     * @since    3.0.0
+     * @since    2.8.0
      */
     public static function get_icon($level = 'unknown') {
         switch ($level) {
@@ -321,7 +371,7 @@ class Logger {
      * @param   $level          string      Optional. A level of error in ('emergency','alert','critical','error','warning','notice','info','debug').
      * @return  string      The color hex encoded.
      *
-     * @since    3.0.0
+     * @since    2.8.0
      */
     public static function get_color($level = 'unknown') {
         switch ($level) {
@@ -361,7 +411,7 @@ class Logger {
      * @param   $level          string      Optional. A level of error in ('emergency','alert','critical','error','warning','notice','info','debug').
      * @return  string      The name in plain text.
      *
-     * @since    3.0.0
+     * @since    2.8.0
      */
     public static function get_name($level = 'unknown') {
         switch ($level) {
