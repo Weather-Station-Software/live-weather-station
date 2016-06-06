@@ -418,6 +418,22 @@ trait Datas_Storage {
     }
 
     /**
+     * Delete some lines in a table.
+     *
+     * @param   string      $table_name The table to update.
+     * @param   string      $field_name   The name of the field containing ids.
+     * @param   integer     $limit  The number of lines to delete.
+     * @return int|false The number of rows deleted, or false on error.
+     * @since    2.8.0
+     */
+    private function rotate_table($table_name, $field_name, $limit) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . $table_name;
+        $sql = "DELETE FROM ".$table_name." ORDER BY ".$field_name." ASC LIMIT ".$limit;
+        return $wpdb->query($sql);
+    }
+
+    /**
      * Delete some owm stations.
      *
      * @param   array   $value  The values to delete from the table

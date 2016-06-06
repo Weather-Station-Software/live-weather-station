@@ -17,6 +17,7 @@ trait Schedules_Manipulation {
     protected static $owm_update_current_schedule_name = 'lws_owm_current_update';
     protected static $owm_update_pollution_schedule_name = 'lws_owm_pollution_update';
     protected static $netatmo_push_schedule_name = 'lws_netatmo_push';
+    protected static $log_rotate_name = 'lws_log_rotate';
 
     /**
      * Define Netatmo Updater cron job.
@@ -36,6 +37,7 @@ trait Schedules_Manipulation {
     protected static function launch_netatmo_update_cron() {
         if (!wp_next_scheduled(self::$netatmo_update_schedule_name)) {
             wp_schedule_event(time() + 10, 'five_minutes', self::$netatmo_update_schedule_name);
+            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$netatmo_update_schedule_name.' cron job.');
         }
     }
 
@@ -57,6 +59,7 @@ trait Schedules_Manipulation {
     protected static function launch_netatmo_push_cron() {
         if (!wp_next_scheduled(self::$netatmo_push_schedule_name)) {
             wp_schedule_event(time() + 20, 'ten_minutes', self::$netatmo_push_schedule_name);
+            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$netatmo_push_schedule_name.' cron job.');
         }
     }
 
@@ -78,6 +81,7 @@ trait Schedules_Manipulation {
     protected static function launch_owm_current_update_cron() {
         if (!wp_next_scheduled(self::$owm_update_current_schedule_name)) {
             wp_schedule_event(time() + 30, 'fifteen_minutes', self::$owm_update_current_schedule_name);
+            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$owm_update_current_schedule_name.' cron job.');
         }
     }
 
@@ -99,6 +103,29 @@ trait Schedules_Manipulation {
     protected static function launch_owm_pollution_update_cron() {
         if (!wp_next_scheduled(self::$owm_update_pollution_schedule_name)) {
             wp_schedule_event(time() + 40, 'thirty_minutes', self::$owm_update_pollution_schedule_name);
+            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$owm_update_pollution_schedule_name.' cron job.');
+        }
+    }
+
+    /**
+     * Define log rotate cron job.
+     *
+     * @since    2.8.0
+     */
+    protected static function define_log_rotate_cron() {
+        $logger = new Logger(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$log_rotate_name, array($logger, 'rotate'));
+    }
+
+    /**
+     * Launch the log rotate cron job if needed.
+     *
+     * @since    2.8.0
+     */
+    protected static function launch_log_rotate_cron() {
+        if (!wp_next_scheduled(self::$log_rotate_name)) {
+            wp_schedule_event(time() + 5, 'daily', self::$log_rotate_name);
+            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$log_rotate_name.' cron job.');
         }
     }
 
@@ -113,6 +140,7 @@ trait Schedules_Manipulation {
         wp_clear_scheduled_hook(self::$owm_update_current_schedule_name);
         wp_clear_scheduled_hook(self::$owm_update_pollution_schedule_name);
         wp_clear_scheduled_hook(self::$netatmo_push_schedule_name);
+        wp_clear_scheduled_hook(self::$log_rotate_name);
     }
 
     /**
@@ -125,6 +153,7 @@ trait Schedules_Manipulation {
         self::launch_netatmo_push_cron();
         self::launch_owm_current_update_cron();
         self::launch_owm_pollution_update_cron();
+        self::launch_log_rotate_cron();
     }
 
     /**

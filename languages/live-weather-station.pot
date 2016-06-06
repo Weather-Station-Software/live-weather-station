@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Live Weather Station\n"
-"POT-Creation-Date: 2016-06-03 11:36+0200\n"
+"POT-Creation-Date: 2016-06-06 15:50+0200\n"
 "PO-Revision-Date: 2015-11-07 19:46+0100\n"
 "Last-Translator: Pierre Lannoy <https://pierre.lannoy.fr/>\n"
 "Language-Team: Pierre Lannoy <https://pierre.lannoy.fr/>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: admin/class-live-weather-station-admin.php:107
+#: admin/class-live-weather-station-admin.php:110
 #: admin/partials/live-weather-station-admin-config-accounts-settings.php:13
 msgid "Settings"
 msgstr ""
@@ -614,17 +614,24 @@ msgstr ""
 msgid "There is no Netatmo weather station associated with your account."
 msgstr ""
 
-#: admin/partials/live-weather-station-admin-config-stations.php:196
+#: admin/partials/live-weather-station-admin-config-stations.php:197
+#: admin/partials/live-weather-station-admin-config-summary.php:86
+msgid ""
+"Internationalisation extension is not installed. You can not manage OWM "
+"stations..."
+msgstr ""
+
+#: admin/partials/live-weather-station-admin-config-stations.php:201
 msgid ""
 "You have not created any OpenWeatherMap station at the moment, this is why "
 "nothing appears here. To add your first station, visit"
 msgstr ""
 
-#: admin/partials/live-weather-station-admin-config-stations.php:196
+#: admin/partials/live-weather-station-admin-config-stations.php:201
 msgid "the stations management page"
 msgstr ""
 
-#: admin/partials/live-weather-station-admin-config-stations.php:201
+#: admin/partials/live-weather-station-admin-config-stations.php:207
 msgid ""
 "To see data from OpenWeatherMap stations, you must choose another "
 "collection mode in the \"Options\" box."
@@ -703,10 +710,9 @@ msgstr ""
 msgid "PHP warning"
 msgstr ""
 
-#: admin/partials/live-weather-station-admin-config-summary.php:86
-msgid ""
-"Internationalisation extension is not installed. You can not manage OWM "
-"stations..."
+#: admin/partials/live-weather-station-admin-config-summary.php:94
+#: admin/partials/live-weather-station-admin-list-logs.php:16
+msgid "Events log"
 msgstr ""
 
 #: admin/partials/live-weather-station-admin-delete-owm.php:12
@@ -876,10 +882,6 @@ msgstr ""
 
 #: admin/partials/live-weather-station-admin-list-logs-top.php:23
 msgid "Filter stations to display"
-msgstr ""
-
-#: admin/partials/live-weather-station-admin-list-logs.php:16
-msgid "Events log"
 msgstr ""
 
 #: admin/partials/live-weather-station-admin-manage-netatmo.php:16
@@ -1195,35 +1197,35 @@ msgstr ""
 msgid "All stations"
 msgstr ""
 
-#: includes/class-logger.php:369
+#: includes/class-logger.php:419
 msgid "Emergency"
 msgstr ""
 
-#: includes/class-logger.php:372
+#: includes/class-logger.php:422
 msgid "Alert"
 msgstr ""
 
-#: includes/class-logger.php:375
+#: includes/class-logger.php:425
 msgid "Critical error"
 msgstr ""
 
-#: includes/class-logger.php:378
+#: includes/class-logger.php:428
 msgid "Error"
 msgstr ""
 
-#: includes/class-logger.php:381
+#: includes/class-logger.php:431
 msgid "Warning"
 msgstr ""
 
-#: includes/class-logger.php:384
+#: includes/class-logger.php:434
 msgid "Notice"
 msgstr ""
 
-#: includes/class-logger.php:387
+#: includes/class-logger.php:437
 msgid "Information"
 msgstr ""
 
-#: includes/class-logger.php:390
+#: includes/class-logger.php:440
 msgid "Debug information"
 msgstr ""
 
@@ -2770,28 +2772,28 @@ msgid ""
 "Temporary unable to contact Netatmo servers. Retry will be done shortly."
 msgstr ""
 
-#: includes/trait-owm-current-client.php:91
-#: includes/trait-type-description.php:42
-msgid "[OpenWeatherMap Records]"
-msgstr ""
-
-#: includes/trait-owm-current-client.php:194
+#: includes/trait-owm-client.php:68 includes/trait-owm-current-client.php:180
 #: includes/trait-owm-pollution-client.php:189
 msgid "Wrong OpenWeatherMap API key."
 msgstr ""
 
-#: includes/trait-owm-current-client.php:200
+#: includes/trait-owm-client.php:72 includes/trait-owm-current-client.php:186
 #: includes/trait-owm-pollution-client.php:195
 msgid ""
 "OpenWeatherMap servers have returned empty response for some weather "
 "stations. Retry will be done shortly."
 msgstr ""
 
-#: includes/trait-owm-current-client.php:203
+#: includes/trait-owm-client.php:76 includes/trait-owm-current-client.php:189
 #: includes/trait-owm-pollution-client.php:198
 msgid ""
 "Temporary unable to contact OpenWeatherMap servers. Retry will be done "
 "shortly."
+msgstr ""
+
+#: includes/trait-owm-current-client.php:76
+#: includes/trait-type-description.php:42
+msgid "[OpenWeatherMap Records]"
 msgstr ""
 
 #: includes/trait-owm-pollution-client.php:152
@@ -2799,23 +2801,23 @@ msgstr ""
 msgid "[OpenWeatherMap Pollution]"
 msgstr ""
 
-#: includes/trait-schedules-manipulation.php:148
+#: includes/trait-schedules-manipulation.php:177
 msgid "Every three minutes"
 msgstr ""
 
-#: includes/trait-schedules-manipulation.php:161
+#: includes/trait-schedules-manipulation.php:190
 msgid "Every five minutes"
 msgstr ""
 
-#: includes/trait-schedules-manipulation.php:174
+#: includes/trait-schedules-manipulation.php:203
 msgid "Every ten minutes"
 msgstr ""
 
-#: includes/trait-schedules-manipulation.php:187
+#: includes/trait-schedules-manipulation.php:216
 msgid "Every fifteen minutes"
 msgstr ""
 
-#: includes/trait-schedules-manipulation.php:200
+#: includes/trait-schedules-manipulation.php:229
 msgid "Every thirty minutes"
 msgstr ""
 

@@ -9,19 +9,6 @@
  * @author     Pierre Lannoy <https://pierre.lannoy.fr/>
  */
 
-require_once(LWS_INCLUDES_DIR. 'owm_api/Cmfcmf/OpenWeatherMap.php');
-require_once(LWS_INCLUDES_DIR. 'owm_api/Cmfcmf/OpenWeatherMap/Exception.php');
-require_once(LWS_INCLUDES_DIR. 'owm_api/Cmfcmf/OpenWeatherMap/CurrentWeather.php');
-require_once(LWS_INCLUDES_DIR. 'owm_api/Cmfcmf/OpenWeatherMap/Fetcher/FetcherInterface.php');
-require_once(LWS_INCLUDES_DIR. 'owm_api/Cmfcmf/OpenWeatherMap/Fetcher/CurlFetcher.php');
-require_once(LWS_INCLUDES_DIR. 'owm_api/Cmfcmf/OpenWeatherMap/Fetcher/FileGetContentsFetcher.php');
-require_once(LWS_INCLUDES_DIR. 'owm_api/Cmfcmf/OpenWeatherMap/Util/City.php');
-require_once(LWS_INCLUDES_DIR. 'owm_api/Cmfcmf/OpenWeatherMap/Util/Sun.php');
-require_once(LWS_INCLUDES_DIR. 'owm_api/Cmfcmf/OpenWeatherMap/Util/Temperature.php');
-require_once(LWS_INCLUDES_DIR. 'owm_api/Cmfcmf/OpenWeatherMap/Util/Time.php');
-require_once(LWS_INCLUDES_DIR. 'owm_api/Cmfcmf/OpenWeatherMap/Util/Unit.php');
-require_once(LWS_INCLUDES_DIR. 'owm_api/Cmfcmf/OpenWeatherMap/Util/Weather.php');
-require_once(LWS_INCLUDES_DIR. 'owm_api/Cmfcmf/OpenWeatherMap/Util/Wind.php');
 require_once(LWS_INCLUDES_DIR.'trait-owm-client.php');
 
 use Cmfcmf\OpenWeatherMap;
@@ -31,8 +18,6 @@ trait Owm_Current_Client {
 
     use Owm_Client;
 
-    public $last_owm_error = '';
-    public $last_owm_warning = '';
     protected $owm_client;
     protected $owm_datas;
     protected $facility = 'Weather Collector';
@@ -166,6 +151,7 @@ trait Owm_Current_Client {
         }
         return $result;
     }
+    
     /**
      * Get station's datas.
      *

@@ -16,6 +16,7 @@ trait Options_Manipulation {
     private static $live_weather_station_owm_account = array('', 0) ;
     private static $live_weather_station_settings = array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0) ;
     private static $live_weather_station_logger_level = 6 ;
+    private static $live_weather_station_logger_rotate = 50000 ;
 
     /**
      * Drop options of the plugin.
@@ -31,6 +32,7 @@ trait Options_Manipulation {
         delete_option('live_weather_station_settings');
         delete_option('live_weather_station_logger_installed');
         delete_option('live_weather_station_logger_level');
+        delete_option('live_weather_station_logger_rotate');
     }
 
     /**
@@ -45,6 +47,7 @@ trait Options_Manipulation {
         update_option('live_weather_station_owm_account', self::$live_weather_station_owm_account);
         update_option('live_weather_station_settings', self::$live_weather_station_settings);
         update_option('live_weather_station_logger_level', self::$live_weather_station_logger_level);
+        update_option('live_weather_station_logger_rotate', self::$live_weather_station_logger_rotate);
     }
 
     /**
@@ -71,11 +74,25 @@ trait Options_Manipulation {
      * Verify a single option string of the plugin.
      *
      * @param       string      $option_name    Name of the option.
-     * @param       array       $val            Default values if not present.
+     * @param       string      $val            Default values if not present.
      * @since    2.0.0
      * @static
      */
-    private static function _verify_options_string($option_name, $val) {
+    private static function _verify_option_string($option_name, $val) {
+        if (!get_option($option_name)) {
+            update_option($option_name, $val);
+        }
+    }
+
+    /**
+     * Verify a single option string of the plugin.
+     *
+     * @param       string      $option_name    Name of the option.
+     * @param       integer     $val            Default values if not present.
+     * @since    2.8.0
+     * @static
+     */
+    private static function _verify_option_integer($option_name, $val) {
         if (!get_option($option_name)) {
             update_option($option_name, $val);
         }
@@ -89,10 +106,12 @@ trait Options_Manipulation {
      * @static
      */
     protected static function verify_options() {
-        self::_verify_options_string('live_weather_station_version', self::$live_weather_station_version);
+        self::_verify_option_string('live_weather_station_version', self::$live_weather_station_version);
         self::_verify_options_array('live_weather_station_netatmo_account', self::$live_weather_station_netatmo_account);
         self::_verify_options_array('live_weather_station_owm_account', self::$live_weather_station_owm_account);
         self::_verify_options_array('live_weather_station_settings', self::$live_weather_station_settings);
+        self::_verify_option_integer('live_weather_station_logger_level', self::$live_weather_station_logger_level);
+        self::_verify_option_integer('live_weather_station_logger_rotate', self::$live_weather_station_logger_rotate);
     }
 
     /**

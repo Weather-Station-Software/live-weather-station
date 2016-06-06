@@ -49,7 +49,7 @@ class Netatmo_Updater {
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
             $ephemeris->compute();
-            Logger::info('Cron Engine', 'Netatmo', null, null, null, null, 0, 'Success while collecting and computing weather and ephemeris data.');
+            Logger::info('Cron Engine', 'Netatmo', null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
         catch (Exception $ex) {
             Logger::critical('Cron Engine', 'Netatmo', null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());

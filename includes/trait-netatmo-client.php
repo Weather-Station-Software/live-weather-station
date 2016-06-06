@@ -197,9 +197,6 @@ trait Netatmo_Client {
                 return array();
             }
         }
-        else {
-            Logger::alert($this->facility, $this->service_name, null, null, null, null, 0, 'Unable to find or obtain access tokens.');
-        }
         return $this->netatmo_datas;
     }
 }

@@ -59,6 +59,7 @@ class Watchdog {
         self::define_netatmo_push_cron();
         self::define_owm_current_update_cron();
         self::define_owm_pollution_update_cron();
+        self::define_log_rotate_cron();
         self::define_watchdog_cron();
         self::launch();
     }
