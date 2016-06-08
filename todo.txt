@@ -7,9 +7,7 @@
  * 3.x - 5 days forecasting
  * 3.x - Forest fire weather index computing
  * 3.x - Aridity index computing
- * 3.x - Logging facilities
  * 3.x - Pushing data to twitter / slack / fb / ...
- * 3.x - Generate txt files for services requiring it
 
  
  
@@ -46,3 +44,4 @@
   * Generation of stickertags
   * Redesign of about box
   * Redesign of dashboard
+  * Direct access to filtered events log

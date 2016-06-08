@@ -87,6 +87,10 @@ abstract class Live_Weather_Station_Standalone {
                     $this->type = $type;
                     break;
                 }
+                if (strpos($args, 'DB_'.$type.'.txt')) {
+                    $this->type = $type;
+                    break;
+                }
             }
             foreach ($available['fields'] as $field) {
                 if (preg_match($available['variables'][$field], $args, $matches) ==1 ) {
