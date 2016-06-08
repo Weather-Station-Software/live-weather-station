@@ -566,7 +566,7 @@ trait Datas_Query {
         $result['00:00:00:00:00:00'] = 'N/A';
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
-        $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name ;
+        $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name . " ORDER BY device_name ASC";
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -596,7 +596,7 @@ trait Datas_Query {
         $result['N/A'] = 'N/A';
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
-        $sql = "SELECT DISTINCT service FROM ".$table_name ;
+        $sql = "SELECT DISTINCT service FROM ".$table_name . " ORDER BY service ASC";
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -627,7 +627,7 @@ trait Datas_Query {
         $result = array();
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
-        $sql = "SELECT DISTINCT system FROM ".$table_name ;
+        $sql = "SELECT DISTINCT system FROM ".$table_name . " ORDER BY system ASC";
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
