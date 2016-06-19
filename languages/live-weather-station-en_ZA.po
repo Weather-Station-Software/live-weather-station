@@ -1,19 +1,18 @@
-# Translation of Stable (latest release) in English (Australia)
-# This file is distributed under the same license as the Stable (latest release) package.
+# Translation of Development (trunk) in English (South Africa)
+# This file is distributed under the same license as the Development (trunk) package.
 msgid ""
 msgstr ""
 "Project-Id-Version: Live Weather Station\n"
-"POT-Creation-Date: 2016-06-19 22:01+0200\n"
-"PO-Revision-Date: 2016-06-19 22:02+0200\n"
-"Last-Translator: Pierre Lannoy <pierre@lannoy.fr>\n"
-"Language-Team: Stephen Edgar (netweb)\n"
-"Language: en_AU\n"
+"POT-Creation-Date: 2016-06-19 22:00+0200\n"
+"PO-Revision-Date: 2016-06-19 22:01+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: en_ZA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Poedit 1.8.8\n"
-"X-Poedit-SourceCharset: UTF-8\n"
 
 #: admin/class-live-weather-station-admin.php:117
 #: admin/class-live-weather-station-admin.php:118
@@ -141,7 +140,7 @@ msgstr "Latitude"
 
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:102
 msgid "(eg 49.85)"
-msgstr "(e.g. 49.85)"
+msgstr "(eg 49.85)"
 
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:106
 #: includes/class-owm-stations-list-table.php:47
@@ -209,8 +208,8 @@ msgid ""
 "\">write a review</a>."
 msgstr ""
 "Is <em>Live Weather Station</em> helpful? I would be pleased that you <a "
-"href=“https://wordpress.org/support/view/plugin-reviews/live-weather-"
-"station”>write a review</a>."
+"href=\"https://wordpress.org/support/view/plugin-reviews/live-weather-station"
+"\">write a review</a>."
 
 #: admin/partials/live-weather-station-admin-config-about.php:29
 msgid "Translations"
@@ -236,9 +235,9 @@ msgid ""
 "and its reactivity and <a href=\"https://profiles.wordpress.org/bergjet"
 "\">Martin Punz</a> for tests and kindness from Austria."
 msgstr ""
-"<a href=“https://twitter.com/cyril_lakech”>Cyril Lakech</a>, for its tools "
-"and its reactivity and <a href=“https://profiles.wordpress.org/"
-"bergjet”>Martin Punz</a> for tests and kindness from Austria."
+"<a href=\"https://twitter.com/cyril_lakech\">Cyril Lakech</a>, for its tools "
+"and its reactivity and <a href=\"https://profiles.wordpress.org/bergjet"
+"\">Martin Punz</a> for tests and kindness from Austria."
 
 #: admin/partials/live-weather-station-admin-config-about.php:44
 msgid ""
@@ -254,7 +253,7 @@ msgstr ""
 "modified) like Weather Icons project by Erik Flowers, EnzoJS and SteelSeries "
 "by Gerrit Grunwald, JustGage by Bojan Đuričić, OpenWeatherMap PHP API by "
 "Christian Flach, phpcolors by Arlo Carreon, moonrise/moonset calculation "
-"from Matt “dxprog” Hackmann and moon phase calculation from Samir Shah."
+"from Matt \"dxprog\" Hackmann and moon phase calculation from Samir Shah."
 
 #: admin/partials/live-weather-station-admin-config-about.php:47
 msgid "Data"
@@ -267,7 +266,7 @@ msgid ""
 "target=\"_blank\">Creative Commons CC:BY-SA 4.0 license</a>."
 msgstr ""
 "All meteorological data provided by OpenWeatherMap are distributed under the "
-"terms of the <a href=\"http://creativecommons.org/licenses/by-sa/4.0/\"  "
+"terms of the <a href=\"http://creativecommons.org/licenses/by-sa/4.0/\" "
 "target=\"_blank\">Creative Commons CC:BY-SA 4.0 license</a>."
 
 #: admin/partials/live-weather-station-admin-config-about.php:50
@@ -472,7 +471,7 @@ msgstr "Design"
 
 #: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:83
 msgid "Colors"
-msgstr "Colors"
+msgstr "Colours"
 
 #: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:96
 msgid "Pointer"
@@ -532,7 +531,7 @@ msgstr "Main pointer type"
 
 #: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:135
 msgid "Main pointer color"
-msgstr "Main pointer color"
+msgstr "Main pointer colour"
 
 #: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:148
 msgid "2nd pointer type"
@@ -540,7 +539,7 @@ msgstr "2nd pointer type"
 
 #: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:161
 msgid "2nd pointer color"
-msgstr "2nd pointer color"
+msgstr "2nd pointer colour"
 
 #: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:174
 msgid "Knob"
@@ -564,7 +563,7 @@ msgstr "Index style"
 
 #: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:253
 msgid "Index color"
-msgstr "Index color"
+msgstr "Index colour"
 
 #: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:266
 msgid "Glass"
@@ -658,15 +657,15 @@ msgid ""
 msgstr ""
 "In order to display weather data, <strong><em>Live Weather Station</em></"
 "strong> must be connected to your Netatmo account and/or it must have a "
-"valid OpenWeatherMap API key…<br/><strong>If you have a Netatmo weather "
+"valid OpenWeatherMap API key...<br/><strong>If you have a Netatmo weather "
 "station</strong> (or have access to some friends stations) please enter your "
-"Netatmo login and password in the “Settings” box. <em>Note that, in "
+"Netatmo login and password in the \"Settings\" box. <em>Note that, in "
 "accordance with the manufacturer recommendations, these credentials will not "
 "be stored in your WordPress site.</em><br/><strong>If you do not have a "
-"Netatmo account</strong> or if you want to enhance the rendered datas of "
-"your Netatmo station, you must <a href=“http://openweathermap.org/appid” "
-"target=“_blank”>get a free OpenWeatherMap API key</a> and paste it in the "
-"“Settings” box."
+"Netatmo account</strong> or if you want to enhance the rendedred datas of "
+"your Netatmo station, you must <a href=\"http://openweathermap.org/appid\" "
+"target=\"_blank\">get a free OpenWeatherMap API key</a> and paste it in the "
+"\"Settings\" box."
 
 #: admin/partials/live-weather-station-admin-config-stations.php:191
 msgid "There is no Netatmo weather station associated with your account."
@@ -679,7 +678,7 @@ msgid ""
 "stations..."
 msgstr ""
 "Internationalisation extension is not installed. You can not manage OWM "
-"stations…"
+"stations..."
 
 #: admin/partials/live-weather-station-admin-config-stations.php:201
 msgid ""
@@ -836,7 +835,7 @@ msgstr ""
 #: admin/partials/live-weather-station-admin-edit-netatmo.php:58
 #: admin/partials/live-weather-station-admin-edit-netatmo.php:88
 msgid "Create an account"
-msgstr "create a site"
+msgstr "Create an account"
 
 #: admin/partials/live-weather-station-admin-edit-netatmo.php:28
 msgid "on the Weather Observations Website from Met Office"
@@ -1177,7 +1176,7 @@ msgstr[1] "%s items"
 
 #: includes/class-live-weather-station-list-table.php:310
 msgid "First page"
-msgstr "First page"
+msgstr "First Page"
 
 #: includes/class-live-weather-station-list-table.php:320
 msgid "Previous page"
@@ -1951,7 +1950,7 @@ msgstr "Translucent - Light purple"
 #: includes/trait-javascript-array.php:663
 #: includes/trait-javascript-array.php:1068
 msgid "Translucent - Gray"
-msgstr "Translucent - Grey"
+msgstr "Translucent - Gray"
 
 #: includes/trait-javascript-array.php:664
 #: includes/trait-javascript-array.php:1066
@@ -2458,7 +2457,7 @@ msgstr "Anthracite"
 
 #: includes/trait-javascript-array.php:908
 msgid "Tilted gray"
-msgstr "Tilted grey"
+msgstr "Tilted gray"
 
 #: includes/trait-javascript-array.php:909
 msgid "Tilted black"
@@ -2482,15 +2481,15 @@ msgstr "Gold"
 
 #: includes/trait-javascript-array.php:925
 msgid "Dark gray"
-msgstr "Dark grey"
+msgstr "Dark gray"
 
 #: includes/trait-javascript-array.php:926
 msgid "Satin gray"
-msgstr "Satin grey"
+msgstr "Satin gray"
 
 #: includes/trait-javascript-array.php:927
 msgid "Light gray"
-msgstr "Light grey"
+msgstr "Light gray"
 
 #: includes/trait-javascript-array.php:928
 #: includes/trait-javascript-array.php:1007
@@ -3652,45 +3651,3 @@ msgstr "Pierre Lannoy"
 #. Author URI of the plugin/theme
 msgid "https://pierre.lannoy.fr"
 msgstr "https://pierre.lannoy.fr"
-
-#~ msgid "CO₂ level"
-#~ msgstr "CO₂ level"
-
-#~ msgid "Temperature unit"
-#~ msgstr "Temperature unit"
-
-#~ msgid "Pressure unit"
-#~ msgstr "Pressure unit"
-
-#~ msgid "Windspeed unit"
-#~ msgstr "Windspeed unit"
-
-#~ msgid "Wind icon semantics"
-#~ msgstr "Wind icon semantics"
-
-#~ msgid "Altitude unit"
-#~ msgstr "Altitude unit"
-
-#~ msgid "Distance unit"
-#~ msgstr "Distance unit"
-
-#~ msgid "After registration, log in and "
-#~ msgstr "After registration, log in and "
-
-#~ msgid "After a few hours you'll get something "
-#~ msgstr "Push data to Met Office"
-
-#~ msgid "on the Weather Observations Website form Met Office"
-#~ msgstr "create a site"
-
-#~ msgid ""
-#~ "All meteorological data provided by OpenWeatherMap are distributed under "
-#~ "terms of the <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\" "
-#~ "target=\"_blank\">Creative Commons CC:BY-SA 2.0 license</a>."
-#~ msgstr ""
-#~ "All meteorological data provided by OpenWeatherMap are distributed under "
-#~ "terms of the <a href=\"http://creativecommons.org/licenses/by-sa/2.0/\" "
-#~ "target=\"_blank\">Creative Commons CC:BY-SA 2.0 license</a>."
-
-#~ msgid "lst hr"
-#~ msgstr "lst hr"

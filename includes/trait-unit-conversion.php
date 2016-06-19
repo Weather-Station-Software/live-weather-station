@@ -293,6 +293,8 @@ trait Unit_Conversion {
                 break;
             case 2:  // V(m/s) = V(km/h) / 3.6
                 $result = $result / 3.6;
+                $format = '%.1F';
+                $prec = 1;
                 break;
             case 5:  // V(m/s) = V(km/h) / 3.6
                 $format = '%.2F';

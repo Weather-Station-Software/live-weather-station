@@ -24,6 +24,7 @@ abstract class Live_Weather_Station_Txt_Generator {
      */
     private function send_header($filename=false) {
         header('Content-type: text/plain; charset=utf-8');
+        header("Cache-Control: max-age=1");
         if ($filename) {
             header('Content-Disposition: attachment; filename="' . $filename . '"');
         }

@@ -31,7 +31,12 @@ function is_i18n_loaded() {
 }
 
 
-define('LWS_VERSION', '2.8.1');
+define('LWS_VERSION', '2.9.0');
+//define('LWS_BETA', true);
+
+
+
+
 define('LWS_MINIMUM_WP_VERSION', '4.0');
 define('LWS_PLUGIN_ID', 'live-weather-station');
 define('LWS_PLUGIN_NAME', 'Live Weather Station');

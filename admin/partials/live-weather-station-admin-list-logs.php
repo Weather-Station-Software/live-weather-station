@@ -11,6 +11,9 @@ require_once(LWS_INCLUDES_DIR.'class-log-list-table.php');
 $logListTable = new Log_List_Table();
 $logListTable->prepare_items();
 
+// @todo 3.x / delete the following hidden fields : view, action
+// @todo 3.x / set page hidden field at "lws-events"
+
 ?>
 <div class="wrap">
     <h2><?php echo __('Events log', 'live-weather-station');?></h2>

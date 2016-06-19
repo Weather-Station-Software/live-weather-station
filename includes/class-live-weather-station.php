@@ -105,6 +105,9 @@ class Live_Weather_Station {
         $this->loader->add_action( 'widgets_init', 'Live_Weather_Station_Widget_Outdoor', 'widget_registering' );
 		$this->loader->add_action( 'widgets_init', 'Live_Weather_Station_Widget_Ephemeris', 'widget_registering' );
         $this->loader->add_filter( 'plugin_action_links_'.plugin_basename(LWS_PLUGIN_DIR.'live-weather-station.php'), $plugin_admin, 'admin_settings_link' );
+		if (defined('LWS_BETA')) {
+			$this->loader->add_action( 'admin_menu', $plugin_admin, 'lws_admin_menu' );
+		}
 	}
 
 	/**

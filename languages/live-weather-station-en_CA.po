@@ -3,8 +3,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Live Weather Station\n"
-"POT-Creation-Date: 2016-06-03 11:38+0200\n"
-"PO-Revision-Date: 2016-06-03 14:16+0200\n"
+"POT-Creation-Date: 2016-06-19 22:02+0200\n"
+"PO-Revision-Date: 2016-06-19 22:02+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: en_CA\n"
@@ -14,10 +14,30 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 "X-Generator: Poedit 1.8.8\n"
 
-#: admin/class-live-weather-station-admin.php:107
+#: admin/class-live-weather-station-admin.php:117
+#: admin/class-live-weather-station-admin.php:118
+msgid "Dashboard"
+msgstr "Dashboard"
+
+#: admin/class-live-weather-station-admin.php:119
+#: admin/class-live-weather-station-admin.php:354
 #: admin/partials/live-weather-station-admin-config-accounts-settings.php:13
 msgid "Settings"
 msgstr "Settings"
+
+#: admin/class-live-weather-station-admin.php:120
+msgid "Stations"
+msgstr "Stations"
+
+#: admin/class-live-weather-station-admin.php:121
+#: admin/partials/live-weather-station-admin-config-summary.php:94
+#: admin/partials/live-weather-station-admin-list-logs.php:19
+msgid "Events log"
+msgstr "Events log"
+
+#: admin/class-live-weather-station-admin.php:121
+msgid "Log"
+msgstr "Log"
 
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:9
 msgid "verify on a map"
@@ -58,8 +78,8 @@ msgstr "Some required fields are missing!"
 
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:30
 #: includes/trait-javascript-array.php:262
-#: includes/trait-javascript-array.php:801
-#: includes/trait-javascript-array.php:806
+#: includes/trait-javascript-array.php:824
+#: includes/trait-javascript-array.php:829
 msgid "Station name"
 msgstr "Station name"
 
@@ -82,7 +102,7 @@ msgstr "Country"
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:48
 #: admin/partials/live-weather-station-admin-config-stations.php:28
 #: includes/class-owm-stations-list-table.php:45
-#: includes/trait-type-description.php:207
+#: includes/trait-type-description.php:215
 msgid "Time zone"
 msgstr "Time Zone"
 
@@ -114,7 +134,7 @@ msgstr ""
 
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:102
 #: includes/class-owm-stations-list-table.php:46
-#: includes/trait-type-description.php:199
+#: includes/trait-type-description.php:207
 msgid "Latitude"
 msgstr "Latitude"
 
@@ -124,7 +144,7 @@ msgstr "(eg 49.85)"
 
 #: admin/partials/live-weather-station-admin-add-edit-owm.php:106
 #: includes/class-owm-stations-list-table.php:47
-#: includes/trait-type-description.php:203
+#: includes/trait-type-description.php:211
 msgid "Longitude"
 msgstr "Longitude"
 
@@ -472,8 +492,8 @@ msgstr "Unit"
 #: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:148
 #: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:83
 #: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:279
-#: includes/trait-type-description.php:240
-#: includes/trait-type-description.php:246
+#: includes/trait-type-description.php:248
+#: includes/trait-type-description.php:254
 msgid "Size"
 msgstr "Size"
 
@@ -651,7 +671,16 @@ msgstr ""
 msgid "There is no Netatmo weather station associated with your account."
 msgstr "There is no Netatmo weather station associated with your account."
 
-#: admin/partials/live-weather-station-admin-config-stations.php:196
+#: admin/partials/live-weather-station-admin-config-stations.php:197
+#: admin/partials/live-weather-station-admin-config-summary.php:86
+msgid ""
+"Internationalisation extension is not installed. You can not manage OWM "
+"stations..."
+msgstr ""
+"Internationalisation extension is not installed. You can not manage OWM "
+"stations..."
+
+#: admin/partials/live-weather-station-admin-config-stations.php:201
 msgid ""
 "You have not created any OpenWeatherMap station at the moment, this is why "
 "nothing appears here. To add your first station, visit"
@@ -659,11 +688,11 @@ msgstr ""
 "You have not created any OpenWeatherMap station at the moment, this is why "
 "nothing appears here. To add your first station, visit"
 
-#: admin/partials/live-weather-station-admin-config-stations.php:196
+#: admin/partials/live-weather-station-admin-config-stations.php:201
 msgid "the stations management page"
 msgstr "the stations management page"
 
-#: admin/partials/live-weather-station-admin-config-stations.php:201
+#: admin/partials/live-weather-station-admin-config-stations.php:207
 msgid ""
 "To see data from OpenWeatherMap stations, you must choose another collection "
 "mode in the \"Options\" box."
@@ -743,14 +772,6 @@ msgstr "Version"
 #: admin/partials/live-weather-station-admin-config-summary.php:84
 msgid "PHP warning"
 msgstr "PHP warning"
-
-#: admin/partials/live-weather-station-admin-config-summary.php:86
-msgid ""
-"Internationalisation extension is not installed. You can not manage OWM "
-"stations..."
-msgstr ""
-"Internationalisation extension is not installed. You can not manage OWM "
-"stations..."
 
 #: admin/partials/live-weather-station-admin-delete-owm.php:12
 msgid "Deleteting OpenWeatherMap stations"
@@ -942,10 +963,6 @@ msgstr "Filter services to display"
 #: admin/partials/live-weather-station-admin-list-logs-top.php:23
 msgid "Filter stations to display"
 msgstr "Filter stations to display"
-
-#: admin/partials/live-weather-station-admin-list-logs.php:16
-msgid "Events log"
-msgstr "Events log"
 
 #: admin/partials/live-weather-station-admin-manage-netatmo.php:16
 msgid "Netatmo stations"
@@ -1264,35 +1281,35 @@ msgstr "All services"
 msgid "All stations"
 msgstr "All stations"
 
-#: includes/class-logger.php:369
+#: includes/class-logger.php:419
 msgid "Emergency"
 msgstr "Emergency"
 
-#: includes/class-logger.php:372
+#: includes/class-logger.php:422
 msgid "Alert"
 msgstr "Alert"
 
-#: includes/class-logger.php:375
+#: includes/class-logger.php:425
 msgid "Critical error"
 msgstr "Critical error"
 
-#: includes/class-logger.php:378
+#: includes/class-logger.php:428
 msgid "Error"
 msgstr "Error"
 
-#: includes/class-logger.php:381
+#: includes/class-logger.php:431
 msgid "Warning"
 msgstr "Warning"
 
-#: includes/class-logger.php:384
+#: includes/class-logger.php:434
 msgid "Notice"
 msgstr "Notice"
 
-#: includes/class-logger.php:387
+#: includes/class-logger.php:437
 msgid "Information"
 msgstr "Information"
 
-#: includes/class-logger.php:390
+#: includes/class-logger.php:440
 msgid "Debug information"
 msgstr "Debug information"
 
@@ -1332,7 +1349,7 @@ msgid "Delete"
 msgstr "Delete"
 
 #: includes/class-owm-stations-list-table.php:48
-#: includes/trait-type-description.php:195
+#: includes/trait-type-description.php:203
 msgid "Altitude"
 msgstr "Altitude"
 
@@ -1343,8 +1360,10 @@ msgstr "Outdoor"
 #: includes/trait-datas-output.php:929 includes/trait-type-description.php:117
 #: includes/trait-type-description.php:174
 #: includes/trait-type-description.php:177
-#: includes/trait-type-description.php:187
-#: includes/trait-type-description.php:191
+#: includes/trait-type-description.php:188
+#: includes/trait-type-description.php:193
+#: includes/trait-type-description.php:196
+#: includes/trait-type-description.php:199
 msgid "Wind"
 msgstr "Wind"
 
@@ -1357,7 +1376,8 @@ msgstr "Gust"
 msgid "Malformed shortcode. Please verify it!"
 msgstr "Malformed shortcode. Please verify it!"
 
-#: includes/trait-datas-output.php:1731 includes/trait-datas-output.php:1856
+#: includes/trait-datas-output.php:1731 includes/trait-datas-output.php:1777
+#: includes/trait-datas-output.php:1801 includes/trait-datas-output.php:1864
 msgid "now"
 msgstr "now"
 
@@ -1365,326 +1385,328 @@ msgstr "now"
 msgid "/ 3 hr"
 msgstr "/ 3 hr"
 
-#: includes/trait-datas-output.php:1743
+#: includes/trait-datas-output.php:1743 includes/trait-datas-output.php:1786
+#: includes/trait-datas-output.php:1810
 msgid "/ 1 hr"
 msgstr "/ 1 hr"
 
-#: includes/trait-datas-output.php:1752
+#: includes/trait-datas-output.php:1752 includes/trait-datas-output.php:1783
+#: includes/trait-datas-output.php:1807
 #: public/partials/live-weather-station-widget-outdoor-display.php:154
 msgid "today"
 msgstr "today"
 
-#: includes/trait-datas-output.php:1783 includes/trait-datas-output.php:1799
+#: includes/trait-datas-output.php:1780 includes/trait-datas-output.php:1804
 msgid "gust"
 msgstr "gust"
 
-#: includes/trait-datas-output.php:1935 includes/trait-type-description.php:81
+#: includes/trait-datas-output.php:1943 includes/trait-type-description.php:81
 msgid "CO₂"
 msgstr "CO₂"
 
-#: includes/trait-datas-output.php:1938 includes/trait-type-description.php:84
+#: includes/trait-datas-output.php:1946 includes/trait-type-description.php:84
 #: includes/trait-type-description.php:90
 msgid "CO"
 msgstr "CO"
 
-#: includes/trait-datas-output.php:1941 includes/trait-type-description.php:87
+#: includes/trait-datas-output.php:1949 includes/trait-type-description.php:87
 #: includes/trait-type-description.php:93
 msgid "O₃"
 msgstr "O₃"
 
-#: includes/trait-datas-output.php:1944
+#: includes/trait-datas-output.php:1952
 msgid "humidity"
 msgstr "humidity"
 
-#: includes/trait-datas-output.php:1947
+#: includes/trait-datas-output.php:1955
 msgid "noise"
 msgstr "noise"
 
-#: includes/trait-datas-output.php:1952
+#: includes/trait-datas-output.php:1960
 msgid "rain"
 msgstr "rain"
 
-#: includes/trait-datas-output.php:1955
+#: includes/trait-datas-output.php:1963
 msgid "snow"
 msgstr "snow"
 
-#: includes/trait-datas-output.php:1963
+#: includes/trait-datas-output.php:1975
 msgid "wind"
 msgstr "wind"
 
-#: includes/trait-datas-output.php:1966
+#: includes/trait-datas-output.php:1978
 msgid "atm pressure"
 msgstr "atm pressure"
 
-#: includes/trait-datas-output.php:1969
+#: includes/trait-datas-output.php:1981
 msgid "dew point"
 msgstr "dew point"
 
-#: includes/trait-datas-output.php:1972
+#: includes/trait-datas-output.php:1984
 msgid "frost point"
 msgstr "frost point"
 
-#: includes/trait-datas-output.php:1975
+#: includes/trait-datas-output.php:1987
 msgid "heat-index"
 msgstr "heat-index"
 
-#: includes/trait-datas-output.php:1978
+#: includes/trait-datas-output.php:1990
 msgid "humidex"
 msgstr "humidex"
 
-#: includes/trait-datas-output.php:1981
+#: includes/trait-datas-output.php:1993
 msgid "wind chill"
 msgstr "wind chill"
 
-#: includes/trait-datas-output.php:1984
+#: includes/trait-datas-output.php:1996
 msgid "cloud base"
 msgstr "cloud base"
 
-#: includes/trait-datas-output.php:1987
+#: includes/trait-datas-output.php:1999
 msgid "cloudiness"
 msgstr "cloudiness"
 
-#: includes/trait-datas-output.php:1992
+#: includes/trait-datas-output.php:2004
 msgid "temperature"
 msgstr "temperature"
 
-#: includes/trait-datas-output.php:2059 includes/trait-datas-output.php:2247
-#: includes/trait-datas-output.php:2291
+#: includes/trait-datas-output.php:2071 includes/trait-datas-output.php:2259
+#: includes/trait-datas-output.php:2303
 msgid "Very low"
 msgstr "Very low"
 
-#: includes/trait-datas-output.php:2062
+#: includes/trait-datas-output.php:2074
 msgid "Low"
 msgstr "Low"
 
-#: includes/trait-datas-output.php:2065 includes/trait-datas-output.php:2244
-#: includes/trait-datas-output.php:2288 includes/trait-javascript-array.php:614
-#: includes/trait-javascript-array.php:699
+#: includes/trait-datas-output.php:2077 includes/trait-datas-output.php:2256
+#: includes/trait-datas-output.php:2300 includes/trait-javascript-array.php:637
+#: includes/trait-javascript-array.php:722
 msgid "Medium"
 msgstr "Medium"
 
-#: includes/trait-datas-output.php:2068 includes/trait-datas-output.php:2241
-#: includes/trait-datas-output.php:2285
+#: includes/trait-datas-output.php:2080 includes/trait-datas-output.php:2253
+#: includes/trait-datas-output.php:2297
 msgid "High"
 msgstr "High"
 
-#: includes/trait-datas-output.php:2071 includes/trait-datas-output.php:2238
+#: includes/trait-datas-output.php:2083 includes/trait-datas-output.php:2250
 msgid "Full"
 msgstr "Full"
 
-#: includes/trait-datas-output.php:2074
+#: includes/trait-datas-output.php:2086
 msgid "AC Power"
 msgstr "AC Power"
 
-#: includes/trait-datas-output.php:2077
+#: includes/trait-datas-output.php:2089
 msgid "Unknown Power State"
 msgstr "Unknown Power State"
 
-#: includes/trait-datas-output.php:2099 includes/trait-datas-output.php:2129
-#: includes/trait-datas-output.php:2145
+#: includes/trait-datas-output.php:2111 includes/trait-datas-output.php:2141
+#: includes/trait-datas-output.php:2157
 msgid "N"
 msgstr "N"
 
-#: includes/trait-datas-output.php:2100 includes/trait-datas-output.php:2130
+#: includes/trait-datas-output.php:2112 includes/trait-datas-output.php:2142
 msgid "N-NE"
 msgstr "N-NE"
 
-#: includes/trait-datas-output.php:2101 includes/trait-datas-output.php:2131
+#: includes/trait-datas-output.php:2113 includes/trait-datas-output.php:2143
 msgid "NE"
 msgstr "NE"
 
-#: includes/trait-datas-output.php:2102 includes/trait-datas-output.php:2132
+#: includes/trait-datas-output.php:2114 includes/trait-datas-output.php:2144
 msgid "E-NE"
 msgstr "E-NE"
 
-#: includes/trait-datas-output.php:2103 includes/trait-datas-output.php:2133
+#: includes/trait-datas-output.php:2115 includes/trait-datas-output.php:2145
 msgid "E"
 msgstr "E"
 
-#: includes/trait-datas-output.php:2104 includes/trait-datas-output.php:2134
+#: includes/trait-datas-output.php:2116 includes/trait-datas-output.php:2146
 msgid "E-SE"
 msgstr "E-SE"
 
-#: includes/trait-datas-output.php:2105 includes/trait-datas-output.php:2135
+#: includes/trait-datas-output.php:2117 includes/trait-datas-output.php:2147
 msgid "SE"
 msgstr "SE"
 
-#: includes/trait-datas-output.php:2106 includes/trait-datas-output.php:2136
+#: includes/trait-datas-output.php:2118 includes/trait-datas-output.php:2148
 msgid "S-SE"
 msgstr "S-SE"
 
-#: includes/trait-datas-output.php:2107 includes/trait-datas-output.php:2137
+#: includes/trait-datas-output.php:2119 includes/trait-datas-output.php:2149
 msgid "S"
 msgstr "S"
 
-#: includes/trait-datas-output.php:2108 includes/trait-datas-output.php:2138
+#: includes/trait-datas-output.php:2120 includes/trait-datas-output.php:2150
 msgid "S-SW"
 msgstr "S-SW"
 
-#: includes/trait-datas-output.php:2109 includes/trait-datas-output.php:2139
+#: includes/trait-datas-output.php:2121 includes/trait-datas-output.php:2151
 msgid "SW"
 msgstr "SW"
 
-#: includes/trait-datas-output.php:2110 includes/trait-datas-output.php:2140
+#: includes/trait-datas-output.php:2122 includes/trait-datas-output.php:2152
 msgid "W-SW"
 msgstr "W-SW"
 
-#: includes/trait-datas-output.php:2111 includes/trait-datas-output.php:2141
+#: includes/trait-datas-output.php:2123 includes/trait-datas-output.php:2153
 msgid "W"
 msgstr "W"
 
-#: includes/trait-datas-output.php:2112 includes/trait-datas-output.php:2142
+#: includes/trait-datas-output.php:2124 includes/trait-datas-output.php:2154
 msgid "W-NW"
 msgstr "W-NW"
 
-#: includes/trait-datas-output.php:2113 includes/trait-datas-output.php:2143
+#: includes/trait-datas-output.php:2125 includes/trait-datas-output.php:2155
 msgid "NW"
 msgstr "NW"
 
-#: includes/trait-datas-output.php:2114 includes/trait-datas-output.php:2144
+#: includes/trait-datas-output.php:2126 includes/trait-datas-output.php:2156
 msgid "N-NW"
 msgstr "N-NW"
 
-#: includes/trait-datas-output.php:2160 includes/trait-datas-output.php:2176
+#: includes/trait-datas-output.php:2172 includes/trait-datas-output.php:2188
 msgid "North"
 msgstr "North"
 
-#: includes/trait-datas-output.php:2161
+#: includes/trait-datas-output.php:2173
 msgid "North-Northeast"
 msgstr "North-Northeast"
 
-#: includes/trait-datas-output.php:2162
+#: includes/trait-datas-output.php:2174
 msgid "Northeast"
 msgstr "Northeast"
 
-#: includes/trait-datas-output.php:2163
+#: includes/trait-datas-output.php:2175
 msgid "East-Northeast"
 msgstr "East-Northeast"
 
-#: includes/trait-datas-output.php:2164
+#: includes/trait-datas-output.php:2176
 msgid "East"
 msgstr "East"
 
-#: includes/trait-datas-output.php:2165
+#: includes/trait-datas-output.php:2177
 msgid "East-Southeast"
 msgstr "East-Southeast"
 
-#: includes/trait-datas-output.php:2166
+#: includes/trait-datas-output.php:2178
 msgid "Southeast"
 msgstr "Southeast"
 
-#: includes/trait-datas-output.php:2167
+#: includes/trait-datas-output.php:2179
 msgid "South-Southeast"
 msgstr "South-Southeast"
 
-#: includes/trait-datas-output.php:2168
+#: includes/trait-datas-output.php:2180
 msgid "South"
 msgstr "South"
 
-#: includes/trait-datas-output.php:2169
+#: includes/trait-datas-output.php:2181
 msgid "South-Southwest"
 msgstr "South-Southwest"
 
-#: includes/trait-datas-output.php:2170
+#: includes/trait-datas-output.php:2182
 msgid "Southwest"
 msgstr "Southwest"
 
-#: includes/trait-datas-output.php:2171
+#: includes/trait-datas-output.php:2183
 msgid "West-Southwest"
 msgstr "West-Southwest"
 
-#: includes/trait-datas-output.php:2172
+#: includes/trait-datas-output.php:2184
 msgid "West"
 msgstr "West"
 
-#: includes/trait-datas-output.php:2173
+#: includes/trait-datas-output.php:2185
 msgid "West-Northwest"
 msgstr "West-Northwest"
 
-#: includes/trait-datas-output.php:2174
+#: includes/trait-datas-output.php:2186
 msgid "Northwest"
 msgstr "Northwest"
 
-#: includes/trait-datas-output.php:2175
+#: includes/trait-datas-output.php:2187
 msgid "North-Northwest"
 msgstr "North-Northwest"
 
-#: includes/trait-datas-output.php:2250
+#: includes/trait-datas-output.php:2262
 msgid "No RF Signal"
 msgstr "No RF Signal"
 
-#: includes/trait-datas-output.php:2294
+#: includes/trait-datas-output.php:2306
 msgid "No WiFi Signal"
 msgstr "No WiFi Signal"
 
-#: includes/trait-datas-output.php:2310
+#: includes/trait-datas-output.php:2322
 msgid "Rising"
 msgstr "Rising"
 
-#: includes/trait-datas-output.php:2313
+#: includes/trait-datas-output.php:2325
 msgid "Falling"
 msgstr "Falling"
 
-#: includes/trait-datas-output.php:2316
+#: includes/trait-datas-output.php:2328
 msgid "Stable"
 msgstr "Stable"
 
-#: includes/trait-datas-output.php:2351 includes/trait-datas-output.php:2359
+#: includes/trait-datas-output.php:2363 includes/trait-datas-output.php:2371
 msgid "New Moon"
 msgstr "New Moon"
 
-#: includes/trait-datas-output.php:2352
+#: includes/trait-datas-output.php:2364
 msgid "Waxing Crescent"
 msgstr "Waxing Crescent"
 
-#: includes/trait-datas-output.php:2353
+#: includes/trait-datas-output.php:2365
 msgid "First Quarter"
 msgstr "First Quarter"
 
-#: includes/trait-datas-output.php:2354
+#: includes/trait-datas-output.php:2366
 msgid "Waxing Gibbous"
 msgstr "Waxing Gibbous"
 
-#: includes/trait-datas-output.php:2355
+#: includes/trait-datas-output.php:2367
 msgid "Full Moon"
 msgstr "Full Moon"
 
-#: includes/trait-datas-output.php:2356
+#: includes/trait-datas-output.php:2368
 msgid "Waning Gibbous"
 msgstr "Waning Gibbous"
 
-#: includes/trait-datas-output.php:2357
+#: includes/trait-datas-output.php:2369
 msgid "Third Quarter"
 msgstr "Third Quarter"
 
-#: includes/trait-datas-output.php:2358
+#: includes/trait-datas-output.php:2370
 msgid "Waning Crescent"
 msgstr "Waning Crescent"
 
-#: includes/trait-datas-output.php:2415 includes/trait-datas-output.php:2534
+#: includes/trait-datas-output.php:2427 includes/trait-datas-output.php:2548
 msgid "Successful operation"
 msgstr "Successful operation"
 
-#: includes/trait-datas-output.php:2418 includes/trait-datas-output.php:2537
-#: includes/trait-datas-query.php:449 includes/trait-datas-query.php:476
-#: includes/trait-datas-query.php:502 includes/trait-datas-query.php:529
-#: includes/trait-datas-query.php:553 includes/trait-datas-query.php:671
+#: includes/trait-datas-output.php:2430 includes/trait-datas-output.php:2551
+#: includes/trait-datas-query.php:448 includes/trait-datas-query.php:475
+#: includes/trait-datas-query.php:501 includes/trait-datas-query.php:528
+#: includes/trait-datas-query.php:552 includes/trait-datas-query.php:670
 msgid "Database contains inconsistent datas"
 msgstr "Database contains inconsistent datas"
 
-#: includes/trait-datas-output.php:2600 includes/trait-datas-output.php:2607
+#: includes/trait-datas-output.php:2614 includes/trait-datas-output.php:2621
 msgid "O/DR"
 msgstr "O/DR"
 
-#: includes/trait-datas-output.php:2675
+#: includes/trait-datas-output.php:2680
 msgid "clouds"
 msgstr "clouds"
 
-#: includes/trait-datas-output.php:2776
+#: includes/trait-datas-output.php:2785
 msgid "All data have been filtered: nothing to show"
 msgstr "All data have been filtered: nothing to show"
 
-#: includes/trait-datas-query.php:104
+#: includes/trait-datas-query.php:103
 msgid "is not running..."
 msgstr "is not running..."
 
@@ -1827,9 +1849,9 @@ msgid "Module type"
 msgstr "Module type"
 
 #: includes/trait-javascript-array.php:265
-#: includes/trait-javascript-array.php:802
-#: includes/trait-javascript-array.php:806
-#: includes/trait-javascript-array.php:807
+#: includes/trait-javascript-array.php:825
+#: includes/trait-javascript-array.php:829
+#: includes/trait-javascript-array.php:830
 msgid "Module name"
 msgstr "Module name"
 
@@ -1838,9 +1860,9 @@ msgid "Measurement timestamp"
 msgstr "Measurement timestamp"
 
 #: includes/trait-javascript-array.php:268
-#: includes/trait-javascript-array.php:804
-#: includes/trait-javascript-array.php:807
-#: includes/trait-javascript-array.php:809
+#: includes/trait-javascript-array.php:827
+#: includes/trait-javascript-array.php:830
+#: includes/trait-javascript-array.php:832
 msgid "Measurement type"
 msgstr "Measurement type"
 
@@ -1856,1000 +1878,995 @@ msgstr "Measurement type"
 msgid "Measurement value"
 msgstr "Measurement value"
 
-#: includes/trait-javascript-array.php:558
+#: includes/trait-javascript-array.php:581
 msgid "[all modules]"
 msgstr "[all modules]"
 
-#: includes/trait-javascript-array.php:613
+#: includes/trait-javascript-array.php:636
 msgid "Fast"
 msgstr "Fast"
 
-#: includes/trait-javascript-array.php:615
+#: includes/trait-javascript-array.php:638
 msgid "Slow"
 msgstr "Slow"
 
-#: includes/trait-javascript-array.php:628
-#: includes/trait-javascript-array.php:1035
+#: includes/trait-javascript-array.php:651
+#: includes/trait-javascript-array.php:1058
 msgid "Standard - Without backlight"
 msgstr "Standard - Without backlight"
 
-#: includes/trait-javascript-array.php:629
+#: includes/trait-javascript-array.php:652
 msgid "Standard - With backlight"
 msgstr "Standard - With backlight"
 
-#: includes/trait-javascript-array.php:630
-#: includes/trait-javascript-array.php:1036
+#: includes/trait-javascript-array.php:653
+#: includes/trait-javascript-array.php:1059
 msgid "Translucent - Red"
 msgstr "Translucent - Red"
 
-#: includes/trait-javascript-array.php:631
-#: includes/trait-javascript-array.php:1037
+#: includes/trait-javascript-array.php:654
+#: includes/trait-javascript-array.php:1060
 msgid "Translucent - Orange"
 msgstr "Translucent - Orange"
 
-#: includes/trait-javascript-array.php:632
-#: includes/trait-javascript-array.php:1038
+#: includes/trait-javascript-array.php:655
+#: includes/trait-javascript-array.php:1061
 msgid "Translucent - Beige"
 msgstr "Translucent - Beige"
 
-#: includes/trait-javascript-array.php:633
+#: includes/trait-javascript-array.php:656
 msgid "Translucent - Yellow"
 msgstr "Translucent - Yellow"
 
-#: includes/trait-javascript-array.php:634
-#: includes/trait-javascript-array.php:1039
+#: includes/trait-javascript-array.php:657
+#: includes/trait-javascript-array.php:1062
 msgid "Translucent - Yellow green"
 msgstr "Translucent - Yellow green"
 
-#: includes/trait-javascript-array.php:635
+#: includes/trait-javascript-array.php:658
 msgid "Translucent - Light green"
 msgstr "Translucent - Light green"
 
-#: includes/trait-javascript-array.php:636
-#: includes/trait-javascript-array.php:1040
+#: includes/trait-javascript-array.php:659
+#: includes/trait-javascript-array.php:1063
 msgid "Translucent - Standard green"
 msgstr "Translucent - Standard green"
 
-#: includes/trait-javascript-array.php:637
-#: includes/trait-javascript-array.php:1041
+#: includes/trait-javascript-array.php:660
+#: includes/trait-javascript-array.php:1064
 msgid "Translucent - Light blue"
 msgstr "Translucent - Light blue"
 
-#: includes/trait-javascript-array.php:638
-#: includes/trait-javascript-array.php:1042
+#: includes/trait-javascript-array.php:661
+#: includes/trait-javascript-array.php:1065
 msgid "Translucent - Blue"
 msgstr "Translucent - Blue"
 
-#: includes/trait-javascript-array.php:639
-#: includes/trait-javascript-array.php:1044
+#: includes/trait-javascript-array.php:662
+#: includes/trait-javascript-array.php:1067
 msgid "Translucent - Light purple"
 msgstr "Translucent - Light purple"
 
-#: includes/trait-javascript-array.php:640
-#: includes/trait-javascript-array.php:1045
+#: includes/trait-javascript-array.php:663
+#: includes/trait-javascript-array.php:1068
 msgid "Translucent - Gray"
 msgstr "Translucent - Gray"
 
-#: includes/trait-javascript-array.php:641
-#: includes/trait-javascript-array.php:1043
+#: includes/trait-javascript-array.php:664
+#: includes/trait-javascript-array.php:1066
 msgid "Translucent - White"
 msgstr "Translucent - White"
 
-#: includes/trait-javascript-array.php:642
-#: includes/trait-javascript-array.php:1046
+#: includes/trait-javascript-array.php:665
+#: includes/trait-javascript-array.php:1069
 msgid "Contrasted - Red"
 msgstr "Contrasted - Red"
 
-#: includes/trait-javascript-array.php:643
+#: includes/trait-javascript-array.php:666
 msgid "Contrasted - Amber"
 msgstr "Contrasted - Amber"
 
-#: includes/trait-javascript-array.php:644
+#: includes/trait-javascript-array.php:667
 msgid "Contrasted - Green"
 msgstr "Contrasted - Green"
 
-#: includes/trait-javascript-array.php:645
-#: includes/trait-javascript-array.php:1047
+#: includes/trait-javascript-array.php:668
+#: includes/trait-javascript-array.php:1070
 msgid "Contrasted - Turquoise"
 msgstr "Contrasted - Turquoise"
 
-#: includes/trait-javascript-array.php:646
+#: includes/trait-javascript-array.php:669
 msgid "Contrasted - Light blue"
 msgstr "Contrasted - Light blue"
 
-#: includes/trait-javascript-array.php:647
-#: includes/trait-javascript-array.php:1050
+#: includes/trait-javascript-array.php:670
+#: includes/trait-javascript-array.php:1073
 msgid "Contrasted - Blue"
 msgstr "Contrasted - Blue"
 
-#: includes/trait-javascript-array.php:648
-#: includes/trait-javascript-array.php:1051
+#: includes/trait-javascript-array.php:671
+#: includes/trait-javascript-array.php:1074
 msgid "Contrasted - Dark blue"
 msgstr "Contrasted - Dark blue"
 
-#: includes/trait-javascript-array.php:649
+#: includes/trait-javascript-array.php:672
 msgid "Contrasted - Purple"
 msgstr "Contrasted - Purple"
 
-#: includes/trait-javascript-array.php:650
+#: includes/trait-javascript-array.php:673
 msgid "Contrasted - Dark purple"
 msgstr "Contrasted - Dark purple"
 
-#: includes/trait-javascript-array.php:651
+#: includes/trait-javascript-array.php:674
 msgid "Contrasted - Black & Yellow"
 msgstr "Contrasted - Black & Yellow"
 
-#: includes/trait-javascript-array.php:652
-#: includes/trait-javascript-array.php:1049
+#: includes/trait-javascript-array.php:675
+#: includes/trait-javascript-array.php:1072
 msgid "Contrasted - Black"
 msgstr "Contrasted - Black"
 
-#: includes/trait-javascript-array.php:653
-#: includes/trait-javascript-array.php:1048
+#: includes/trait-javascript-array.php:676
+#: includes/trait-javascript-array.php:1071
 msgid "Contrasted - Dark grey"
 msgstr "Contrasted - Dark grey"
 
-#: includes/trait-javascript-array.php:654
-#: includes/trait-javascript-array.php:1052
+#: includes/trait-javascript-array.php:677
+#: includes/trait-javascript-array.php:1075
 msgid "Soft - Amber"
 msgstr "Soft - Amber"
 
-#: includes/trait-javascript-array.php:655
-#: includes/trait-javascript-array.php:1053
+#: includes/trait-javascript-array.php:678
+#: includes/trait-javascript-array.php:1076
 msgid "Soft - Dark green"
 msgstr "Soft - Dark green"
 
-#: includes/trait-javascript-array.php:656
-#: includes/trait-javascript-array.php:1054
+#: includes/trait-javascript-array.php:679
+#: includes/trait-javascript-array.php:1077
 msgid "Soft - Blue"
 msgstr "Soft - Blue"
 
-#: includes/trait-javascript-array.php:657
-#: includes/trait-javascript-array.php:1055
+#: includes/trait-javascript-array.php:680
+#: includes/trait-javascript-array.php:1078
 msgid "Soft - Dark blue"
 msgstr "Soft - Dark blue"
 
-#: includes/trait-javascript-array.php:658
+#: includes/trait-javascript-array.php:681
 msgid "Soft - Navy"
 msgstr "Soft - Navy"
 
-#: includes/trait-javascript-array.php:659
-#: includes/trait-javascript-array.php:1056
+#: includes/trait-javascript-array.php:682
+#: includes/trait-javascript-array.php:1079
 msgid "Soft - Purple"
 msgstr "Soft - Purple"
 
-#: includes/trait-javascript-array.php:660
+#: includes/trait-javascript-array.php:683
 msgid "Soft - Dark purple"
 msgstr "Soft - Dark purple"
 
-#: includes/trait-javascript-array.php:661
+#: includes/trait-javascript-array.php:684
 msgid "Soft - Grey"
 msgstr "Soft - Grey"
 
-#: includes/trait-javascript-array.php:662
+#: includes/trait-javascript-array.php:685
 msgid "Flat - Pomegranate"
 msgstr "Flat - Pomegranate"
 
-#: includes/trait-javascript-array.php:663
+#: includes/trait-javascript-array.php:686
 msgid "Flat - Alizarin"
 msgstr "Flat - Alizarin"
 
-#: includes/trait-javascript-array.php:664
+#: includes/trait-javascript-array.php:687
 msgid "Flat - Pumpkin"
 msgstr "Flat - Pumpkin"
 
-#: includes/trait-javascript-array.php:665
+#: includes/trait-javascript-array.php:688
 msgid "Flat - Carrot"
 msgstr "Flat - Carrot"
 
-#: includes/trait-javascript-array.php:666
+#: includes/trait-javascript-array.php:689
 msgid "Flat - Orange"
 msgstr "Flat - Orange"
 
-#: includes/trait-javascript-array.php:667
+#: includes/trait-javascript-array.php:690
 msgid "Flat - Sunflower"
 msgstr "Flat - Sunflower"
 
-#: includes/trait-javascript-array.php:668
+#: includes/trait-javascript-array.php:691
 msgid "Flat - Emerald"
 msgstr "Flat - Emerald"
 
-#: includes/trait-javascript-array.php:669
+#: includes/trait-javascript-array.php:692
 msgid "Flat - Nephritis"
 msgstr "Flat - Nephritis"
 
-#: includes/trait-javascript-array.php:670
+#: includes/trait-javascript-array.php:693
 msgid "Flat - Turquoise"
 msgstr "Flat - Turquoise"
 
-#: includes/trait-javascript-array.php:671
+#: includes/trait-javascript-array.php:694
 msgid "Flat - Peter river"
 msgstr "Flat - Peter river"
 
-#: includes/trait-javascript-array.php:672
+#: includes/trait-javascript-array.php:695
 msgid "Flat - Sky"
 msgstr "Flat - Sky"
 
-#: includes/trait-javascript-array.php:673
+#: includes/trait-javascript-array.php:696
 msgid "Flat - Belize hole"
 msgstr "Flat - Belize hole"
 
-#: includes/trait-javascript-array.php:674
+#: includes/trait-javascript-array.php:697
 msgid "Flat - Amethyst"
 msgstr "Flat - Amethyst"
 
-#: includes/trait-javascript-array.php:675
+#: includes/trait-javascript-array.php:698
 msgid "Flat - Wisteria"
 msgstr "Flat - Wisteria"
 
-#: includes/trait-javascript-array.php:676
+#: includes/trait-javascript-array.php:699
 msgid "Flat - Wet asphalt"
 msgstr "Flat - Wet asphalt"
 
-#: includes/trait-javascript-array.php:677
+#: includes/trait-javascript-array.php:700
 msgid "Flat - Midnight blue"
 msgstr "Flat - Midnight blue"
 
-#: includes/trait-javascript-array.php:678
+#: includes/trait-javascript-array.php:701
 msgid "Flat - Black"
 msgstr "Flat - Black"
 
-#: includes/trait-javascript-array.php:679
+#: includes/trait-javascript-array.php:702
 msgid "Flat - Asbestos"
 msgstr "Flat - Asbestos"
 
-#: includes/trait-javascript-array.php:680
+#: includes/trait-javascript-array.php:703
 msgid "Flat - Concrete"
 msgstr "Flat - Concrete"
 
-#: includes/trait-javascript-array.php:681
+#: includes/trait-javascript-array.php:704
 msgid "Flat - Silver"
 msgstr "Flat - Silver"
 
-#: includes/trait-javascript-array.php:682
+#: includes/trait-javascript-array.php:705
 msgid "Flat - Clouds"
 msgstr "Flat - Clouds"
 
-#: includes/trait-javascript-array.php:696
+#: includes/trait-javascript-array.php:719
 msgid "Miniature"
 msgstr "Miniature"
 
-#: includes/trait-javascript-array.php:698
+#: includes/trait-javascript-array.php:721
 msgid "Small"
 msgstr "Small"
 
-#: includes/trait-javascript-array.php:700
+#: includes/trait-javascript-array.php:723
 msgid "Large"
 msgstr "Large"
 
-#: includes/trait-javascript-array.php:702
+#: includes/trait-javascript-array.php:725
 msgid "Scalable"
 msgstr "Scalable"
 
-#: includes/trait-javascript-array.php:705
+#: includes/trait-javascript-array.php:728
 msgid "Gigantic"
 msgstr "Gigantic"
 
-#: includes/trait-javascript-array.php:719
+#: includes/trait-javascript-array.php:742
 msgid "Standard (for light background)"
 msgstr "Standard (for light background)"
 
-#: includes/trait-javascript-array.php:720
+#: includes/trait-javascript-array.php:743
 msgid "Standard (for dark background)"
 msgstr "Standard (for dark background)"
 
-#: includes/trait-javascript-array.php:721
+#: includes/trait-javascript-array.php:744
 msgid "Flag (for light background)"
 msgstr "Flag (for light background)"
 
-#: includes/trait-javascript-array.php:722
+#: includes/trait-javascript-array.php:745
 msgid "Flag (for dark background)"
 msgstr "Flag (for dark background)"
 
-#: includes/trait-javascript-array.php:723
+#: includes/trait-javascript-array.php:746
 msgid "Pinky (for light background)"
 msgstr "Pinky (for light background)"
 
-#: includes/trait-javascript-array.php:724
+#: includes/trait-javascript-array.php:747
 msgid "Pinky (for dark background)"
 msgstr "Pinky (for dark background)"
 
-#: includes/trait-javascript-array.php:725
+#: includes/trait-javascript-array.php:748
 msgid "Aquamarine (for light background)"
 msgstr "Aquamarine (for light background)"
 
-#: includes/trait-javascript-array.php:726
+#: includes/trait-javascript-array.php:749
 msgid "Aquamarine (for dark background)"
 msgstr "Aquamarine (for dark background)"
 
-#: includes/trait-javascript-array.php:727
+#: includes/trait-javascript-array.php:750
 msgid "B&W (for light background)"
 msgstr "B&W (for light background)"
 
-#: includes/trait-javascript-array.php:728
+#: includes/trait-javascript-array.php:751
 msgid "B&W (for dark background)"
 msgstr "B&W (for dark background)"
 
-#: includes/trait-javascript-array.php:729
+#: includes/trait-javascript-array.php:752
 msgid "Solid red (for light background)"
 msgstr "Solid red (for light background)"
 
-#: includes/trait-javascript-array.php:730
+#: includes/trait-javascript-array.php:753
 msgid "Solid red (for dark background)"
 msgstr "Solid red (for dark background)"
 
-#: includes/trait-javascript-array.php:731
+#: includes/trait-javascript-array.php:754
 msgid "Solid orange (for light background)"
 msgstr "Solid orange (for light background)"
 
-#: includes/trait-javascript-array.php:732
+#: includes/trait-javascript-array.php:755
 msgid "Solid orange (for dark background)"
 msgstr "Solid orange (for dark background)"
 
-#: includes/trait-javascript-array.php:733
+#: includes/trait-javascript-array.php:756
 msgid "Solid yellow (for light background)"
 msgstr "Solid yellow (for light background)"
 
-#: includes/trait-javascript-array.php:734
+#: includes/trait-javascript-array.php:757
 msgid "Solid yellow (for dark background)"
 msgstr "Solid yellow (for dark background)"
 
-#: includes/trait-javascript-array.php:735
+#: includes/trait-javascript-array.php:758
 msgid "Solid green (for light background)"
 msgstr "Solid green (for light background)"
 
-#: includes/trait-javascript-array.php:736
+#: includes/trait-javascript-array.php:759
 msgid "Solid green (for dark background)"
 msgstr "Solid green (for dark background)"
 
-#: includes/trait-javascript-array.php:737
+#: includes/trait-javascript-array.php:760
 msgid "Solid blue (for light background)"
 msgstr "Solid blue (for light background)"
 
-#: includes/trait-javascript-array.php:738
+#: includes/trait-javascript-array.php:761
 msgid "Solid blue (for dark background)"
 msgstr "Solid blue (for dark background)"
 
-#: includes/trait-javascript-array.php:739
+#: includes/trait-javascript-array.php:762
 msgid "Solid purple (for light background)"
 msgstr "Solid purple (for light background)"
 
-#: includes/trait-javascript-array.php:740
+#: includes/trait-javascript-array.php:763
 msgid "Solid purple (for dark background)"
 msgstr "Solid purple (for dark background)"
 
-#: includes/trait-javascript-array.php:741
+#: includes/trait-javascript-array.php:764
 msgid "Solid black (for light background)"
 msgstr "Solid black (for light background)"
 
-#: includes/trait-javascript-array.php:742
+#: includes/trait-javascript-array.php:765
 msgid "Solid black (for dark background)"
 msgstr "Solid black (for dark background)"
 
-#: includes/trait-javascript-array.php:743
+#: includes/trait-javascript-array.php:766
 msgid "Transparent (for light background)"
 msgstr "Transparent (for light background)"
 
-#: includes/trait-javascript-array.php:744
+#: includes/trait-javascript-array.php:767
 msgid "Transparent (for dark background)"
 msgstr "Transparent (for dark background)"
 
-#: includes/trait-javascript-array.php:757
-#: includes/trait-javascript-array.php:800
-#: includes/trait-javascript-array.php:822
-#: includes/trait-javascript-array.php:1015
-#: includes/trait-javascript-array.php:1034
-#: includes/trait-javascript-array.php:1068
-#: includes/trait-javascript-array.php:1123
+#: includes/trait-javascript-array.php:780
+#: includes/trait-javascript-array.php:823
+#: includes/trait-javascript-array.php:845
+#: includes/trait-javascript-array.php:1038
+#: includes/trait-javascript-array.php:1057
+#: includes/trait-javascript-array.php:1091
+#: includes/trait-javascript-array.php:1146
 msgid "None"
 msgstr "None"
 
-#: includes/trait-javascript-array.php:758
+#: includes/trait-javascript-array.php:781
 msgid "External"
 msgstr "External"
 
-#: includes/trait-javascript-array.php:759
+#: includes/trait-javascript-array.php:782
 msgid "Internal"
 msgstr "Internal"
 
-#: includes/trait-javascript-array.php:772
+#: includes/trait-javascript-array.php:795
 msgid "Half - Flat - Thin"
 msgstr "Half - Flat - Thin"
 
-#: includes/trait-javascript-array.php:773
+#: includes/trait-javascript-array.php:796
 msgid "Half - Flat - Standard"
 msgstr "Half - Flat - Standard"
 
-#: includes/trait-javascript-array.php:774
+#: includes/trait-javascript-array.php:797
 msgid "Half - Flat - Fat"
 msgstr "Half - Flat - Fat"
 
-#: includes/trait-javascript-array.php:775
+#: includes/trait-javascript-array.php:798
 msgid "Half - Flat - Pie"
 msgstr "Half - Flat - Pie"
 
-#: includes/trait-javascript-array.php:776
+#: includes/trait-javascript-array.php:799
 msgid "Half - 3D - Thin"
 msgstr "Half - 3D - Thin"
 
-#: includes/trait-javascript-array.php:777
+#: includes/trait-javascript-array.php:800
 msgid "Half - 3D - Standard"
 msgstr "Half - 3D - Standard"
 
-#: includes/trait-javascript-array.php:778
+#: includes/trait-javascript-array.php:801
 msgid "Half - 3D - Fat"
 msgstr "Half - 3D - Fat"
 
-#: includes/trait-javascript-array.php:779
+#: includes/trait-javascript-array.php:802
 msgid "Half - 3D - Pie"
 msgstr "Half - 3D - Pie"
 
-#: includes/trait-javascript-array.php:780
+#: includes/trait-javascript-array.php:803
 msgid "Full - Flat - Thin"
 msgstr "Full - Flat - Thin"
 
-#: includes/trait-javascript-array.php:781
+#: includes/trait-javascript-array.php:804
 msgid "Full - Flat - Standard"
 msgstr "Full - Flat - Standard"
 
-#: includes/trait-javascript-array.php:782
+#: includes/trait-javascript-array.php:805
 msgid "Full - Flat - Fat"
 msgstr "Full - Flat - Fat"
 
-#: includes/trait-javascript-array.php:783
+#: includes/trait-javascript-array.php:806
 msgid "Full - Flat - Pie"
 msgstr "Full - Flat - Pie"
 
-#: includes/trait-javascript-array.php:784
+#: includes/trait-javascript-array.php:807
 msgid "Full - 3D - Thin"
 msgstr "Full - 3D - Thin"
 
-#: includes/trait-javascript-array.php:785
+#: includes/trait-javascript-array.php:808
 msgid "Full - 3D - Standard"
 msgstr "Full - 3D - Standard"
 
-#: includes/trait-javascript-array.php:786
+#: includes/trait-javascript-array.php:809
 msgid "Full - 3D - Fat"
 msgstr "Full - 3D - Fat"
 
-#: includes/trait-javascript-array.php:787
+#: includes/trait-javascript-array.php:810
 msgid "Full - 3D - Pie"
 msgstr "Full - 3D - Pie"
 
-#: includes/trait-javascript-array.php:803
-#: includes/trait-javascript-array.php:808
+#: includes/trait-javascript-array.php:826
+#: includes/trait-javascript-array.php:831
 msgid "Short measurement type"
 msgstr "Short measurement type"
 
-#: includes/trait-javascript-array.php:805
-#: includes/trait-javascript-array.php:808
-#: includes/trait-javascript-array.php:809
-#: includes/trait-javascript-array.php:823
+#: includes/trait-javascript-array.php:828
+#: includes/trait-javascript-array.php:831
+#: includes/trait-javascript-array.php:832
+#: includes/trait-javascript-array.php:846
 msgid "Measurement unit"
 msgstr "Measurement unit"
 
-#: includes/trait-javascript-array.php:836
+#: includes/trait-javascript-array.php:859
 msgid "Test with actual background"
 msgstr "Test with actual background"
 
-#: includes/trait-javascript-array.php:837
+#: includes/trait-javascript-array.php:860
 msgid "Test with white background"
 msgstr "Test with white background"
 
-#: includes/trait-javascript-array.php:838
+#: includes/trait-javascript-array.php:861
 msgid "Test with light background"
 msgstr "Test with light background"
 
-#: includes/trait-javascript-array.php:839
+#: includes/trait-javascript-array.php:862
 msgid "Test with medium background"
 msgstr "Test with medium background"
 
-#: includes/trait-javascript-array.php:840
+#: includes/trait-javascript-array.php:863
 msgid "Test with dark background"
 msgstr "Test with dark background"
 
-#: includes/trait-javascript-array.php:841
+#: includes/trait-javascript-array.php:864
 msgid "Test with black background"
 msgstr "Test with black background"
 
-#: includes/trait-javascript-array.php:854
+#: includes/trait-javascript-array.php:877
 msgid "Analog - 1/4"
 msgstr "Analog - 1/4"
 
-#: includes/trait-javascript-array.php:855
+#: includes/trait-javascript-array.php:878
 msgid "Analog - half"
 msgstr "Analog - half"
 
-#: includes/trait-javascript-array.php:856
+#: includes/trait-javascript-array.php:879
 msgid "Analog - 3/4"
 msgstr "Analog - 3/4"
 
-#: includes/trait-javascript-array.php:857
+#: includes/trait-javascript-array.php:880
 msgid "Analog - full"
 msgstr "Analog - full"
 
-#: includes/trait-javascript-array.php:858
+#: includes/trait-javascript-array.php:881
 msgid "Digital - 1/4"
 msgstr "Digital - 1/4"
 
-#: includes/trait-javascript-array.php:859
+#: includes/trait-javascript-array.php:882
 msgid "Digital - half"
 msgstr "Digital - half"
 
-#: includes/trait-javascript-array.php:860
+#: includes/trait-javascript-array.php:883
 msgid "Digital - 3/4"
 msgstr "Digital - 3/4"
 
-#: includes/trait-javascript-array.php:861
+#: includes/trait-javascript-array.php:884
 msgid "Digital - full"
 msgstr "Digital - full"
 
-#: includes/trait-javascript-array.php:862
+#: includes/trait-javascript-array.php:885
 msgid "Top meter"
 msgstr "Top meter"
 
-#: includes/trait-javascript-array.php:863
+#: includes/trait-javascript-array.php:886
 msgid "Left meter"
 msgstr "Left meter"
 
-#: includes/trait-javascript-array.php:864
+#: includes/trait-javascript-array.php:887
 msgid "Right meter"
 msgstr "Right meter"
 
-#: includes/trait-javascript-array.php:865
+#: includes/trait-javascript-array.php:888
 msgid "Vintage wind compass"
 msgstr "Vintage wind compass"
 
-#: includes/trait-javascript-array.php:866
+#: includes/trait-javascript-array.php:889
 msgid "Standard wind compass"
 msgstr "Standard wind compass"
 
-#: includes/trait-javascript-array.php:867
+#: includes/trait-javascript-array.php:890
 msgid "Modern wind compass"
 msgstr "Modern wind compass"
 
-#: includes/trait-javascript-array.php:868
+#: includes/trait-javascript-array.php:891
 msgid "Altimeter"
 msgstr "Altimeter"
 
-#: includes/trait-javascript-array.php:880
+#: includes/trait-javascript-array.php:903
 msgid "Black metal"
 msgstr "Black metal"
 
-#: includes/trait-javascript-array.php:881
+#: includes/trait-javascript-array.php:904
 msgid "Metal"
 msgstr "Metal"
 
-#: includes/trait-javascript-array.php:882
+#: includes/trait-javascript-array.php:905
 msgid "Shiny metal"
 msgstr "Shiny metal"
 
-#: includes/trait-javascript-array.php:883
+#: includes/trait-javascript-array.php:906
 msgid "Glossy metal"
 msgstr "Glossy metal"
 
-#: includes/trait-javascript-array.php:884
-#: includes/trait-javascript-array.php:912
+#: includes/trait-javascript-array.php:907
+#: includes/trait-javascript-array.php:935
 msgid "Anthracite"
 msgstr "Anthracite"
 
-#: includes/trait-javascript-array.php:885
+#: includes/trait-javascript-array.php:908
 msgid "Tilted gray"
 msgstr "Tilted gray"
 
-#: includes/trait-javascript-array.php:886
+#: includes/trait-javascript-array.php:909
 msgid "Tilted black"
 msgstr "Tilted black"
 
-#: includes/trait-javascript-array.php:887
+#: includes/trait-javascript-array.php:910
 msgid "Brass"
 msgstr "Brass"
 
-#: includes/trait-javascript-array.php:888
+#: includes/trait-javascript-array.php:911
 msgid "Steel"
 msgstr "Steel"
 
-#: includes/trait-javascript-array.php:889
+#: includes/trait-javascript-array.php:912
 msgid "Chrome"
 msgstr "Chrome"
 
-#: includes/trait-javascript-array.php:890
+#: includes/trait-javascript-array.php:913
 msgid "Gold"
 msgstr "Gold"
 
-#: includes/trait-javascript-array.php:902
+#: includes/trait-javascript-array.php:925
 msgid "Dark gray"
 msgstr "Dark gray"
 
-#: includes/trait-javascript-array.php:903
+#: includes/trait-javascript-array.php:926
 msgid "Satin gray"
 msgstr "Satin gray"
 
-#: includes/trait-javascript-array.php:904
+#: includes/trait-javascript-array.php:927
 msgid "Light gray"
 msgstr "Light gray"
 
-#: includes/trait-javascript-array.php:905
-#: includes/trait-javascript-array.php:984
-#: includes/trait-javascript-array.php:1109
+#: includes/trait-javascript-array.php:928
+#: includes/trait-javascript-array.php:1007
+#: includes/trait-javascript-array.php:1132
 msgid "White"
 msgstr "White"
 
-#: includes/trait-javascript-array.php:906
-#: includes/trait-javascript-array.php:986
-#: includes/trait-javascript-array.php:1112
+#: includes/trait-javascript-array.php:929
+#: includes/trait-javascript-array.php:1009
+#: includes/trait-javascript-array.php:1135
 msgid "Black"
 msgstr "Black"
 
-#: includes/trait-javascript-array.php:907
+#: includes/trait-javascript-array.php:930
 msgid "Beige"
 msgstr "Beige"
 
-#: includes/trait-javascript-array.php:908
+#: includes/trait-javascript-array.php:931
 msgid "Brown"
 msgstr "Brown"
 
-#: includes/trait-javascript-array.php:909
-#: includes/trait-javascript-array.php:974
-#: includes/trait-javascript-array.php:1016
-#: includes/trait-javascript-array.php:1096
+#: includes/trait-javascript-array.php:932
+#: includes/trait-javascript-array.php:997
+#: includes/trait-javascript-array.php:1039
+#: includes/trait-javascript-array.php:1119
 msgid "Red"
 msgstr "Red"
 
-#: includes/trait-javascript-array.php:910
-#: includes/trait-javascript-array.php:977
-#: includes/trait-javascript-array.php:1019
-#: includes/trait-javascript-array.php:1101
+#: includes/trait-javascript-array.php:933
+#: includes/trait-javascript-array.php:1000
+#: includes/trait-javascript-array.php:1042
+#: includes/trait-javascript-array.php:1124
 msgid "Green"
 msgstr "Green"
 
-#: includes/trait-javascript-array.php:911
-#: includes/trait-javascript-array.php:982
-#: includes/trait-javascript-array.php:1021
-#: includes/trait-javascript-array.php:1105
+#: includes/trait-javascript-array.php:934
+#: includes/trait-javascript-array.php:1005
+#: includes/trait-javascript-array.php:1044
+#: includes/trait-javascript-array.php:1128
 msgid "Blue"
 msgstr "Blue"
 
-#: includes/trait-javascript-array.php:913
+#: includes/trait-javascript-array.php:936
 msgid "Mud"
 msgstr "Mud"
 
-#: includes/trait-javascript-array.php:914
+#: includes/trait-javascript-array.php:937
 msgid "Punched sheet"
 msgstr "Punched sheet"
 
-#: includes/trait-javascript-array.php:915
+#: includes/trait-javascript-array.php:938
 msgid "Carbon"
 msgstr "Carbon"
 
-#: includes/trait-javascript-array.php:916
+#: includes/trait-javascript-array.php:939
 msgid "Stainless"
 msgstr "Stainless"
 
-#: includes/trait-javascript-array.php:917
+#: includes/trait-javascript-array.php:940
 msgid "Brushed metal"
 msgstr "Brushed metal"
 
-#: includes/trait-javascript-array.php:918
+#: includes/trait-javascript-array.php:941
 msgid "Brushed stainless"
 msgstr "Brushed stainless"
 
-#: includes/trait-javascript-array.php:919
+#: includes/trait-javascript-array.php:942
 msgid "Turned"
 msgstr "Turned"
 
-#: includes/trait-javascript-array.php:931
+#: includes/trait-javascript-array.php:954
 msgid "Standard glass"
 msgstr "Standard glass"
 
-#: includes/trait-javascript-array.php:932
+#: includes/trait-javascript-array.php:955
 msgid "Crystal"
 msgstr "Crystal"
 
-#: includes/trait-javascript-array.php:933
+#: includes/trait-javascript-array.php:956
 msgid "Sapphire crystal"
 msgstr "Sapphire crystal"
 
-#: includes/trait-javascript-array.php:934
+#: includes/trait-javascript-array.php:957
 msgid "Plexiglass"
 msgstr "Plexiglass"
 
-#: includes/trait-javascript-array.php:935
+#: includes/trait-javascript-array.php:958
 msgid "Rhodoid"
 msgstr "Rhodoid"
 
-#: includes/trait-javascript-array.php:947
+#: includes/trait-javascript-array.php:970
 msgid "Thin triangle"
 msgstr "Thin triangle"
 
-#: includes/trait-javascript-array.php:948
+#: includes/trait-javascript-array.php:971
 msgid "Fat Triangle"
 msgstr "Fat Triangle"
 
-#: includes/trait-javascript-array.php:949
+#: includes/trait-javascript-array.php:972
 msgid "3D triangle"
 msgstr "3D triangle"
 
-#: includes/trait-javascript-array.php:950
+#: includes/trait-javascript-array.php:973
 msgid "Clipped"
 msgstr "Clipped"
 
-#: includes/trait-javascript-array.php:951
+#: includes/trait-javascript-array.php:974
 msgid "Double clipped"
 msgstr "Double clipped"
 
-#: includes/trait-javascript-array.php:952
+#: includes/trait-javascript-array.php:975
 msgid "Flat clipped"
 msgstr "Flat clipped"
 
-#: includes/trait-javascript-array.php:953
+#: includes/trait-javascript-array.php:976
 msgid "Thin rod"
 msgstr "Thin rod"
 
-#: includes/trait-javascript-array.php:954
+#: includes/trait-javascript-array.php:977
 msgid "Fat rod"
 msgstr "Fat rod"
 
-#: includes/trait-javascript-array.php:955
+#: includes/trait-javascript-array.php:978
 msgid "Thin curved triangle"
 msgstr "Thin curved triangle"
 
-#: includes/trait-javascript-array.php:956
+#: includes/trait-javascript-array.php:979
 msgid "3D curved triangle"
 msgstr "3D curved triangle"
 
-#: includes/trait-javascript-array.php:957
+#: includes/trait-javascript-array.php:980
 msgid "Double needle"
 msgstr "Double needle"
 
-#: includes/trait-javascript-array.php:958
+#: includes/trait-javascript-array.php:981
 msgid "Culbuto"
 msgstr "Culbuto"
 
-#: includes/trait-javascript-array.php:959
+#: includes/trait-javascript-array.php:982
 msgid "Cessna"
 msgstr "Cessna"
 
-#: includes/trait-javascript-array.php:960
+#: includes/trait-javascript-array.php:983
 msgid "Volvo"
 msgstr "Volvo"
 
-#: includes/trait-javascript-array.php:961
+#: includes/trait-javascript-array.php:984
 msgid "Ferrari"
 msgstr "Ferrari"
 
-#: includes/trait-javascript-array.php:962
+#: includes/trait-javascript-array.php:985
 msgid "Ferrari arched"
 msgstr "Ferrari arched"
 
-#: includes/trait-javascript-array.php:975
-#: includes/trait-javascript-array.php:1017
-#: includes/trait-javascript-array.php:1098
+#: includes/trait-javascript-array.php:998
+#: includes/trait-javascript-array.php:1040
+#: includes/trait-javascript-array.php:1121
 msgid "Orange"
 msgstr "Orange"
 
-#: includes/trait-javascript-array.php:976
-#: includes/trait-javascript-array.php:1018
-#: includes/trait-javascript-array.php:1099
+#: includes/trait-javascript-array.php:999
+#: includes/trait-javascript-array.php:1041
+#: includes/trait-javascript-array.php:1122
 msgid "Yellow"
 msgstr "Yellow"
 
-#: includes/trait-javascript-array.php:978
+#: includes/trait-javascript-array.php:1001
 msgid "JUG Green"
 msgstr "JUG Green"
 
-#: includes/trait-javascript-array.php:979
+#: includes/trait-javascript-array.php:1002
 msgid "Green LCD"
 msgstr "Green LCD"
 
-#: includes/trait-javascript-array.php:980
-#: includes/trait-javascript-array.php:1020
+#: includes/trait-javascript-array.php:1003
+#: includes/trait-javascript-array.php:1043
 msgid "Cyan"
 msgstr "Cyan"
 
-#: includes/trait-javascript-array.php:981
+#: includes/trait-javascript-array.php:1004
 msgid "Raith"
 msgstr "Raith"
 
-#: includes/trait-javascript-array.php:983
-#: includes/trait-javascript-array.php:1022
+#: includes/trait-javascript-array.php:1006
+#: includes/trait-javascript-array.php:1045
 msgid "Magenta"
 msgstr "Magenta"
 
-#: includes/trait-javascript-array.php:985
-#: includes/trait-javascript-array.php:1111
+#: includes/trait-javascript-array.php:1008
+#: includes/trait-javascript-array.php:1134
 msgid "Gray"
 msgstr "Grey"
 
-#: includes/trait-javascript-array.php:998
+#: includes/trait-javascript-array.php:1021
 msgid "Plain - Black"
 msgstr "Plain - Black"
 
-#: includes/trait-javascript-array.php:999
+#: includes/trait-javascript-array.php:1022
 msgid "Plain - Brass"
 msgstr "Plain - Brass"
 
-#: includes/trait-javascript-array.php:1000
+#: includes/trait-javascript-array.php:1023
 msgid "Plain - Silver"
 msgstr "Plain - Silver"
 
-#: includes/trait-javascript-array.php:1001
+#: includes/trait-javascript-array.php:1024
 msgid "Embossed - Black"
 msgstr "Embossed - Black"
 
-#: includes/trait-javascript-array.php:1002
+#: includes/trait-javascript-array.php:1025
 msgid "Embossed - Brass"
 msgstr "Embossed - Brass"
 
-#: includes/trait-javascript-array.php:1003
+#: includes/trait-javascript-array.php:1026
 msgid "Embossed - Silver"
 msgstr "Embossed - Silver"
 
-#: includes/trait-javascript-array.php:1069
+#: includes/trait-javascript-array.php:1092
 msgid "Cursors"
 msgstr "Cursors"
 
-#: includes/trait-javascript-array.php:1081
+#: includes/trait-javascript-array.php:1104
 msgid "Automatic"
 msgstr "Automatic"
 
-#: includes/trait-javascript-array.php:1082
+#: includes/trait-javascript-array.php:1105
 msgid "Normal"
 msgstr "Normal"
 
-#: includes/trait-javascript-array.php:1083
+#: includes/trait-javascript-array.php:1106
 msgid "Horizontal"
 msgstr "Horizontal"
 
-#: includes/trait-javascript-array.php:1084
+#: includes/trait-javascript-array.php:1107
 msgid "Tangent"
 msgstr "Tangent"
 
-#: includes/trait-javascript-array.php:1097
+#: includes/trait-javascript-array.php:1120
 msgid "Maroon"
 msgstr "Maroon"
 
-#: includes/trait-javascript-array.php:1100
+#: includes/trait-javascript-array.php:1123
 msgid "Lime"
 msgstr "Lime"
 
-#: includes/trait-javascript-array.php:1102
+#: includes/trait-javascript-array.php:1125
 msgid "Teal"
 msgstr "Teal"
 
-#: includes/trait-javascript-array.php:1103
+#: includes/trait-javascript-array.php:1126
 msgid "Aqua"
 msgstr "Aqua"
 
-#: includes/trait-javascript-array.php:1104
+#: includes/trait-javascript-array.php:1127
 msgid "Light blue"
 msgstr "Light blue"
 
-#: includes/trait-javascript-array.php:1106
+#: includes/trait-javascript-array.php:1129
 msgid "Navy"
 msgstr "Navy"
 
-#: includes/trait-javascript-array.php:1107
+#: includes/trait-javascript-array.php:1130
 msgid "Fuchsia"
 msgstr "Fuchsia"
 
-#: includes/trait-javascript-array.php:1108
+#: includes/trait-javascript-array.php:1131
 msgid "Purple"
 msgstr "Purple"
 
-#: includes/trait-javascript-array.php:1110
+#: includes/trait-javascript-array.php:1133
 msgid "Silver"
 msgstr "Silver"
 
-#: includes/trait-javascript-array.php:1124
+#: includes/trait-javascript-array.php:1147
 msgid "Plain - Translucent"
 msgstr "Plain - Translucent"
 
-#: includes/trait-javascript-array.php:1125
+#: includes/trait-javascript-array.php:1148
 msgid "Plain - Liquid"
 msgstr "Plain - Liquid"
 
-#: includes/trait-javascript-array.php:1126
+#: includes/trait-javascript-array.php:1149
 msgid "Plain - Soft"
 msgstr "Plain - Soft"
 
-#: includes/trait-javascript-array.php:1127
+#: includes/trait-javascript-array.php:1150
 msgid "Plain - Hard"
 msgstr "Plain - Hard"
 
-#: includes/trait-javascript-array.php:1128
+#: includes/trait-javascript-array.php:1151
 msgid "Fade-in - Translucent"
 msgstr "Fade-in - Translucent"
 
-#: includes/trait-javascript-array.php:1129
+#: includes/trait-javascript-array.php:1152
 msgid "Fade-in - Liquid"
 msgstr "Fade-in - Liquid"
 
-#: includes/trait-javascript-array.php:1130
+#: includes/trait-javascript-array.php:1153
 msgid "Fade-in - Soft"
 msgstr "Fade-in - Soft"
 
-#: includes/trait-javascript-array.php:1131
+#: includes/trait-javascript-array.php:1154
 msgid "Fade-in - Hard"
 msgstr "Fade-in - Hard"
 
-#: includes/trait-javascript-array.php:1132
+#: includes/trait-javascript-array.php:1155
 msgid "Fade-out - Translucent"
 msgstr "Fade-out - Translucent"
 
-#: includes/trait-javascript-array.php:1133
+#: includes/trait-javascript-array.php:1156
 msgid "Fade-out - Liquid"
 msgstr "Fade-out - Liquid"
 
-#: includes/trait-javascript-array.php:1134
+#: includes/trait-javascript-array.php:1157
 msgid "Fade-out - Soft"
 msgstr "Fade-out - Soft"
 
-#: includes/trait-javascript-array.php:1135
+#: includes/trait-javascript-array.php:1158
 msgid "Fade-out - Hard"
 msgstr "Fade-out - Hard"
 
-#: includes/trait-javascript-array.php:1136
+#: includes/trait-javascript-array.php:1159
 msgid "Complementary - Translucent"
 msgstr "Complementary - Translucent"
 
-#: includes/trait-javascript-array.php:1137
+#: includes/trait-javascript-array.php:1160
 msgid "Complementary - Liquid"
 msgstr "Complementary - Liquid"
 
-#: includes/trait-javascript-array.php:1138
+#: includes/trait-javascript-array.php:1161
 msgid "Complementary - Soft"
 msgstr "Complementary - Soft"
 
-#: includes/trait-javascript-array.php:1139
+#: includes/trait-javascript-array.php:1162
 msgid "Complementary - Hard"
 msgstr "Complementary - Hard"
 
-#: includes/trait-javascript-array.php:1140
+#: includes/trait-javascript-array.php:1163
 msgid "Inverted complementary - Translucent"
 msgstr "Inverted complementary - Translucent"
 
-#: includes/trait-javascript-array.php:1141
+#: includes/trait-javascript-array.php:1164
 msgid "Inverted complementary - Liquid"
 msgstr "Inverted complementary - Liquid"
 
-#: includes/trait-javascript-array.php:1142
+#: includes/trait-javascript-array.php:1165
 msgid "Inverted complementary - Soft"
 msgstr "Inverted complementary - Soft"
 
-#: includes/trait-javascript-array.php:1143
+#: includes/trait-javascript-array.php:1166
 msgid "Inverted complementary - Hard"
 msgstr "Inverted complementary - Hard"
 
-#: includes/trait-netatmo-client.php:56 includes/trait-netatmo-client.php:178
+#: includes/trait-netatmo-client.php:56 includes/trait-netatmo-client.php:179
 msgid "Wrong credentials. Please, verify your login and password."
 msgstr "Wrong credentials. Please, verify your login and password."
 
-#: includes/trait-netatmo-client.php:186
+#: includes/trait-netatmo-client.php:187
 msgid "Application deactivated. Please contact support."
 msgstr "Application deactivated. Please contact support."
 
-#: includes/trait-netatmo-client.php:190
+#: includes/trait-netatmo-client.php:191
 msgid "Too many users with this IP."
 msgstr "Too many users with this IP."
 
-#: includes/trait-netatmo-client.php:194
+#: includes/trait-netatmo-client.php:195
 msgid ""
 "Temporary unable to contact Netatmo servers. Retry will be done shortly."
 msgstr ""
 "Temporary unable to contact Netatmo servers. Retry will be done shortly."
 
-#: includes/trait-owm-current-client.php:91
-#: includes/trait-type-description.php:42
-msgid "[OpenWeatherMap Records]"
-msgstr "[OpenWeatherMap Records]"
-
-#: includes/trait-owm-current-client.php:194
+#: includes/trait-owm-client.php:68 includes/trait-owm-current-client.php:180
 #: includes/trait-owm-pollution-client.php:189
 msgid "Wrong OpenWeatherMap API key."
 msgstr "Wrong OpenWeatherMap API key."
 
-#: includes/trait-owm-current-client.php:200
+#: includes/trait-owm-client.php:72 includes/trait-owm-current-client.php:186
 #: includes/trait-owm-pollution-client.php:195
 msgid ""
 "OpenWeatherMap servers have returned empty response for some weather "
@@ -2858,7 +2875,7 @@ msgstr ""
 "OpenWeatherMap servers have returned empty response for some weather "
 "stations. Retry will be done shortly."
 
-#: includes/trait-owm-current-client.php:203
+#: includes/trait-owm-client.php:76 includes/trait-owm-current-client.php:189
 #: includes/trait-owm-pollution-client.php:198
 msgid ""
 "Temporary unable to contact OpenWeatherMap servers. Retry will be done "
@@ -2867,28 +2884,33 @@ msgstr ""
 "Temporary unable to contact OpenWeatherMap servers. Retry will be done "
 "shortly."
 
+#: includes/trait-owm-current-client.php:76
+#: includes/trait-type-description.php:42
+msgid "[OpenWeatherMap Records]"
+msgstr "[OpenWeatherMap Records]"
+
 #: includes/trait-owm-pollution-client.php:152
 #: includes/trait-type-description.php:45
 msgid "[OpenWeatherMap Pollution]"
 msgstr "[OpenWeatherMap Pollution]"
 
-#: includes/trait-schedules-manipulation.php:148
+#: includes/trait-schedules-manipulation.php:177
 msgid "Every three minutes"
 msgstr "Every three minutes"
 
-#: includes/trait-schedules-manipulation.php:161
+#: includes/trait-schedules-manipulation.php:190
 msgid "Every five minutes"
 msgstr "Every five minutes"
 
-#: includes/trait-schedules-manipulation.php:174
+#: includes/trait-schedules-manipulation.php:203
 msgid "Every ten minutes"
 msgstr "Every ten minutes"
 
-#: includes/trait-schedules-manipulation.php:187
+#: includes/trait-schedules-manipulation.php:216
 msgid "Every fifteen minutes"
 msgstr "Every fifteen minutes"
 
-#: includes/trait-schedules-manipulation.php:200
+#: includes/trait-schedules-manipulation.php:229
 msgid "Every thirty minutes"
 msgstr "Every thirty minutes"
 
@@ -3112,104 +3134,112 @@ msgstr "Gust direction"
 msgid "Gust strength"
 msgstr "Gust strength"
 
-#: includes/trait-type-description.php:187
+#: includes/trait-type-description.php:188
 msgid "Wind direction for the maximal wind strength for the last hour"
 msgstr "Wind direction for the maximal wind strength for the last hour"
 
-#: includes/trait-type-description.php:191
+#: includes/trait-type-description.php:193
 msgid "Maximal wind strength for the last hour"
 msgstr "Maximal wind strength for the last hour"
 
-#: includes/trait-type-description.php:207
+#: includes/trait-type-description.php:196
+msgid "Wind direction for the maximal wind strength today"
+msgstr "Wind direction for the maximal wind strength today"
+
+#: includes/trait-type-description.php:199
+msgid "Maximal wind strength today"
+msgstr "Maximal wind strength today"
+
+#: includes/trait-type-description.php:215
 msgid "TZ"
 msgstr "TZ"
 
-#: includes/trait-type-description.php:210
+#: includes/trait-type-description.php:218
 msgid "all"
 msgstr "all"
 
-#: includes/trait-type-description.php:210
+#: includes/trait-type-description.php:218
 msgid "[all measures]"
 msgstr "[all measures]"
 
-#: includes/trait-type-description.php:213
+#: includes/trait-type-description.php:221
 msgid "outdoor"
 msgstr "outdoor"
 
-#: includes/trait-type-description.php:213
+#: includes/trait-type-description.php:221
 msgid "[outdoor measures]"
 msgstr "[outdoor measures]"
 
-#: includes/trait-type-description.php:216
+#: includes/trait-type-description.php:224
 #: public/partials/live-weather-station-widget-ephemeris-display.php:78
 msgid "Sunrise"
 msgstr "Sunrise"
 
-#: includes/trait-type-description.php:219
+#: includes/trait-type-description.php:227
 #: public/partials/live-weather-station-widget-ephemeris-display.php:91
 msgid "Sunset"
 msgstr "Sunset"
 
-#: includes/trait-type-description.php:222
+#: includes/trait-type-description.php:230
 #: public/partials/live-weather-station-widget-ephemeris-display.php:165
 msgid "Moonrise"
 msgstr "Moonrise"
 
-#: includes/trait-type-description.php:225
+#: includes/trait-type-description.php:233
 #: public/partials/live-weather-station-widget-ephemeris-display.php:152
 msgid "Moonset"
 msgstr "Moonset"
 
-#: includes/trait-type-description.php:228
+#: includes/trait-type-description.php:236
 msgid "Age"
 msgstr "Age"
 
-#: includes/trait-type-description.php:228
+#: includes/trait-type-description.php:236
 msgid "Moon age"
 msgstr "Moon age"
 
-#: includes/trait-type-description.php:231
+#: includes/trait-type-description.php:239
 msgid "Phase"
 msgstr "Phase"
 
-#: includes/trait-type-description.php:231
+#: includes/trait-type-description.php:239
 msgid "Moon phase"
 msgstr "Moon phase"
 
-#: includes/trait-type-description.php:234
+#: includes/trait-type-description.php:242
 msgid "Illumination"
 msgstr "Illumination"
 
-#: includes/trait-type-description.php:234
+#: includes/trait-type-description.php:242
 msgid "Moon illumination"
 msgstr "Moon illumination"
 
-#: includes/trait-type-description.php:237
-#: includes/trait-type-description.php:243
+#: includes/trait-type-description.php:245
+#: includes/trait-type-description.php:251
 msgid "Distance"
 msgstr "Distance"
 
-#: includes/trait-type-description.php:237
+#: includes/trait-type-description.php:245
 msgid "Moon distance"
 msgstr "Moon distance"
 
-#: includes/trait-type-description.php:240
+#: includes/trait-type-description.php:248
 msgid "Moon angular size"
 msgstr "Moon angular size"
 
-#: includes/trait-type-description.php:243
+#: includes/trait-type-description.php:251
 msgid "Sun distance"
 msgstr "Sun distance"
 
-#: includes/trait-type-description.php:246
+#: includes/trait-type-description.php:254
 msgid "Sun angular size"
 msgstr "Sun angular size"
 
-#: includes/trait-type-description.php:249
+#: includes/trait-type-description.php:257
 msgid "?"
 msgstr "?"
 
-#: includes/trait-type-description.php:249
+#: includes/trait-type-description.php:257
 msgid "Unknown measurement"
 msgstr "Unknown measurement"
 

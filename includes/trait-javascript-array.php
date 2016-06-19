@@ -403,10 +403,8 @@ use Type_Description;
                     $result[] = array($this->get_measurement_type('signal'), 'signal', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'signal', (array_key_exists('rf_status', $sample) ? $sample['rf_status'] : ''))));
                 }
                 $result[] = array($this->get_measurement_type('rain', false, $sample['module_type']), 'rain', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'rain', (array_key_exists('Rain', $sample['measure_values']) ? $sample['measure_values']['Rain'] : ''))));
-                //if ($full || $mono || $aggregated) {
-                    $result[] = array($this->get_measurement_type('rain_hour_aggregated', false, $sample['module_type']), 'rain_hour_aggregated', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'rain_hour_aggregated', (array_key_exists('sum_rain_1', $sample['measure_values']) ? $sample['measure_values']['sum_rain_1'] : ''))));
-                //}
-                    $result[] = array($this->get_measurement_type('rain_day_aggregated', false, $sample['module_type']), 'rain_day_aggregated', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'rain_day_aggregated', (array_key_exists('sum_rain_24', $sample['measure_values']) ? $sample['measure_values']['sum_rain_24'] : ''))));
+                $result[] = array($this->get_measurement_type('rain_hour_aggregated', false, $sample['module_type']), 'rain_hour_aggregated', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'rain_hour_aggregated', (array_key_exists('sum_rain_1', $sample['measure_values']) ? $sample['measure_values']['sum_rain_1'] : ''))));
+                $result[] = array($this->get_measurement_type('rain_day_aggregated', false, $sample['module_type']), 'rain_day_aggregated', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'rain_day_aggregated', (array_key_exists('sum_rain_24', $sample['measure_values']) ? $sample['measure_values']['sum_rain_24'] : ''))));
                 break;
             case 'namodule2': // Wind gauge
                 if ($aggregated) {
@@ -419,13 +417,38 @@ use Type_Description;
                 }
                 $result[] = array($this->get_measurement_type('windangle'), 'windangle', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'windangle', (array_key_exists('WindAngle', $sample['measure_values']) ? $sample['measure_values']['WindAngle'] : ''))));
                 $result[] = array($this->get_measurement_type('windstrength'), 'windstrength', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'windstrength', (array_key_exists('WindStrength', $sample['measure_values']) ? $sample['measure_values']['WindStrength'] : ''))));
-                if ($full || $mono || $aggregated) {
+                //if ($full || $mono || $aggregated) {
                     $result[] = array($this->get_measurement_type('gustangle'), 'gustangle', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'gustangle', (array_key_exists('GustAngle', $sample['measure_values']) ? $sample['measure_values']['GustAngle'] : ''))));
                     $result[] = array($this->get_measurement_type('guststrength'), 'guststrength', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'guststrength', (array_key_exists('GustStrength', $sample['measure_values']) ? $sample['measure_values']['GustStrength'] : ''))));
-                }
-                if ($full) {
-                    $result[] = array($this->get_measurement_type('windangle_max'), 'windangle_max', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'windangle_max', (array_key_exists('max_wind_angle', $sample['measure_values']['WindHistoric']) ? $sample['measure_values']['WindHistoric']['max_wind_angle'] : ''))));
-                    $result[] = array($this->get_measurement_type('windstrength_max'), 'windstrength_max', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'windstrength_max', (array_key_exists('max_wind_str', $sample['measure_values']['WindHistoric']) ? $sample['measure_values']['WindHistoric']['max_wind_str'] : ''))));
+                //}
+                if (true || $full || $mono || $aggregated) {
+                    // Additional datas about wind
+                   if (array_key_exists('WindHistoric', $sample['measure_values']) &&
+                        is_array($sample['measure_values']['WindHistoric'])) {
+                        $wsmax=0;
+                        $wamax=0;
+                        $wdmax = time();
+                        foreach($sample['measure_values']['WindHistoric'] as $wind) {
+                            if ($wind['WindStrength'] > $wsmax) {
+                                $wsmax = $wind['WindStrength'];
+                                $wamax = $wind['WindAngle'];
+                                $wdmax = $wind['time_utc'];
+                            }
+                        }
+                       $sample['measure_values']['windstrength_hour_max'] = $wsmax ;
+                       $sample['measure_values']['windangle_hour_max'] = $wamax ;
+                    }
+                    // Additional datas about wind
+                    if (array_key_exists('date_max_wind_str', $sample['measure_values']) &&
+                        array_key_exists('max_wind_angle', $sample['measure_values']) &&
+                        array_key_exists('max_wind_str', $sample['measure_values'])) {
+                        $sample['measure_values']['windstrength_day_max'] = $sample['measure_values']['max_wind_str'] ;
+                        $sample['measure_values']['windangle_day_max'] = $sample['measure_values']['max_wind_angle'] ;
+                    }
+                    $result[] = array($this->get_measurement_type('windangle_hour_max'), 'windangle_hour_max', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'windangle_hour_max', (array_key_exists('windangle_hour_max', $sample['measure_values']) ? $sample['measure_values']['windangle_hour_max'] : ''))));
+                    $result[] = array($this->get_measurement_type('windstrength_hour_max'), 'windstrength_hour_max', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'windstrength_hour_max', (array_key_exists('windstrength_hour_max', $sample['measure_values']) ? $sample['measure_values']['windstrength_hour_max'] : ''))));
+                    $result[] = array($this->get_measurement_type('windangle_day_max'), 'windangle_day_max', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'windangle_day_max', (array_key_exists('windangle_day_max', $sample['measure_values']) ? $sample['measure_values']['windangle_day_max'] : ''))));
+                    $result[] = array($this->get_measurement_type('windstrength_day_max'), 'windstrength_day_max', ($reduced ? array() : $this->get_td_elements($sample, $ts, 'windstrength_day_max', (array_key_exists('windstrength_day_max', $sample['measure_values']) ? $sample['measure_values']['windstrength_day_max'] : ''))));
                 }
                 break;
             case 'namodule4': // Additional indoor module
