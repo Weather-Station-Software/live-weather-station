@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, CO2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill, weather plugin, wordpress widget, wind gauge, rain gauge, pws, met office, personal weather station, weather underground, wunderground, weather observations website, wow, observation, pollution, CO₂, CO, O3, O₃, ozone, carbon dioxide, carbon monoxide
 Requires at least: 4.0
 Tested up to: 4.5
-Stable tag: 2.8.1
+Stable tag: 2.9.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://support.laquadrature.net/
@@ -59,6 +59,7 @@ Right now, Live Weather Station supports the following languages:
 * English / Australia (thanks to [translation team](https://translate.wordpress.org/locale/en-au/default/wp-plugins/live-weather-station))
 * English / Canada (thanks to [translation team](https://translate.wordpress.org/locale/en-ca/default/wp-plugins/live-weather-station))
 * English / New Zealand (thanks to [translation team](https://translate.wordpress.org/locale/en-nz/default/wp-plugins/live-weather-station))
+* English / South Africa (thanks to [translation team](https://translate.wordpress.org/locale/en-za/default/wp-plugins/live-weather-station))
 * English / UK (thanks to [translation team](https://translate.wordpress.org/locale/en-gb/default/wp-plugins/live-weather-station))
 * French / Belgium (thanks to [translation team](https://translate.wordpress.org/locale/fr-be/default/wp-plugins/live-weather-station))
 * French / Canada (thanks to [translation team](https://translate.wordpress.org/locale/fr-ca/default/wp-plugins/live-weather-station))
@@ -126,6 +127,22 @@ You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-l
 You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 == Changelog ==
+
+= 2.9.0 =
+
+Release date: June 19th, 2016
+
+* Added: Live Weather Station can now collects max wind strength and angle for today (from Netatmo stations) and display it in textual shortcodes, LCD Panel, clean gauges and steel meter.
+* New language: English / South Africa.
+* Improvement: the number of decimals for wind strength are now adapted to the true strength (on a suggestion from [seasparrow](https://wordpress.org/support/profile/seasparrow)).
+* Improvement: better display for wind and units in LCD Panel.
+* Improvement: added compatibility to *WN (local weather networks) thanks to Patrice Corre from FRWN.
+* Improvement: some events have new severity for better visibility.
+* Improvement: event log is now more precise whith Netatmo connection error codes and messages.
+* Improvement: 4th phase of code refactoring for provisioning 3.X version.
+* Improvement: `readme.txt`.
+* Bug fix: in some cases, unit name in plain text, for wind and rain, is not correctly rendered.
+* Bug fix: some generated files are not correctly refreshed when using Varnish as cache.
 
 = 2.8.1 =
 
@@ -401,11 +418,14 @@ Release date: November 14th, 2015
 
 == Upgrade Notice ==
 
+= 2.9.X =
+New wind values collected from Netatmo stations and one new language. Many optimizations, improvements and bug fixes.
+
 = 2.8.X =
 New events log and new languages. Many optimizations, improvements and bug fixes.
 
 = 2.7.X =
-New pollution data collecting from OpenWeatherMap. New cron jobs mode. Many optimizations, improvements and bug fixes.
+New pollution data collection from OpenWeatherMap. New cron jobs mode. Many optimizations, improvements and bug fixes.
 
 = 2.6.X =
 Added the possibility to send outdoor data from Netatmo stations to Weather Underground. Many optimizations and improvements.

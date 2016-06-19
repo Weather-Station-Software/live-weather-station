@@ -42,6 +42,48 @@ class NAApiErrorType extends NAClientException
         {
             parent::__construct($code, $message, API_ERROR_TYPE);
         }
+        ///////////////////////////////////////////////////////////////////
+        // DETAILED LOGGED ERROR
+        // ADDED BY PIERRE LANNOY
+        $c = $this->http_code;
+        $m = $this->http_message;
+        $r = 'unknown';
+        $s = 'none';
+        if (isset($this->result))
+        {
+            if (is_array($this->result))
+            {
+                $s = print_r($this->result, true);
+                if (isset($this->result['error']['code']) && isset($this->result['error']['message'])) {
+                    $c = $this->result['error']['code'];
+                    $m = $this->result['error']['message'];
+                }
+            }
+            else
+            {
+                if ($this->result == CURL_ERROR_TYPE) {
+                    $r = 'cURL';
+                }
+                if ($this->result == JSON_ERROR_TYPE) {
+                    $r = 'JSON';
+                }
+                if ($this->result == INTERNAL_ERROR_TYPE) {
+                    $r = 'internal';
+                }
+                if ($this->result == NOT_LOGGED_ERROR_TYPE) {
+                    $r = 'not logged';
+                }
+            }
+        }
+        $t = $m . PHP_EOL . 'Type: ' . $r . PHP_EOL .  'Detail: ' . $s;
+        if ($r == 'unknown' && $c == 2) {
+            Logger::debug('API / SDK', 'Netatmo', null, null, null, null, $c, $t);
+        }
+        else {
+            Logger::warning('API / SDK', 'Netatmo', null, null, null, null, $c, $t);
+        }
+        //
+        ///////////////////////////////////////////////////////////////////
     }
 }
 

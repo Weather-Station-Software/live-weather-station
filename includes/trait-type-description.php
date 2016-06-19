@@ -183,12 +183,20 @@ trait Type_Description {
                 $result = ($abbr ? __('Gust', 'live-weather-station') : __('Gust strength', 'live-weather-station'));
                 break;
             case 'windangle_max':
+            case 'windangle_hour_max':
             case 'max_wind_angle':
                 $result = ($abbr ? __('Wind', 'live-weather-station') : __('Wind direction for the maximal wind strength for the last hour', 'live-weather-station'));
                 break;
             case 'windstrength_max':
+            case 'windstrength_hour_max':
             case 'max_wind_str':
                 $result = ($abbr ? __('Wind', 'live-weather-station') : __('Maximal wind strength for the last hour', 'live-weather-station'));
+                break;
+            case 'windangle_day_max':
+                $result = ($abbr ? __('Wind', 'live-weather-station') : __('Wind direction for the maximal wind strength today', 'live-weather-station'));
+                break;
+            case 'windstrength_day_max':
+                $result = ($abbr ? __('Wind', 'live-weather-station') : __('Maximal wind strength today', 'live-weather-station'));
                 break;
             case 'loc_altitude':
             case 'altitude':

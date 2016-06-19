@@ -166,6 +166,7 @@ trait Netatmo_Client {
             }
             try {
                 $this->netatmo_datas = $this->netatmo_client->getData();
+                //Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($this->netatmo_datas['devices'][0]['modules'], true));
                 $this->normalize_netatmo_datas();
                 $this->store_netatmo_datas();
                 update_option('live_weather_station_netatmo_account', array($this->netatmo_client->getRefreshToken(), $this->netatmo_client->getAccessToken(), true));

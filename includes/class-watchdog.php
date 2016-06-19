@@ -93,7 +93,7 @@ class Watchdog {
     public static function launch() {
         if (!wp_next_scheduled(self::$watchdog_name)) {
             wp_schedule_event(time() + 5, 'three_minutes', self::$watchdog_name);
-            Logger::info(get_called_class(),null,null,null,null,null,null,'Service started.');
+            Logger::notice(get_called_class(),null,null,null,null,null,null,'Service started.');
         }
     }
 

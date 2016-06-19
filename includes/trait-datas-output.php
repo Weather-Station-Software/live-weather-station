@@ -137,7 +137,7 @@ trait Datas_Output {
             $module_type = $master['module_type'];
             $measure_type = $master['measure_type'];
             $value = $this->output_value($master['measure_value'], $measure_type);
-            $precision = $this->decimal_for_output($measure_type);
+            $precision = $this->decimal_for_output($measure_type, $value);
             if ($precision < 2) {
                 $prec = 0;
             }
@@ -600,7 +600,7 @@ trait Datas_Output {
             $result['type'] = $this->get_measurement_type($measure_type, true, $module_type);
             $value = $this->output_value($master['measure_value'], $measure_type);
             $alarm = $this->is_alarm_on($master['measure_value'], $measure_type);
-            $precision = $this->decimal_for_output($measure_type);
+            $precision = $this->decimal_for_output($measure_type, $value);
             if ($precision < 2) {
                 $prec = 0;
             }
@@ -1765,6 +1765,7 @@ trait Datas_Output {
                 $result['long'] = $this->get_snow_unit_full($ref) ;
                 break;
             case 'windangle':
+            case 'gustangle':
             case 'windangle_max':
             case 'windangle_day_max':
             case 'windangle_hour_max':
@@ -1772,19 +1773,23 @@ trait Datas_Output {
                 if ($force_ref != 0) {
                     $ref = $force_ref;
                 }
-                $result['unit'] = $this->get_wind_angle_unit($ref);
-                $result['long'] = $this->get_wind_angle_unit_full($ref);
-                break;
-            case 'gustangle':
-                $ref = 0;
-                if ($force_ref != 0) {
-                    $ref = $force_ref;
+                if ($type == 'windangle') {
+                    $result['comp'] = __('now', 'live-weather-station') ;
                 }
-                $result['comp'] = __('gust', 'live-weather-station') ;
+                if ($type == 'gustangle') {
+                    $result['comp'] = __('gust', 'live-weather-station') ;
+                }
+                if ($type == 'windangle_day_max') {
+                    $result['comp'] = __('today', 'live-weather-station') ;
+                }
+                if ($type == 'windangle_hour_max') {
+                    $result['comp'] = __('/ 1 hr', 'live-weather-station') ;
+                }
                 $result['unit'] = $this->get_wind_angle_unit($ref);
                 $result['long'] = $this->get_wind_angle_unit_full($ref);
                 break;
             case 'windstrength':
+            case 'guststrength':
             case 'windstrength_max':
             case 'windstrength_day_max':
             case 'windstrength_hour_max':
@@ -1792,17 +1797,20 @@ trait Datas_Output {
                 if ($force_ref != 0) {
                     $ref = $force_ref;
                 }
-                $result['unit'] = $this->get_wind_speed_unit($ref);
-                $result['long'] = $this->get_wind_speed_unit($ref);
-                break;
-            case 'guststrength':
-                $result['comp'] = __('gust', 'live-weather-station') ;
-                $ref = get_option('live_weather_station_settings')[2] ;
-                if ($force_ref != 0) {
-                    $ref = $force_ref;
+                if ($type == 'windstrength') {
+                    $result['comp'] = __('now', 'live-weather-station') ;
+                }
+                if ($type == 'guststrength') {
+                    $result['comp'] = __('gust', 'live-weather-station') ;
+                }
+                if ($type == 'windstrength_day_max') {
+                    $result['comp'] = __('today', 'live-weather-station') ;
+                }
+                if ($type == 'windstrength_hour_max') {
+                    $result['comp'] = __('/ 1 hr', 'live-weather-station') ;
                 }
                 $result['unit'] = $this->get_wind_speed_unit($ref);
-                $result['long'] = $this->get_wind_speed_unit($ref);
+                $result['long'] = $this->get_wind_speed_unit_full($ref);
                 break;
             case 'pressure':
                 $ref = get_option('live_weather_station_settings')[1] ;
@@ -1866,10 +1874,11 @@ trait Datas_Output {
      * How decimals to display for this type of value.
      *
      * @param   string  $type   The type of the value.
+     * @param   integer $value  Optional. The decimal value.
      * @return  integer   The number of decimals to show.
      * @since    2.1.0
      */
-    protected function decimal_for_output($type) {
+    protected function decimal_for_output($type, $value) {
         $result = 0;
         switch ($type) {
             case 'rain':
@@ -1900,6 +1909,18 @@ trait Datas_Output {
                     case 0 : $result = 6 ; break;
                     case 1 : $result = 4 ; break;
                     case 2 : $result = 5 ; break;
+                }
+                break;
+            case 'windstrength':
+            case 'guststrength':
+            case 'windstrength_max':
+            case 'windstrength_day_max':
+            case 'windstrength_hour_max':
+                $ref = get_option('live_weather_station_settings')[2] ;
+                if ($ref == 1 || $ref == 2 || $ref == 4 || $ref == 5 || $ref == 6) {
+                    if ($value < 5) {
+                        $result = 1;
+                    }
                 }
                 break;
         }
@@ -1956,9 +1977,13 @@ trait Datas_Output {
                 break;
             case 'windangle':
             case 'windangle_max':
+            case 'windangle_hour_max':
+            case 'windangle_day_max':
             case 'gustangle':
             case 'windstrength':
             case 'windstrength_max':
+            case 'windstrength_hour_max':
+            case 'windstrength_day_max':
             case 'guststrength':
                 $result = __('wind', 'live-weather-station') ;
                 break;
@@ -2477,7 +2502,9 @@ trait Datas_Output {
             case 'windstrength':
             case 'windangle':
             case 'guststrength':
-            case 'gustangle':
+            case 'windstrength_hour_max':
+            case 'windstrength_day_max':
+            //case 'gustangle':
                 $result = $aggregated || $outdoor;
                 break;
             case 'dew_point':
@@ -2589,7 +2616,7 @@ trait Datas_Output {
                 $measure['max'] = 0;
                 $measure['value'] = $this->output_value($data['measure_value'], $data['measure_type']);
                 $measure['unit'] = $unit['unit'];
-                $measure['decimals'] = $this->decimal_for_output($data['measure_type']);
+                $measure['decimals'] = $this->decimal_for_output($data['measure_type'], $measure['value']);
                 if ($measure['decimals']>5) {
                     $measure['decimals'] = 5;
                 }
@@ -2631,15 +2658,6 @@ trait Datas_Output {
                         case 'o3':
                         case 'co':
                         case 'noise':
-                        case 'guststrength':
-                            $response[] = $measure;
-                            break;
-                        case 'gustangle':
-                            $measure['sub_unit'] = $this->get_angle_text($data['measure_value']);
-                            $measure['show_sub_unit'] = true;
-                            $response[] = $measure;
-                            break;
-
                         case 'dew_point':
                             if ($has_temp_ref && $this->is_valid_dew_point($temp_ref)) {
                                 $response[] = $measure;
@@ -2752,15 +2770,19 @@ trait Datas_Output {
                             }
                             break;
                         case 'windangle':
+                        case 'gustangle':
+                        case 'windangle_max':
+                        case 'windangle_day_max':
+                        case 'windangle_hour_max':
                         case 'windstrength':
-                            if ($data['measure_type'] == 'windangle') {
-                                $measure['sub_unit'] = $this->get_angle_text($data['measure_value']);
-                                $measure['show_sub_unit'] = true;
-                            }
-                            if (($data['measure_type'] == $measure_type) || ($data['measure_type'] != $measure_type && $aggregated)) {
+                        case 'guststrength':
+                        case 'windstrength_max':
+                        case 'windstrength_day_max':
+                        case 'windstrength_hour_max':
+                            if (($data['measure_type'] == $measure_type) || $aggregated) {
                                 $response[] = $measure;
                             }
-                            if ($outdoor && $data['module_type'] == 'NAModule2') {
+                            if (($outdoor && $data['module_type'] == 'NAModule2') || ($data['measure_type'] != $measure_type && $aggregated)) {
                                 $response[] = $measure;
                             }
                             if ($outdoor && $data['module_type'] == 'NACurrent' && !array_key_exists($data['measure_type'], $values)) {

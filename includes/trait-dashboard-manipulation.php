@@ -341,6 +341,7 @@ trait Dashboard_Manipulation {
             $updates['measure_type'] = 'windstrength_hour_max';
             $updates['measure_value'] = $wsmax ;
             $this->update_data_table($updates);
+
         }
 
         // Additional datas about wind

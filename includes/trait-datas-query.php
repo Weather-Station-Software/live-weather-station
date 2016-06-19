@@ -16,8 +16,7 @@ trait Datas_Query {
     use Datas_Storage;
 
     private $dont_filter = array('temperature_max', 'temperature_min', 'temperature_trend', 'pressure_trend', 'loc_latitude',
-                                 'loc_longitude', 'loc_altitude', 'windstrength_day_max', 'windangle_hour_max', 'windangle_day_max');
-    //private $strict_exclusion = array('battery', 'firmware', 'loc_latitude', 'loc_longitude', 'loc_altitude', 'loc_timezone', 'signal');
+                                 'loc_longitude', 'loc_altitude', 'windstrength_hour_max', 'windstrength_day_max', 'windangle_hour_max', 'windangle_day_max');
 
     /**
      * Filter data.
