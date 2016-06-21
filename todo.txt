@@ -9,8 +9,7 @@
  * 3.x - Aridity index computing
  * 3.x - Pushing data to twitter / slack / fb / ...
 
- 
- 
+
 ***********************
 *  UPCOMING CONTROLS  *
 ***********************
@@ -27,6 +26,7 @@
  * 3.x - Ability to (re)order displayed datas in controls like LCD Panel
  * 3.x - Ability to change text color in clean gauges
  * 3.x - About box have a direct link to the relevant GlotPress page
+ * 3.x - Better cloud altitude display in widget
 
  --
 

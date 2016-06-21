@@ -1,0 +1,3626 @@
+# Translation of Stable (latest release) in Dutch
+# This file is distributed under the same license as the Stable (latest release) package.
+msgid ""
+msgstr ""
+"Project-Id-Version: Live Weather Station\n"
+"POT-Creation-Date: 2016-06-03 14:16+0200\n"
+"PO-Revision-Date: 2016-06-21 17:58+0200\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: nl_NL\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"X-Generator: Poedit 1.8.8\n"
+
+#: admin/class-live-weather-station-admin.php:107
+#: admin/partials/live-weather-station-admin-config-accounts-settings.php:13
+msgid "Settings"
+msgstr "Instellingen"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:9
+msgid "verify on a map"
+msgstr "controleren op een kaart"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:10
+#, php-format
+msgid ""
+"Here are the coordinates we've found %s. You can confirm it by clicking "
+"again on the button <em>%s</em>!"
+msgstr ""
+"Dit zijn de gevonden coördinaten %s. Je kunt dit bevestigen door opnieuw op "
+"de knop <em>%s</em> te klikken!"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:10
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:112
+msgid "Add This Station"
+msgstr "Station toevoegen"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:10
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:115
+#: admin/partials/live-weather-station-admin-config-options.php:186
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:113
+msgid "Save Changes"
+msgstr "Wijzigingen opslaan"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:18
+msgid "Add an OpenWeatherMap station"
+msgstr "Voeg een OpenWeatherMap station toe"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:21
+msgid "Edit an OpenWeatherMap station"
+msgstr "Wijzig een OpenWeatherMap station"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:24
+msgid "Some required fields are missing!"
+msgstr "Ontbrekende verlichte velden!"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:30
+#: includes/trait-javascript-array.php:262
+#: includes/trait-javascript-array.php:801
+#: includes/trait-javascript-array.php:806
+msgid "Station name"
+msgstr "Stationsnaam"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:30
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:34
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:38
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:48
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:83
+msgid "(required)"
+msgstr "(verplicht)"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:34
+msgid "City"
+msgstr "Stad"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:38
+msgid "Country"
+msgstr "Land"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:48
+#: admin/partials/live-weather-station-admin-config-stations.php:28
+#: includes/class-owm-stations-list-table.php:45
+#: includes/trait-type-description.php:207
+msgid "Time zone"
+msgstr "Tijdzone"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:83
+msgid "Altitude (in meters)"
+msgstr "Hoogte (in meters)"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:88
+msgid ""
+"If you know the exact coordinates of this location, enter them here. "
+"Otherwise, we will try to find them for you..."
+msgstr ""
+"Als je de juiste coördinaten weet kun je ze hier opgeven, ander kunnen we "
+"proberen ze voor jou te vinden... "
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:91
+msgid ""
+"Despite our best efforts, we were unable to find the coordinates of this "
+"location. Please, enter them here - or try an other location:"
+msgstr ""
+"We deden ons best de coördinaten te vinden maar dat is niet gelukt. Je kunt "
+"ze hier handmatig invoeren of probeer een andere locatie:"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:95
+msgid ""
+"The coordinates you have entered are not valid. Please, retry or left blank:"
+msgstr ""
+"De opgegeven coördinaten zijn niet correct. Probeer het opnieuw of laat ze "
+"leeg:"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:102
+#: includes/class-owm-stations-list-table.php:46
+#: includes/trait-type-description.php:199
+msgid "Latitude"
+msgstr "Latitude"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:102
+msgid "(eg 49.85)"
+msgstr "(e.g. 49.85)"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:106
+#: includes/class-owm-stations-list-table.php:47
+#: includes/trait-type-description.php:203
+msgid "Longitude"
+msgstr "Longitude"
+
+#: admin/partials/live-weather-station-admin-add-edit-owm.php:106
+msgid "(eg -1.6)"
+msgstr "(e.g. -1.6)"
+
+#: admin/partials/live-weather-station-admin-config-about.php:11
+#: admin/partials/live-weather-station-admin-config-accounts-settings.php:12
+#: admin/partials/live-weather-station-admin-config-options.php:11
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:14
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:41
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:154
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:167
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:14
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:41
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:310
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:330
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:14
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:41
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:196
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:209
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:14
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:41
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:641
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:654
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:14
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:124
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:135
+#: admin/partials/live-weather-station-admin-config-stations.php:14
+#: admin/partials/live-weather-station-admin-config-stations.php:179
+#: admin/partials/live-weather-station-admin-config-summary.php:11
+msgid "Click to toggle"
+msgstr "Klik om te switchen"
+
+#: admin/partials/live-weather-station-admin-config-about.php:12
+#: admin/partials/live-weather-station-admin-config-about.php:41
+msgid "About"
+msgstr "Over"
+
+#: admin/partials/live-weather-station-admin-config-about.php:17
+msgid "Help"
+msgstr "Help"
+
+#: admin/partials/live-weather-station-admin-config-about.php:20
+msgid ""
+"You can find help and explanation about this plugin on <a href=\"https://"
+"pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/\">this page</a>."
+msgstr ""
+"Je kunt hulp en uitleg over deze plugin vinden op <a href=\"https://pierre."
+"lannoy.fr/wordpress-live-weather-station-for-netatmo/\">deze pagina</a>."
+
+#: admin/partials/live-weather-station-admin-config-about.php:23
+msgid "Plugin"
+msgstr "Plugin"
+
+#: admin/partials/live-weather-station-admin-config-about.php:26
+msgid ""
+"Is <em>Live Weather Station</em> helpful? I would be pleased that you <a "
+"href=\"https://wordpress.org/support/view/plugin-reviews/live-weather-station"
+"\">write a review</a>."
+msgstr ""
+"Is <em>Live Weather Station</em> naar je zin? Ik zou het leuk vinden als je "
+"<a href=\"https://wordpress.org/support/view/plugin-reviews/live-weather-"
+"station\">een review</a> schrijft."
+
+#: admin/partials/live-weather-station-admin-config-about.php:29
+msgid "Translations"
+msgstr "Vertalingen"
+
+#: admin/partials/live-weather-station-admin-config-about.php:32
+msgid ""
+"If you want to help to translate this plugin, you can do it with  <a href="
+"\"https://translate.wordpress.org/projects/wp-plugins/live-weather-station"
+"\">GlotPress</a> (please, use the 'stable' column)."
+msgstr ""
+"Als je mee wilt helpen om deze plugin te vertalen kun je dat doen met  <a "
+"href=\"https://translate.wordpress.org/projects/wp-plugins/live-weather-"
+"station\">GlotPress</a> (gebruik s.v.p. de 'stable' kolom)."
+
+#: admin/partials/live-weather-station-admin-config-about.php:35
+msgid "Thanks to"
+msgstr "Met dank aan"
+
+#: admin/partials/live-weather-station-admin-config-about.php:38
+msgid ""
+"<a href=\"https://twitter.com/cyril_lakech\">Cyril Lakech</a>, for its tools "
+"and its reactivity and <a href=\"https://profiles.wordpress.org/bergjet"
+"\">Martin Punz</a> for tests and kindness from Austria."
+msgstr ""
+"<a href=\"https://twitter.com/cyril_lakech\">Cyril Lakech</a>, voor zijn "
+"\"tools and reactivity\" en <a href=\"https://profiles.wordpress.org/bergjet"
+"\">Martin Punz</a> voor zijn \"tests and kindness\" vanuit Oostenrijk."
+
+#: admin/partials/live-weather-station-admin-config-about.php:44
+msgid ""
+"<em>Live Weather Station</em> is a free and open source plugin for "
+"WordPress. It integrates other free and open source works (as-is or "
+"modified) like Weather Icons project by Erik Flowers, EnzoJS and SteelSeries "
+"by Gerrit Grunwald, JustGage by Bojan Đuričić, OpenWeatherMap PHP API by "
+"Christian Flach, phpcolors by Arlo Carreon, moonrise/moonset calculation "
+"from Matt \"dxprog\" Hackmann and moon phase calculation from Samir Shah."
+msgstr ""
+"<em>Live Weather Station</em> is een gratis open source plugin voor "
+"WordPress. Het maakt gebruik van andere gratis en open source onderdelen (as-"
+"is of aangepast) zoals het Weather Icons project van Erik Flowers, EnzoJS en "
+"SteelSeries van Gerrit Grunwald, JustGage van Bojan Đuričić, OpenWeatherMap "
+"PHP API van Christian Flach, phpcolors van Arlo Carreon, maansopkomst en -"
+"ondergangsberekeningen van Matt \"dxprog\" Hackmann en maanfaseberekeningen "
+"van Samir Shah."
+
+#: admin/partials/live-weather-station-admin-config-about.php:47
+msgid "Data"
+msgstr "Data"
+
+#: admin/partials/live-weather-station-admin-config-about.php:50
+msgid ""
+"All meteorological data provided by OpenWeatherMap are distributed under the "
+"terms of the <a href=\"http://creativecommons.org/licenses/by-sa/4.0/\" "
+"target=\"_blank\">Creative Commons CC:BY-SA 4.0 license</a>."
+msgstr ""
+"Alle meteorologische gegevens woorden door OpenWeatherMap geleverd onder de "
+"voorwaarden genoemd onder de <a href=\"http://creativecommons.org/licenses/"
+"by-sa/4.0/\" target=\"_blank\">Creative Commons CC:BY-SA 4.0 licentie</a>."
+"<br/>"
+
+#: admin/partials/live-weather-station-admin-config-about.php:50
+msgid ""
+"If you use OpenWeatherMap data on your site, the name of OpenWeatherMap must "
+"be mentioned as a weather source on pages where data are shown."
+msgstr ""
+"Als je OpenWeatherMap data op je website gebruikt moet de OpenWeatherMap "
+"naam als bron vermeld worden op de pagina's waar die data zichtbaar is."
+
+#: admin/partials/live-weather-station-admin-config-accounts-settings.php:20
+msgid "Netatmo login"
+msgstr "Netatmo login"
+
+#: admin/partials/live-weather-station-admin-config-accounts-settings.php:27
+msgid "Netatmo password"
+msgstr "Netatmo paswoord"
+
+#: admin/partials/live-weather-station-admin-config-accounts-settings.php:36
+msgid "OpenWeatherMap key"
+msgstr "OpenWeatherMap key"
+
+#: admin/partials/live-weather-station-admin-config-accounts-settings.php:49
+msgid "Connect"
+msgstr "Verbinden"
+
+#: admin/partials/live-weather-station-admin-config-options.php:12
+msgid "Options"
+msgstr "Opties"
+
+#: admin/partials/live-weather-station-admin-config-options.php:18
+msgid "Collected data"
+msgstr "Verzamelde data"
+
+#: admin/partials/live-weather-station-admin-config-options.php:31
+msgid "Live controls displays"
+msgstr "Live control weergave"
+
+#: admin/partials/live-weather-station-admin-config-options.php:44
+msgid "Data obsolescence"
+msgstr "Data verversing"
+
+#: admin/partials/live-weather-station-admin-config-options.php:57
+msgid "Gauges boundaries"
+msgstr "Meetbereik"
+
+#: admin/partials/live-weather-station-admin-config-options.php:77
+msgid "Temperatures"
+msgstr "Temperatuur"
+
+#: admin/partials/live-weather-station-admin-config-options.php:90
+msgid "Pressures"
+msgstr "Luchtdruk"
+
+#: admin/partials/live-weather-station-admin-config-options.php:103
+msgid "Windspeeds"
+msgstr "Windsnelheid"
+
+#: admin/partials/live-weather-station-admin-config-options.php:116
+#: includes/trait-type-description.php:84
+msgid "Carbon monoxide"
+msgstr "Koolstofmonoxide"
+
+#: admin/partials/live-weather-station-admin-config-options.php:129
+msgid "Wind icon"
+msgstr "Windicoon"
+
+#: admin/partials/live-weather-station-admin-config-options.php:142
+msgid "Rain & snow"
+msgstr "Regen & sneeuw"
+
+#: admin/partials/live-weather-station-admin-config-options.php:155
+msgid "Altitudes"
+msgstr "Hoogten"
+
+#: admin/partials/live-weather-station-admin-config-options.php:168
+msgid "Distances"
+msgstr "Afstanden"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:15
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:15
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:15
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:15
+msgid "OpenWeatherMap error"
+msgstr "OpenWeatherMap fout"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:17
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:17
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:17
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:17
+msgid ""
+"OpenWeatherMap servers have returned an empty response for this weather "
+"station. For this reason, it is currently not possible to generate a "
+"shortcode. This is normally a temporary error so, please, retry again later."
+msgstr ""
+"OpenWeatherMap servers gaven geen reactie voor dit weerstation en daarom kan "
+"de shortcode nu niet gegenereerd worden. Dit is normaal gesproken een "
+"tijdelijk probleem dus probeer het later nog eens."
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:103
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:180
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:141
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:311
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:77
+msgid "Shortcodes for"
+msgstr "Shortcodes voor"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:311
+#: admin/partials/live-weather-station-admin-config-stations.php:168
+msgid "steel meter"
+msgstr "Stalen meter"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:42
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:42
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:42
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:42
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:15
+msgid "1. Set parameters for the shortcode"
+msgstr "1. Stel de parameters voor de shortcode in"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:47
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:47
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:47
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:47
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:20
+#: admin/partials/live-weather-station-admin-view-log.php:30
+msgid "Module"
+msgstr "Station"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:60
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:60
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:60
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:60
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:33
+msgid "Measurement"
+msgstr "Meting"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:70
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:43
+msgid "Element"
+msgstr "Element"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:80
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:53
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:18
+msgid "Format"
+msgstr "Formaat"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:103
+msgid "icon datas"
+msgstr "icoondata"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:155
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:331
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:197
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:642
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:125
+msgid "2. Verify the generated output"
+msgstr "2. Controleer de gegenereerde code"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:168
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:311
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:210
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:655
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:136
+msgid "3. Copy the following shortcode"
+msgstr "3. Kopieer de volgende shortcode"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:174
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:317
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:216
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:661
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:142
+msgid "This shortcode is ready for use."
+msgstr "Deze shortcode is gereed voor gebruik."
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-icon.php:177
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:320
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:219
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:664
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:145
+msgid "Copy"
+msgstr "Kopieer"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:180
+#: admin/partials/live-weather-station-admin-config-stations.php:168
+msgid "clean gauge"
+msgstr "Moderne schaal"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:70
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:70
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:70
+msgid "Design"
+msgstr "Ontwerp"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:83
+msgid "Colors"
+msgstr "Kleuren"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:96
+msgid "Pointer"
+msgstr "Aanwijzer"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:109
+msgid "Title"
+msgstr "Titel"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:122
+msgid "Label"
+msgstr "Label"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:135
+msgid "Unit"
+msgstr "Eenheid"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:148
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:83
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:279
+#: includes/trait-type-description.php:240
+#: includes/trait-type-description.php:246
+msgid "Size"
+msgstr "Afmeting"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-justgage.php:355
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:203
+msgid "This controls will be dynamically resized to fit its parent's size."
+msgstr ""
+"Deze elementen worden dynamisch aangepast aan de grootte van haar ouders."
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:27
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:141
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:188
+#: admin/partials/live-weather-station-admin-config-stations.php:168
+msgid "LCD display"
+msgstr "LCD display"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-lcd.php:96
+msgid "Speed"
+msgstr "Snelheid"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:83
+msgid "Bezel"
+msgstr "Rand"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:96
+msgid "Face"
+msgstr "Wijzerplaat"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:109
+msgid "Labels orientation"
+msgstr "Labeloriëntatie"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:122
+msgid "Main pointer type"
+msgstr "Type wijzer"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:135
+msgid "Main pointer color"
+msgstr "Kleur wijzer"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:148
+msgid "2nd pointer type"
+msgstr "2e Aanwijzer type"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:161
+msgid "2nd pointer color"
+msgstr "2e Aanwijzer kleur"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:174
+msgid "Knob"
+msgstr "Knop"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:201
+msgid "Alarm"
+msgstr "Alarm"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:214
+msgid "Trend"
+msgstr "Trend"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:227
+msgid "Min/max"
+msgstr "Min/max"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:240
+msgid "Index style"
+msgstr "Indexstijl"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:253
+msgid "Index color"
+msgstr "Indexkleur"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-steelmeter.php:266
+msgid "Glass"
+msgstr "Glas"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:77
+#: admin/partials/live-weather-station-admin-config-stations.php:168
+msgid "textual datas"
+msgstr "Tekstdata"
+
+#: admin/partials/live-weather-station-admin-config-shortcodes-textual.php:130
+msgid ""
+"This value is for illustration only and is not the precise value that will "
+"be computed at runtime."
+msgstr ""
+"Alleen ter illustratie, de juiste waarde wordt berekend bij het uitvoeren."
+
+#: admin/partials/live-weather-station-admin-config-stations.php:25
+msgid "Location"
+msgstr "Locatie"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:26
+msgid "Geolocation informations found"
+msgstr "Geolocatie informatie gevonden"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:26
+msgid "Geolocation informations not found"
+msgstr "Geolocatie informatie niet gevonden"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:31
+#: admin/partials/live-weather-station-admin-config-stations.php:57
+#: includes/trait-type-description.php:75
+msgid "Battery level"
+msgstr "Batterijsterkte"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:31
+msgid "WiFi signal"
+msgstr "WiFi signaal"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:32
+msgid "Last seen on"
+msgstr "Laatste keer gezien op"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:32
+msgid "at"
+msgstr "om"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:57
+msgid "Radio signal"
+msgstr "Signaalsterkte"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:75
+msgid "OpenWeatherMap records"
+msgstr "OpenWeatherMap records"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:97
+msgid "OpenWeatherMap pollution"
+msgstr "OpenWeatherMap verontreiniging"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:118
+msgid "Computed values"
+msgstr "Berekende waarden"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:138
+#: includes/class-live-weather-station-widget-ephemeris.php:37
+msgid "Ephemeris"
+msgstr "Efemeriden"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:167
+msgid "Get shortcodes for "
+msgstr "Bekijk shortcodes voor "
+
+#: admin/partials/live-weather-station-admin-config-stations.php:180
+msgid "Get started"
+msgstr "Beginnen"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:186
+msgid ""
+"In order to display weather data, <strong><em>Live Weather Station</em></"
+"strong> must be connected to your Netatmo account and/or it must have a "
+"valid OpenWeatherMap API key...<br/><strong>If you have a Netatmo weather "
+"station</strong> (or have access to some friends stations) please enter your "
+"Netatmo login and password in the \"Settings\" box. <em>Note that, in "
+"accordance with the manufacturer recommendations, these credentials will not "
+"be stored in your WordPress site.</em><br/><strong>If you do not have a "
+"Netatmo account</strong> or if you want to enhance the rendedred datas of "
+"your Netatmo station, you must <a href=\"http://openweathermap.org/appid\" "
+"target=\"_blank\">get a free OpenWeatherMap API key</a> and paste it in the "
+"\"Settings\" box."
+msgstr ""
+"Om weergegevens te tonen moet <strong><em>Live Weather Station</em></strong> "
+"verbonden zijn met jouw Netatmo account en/of moet je een geldige "
+"OpenWeatherMap API key hebben.<br/><br/><strong>Als je een Netatmo "
+"weerstation</strong> hebt (of toegang tot een ander station) kun je de "
+"Netatmo gebruikersnaam en het paswoord bij \"Instellingen\" opgeven. <em>Je "
+"moet er rekening mee houden dat, overeenkomstig de aanbevelingen van de "
+"fabrikant, deze gegevens niet in de WordPress site worden opgeslagen.</"
+"em><br/><br /><strong>Als je geen Netatmo account hebt</strong>, of als je "
+"de weergegeven informatie van je Netatmo station wilt uitbreiden, moet je "
+"een <a href=\"http://openweathermap.org/appid\" target=\"_blank\">gratis "
+"OpenWeatherMap API key</a> hebben en die gegevens invullen onder  "
+"\"Instellingen\"."
+
+#: admin/partials/live-weather-station-admin-config-stations.php:191
+msgid "There is no Netatmo weather station associated with your account."
+msgstr "Er is geen Netatmo station met jouw account verbonden."
+
+#: admin/partials/live-weather-station-admin-config-stations.php:196
+msgid ""
+"You have not created any OpenWeatherMap station at the moment, this is why "
+"nothing appears here. To add your first station, visit"
+msgstr ""
+"Je hebt nog geen OpenWeatherMap station aangemaakt, daarom zie je hier niks. "
+"Om een station toe te voegen ga je naar"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:196
+msgid "the stations management page"
+msgstr "de stations beheerpagina"
+
+#: admin/partials/live-weather-station-admin-config-stations.php:201
+msgid ""
+"To see data from OpenWeatherMap stations, you must choose another collection "
+"mode in the \"Options\" box."
+msgstr ""
+"Om gegevens van OpenWeatherMap stations te zien moet je bij \"Opties\" een "
+"andere collectie-modus kiezen."
+
+#: admin/partials/live-weather-station-admin-config-summary.php:12
+msgid "Summary"
+msgstr "Samenvatting"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:18
+#: admin/partials/live-weather-station-admin-config-summary.php:31
+msgid "Netatmo status"
+msgstr "Netatmo status"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:20
+#: admin/partials/live-weather-station-admin-config-summary.php:55
+msgid "Up and running"
+msgstr "Verbonden en werkend"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:20
+#: admin/partials/live-weather-station-admin-config-summary.php:55
+msgid "Connected but inactive"
+msgstr "Verbonden maar niet actief"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:20
+#: admin/partials/live-weather-station-admin-config-summary.php:55
+msgid "disconnect"
+msgstr "verbinding verbreken"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:20
+#: admin/partials/live-weather-station-admin-config-summary.php:55
+msgid "or"
+msgstr "of"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:20
+msgid "manage related services"
+msgstr "stel bijbehorende services in"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:24
+msgid "Netatmo warning"
+msgstr "Netatmo waarschuwing"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:33
+#: admin/partials/live-weather-station-admin-config-summary.php:49
+#: admin/partials/live-weather-station-admin-config-summary.php:69
+msgid "Not connected"
+msgstr "Niet verbonden"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:37
+msgid "Netatmo error"
+msgstr "Netatmo fout"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:47
+#: admin/partials/live-weather-station-admin-config-summary.php:53
+#: admin/partials/live-weather-station-admin-config-summary.php:67
+msgid "OWM status"
+msgstr "OWM status"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:55
+msgid "manage stations"
+msgstr "beheer stations"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:60
+msgid "OWM warning"
+msgstr "OWM waarschuwing"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:72
+msgid "OWM error"
+msgstr "OWM fout"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:78
+msgid "Version"
+msgstr "Versie"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:84
+msgid "PHP warning"
+msgstr "PHP melding"
+
+#: admin/partials/live-weather-station-admin-config-summary.php:86
+msgid ""
+"Internationalisation extension is not installed. You can not manage OWM "
+"stations..."
+msgstr ""
+"De \"Internationalisation Extension\" is niet geïnstalleerd, je kunt de OWM "
+"stations niet instellen..."
+
+#: admin/partials/live-weather-station-admin-delete-owm.php:12
+msgid "Deleteting OpenWeatherMap stations"
+msgstr "Verwijderen OpenWeatherMap stations"
+
+#: admin/partials/live-weather-station-admin-delete-owm.php:20
+msgid "You have chosen to delete this station:"
+msgstr "Je hebt er voor gekozen dit station te verwijderen:"
+
+#: admin/partials/live-weather-station-admin-delete-owm.php:22
+msgid "You have chosen to remove these stations:"
+msgstr "Je hebt er voor gekozen deze stations te verwijderen:"
+
+#: admin/partials/live-weather-station-admin-delete-owm.php:29
+msgid "Confirm Delete"
+msgstr "Bevestig verwijderen"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:11
+msgid "Manage services for"
+msgstr "Beheer services voor"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:14
+msgid ""
+"Some services could not be activated. See details in the following "
+"sections..."
+msgstr ""
+"Enkele services kunnen niet geactiveerd worden, zie de details in de "
+"volgende secties..."
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:16
+msgid ""
+"You can participate in the dissemination and sharing of data collected by "
+"your Netatmo weather station by enabling Live Weather Station to send, every "
+"10 minutes, outdoor data<sup>*</sup> like temperature, pressure, humidity, "
+"dew point, wind and rain to the following services. To obtain help for each "
+"service, please click on logos."
+msgstr ""
+"Je kunt deelnemen aan het delen en uitwisselen van gegevens van jouw Netatmo "
+"weerstation door het inschakelen van Live Weather Station. Elke 10 minuten "
+"worden de gegevens van de buitenmodule <sup> * </ sup> zoals temperatuur, "
+"luchtdruk, vochtigheid, dauwpunt, wind en regen met die diensten gedeeld. "
+"Klik voor uitleg over de diensten op de logo's."
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:17
+msgid ""
+"Note that no data from inside your home (noise, temperature, CO₂ ...) are "
+"transmitted to these services."
+msgstr ""
+"Gegevens zoals geluid, temperatuur en CO₂  van de binnenmodules worden niet "
+"met deze diensten gedeeld."
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:26
+msgid ""
+"To obtain Site ID and AWS 6-digit PIN from Met Office please, follow these "
+"steps:"
+msgstr ""
+"Om de Site ID en AWS 6-digit PIN van Met Office op te vragen kun je deze "
+"stappen volgen:"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:28
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:58
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:88
+msgid "Create an account"
+msgstr "Account aanmaken"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:28
+msgid "on the Weather Observations Website from Met Office"
+msgstr "op de Weather Observations Website van Met Office"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:29
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:59
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:89
+msgid "After registration, log in and"
+msgstr "Na registratie inloggen en"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:29
+msgid "create a site"
+msgstr "creëer een site"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:30
+msgid ""
+"Then, copy and paste <em>Site ID</em> and <em>AWS 6-digit PIN</em> in the "
+"following fields, and activate push."
+msgstr ""
+"Knip en plak daarna <em>Site ID</em> en <em>AWS 6-digit PIN</em> in de "
+"volgende velden en activeer push."
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:32
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:62
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:92
+msgid "After a few hours you'll get something"
+msgstr "Na een paar uur moet het werken"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:32
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:62
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:92
+msgid "like this!"
+msgstr "zoals dit!"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:36
+msgid ""
+"Unable to activate this service. Met Office servers have returned the "
+"following error:"
+msgstr ""
+"Kan de service niet activeren, de Met Office servers sturen volgende "
+"foutmelding:"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:47
+msgid "Push data to Met Office"
+msgstr "Push data naar Met Office"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:56
+msgid "To obtain Station ID from PWS please, follow these steps:"
+msgstr "Volg deze stappen om het Station ID van PWS op te vragen:"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:58
+msgid "on the PWS website"
+msgstr "op de PWS website"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:59
+msgid "add a new station"
+msgstr "voeg een nieuw station toe"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:60
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:90
+msgid ""
+"Then, copy and paste <em>Station ID</em> in the corresponding following "
+"field, set your password and activate push."
+msgstr ""
+"Daarna knip en plak je de <em>Station ID</em> in het betreffende volgende "
+"veld, geef je jouw paswoord op en activeer je push."
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:66
+msgid ""
+"Unable to activate this service. PWS servers have returned the following "
+"error:"
+msgstr ""
+"Kan de service niet activeren, de PWS servers sturen volgende foutmelding:"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:77
+msgid "Push data to PWS"
+msgstr "Push data naar PWS"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:86
+msgid ""
+"To obtain Station ID from Weather Underground please, follow these steps:"
+msgstr "Volg deze stappen om het Station ID van PWS op te vragen:"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:88
+msgid "on the Weather Underground website"
+msgstr "op de Weather Underground website"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:89
+msgid "add a new station by following the 4 steps registration form"
+msgstr ""
+"voeg een nieuw station toe via vier stappen op het registratieformulier"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:96
+msgid ""
+"Unable to activate this service. Weather Underground servers have returned "
+"the following error:"
+msgstr ""
+"Kan de service niet activeren, de Weather Underground servers sturen "
+"volgende foutmelding:"
+
+#: admin/partials/live-weather-station-admin-edit-netatmo.php:107
+msgid "Push data to Weather Underground"
+msgstr "Push data naar Weather Underground"
+
+#: admin/partials/live-weather-station-admin-list-logs-bottom.php:11
+msgid "Number of lines to display"
+msgstr "Aantal regels weergeven"
+
+#: admin/partials/live-weather-station-admin-list-logs-bottom.php:17
+#: admin/partials/live-weather-station-admin-list-logs-top.php:29
+#: includes/class-live-weather-station-list-table.php:193
+msgid "Apply"
+msgstr "Toepassen"
+
+#: admin/partials/live-weather-station-admin-list-logs-top.php:11
+msgid "Filter systems to display"
+msgstr "Te tonen filtersystemen"
+
+#: admin/partials/live-weather-station-admin-list-logs-top.php:17
+msgid "Filter services to display"
+msgstr "Te tonen filterservices"
+
+#: admin/partials/live-weather-station-admin-list-logs-top.php:23
+msgid "Filter stations to display"
+msgstr "Te tonen stations"
+
+#: admin/partials/live-weather-station-admin-list-logs.php:16
+msgid "Events log"
+msgstr "Events log"
+
+#: admin/partials/live-weather-station-admin-manage-netatmo.php:16
+msgid "Netatmo stations"
+msgstr "Netatmo stations"
+
+#: admin/partials/live-weather-station-admin-manage-owm.php:13
+msgid "Add"
+msgstr "Toevoegen"
+
+#: admin/partials/live-weather-station-admin-manage-owm.php:17
+msgid "OpenWeatherMap stations"
+msgstr "OpenWeatherMap stations"
+
+#: admin/partials/live-weather-station-admin-view-log.php:21
+msgid "Timestamp"
+msgstr "Tijdstempel"
+
+#: admin/partials/live-weather-station-admin-view-log.php:23
+msgid "System"
+msgstr "Systeem"
+
+#: admin/partials/live-weather-station-admin-view-log.php:25
+#: includes/class-log-list-table.php:95
+msgid "Service"
+msgstr "Service"
+
+#: admin/partials/live-weather-station-admin-view-log.php:28
+#: includes/class-log-list-table.php:96
+#: includes/class-netatmo-stations-list-table.php:42
+#: includes/class-owm-stations-list-table.php:44
+msgid "Station"
+msgstr "Station"
+
+#: admin/partials/live-weather-station-admin-view-log.php:33
+msgid "Error code"
+msgstr "Foutcode"
+
+#: admin/partials/live-weather-station-admin-view-log.php:35
+msgid "Full message"
+msgstr "Volledig bericht"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:10
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:10
+msgid "Station to display"
+msgstr "Weer te geven station"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:20
+msgid "Compact"
+msgstr "Compact"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:21
+msgid "Standard"
+msgstr "Standaard"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:22
+msgid "Extended"
+msgstr "Uitgebreid"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:26
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:65
+msgid "Displayed name"
+msgstr "Weergegeven naam"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:30
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:69
+msgid "Subtitle to display"
+msgstr "Te tonen ondertitel"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:32
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:71
+msgid "Nothing"
+msgstr "Niets"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:33
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:72
+msgid "Date and time of records"
+msgstr "Datum en tijd van de records"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:34
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:73
+msgid "Station coordinates (if known)"
+msgstr "Stationscoordinaten (indien bekend)"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:38
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:77
+msgid "Max width (in px)"
+msgstr "Max breedte (in px)"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:42
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:81
+msgid "Text color"
+msgstr "Tekstkleur"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:46
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:85
+msgid "Background color"
+msgstr "Achtergrondkleur"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:49
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:88
+msgid "Transparence of background"
+msgstr "Transparantie achtergrond"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:57
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:96
+msgid "Show borders"
+msgstr "Toon borders"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:61
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:100
+msgid "Show tooltips"
+msgstr "Toon tooltips"
+
+#: admin/partials/live-weather-station-widget-ephemeris-settings.php:65
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:104
+msgid "Flat design"
+msgstr "Vlak ontwerp"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:19
+msgid "Display current weather conditions (if available)"
+msgstr "Weercondities weergeven (indien beschikbaar)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:22
+msgid "Display temperatures (if available)"
+msgstr "Temperatuur weergeven (indien beschikbaar)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:25
+msgid "Display atmospheric pressure (if available)"
+msgstr "Luchtdruk weergeven (indien beschikbaar)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:28
+msgid "Display humidity (if available)"
+msgstr "Luchtvochtigheid weergeven (indien beschikbaar)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:31
+msgid "Display rainfall (if available)"
+msgstr "Regen weergeven (indien beschikbaar)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:34
+msgid "Display snowfall (if available)"
+msgstr "Sneeuw weergeven (indien beschikbaar)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:37
+msgid "Display wind (if available)"
+msgstr "Wind weergeven (indien beschikbaar)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:40
+msgid "Display cloud cover (if available)"
+msgstr "Bewolking weergeven (indien beschikbaar)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:43
+msgid "Display cloud base altitude (if available)"
+msgstr "Hoogte bewolking weergeven (indien beschikbaar)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:46
+msgid "Display dew point (if available)"
+msgstr "Dauwpunt weergeven (indien beschikbaar)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:49
+msgid "Display frost point (if available)"
+msgstr "Vriespunt weergeven (indien beschikbaar)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:52
+msgid "Display heat index (if available)"
+msgstr "Gevoelstemperatuur (heat index) weergeven (indien beschikbaar)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:55
+msgid "Display humidex (if available)"
+msgstr "Gevoelstemperatuur (humidex) weergeven (indien beschikbaar)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:58
+msgid "Display wind chill (if available)"
+msgstr "Gevoelstemperatuur (wind chill) weergeven (indien beschikbaar)"
+
+#: admin/partials/live-weather-station-widget-outdoor-settings.php:61
+msgid "Hide obsolete measurements"
+msgstr "Verberg verouderde metingen"
+
+#: includes/class-live-weather-station-list-table.php:56
+msgid "List View"
+msgstr "Lijstweergave"
+
+#: includes/class-live-weather-station-list-table.php:57
+msgid "Excerpt View"
+msgstr "Verkorte weergave"
+
+#: includes/class-live-weather-station-list-table.php:124
+msgid "No items found."
+msgstr "Geen items gevonden."
+
+#: includes/class-live-weather-station-list-table.php:181
+msgid "Select bulk action"
+msgstr "Kies bulkactie"
+
+#: includes/class-live-weather-station-list-table.php:183
+msgid "Bulk Actions"
+msgstr "Bulkacties"
+
+#: includes/class-live-weather-station-list-table.php:223
+#: includes/class-live-weather-station-list-table.php:639
+msgid "Show more details"
+msgstr "Toon meer details"
+
+#: includes/class-live-weather-station-list-table.php:275
+#: includes/class-live-weather-station-list-table.php:657
+#, php-format
+msgid "%s item"
+msgid_plural "%s items"
+msgstr[0] "%s onderdelen"
+msgstr[1] "%s items"
+
+#: includes/class-live-weather-station-list-table.php:310
+msgid "First page"
+msgstr "Eerste agina"
+
+#: includes/class-live-weather-station-list-table.php:320
+msgid "Previous page"
+msgstr "Vorige pagina"
+
+#: includes/class-live-weather-station-list-table.php:327
+#: includes/class-live-weather-station-list-table.php:330
+msgid "Current Page"
+msgstr "Huidige pagina"
+
+#: includes/class-live-weather-station-list-table.php:336
+#, php-format
+msgctxt "paging"
+msgid "%1$s of %2$s"
+msgstr "%1$s of %2$s"
+
+#: includes/class-live-weather-station-list-table.php:343
+msgid "Next page"
+msgstr "Volgende pagina"
+
+#: includes/class-live-weather-station-list-table.php:353
+msgid "Last page"
+msgstr "Laatste pagina"
+
+#: includes/class-live-weather-station-list-table.php:473
+msgid "Select All"
+msgstr "Selecteer alles"
+
+#: includes/class-live-weather-station-widget-ephemeris.php:38
+msgid ""
+"Display ephemeris for sun and moon at the location of a Netatmo and/or "
+"OpenWeatherMap weather station."
+msgstr ""
+"Toon de efimerides van zon en maan voor de locatie van een Netatmo en/of "
+"OpenWeatherMap weerstation."
+
+#: includes/class-live-weather-station-widget-outdoor.php:40
+msgid "Outdoor weather summary"
+msgstr "Samenvatting weer buiten"
+
+#: includes/class-live-weather-station-widget-outdoor.php:41
+msgid ""
+"Display outdoor measurements of a Netatmo and/or OpenWeatherMap weather "
+"station."
+msgstr ""
+"Toon de buitenmetingen van een Netatmo en/of OpenWeatherMap weerstation"
+
+#: includes/class-log-list-table.php:48
+msgid "See detail in new window"
+msgstr "Bekijk detail in een nieuw venster"
+
+#: includes/class-log-list-table.php:49
+msgid "code"
+msgstr "code"
+
+#: includes/class-log-list-table.php:55 includes/class-log-list-table.php:80
+#: includes/trait-datas-output.php:1256 includes/trait-datas-output.php:1261
+#: includes/trait-datas-output.php:1266 includes/trait-datas-output.php:1271
+#: includes/trait-datas-output.php:1276
+msgid "N/A"
+msgstr "N/A"
+
+#: includes/class-log-list-table.php:93
+msgid "Event"
+msgstr "Gebeurtenis"
+
+#: includes/class-log-list-table.php:94
+msgid "Time"
+msgstr "Tijd"
+
+#: includes/class-log-list-table.php:97
+msgid "Message"
+msgstr "Bericht"
+
+#: includes/class-log-list-table.php:190
+msgid "All"
+msgstr "Alles"
+
+#: includes/class-log-list-table.php:192
+msgid "Notices &amp; beyond"
+msgstr "Mededelingen &amp; daarop volgend"
+
+#: includes/class-log-list-table.php:194
+msgid "Errors &amp; beyond"
+msgstr "Fouten &amp; daarop volgend"
+
+#: includes/class-log-list-table.php:237
+#, php-format
+msgid "Show %d lines per page"
+msgstr "Toon %d regels per pagina"
+
+#: includes/class-log-list-table.php:248
+msgid "All systems"
+msgstr "Alle systemen"
+
+#: includes/class-log-list-table.php:265
+msgid "All services"
+msgstr "Alle services"
+
+#: includes/class-log-list-table.php:282
+msgid "All stations"
+msgstr "Alle stations"
+
+#: includes/class-logger.php:369
+msgid "Emergency"
+msgstr "Noodgeval"
+
+#: includes/class-logger.php:372
+msgid "Alert"
+msgstr "Opletten"
+
+#: includes/class-logger.php:375
+msgid "Critical error"
+msgstr "Kritische fout"
+
+#: includes/class-logger.php:378
+msgid "Error"
+msgstr "Fout"
+
+#: includes/class-logger.php:381
+msgid "Warning"
+msgstr "Waarschuwing"
+
+#: includes/class-logger.php:384
+msgid "Notice"
+msgstr "Opmerken"
+
+#: includes/class-logger.php:387
+msgid "Information"
+msgstr "Informatie"
+
+#: includes/class-logger.php:390
+msgid "Debug information"
+msgstr "Debug informatie"
+
+#: includes/class-netatmo-stations-list-table.php:31
+msgid "Manage services"
+msgstr "Beheer services"
+
+#: includes/class-netatmo-stations-list-table.php:74
+#: includes/class-netatmo-stations-list-table.php:81
+#: includes/class-netatmo-stations-list-table.php:88
+msgid "No"
+msgstr "Nee"
+
+#: includes/class-netatmo-stations-list-table.php:76
+#: includes/class-netatmo-stations-list-table.php:83
+#: includes/class-netatmo-stations-list-table.php:90
+msgid "Yes"
+msgstr "Ja"
+
+#: includes/class-netatmo-stations-list-table.php:78
+#: includes/class-netatmo-stations-list-table.php:85
+#: includes/class-netatmo-stations-list-table.php:92
+msgid "see it"
+msgstr "bekijken"
+
+#: includes/class-owm-stations-list-table.php:31
+msgid "Edit"
+msgstr "Aanpassen"
+
+#: includes/class-owm-stations-list-table.php:32
+msgid "Verify on a map"
+msgstr "Controleer op een kaart"
+
+#: includes/class-owm-stations-list-table.php:33
+#: includes/class-owm-stations-list-table.php:58
+msgid "Delete"
+msgstr "Verwijder"
+
+#: includes/class-owm-stations-list-table.php:48
+#: includes/trait-type-description.php:195
+msgid "Altitude"
+msgstr "Hoogte"
+
+#: includes/trait-datas-output.php:186
+msgid "Outdoor"
+msgstr "Buiten"
+
+#: includes/trait-datas-output.php:929 includes/trait-type-description.php:117
+#: includes/trait-type-description.php:174
+#: includes/trait-type-description.php:177
+#: includes/trait-type-description.php:187
+#: includes/trait-type-description.php:191
+msgid "Wind"
+msgstr "Wind"
+
+#: includes/trait-datas-output.php:929 includes/trait-type-description.php:180
+#: includes/trait-type-description.php:183
+msgid "Gust"
+msgstr "Vlaag"
+
+#: includes/trait-datas-output.php:1129
+msgid "Malformed shortcode. Please verify it!"
+msgstr "Ongeldige shortcode, controleren!"
+
+#: includes/trait-datas-output.php:1731 includes/trait-datas-output.php:1856
+msgid "now"
+msgstr "nu"
+
+#: includes/trait-datas-output.php:1733 includes/trait-datas-output.php:1762
+msgid "/ 3 hr"
+msgstr "/ 3 uur"
+
+#: includes/trait-datas-output.php:1743
+msgid "/ 1 hr"
+msgstr "/ 1 uur"
+
+#: includes/trait-datas-output.php:1752
+#: public/partials/live-weather-station-widget-outdoor-display.php:154
+msgid "today"
+msgstr "vandaag"
+
+#: includes/trait-datas-output.php:1783 includes/trait-datas-output.php:1799
+msgid "gust"
+msgstr "windvlaag"
+
+#: includes/trait-datas-output.php:1935 includes/trait-type-description.php:81
+msgid "CO₂"
+msgstr "CO₂"
+
+#: includes/trait-datas-output.php:1938 includes/trait-type-description.php:84
+#: includes/trait-type-description.php:90
+msgid "CO"
+msgstr "CO"
+
+#: includes/trait-datas-output.php:1941 includes/trait-type-description.php:87
+#: includes/trait-type-description.php:93
+msgid "O₃"
+msgstr "O₃"
+
+#: includes/trait-datas-output.php:1944
+msgid "humidity"
+msgstr "vochtigheid"
+
+#: includes/trait-datas-output.php:1947
+msgid "noise"
+msgstr "geluid"
+
+#: includes/trait-datas-output.php:1952
+msgid "rain"
+msgstr "regen"
+
+#: includes/trait-datas-output.php:1955
+msgid "snow"
+msgstr "sneeuw"
+
+#: includes/trait-datas-output.php:1963
+msgid "wind"
+msgstr "wind"
+
+#: includes/trait-datas-output.php:1966
+msgid "atm pressure"
+msgstr "atmosferische luchtdruk"
+
+#: includes/trait-datas-output.php:1969
+msgid "dew point"
+msgstr "dauwpunt"
+
+#: includes/trait-datas-output.php:1972
+msgid "frost point"
+msgstr "vriespunt"
+
+#: includes/trait-datas-output.php:1975
+msgid "heat-index"
+msgstr "heat-index"
+
+#: includes/trait-datas-output.php:1978
+msgid "humidex"
+msgstr "humidex"
+
+#: includes/trait-datas-output.php:1981
+msgid "wind chill"
+msgstr "gevoelstemperatuur"
+
+#: includes/trait-datas-output.php:1984
+msgid "cloud base"
+msgstr "wolkenbasis"
+
+#: includes/trait-datas-output.php:1987
+msgid "cloudiness"
+msgstr "bewolking"
+
+#: includes/trait-datas-output.php:1992
+msgid "temperature"
+msgstr "temperatuur"
+
+#: includes/trait-datas-output.php:2059 includes/trait-datas-output.php:2247
+#: includes/trait-datas-output.php:2291
+msgid "Very low"
+msgstr "Erg laag"
+
+#: includes/trait-datas-output.php:2062
+msgid "Low"
+msgstr "Laag"
+
+#: includes/trait-datas-output.php:2065 includes/trait-datas-output.php:2244
+#: includes/trait-datas-output.php:2288 includes/trait-javascript-array.php:614
+#: includes/trait-javascript-array.php:699
+msgid "Medium"
+msgstr "Gemiddeld"
+
+#: includes/trait-datas-output.php:2068 includes/trait-datas-output.php:2241
+#: includes/trait-datas-output.php:2285
+msgid "High"
+msgstr "Hoog"
+
+#: includes/trait-datas-output.php:2071 includes/trait-datas-output.php:2238
+msgid "Full"
+msgstr "Vol"
+
+#: includes/trait-datas-output.php:2074
+msgid "AC Power"
+msgstr "Externe voeding"
+
+#: includes/trait-datas-output.php:2077
+msgid "Unknown Power State"
+msgstr "Onbekende status"
+
+#: includes/trait-datas-output.php:2099 includes/trait-datas-output.php:2129
+#: includes/trait-datas-output.php:2145
+msgid "N"
+msgstr "N"
+
+#: includes/trait-datas-output.php:2100 includes/trait-datas-output.php:2130
+msgid "N-NE"
+msgstr "N-NO"
+
+#: includes/trait-datas-output.php:2101 includes/trait-datas-output.php:2131
+msgid "NE"
+msgstr "NO"
+
+#: includes/trait-datas-output.php:2102 includes/trait-datas-output.php:2132
+msgid "E-NE"
+msgstr "O-NO"
+
+#: includes/trait-datas-output.php:2103 includes/trait-datas-output.php:2133
+msgid "E"
+msgstr "O"
+
+#: includes/trait-datas-output.php:2104 includes/trait-datas-output.php:2134
+msgid "E-SE"
+msgstr "O-ZO"
+
+#: includes/trait-datas-output.php:2105 includes/trait-datas-output.php:2135
+msgid "SE"
+msgstr "ZO"
+
+#: includes/trait-datas-output.php:2106 includes/trait-datas-output.php:2136
+msgid "S-SE"
+msgstr "Z-ZO"
+
+#: includes/trait-datas-output.php:2107 includes/trait-datas-output.php:2137
+msgid "S"
+msgstr "Z"
+
+#: includes/trait-datas-output.php:2108 includes/trait-datas-output.php:2138
+msgid "S-SW"
+msgstr "Z-ZW"
+
+#: includes/trait-datas-output.php:2109 includes/trait-datas-output.php:2139
+msgid "SW"
+msgstr "ZW"
+
+#: includes/trait-datas-output.php:2110 includes/trait-datas-output.php:2140
+msgid "W-SW"
+msgstr "W-ZW"
+
+#: includes/trait-datas-output.php:2111 includes/trait-datas-output.php:2141
+msgid "W"
+msgstr "W"
+
+#: includes/trait-datas-output.php:2112 includes/trait-datas-output.php:2142
+msgid "W-NW"
+msgstr "W-NW"
+
+#: includes/trait-datas-output.php:2113 includes/trait-datas-output.php:2143
+msgid "NW"
+msgstr "NW"
+
+#: includes/trait-datas-output.php:2114 includes/trait-datas-output.php:2144
+msgid "N-NW"
+msgstr "N-NW"
+
+#: includes/trait-datas-output.php:2160 includes/trait-datas-output.php:2176
+msgid "North"
+msgstr "NOORD"
+
+#: includes/trait-datas-output.php:2161
+msgid "North-Northeast"
+msgstr "Noord-Noordoost"
+
+#: includes/trait-datas-output.php:2162
+msgid "Northeast"
+msgstr "Noordoost"
+
+#: includes/trait-datas-output.php:2163
+msgid "East-Northeast"
+msgstr "Oost-Noordoost"
+
+#: includes/trait-datas-output.php:2164
+msgid "East"
+msgstr "Oost"
+
+#: includes/trait-datas-output.php:2165
+msgid "East-Southeast"
+msgstr "Oost-Zuidoost"
+
+#: includes/trait-datas-output.php:2166
+msgid "Southeast"
+msgstr "Zuidoost"
+
+#: includes/trait-datas-output.php:2167
+msgid "South-Southeast"
+msgstr "Zuid-Zuidoost"
+
+#: includes/trait-datas-output.php:2168
+msgid "South"
+msgstr "Zuid"
+
+#: includes/trait-datas-output.php:2169
+msgid "South-Southwest"
+msgstr "Zuid-Zuidwest"
+
+#: includes/trait-datas-output.php:2170
+msgid "Southwest"
+msgstr "Zuidwest"
+
+#: includes/trait-datas-output.php:2171
+msgid "West-Southwest"
+msgstr "West-Zuidwest"
+
+#: includes/trait-datas-output.php:2172
+msgid "West"
+msgstr "West"
+
+#: includes/trait-datas-output.php:2173
+msgid "West-Northwest"
+msgstr "West-Noordwest"
+
+#: includes/trait-datas-output.php:2174
+msgid "Northwest"
+msgstr "Noordwest"
+
+#: includes/trait-datas-output.php:2175
+msgid "North-Northwest"
+msgstr "Noord-Noordwest"
+
+#: includes/trait-datas-output.php:2250
+msgid "No RF Signal"
+msgstr "Geen RF Signaal"
+
+#: includes/trait-datas-output.php:2294
+msgid "No WiFi Signal"
+msgstr "Geen WiFi Signaal"
+
+#: includes/trait-datas-output.php:2310
+msgid "Rising"
+msgstr "stijgend"
+
+#: includes/trait-datas-output.php:2313
+msgid "Falling"
+msgstr "dalend"
+
+#: includes/trait-datas-output.php:2316
+msgid "Stable"
+msgstr "stabiel"
+
+#: includes/trait-datas-output.php:2351 includes/trait-datas-output.php:2359
+msgid "New Moon"
+msgstr "Nieuwe maan"
+
+#: includes/trait-datas-output.php:2352
+msgid "Waxing Crescent"
+msgstr "Afnemende maan"
+
+#: includes/trait-datas-output.php:2353
+msgid "First Quarter"
+msgstr "Eerste kwartier"
+
+#: includes/trait-datas-output.php:2354
+msgid "Waxing Gibbous"
+msgstr "Wassende maan"
+
+#: includes/trait-datas-output.php:2355
+msgid "Full Moon"
+msgstr "Volle maan"
+
+#: includes/trait-datas-output.php:2356
+msgid "Waning Gibbous"
+msgstr "Afnemende maan"
+
+#: includes/trait-datas-output.php:2357
+msgid "Third Quarter"
+msgstr "Derde kwartier"
+
+#: includes/trait-datas-output.php:2358
+msgid "Waning Crescent"
+msgstr "Afnemende halve maan"
+
+#: includes/trait-datas-output.php:2415 includes/trait-datas-output.php:2534
+msgid "Successful operation"
+msgstr "Geslaagde bewerking"
+
+#: includes/trait-datas-output.php:2418 includes/trait-datas-output.php:2537
+#: includes/trait-datas-query.php:449 includes/trait-datas-query.php:476
+#: includes/trait-datas-query.php:502 includes/trait-datas-query.php:529
+#: includes/trait-datas-query.php:553 includes/trait-datas-query.php:671
+msgid "Database contains inconsistent datas"
+msgstr "Database bevat inconsistente data"
+
+#: includes/trait-datas-output.php:2600 includes/trait-datas-output.php:2607
+msgid "O/DR"
+msgstr "O/DR"
+
+#: includes/trait-datas-output.php:2675
+msgid "clouds"
+msgstr "wolken"
+
+#: includes/trait-datas-output.php:2776
+msgid "All data have been filtered: nothing to show"
+msgstr "Alle data is gefilterd: niets om te laten zien"
+
+#: includes/trait-datas-query.php:104
+msgid "is not running..."
+msgstr "wordt niet uitgevoerd..."
+
+#: includes/trait-datetime-conversion.php:119
+#: includes/trait-datetime-conversion.php:135
+#: includes/trait-datetime-conversion.php:151
+#, php-format
+msgid "%s ago"
+msgstr "%s geleden"
+
+#: includes/trait-datetime-conversion.php:122
+#: includes/trait-datetime-conversion.php:154
+#, php-format
+msgid "in %s"
+msgstr "in %s"
+
+#: includes/trait-datetime-conversion.php:138
+msgid "currently"
+msgstr "huidig"
+
+#: includes/trait-datetime-conversion.php:248
+msgid "days"
+msgstr "dagen"
+
+#: includes/trait-datetime-conversion.php:248
+msgid "hours"
+msgstr "uur"
+
+#: includes/trait-ephemeris-client.php:46
+#: includes/trait-type-description.php:51
+msgid "[Ephemeris]"
+msgstr "[Efemeriden]"
+
+#: includes/trait-javascript-array.php:27
+#: includes/trait-javascript-array.php:55
+#: includes/trait-javascript-array.php:69
+#: includes/trait-javascript-array.php:115
+#: includes/trait-javascript-array.php:133
+#: includes/trait-javascript-array.php:149
+#: includes/trait-javascript-array.php:164
+#: includes/trait-javascript-array.php:181
+#: includes/trait-javascript-array.php:199
+#: includes/trait-javascript-array.php:213
+#: includes/trait-javascript-array.php:227
+#: includes/trait-javascript-array.php:246
+msgid "Raw value"
+msgstr "Onbewerkte waarde"
+
+#: includes/trait-javascript-array.php:41
+#: includes/trait-javascript-array.php:84
+msgid "As-is"
+msgstr "As-is"
+
+#: includes/trait-javascript-array.php:70
+#: includes/trait-javascript-array.php:116
+msgid "Formated value"
+msgstr "Geformatteerde waarde"
+
+#: includes/trait-javascript-array.php:98
+msgid "UTC timestamp"
+msgstr "UTC tijdweergave"
+
+#: includes/trait-javascript-array.php:99
+msgid "Formated local date"
+msgstr "Geformatteerde locale datum"
+
+#: includes/trait-javascript-array.php:100
+msgid "Formated local time"
+msgstr "Geformatteerde locale tijd"
+
+#: includes/trait-javascript-array.php:101
+msgid "Elapsed or remaining approximative time"
+msgstr "Verstreken of resterende tijd bij benadering"
+
+#: includes/trait-javascript-array.php:117
+msgid "Unit symbol or abbreviation"
+msgstr "Unitsymbool of afkorting"
+
+#: includes/trait-javascript-array.php:118
+msgid "Unit with complement (if any)"
+msgstr "Unit met aanvulling (indien van toepassing)"
+
+#: includes/trait-javascript-array.php:119
+msgid "Unit name"
+msgstr "Eenheidsnaam"
+
+#: includes/trait-javascript-array.php:134
+#: includes/trait-javascript-array.php:150
+#: includes/trait-javascript-array.php:165
+#: includes/trait-javascript-array.php:182
+msgid "Converted value"
+msgstr "Geconverteerde waarde"
+
+#: includes/trait-javascript-array.php:135
+#: includes/trait-javascript-array.php:166
+#: includes/trait-javascript-array.php:183
+msgid "Converted value with unit"
+msgstr "Geconverteerde waarde met unit"
+
+#: includes/trait-javascript-array.php:167
+#: includes/trait-javascript-array.php:185
+#: includes/trait-javascript-array.php:247
+msgid "Plain text"
+msgstr "Platte tekst"
+
+#: includes/trait-javascript-array.php:184
+msgid "Abbreviation"
+msgstr "Afkorting"
+
+#: includes/trait-javascript-array.php:228
+msgid "Geodetic system WGS 84"
+msgstr "Geodetic system WGS 84"
+
+#: includes/trait-javascript-array.php:229
+msgid "Geodetic system WGS 84 with unit"
+msgstr "Geodetic system WGS 84 met unit"
+
+#: includes/trait-javascript-array.php:230
+msgid "DMS"
+msgstr "DMS"
+
+#: includes/trait-javascript-array.php:231
+msgid "DMS starting with cardinal"
+msgstr "DMS starten met cardinal"
+
+#: includes/trait-javascript-array.php:232
+msgid "DMS ending with cardinal"
+msgstr "DMS stoppen met cardinal"
+
+#: includes/trait-javascript-array.php:261
+msgid "Station ID"
+msgstr "Stations ID"
+
+#: includes/trait-javascript-array.php:263
+msgid "Module ID"
+msgstr "Module ID"
+
+#: includes/trait-javascript-array.php:264
+msgid "Module type"
+msgstr "Moduletype"
+
+#: includes/trait-javascript-array.php:265
+#: includes/trait-javascript-array.php:802
+#: includes/trait-javascript-array.php:806
+#: includes/trait-javascript-array.php:807
+msgid "Module name"
+msgstr "Modulenaam"
+
+#: includes/trait-javascript-array.php:266
+msgid "Measurement timestamp"
+msgstr "Tijdsaanduiding meting"
+
+#: includes/trait-javascript-array.php:268
+#: includes/trait-javascript-array.php:804
+#: includes/trait-javascript-array.php:807
+#: includes/trait-javascript-array.php:809
+msgid "Measurement type"
+msgstr "Metingtype"
+
+#: includes/trait-javascript-array.php:272
+#: includes/trait-javascript-array.php:279
+#: includes/trait-javascript-array.php:285
+#: includes/trait-javascript-array.php:288
+#: includes/trait-javascript-array.php:292
+#: includes/trait-javascript-array.php:296
+#: includes/trait-javascript-array.php:303
+#: includes/trait-javascript-array.php:309
+#: includes/trait-javascript-array.php:312
+msgid "Measurement value"
+msgstr "Gemeten waarde"
+
+#: includes/trait-javascript-array.php:558
+msgid "[all modules]"
+msgstr "[alle stations]"
+
+#: includes/trait-javascript-array.php:613
+msgid "Fast"
+msgstr "Snel"
+
+#: includes/trait-javascript-array.php:615
+msgid "Slow"
+msgstr "Langzaam"
+
+#: includes/trait-javascript-array.php:628
+#: includes/trait-javascript-array.php:1035
+msgid "Standard - Without backlight"
+msgstr "Standaard - Zonder backlight"
+
+#: includes/trait-javascript-array.php:629
+msgid "Standard - With backlight"
+msgstr "Standaard - Met backlight"
+
+#: includes/trait-javascript-array.php:630
+#: includes/trait-javascript-array.php:1036
+msgid "Translucent - Red"
+msgstr "Doorzichtig - Rood"
+
+#: includes/trait-javascript-array.php:631
+#: includes/trait-javascript-array.php:1037
+msgid "Translucent - Orange"
+msgstr "Doorzichtig - Oranje"
+
+#: includes/trait-javascript-array.php:632
+#: includes/trait-javascript-array.php:1038
+msgid "Translucent - Beige"
+msgstr "Doorzichtig - Beige"
+
+#: includes/trait-javascript-array.php:633
+msgid "Translucent - Yellow"
+msgstr "Doorzichtig - Geel"
+
+#: includes/trait-javascript-array.php:634
+#: includes/trait-javascript-array.php:1039
+msgid "Translucent - Yellow green"
+msgstr "Doorzichtig - Geelgroen"
+
+#: includes/trait-javascript-array.php:635
+msgid "Translucent - Light green"
+msgstr "Doorzichtig - Lichtgroen"
+
+#: includes/trait-javascript-array.php:636
+#: includes/trait-javascript-array.php:1040
+msgid "Translucent - Standard green"
+msgstr "Doorzichtig - Groen"
+
+#: includes/trait-javascript-array.php:637
+#: includes/trait-javascript-array.php:1041
+msgid "Translucent - Light blue"
+msgstr "Doorzichtig - Lichtblauw"
+
+#: includes/trait-javascript-array.php:638
+#: includes/trait-javascript-array.php:1042
+msgid "Translucent - Blue"
+msgstr "Doorzichtig - Blauw"
+
+#: includes/trait-javascript-array.php:639
+#: includes/trait-javascript-array.php:1044
+msgid "Translucent - Light purple"
+msgstr "Doorzichtig - Lichtpurper"
+
+#: includes/trait-javascript-array.php:640
+#: includes/trait-javascript-array.php:1045
+msgid "Translucent - Gray"
+msgstr "Doorzichtig - Grijs"
+
+#: includes/trait-javascript-array.php:641
+#: includes/trait-javascript-array.php:1043
+msgid "Translucent - White"
+msgstr "Doorzichtig - Wit"
+
+#: includes/trait-javascript-array.php:642
+#: includes/trait-javascript-array.php:1046
+msgid "Contrasted - Red"
+msgstr "Contrastrijk - Rood"
+
+#: includes/trait-javascript-array.php:643
+msgid "Contrasted - Amber"
+msgstr "Contrastrijk - Amber"
+
+#: includes/trait-javascript-array.php:644
+msgid "Contrasted - Green"
+msgstr "Contrastrijk -Groen"
+
+#: includes/trait-javascript-array.php:645
+#: includes/trait-javascript-array.php:1047
+msgid "Contrasted - Turquoise"
+msgstr "Contrastrijk - Turquoise"
+
+#: includes/trait-javascript-array.php:646
+msgid "Contrasted - Light blue"
+msgstr "Contrastrijk - Lichtblauw"
+
+#: includes/trait-javascript-array.php:647
+#: includes/trait-javascript-array.php:1050
+msgid "Contrasted - Blue"
+msgstr "Contrastrijk - Blauw"
+
+#: includes/trait-javascript-array.php:648
+#: includes/trait-javascript-array.php:1051
+msgid "Contrasted - Dark blue"
+msgstr "Contrastrijk - Donkerblauw"
+
+#: includes/trait-javascript-array.php:649
+msgid "Contrasted - Purple"
+msgstr "Contrastrijk - Purper"
+
+#: includes/trait-javascript-array.php:650
+msgid "Contrasted - Dark purple"
+msgstr "Contrastrijk - Donker purper"
+
+#: includes/trait-javascript-array.php:651
+msgid "Contrasted - Black & Yellow"
+msgstr "Contrastrijk - Zwart & Geel"
+
+#: includes/trait-javascript-array.php:652
+#: includes/trait-javascript-array.php:1049
+msgid "Contrasted - Black"
+msgstr "Contrasted - Zwart"
+
+#: includes/trait-javascript-array.php:653
+#: includes/trait-javascript-array.php:1048
+msgid "Contrasted - Dark grey"
+msgstr "Contrastrijk - Donkergrijs"
+
+#: includes/trait-javascript-array.php:654
+#: includes/trait-javascript-array.php:1052
+msgid "Soft - Amber"
+msgstr "Zacht - Amber"
+
+#: includes/trait-javascript-array.php:655
+#: includes/trait-javascript-array.php:1053
+msgid "Soft - Dark green"
+msgstr "Zacht - Donkergroen"
+
+#: includes/trait-javascript-array.php:656
+#: includes/trait-javascript-array.php:1054
+msgid "Soft - Blue"
+msgstr "Zacht - Blauw"
+
+#: includes/trait-javascript-array.php:657
+#: includes/trait-javascript-array.php:1055
+msgid "Soft - Dark blue"
+msgstr "Zacht - Donkerblauw"
+
+#: includes/trait-javascript-array.php:658
+msgid "Soft - Navy"
+msgstr "Zacht - Navy"
+
+#: includes/trait-javascript-array.php:659
+#: includes/trait-javascript-array.php:1056
+msgid "Soft - Purple"
+msgstr "Zacht - Purper"
+
+#: includes/trait-javascript-array.php:660
+msgid "Soft - Dark purple"
+msgstr "Zacht - Donker purper"
+
+#: includes/trait-javascript-array.php:661
+msgid "Soft - Grey"
+msgstr "Zacht - Grijs"
+
+#: includes/trait-javascript-array.php:662
+msgid "Flat - Pomegranate"
+msgstr "Vlak - Granaatappel"
+
+#: includes/trait-javascript-array.php:663
+msgid "Flat - Alizarin"
+msgstr "Vlak - Alazinerood"
+
+#: includes/trait-javascript-array.php:664
+msgid "Flat - Pumpkin"
+msgstr "Vlak - Pompoen"
+
+#: includes/trait-javascript-array.php:665
+msgid "Flat - Carrot"
+msgstr "Vlak - Wortel"
+
+#: includes/trait-javascript-array.php:666
+msgid "Flat - Orange"
+msgstr "Vlak - Sinaasappel"
+
+#: includes/trait-javascript-array.php:667
+msgid "Flat - Sunflower"
+msgstr "Vlak - Zonnebloem"
+
+#: includes/trait-javascript-array.php:668
+msgid "Flat - Emerald"
+msgstr "Vlak - Smaragd"
+
+#: includes/trait-javascript-array.php:669
+msgid "Flat - Nephritis"
+msgstr "Flat - Nier"
+
+#: includes/trait-javascript-array.php:670
+msgid "Flat - Turquoise"
+msgstr "Vlak - Turquoise"
+
+#: includes/trait-javascript-array.php:671
+msgid "Flat - Peter river"
+msgstr "Vlak - Peter river"
+
+#: includes/trait-javascript-array.php:672
+msgid "Flat - Sky"
+msgstr "Vlak - Lucht"
+
+#: includes/trait-javascript-array.php:673
+msgid "Flat - Belize hole"
+msgstr "Flat - Belizegat"
+
+#: includes/trait-javascript-array.php:674
+msgid "Flat - Amethyst"
+msgstr "Flat - Ametist"
+
+#: includes/trait-javascript-array.php:675
+msgid "Flat - Wisteria"
+msgstr "Flat - Blauwe regen"
+
+#: includes/trait-javascript-array.php:676
+msgid "Flat - Wet asphalt"
+msgstr "Flat - Nat asfalt"
+
+#: includes/trait-javascript-array.php:677
+msgid "Flat - Midnight blue"
+msgstr "Flat - Midnight blue"
+
+#: includes/trait-javascript-array.php:678
+msgid "Flat - Black"
+msgstr "Flat - Zwart"
+
+#: includes/trait-javascript-array.php:679
+msgid "Flat - Asbestos"
+msgstr "Flat - Asbest"
+
+#: includes/trait-javascript-array.php:680
+msgid "Flat - Concrete"
+msgstr "Flat - Beton"
+
+#: includes/trait-javascript-array.php:681
+msgid "Flat - Silver"
+msgstr "Flat - Zilver"
+
+#: includes/trait-javascript-array.php:682
+msgid "Flat - Clouds"
+msgstr "Flat - Wolken"
+
+#: includes/trait-javascript-array.php:696
+msgid "Miniature"
+msgstr "Miniatuur"
+
+#: includes/trait-javascript-array.php:698
+msgid "Small"
+msgstr "Klein"
+
+#: includes/trait-javascript-array.php:700
+msgid "Large"
+msgstr "Groot"
+
+#: includes/trait-javascript-array.php:702
+msgid "Scalable"
+msgstr "Schaalbaar"
+
+#: includes/trait-javascript-array.php:705
+msgid "Gigantic"
+msgstr "Gigantisch"
+
+#: includes/trait-javascript-array.php:719
+msgid "Standard (for light background)"
+msgstr "Standaard (voor lichte achtergrond)"
+
+#: includes/trait-javascript-array.php:720
+msgid "Standard (for dark background)"
+msgstr "Standaard (voor donkere achtergrond)"
+
+#: includes/trait-javascript-array.php:721
+msgid "Flag (for light background)"
+msgstr "Doek (voor lichte achtergrond)"
+
+#: includes/trait-javascript-array.php:722
+msgid "Flag (for dark background)"
+msgstr "Doek (voor donkere achtergrond)"
+
+#: includes/trait-javascript-array.php:723
+msgid "Pinky (for light background)"
+msgstr "Pinky  (voor lichte achtergrond)"
+
+#: includes/trait-javascript-array.php:724
+msgid "Pinky (for dark background)"
+msgstr "Pinky (voor donkere achtergrond)"
+
+#: includes/trait-javascript-array.php:725
+msgid "Aquamarine (for light background)"
+msgstr "Aquamarine (voor lichte achtergrond)"
+
+#: includes/trait-javascript-array.php:726
+msgid "Aquamarine (for dark background)"
+msgstr "Aquamarine (voor donkere achtergrond)"
+
+#: includes/trait-javascript-array.php:727
+msgid "B&W (for light background)"
+msgstr "B&W (voor lichte achtergrond)"
+
+#: includes/trait-javascript-array.php:728
+msgid "B&W (for dark background)"
+msgstr "B&W (voor donkere achtergrond)"
+
+#: includes/trait-javascript-array.php:729
+msgid "Solid red (for light background)"
+msgstr "Effen rood (voor lichte achtergrond)"
+
+#: includes/trait-javascript-array.php:730
+msgid "Solid red (for dark background)"
+msgstr "Effen rood (voor donkere achtergrond)"
+
+#: includes/trait-javascript-array.php:731
+msgid "Solid orange (for light background)"
+msgstr "Effen oranje (voor lichte achtergrond)"
+
+#: includes/trait-javascript-array.php:732
+msgid "Solid orange (for dark background)"
+msgstr "Effen oranje (voor donkere achtergrond)"
+
+#: includes/trait-javascript-array.php:733
+msgid "Solid yellow (for light background)"
+msgstr "Effen geel (voor lichte achtergrond)"
+
+#: includes/trait-javascript-array.php:734
+msgid "Solid yellow (for dark background)"
+msgstr "Effen geel (voor donkere achtergrond)"
+
+#: includes/trait-javascript-array.php:735
+msgid "Solid green (for light background)"
+msgstr "Effen groen (voor lichte achtergrond)"
+
+#: includes/trait-javascript-array.php:736
+msgid "Solid green (for dark background)"
+msgstr "Effen groen (voor donkere achtergrond)"
+
+#: includes/trait-javascript-array.php:737
+msgid "Solid blue (for light background)"
+msgstr "Effen blauw (voor lichte achtergrond)"
+
+#: includes/trait-javascript-array.php:738
+msgid "Solid blue (for dark background)"
+msgstr "Effen blauw (voor donkere achtergrond)"
+
+#: includes/trait-javascript-array.php:739
+msgid "Solid purple (for light background)"
+msgstr "Effen purper (voor lichte achtergrond)"
+
+#: includes/trait-javascript-array.php:740
+msgid "Solid purple (for dark background)"
+msgstr "Effen purper (voor donkere achtergrond)"
+
+#: includes/trait-javascript-array.php:741
+msgid "Solid black (for light background)"
+msgstr "Effen zwart (voor lichte achtergrond)"
+
+#: includes/trait-javascript-array.php:742
+msgid "Solid black (for dark background)"
+msgstr "Effen zwart (voor donkere achtergrond)"
+
+#: includes/trait-javascript-array.php:743
+msgid "Transparent (for light background)"
+msgstr "Transparant (voor lichte achtergrond)"
+
+#: includes/trait-javascript-array.php:744
+msgid "Transparent (for dark background)"
+msgstr "Transparant (voor donkere achtergrond)"
+
+#: includes/trait-javascript-array.php:757
+#: includes/trait-javascript-array.php:800
+#: includes/trait-javascript-array.php:822
+#: includes/trait-javascript-array.php:1015
+#: includes/trait-javascript-array.php:1034
+#: includes/trait-javascript-array.php:1068
+#: includes/trait-javascript-array.php:1123
+msgid "None"
+msgstr "Geen"
+
+#: includes/trait-javascript-array.php:758
+msgid "External"
+msgstr "Extern"
+
+#: includes/trait-javascript-array.php:759
+msgid "Internal"
+msgstr "Intern"
+
+#: includes/trait-javascript-array.php:772
+msgid "Half - Flat - Thin"
+msgstr "Half - Vlak - Dun"
+
+#: includes/trait-javascript-array.php:773
+msgid "Half - Flat - Standard"
+msgstr "Half - Vlak - Standaard"
+
+#: includes/trait-javascript-array.php:774
+msgid "Half - Flat - Fat"
+msgstr "Half - Vlak - Dik"
+
+#: includes/trait-javascript-array.php:775
+msgid "Half - Flat - Pie"
+msgstr "Half - Vlak - Taart"
+
+#: includes/trait-javascript-array.php:776
+msgid "Half - 3D - Thin"
+msgstr "Half - 3D - Dun"
+
+#: includes/trait-javascript-array.php:777
+msgid "Half - 3D - Standard"
+msgstr "Half - 3D - Standaard"
+
+#: includes/trait-javascript-array.php:778
+msgid "Half - 3D - Fat"
+msgstr "Half - 3D - Dik"
+
+#: includes/trait-javascript-array.php:779
+msgid "Half - 3D - Pie"
+msgstr "Half - 3D - Taart"
+
+#: includes/trait-javascript-array.php:780
+msgid "Full - Flat - Thin"
+msgstr "Vol - Vlak - Dun"
+
+#: includes/trait-javascript-array.php:781
+msgid "Full - Flat - Standard"
+msgstr "Vol - Vlak - Standaard"
+
+#: includes/trait-javascript-array.php:782
+msgid "Full - Flat - Fat"
+msgstr "Vol - Vlak - Dik"
+
+#: includes/trait-javascript-array.php:783
+msgid "Full - Flat - Pie"
+msgstr "Vol - Vlak - Taart"
+
+#: includes/trait-javascript-array.php:784
+msgid "Full - 3D - Thin"
+msgstr "Vol - 3D - Dun"
+
+#: includes/trait-javascript-array.php:785
+msgid "Full - 3D - Standard"
+msgstr "Vol - 3D - Standaard"
+
+#: includes/trait-javascript-array.php:786
+msgid "Full - 3D - Fat"
+msgstr "Vol - 3D - Dik"
+
+#: includes/trait-javascript-array.php:787
+msgid "Full - 3D - Pie"
+msgstr "Vol - 3D - Taart"
+
+#: includes/trait-javascript-array.php:803
+#: includes/trait-javascript-array.php:808
+msgid "Short measurement type"
+msgstr "Korte maateenheid"
+
+#: includes/trait-javascript-array.php:805
+#: includes/trait-javascript-array.php:808
+#: includes/trait-javascript-array.php:809
+#: includes/trait-javascript-array.php:823
+msgid "Measurement unit"
+msgstr "Maateenheid"
+
+#: includes/trait-javascript-array.php:836
+msgid "Test with actual background"
+msgstr "Bekijk met actuele achtergrond"
+
+#: includes/trait-javascript-array.php:837
+msgid "Test with white background"
+msgstr "Bekijk met witte achtergrond"
+
+#: includes/trait-javascript-array.php:838
+msgid "Test with light background"
+msgstr "Bekijk met lichte achtergrond"
+
+#: includes/trait-javascript-array.php:839
+msgid "Test with medium background"
+msgstr "Bekijk met medium achtergrond"
+
+#: includes/trait-javascript-array.php:840
+msgid "Test with dark background"
+msgstr "Bekijk met donkere achtergrond"
+
+#: includes/trait-javascript-array.php:841
+msgid "Test with black background"
+msgstr "Bekijk met zwarte achtergrond"
+
+#: includes/trait-javascript-array.php:854
+msgid "Analog - 1/4"
+msgstr "Analoog - 1/4"
+
+#: includes/trait-javascript-array.php:855
+msgid "Analog - half"
+msgstr "Analoog - half"
+
+#: includes/trait-javascript-array.php:856
+msgid "Analog - 3/4"
+msgstr "Analoog - 3/4"
+
+#: includes/trait-javascript-array.php:857
+msgid "Analog - full"
+msgstr "Analoog - full"
+
+#: includes/trait-javascript-array.php:858
+msgid "Digital - 1/4"
+msgstr "Digital - 1/4"
+
+#: includes/trait-javascript-array.php:859
+msgid "Digital - half"
+msgstr "Digitaal - half"
+
+#: includes/trait-javascript-array.php:860
+msgid "Digital - 3/4"
+msgstr "Digitaal - 3/4"
+
+#: includes/trait-javascript-array.php:861
+msgid "Digital - full"
+msgstr "Digitaal - volledig"
+
+#: includes/trait-javascript-array.php:862
+msgid "Top meter"
+msgstr "Top meter"
+
+#: includes/trait-javascript-array.php:863
+msgid "Left meter"
+msgstr "Linker meter"
+
+#: includes/trait-javascript-array.php:864
+msgid "Right meter"
+msgstr "Rechter meter"
+
+#: includes/trait-javascript-array.php:865
+msgid "Vintage wind compass"
+msgstr "Antiek wind kompas"
+
+#: includes/trait-javascript-array.php:866
+msgid "Standard wind compass"
+msgstr "Standaard wind kompas"
+
+#: includes/trait-javascript-array.php:867
+msgid "Modern wind compass"
+msgstr "Modern windkompas"
+
+#: includes/trait-javascript-array.php:868
+msgid "Altimeter"
+msgstr "Hoogtemeter"
+
+#: includes/trait-javascript-array.php:880
+msgid "Black metal"
+msgstr "Zwart metaal"
+
+#: includes/trait-javascript-array.php:881
+msgid "Metal"
+msgstr "Metaal"
+
+#: includes/trait-javascript-array.php:882
+msgid "Shiny metal"
+msgstr "Glanzend metaal"
+
+#: includes/trait-javascript-array.php:883
+msgid "Glossy metal"
+msgstr "Glimmend metaal"
+
+#: includes/trait-javascript-array.php:884
+#: includes/trait-javascript-array.php:912
+msgid "Anthracite"
+msgstr "Anthraciet"
+
+#: includes/trait-javascript-array.php:885
+msgid "Tilted gray"
+msgstr "Gebogen grijs"
+
+#: includes/trait-javascript-array.php:886
+msgid "Tilted black"
+msgstr "Gebogen zwart"
+
+#: includes/trait-javascript-array.php:887
+msgid "Brass"
+msgstr "Brons"
+
+#: includes/trait-javascript-array.php:888
+msgid "Steel"
+msgstr "Staal"
+
+#: includes/trait-javascript-array.php:889
+msgid "Chrome"
+msgstr "Chroom"
+
+#: includes/trait-javascript-array.php:890
+msgid "Gold"
+msgstr "Goud"
+
+#: includes/trait-javascript-array.php:902
+msgid "Dark gray"
+msgstr "Donkergrijs"
+
+#: includes/trait-javascript-array.php:903
+msgid "Satin gray"
+msgstr "Satijngrijs"
+
+#: includes/trait-javascript-array.php:904
+msgid "Light gray"
+msgstr "Lichtgrijs"
+
+#: includes/trait-javascript-array.php:905
+#: includes/trait-javascript-array.php:984
+#: includes/trait-javascript-array.php:1109
+msgid "White"
+msgstr "Wit"
+
+#: includes/trait-javascript-array.php:906
+#: includes/trait-javascript-array.php:986
+#: includes/trait-javascript-array.php:1112
+msgid "Black"
+msgstr "Zwart"
+
+#: includes/trait-javascript-array.php:907
+msgid "Beige"
+msgstr "Beige"
+
+#: includes/trait-javascript-array.php:908
+msgid "Brown"
+msgstr "Bruin"
+
+#: includes/trait-javascript-array.php:909
+#: includes/trait-javascript-array.php:974
+#: includes/trait-javascript-array.php:1016
+#: includes/trait-javascript-array.php:1096
+msgid "Red"
+msgstr "Rood"
+
+#: includes/trait-javascript-array.php:910
+#: includes/trait-javascript-array.php:977
+#: includes/trait-javascript-array.php:1019
+#: includes/trait-javascript-array.php:1101
+msgid "Green"
+msgstr "Groen"
+
+#: includes/trait-javascript-array.php:911
+#: includes/trait-javascript-array.php:982
+#: includes/trait-javascript-array.php:1021
+#: includes/trait-javascript-array.php:1105
+msgid "Blue"
+msgstr "Blauw"
+
+#: includes/trait-javascript-array.php:913
+msgid "Mud"
+msgstr "Modder"
+
+#: includes/trait-javascript-array.php:914
+msgid "Punched sheet"
+msgstr "Geperforeerd blad"
+
+#: includes/trait-javascript-array.php:915
+msgid "Carbon"
+msgstr "Carbon"
+
+#: includes/trait-javascript-array.php:916
+msgid "Stainless"
+msgstr "Roestvrij staal"
+
+#: includes/trait-javascript-array.php:917
+msgid "Brushed metal"
+msgstr "Geborsteld metaal"
+
+#: includes/trait-javascript-array.php:918
+msgid "Brushed stainless"
+msgstr "Geborsteld roestvrij staal"
+
+#: includes/trait-javascript-array.php:919
+msgid "Turned"
+msgstr "Gedraaid"
+
+#: includes/trait-javascript-array.php:931
+msgid "Standard glass"
+msgstr "Standaard glas"
+
+#: includes/trait-javascript-array.php:932
+msgid "Crystal"
+msgstr "Kristal"
+
+#: includes/trait-javascript-array.php:933
+msgid "Sapphire crystal"
+msgstr "Saffier"
+
+#: includes/trait-javascript-array.php:934
+msgid "Plexiglass"
+msgstr "Plexiglass"
+
+#: includes/trait-javascript-array.php:935
+msgid "Rhodoid"
+msgstr "Rhodoid"
+
+#: includes/trait-javascript-array.php:947
+msgid "Thin triangle"
+msgstr "Dunne driehoek"
+
+#: includes/trait-javascript-array.php:948
+msgid "Fat Triangle"
+msgstr "Dikke driehoek"
+
+#: includes/trait-javascript-array.php:949
+msgid "3D triangle"
+msgstr "3D driehoek"
+
+#: includes/trait-javascript-array.php:950
+msgid "Clipped"
+msgstr "Geknipt"
+
+#: includes/trait-javascript-array.php:951
+msgid "Double clipped"
+msgstr "Dubbel geknipt"
+
+#: includes/trait-javascript-array.php:952
+msgid "Flat clipped"
+msgstr "Dik geknipt"
+
+#: includes/trait-javascript-array.php:953
+msgid "Thin rod"
+msgstr "Dun rood"
+
+#: includes/trait-javascript-array.php:954
+msgid "Fat rod"
+msgstr "Dik rood"
+
+#: includes/trait-javascript-array.php:955
+msgid "Thin curved triangle"
+msgstr "Dun gebogen driehoek"
+
+#: includes/trait-javascript-array.php:956
+msgid "3D curved triangle"
+msgstr "3D gebogen driehoek"
+
+#: includes/trait-javascript-array.php:957
+msgid "Double needle"
+msgstr "Double needle"
+
+#: includes/trait-javascript-array.php:958
+msgid "Culbuto"
+msgstr "Culbuto"
+
+#: includes/trait-javascript-array.php:959
+msgid "Cessna"
+msgstr "Cessna"
+
+#: includes/trait-javascript-array.php:960
+msgid "Volvo"
+msgstr "Volvo"
+
+#: includes/trait-javascript-array.php:961
+msgid "Ferrari"
+msgstr "Ferrari"
+
+#: includes/trait-javascript-array.php:962
+msgid "Ferrari arched"
+msgstr "Ferrari afgerond"
+
+#: includes/trait-javascript-array.php:975
+#: includes/trait-javascript-array.php:1017
+#: includes/trait-javascript-array.php:1098
+msgid "Orange"
+msgstr "Oranje"
+
+#: includes/trait-javascript-array.php:976
+#: includes/trait-javascript-array.php:1018
+#: includes/trait-javascript-array.php:1099
+msgid "Yellow"
+msgstr "Geel"
+
+#: includes/trait-javascript-array.php:978
+msgid "JUG Green"
+msgstr "JUG Groen"
+
+#: includes/trait-javascript-array.php:979
+msgid "Green LCD"
+msgstr "Groen LCD"
+
+#: includes/trait-javascript-array.php:980
+#: includes/trait-javascript-array.php:1020
+msgid "Cyan"
+msgstr "Cyaan"
+
+#: includes/trait-javascript-array.php:981
+msgid "Raith"
+msgstr "Raith"
+
+#: includes/trait-javascript-array.php:983
+#: includes/trait-javascript-array.php:1022
+msgid "Magenta"
+msgstr "Magenta"
+
+#: includes/trait-javascript-array.php:985
+#: includes/trait-javascript-array.php:1111
+msgid "Gray"
+msgstr "Grijs"
+
+#: includes/trait-javascript-array.php:998
+msgid "Plain - Black"
+msgstr "Effen - Zwart"
+
+#: includes/trait-javascript-array.php:999
+msgid "Plain - Brass"
+msgstr "Effen - Brons"
+
+#: includes/trait-javascript-array.php:1000
+msgid "Plain - Silver"
+msgstr "Effen - Zilver"
+
+#: includes/trait-javascript-array.php:1001
+msgid "Embossed - Black"
+msgstr "Geciseleerd - Zwart"
+
+#: includes/trait-javascript-array.php:1002
+msgid "Embossed - Brass"
+msgstr "Geciseleerd - Brons"
+
+#: includes/trait-javascript-array.php:1003
+msgid "Embossed - Silver"
+msgstr "Geciseleerd - Zilver"
+
+#: includes/trait-javascript-array.php:1069
+msgid "Cursors"
+msgstr "Cursors"
+
+#: includes/trait-javascript-array.php:1081
+msgid "Automatic"
+msgstr "Automatisch"
+
+#: includes/trait-javascript-array.php:1082
+msgid "Normal"
+msgstr "Normaal"
+
+#: includes/trait-javascript-array.php:1083
+msgid "Horizontal"
+msgstr "Horizontaal"
+
+#: includes/trait-javascript-array.php:1084
+msgid "Tangent"
+msgstr "Raaklijn"
+
+#: includes/trait-javascript-array.php:1097
+msgid "Maroon"
+msgstr "Maroon"
+
+#: includes/trait-javascript-array.php:1100
+msgid "Lime"
+msgstr "Lime"
+
+#: includes/trait-javascript-array.php:1102
+msgid "Teal"
+msgstr "Appel"
+
+#: includes/trait-javascript-array.php:1103
+msgid "Aqua"
+msgstr "Aqua"
+
+#: includes/trait-javascript-array.php:1104
+msgid "Light blue"
+msgstr "Lichtblauw"
+
+#: includes/trait-javascript-array.php:1106
+msgid "Navy"
+msgstr "Navy"
+
+#: includes/trait-javascript-array.php:1107
+msgid "Fuchsia"
+msgstr "Fuchsia"
+
+#: includes/trait-javascript-array.php:1108
+msgid "Purple"
+msgstr "Purper"
+
+#: includes/trait-javascript-array.php:1110
+msgid "Silver"
+msgstr "Zilver"
+
+#: includes/trait-javascript-array.php:1124
+msgid "Plain - Translucent"
+msgstr "Effen - Transparant"
+
+#: includes/trait-javascript-array.php:1125
+msgid "Plain - Liquid"
+msgstr "Effen - Vloeistof"
+
+#: includes/trait-javascript-array.php:1126
+msgid "Plain - Soft"
+msgstr "Effen - Zacht"
+
+#: includes/trait-javascript-array.php:1127
+msgid "Plain - Hard"
+msgstr "Effen - Hard"
+
+#: includes/trait-javascript-array.php:1128
+msgid "Fade-in - Translucent"
+msgstr "Fade-in - Transparant"
+
+#: includes/trait-javascript-array.php:1129
+msgid "Fade-in - Liquid"
+msgstr "Fade-in - Vloeistof"
+
+#: includes/trait-javascript-array.php:1130
+msgid "Fade-in - Soft"
+msgstr "Fade-in - Zacht"
+
+#: includes/trait-javascript-array.php:1131
+msgid "Fade-in - Hard"
+msgstr "Fade-in - Hard"
+
+#: includes/trait-javascript-array.php:1132
+msgid "Fade-out - Translucent"
+msgstr "Fade-out - Transparant"
+
+#: includes/trait-javascript-array.php:1133
+msgid "Fade-out - Liquid"
+msgstr "Fade-out - Vloeistof"
+
+#: includes/trait-javascript-array.php:1134
+msgid "Fade-out - Soft"
+msgstr "Fade-out - Zacht"
+
+#: includes/trait-javascript-array.php:1135
+msgid "Fade-out - Hard"
+msgstr "Fade-out - Hard"
+
+#: includes/trait-javascript-array.php:1136
+msgid "Complementary - Translucent"
+msgstr "Complementair - Transparant"
+
+#: includes/trait-javascript-array.php:1137
+msgid "Complementary - Liquid"
+msgstr "Complementair - Vloeistof"
+
+#: includes/trait-javascript-array.php:1138
+msgid "Complementary - Soft"
+msgstr "Complementair - Zacht"
+
+#: includes/trait-javascript-array.php:1139
+msgid "Complementary - Hard"
+msgstr "Complementair - Hard"
+
+#: includes/trait-javascript-array.php:1140
+msgid "Inverted complementary - Translucent"
+msgstr "Geïnverteerd complementair - Transparant"
+
+#: includes/trait-javascript-array.php:1141
+msgid "Inverted complementary - Liquid"
+msgstr "Geïnverteerd complementair - Vloeistof"
+
+#: includes/trait-javascript-array.php:1142
+msgid "Inverted complementary - Soft"
+msgstr "Geïnverteerd complementair - Zacht"
+
+#: includes/trait-javascript-array.php:1143
+msgid "Inverted complementary - Hard"
+msgstr "Geïnverteerd complementair - Hard"
+
+#: includes/trait-netatmo-client.php:56 includes/trait-netatmo-client.php:178
+msgid "Wrong credentials. Please, verify your login and password."
+msgstr "Verkeerde gegevens, controleer login en paswoord."
+
+#: includes/trait-netatmo-client.php:186
+msgid "Application deactivated. Please contact support."
+msgstr "Applicatie gestopt, neem contact  op met support."
+
+#: includes/trait-netatmo-client.php:190
+msgid "Too many users with this IP."
+msgstr "Teveel gebruikers met dit  IP-adres"
+
+#: includes/trait-netatmo-client.php:194
+msgid ""
+"Temporary unable to contact Netatmo servers. Retry will be done shortly."
+msgstr ""
+"Tijdelijk niet mogelijk te verbinden met Netatmo servers, nieuwe poging "
+"wordt gestart."
+
+#: includes/trait-owm-current-client.php:91
+#: includes/trait-type-description.php:42
+msgid "[OpenWeatherMap Records]"
+msgstr "[OpenWeatherMap Records]"
+
+#: includes/trait-owm-current-client.php:194
+#: includes/trait-owm-pollution-client.php:189
+msgid "Wrong OpenWeatherMap API key."
+msgstr "Verkeerde OpenWeatherMap API key."
+
+#: includes/trait-owm-current-client.php:200
+#: includes/trait-owm-pollution-client.php:195
+msgid ""
+"OpenWeatherMap servers have returned empty response for some weather "
+"stations. Retry will be done shortly."
+msgstr ""
+"OpenWeatherMap servers stuurden een lege respoinse voor sommige stations, "
+"nieuwe poging wordt gestart."
+
+#: includes/trait-owm-current-client.php:203
+#: includes/trait-owm-pollution-client.php:198
+msgid ""
+"Temporary unable to contact OpenWeatherMap servers. Retry will be done "
+"shortly."
+msgstr ""
+"Tijdelijk zijn de OpenWeatherMap servers niet te bereiken, nieuwe poging "
+"wordt gestart."
+
+#: includes/trait-owm-pollution-client.php:152
+#: includes/trait-type-description.php:45
+msgid "[OpenWeatherMap Pollution]"
+msgstr "[OpenWeatherMap Verontreiniging]"
+
+#: includes/trait-schedules-manipulation.php:148
+msgid "Every three minutes"
+msgstr "Elke drie minuten"
+
+#: includes/trait-schedules-manipulation.php:161
+msgid "Every five minutes"
+msgstr "Elke vijf minuten"
+
+#: includes/trait-schedules-manipulation.php:174
+msgid "Every ten minutes"
+msgstr "Elke tien minuten"
+
+#: includes/trait-schedules-manipulation.php:187
+msgid "Every fifteen minutes"
+msgstr "Elke vijftien minuten"
+
+#: includes/trait-schedules-manipulation.php:200
+msgid "Every thirty minutes"
+msgstr "Elke dertig minuten"
+
+#: includes/trait-type-description.php:24
+msgid "Base station"
+msgstr "Basisstation"
+
+#: includes/trait-type-description.php:27
+msgid "Outdoor module"
+msgstr "Buitenmodule"
+
+#: includes/trait-type-description.php:30
+msgid "Rain gauge"
+msgstr "Rainmeter"
+
+#: includes/trait-type-description.php:33
+msgid "Wind gauge"
+msgstr "Windmeter"
+
+#: includes/trait-type-description.php:36
+msgid "Indoor module"
+msgstr "Binnenmodule"
+
+#: includes/trait-type-description.php:39 includes/trait-weather-client.php:166
+msgid "[Computed Values]"
+msgstr "[Berekende waarden]"
+
+#: includes/trait-type-description.php:48
+msgid "[OpenWeatherMap Forecast]"
+msgstr "[OpenWeatherMap Forecast]"
+
+#: includes/trait-type-description.php:54
+msgid "Unknonw module"
+msgstr "Onbekende module"
+
+#: includes/trait-type-description.php:72
+msgid "Firmware"
+msgstr "Firmware"
+
+#: includes/trait-type-description.php:72
+msgid "Firmware version"
+msgstr "Firmware versie"
+
+#: includes/trait-type-description.php:75
+msgid "Battery"
+msgstr "Batterij"
+
+#: includes/trait-type-description.php:78
+msgid "WiFi"
+msgstr "WiFi"
+
+#: includes/trait-type-description.php:78
+msgid "RF/WiFi signal quality"
+msgstr "RF/WiFi signaalsterkte"
+
+#: includes/trait-type-description.php:81
+msgid "Carbon dioxide"
+msgstr "Kooldioxide"
+
+#: includes/trait-type-description.php:87
+msgid "Ozone"
+msgstr "Ozon"
+
+#: includes/trait-type-description.php:90
+msgid "CO probe distance"
+msgstr "CO sonde afstand"
+
+#: includes/trait-type-description.php:93
+msgid "O₃ probe distance"
+msgstr "O₃ sonde afstand"
+
+#: includes/trait-type-description.php:96
+#: includes/trait-type-description.php:99
+#: public/partials/live-weather-station-widget-outdoor-display.php:88
+msgid "Humidity"
+msgstr "Vochtigheid"
+
+#: includes/trait-type-description.php:99
+msgid "Reference humidity"
+msgstr "Referentievochtigheid"
+
+#: includes/trait-type-description.php:102
+msgid "Noise"
+msgstr "Geluid"
+
+#: includes/trait-type-description.php:102
+msgid "Noise level"
+msgstr "Geluidsniveau"
+
+#: includes/trait-type-description.php:105
+#: includes/trait-type-description.php:108
+msgid "Pressure"
+msgstr "Druk"
+
+#: includes/trait-type-description.php:105
+#: public/partials/live-weather-station-widget-outdoor-display.php:73
+msgid "Atmospheric pressure"
+msgstr "Luchtdruk"
+
+#: includes/trait-type-description.php:108
+msgid "Pressure trend"
+msgstr "Druk trend"
+
+#: includes/trait-type-description.php:111
+#: includes/trait-type-description.php:114
+#: includes/trait-type-description.php:121
+#: includes/trait-type-description.php:125
+#: includes/trait-type-description.php:129
+#: public/partials/live-weather-station-widget-outdoor-display.php:35
+#: public/partials/live-weather-station-widget-outdoor-display.php:58
+msgid "Temperature"
+msgstr "Temperatuur"
+
+#: includes/trait-type-description.php:114
+msgid "Reference temperature"
+msgstr "Referentietemperatuur"
+
+#: includes/trait-type-description.php:117
+msgid "Reference wind strength"
+msgstr "Referentiewindkracht"
+
+#: includes/trait-type-description.php:121
+msgid "Highest temperature of the day"
+msgstr "Hoogste dagtemperatuur"
+
+#: includes/trait-type-description.php:125
+msgid "Lowest temperature of the day"
+msgstr "Laagste dagtemperatuur"
+
+#: includes/trait-type-description.php:129
+msgid "Temperature trend"
+msgstr "Temperatuur trend"
+
+#: includes/trait-type-description.php:132
+#: public/partials/live-weather-station-widget-outdoor-display.php:222
+msgid "Dew point"
+msgstr "Dauwpunt"
+
+#: includes/trait-type-description.php:135
+#: public/partials/live-weather-station-widget-outdoor-display.php:237
+msgid "Frost point"
+msgstr "Vriespunt"
+
+#: includes/trait-type-description.php:138
+msgid "Heat"
+msgstr "Hitte"
+
+#: includes/trait-type-description.php:138
+#: public/partials/live-weather-station-widget-outdoor-display.php:252
+msgid "Heat index"
+msgstr "Hitte index"
+
+#: includes/trait-type-description.php:141
+#: public/partials/live-weather-station-widget-outdoor-display.php:266
+msgid "Humidex"
+msgstr "Humidex"
+
+#: includes/trait-type-description.php:144
+#: public/partials/live-weather-station-widget-outdoor-display.php:280
+msgid "Wind chill"
+msgstr "Gevoelstemperatuur"
+
+#: includes/trait-type-description.php:147
+msgid "Cloud base"
+msgstr "Wolkenbasis"
+
+#: includes/trait-type-description.php:147
+#: public/partials/live-weather-station-widget-outdoor-display.php:207
+msgid "Cloud base altitude"
+msgstr "Wolkenbasis hoogte"
+
+#: includes/trait-type-description.php:152
+#: public/partials/live-weather-station-widget-outdoor-display.php:192
+msgid "Cloudiness"
+msgstr "Bewolking"
+
+#: includes/trait-type-description.php:156
+#: includes/trait-type-description.php:159
+#: includes/trait-type-description.php:167
+#: includes/trait-type-description.php:171
+msgid "Rain"
+msgstr "Regen"
+
+#: includes/trait-type-description.php:156
+msgid "Rain rate"
+msgstr "Neerslag (regen)"
+
+#: includes/trait-type-description.php:159
+msgid "Accumulated rainfall for the last 3 hours"
+msgstr "Totale neerslag laatste 3 uur"
+
+#: includes/trait-type-description.php:163
+msgid "Snow"
+msgstr "Sneeuw"
+
+#: includes/trait-type-description.php:163
+msgid "Accumulated snowfall for the last 3 hours"
+msgstr "Totale sneeuwval laatste 3 uur"
+
+#: includes/trait-type-description.php:167
+msgid "Accumulated rainfall for the last hour"
+msgstr "Totale neerslag afgelopen uur"
+
+#: includes/trait-type-description.php:171
+msgid "Accumulated rainfall for today"
+msgstr "Totale neerslag vandaag"
+
+#: includes/trait-type-description.php:174
+msgid "Wind direction"
+msgstr "Windrichting"
+
+#: includes/trait-type-description.php:177
+msgid "Wind strength"
+msgstr "Windkracht"
+
+#: includes/trait-type-description.php:180
+msgid "Gust direction"
+msgstr "Windvlaag richting"
+
+#: includes/trait-type-description.php:183
+msgid "Gust strength"
+msgstr "Windvlaag sterkte"
+
+#: includes/trait-type-description.php:187
+msgid "Wind direction for the maximal wind strength for the last hour"
+msgstr "Windrichting maximale windkracht voor het laatste uur"
+
+#: includes/trait-type-description.php:191
+msgid "Maximal wind strength for the last hour"
+msgstr "Maximum windkracht laatste uur"
+
+#: includes/trait-type-description.php:207
+msgid "TZ"
+msgstr "TZ"
+
+#: includes/trait-type-description.php:210
+msgid "all"
+msgstr "alle"
+
+#: includes/trait-type-description.php:210
+msgid "[all measures]"
+msgstr "[alle metingen]"
+
+#: includes/trait-type-description.php:213
+msgid "outdoor"
+msgstr "buiten"
+
+#: includes/trait-type-description.php:213
+msgid "[outdoor measures]"
+msgstr "[buitenmetingen]"
+
+#: includes/trait-type-description.php:216
+#: public/partials/live-weather-station-widget-ephemeris-display.php:78
+msgid "Sunrise"
+msgstr "Zonsopkomst"
+
+#: includes/trait-type-description.php:219
+#: public/partials/live-weather-station-widget-ephemeris-display.php:91
+msgid "Sunset"
+msgstr "Zonsondergang"
+
+#: includes/trait-type-description.php:222
+#: public/partials/live-weather-station-widget-ephemeris-display.php:165
+msgid "Moonrise"
+msgstr "Maansopkomst"
+
+#: includes/trait-type-description.php:225
+#: public/partials/live-weather-station-widget-ephemeris-display.php:152
+msgid "Moonset"
+msgstr "Maansondergang"
+
+#: includes/trait-type-description.php:228
+msgid "Age"
+msgstr "Leeftijd"
+
+#: includes/trait-type-description.php:228
+msgid "Moon age"
+msgstr "Leeftijd maan"
+
+#: includes/trait-type-description.php:231
+msgid "Phase"
+msgstr "Fase"
+
+#: includes/trait-type-description.php:231
+msgid "Moon phase"
+msgstr "Maanfase"
+
+#: includes/trait-type-description.php:234
+msgid "Illumination"
+msgstr "Helderheid"
+
+#: includes/trait-type-description.php:234
+msgid "Moon illumination"
+msgstr "Helderheid maan"
+
+#: includes/trait-type-description.php:237
+#: includes/trait-type-description.php:243
+msgid "Distance"
+msgstr "Afstand"
+
+#: includes/trait-type-description.php:237
+msgid "Moon distance"
+msgstr "Maanafstand"
+
+#: includes/trait-type-description.php:240
+msgid "Moon angular size"
+msgstr "Maan hoek"
+
+#: includes/trait-type-description.php:243
+msgid "Sun distance"
+msgstr "Zonsafstand"
+
+#: includes/trait-type-description.php:246
+msgid "Sun angular size"
+msgstr "Zon hoek"
+
+#: includes/trait-type-description.php:249
+msgid "?"
+msgstr "?"
+
+#: includes/trait-type-description.php:249
+msgid "Unknown measurement"
+msgstr "Onbekende meting"
+
+#: includes/trait-unit-description.php:22
+#: includes/trait-unit-description.php:45
+#: includes/trait-unit-description.php:90
+#: includes/trait-unit-description.php:114
+#: includes/trait-unit-description.php:138
+msgid "%"
+msgstr "%"
+
+#: includes/trait-unit-description.php:34
+#: includes/trait-unit-description.php:56
+#: includes/trait-unit-description.php:102
+msgid "percent"
+msgstr "procent"
+
+#: includes/trait-unit-description.php:67
+#: includes/trait-unit-description.php:366
+msgid "°"
+msgstr "°"
+
+#: includes/trait-unit-description.php:78
+#: includes/trait-unit-description.php:378
+msgid "degree"
+msgstr "graden"
+
+#: includes/trait-unit-description.php:126
+msgid "percent of capacity"
+msgstr "percentage van de capaciteit"
+
+#: includes/trait-unit-description.php:150
+msgid "percent of strength"
+msgstr "percentage van de sterkte"
+
+#: includes/trait-unit-description.php:164
+msgid "mm/h"
+msgstr "mm/u"
+
+#: includes/trait-unit-description.php:167
+#: includes/trait-unit-description.php:214
+msgid "in"
+msgstr "in"
+
+#: includes/trait-unit-description.php:170
+msgid "in/h"
+msgstr "in/u"
+
+#: includes/trait-unit-description.php:173
+msgid "mm"
+msgstr "mm"
+
+#: includes/trait-unit-description.php:189
+msgid "millimeter per hour"
+msgstr "millimeter per uur"
+
+#: includes/trait-unit-description.php:192
+#: includes/trait-unit-description.php:233
+msgid "inch"
+msgstr "inch"
+
+#: includes/trait-unit-description.php:195
+msgid "inch per hour"
+msgstr "inch per uur"
+
+#: includes/trait-unit-description.php:198
+msgid "millimeter"
+msgstr "millimetre"
+
+#: includes/trait-unit-description.php:217
+msgid "cm"
+msgstr "cm"
+
+#: includes/trait-unit-description.php:236
+msgid "centimeter"
+msgstr "centimeter"
+
+#: includes/trait-unit-description.php:250
+msgid "dB"
+msgstr "dB"
+
+#: includes/trait-unit-description.php:262
+msgid "decibel"
+msgstr "decibel"
+
+#: includes/trait-unit-description.php:274
+msgid "ppm"
+msgstr "ppm"
+
+#: includes/trait-unit-description.php:286
+msgid "part per million"
+msgstr "part per million"
+
+#: includes/trait-unit-description.php:298
+msgid "DU"
+msgstr "DU"
+
+#: includes/trait-unit-description.php:310
+msgid "dobson unit"
+msgstr "dobson unit"
+
+#: includes/trait-unit-description.php:324
+msgid "Pa"
+msgstr "Pa"
+
+#: includes/trait-unit-description.php:327
+msgid "μg/g"
+msgstr "μg/g"
+
+#: includes/trait-unit-description.php:330
+msgid "ppmv"
+msgstr "ppmv"
+
+#: includes/trait-unit-description.php:346
+msgid "pascal"
+msgstr "pascal"
+
+#: includes/trait-unit-description.php:349
+msgid "microgram per gram"
+msgstr "microgram per gram"
+
+#: includes/trait-unit-description.php:352
+msgid "part per million by volume"
+msgstr "ppm per volume"
+
+#: includes/trait-unit-description.php:392
+#: includes/trait-unit-description.php:606
+msgid "inHg"
+msgstr "inHg"
+
+#: includes/trait-unit-description.php:395
+#: includes/trait-unit-description.php:609
+msgid "mmHg"
+msgstr "mmHg"
+
+#: includes/trait-unit-description.php:398
+msgid "hPa"
+msgstr "hPa"
+
+#: includes/trait-unit-description.php:414
+msgid "inch of mercury"
+msgstr "inch of mercury"
+
+#: includes/trait-unit-description.php:417
+msgid "millimeter of mercury"
+msgstr "millimetre of mercury"
+
+#: includes/trait-unit-description.php:420
+msgid "hectopascal"
+msgstr "hectopascal"
+
+#: includes/trait-unit-description.php:436
+msgid "°F"
+msgstr "°F"
+
+#: includes/trait-unit-description.php:439
+msgid "°C"
+msgstr "°C"
+
+#: includes/trait-unit-description.php:455
+msgid "fahrenheit degree"
+msgstr "fahrenheit graden"
+
+#: includes/trait-unit-description.php:458
+msgid "celcius degree"
+msgstr "celcius graden"
+
+#: includes/trait-unit-description.php:474
+#: includes/trait-unit-description.php:685
+msgid "mph"
+msgstr "mph"
+
+#: includes/trait-unit-description.php:477
+#: includes/trait-unit-description.php:688
+msgid "m/s"
+msgstr "m/s"
+
+#: includes/trait-unit-description.php:480
+msgid "bf"
+msgstr "bf"
+
+#: includes/trait-unit-description.php:483
+msgid "kts"
+msgstr "kts"
+
+#: includes/trait-unit-description.php:486
+#: includes/trait-unit-description.php:697
+msgid "km/h"
+msgstr "km/h"
+
+#: includes/trait-unit-description.php:502
+msgid "mile per hour"
+msgstr "mile per uur"
+
+#: includes/trait-unit-description.php:505
+msgid "meter per second"
+msgstr "meter per seconde"
+
+#: includes/trait-unit-description.php:508
+msgid "beaufort"
+msgstr "beaufort"
+
+#: includes/trait-unit-description.php:511
+msgid "knot"
+msgstr "knopen"
+
+#: includes/trait-unit-description.php:514
+msgid "kilometer per hour"
+msgstr "kilometer per uur"
+
+#: includes/trait-unit-description.php:530
+msgid "ft"
+msgstr "ft"
+
+#: includes/trait-unit-description.php:533
+msgid "m"
+msgstr "m"
+
+#: includes/trait-unit-description.php:549
+msgid "foot"
+msgstr "voet"
+
+#: includes/trait-unit-description.php:552
+msgid "meter"
+msgstr "meter"
+
+#: includes/trait-unit-description.php:568
+msgid "mi"
+msgstr "mi"
+
+#: includes/trait-unit-description.php:571
+msgid "km"
+msgstr "km"
+
+#: includes/trait-unit-description.php:587
+msgid "mile"
+msgstr "mijl"
+
+#: includes/trait-unit-description.php:590
+msgid "kilometer"
+msgstr "kilometer"
+
+#: includes/trait-unit-description.php:612
+msgid "hPa / mbar"
+msgstr "hPa / mbar"
+
+#: includes/trait-unit-description.php:628
+msgid "Fahrenheit - °F"
+msgstr "Fahrenheit - °F"
+
+#: includes/trait-unit-description.php:631
+msgid "Celcius - °C"
+msgstr "Celcius - °C"
+
+#: includes/trait-unit-description.php:647
+#: includes/trait-unit-description.php:666
+msgid "Imperial system"
+msgstr "Imperiaal"
+
+#: includes/trait-unit-description.php:650
+#: includes/trait-unit-description.php:669
+msgid "Metric system"
+msgstr "Metrisch"
+
+#: includes/trait-unit-description.php:691
+msgid "Beaufort"
+msgstr "Beaufort"
+
+#: includes/trait-unit-description.php:694
+msgid "Knot"
+msgstr "Knopen"
+
+#: includes/trait-unit-description.php:786
+msgid "Measured and computed values"
+msgstr "Gemeten en berekende waarden"
+
+#: includes/trait-unit-description.php:787
+msgid "Only measured values"
+msgstr "Alleen gemeten waarden"
+
+#: includes/trait-unit-description.php:800
+msgid "Netatmo and OpenWeatherMap"
+msgstr "Netatmo en OpenWeatherMap"
+
+#: includes/trait-unit-description.php:801
+msgid "Only Netatmo"
+msgstr "Alleen Netatmo"
+
+#: includes/trait-unit-description.php:802
+msgid "Only OpenWeatherMap"
+msgstr "Alleen OpenWeatherMap"
+
+#: includes/trait-unit-description.php:815
+msgid "Never"
+msgstr "Nooit"
+
+#: includes/trait-unit-description.php:816
+msgid "After 30 minutes"
+msgstr "Na 30 minuten"
+
+#: includes/trait-unit-description.php:817
+msgid "After 1 hour"
+msgstr "Na 1 uur"
+
+#: includes/trait-unit-description.php:818
+msgid "After 2 hours"
+msgstr "Na 2 uur"
+
+#: includes/trait-unit-description.php:819
+msgid "After 4 hours"
+msgstr "Na 4 uur"
+
+#: includes/trait-unit-description.php:820
+msgid "After 12 hours"
+msgstr "Na 12 uur"
+
+#: includes/trait-unit-description.php:821
+msgid "After 24 hours"
+msgstr "Na 24 uur"
+
+#: includes/trait-unit-description.php:833
+msgid "Fixed min & max"
+msgstr "Vaste min & max"
+
+#: includes/trait-unit-description.php:834
+msgid "Adapted min & max when possible"
+msgstr "Aangepaste min & max (indien mogelijk)"
+
+#: includes/trait-unit-description.php:847
+msgid "Towards... (points to the degree)"
+msgstr "Naar... (wijst naar de graad)"
+
+#: includes/trait-unit-description.php:848
+msgid "From... (points directly away from the degree)"
+msgstr "Van... (wijst van de graad af)"
+
+#: public/class-live-weather-station-public.php:106
+#: public/class-live-weather-station-public.php:131
+msgid "Error code "
+msgstr "Foutcode"
+
+#: public/class-live-weather-station-public.php:110
+#: public/class-live-weather-station-public.php:135
+msgid "No data"
+msgstr "Geen data"
+
+#: public/partials/live-weather-station-widget-ephemeris-display.php:29
+msgid "Sunrise & sunset"
+msgstr "Zonsopkomst &  -ondergang"
+
+#: public/partials/live-weather-station-widget-ephemeris-display.php:52
+msgid "Moon"
+msgstr "Maan"
+
+#: public/partials/live-weather-station-widget-ephemeris-display.php:106
+msgid "Sun distance and angular size"
+msgstr "Zon afstand en hoek"
+
+#: public/partials/live-weather-station-widget-ephemeris-display.php:129
+msgid "Moon illumination, phase & age"
+msgstr "Maan helderheid, fase & leeftijd"
+
+#: public/partials/live-weather-station-widget-ephemeris-display.php:180
+msgid "Moon distance and angular size"
+msgstr "Maan afstand en hoek"
+
+#: public/partials/live-weather-station-widget-outdoor-display.php:13
+msgid "Current weather conditions"
+msgstr "Huidige weercondities"
+
+#: public/partials/live-weather-station-widget-outdoor-display.php:103
+#: public/partials/live-weather-station-widget-outdoor-display.php:125
+msgid "Wind from"
+msgstr "Wind vanuit"
+
+#: public/partials/live-weather-station-widget-outdoor-display.php:117
+msgid "max"
+msgstr "max"
+
+#: public/partials/live-weather-station-widget-outdoor-display.php:140
+#: public/partials/live-weather-station-widget-outdoor-display.php:162
+msgid "Rainfall"
+msgstr "Regen"
+
+#: public/partials/live-weather-station-widget-outdoor-display.php:177
+msgid "Snowfall"
+msgstr "Sneeuwval"
+
+#. Plugin Name of the plugin/theme
+msgid "Live Weather Station"
+msgstr "Live Weather Station"
+
+#. Plugin URI of the plugin/theme
+msgid "https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/"
+msgstr "https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/"
+
+#. Description of the plugin/theme
+msgid ""
+"Display, in many different and elegant ways, the meteorological data "
+"collected by your Netatmo weather station or coming from OpenWeatherMap."
+msgstr ""
+"Weergave op veel verschillende en fraaie manieren, de meteorologische "
+"gegevens afkomstig van jouw Netatmo station of van OpenWeatherMap."
+
+#. Author of the plugin/theme
+msgid "Pierre Lannoy"
+msgstr "Pierre Lannoy"
+
+#. Author URI of the plugin/theme
+msgid "https://pierre.lannoy.fr"
+msgstr "https://pierre.lannoy.fr"
