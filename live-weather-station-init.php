@@ -31,7 +31,7 @@ function is_i18n_loaded() {
 }
 
 
-define('LWS_VERSION', '2.9.0');
+define('LWS_VERSION', '2.9.1');
 //define('LWS_BETA', true);
 
 
