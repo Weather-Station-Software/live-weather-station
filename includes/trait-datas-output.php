@@ -1612,12 +1612,6 @@ trait Datas_Output {
             case 'windstrength_max':
                 $result = ($value > 70);
                 break;
-            /*case 'pressure':
-                $result = ($value > 75);
-                if (!$result) {
-                    $result = ($value < 25);
-                }
-            break;*/
             case 'temperature':
                 $result = ($value > 40);
                 if (!$result) {
@@ -2653,11 +2647,13 @@ trait Datas_Output {
                     $measure['signal'] = $this->get_signal_lcd_level_text(-1, 'none');
                 }
                 if (($data['measure_type'] == $measure_type) || (($data['measure_type'] != $measure_type) && $this->is_value_ok($data['measure_type'], $aggregated, $outdoor, $computed, $pollution))) {
-                    switch ($data['measure_type']) {
+                    switch (strtolower($data['measure_type'])) {
                         case 'co2':
                         case 'o3':
                         case 'co':
                         case 'noise':
+                            $response[] = $measure;
+                            break;
                         case 'dew_point':
                             if ($has_temp_ref && $this->is_valid_dew_point($temp_ref)) {
                                 $response[] = $measure;
