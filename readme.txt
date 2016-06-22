@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, CO2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill, weather plugin, wordpress widget, wind gauge, rain gauge, pws, met office, personal weather station, weather underground, wunderground, weather observations website, wow, observation, pollution, CO₂, CO, O3, O₃, ozone, carbon dioxide, carbon monoxide
 Requires at least: 4.0
 Tested up to: 4.5
-Stable tag: 2.9.1
+Stable tag: 2.9.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://support.laquadrature.net/
@@ -55,7 +55,7 @@ Live Weather Station allows you to send your Netatmo outdoor data, at a 10 minut
 = Supported languages =
 Right now, Live Weather Station supports the following languages:
 
-* Dutch
+* Dutch (thanks to [@hanstis](https://profiles.wordpress.org/hanstis))
 * English (default)
 * English / Australia (thanks to [translation team](https://translate.wordpress.org/locale/en-au/default/wp-plugins/live-weather-station))
 * English / Canada (thanks to [translation team](https://translate.wordpress.org/locale/en-ca/default/wp-plugins/live-weather-station))
@@ -124,9 +124,15 @@ You can report bugs and suggest ideas via the [support section](https://wordpres
 
 == Changelog ==
 
+= 2.9.2 =
+
+Release date: June 22nd, 2016
+
+* Improvement: `readme.txt`.
+
 = 2.9.1 =
 
-Release date: June xxxxxxth, 2016
+Release date: June 22nd, 2016
 
 * New language: Dutch (thanks to [@hanstis](https://profiles.wordpress.org/hanstis)).
 * Improvement: `readme.txt`.
