@@ -2,8 +2,8 @@
 Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, CO2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill, weather plugin, wordpress widget, wind gauge, rain gauge, pws, met office, personal weather station, weather underground, wunderground, weather observations website, wow, observation, pollution, CO₂, CO, O3, O₃, ozone, carbon dioxide, carbon monoxide
 Requires at least: 4.0
-Tested up to: 4.5
-Stable tag: 2.9.2
+Tested up to: 4.6
+Stable tag: 2.9.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://support.laquadrature.net/
@@ -123,6 +123,13 @@ You can find instructions in english [here](https://pierre.lannoy.fr/wordpress-l
 You can report bugs and suggest ideas via the [support section](https://wordpress.org/support/plugin/live-weather-station) of this plugin page.
 
 == Changelog ==
+
+= 2.9.3 =
+
+Release date: August 4th, 2016
+
+* Improvement: support for Wordpress 4.6.
+* Improvement: `readme.txt`.
 
 = 2.9.2 =
 
