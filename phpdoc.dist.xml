@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+    <title>Weather Station [for WordPress]</title>
+    <parser>
+        <encoding>utf8</encoding>
+        <markers>
+            <item>todo</item>
+            <item>FIXME</item>
+        </markers>
+    </parser>
+    <transformations>
+        <template name="weather-station"/>
+    </transformations>
+    <files>
+        <ignore>index.php</ignore>
+        <ignore>languages/*</ignore>
+        <ignore>public/partials/*-css.php</ignore>
+        <file>public/partials/*-css.source</file>
+    </files>
+</phpdoc>
