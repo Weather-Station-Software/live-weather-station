@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Live Weather Station\n"
-"POT-Creation-Date: 2016-10-03 22:45+0200\n"
+"POT-Creation-Date: 2016-10-04 22:22+0200\n"
 "PO-Revision-Date: 2015-11-07 19:46+0100\n"
 "Last-Translator: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
 "Language-Team: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
@@ -33,25 +33,25 @@ msgstr ""
 msgid "this page"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:127 includes/system/InlineHelp.php:206
+#: admin/SystemPluginAdmin.php:127 includes/system/InlineHelp.php:209
 #, php-format
 msgid ""
 "In order to work properly, %s has to be connected to some services. You can "
 "manage here these connections."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:132 includes/system/InlineHelp.php:207
+#: admin/SystemPluginAdmin.php:132 includes/system/InlineHelp.php:210
 msgid ""
 "You can set here all the units and display options for controls and widgets."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:137 includes/system/InlineHelp.php:208
+#: admin/SystemPluginAdmin.php:137 includes/system/InlineHelp.php:211
 msgid ""
 "You can set here all the thresholds which define limits and alarms in some "
 "controls (LCD panel, gauges, meters, etc.)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:142 includes/system/InlineHelp.php:209
+#: admin/SystemPluginAdmin.php:142 includes/system/InlineHelp.php:212
 #, php-format
 msgid ""
 "You can set here all the parameters related to the operation of the %s "
@@ -63,7 +63,7 @@ msgstr ""
 msgid "You can find help on these maintenance operations on %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:147 includes/system/InlineHelp.php:210
+#: admin/SystemPluginAdmin.php:147 includes/system/InlineHelp.php:213
 msgid ""
 "Here, you can make some maintenance operations that are not directly "
 "accessible elsewhere."
@@ -227,7 +227,7 @@ msgstr ""
 msgid "days"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:298 includes/system/InlineHelp.php:262
+#: admin/SystemPluginAdmin.php:298 includes/system/InlineHelp.php:265
 msgid "Netatmo"
 msgstr ""
 
@@ -320,22 +320,27 @@ msgstr ""
 
 #: admin/SystemPluginAdmin.php:637
 #, php-format
-msgid "%s has been correctly updated."
+msgid "%s have been correctly updated."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:643 admin/SystemPluginAdmin.php:669
+#: admin/SystemPluginAdmin.php:643
 #, php-format
-msgid "%s has not been updated. Please try again."
+msgid "%s have not been updated. Please try again."
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:651
 #, php-format
-msgid "%s has been correctly reset to defaults."
+msgid "%s have been correctly reset to defaults."
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:657
 #, php-format
-msgid "%s has not been reset to defaults. Please try again."
+msgid "%s have not been reset to defaults. Please try again."
+msgstr ""
+
+#: admin/SystemPluginAdmin.php:669
+#, php-format
+msgid "%s has not been updated. Please try again."
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:696 admin/SystemPluginAdmin.php:697
@@ -497,7 +502,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: admin/partials/ChooseStationType.php:14 includes/system/InlineHelp.php:262
+#: admin/partials/ChooseStationType.php:14 includes/system/InlineHelp.php:265
 msgid "a Netatmo station to which you have access to."
 msgstr ""
 
@@ -509,7 +514,7 @@ msgid ""
 "settings."
 msgstr ""
 
-#: admin/partials/ChooseStationType.php:25 includes/system/InlineHelp.php:263
+#: admin/partials/ChooseStationType.php:25 includes/system/InlineHelp.php:266
 msgid ""
 "a \"virtual\" weather station whose you only know the city or its "
 "coordinates."
@@ -522,11 +527,11 @@ msgid ""
 "To set it, click on this logo to be redirected to the services settings."
 msgstr ""
 
-#: admin/partials/ChooseStationType.php:36 includes/system/InlineHelp.php:264
+#: admin/partials/ChooseStationType.php:36 includes/system/InlineHelp.php:267
 msgid "a personal weather station published on OpenWeatherMap."
 msgstr ""
 
-#: admin/partials/ChooseStationType.php:47 includes/system/InlineHelp.php:265
+#: admin/partials/ChooseStationType.php:47 includes/system/InlineHelp.php:268
 msgid "a personal weather station published on Weather Underground."
 msgstr ""
 
@@ -570,7 +575,7 @@ msgstr ""
 #: admin/partials/ConnectNetatmo.php:42
 #: admin/partials/ConnectOpenWeatherMap.php:59
 #: includes/classes/ListTableStations.php:79
-#: includes/system/InlineHelp.php:275
+#: includes/system/InlineHelp.php:278
 msgid "See events log"
 msgstr ""
 
@@ -754,7 +759,7 @@ msgstr ""
 msgid "Browse events log"
 msgstr ""
 
-#: admin/partials/DashboardWelcome.php:43
+#: admin/partials/DashboardWelcome.php:44
 msgid "Learn more about getting started"
 msgstr ""
 
@@ -827,7 +832,7 @@ msgstr ""
 
 #: admin/partials/FormAddEditLocation.php:9
 #: includes/classes/ListTableStations.php:85
-#: includes/system/InlineHelp.php:276
+#: includes/system/InlineHelp.php:279
 msgid "Verify on a map"
 msgstr ""
 
@@ -1172,7 +1177,7 @@ msgid "Timestamp"
 msgstr ""
 
 #: admin/partials/LogDetail.php:26 admin/partials/Settings.php:26
-#: includes/system/InlineHelp.php:209
+#: includes/system/InlineHelp.php:212
 msgid "System"
 msgstr ""
 
@@ -1199,23 +1204,23 @@ msgstr ""
 msgid "PHP configuration of your server"
 msgstr ""
 
-#: admin/partials/Settings.php:21 includes/system/InlineHelp.php:205
+#: admin/partials/Settings.php:21 includes/system/InlineHelp.php:208
 msgid "General"
 msgstr ""
 
-#: admin/partials/Settings.php:22 includes/system/InlineHelp.php:206
+#: admin/partials/Settings.php:22 includes/system/InlineHelp.php:209
 msgid "Services"
 msgstr ""
 
-#: admin/partials/Settings.php:24 includes/system/InlineHelp.php:207
+#: admin/partials/Settings.php:24 includes/system/InlineHelp.php:210
 msgid "Display"
 msgstr ""
 
-#: admin/partials/Settings.php:25 includes/system/InlineHelp.php:208
+#: admin/partials/Settings.php:25 includes/system/InlineHelp.php:211
 msgid "Thresholds"
 msgstr ""
 
-#: admin/partials/Settings.php:27 includes/system/InlineHelp.php:210
+#: admin/partials/Settings.php:27 includes/system/InlineHelp.php:213
 msgid "Maintenance"
 msgstr ""
 
@@ -1681,7 +1686,7 @@ msgstr ""
 msgid "Boxes"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:109 includes/system/InlineHelp.php:174
+#: includes/classes/DashboardHelper.php:109 includes/system/InlineHelp.php:177
 msgid "Welcome"
 msgstr ""
 
@@ -1690,15 +1695,15 @@ msgstr ""
 msgid "%s Dashboard"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:205
+#: includes/classes/DashboardHelper.php:205 includes/system/InlineHelp.php:172
 msgid "At a Glance"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:206 includes/system/InlineHelp.php:170
+#: includes/classes/DashboardHelper.php:206 includes/system/InlineHelp.php:173
 msgid "Versions"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:210 includes/system/InlineHelp.php:171
+#: includes/classes/DashboardHelper.php:210 includes/system/InlineHelp.php:174
 msgid "Translation"
 msgstr ""
 
@@ -1707,12 +1712,38 @@ msgstr ""
 msgid "%s News"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:215 includes/system/InlineHelp.php:172
+#: includes/classes/DashboardHelper.php:215 includes/system/InlineHelp.php:175
 msgid "About"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:216 includes/system/InlineHelp.php:173
+#: includes/classes/DashboardHelper.php:216 includes/system/InlineHelp.php:176
 msgid "Licenses"
+msgstr ""
+
+#: includes/classes/I18nHelper.php:65
+#, php-format
+msgid ""
+"As you can see, there is a partial translation of %2$s in %1$s. This "
+"translation is currently %3$d%% complete. We need your help to make it "
+"complete and to fix any errors. Please %4$s on how you can help to complete "
+"this translation in %1$s!"
+msgstr ""
+
+#: includes/classes/I18nHelper.php:69
+#, php-format
+msgid ""
+"You're using WordPress in %1$s. While %2$s has been translated to %1$s for "
+"%3$d%%, it's not been shipped with the plugin yet. But, you can help! "
+"Please %4$s on how you can participate to this translation in %1$s!"
+msgstr ""
+
+#: includes/classes/I18nHelper.php:73
+#, php-format
+msgid ""
+"You're using WordPress in a language which is not supported yet by %2$s. "
+"For now, this plugin is already translated in %5$d languages and we'd love "
+"to add %1$s to this list. Please %4$s on how you can help to achieve this "
+"goal!"
 msgstr ""
 
 #: includes/classes/ListTable.php:60
@@ -1834,7 +1865,7 @@ msgid "All stations"
 msgstr ""
 
 #: includes/classes/ListTableStations.php:60
-#: includes/system/InlineHelp.php:273
+#: includes/system/InlineHelp.php:276
 msgid "Manage services"
 msgstr ""
 
@@ -1842,14 +1873,14 @@ msgstr ""
 #: includes/classes/ListTableStations.php:67
 #: includes/classes/ListTableStations.php:71
 #: includes/classes/ListTableStations.php:75
-#: includes/system/InlineHelp.php:274
+#: includes/system/InlineHelp.php:277
 msgid "Remove"
 msgstr ""
 
 #: includes/classes/ListTableStations.php:66
 #: includes/classes/ListTableStations.php:70
 #: includes/classes/ListTableStations.php:74
-#: includes/system/InlineHelp.php:272
+#: includes/system/InlineHelp.php:275
 msgid "Edit"
 msgstr ""
 
@@ -1901,7 +1932,7 @@ msgid "Composition"
 msgstr ""
 
 #: includes/classes/ListTableStations.php:168
-#: includes/classes/StationHelper.php:278 includes/system/InlineHelp.php:277
+#: includes/classes/StationHelper.php:278 includes/system/InlineHelp.php:280
 msgid "Shortcodes"
 msgstr ""
 
@@ -1934,27 +1965,27 @@ msgid ""
 "station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:137
+#: includes/system/InlineHelp.php:140
 msgid "See also:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:138
+#: includes/system/InlineHelp.php:141
 msgid "Documentation"
 msgstr ""
 
-#: includes/system/InlineHelp.php:139
+#: includes/system/InlineHelp.php:142
 msgid "FAQ"
 msgstr ""
 
-#: includes/system/InlineHelp.php:140
+#: includes/system/InlineHelp.php:143
 msgid "Support"
 msgstr ""
 
-#: includes/system/InlineHelp.php:141
+#: includes/system/InlineHelp.php:144
 msgid "Official website"
 msgstr ""
 
-#: includes/system/InlineHelp.php:151
+#: includes/system/InlineHelp.php:154
 #, php-format
 msgid ""
 "Welcome to your %1$s Dashboard! This is the screen you will see when you "
@@ -1962,165 +1993,161 @@ msgid ""
 "help for any %1$s screen by clicking the Help tab above the screen title."
 msgstr ""
 
-#: includes/system/InlineHelp.php:155 includes/system/InlineHelp.php:200
-#: includes/system/InlineHelp.php:241 includes/system/InlineHelp.php:258
-#: includes/system/InlineHelp.php:305 includes/system/InlineHelp.php:349
+#: includes/system/InlineHelp.php:158 includes/system/InlineHelp.php:203
+#: includes/system/InlineHelp.php:244 includes/system/InlineHelp.php:261
+#: includes/system/InlineHelp.php:308 includes/system/InlineHelp.php:352
 msgid "Overview"
 msgstr ""
 
-#: includes/system/InlineHelp.php:159
+#: includes/system/InlineHelp.php:162
 #, php-format
 msgid ""
 "You can use the following controls to arrange your %s Dashboard screen to "
 "suit your workflow:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:160 includes/system/InlineHelp.php:245
+#: includes/system/InlineHelp.php:163 includes/system/InlineHelp.php:248
 msgid "Screen Options"
 msgstr ""
 
-#: includes/system/InlineHelp.php:160
+#: includes/system/InlineHelp.php:163
 #, php-format
 msgid "Use the Screen Options tab to choose which %s Dashboard boxes to show."
 msgstr ""
 
-#: includes/system/InlineHelp.php:161 includes/system/InlineHelp.php:246
+#: includes/system/InlineHelp.php:164 includes/system/InlineHelp.php:249
 msgid "Drag and Drop"
 msgstr ""
 
-#: includes/system/InlineHelp.php:161 includes/system/InlineHelp.php:246
+#: includes/system/InlineHelp.php:164 includes/system/InlineHelp.php:249
 msgid ""
 "To rearrange the boxes, drag and drop by clicking on the title bar of the "
 "selected box and releasing when you see a gray dotted-line rectangle appear "
 "in the location you want to place the box."
 msgstr ""
 
-#: includes/system/InlineHelp.php:162 includes/system/InlineHelp.php:247
+#: includes/system/InlineHelp.php:165 includes/system/InlineHelp.php:250
 msgid "Box Controls"
 msgstr ""
 
-#: includes/system/InlineHelp.php:162 includes/system/InlineHelp.php:247
+#: includes/system/InlineHelp.php:165 includes/system/InlineHelp.php:250
 msgid "Click the title bar of the box to expand or collapse it."
 msgstr ""
 
-#: includes/system/InlineHelp.php:164 includes/system/InlineHelp.php:249
+#: includes/system/InlineHelp.php:167 includes/system/InlineHelp.php:252
 msgid "Layout"
 msgstr ""
 
-#: includes/system/InlineHelp.php:168
+#: includes/system/InlineHelp.php:171
 #, php-format
 msgid "The boxes on your %s Dashboard screen are:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:169
-msgid "At A Glance"
-msgstr ""
-
-#: includes/system/InlineHelp.php:169
+#: includes/system/InlineHelp.php:172
 #, php-format
 msgid ""
 "Displays a summary of %s operations. Note that a similar box is displayed "
 "in your main WordPress Dashboard."
 msgstr ""
 
-#: includes/system/InlineHelp.php:170
+#: includes/system/InlineHelp.php:173
 msgid "Displays important versions numbers."
 msgstr ""
 
-#: includes/system/InlineHelp.php:171
+#: includes/system/InlineHelp.php:174
 msgid "If displayed, shows translations status."
 msgstr ""
 
-#: includes/system/InlineHelp.php:172
+#: includes/system/InlineHelp.php:175
 #, php-format
 msgid "Displays information about %s and contributors."
 msgstr ""
 
-#: includes/system/InlineHelp.php:173
+#: includes/system/InlineHelp.php:176
 msgid ""
 "Displays important information about the licenses under which are published "
 "some weather data."
 msgstr ""
 
-#: includes/system/InlineHelp.php:174
+#: includes/system/InlineHelp.php:177
 #, php-format
 msgid ""
 "Shows links for some of the most common tasks when getting started or using "
 "%s."
 msgstr ""
 
-#: includes/system/InlineHelp.php:176 includes/system/InlineHelp.php:212
+#: includes/system/InlineHelp.php:179 includes/system/InlineHelp.php:215
 msgid "Content"
 msgstr ""
 
-#: includes/system/InlineHelp.php:184 includes/system/InlineHelp.php:220
-#: includes/system/InlineHelp.php:288 includes/system/InlineHelp.php:333
-#: includes/system/InlineHelp.php:356
+#: includes/system/InlineHelp.php:187 includes/system/InlineHelp.php:223
+#: includes/system/InlineHelp.php:291 includes/system/InlineHelp.php:336
+#: includes/system/InlineHelp.php:359
 msgid "For more information:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:185
+#: includes/system/InlineHelp.php:188
 msgid "Dashboard description"
 msgstr ""
 
-#: includes/system/InlineHelp.php:196
+#: includes/system/InlineHelp.php:199
 #, php-format
 msgid ""
 "This screen allows you to adjust all settings required to adapt the "
 "operation of %s to what you expect."
 msgstr ""
 
-#: includes/system/InlineHelp.php:204
+#: includes/system/InlineHelp.php:207
 msgid "The tabs on the settings screen are:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:205
+#: includes/system/InlineHelp.php:208
 #, php-format
 msgid "Allows you to switch the mode in which %s runs."
 msgstr ""
 
-#: includes/system/InlineHelp.php:207 includes/system/InlineHelp.php:208
-#: includes/system/InlineHelp.php:209 includes/system/InlineHelp.php:210
+#: includes/system/InlineHelp.php:210 includes/system/InlineHelp.php:211
+#: includes/system/InlineHelp.php:212 includes/system/InlineHelp.php:213
 #, php-format
 msgid "This tab is visible only if %s runs in extended mode."
 msgstr ""
 
-#: includes/system/InlineHelp.php:221
+#: includes/system/InlineHelp.php:224
 msgid "Settings management"
 msgstr ""
 
-#: includes/system/InlineHelp.php:237
+#: includes/system/InlineHelp.php:240
 msgid "This \"station view\" shows you the details of a station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:238
+#: includes/system/InlineHelp.php:241
 msgid ""
 "The lef-hand column display statical information on the station as well as "
 "shortcodes or publishing format options."
 msgstr ""
 
-#: includes/system/InlineHelp.php:239
+#: includes/system/InlineHelp.php:242
 msgid ""
 "The right-hand column displays all modules (main base, outdoor, indoor and "
 "virtual modules) attached to the station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:244
+#: includes/system/InlineHelp.php:247
 msgid ""
 "You can use the following controls to arrange this station view to suit "
 "your workflow:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:245
+#: includes/system/InlineHelp.php:248
 msgid "Use the Screen Options tab to choose which boxes and modules to show."
 msgstr ""
 
-#: includes/system/InlineHelp.php:254
+#: includes/system/InlineHelp.php:257
 #, php-format
 msgid "This screen displays all stations collected by %s."
 msgstr ""
 
-#: includes/system/InlineHelp.php:255
+#: includes/system/InlineHelp.php:258
 #, php-format
 msgid ""
 "To add a new weather station (to have its data collected by %s), just click "
@@ -2128,78 +2155,78 @@ msgid ""
 "of the station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:256
+#: includes/system/InlineHelp.php:259
 msgid ""
 "If you mouse over the line of an existing station, some of the station "
 "management features will appear. To display the full station view, just "
 "click on its name."
 msgstr ""
 
-#: includes/system/InlineHelp.php:261
+#: includes/system/InlineHelp.php:264
 #, php-format
 msgid ""
 "In this version of %s and depending of the API key you have set, you can "
 "add the following types of stations:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:263
+#: includes/system/InlineHelp.php:266
 msgid "Virtual"
 msgstr ""
 
-#: includes/system/InlineHelp.php:264
+#: includes/system/InlineHelp.php:267
 msgid "OpenWeatherMap"
 msgstr ""
 
-#: includes/system/InlineHelp.php:265
+#: includes/system/InlineHelp.php:268
 msgid "WeatherUndergroung"
 msgstr ""
 
-#: includes/system/InlineHelp.php:267
+#: includes/system/InlineHelp.php:270
 msgid "Stations types"
 msgstr ""
 
-#: includes/system/InlineHelp.php:271
+#: includes/system/InlineHelp.php:274
 msgid ""
 "Depending of the type of the station, you can access to these features:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:272
+#: includes/system/InlineHelp.php:275
 msgid ""
 "To modify or update the properties of the station (city, country, "
 "coordinates, etc.)."
 msgstr ""
 
-#: includes/system/InlineHelp.php:273
+#: includes/system/InlineHelp.php:276
 #, php-format
 msgid "To let %s send outdoor data of the station to some online services."
 msgstr ""
 
-#: includes/system/InlineHelp.php:274
+#: includes/system/InlineHelp.php:277
 #, php-format
 msgid "To remove the station from the %s collect process."
 msgstr ""
 
-#: includes/system/InlineHelp.php:275
+#: includes/system/InlineHelp.php:278
 msgid "To see events associated with the station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:276
+#: includes/system/InlineHelp.php:279
 msgid "To verify, visually, the coordinates of the station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:277
+#: includes/system/InlineHelp.php:280
 msgid "To obtain shortcodes ready to insert in a page or a post."
 msgstr ""
 
-#: includes/system/InlineHelp.php:279
+#: includes/system/InlineHelp.php:282
 msgid "Features"
 msgstr ""
 
-#: includes/system/InlineHelp.php:289
+#: includes/system/InlineHelp.php:292
 msgid "Stations management"
 msgstr ""
 
-#: includes/system/InlineHelp.php:300
+#: includes/system/InlineHelp.php:303
 #, php-format
 msgid ""
 "This screen displays all events generated by %s during its operation. These "
@@ -2207,73 +2234,73 @@ msgid ""
 "collecting weather data."
 msgstr ""
 
-#: includes/system/InlineHelp.php:301
+#: includes/system/InlineHelp.php:304
 msgid "To view the details of an event, just click on its name."
 msgstr ""
 
-#: includes/system/InlineHelp.php:309
-msgid "Events have the following types:"
-msgstr ""
-
-#: includes/system/InlineHelp.php:311
-#, php-format
-msgid "A major error. %s doesn't run anymore or can't start."
-msgstr ""
-
 #: includes/system/InlineHelp.php:312
-#, php-format
-msgid "An error that undoubtedly affects the %s system operations."
-msgstr ""
-
-#: includes/system/InlineHelp.php:313
-#, php-format
-msgid "An error that undoubtedly affects the %s current operations."
+msgid "Events have the following types:"
 msgstr ""
 
 #: includes/system/InlineHelp.php:314
 #, php-format
-msgid "An error that may affects the %s operations."
+msgid "A major error. %s doesn't run anymore or can't start."
 msgstr ""
 
 #: includes/system/InlineHelp.php:315
+#, php-format
+msgid "An error that undoubtedly affects the %s system operations."
+msgstr ""
+
+#: includes/system/InlineHelp.php:316
+#, php-format
+msgid "An error that undoubtedly affects the %s current operations."
+msgstr ""
+
+#: includes/system/InlineHelp.php:317
+#, php-format
+msgid "An error that may affects the %s operations."
+msgstr ""
+
+#: includes/system/InlineHelp.php:318
 #, php-format
 msgid ""
 "A warning related to a temporary condition. Does not usually affect the %s "
 "operations."
 msgstr ""
 
-#: includes/system/InlineHelp.php:316
+#: includes/system/InlineHelp.php:319
 msgid "An important information. Now you know!"
 msgstr ""
 
-#: includes/system/InlineHelp.php:317
+#: includes/system/InlineHelp.php:320
 msgid "A standard information, just for you to know... and forget!"
 msgstr ""
 
-#: includes/system/InlineHelp.php:318
+#: includes/system/InlineHelp.php:321
 msgid "An information for coders and testers, so not for humans."
 msgstr ""
 
-#: includes/system/InlineHelp.php:319
+#: includes/system/InlineHelp.php:322
 msgid "The event is not typed, this can't be a good news."
 msgstr ""
 
-#: includes/system/InlineHelp.php:326
+#: includes/system/InlineHelp.php:329
 msgid "Events types"
 msgstr ""
 
-#: includes/system/InlineHelp.php:334
+#: includes/system/InlineHelp.php:337
 msgid "Events log description"
 msgstr ""
 
-#: includes/system/InlineHelp.php:345
+#: includes/system/InlineHelp.php:348
 #, php-format
 msgid ""
 "Your installation of WordPress does not meet the minimum requirements "
 "needed for %s to run. The items to be corrected are shown on this screen."
 msgstr ""
 
-#: includes/system/InlineHelp.php:357
+#: includes/system/InlineHelp.php:360
 msgid "Plugin requirements"
 msgstr ""
 
@@ -4578,12 +4605,12 @@ msgstr ""
 
 #: includes/traits/Forms.php:200
 #, php-format
-msgid "Limits for %s, value expressed in %s."
+msgid "Limits for %s, values expressed in %s."
 msgstr ""
 
 #: includes/traits/Forms.php:201
 #, php-format
-msgid "Alarms for %s, value expressed in %s."
+msgid "Alarms for %s, values expressed in %s."
 msgstr ""
 
 #: includes/traits/Forms.php:203 includes/traits/Forms.php:209

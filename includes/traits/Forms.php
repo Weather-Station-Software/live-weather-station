@@ -197,8 +197,8 @@ trait Handling {
             $txt_alarm = sprintf(__('Alarms for %s, dimensionless index.', 'live-weather-station'), $typetxt, $unitlong);
         }
         else {
-            $txt_value = sprintf(__('Limits for %s, value expressed in %s.', 'live-weather-station'), $typetxt, $unitlong);
-            $txt_alarm = sprintf(__('Alarms for %s, value expressed in %s.', 'live-weather-station'), $typetxt, $unitlong);
+            $txt_value = sprintf(__('Limits for %s, values expressed in %s.', 'live-weather-station'), $typetxt, $unitlong);
+            $txt_alarm = sprintf(__('Alarms for %s, values expressed in %s.', 'live-weather-station'), $typetxt, $unitlong);
         }
         $html .= __('low:', 'live-weather-station') . ' <input name="' . $id . 'min_value" type="number" step="' . $step . '" min="' . $min_boundary . '" max="' . $max_boundary . '" id="' . $id . 'min_value" value="' . $min_value . '" />';
         $html .= '&nbsp;<label for="' . $id . 'min_value">' . $unit . '</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ';
