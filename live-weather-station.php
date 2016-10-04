@@ -13,7 +13,7 @@ use WeatherStation\System\Plugin\Deactivator;
  * Plugin Name:       Weather Station
  * Plugin URI:        https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/
  * Description:       Display, in many different and elegant ways, the meteorological data collected by your Netatmo weather station or coming from OpenWeatherMap.
- * Version:           3.0.0-dev1
+ * Version:           3.0.0-dev2
  * Author:            Pierre Lannoy
  * Author URI:        https://pierre.lannoy.fr
  * License:           GPLv2 or later

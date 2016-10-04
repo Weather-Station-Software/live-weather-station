@@ -15,6 +15,7 @@ use WeatherStation\System\Help\InlineHelp;
 class Handling {
 
     private $locale_name;
+    private $locale_native_name;
     private $percent_translated;
     private $count_translated;
     private $translation_exists;
@@ -59,20 +60,24 @@ class Handling {
     public function get_message() {
         $this->translation_details();
         $message = false;
+        $locale = $this->locale_name;
         if ($this->translation_exists && $this->translation_loaded && $this->percent_translated < $this->percent_min) {
-            $message = 'As you can see, there is a partial translation of %2$s in %1$s. This translation is currently %3$d%% complete. We need your help to make it complete and to fix any errors. Please %4$s on how you can help to complete this %1$s translation!';
+            $message = __('As you can see, there is a partial translation of %2$s in %1$s. This translation is currently %3$d%% complete. We need your help to make it complete and to fix any errors. Please %4$s on how you can help to complete this translation in %1$s!', 'live-weather-station');
+            $locale = (strpos($message, 'you can see, there is a partial translation') > 0 ? $this->locale_name : $this->locale_native_name);
         }
         if (!$this->translation_loaded && $this->translation_exists) {
-            $message = 'You\'re using WordPress in %1$s. While %2$s has been translated to %1$s for %3$d%%, it\'s not been shipped with the plugin yet. But, you can help! Please %4$s on how you can participate to this %1$s translation!';
+            $message = __('You\'re using WordPress in %1$s. While %2$s has been translated to %1$s for %3$d%%, it\'s not been shipped with the plugin yet. But, you can help! Please %4$s on how you can participate to this translation in %1$s!', 'live-weather-station');
+            $locale = (strpos($message, 'But, you can help!') > 0 ? $this->locale_name : $this->locale_native_name);
         }
-        if (!$this->translation_exists) {
-            $message = 'You\'re using WordPress in a language which is not supported yet by %2$s. For now, this plugin is already translated in %5$d languages and we\'d love to add %1$s to this list. Please %4$s on how you can help to achieve this goal!';
+        if (!$this->translation_exists || $this->percent_translated == 0) {
+            $message = __('You\'re using WordPress in a language which is not supported yet by %2$s. For now, this plugin is already translated in %5$d languages and we\'d love to add %1$s to this list. Please %4$s on how you can help to achieve this goal!', 'live-weather-station');
+            $locale = (strpos($message, 'you can help to achieve this goal!') > 0 ? $this->locale_name : $this->locale_native_name);
         }
         $help = InlineHelp::get(12, '%s', 'see details');
         if ((strpos(LWS_VERSION, 'dev') > 0) || (strpos(LWS_VERSION, 'rc') > 0)) {
             $help = InlineHelp::get(-10, '%s', 'see here');
         }
-        return sprintf($message, $this->locale_name, LWS_FULL_NAME, $this->percent_translated, $help, $this->count_translated);
+        return sprintf($message, $locale, LWS_FULL_NAME, $this->percent_translated, $help, $this->count_translated);
     }
 
     /**
@@ -144,12 +149,22 @@ class Handling {
      * @since 3.0.0
      */
     private function parse_translation_set($set) {
+        require_once(ABSPATH . 'wp-admin/includes/translation-install.php');
+        $translations = wp_get_available_translations();
         if ($this->translation_exists && is_object($set)) {
-            $this->locale_name = $set->name;
+            if (array_key_exists($this->locale, $translations)) {
+                $this->locale_native_name = $translations[$this->locale]['native_name'];
+                $this->locale_name = $set->name;
+            }
+            else {
+                $this->locale_native_name = $set->name;
+                $this->locale_name = $set->name;
+            }
             $this->percent_translated = $set->percent_translated;
         }
         else {
-            $this->locale_name = '';
+            $this->locale_native_name = $translations[$this->locale]['native_name'];
+            $this->locale_name = $translations[$this->locale]['language'];
             $this->percent_translated = '';
         }
     }
