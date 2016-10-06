@@ -7,6 +7,7 @@ use WeatherStation\SDK\Netatmo\Plugin\Pusher as Netatmo_Pusher;
 use WeatherStation\SDK\Netatmo\Plugin\Updater as Netatmo_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\CurrentUpdater as Owm_Current_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\PollutionUpdater as Owm_Pollution_Updater;
+use WeatherStation\System\I18N\Handling as i18n;
 
 /**
  * Functionalities for schedules & cron handling.
@@ -19,6 +20,7 @@ use WeatherStation\SDK\OpenWeatherMap\Plugin\PollutionUpdater as Owm_Pollution_U
 trait Handling {
 
     protected static $watchdog_name = 'lws_watchdog';
+    protected static $translation_update_name = 'lws_translation_update';
     protected static $netatmo_update_schedule_name = 'lws_netatmo_update';
     protected static $owm_update_schedule_name = 'lws_owm_update';
     protected static $owm_update_current_schedule_name = 'lws_owm_current_update';
@@ -137,6 +139,28 @@ trait Handling {
     }
 
     /**
+     * Define log rotate cron job.
+     *
+     * @since 3.0.0
+     */
+    protected static function define_translation_update_cron() {
+        $i18n = new i18n();
+        add_action(self::$translation_update_name, array($i18n, 'cron_run'));
+    }
+
+    /**
+     * Launch the log rotate cron job if needed.
+     *
+     * @since    2.8.0
+     */
+    protected static function launch_translation_update_cron() {
+        if (!wp_next_scheduled(self::$translation_update_name)) {
+            wp_schedule_event(time() + 15, 'hourly', self::$translation_update_name);
+            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$translation_update_name.' cron job.');
+        }
+    }
+
+    /**
      * Delete schedules.
      *
      * @since    1.0.0
@@ -148,6 +172,7 @@ trait Handling {
         wp_clear_scheduled_hook(self::$owm_update_pollution_schedule_name);
         wp_clear_scheduled_hook(self::$netatmo_push_schedule_name);
         wp_clear_scheduled_hook(self::$log_rotate_name);
+        wp_clear_scheduled_hook(self::$translation_update_name);
     }
 
     /**
@@ -161,6 +186,7 @@ trait Handling {
         self::launch_owm_current_update_cron();
         self::launch_owm_pollution_update_cron();
         self::launch_log_rotate_cron();
+        self::launch_translation_update_cron();
     }
 
     /**
@@ -178,7 +204,7 @@ trait Handling {
      *
      * @since    2.7.0
      */
-    public static function add_cron_03_minutes_interval( $schedules ) {
+    public static function add_cron_03_minutes_interval($schedules) {
         $schedules['three_minutes'] = array(
             'interval' => 180,
             'display'  => __( 'Every three minutes', 'live-weather-station' ),
@@ -191,7 +217,7 @@ trait Handling {
      *
      * @since    2.4.0
      */
-    public static function add_cron_05_minutes_interval( $schedules ) {
+    public static function add_cron_05_minutes_interval($schedules) {
         $schedules['five_minutes'] = array(
             'interval' => 300,
             'display'  => __( 'Every five minutes', 'live-weather-station' ),
@@ -204,7 +230,7 @@ trait Handling {
      *
      * @since    1.0.0
      */
-    public static function add_cron_10_minutes_interval( $schedules ) {
+    public static function add_cron_10_minutes_interval($schedules) {
         $schedules['ten_minutes'] = array(
             'interval' => 600,
             'display'  => __( 'Every ten minutes', 'live-weather-station' ),
@@ -217,7 +243,7 @@ trait Handling {
      *
      * @since    2.0.0
      */
-    public static function add_cron_15_minutes_interval( $schedules ) {
+    public static function add_cron_15_minutes_interval($schedules) {
         $schedules['fifteen_minutes'] = array(
             'interval' => 900,
             'display'  => __( 'Every fifteen minutes', 'live-weather-station' ),
@@ -230,7 +256,7 @@ trait Handling {
      *
      * @since    2.4.0
      */
-    public static function add_cron_30_minutes_interval( $schedules ) {
+    public static function add_cron_30_minutes_interval($schedules) {
         $schedules['thirty_minutes'] = array(
             'interval' => 1800,
             'display'  => __( 'Every thirty minutes', 'live-weather-station' ),

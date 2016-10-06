@@ -96,12 +96,13 @@ class Core {
 	 *
 	 * Uses the I18n class in order to set the domain and to register the hook with WordPress.
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	private function set_locale() {
 		$plugin_i18n = new I18n();
-		$plugin_i18n->set_domain( $this->get_Live_Weather_Station() );
-		$this->loader->add_action( 'plugins_loaded', $plugin_i18n, 'load_plugin_textdomain' );
+		$plugin_i18n->set_domain(LWS_PLUGIN_TEXT_DOMAIN);
+		$this->loader->add_action('plugins_loaded', $plugin_i18n, 'load_plugin_textdomain');
+        $this->loader->add_filter('override_load_textdomain', $plugin_i18n, 'load_local_textdomain_mofile', 10, 2 );
 	}
 
     /**

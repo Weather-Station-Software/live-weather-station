@@ -47,10 +47,8 @@
  *  3.0.0 FEATURES     *
  ***********************
 
-  * Dashboard
   * TBD : stat on datas timestamp
   * TBD : stat on events (full, by station, by service ?)
-  * where displaying version ?
   - display option
 
 
@@ -80,6 +78,7 @@ After upgrading, please, review all your settings.
 * New: ability to publish outdoor data of personal stations as stickertags format (for local, national or transnational weather networks like FRWN, etc.).
 * New: a caching mechanism is implemented to accelerate all backend operations.
 * Improvement: stability and speed are dramatically optimized.
+* Improvement: it's now possible to use partial translations.
 * Improvement: Weather Station has a new stylized (and stylish) logo!
 * Improvement: Weather Station has now its own menu in the main admin sidebar.
 * Improvement: all UI have been redesigned for easy use (icons, information messages, confirmation prompts, etc.).

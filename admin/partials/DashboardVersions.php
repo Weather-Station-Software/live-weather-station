@@ -7,11 +7,13 @@
  */
 
 use WeatherStation\UI\SVG\Handling as SVG;
+use WeatherStation\System\Environment\Manager as EnvManager;
 
-global $wp_version;
-$wp_str = 'Wordpress ' . $wp_version . ' (PHP ' . PHP_VERSION . ')';
-$lws_str = 'Weather Station ' . LWS_VERSION;
-$dev = (strpos(LWS_VERSION, 'dev') > 0);
+
+$wp_str = EnvManager::wordpress_version_text() . ' (' . EnvManager::php_version_text() . ' / ' . EnvManager::mysql_version_text() . ')';
+$lws_str = EnvManager::weatherstation_version_text();
+$dev = EnvManager::is_plugin_in_dev_mode();
+$rc = EnvManager::is_plugin_in_rc_mode();
 
 ?>
 
@@ -25,4 +27,9 @@ $dev = (strpos(LWS_VERSION, 'dev') > 0);
 <div class="activity-block" style="padding-bottom: 0px">
     <i style="color:#ff4444" class="fa fa-lg fa-exclamation-triangle"></i>&nbsp;<strong><?php echo __('Warning', 'live-weather-station'); ?></strong> &mdash; <?php echo sprintf(__('This version of %s is not production-ready. It is a development preview. Use it at your own risk!', 'live-weather-station'), LWS_PLUGIN_NAME); ?>
 </div>
+<?php } ?>
+<?php if ($rc) { ?>
+    <div class="activity-block" style="padding-bottom: 0px">
+        <i style="color:#999" class="fa fa-lg fa-info-circle"></i>&nbsp;<strong><?php echo __('Information', 'live-weather-station'); ?></strong> &mdash; <?php echo sprintf(__('This version of %s is a release candidate. Although ready for production, this version is not officially supported in production environments.', 'live-weather-station'), LWS_PLUGIN_NAME); ?>
+    </div>
 <?php } ?>

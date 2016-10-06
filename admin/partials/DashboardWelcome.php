@@ -24,7 +24,7 @@ $welcome = true;
             <div class="welcome-panel-column" style="padding-left: 23px;margin-right: -23px;">
                 <img style="width:120px;float:left;margin-top:16px;margin-bottom:20px;" src="<?php echo set_url_scheme(SVG::get_base64_lws_icon()); ?>" />
                 <h3><?php _e('Connect!', 'live-weather-station'); ?></h3>
-                <a class="button button-primary button-hero" href="<?php echo admin_dir_relative_url(); ?>?page=lws-settings&tab=services"><?php _e('Services Settings', 'live-weather-station'); ?></a>
+                <a class="button button-primary button-hero" href="<?php echo LWS_ADMIN_PHP_URL; ?>?page=lws-settings&tab=services"><?php _e('Services Settings', 'live-weather-station'); ?></a>
                 <br/>&nbsp;<br/>&nbsp;<br/>
             </div>
             <div class="welcome-panel-column" style="padding-left: 23px;margin-right: -50px;">
