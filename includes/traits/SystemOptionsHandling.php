@@ -15,6 +15,8 @@ use WeatherStation\System\Logs\Logger;
 
 trait Handling {
 
+    private static $live_weather_station_partial_translation = 0 ;
+
     private static $live_weather_station_version = '-' ;
     private static $live_weather_station_logger_level = 5 ;
     private static $live_weather_station_logger_rotate = 20000 ;
@@ -262,6 +264,7 @@ trait Handling {
      * @since 1.0.0
      */
     protected static function delete_options() {
+        delete_option('live_weather_station_partial_translation');
         delete_option('live_weather_station_version');
         delete_option('live_weather_station_logger_level');
         delete_option('live_weather_station_logger_rotate');
@@ -395,6 +398,7 @@ trait Handling {
         update_option('live_weather_station_unit_distance', self::$live_weather_station_unit_distance);
         update_option('live_weather_station_unit_rain_snow', self::$live_weather_station_unit_rain_snow);
         update_option('live_weather_station_advanced_mode', (self::$live_weather_station_advanced_mode ? 1 : 0));
+        update_option('live_weather_station_partial_translation', (self::$live_weather_station_partial_translation ? 1 : 0));
     }
 
     /**
@@ -533,6 +537,8 @@ trait Handling {
         self::verify_option_string('live_weather_station_map_layer', self::$live_weather_station_map_layer);
         self::verify_option_boolean('live_weather_station_auto_manage_netatmo', self::$live_weather_station_auto_manage_netatmo);
         self::verify_option_boolean('live_weather_station_show_technical', self::$live_weather_station_show_technical);
+        self::verify_option_boolean('live_weather_station_advanced_mode', self::$live_weather_station_advanced_mode);
+        self::verify_option_boolean('live_weather_station_partial_translation', self::$live_weather_station_partial_translation);
         if ($migrate) {
             self::verify_option_string('live_weather_station_netatmo_refresh_token', (get_option('live_weather_station_netatmo_account') ? get_option('live_weather_station_netatmo_account')[0] : self::$live_weather_station_netatmo_refresh_token));
             self::verify_option_string('live_weather_station_netatmo_access_token', (get_option('live_weather_station_netatmo_account') ? get_option('live_weather_station_netatmo_account')[1] : self::$live_weather_station_netatmo_access_token));

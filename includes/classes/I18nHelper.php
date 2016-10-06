@@ -3,6 +3,8 @@
 namespace WeatherStation\System\I18N;
 
 use WeatherStation\System\Help\InlineHelp;
+use WeatherStation\System\Environment\Manager as EnvManager;
+use WeatherStation\System\Logs\Logger;
 
 /**
  * This class add i18n management.
@@ -12,16 +14,21 @@ use WeatherStation\System\Help\InlineHelp;
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */
+
 class Handling {
 
+    private $locale;
     private $locale_name;
     private $locale_native_name;
+    private $locale_path;
     private $percent_translated;
     private $count_translated;
     private $translation_exists;
-    private $translation_loaded;
+    private $last_modified;
     private $percent_min = 96;
     private $cpt;
+
+    private $service_name = 'I18n Helper';
 
     /**
      * Class constructor
@@ -30,8 +37,11 @@ class Handling {
      */
     public function __construct() {
         $this->locale = get_locale();
-        if ('en_US' === $this->locale ) {
-            return;
+        if ('en_US' === $this->locale) {
+            return false;
+        }
+        else {
+            $this->translation_details();
         }
     }
 
@@ -46,9 +56,119 @@ class Handling {
            return false;
        }
        else {
-           $this->translation_details();
            return ($this->percent_translated < $this->percent_min);
        }
+    }
+
+    /**
+     * Get the url for the mo file.
+     *
+     * @param string $branch The branch in which retrieve the file. Accepted values: "stable" or "dev".
+     * @return bool|string The URL if it has a translation, false otherwise.
+     * @since 3.0.0
+     */
+    public function get_mo_file_url($branch = 'stable') {
+        if ('en_US' === $this->locale) {
+            return false;
+        }
+        if (!$this->locale_path) {
+            return false;
+        }
+        return 'https://translate.wordpress.org/projects/wp-plugins/live-weather-station/' . $branch . '/' . $this->locale_path . '/default/export-translations?format=mo';
+    }
+
+    /**
+     * Get the mo file for current translation.
+     *
+     * @return string The full filename for current mo file.
+     * @since 3.0.0
+     */
+    public static function get_current_mo_file() {
+        $branch = 'stable';
+        if (!EnvManager::is_plugin_in_production_mode()) {
+            $branch = 'dev';
+        }
+        return LWS_LANGUAGES_DIR . LWS_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . get_locale() . '.mo';
+    }
+
+    /**
+     * Delete all the mo files of the current branch.
+     *
+     * @return boolean True if if has been downloaded, false otherwise.
+     * @since 3.0.0
+     */
+    public function delete_mo_files() {
+        $branch = 'stable';
+        if (!EnvManager::is_plugin_in_production_mode()) {
+            $branch = 'dev';
+        }
+        $target = LWS_LANGUAGES_DIR . LWS_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-??_??.mo';
+        $result = array_map('unlink', glob($target));
+        $ok = true;
+        if (count($result) > 0) {
+            foreach ($result as $r) {
+                if (!$r) {
+                    $ok = false;
+                    break;
+                }
+            }
+        }
+        if (!$ok) {
+            Logger::error($this->service_name, null, null, null, null, null, 1, 'Unable to delete old translation files in /languages.');
+        }
+        delete_transient('lws_i18n_last_modified_' . $this->locale);
+        return $ok;
+    }
+
+    /**
+     * Download the mo file and copy it in /languages dir.
+     *
+     * @param string $target The target directory in which to put the file.
+     * @param string $branch The branch in which retrieve the file. Accepted values: "stable" or "dev".
+     * @return boolean True if if has been downloaded, false otherwise.
+     * @since 3.0.0
+     */
+    public function download_mo_file($target, $branch = 'stable') {
+        if ($url = $this->get_mo_file_url($branch)) {
+            $file = download_url($url);
+            $target .= LWS_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . $this->locale . '.mo';
+            if (is_wp_error($file)) {
+                @unlink($file);
+                Logger::error($this->service_name, null, null, null, null, null, 300, 'Unable to download ' . $this->locale_name . ' translation file from WordPress.org. Error was: ' . $file->get_error_messages());
+                return false;
+            }
+            else {
+                if (!copy($file, $target)) {
+                    Logger::error($this->service_name, null, null, null, null, null, 1, 'Unable to copy ' . $this->locale_name . ' translation file to /languages directory.');
+                    @unlink($file);
+                    return false;
+                }
+                else {
+                    Logger::notice($this->service_name, null, null, null, null, null, 0, $this->locale_name . ' translation file successfully updated from ' . $branch . ' branch.');
+                    @unlink($file);
+                    return true;
+                }
+            }
+        }
+    }
+
+    /**
+     * Verify if a new translation is ready to download and if so, do it.
+     *
+     * @since 3.0.0
+     */
+    public function cron_run() {
+        if ($this->last_modified && (bool)get_option('live_weather_station_partial_translation')) {
+            if ($this->last_modified != get_transient('lws_i18n_last_modified_' . $this->locale)) {
+                $branch = 'stable';
+                if (!EnvManager::is_plugin_in_production_mode()) {
+                    $branch = 'dev';
+                }
+                if ($this->download_mo_file(LWS_LANGUAGES_DIR, $branch)) {
+                    set_transient('lws_i18n_last_modified_' . $this->locale, $this->last_modified);
+                }
+            }
+        }
     }
 
     /**
@@ -58,23 +178,24 @@ class Handling {
      * @since 3.0.0
      */
     public function get_message() {
-        $this->translation_details();
         $message = false;
         $locale = $this->locale_name;
-        if ($this->translation_exists && $this->translation_loaded && $this->percent_translated < $this->percent_min) {
-            $message = __('As you can see, there is a partial translation of %2$s in %1$s. This translation is currently %3$d%% complete. We need your help to make it complete and to fix any errors. Please %4$s on how you can help to complete this translation in %1$s!', 'live-weather-station');
-            $locale = (strpos($message, 'you can see, there is a partial translation') > 0 ? $this->locale_name : $this->locale_native_name);
-        }
-        if (!$this->translation_loaded && $this->translation_exists) {
-            $message = __('You\'re using WordPress in %1$s. While %2$s has been translated to %1$s for %3$d%%, it\'s not been shipped with the plugin yet. But, you can help! Please %4$s on how you can participate to this translation in %1$s!', 'live-weather-station');
-            $locale = (strpos($message, 'But, you can help!') > 0 ? $this->locale_name : $this->locale_native_name);
+        if ($this->translation_exists && $this->percent_translated < $this->percent_min) {
+            if ((bool)get_option('live_weather_station_partial_translation')) {
+                $s = __('%2$s is using a partial translation in %1$s.', 'live-weather-station');
+            }
+            else {
+                $s = __('There is a partial translation of %2$s in %1$s.', 'live-weather-station');
+            }
+            $message = $s . ' ' . __('This translation is currently %3$d%% complete. We need your help to make it complete and to fix any errors. Please %4$s on how you can help to complete this translation!', 'live-weather-station');
+            $locale = (strpos($message, 'We need your help to make it complete') > 0 ? $this->locale_name : $this->locale_native_name);
         }
         if (!$this->translation_exists || $this->percent_translated == 0) {
             $message = __('You\'re using WordPress in a language which is not supported yet by %2$s. For now, this plugin is already translated in %5$d languages and we\'d love to add %1$s to this list. Please %4$s on how you can help to achieve this goal!', 'live-weather-station');
             $locale = (strpos($message, 'you can help to achieve this goal!') > 0 ? $this->locale_name : $this->locale_native_name);
         }
         $help = InlineHelp::get(12, '%s', 'see details');
-        if ((strpos(LWS_VERSION, 'dev') > 0) || (strpos(LWS_VERSION, 'rc') > 0)) {
+        if (!EnvManager::is_plugin_in_production_mode()) {
             $help = InlineHelp::get(-10, '%s', 'see here');
         }
         return sprintf($message, $locale, LWS_FULL_NAME, $this->percent_translated, $help, $this->count_translated);
@@ -88,7 +209,6 @@ class Handling {
     private function translation_details() {
         $set = $this->find_or_initialize_translation_details();
         $this->translation_exists = !is_null($set);
-        $this->translation_loaded = is_textdomain_loaded(LWS_PLUGIN_TEXT_DOMAIN);
         $this->parse_translation_set($set);
     }
 
@@ -103,8 +223,8 @@ class Handling {
         $this->count_translated = get_transient('lws_i18n_count');
         if (!$set || !$this->count_translated) {
             $set = $this->retrieve_translation_details();
-            set_transient('lws_i18n_' . $this->locale, $set, DAY_IN_SECONDS / 4);
-            set_transient('lws_i18n_count', $this->cpt, DAY_IN_SECONDS / 4);
+            set_transient('lws_i18n_' . $this->locale, $set, 2 * HOUR_IN_SECONDS);
+            set_transient('lws_i18n_count', $this->cpt, 2 * HOUR_IN_SECONDS);
         }
         return $set;
     }
@@ -117,7 +237,7 @@ class Handling {
      */
     private function retrieve_translation_details() {
         $branch = '/stable';
-        if ((strpos(LWS_VERSION, 'dev') > 0) || (strpos(LWS_VERSION, 'rc') > 0)) {
+        if (!EnvManager::is_plugin_in_production_mode()) {
             $branch = '/dev';
         }
         $api_url = 'https://translate.wordpress.org/api/projects/wp-plugins/' . LWS_PLUGIN_SLUG . $branch;
@@ -161,11 +281,15 @@ class Handling {
                 $this->locale_name = $set->name;
             }
             $this->percent_translated = $set->percent_translated;
+            $this->locale_path = $set->locale;
+            $this->last_modified = $set->last_modified;
         }
         else {
             $this->locale_native_name = $translations[$this->locale]['native_name'];
             $this->locale_name = $translations[$this->locale]['language'];
             $this->percent_translated = '';
+            $this->locale_path = false;
+            $this->last_modified = false;
         }
     }
 }

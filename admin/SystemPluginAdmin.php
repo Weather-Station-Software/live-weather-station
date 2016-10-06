@@ -26,6 +26,7 @@ use WeatherStation\SDK\OpenWeatherMap\Plugin\Pusher as OWM_Pusher;
 use WeatherStation\SDK\PWSWeather\Plugin\Pusher as PWS_Pusher;
 use WeatherStation\SDK\MetOffice\Plugin\Pusher as WOW_Pusher;
 use WeatherStation\SDK\WeatherUnderground\Plugin\Pusher as WUG_Pusher;
+use WeatherStation\System\I18N\Handling as Intl;
 
 
 
@@ -539,6 +540,7 @@ class Admin {
             }
         }
         if ($section == 'system') {
+            $save_auto = get_option('live_weather_station_auto_manage_netatmo');
             if (array_key_exists('submit', $_POST)) {
                 update_option('live_weather_station_logger_level', (integer)$_POST['lws_system_log_level']);
                 update_option('live_weather_station_logger_rotate', (integer)$_POST['lws_system_log_rotate']);
@@ -551,7 +553,7 @@ class Admin {
                 update_option('live_weather_station_auto_manage_netatmo', (array_key_exists('lws_system_auto_manage_netatmo', $_POST) ? 1 : 0));
                 update_option('live_weather_station_time_shift_threshold', (integer)$_POST['lws_system_time_shift_threshold']);
                 update_option('live_weather_station_show_technical', (array_key_exists('lws_system_show_technical', $_POST) ? 1 : 0));
-                if (get_option('live_weather_station_auto_manage_netatmo')) {
+                if (!$save_auto && get_option('live_weather_station_auto_manage_netatmo')) {
                     $this->get_netatmo(true);
                 }
             }
@@ -869,6 +871,8 @@ class Admin {
                     case 'switch-extended': $this->switch_extended(); break;
                     case 'switch-metric': $this->switch_metric(); break;
                     case 'switch-imperial': $this->switch_imperial(); break;
+                    case 'switch-full-translation': $this->switch_full_translation(); break;
+                    case 'switch-partial-translation': $this->switch_partial_translation(); break;
                     case 'reset-dashboard': $this->reset_dashboard_meta(); break;
                     case 'reset-services': $this->reset_services_meta(); break;
                     case 'reset-stations': $this->reset_stations_meta(); break;
@@ -969,6 +973,32 @@ class Admin {
         self::switch_to_imperial();
         add_settings_error('lws_nonce_success', 200, sprintf(__('%s now displays its data in the imperial system.', 'live-weather-station'), LWS_PLUGIN_NAME), 'updated');
         Logger::info($this->service, null, null, null, null, null, 0, 'Weather Station now displays its data in the imperial system.');
+    }
+
+    /**
+     * Switch to full translation only.
+     *
+     * @since 3.0.0
+     */
+    private function switch_full_translation() {
+        update_option('live_weather_station_partial_translation', 0);
+        $i18n = new Intl();
+        $i18n->delete_mo_files();
+        add_settings_error('lws_nonce_success', 200, sprintf(__('%s no longer uses partial translations.', 'live-weather-station'), LWS_PLUGIN_NAME), 'updated');
+        Logger::info($this->service, null, null, null, null, null, 0, 'Weather Station no longer uses partial translations.');
+    }
+
+    /**
+     * Switch to partial translation.
+     *
+     * @since 3.0.0
+     */
+    private function switch_partial_translation() {
+        update_option('live_weather_station_partial_translation', 1);
+        $i18n = new Intl();
+        $i18n->cron_run();
+        add_settings_error('lws_nonce_success', 200, sprintf(__('%s now uses a partial translation.', 'live-weather-station'), LWS_PLUGIN_NAME), 'updated');
+        Logger::info($this->service, null, null, null, null, null, 0, 'Weather Station now uses a partial translation.');
     }
 
     /**

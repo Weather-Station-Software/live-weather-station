@@ -7,6 +7,10 @@
  */
 
 use WeatherStation\System\Help\InlineHelp;
+use WeatherStation\System\I18N\Handling as i18n;
+
+$i18n = new i18n();
+
 
 ?>
 
@@ -31,6 +35,23 @@ use WeatherStation\System\Help\InlineHelp;
         <p><a class="button button-primary" href="<?php echo esc_url(get_admin_page_url('lws-settings', 'switch-metric')); ?>"><?php echo __('Display Data in Metric Units', 'live-weather-station');?></a></p>
     <?php } ?>
 <?php } ?>
+
+<?php if ($i18n->is_translatable()) { ?>
+    <p>&nbsp;</p>
+    <?php if ((bool)get_option('live_weather_station_partial_translation')) { ?>
+        <p>
+            <?php echo sprintf(__('Actually, %s use a partial translation of your language. If you do not like half finished things, click the button below:', 'live-weather-station'), LWS_PLUGIN_NAME);?>
+        </p>
+        <p><a class="button button-primary" href="<?php echo esc_url(get_admin_page_url('lws-settings', 'switch-full-translation')); ?>"><?php echo __('Use Only Full Translation', 'live-weather-station');?></a></p>
+    <?php } else { ?>
+        <p>
+            <?php echo sprintf(__('Actually, %s is not displayed in your language. But, there is a partial translation that can be used!', 'live-weather-station'), LWS_PLUGIN_NAME);?>
+        </p>
+        <p><a class="button button-primary" href="<?php echo esc_url(get_admin_page_url('lws-settings', 'switch-partial-translation')); ?>"><?php echo __('Use Partial Translation', 'live-weather-station');?></a></p>
+
+    <?php } ?>
+<?php } ?>
+
 <p>&nbsp;</p>
 <p>&nbsp;</p>
 <p><?php echo InlineHelp::get(0, __('You can find help on the general settings on %s.', 'live-weather-station'), __('this page', 'live-weather-station'));?></p>
