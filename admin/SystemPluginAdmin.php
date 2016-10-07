@@ -232,7 +232,7 @@ class Admin {
         register_setting('lws_display', 'lws_display_moonicons');
         add_settings_field('lws_display_minmax', __('Gauges boundaries', 'live-weather-station'),
             array($this, 'lws_display_minmax_callback'), 'lws_display', 'lws_display_section',
-            array(sprintf(__('By default, min/max boundaries in controls are fixed. I you check this, %s will try to adapt it to the amplitude of the measures.', 'live-weather-station'), LWS_PLUGIN_NAME)));
+            array(sprintf(__('By default, min/max boundaries in controls are fixed. If you check this, %s will try to adapt it to the amplitude of the measures.', 'live-weather-station'), LWS_PLUGIN_NAME)));
         register_setting('lws_display', 'lws_display_minmax');
         add_settings_field('lws_display_obsolescence', __('Data obsolescence', 'live-weather-station'),
             array($this, 'lws_display_obsolescence_callback'), 'lws_display', 'lws_display_section',

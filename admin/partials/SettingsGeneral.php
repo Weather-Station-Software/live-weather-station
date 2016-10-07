@@ -40,15 +40,16 @@ $i18n = new i18n();
     <p>&nbsp;</p>
     <?php if ((bool)get_option('live_weather_station_partial_translation')) { ?>
         <p>
-            <?php echo sprintf(__('Actually, %s use a partial translation of your language. If you do not like half finished things, click the button below:', 'live-weather-station'), LWS_PLUGIN_NAME);?>
+            <?php echo sprintf(__('Currently, %s use a partial translation of your language. If you do not like half finished things, click the button below:', 'live-weather-station'), LWS_PLUGIN_NAME);?>
         </p>
-        <p><a class="button button-primary" href="<?php echo esc_url(get_admin_page_url('lws-settings', 'switch-full-translation')); ?>"><?php echo __('Use Only Full Translation', 'live-weather-station');?></a></p>
+        <p><a id="partial-translation" class="button button-primary" href="<?php echo esc_url(get_admin_page_url('lws-settings', 'switch-full-translation')); ?>"><?php echo __('Use Only Full Translation', 'live-weather-station');?></a>
+            <span id="span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Dectivating partial translation, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
     <?php } else { ?>
         <p>
-            <?php echo sprintf(__('Actually, %s is not displayed in your language. But, there is a partial translation that can be used!', 'live-weather-station'), LWS_PLUGIN_NAME);?>
+            <?php echo sprintf(__('Currently, %s is not displayed in your language. But, there is a partial translation that can be used!', 'live-weather-station'), LWS_PLUGIN_NAME);?>
         </p>
-        <p><a class="button button-primary" href="<?php echo esc_url(get_admin_page_url('lws-settings', 'switch-partial-translation')); ?>"><?php echo __('Use Partial Translation', 'live-weather-station');?></a></p>
-
+        <p><a id="partial-translation" class="button button-primary" href="<?php echo esc_url(get_admin_page_url('lws-settings', 'switch-partial-translation')); ?>"><?php echo __('Use Partial Translation', 'live-weather-station');?></a>
+            <span id="span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Activating partial translation, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
     <?php } ?>
 <?php } ?>
 
