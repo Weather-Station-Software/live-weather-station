@@ -28,7 +28,7 @@ $welcome = true;
                 <br/>&nbsp;<br/>&nbsp;<br/>
             </div>
             <div class="welcome-panel-column" style="padding-left: 23px;margin-right: -50px;">
-                <h3><?php _e('Next Steps', 'live-weather-station'); ?></h3>
+                <h3><?php _e('Next steps', 'live-weather-station'); ?></h3>
                 <ul>
                     <li><i class="fa fa-lg fa-fw fa-plus" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<a href="#" class="add-trigger"><?php echo __('Add a new station', 'live-weather-station');?></a></li>
                     <li><i class="fa fa-lg fa-fw fa-list-ul" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<a href="<?php echo get_admin_page_url('lws-stations'); ?>"><?php echo __('Manage stations', 'live-weather-station');?></a></li>

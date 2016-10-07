@@ -57,4 +57,10 @@ jQuery(document).ready( function($) {
         $('#span-sync').show();
     });
 
+    $('#partial-translation').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#span-sync').show();
+    });
+
 } );

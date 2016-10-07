@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Live Weather Station\n"
-"POT-Creation-Date: 2016-10-04 22:22+0200\n"
+"POT-Creation-Date: 2016-10-07 09:09+0200\n"
 "PO-Revision-Date: 2015-11-07 19:46+0100\n"
 "Last-Translator: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
 "Language-Team: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
@@ -20,473 +20,483 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: admin/SystemPluginAdmin.php:126 admin/SystemPluginAdmin.php:131
-#: admin/SystemPluginAdmin.php:136 admin/SystemPluginAdmin.php:141
+#: admin/SystemPluginAdmin.php:127 admin/SystemPluginAdmin.php:132
+#: admin/SystemPluginAdmin.php:137 admin/SystemPluginAdmin.php:142
 #, php-format
 msgid "You can find help on these settings on %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:126 admin/SystemPluginAdmin.php:131
-#: admin/SystemPluginAdmin.php:136 admin/SystemPluginAdmin.php:141
-#: admin/SystemPluginAdmin.php:146 admin/partials/DetailedRequirements.php:62
-#: admin/partials/SettingsGeneral.php:36
+#: admin/SystemPluginAdmin.php:127 admin/SystemPluginAdmin.php:132
+#: admin/SystemPluginAdmin.php:137 admin/SystemPluginAdmin.php:142
+#: admin/SystemPluginAdmin.php:147 admin/partials/DetailedRequirements.php:62
+#: admin/partials/SettingsGeneral.php:57
 msgid "this page"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:127 includes/system/InlineHelp.php:209
+#: admin/SystemPluginAdmin.php:128 includes/system/InlineHelp.php:209
 #, php-format
 msgid ""
 "In order to work properly, %s has to be connected to some services. You can "
 "manage here these connections."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:132 includes/system/InlineHelp.php:210
+#: admin/SystemPluginAdmin.php:133 includes/system/InlineHelp.php:210
 msgid ""
 "You can set here all the units and display options for controls and widgets."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:137 includes/system/InlineHelp.php:211
+#: admin/SystemPluginAdmin.php:138 includes/system/InlineHelp.php:211
 msgid ""
 "You can set here all the thresholds which define limits and alarms in some "
 "controls (LCD panel, gauges, meters, etc.)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:142 includes/system/InlineHelp.php:212
+#: admin/SystemPluginAdmin.php:143 includes/system/InlineHelp.php:212
 #, php-format
 msgid ""
 "You can set here all the parameters related to the operation of the %s "
 "subsystems."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:146
+#: admin/SystemPluginAdmin.php:147
 #, php-format
 msgid "You can find help on these maintenance operations on %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:147 includes/system/InlineHelp.php:213
+#: admin/SystemPluginAdmin.php:148 includes/system/InlineHelp.php:213
 msgid ""
 "Here, you can make some maintenance operations that are not directly "
 "accessible elsewhere."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:156
+#: admin/SystemPluginAdmin.php:157
 msgid "Cache mechanism"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:160
+#: admin/SystemPluginAdmin.php:161
 msgid "Logging policy"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:162
+#: admin/SystemPluginAdmin.php:163
 msgid "Minimum level of severity that will be recorded in the events log."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:166
+#: admin/SystemPluginAdmin.php:167
 msgid "Maximum number and maximum age of events stored in the events log."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:168
+#: admin/SystemPluginAdmin.php:169
 msgid "Automatic management"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:172
+#: admin/SystemPluginAdmin.php:173
 msgid "Servers time shift"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:174
+#: admin/SystemPluginAdmin.php:175
 msgid ""
 "Maximum allowed servers time shift before warning (useful for Netatmo "
 "accuracy)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:176
+#: admin/SystemPluginAdmin.php:177
 msgid "Stations views"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:178
+#: admin/SystemPluginAdmin.php:179
 msgid ""
 "If you check this, stations views will display detailed technical "
 "information for each module."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:180
+#: admin/SystemPluginAdmin.php:181
 msgid "Links"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:192
+#: admin/SystemPluginAdmin.php:193
 msgid "Temperature unit"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:194
+#: admin/SystemPluginAdmin.php:195
 msgid "Unit of measurement in which temperatures are expressed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:196
+#: admin/SystemPluginAdmin.php:197
 msgid "Pressure unit"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:198
+#: admin/SystemPluginAdmin.php:199
 msgid "Unit of measurement in which pressures are expressed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:200
+#: admin/SystemPluginAdmin.php:201
 msgid "Wind speed unit"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:202
+#: admin/SystemPluginAdmin.php:203
 msgid "Unit of measurement in which wind speeds are expressed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:204
+#: admin/SystemPluginAdmin.php:205
 msgid "Carbon monoxide unit"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:206
+#: admin/SystemPluginAdmin.php:207
 msgid ""
 "Unit of measurement in which the concentrations of carbon monoxide are "
 "expressed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:208
+#: admin/SystemPluginAdmin.php:209
 msgid "Distances"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:210
+#: admin/SystemPluginAdmin.php:211
 msgid "Units system in which distances are expressed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:212
+#: admin/SystemPluginAdmin.php:213
 msgid "Altitudes"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:214
+#: admin/SystemPluginAdmin.php:215
 msgid "Units system in which altitudes are expressed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:216
+#: admin/SystemPluginAdmin.php:217
 msgid "Rain & snow"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:218
+#: admin/SystemPluginAdmin.php:219
 msgid "Units system in which rain and snow quantities are expressed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:220
+#: admin/SystemPluginAdmin.php:221
 msgid "Computed values"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:222
+#: admin/SystemPluginAdmin.php:223
 msgid ""
 "Check this if you want the controls and widgets display the computed values "
 "in addition to the measured data."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:224
+#: admin/SystemPluginAdmin.php:225
 msgid "Wind icon"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:226
+#: admin/SystemPluginAdmin.php:227
 msgid "Semantics of the icon representing the wind direction in widgets."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:228
+#: admin/SystemPluginAdmin.php:229
 msgid "Moon icon set"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:230
+#: admin/SystemPluginAdmin.php:231
 msgid "Type of icons to illustrate moon age and phase in widgets."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:232
+#: admin/SystemPluginAdmin.php:233
 msgid "Gauges boundaries"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:234
+#: admin/SystemPluginAdmin.php:235
 #, php-format
 msgid ""
 "By default, min/max boundaries in controls are fixed. I you check this, %s "
 "will try to adapt it to the amplitude of the measures."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:236
+#: admin/SystemPluginAdmin.php:237
 msgid "Data obsolescence"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:238
+#: admin/SystemPluginAdmin.php:239
 msgid ""
 "Duration beyond which a data is considered stale (and will therefore "
 "neither shown nor used in computations)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:280
+#: admin/SystemPluginAdmin.php:281
 msgid "events"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:286
+#: admin/SystemPluginAdmin.php:287
 #: includes/traits/DataDateTimeConversion.php:249
 msgid "days"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:298 includes/system/InlineHelp.php:265
+#: admin/SystemPluginAdmin.php:299 includes/system/InlineHelp.php:265
 msgid "Netatmo"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:301
+#: admin/SystemPluginAdmin.php:302
 #, php-format
 msgid ""
 "Check this to let %s manage Netatmo stations for you (add, remove, etc.)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:318
+#: admin/SystemPluginAdmin.php:319
 msgid "Cache backend features"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:321
+#: admin/SystemPluginAdmin.php:322
 #, php-format
 msgid ""
 "Check this to activate the cache manager of %s for backend rendering (admin "
 "panel, dashboard, station view, etc.)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:322
+#: admin/SystemPluginAdmin.php:323
 msgid "Do not cache generated text files"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:325
+#: admin/SystemPluginAdmin.php:326
 msgid ""
 "Check this to prevent caching of the generated text files. Required on some "
 "server configurations, particularly when using Varnish."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:336
+#: admin/SystemPluginAdmin.php:337
 msgid "seconds"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:347
+#: admin/SystemPluginAdmin.php:348
 msgid "Open internal links in a new window"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:350
+#: admin/SystemPluginAdmin.php:351
 msgid ""
 "Check this to have all auxiliary internal links (like events, etc.) opened "
 "in a new window."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:351
+#: admin/SystemPluginAdmin.php:352
 msgid "Open external links in a new window"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:354
+#: admin/SystemPluginAdmin.php:355
 msgid ""
 "Check this to have all external links (like help, etc.) opened in a new "
 "window."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:365
+#: admin/SystemPluginAdmin.php:366
 msgid "Display technical information"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:445
+#: admin/SystemPluginAdmin.php:446
 msgid "Display it in controls and widgets"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:475
+#: admin/SystemPluginAdmin.php:476
 msgid "Adjusted whenever possible"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:627
+#: admin/SystemPluginAdmin.php:629
 msgid "General settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:628
+#: admin/SystemPluginAdmin.php:630
 msgid "Services settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:629
+#: admin/SystemPluginAdmin.php:631
 msgid "Display settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:630
+#: admin/SystemPluginAdmin.php:632
 msgid "Thresholds settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:631
+#: admin/SystemPluginAdmin.php:633
 msgid "System settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:632
+#: admin/SystemPluginAdmin.php:634
 msgid "Unknown settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:637
+#: admin/SystemPluginAdmin.php:639
 #, php-format
 msgid "%s have been correctly updated."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:643
+#: admin/SystemPluginAdmin.php:645
 #, php-format
 msgid "%s have not been updated. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:651
+#: admin/SystemPluginAdmin.php:653
 #, php-format
 msgid "%s have been correctly reset to defaults."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:657
+#: admin/SystemPluginAdmin.php:659
 #, php-format
 msgid "%s have not been reset to defaults. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:669
+#: admin/SystemPluginAdmin.php:671
 #, php-format
 msgid "%s has not been updated. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:696 admin/SystemPluginAdmin.php:697
+#: admin/SystemPluginAdmin.php:698 admin/SystemPluginAdmin.php:699
 msgid "Dashboard"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:699 admin/partials/Settings.php:17
+#: admin/SystemPluginAdmin.php:701 admin/partials/Settings.php:17
 msgid "Settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:701 admin/partials/ListTableStations.php:16
+#: admin/SystemPluginAdmin.php:703 admin/partials/ListTableStations.php:16
 msgid "Stations"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:703 admin/SystemPluginAdmin.php:712
+#: admin/SystemPluginAdmin.php:705 admin/SystemPluginAdmin.php:714
 #: admin/partials/DashboardSummary.php:36 admin/partials/ListTableLogs.php:16
 msgid "Events log"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:703 admin/SystemPluginAdmin.php:712
+#: admin/SystemPluginAdmin.php:705 admin/SystemPluginAdmin.php:714
 msgid "Events"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:710 admin/SystemPluginAdmin.php:711
+#: admin/SystemPluginAdmin.php:712 admin/SystemPluginAdmin.php:713
 #: admin/partials/Requirements.php:10
 msgid "Requirements"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:936
+#: admin/SystemPluginAdmin.php:940
 #, php-format
 msgid "%s now runs in simplified mode."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:948
+#: admin/SystemPluginAdmin.php:952
 #, php-format
 msgid "%s now runs in extended mode."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:959
+#: admin/SystemPluginAdmin.php:963
 #, php-format
 msgid "%s now displays its data in the metric system."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:970
+#: admin/SystemPluginAdmin.php:974
 #, php-format
 msgid "%s now displays its data in the imperial system."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:982
+#: admin/SystemPluginAdmin.php:987
+#, php-format
+msgid "%s no longer uses partial translations."
+msgstr ""
+
+#: admin/SystemPluginAdmin.php:1000
+#, php-format
+msgid "%s now uses a partial translation."
+msgstr ""
+
+#: admin/SystemPluginAdmin.php:1012
 msgid "Dashboard view has been reset to defaults."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:993
+#: admin/SystemPluginAdmin.php:1023
 msgid "Services view has been reset to defaults."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1004
+#: admin/SystemPluginAdmin.php:1034
 msgid "Stations views have been reset to defaults."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1015
+#: admin/SystemPluginAdmin.php:1045
 msgid "All stations data have been purged."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1027
+#: admin/SystemPluginAdmin.php:1057
 msgid "All stations have been resynchronized."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1074
+#: admin/SystemPluginAdmin.php:1104
 msgid "Unkonwn service."
-msgstr ""
-
-#: admin/SystemPluginAdmin.php:1082
-#, php-format
-msgid "%s is now connected to %s."
-msgstr ""
-
-#: admin/SystemPluginAdmin.php:1088
-#, php-format
-msgid "Unable to connect %s to %s. Please try again."
-msgstr ""
-
-#: admin/SystemPluginAdmin.php:1090
-#, php-format
-msgid "The error message is \"%s\"."
-msgstr ""
-
-#: admin/SystemPluginAdmin.php:1106
-#, php-format
-msgid "%s is now disconnected from %s."
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:1112
 #, php-format
+msgid "%s is now connected to %s."
+msgstr ""
+
+#: admin/SystemPluginAdmin.php:1118
+#, php-format
+msgid "Unable to connect %s to %s. Please try again."
+msgstr ""
+
+#: admin/SystemPluginAdmin.php:1120
+#, php-format
+msgid "The error message is \"%s\"."
+msgstr ""
+
+#: admin/SystemPluginAdmin.php:1136
+#, php-format
+msgid "%s is now disconnected from %s."
+msgstr ""
+
+#: admin/SystemPluginAdmin.php:1142
+#, php-format
 msgid "Unable to disconnect %s from %s. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1121
+#: admin/SystemPluginAdmin.php:1151
 #, php-format
 msgid "Connection to %s has not been updated. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1187
+#: admin/SystemPluginAdmin.php:1217
 #, php-format
 msgid "The station %s has been correctly removed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1193 admin/SystemPluginAdmin.php:1200
+#: admin/SystemPluginAdmin.php:1223 admin/SystemPluginAdmin.php:1230
 #, php-format
 msgid "Unable to remove the station %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1232 admin/SystemPluginAdmin.php:1392
+#: admin/SystemPluginAdmin.php:1262 admin/SystemPluginAdmin.php:1422
 #, php-format
 msgid "The station %s has been correctly added."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1239 admin/SystemPluginAdmin.php:1246
-#: admin/SystemPluginAdmin.php:1410 admin/SystemPluginAdmin.php:1427
+#: admin/SystemPluginAdmin.php:1269 admin/SystemPluginAdmin.php:1276
+#: admin/SystemPluginAdmin.php:1440 admin/SystemPluginAdmin.php:1457
 #, php-format
 msgid "Unable to add the station %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1388 includes/classes/StationHelper.php:94
+#: admin/SystemPluginAdmin.php:1418 includes/classes/StationHelper.php:94
 #, php-format
 msgid "The station %s has been correctly updated."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1404 admin/SystemPluginAdmin.php:1422
+#: admin/SystemPluginAdmin.php:1434 admin/SystemPluginAdmin.php:1452
 #: includes/classes/StationHelper.php:100
 #, php-format
 msgid "Unable to update the station %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1531
+#: admin/SystemPluginAdmin.php:1561
 #, php-format
 msgid ""
 "The services associated with the station %s have been correctly updated."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1538
+#: admin/SystemPluginAdmin.php:1568
 #, php-format
 msgid "Unable to update the services associated with the station %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1549 includes/classes/StationHelper.php:108
+#: admin/SystemPluginAdmin.php:1579 includes/classes/StationHelper.php:108
 msgid "Unable to perform this update."
 msgstr ""
 
@@ -698,16 +708,28 @@ msgstr ""
 msgid "%1$s can't run: %2$s"
 msgstr ""
 
-#: admin/partials/DashboardVersions.php:26 includes/system/Logger.php:392
+#: admin/partials/DashboardVersions.php:28 includes/system/Logger.php:392
 #: includes/system/Logger.php:432
 msgid "Warning"
 msgstr ""
 
-#: admin/partials/DashboardVersions.php:26
+#: admin/partials/DashboardVersions.php:28
 #, php-format
 msgid ""
 "This version of %s is not production-ready. It is a development preview. "
 "Use it at your own risk!"
+msgstr ""
+
+#: admin/partials/DashboardVersions.php:33 includes/system/Logger.php:398
+#: includes/system/Logger.php:438
+msgid "Information"
+msgstr ""
+
+#: admin/partials/DashboardVersions.php:33
+#, php-format
+msgid ""
+"This version of %s is a release candidate. Although ready for production, "
+"this version is not officially supported in production environments."
 msgstr ""
 
 #: admin/partials/DashboardWelcome.php:19
@@ -1224,57 +1246,79 @@ msgstr ""
 msgid "Maintenance"
 msgstr ""
 
-#: admin/partials/SettingsGeneral.php:16
+#: admin/partials/SettingsGeneral.php:20
 #, php-format
 msgid ""
 "%s runs currently in extended mode. If you want to make your life easier, "
 "switch to simplified mode."
 msgstr ""
 
-#: admin/partials/SettingsGeneral.php:17
+#: admin/partials/SettingsGeneral.php:21
 msgid ""
 "Note: if you choose the simplified mode, all settings (like display "
 "options, units, etc.) will be automatically set for you."
 msgstr ""
 
-#: admin/partials/SettingsGeneral.php:19
+#: admin/partials/SettingsGeneral.php:23
 msgid "Switch to Simplified Mode"
 msgstr ""
 
-#: admin/partials/SettingsGeneral.php:22
+#: admin/partials/SettingsGeneral.php:26
 #, php-format
 msgid ""
 "%s runs currently in simplified mode. If you want to access all the "
 "available settings, you must switch to extended mode."
 msgstr ""
 
-#: admin/partials/SettingsGeneral.php:23
+#: admin/partials/SettingsGeneral.php:27
 msgid "Switch to Extended Mode"
 msgstr ""
 
-#: admin/partials/SettingsGeneral.php:26
+#: admin/partials/SettingsGeneral.php:30
 #, php-format
 msgid ""
 "The data displayed by %s are in <em>metric units</em>. If that does not "
 "suit your needs, you can choose imperial units."
 msgstr ""
 
-#: admin/partials/SettingsGeneral.php:27
+#: admin/partials/SettingsGeneral.php:31
 msgid "Display Data in Imperial Units"
 msgstr ""
 
-#: admin/partials/SettingsGeneral.php:30
+#: admin/partials/SettingsGeneral.php:34
 #, php-format
 msgid ""
 "The data displayed by %s are in <em>imperial units</em>. If that does not "
 "suit your needs, you can choose metric units."
 msgstr ""
 
-#: admin/partials/SettingsGeneral.php:31
+#: admin/partials/SettingsGeneral.php:35
 msgid "Display Data in Metric Units"
 msgstr ""
 
-#: admin/partials/SettingsGeneral.php:36
+#: admin/partials/SettingsGeneral.php:43
+#, php-format
+msgid ""
+"Actually, %s use a partial translation of your language. If you do not like "
+"half finished things, click the button below:"
+msgstr ""
+
+#: admin/partials/SettingsGeneral.php:45
+msgid "Use Only Full Translation"
+msgstr ""
+
+#: admin/partials/SettingsGeneral.php:48
+#, php-format
+msgid ""
+"Actually, %s is not displayed in your language. But, there is a partial "
+"translation that can be used!"
+msgstr ""
+
+#: admin/partials/SettingsGeneral.php:50
+msgid "Use Partial Translation"
+msgstr ""
+
+#: admin/partials/SettingsGeneral.php:57
 #, php-format
 msgid "You can find help on the general settings on %s."
 msgstr ""
@@ -1720,24 +1764,25 @@ msgstr ""
 msgid "Licenses"
 msgstr ""
 
-#: includes/classes/I18nHelper.php:65
+#: includes/classes/I18nHelper.php:185
+#, php-format
+msgid "%2$s is using a partial translation in %1$s."
+msgstr ""
+
+#: includes/classes/I18nHelper.php:188
+#, php-format
+msgid "There is a partial translation of %2$s in %1$s."
+msgstr ""
+
+#: includes/classes/I18nHelper.php:190
 #, php-format
 msgid ""
-"As you can see, there is a partial translation of %2$s in %1$s. This "
-"translation is currently %3$d%% complete. We need your help to make it "
+"This translation is currently %3$d%% complete. We need your help to make it "
 "complete and to fix any errors. Please %4$s on how you can help to complete "
-"this translation in %1$s!"
+"this translation!"
 msgstr ""
 
-#: includes/classes/I18nHelper.php:69
-#, php-format
-msgid ""
-"You're using WordPress in %1$s. While %2$s has been translated to %1$s for "
-"%3$d%%, it's not been shipped with the plugin yet. But, you can help! "
-"Please %4$s on how you can participate to this translation in %1$s!"
-msgstr ""
-
-#: includes/classes/I18nHelper.php:73
+#: includes/classes/I18nHelper.php:194
 #, php-format
 msgid ""
 "You're using WordPress in a language which is not supported yet by %2$s. "
@@ -2322,10 +2367,6 @@ msgstr ""
 
 #: includes/system/Logger.php:395 includes/system/Logger.php:435
 msgid "Notice"
-msgstr ""
-
-#: includes/system/Logger.php:398 includes/system/Logger.php:438
-msgid "Information"
 msgstr ""
 
 #: includes/system/Logger.php:401 includes/system/Logger.php:441
@@ -4663,23 +4704,23 @@ msgid ""
 "shortly."
 msgstr ""
 
-#: includes/traits/SystemSchedulesHandling.php:184
+#: includes/traits/SystemSchedulesHandling.php:210
 msgid "Every three minutes"
 msgstr ""
 
-#: includes/traits/SystemSchedulesHandling.php:197
+#: includes/traits/SystemSchedulesHandling.php:223
 msgid "Every five minutes"
 msgstr ""
 
-#: includes/traits/SystemSchedulesHandling.php:210
+#: includes/traits/SystemSchedulesHandling.php:236
 msgid "Every ten minutes"
 msgstr ""
 
-#: includes/traits/SystemSchedulesHandling.php:223
+#: includes/traits/SystemSchedulesHandling.php:249
 msgid "Every fifteen minutes"
 msgstr ""
 
-#: includes/traits/SystemSchedulesHandling.php:236
+#: includes/traits/SystemSchedulesHandling.php:262
 msgid "Every thirty minutes"
 msgstr ""
 
