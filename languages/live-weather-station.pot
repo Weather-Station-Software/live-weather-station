@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Live Weather Station\n"
-"POT-Creation-Date: 2016-10-07 17:56+0200\n"
+"POT-Creation-Date: 2016-10-07 18:01+0200\n"
 "PO-Revision-Date: 2015-11-07 19:46+0100\n"
 "Last-Translator: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
 "Language-Team: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
@@ -1308,7 +1308,7 @@ msgid "Use Only Full Translation"
 msgstr ""
 
 #: admin/partials/SettingsGeneral.php:46
-msgid "Dectivating partial translation, please wait"
+msgid "Deactivating partial translation, please wait"
 msgstr ""
 
 #: admin/partials/SettingsGeneral.php:49
