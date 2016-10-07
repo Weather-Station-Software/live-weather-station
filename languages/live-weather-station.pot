@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Live Weather Station\n"
-"POT-Creation-Date: 2016-10-07 09:09+0200\n"
+"POT-Creation-Date: 2016-10-07 17:56+0200\n"
 "PO-Revision-Date: 2015-11-07 19:46+0100\n"
 "Last-Translator: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
 "Language-Team: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
@@ -29,7 +29,7 @@ msgstr ""
 #: admin/SystemPluginAdmin.php:127 admin/SystemPluginAdmin.php:132
 #: admin/SystemPluginAdmin.php:137 admin/SystemPluginAdmin.php:142
 #: admin/SystemPluginAdmin.php:147 admin/partials/DetailedRequirements.php:62
-#: admin/partials/SettingsGeneral.php:57
+#: admin/partials/SettingsGeneral.php:58
 msgid "this page"
 msgstr ""
 
@@ -204,7 +204,7 @@ msgstr ""
 #: admin/SystemPluginAdmin.php:235
 #, php-format
 msgid ""
-"By default, min/max boundaries in controls are fixed. I you check this, %s "
+"By default, min/max boundaries in controls are fixed. If you check this, %s "
 "will try to adapt it to the amplitude of the measures."
 msgstr ""
 
@@ -758,7 +758,7 @@ msgid "Services Settings"
 msgstr ""
 
 #: admin/partials/DashboardWelcome.php:31
-msgid "Next Steps"
+msgid "Next steps"
 msgstr ""
 
 #: admin/partials/DashboardWelcome.php:33
@@ -1299,26 +1299,34 @@ msgstr ""
 #: admin/partials/SettingsGeneral.php:43
 #, php-format
 msgid ""
-"Actually, %s use a partial translation of your language. If you do not like "
-"half finished things, click the button below:"
+"Currently, %s use a partial translation of your language. If you do not "
+"like half finished things, click the button below:"
 msgstr ""
 
 #: admin/partials/SettingsGeneral.php:45
 msgid "Use Only Full Translation"
 msgstr ""
 
-#: admin/partials/SettingsGeneral.php:48
+#: admin/partials/SettingsGeneral.php:46
+msgid "Dectivating partial translation, please wait"
+msgstr ""
+
+#: admin/partials/SettingsGeneral.php:49
 #, php-format
 msgid ""
-"Actually, %s is not displayed in your language. But, there is a partial "
+"Currently, %s is not displayed in your language. But, there is a partial "
 "translation that can be used!"
 msgstr ""
 
-#: admin/partials/SettingsGeneral.php:50
+#: admin/partials/SettingsGeneral.php:51
 msgid "Use Partial Translation"
 msgstr ""
 
-#: admin/partials/SettingsGeneral.php:57
+#: admin/partials/SettingsGeneral.php:52
+msgid "Activating partial translation, please wait"
+msgstr ""
+
+#: admin/partials/SettingsGeneral.php:58
 #, php-format
 msgid "You can find help on the general settings on %s."
 msgstr ""
