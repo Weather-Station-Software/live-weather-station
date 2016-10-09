@@ -637,13 +637,13 @@ class Admin {
             if ($action == 'update') {
                 if ($result = $this->save_options($section)) {
                     $message = __('%s have been correctly updated.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . $settings_string . '</em>');
+                    $message = sprintf($message, '<em>' . lcfirst($settings_string) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::info($this->service, null, null, null, null, null, 0, 'Settings for '. $section . ' category has been correctly updated by an admin.');
                 }
                 else {
                     $message = __('%s have not been updated. Please try again.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . $settings_string . '</em>');
+                    $message = sprintf($message, '<em>' . lcfirst($settings_string) . '</em>');
                     add_settings_error('lws_nonce_error', 200, $message, 'error');
                     Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to correctly update settings for '. $section . ' category.');
                 }
@@ -651,13 +651,13 @@ class Admin {
             if ($action == 'reset') {
                 if ($result = $this->reset_to_defaults($section)) {
                     $message = __('%s have been correctly reset to defaults.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . $settings_string . '</em>');
+                    $message = sprintf($message, '<em>' . lcfirst($settings_string) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::info($this->service, null, null, null, null, null, 0, 'Settings for '. $section . ' category has been correctly reset to defaults by an admin.');
                 }
                 else {
                     $message = __('%s have not been reset to defaults. Please try again.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . $settings_string . '</em>');
+                    $message = sprintf($message, '<em>' . lcfirst($settings_string) . '</em>');
                     add_settings_error('lws_nonce_error', 200, $message, 'error');
                     Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to correctly reset to defaults settings for '. $section . ' category.');
                 }
@@ -669,7 +669,7 @@ class Admin {
         }
         else {
             $message = __('%s has not been updated. Please try again.', 'live-weather-station');
-            $message = sprintf($message, '<em>' . $settings_string . '</em>');
+            $message = sprintf($message, '<em>' . lcfirst($settings_string) . '</em>');
             add_settings_error('lws_nonce_error', 403, $message, 'error');
             Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
             Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to securely update settings for '. $section . ' category.');

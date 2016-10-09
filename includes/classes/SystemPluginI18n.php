@@ -26,7 +26,7 @@ class I18n {
 	 * @access   public
 	 */
 	public function load_plugin_textdomain() {
-		load_plugin_textdomain($this->domain, false, dirname( dirname( plugin_basename( __FILE__ ) ) ) . '/languages/');
+		load_plugin_textdomain($this->domain, false, false);
 	}
 
 	/**
@@ -51,6 +51,10 @@ class I18n {
         if (LWS_PLUGIN_TEXT_DOMAIN == $domain && (bool)get_option('live_weather_station_partial_translation')) {
             remove_filter('override_load_textdomain', array($this, 'load_local_textdomain_mofile'));
             $file = Intl::get_current_mo_file();
+            if (!file_exists($file)) {
+                $i18n = new Intl();
+                $i18n->cron_run();
+            }
             return load_textdomain($domain, $file);
         }
         return $override;

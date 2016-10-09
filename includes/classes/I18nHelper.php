@@ -25,7 +25,7 @@ class Handling {
     private $count_translated;
     private $translation_exists;
     private $last_modified;
-    private $percent_min = 96;
+    private $percent_min = 100;
     private $cpt;
 
     private $service_name = 'I18n Helper';
@@ -38,10 +38,14 @@ class Handling {
     public function __construct() {
         $this->locale = get_locale();
         if ('en_US' === $this->locale) {
+            update_option('live_weather_station_partial_translation', 0);
             return false;
         }
         else {
             $this->translation_details();
+            if (!$this->is_translatable() && EnvManager::is_plugin_in_production_mode()) {
+                update_option('live_weather_station_partial_translation', 0);
+            }
         }
     }
 
@@ -130,6 +134,15 @@ class Handling {
      */
     public function download_mo_file($target, $branch = 'stable') {
         if ($url = $this->get_mo_file_url($branch)) {
+            if (!function_exists('download_url')) {
+                try {
+                    require_once ABSPATH . 'wp-admin/includes/file.php';
+                }
+                catch (\Exception $e) {
+                    Logger::alert($this->service_name, null, null, null, null, null, 666, 'Unable to activate download_url function.' . $this->locale_name . ' translation file can not be downloaded from WordPress.org.');
+                    return false;
+                }
+            }
             $file = download_url($url);
             $target .= LWS_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . $this->locale . '.mo';
             if (is_wp_error($file)) {
@@ -194,9 +207,9 @@ class Handling {
             $message = __('You\'re using WordPress in a language which is not supported yet by %2$s. For now, this plugin is already translated in %5$d languages and we\'d love to add %1$s to this list. Please %4$s on how you can help to achieve this goal!', 'live-weather-station');
             $locale = (strpos($message, 'you can help to achieve this goal!') > 0 ? $this->locale_name : $this->locale_native_name);
         }
-        $help = InlineHelp::get(12, '%s', 'see details');
+        $help = InlineHelp::get(12, '%s', __('see details', 'live-weather-station'));
         if (!EnvManager::is_plugin_in_production_mode()) {
-            $help = InlineHelp::get(-10, '%s', 'see here');
+            $help = InlineHelp::get(-10, '%s', __('see here', 'live-weather-station'));
         }
         return sprintf($message, $locale, LWS_FULL_NAME, $this->percent_translated, $help, $this->count_translated);
     }

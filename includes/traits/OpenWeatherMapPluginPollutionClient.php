@@ -136,8 +136,6 @@ trait PollutionClient {
      * @since 2.7.0
      */
     public function get_datas() {
-        $this->last_owm_warning = '';
-        $this->last_owm_error = '';
         if (get_option('live_weather_station_owm_apikey') == '') {
             $this->owm_datas = array ();
             return array ();
@@ -195,16 +193,13 @@ trait PollutionClient {
             catch(\Exception $ex)
             {
                 if (strpos($ex->getMessage(), 'Invalid API key') > -1) {
-                    $this->last_owm_error = __('Wrong OpenWeatherMap API key.', 'live-weather-station');
                     Logger::critical($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], $ex->getCode(), 'Wrong credentials. Please, verify your OpenWeatherMap API key.');
                     return array();
                 }
                 if (strpos($ex->getMessage(), 'JSON /') > -1) {
                     Logger::warning($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], $ex->getCode(), 'OpenWeatherMap servers has returned empty response. Retry will be done shortly.');
-                    $this->last_owm_warning = __('OpenWeatherMap servers have returned empty response for some weather stations. Retry will be done shortly.', 'live-weather-station');
                 }
                 else {
-                    $this->last_owm_warning = __('Temporary unable to contact OpenWeatherMap servers. Retry will be done shortly.', 'live-weather-station');
                     Logger::warning($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], $ex->getCode(), 'Temporary unable to contact OpenWeatherMap servers. Retry will be done shortly.');
                     return array();
                 }

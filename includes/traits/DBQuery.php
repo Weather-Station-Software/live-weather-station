@@ -928,6 +928,16 @@ trait Query {
     }
 
     /**
+     * Get a list of all OpenWeatherMap (true) stations.
+     *
+     * @return array An array containing the details of all stations.
+     * @since 3.0.0
+     */
+    protected function get_all_owm_true_stations() {
+        return $this->get_all_stations_by_type(2);
+    }
+
+    /**
      * Delete all OpenWeatherMap stations.
      *
      * @since 3.0.0
