@@ -52,12 +52,12 @@ class Logger {
     public function rotate() {
         $count = 0;
         if ($hour_done = $this->purge_table(self::live_weather_station_log_table() , 'timestamp', 24 * get_option('live_weather_station_logger_retention', 14))) {
-            $count .= $hour_done;
+            $count += $hour_done;
         }
         $limit = $this->get_log_count() - get_option('live_weather_station_logger_rotate', 20000);
         if ($limit > 0) {
             if ($max_done = $this->rotate_table(self::live_weather_station_log_table() , 'id', $limit)) {
-                $count .= $max_done;
+                $count += $max_done;
             }
         }
         if ($count > 0) {

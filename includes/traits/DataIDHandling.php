@@ -13,7 +13,8 @@ namespace WeatherStation\Data\ID;
 trait Handling {
 
     private static $owm_id ='xx';
-    private static $wug_id ='xy';
+    private static $owm_station_id ='xy';
+    private static $wug_id ='xz';
 
     private static $owm_current_id ='wm';
     private static $owm_pollution_id ='po';
@@ -29,6 +30,20 @@ trait Handling {
      */
     public static function get_unique_owm_id($guid) {
         $st = self::$owm_id.str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
+        $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
+        return strtolower($result);
+    }
+
+    /**
+     * Generate a unique id for a OWM true station.
+     *
+     * @param integer $guid The numeric id of the station
+     * @return string The unique id of the station.
+     *
+     * @since 3.0.0
+     */
+    public static function get_unique_owm_true_id($guid) {
+        $st = self::$owm_station_id.str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower($result);
     }
@@ -55,6 +70,17 @@ trait Handling {
      */
     public static function is_owm_station($station_id) {
         return (substr($station_id, 0, 2) == self::$owm_id);
+    }
+
+    /**
+     * Indicates if the id is the id of an OWM true station.
+     *
+     * @param integer $station_id The numeric id of the station.
+     * @return boolean True if it's an OWM station, false otherwise.
+     * @since 3.0.0
+     */
+    public static function is_owm_true_station($station_id) {
+        return (substr($station_id, 0, 2) == self::$owm_station_id);
     }
 
     /**

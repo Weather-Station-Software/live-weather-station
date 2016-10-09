@@ -55,6 +55,10 @@ spl_autoload_register(
         case 'WeatherStation\SDK\OpenWeatherMap\Plugin\PollutionInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherPollutionOpenWeatherMapInitiator.php'; break;
         case 'WeatherStation\SDK\OpenWeatherMap\Plugin\PollutionUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherPollutionOpenWeatherMapUpdater.php'; break;
         case 'WeatherStation\SDK\OpenWeatherMap\Plugin\Pusher': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentOpenWeatherMapPusher.php'; break;
+        case 'WeatherStation\SDK\OpenWeatherMap\Plugin\StationClient': $file = LWS_INCLUDES_DIR.'traits/OpenWeatherMapPluginStationClient.php'; break;
+        case 'WeatherStation\SDK\OpenWeatherMap\Plugin\StationCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentOpenWeatherMapStationCollector.php'; break;
+        case 'WeatherStation\SDK\OpenWeatherMap\Plugin\StationInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentOpenWeatherMapStationInitiator.php'; break;
+        case 'WeatherStation\SDK\OpenWeatherMap\Plugin\StationUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentOpenWeatherMapStationUpdater.php'; break;
         case 'WeatherStation\SDK\OpenWeatherMap\OWMApiClient': $file = LWS_INCLUDES_DIR.'libraries/owm/autoload.php'; break;
         case 'WeatherStation\SDK\PWSWeather\Plugin\Pusher': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentPWSWeatherPusher.php'; break;
         case 'WeatherStation\SDK\WeatherUnderground\Plugin\Pusher': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentWeatherUndergroundPusher.php'; break;

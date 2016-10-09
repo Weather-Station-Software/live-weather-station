@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Live Weather Station\n"
-"POT-Creation-Date: 2016-10-07 18:01+0200\n"
+"POT-Creation-Date: 2016-10-08 15:43+0200\n"
 "PO-Revision-Date: 2015-11-07 19:46+0100\n"
 "Last-Translator: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
 "Language-Team: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
@@ -1772,17 +1772,17 @@ msgstr ""
 msgid "Licenses"
 msgstr ""
 
-#: includes/classes/I18nHelper.php:185
+#: includes/classes/I18nHelper.php:192
 #, php-format
 msgid "%2$s is using a partial translation in %1$s."
 msgstr ""
 
-#: includes/classes/I18nHelper.php:188
+#: includes/classes/I18nHelper.php:195
 #, php-format
 msgid "There is a partial translation of %2$s in %1$s."
 msgstr ""
 
-#: includes/classes/I18nHelper.php:190
+#: includes/classes/I18nHelper.php:197
 #, php-format
 msgid ""
 "This translation is currently %3$d%% complete. We need your help to make it "
@@ -1790,13 +1790,21 @@ msgid ""
 "this translation!"
 msgstr ""
 
-#: includes/classes/I18nHelper.php:194
+#: includes/classes/I18nHelper.php:201
 #, php-format
 msgid ""
 "You're using WordPress in a language which is not supported yet by %2$s. "
 "For now, this plugin is already translated in %5$d languages and we'd love "
 "to add %1$s to this list. Please %4$s on how you can help to achieve this "
 "goal!"
+msgstr ""
+
+#: includes/classes/I18nHelper.php:204 includes/classes/ListTableLog.php:50
+msgid "see details"
+msgstr ""
+
+#: includes/classes/I18nHelper.php:206
+msgid "see here"
 msgstr ""
 
 #: includes/classes/ListTable.php:60
@@ -1858,10 +1866,6 @@ msgstr ""
 
 #: includes/classes/ListTable.php:477
 msgid "Select All"
-msgstr ""
-
-#: includes/classes/ListTableLog.php:50
-msgid "see details"
 msgstr ""
 
 #: includes/classes/ListTableLog.php:51
@@ -2175,7 +2179,7 @@ msgstr ""
 
 #: includes/system/InlineHelp.php:241
 msgid ""
-"The lef-hand column display statical information on the station as well as "
+"The left-hand column display statical information on the station as well as "
 "shortcodes or publishing format options."
 msgstr ""
 

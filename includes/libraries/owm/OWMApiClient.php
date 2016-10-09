@@ -28,6 +28,11 @@ class OWMApiClient
     private $weatherUrl = "http://api.openweathermap.org/data/2.5/weather?";
 
     /**
+     * @var string $weatherUrl The  api url to fetch station data from.
+     */
+    private $stationUrl = "http://api.openweathermap.org/data/2.5/station?";
+
+    /**
      * @var string $url The basic api url to fetch weekly forecast data from.
      */
     private $weatherHourlyForecastUrl = "http://api.openweathermap.org/data/2.5/forecast?";
@@ -337,6 +342,33 @@ class OWMApiClient
     public function getRawWeatherData($query, $units = 'imperial', $lang = 'en', $appid = '', $mode = 'xml')
     {
         $url = $this->buildUrl($query, $units, $lang, $appid, $mode, $this->weatherUrl);
+
+        return $this->cacheOrFetchResult($url);
+    }
+
+    /**
+     * Directly returns the xml/json/html string returned by OpenWeatherMap for a specific station.
+     *
+     * @param integer          $query The station to get weather information for.
+     * @param string           $units Can be either 'metric' or 'imperial' (default). This affects almost all units returned.
+     * @param string           $lang  The language to use for descriptions, default is 'en'. For possible values see below.
+     * @param string           $appid Your app id, default ''. See http://openweathermap.org/appid for more details.
+     * @param string           $mode  The format of the data fetched. Possible values are 'json', 'html' and 'xml' (default).
+     *
+     * @return string Returns false on failure and the fetched data in the format you specified on success.
+     *
+     * Warning If an error occurred, OpenWeatherMap returns data in json format ALWAYS
+     *
+     * @api
+     */
+    public function getRawStationData($query, $units = 'imperial', $lang = 'en', $appid = '', $mode = 'xml')
+    {
+        //$url = $this->buildUrl($query, $units, $lang, $appid, $mode, $this->stationUrl);
+
+        $url = $this->stationUrl . 'ID=' . $query;
+        if (!empty($appid)) {
+            $url .= "&APPID=$appid";
+        }
 
         return $this->cacheOrFetchResult($url);
     }

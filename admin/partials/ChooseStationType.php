@@ -69,7 +69,9 @@ else {
                 </style>
                 <div style="flex:auto;padding:14px;"><img id="netatmo" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_netatmo_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="loc" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_loc_color_logo());?>" /></div>
-                <div style="flex:auto;padding:14px;"><img id="owm" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_owm_color_logo());?>" /></div>
+                <?php /*
+                    <div style="flex:auto;padding:14px;"><img id="owm" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_owm_color_logo());?>" /></div>
+                */ ?>
                 <div style="flex:auto;padding:14px;"><img id="wug" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_wug_color_logo());?>" /></div>
             </div>
         </div>

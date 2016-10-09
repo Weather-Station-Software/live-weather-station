@@ -8,14 +8,14 @@ use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
 use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
 
 /**
- * OpenWeatherMap current weather client for Weather Station plugin.
+ * OpenWeatherMap station client for Weather Station plugin.
  *
  * @package Includes\Traits
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
- * @since 2.0.0
+ * @since 3.0.0
  */
-trait CurrentClient {
+trait StationClient {
 
     use BaseClient;
 
@@ -24,36 +24,14 @@ trait CurrentClient {
     protected $facility = 'Weather Collector';
 
     /**
-     * Get station's datas.
-     *
-     * @param   string  $city       The city name.
-     * @param   string  $country    The country ISO-2 code.
-     * @return  array     An array containing lat & lon coordinates.
-     * @since    2.0.0
-     */
-    public static function get_coordinates_via_owm($city, $country) {
-        $result = array() ;
-        $owm = new OWMApiClient();
-        $weather = $owm->getRawWeatherData($city.','.$country, 'metric', 'en', get_option('live_weather_station_owm_apikey'), 'json');
-        $weather = json_decode($weather, true);
-        if (is_array($weather)) {
-            if (array_key_exists('coord', $weather)) {
-                $result['loc_longitude'] = $weather['coord']['lon'];
-                $result['loc_latitude'] = $weather['coord']['lat']; 
-            }
-        }
-        return $result;
-    }
-
-    /**
      * Get station's data array.
      *
-     * @param   string  $json_weather    Weather array json formated.
-     * @param   array   $station    Station array.
-     * @param   string  $device_id  The device id.
-     * @return  array     A standard array with value.
-     * @throws  \Exception
-     * @since    2.0.0
+     * @param string $json_weather Weather array json formated.
+     * @param array $station Station array.
+     * @param string $device_id The device id.
+     * @return array A standard array with value.
+     * @throws \Exception
+     * @since 3.0.0
      */
     private function get_owm_datas_array($json_weather, $station, $device_id) {
         $weather = json_decode($json_weather, true);
@@ -152,33 +130,36 @@ trait CurrentClient {
         }
         return $result;
     }
-    
+
     /**
-     * Get station's datas.
+     * Get true station's datas.
      *
-     * @return  array     OWM collected datas.
-     * @since    2.0.0
+     * @return array OWM collected datas.
+     * @since 3.0.0
      */
     public function get_datas() {
         if (get_option('live_weather_station_owm_apikey') == '') {
             $this->owm_datas = array ();
             return array ();
         }
-        $this->synchronize_owm();
+        $this->synchronize_owm_true_station();
         $this->owm_datas = array ();
-        $stations = $this->get_located_operational_stations_list();
+        $stations = $this->get_operational_stations_list();
+        Logger::dev(print_r($stations, true));
+
         $owm = new OWMApiClient();
         foreach ($stations as $key => $station) {
             try {
-                $raw_data = $owm->getRawWeatherData(array('lat' => $station['loc_latitude'], 'lon' => $station['loc_longitude']), 'metric', 'en', get_option('live_weather_station_owm_apikey'), 'json');
-                $values = $this->get_owm_datas_array($raw_data, $station, $key);
+                $raw_data = $owm->getRawStationData(29584, 'metric', 'en', get_option('live_weather_station_owm_apikey'), 'json');
+                Logger::dev(print_r($raw_data, true));
+                /*$values = $this->get_owm_datas_array($raw_data, $station, $key);
                 $place = array();
                 $place['country'] = $station['loc_country'];
                 $place['city'] = $station['loc_city'];
                 $place['altitude'] = $station['loc_altitude'];
                 $place['timezone'] = $station['loc_timezone'];
                 $place['location'] = array($station['loc_longitude'], $station['loc_latitude']);
-                $values['place'] = $place;
+                $values['place'] = $place;*/
             }
             catch(\Exception $ex)
             {
@@ -207,7 +188,7 @@ trait CurrentClient {
                 $this->owm_datas[] = $values;
             }
         }
-        $this->store_owm_datas($this->owm_datas);
+        //$this->store_owm_datas($this->owm_datas);
         return $this->owm_datas;
     }
 
@@ -218,6 +199,7 @@ trait CurrentClient {
      * @since 3.0.0
      */
     protected function __run($system){
+        //Logger::dev('running');
         $err = '';
         try {
             $err = 'collecting weather';
