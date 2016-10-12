@@ -20,6 +20,7 @@ class Stations extends Base {
     use Output, Generator {
         Output::get_service_name insteadof Generator;
         Output::get_module_type insteadof Generator;
+        Output::get_fake_module_name insteadof Generator;
         Output::get_measurement_type insteadof Generator;
     }
 
@@ -154,6 +155,9 @@ class Stations extends Base {
     }
 
     protected function column_sc($item){
+        if (($item['comp_bas'] + $item['comp_ext'] + $item['comp_int'] + $item['comp_vrt']) == 0) {
+            return '';
+        }
         $s = '<a href="#" id="textual-datas-link-' . $item['guid'] . '">' . __('textual datas', 'live-weather-station') . '</a>, ';
         $s .= '<a href="#" id="lcd-datas-link-' . $item['guid'] . '">' . __('LCD display', 'live-weather-station') . '</a>, ';
         $s .= '<a href="#" id="justgage-datas-link-' . $item['guid'] . '">' . __('clean gauge', 'live-weather-station') . '</a>, ';

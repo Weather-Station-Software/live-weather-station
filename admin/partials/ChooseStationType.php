@@ -34,7 +34,7 @@ else {
 
 if (get_option('live_weather_station_owm_apikey') != '') {
     $owm_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a personal weather station published on OpenWeatherMap.', 'live-weather-station'));
-    $owm_l = get_admin_page_url('lws-stations', 'form', 'add', 'OpenWeatherMap', $dashboard);
+    $owm_l = get_admin_page_url('lws-stations', 'form', 'add-edit', 'OpenWeatherMap', $dashboard);
     $owm_t = '_self';
 }
 else {
@@ -45,7 +45,7 @@ else {
 
 if (get_option('live_weather_station_wug_apikey') != '') {
     $wug_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a personal weather station published on Weather Underground.', 'live-weather-station'));
-    $wug_l = get_admin_page_url('lws-stations', 'form', 'add', 'WeatherUnderground', $dashboard);
+    $wug_l = get_admin_page_url('lws-stations', 'form', 'add-edit', 'WeatherUnderground', $dashboard);
     $wug_t = '_self';
 }
 else {

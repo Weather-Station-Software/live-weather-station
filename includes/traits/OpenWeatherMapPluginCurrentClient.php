@@ -228,10 +228,10 @@ trait CurrentClient {
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
             $ephemeris->compute();
-            Logger::info($system, 'OpenWeatherMap', null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
+            Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
         catch (\Exception $ex) {
-            Logger::critical($system, 'OpenWeatherMap', null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
         }
         $this->synchronize_modules_count();
     }

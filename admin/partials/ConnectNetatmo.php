@@ -49,14 +49,20 @@ $warning = sprintf(__('All stations associated to this service will be removed f
 <?php if (get_option('live_weather_station_netatmo_connected') == 0) { ?>
     <div id="major-publishing-actions">
         <div id="publishing-action">
-            <input type="submit" name="connect" id="connect" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
+            <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
+                <span id="netatmo-span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+            </div>
+            <input type="submit" name="connect" id="netatmo-connect" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
         </div>
         <div class="clear"></div>
     </div>
 <?php } else {?>
     <div id="major-publishing-actions">
         <div id="publishing-action">
-            <input type="submit" name="disconnect" id="disconnect" class="button button-primary" onclick="return confirm('<?php echo $warning; ?>');" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+            <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
+                <span id="netatmo-span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+            </div>
+            <input type="submit" name="disconnect" id="netatmo-disconnect" class="button button-primary" onclick="return confirm('<?php echo $warning; ?>');" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
         </div>
         <div class="clear"></div>
     </div>

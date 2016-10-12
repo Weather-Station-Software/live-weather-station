@@ -55,6 +55,10 @@ trait Handling {
                 $this->update_data_table($updates);
             }
         }
+        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_type'] = 'last_refresh';
+        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $this->update_data_table($updates);
         $updates = array();
         $updates['device_id'] = $device_id;
         $updates['device_name'] = $device_name;
@@ -273,6 +277,10 @@ trait Handling {
                 $this->update_data_table($updates);
             }
         }
+        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_type'] = 'last_refresh';
+        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $this->update_data_table($updates);
 
         // place datas from device
         if(isset($place) && is_array($place)) {

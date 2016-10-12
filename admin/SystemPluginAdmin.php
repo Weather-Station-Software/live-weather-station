@@ -10,23 +10,32 @@ use WeatherStation\System\Help\InlineHelp;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\System\Options\Handling as Options;
 use WeatherStation\Data\Arrays\Generator as Arrays;
-use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
-use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
-use WeatherStation\SDK\Netatmo\Plugin\Collector as Netatmo_Collector;
-use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector;
-use WeatherStation\SDK\OpenWeatherMap\Plugin\CurrentCollector as OWM_Current_Collector;
-use WeatherStation\SDK\OpenWeatherMap\Plugin\PollutionCollector as OWM_Pollution_Collector;
 use WeatherStation\UI\Forms\Handling as FormsRenderer;
 use WeatherStation\UI\SVG\Handling as SVG;
+use WeatherStation\System\I18N\Handling as Intl;
+use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
+use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
+
+use WeatherStation\SDK\Netatmo\Plugin\Collector as Netatmo_Collector;
 use WeatherStation\SDK\Netatmo\Plugin\Initiator as Netatmo_Initiator;
+
+use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector;
+use WeatherStation\SDK\WeatherUnderground\Plugin\BaseCollector as WUG_Base_Collector;
+use WeatherStation\SDK\WeatherUnderground\Plugin\StationCollector as WUG_Station_Collector;
+use WeatherStation\SDK\OpenWeatherMap\Plugin\CurrentCollector as OWM_Current_Collector;
+use WeatherStation\SDK\OpenWeatherMap\Plugin\PollutionCollector as OWM_Pollution_Collector;
+
+
 use WeatherStation\SDK\OpenWeatherMap\Plugin\CurrentInitiator as OpenWeatherMap_Current_Initiator;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\PollutionInitiator as OpenWeatherMap_Pollution_Initiator;
+use WeatherStation\SDK\WeatherUnderground\Plugin\StationInitiator as WeatherUnderground_Station_Initiator;
+
 use WeatherStation\SDK\Netatmo\Plugin\Pusher as Netatmo_Merger;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\Pusher as OWM_Pusher;
 use WeatherStation\SDK\PWSWeather\Plugin\Pusher as PWS_Pusher;
 use WeatherStation\SDK\MetOffice\Plugin\Pusher as WOW_Pusher;
 use WeatherStation\SDK\WeatherUnderground\Plugin\Pusher as WUG_Pusher;
-use WeatherStation\System\I18N\Handling as Intl;
+
 
 
 
@@ -43,6 +52,7 @@ class Admin {
     use Options, Arrays, FormsRenderer {
         FormsRenderer::get_service_name insteadof Arrays;
         FormsRenderer::get_module_type insteadof Arrays;
+        FormsRenderer::get_fake_module_name insteadof Arrays;
         FormsRenderer::get_measurement_type insteadof Arrays;
     }
 
@@ -796,6 +806,16 @@ class Admin {
                             $error = array();
                             $args = compact('station', 'error');
                             break;
+                        case 'WeatherUnderground':
+                            if ($id) {
+                                $station = $this->get_station_informations_by_guid($id);
+                            }
+                            else {
+                                $station = $this->get_wug_station();
+                            }
+                            $models = $this->get_models_array();
+                            $args = compact('station', 'models', 'dashboard');
+                            break;
                         default:
                             $args = compact('dashboard');
                     }
@@ -828,6 +848,14 @@ class Admin {
                                 else {
                                     $view = 'form-add-edit-location' ;
                                     $args = compact('station', 'countries', 'timezones', 'error', 'dashboard');
+                                }
+                            }
+                            break;
+                        case 'WeatherUnderground':
+                            if (array_key_exists('add-edit-wug', $_POST)) {
+                                $this->add_wug();
+                                if ($dashboard) {
+                                    $view = 'dashboard' ;
                                 }
                             }
                             break;
@@ -1103,10 +1131,28 @@ class Admin {
             if ($action == 'connect') {
                 $s = __('Unkonwn service.', 'live-weather-station');
                 if ($service == 'Netatmo') {
-                    $s = $this->connect_netatmo($login, $password);
+                    if ($login == '' || $password == '') {
+                        $s = __('the login and password can not be empty', 'live-weather-station');
+                    }
+                    else {
+                        $s = $this->connect_netatmo($login, $password);
+                    }
                 }
                 if ($service == 'OpenWeatherMap') {
-                    $s = $this->connect_owm($key, $plan);
+                    if ($key == '') {
+                        $s = __('the API key can not be empty', 'live-weather-station');
+                    }
+                    else {
+                        $s = $s = $this->connect_owm($key, $plan);;
+                    }
+                }
+                if ($service == 'WeatherUnderground') {
+                    if ($key == '') {
+                        $s = __('the API key can not be empty', 'live-weather-station');
+                    }
+                    else {
+                        $s = $s = $this->connect_wug($key, $plan);;
+                    }
                 }
                 if ($s == '') {
                     $message = __('%s is now connected to %s.', 'live-weather-station');
@@ -1132,6 +1178,10 @@ class Admin {
                     $this->disconnect_owm();
                     $result = true;
                 }
+                if ($service == 'WeatherUnderground') {
+                    $this->disconnect_wug();
+                    $result = true;
+                }
                 if ($result) {
                     $message = __('%s is now disconnected from %s.', 'live-weather-station');
                     $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . $service . '</em>');
@@ -1154,49 +1204,6 @@ class Admin {
             Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
             Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to securely update connection to '. $service . ' service.');
         }
-    }
-
-    /**
-     * Disconnect from a Netatmo account.
-     *
-     * @since    2.0.0
-     */
-    protected function disconnect_netatmo() {
-        self::init_netatmo_options();
-        Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly disconnected from service.');
-        $this->clear_all_netatmo_stations();
-        Logger::notice('Backend', 'Netatmo', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
-
-    }
-
-    /**
-     * First getting of data for Netatmo station.
-     *
-     * @param boolean $auto_init Optional. Force creation of stations.
-     *
-     * @since    3.0.0
-     */
-    private function get_netatmo($auto_init=false) {
-        $n = new Netatmo_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
-        $n->run($auto_init);
-        $n = new OpenWeatherMap_Current_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
-        $n->run();
-        $n = new OpenWeatherMap_Pollution_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
-        $n->run();
-    }
-
-    /**
-     * First getting of data for Netatmo station.
-     *
-     * @since 3.0.0
-     */
-    private function get_all() {
-        $n = new Netatmo_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
-        $n->run();
-        $n = new OpenWeatherMap_Current_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
-        $n->run();
-        $n = new OpenWeatherMap_Pollution_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
-        $n->run();
     }
 
     /**
@@ -1241,10 +1248,161 @@ class Admin {
     }
 
     /**
+     * First getting of data for all station (resynchronization)
+     *
+     * @since 3.0.0
+     */
+    private function get_all() {
+        $n = new Netatmo_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run();
+        $n = new WeatherUnderground_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run();
+        $this->get_current_and_pollution();
+    }
+
+    /**
+     * First getting of data for Netatmo station.
+     *
+     * @param boolean $auto_init Optional. Force creation of stations.
+     *
+     * @since 3.0.0
+     */
+    private function get_netatmo($auto_init=false) {
+        $n = new Netatmo_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run($auto_init);
+        $this->get_current_and_pollution();
+    }
+
+    /**
+     * First getting of data for WeatherUnderground station.
+     *
+     * @since 3.0.0
+     */
+    private function get_wug() {
+        $n = new WeatherUnderground_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run();
+        $this->get_current_and_pollution();
+    }
+
+    /**
+     * Connect to an OpenWeatherMap account.
+     *
+     * @since 3.0.0
+     */
+    protected function get_current_and_pollution() {
+        $n = new OpenWeatherMap_Current_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run();
+        $n = new OpenWeatherMap_Pollution_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run();
+    }
+
+    /**
+     * Connect to a Netatmo account.
+     *
+     * @param string $login The login for the account.
+     * @param string $password The password for the account.
+     * @return string The error string if an error occured, empty string if none.
+     *
+     * @since    3.0.0
+     */
+    protected function connect_netatmo($login, $password) {
+        $netatmo = new Netatmo_Collector();
+        if ($netatmo->authentication($login, $password)) {
+            Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly connected to service.');
+            if (get_option('live_weather_station_auto_manage_netatmo')) {
+                $this->get_netatmo(true);
+            }
+        }
+        else {
+            Logger::error('Authentication', 'Netatmo', null, null, null, null, null, 'Unable to connect to service.');
+        }
+        return $netatmo->last_netatmo_error;
+    }
+
+    /**
+     * Disconnect from a Netatmo account.
+     *
+     * @since    2.0.0
+     */
+    protected function disconnect_netatmo() {
+        self::init_netatmo_options();
+        Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly disconnected from service.');
+        $this->clear_all_netatmo_stations();
+        Logger::notice('Backend', 'Netatmo', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
+    }
+
+    /**
+     * Connect to an OpenWeatherMap account.
+     *
+     * @param string $key The API key of the account.
+     * @param string $plan The plan of the account.
+     * @return string The error string if an error occured, empty string if none.
+     *
+     * @since    3.0.0
+     */
+    protected function connect_owm($key, $plan) {
+        $owm = new OWM_Base_Collector();
+        if ($owm->authentication($key, $plan)) {
+            Logger::notice('Authentication', 'OpenWeatherMap', null, null, null, null, null, 'Correctly connected to service.');
+            $this->get_current_and_pollution();
+        }
+        else {
+            Logger::error('Authentication', 'OpenWeatherMap', null, null, null, null, null, 'Unable to connect to service.');
+        }
+        return $owm->last_owm_error;
+    }
+
+    /**
+     * Disconnect from an OpenWeatherMap API key.
+     *
+     * @since    2.0.0
+     */
+    protected function disconnect_owm() {
+        self::init_owm_options();
+        Logger::notice('Authentication', 'OpenWeatherMap', null, null, null, null, null, 'Correctly disconnected from service.');
+        $this->clear_all_owm_stations();
+        $this->clear_all_owm_id_stations();
+        Logger::notice('Backend', 'OpenWeatherMap', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
+    }
+
+    /**
+     * Connect to an WeatherUnderground account.
+     *
+     * @param string $key The API key of the account.
+     * @param string $plan The plan of the account.
+     * @return string The error string if an error occured, empty string if none.
+     *
+     * @since    3.0.0
+     */
+    protected function connect_wug($key, $plan) {
+        $wug = new WUG_Base_Collector();
+        if ($wug->authentication($key, $plan)) {
+            Logger::notice('Authentication', 'WeatherUnderground', null, null, null, null, null, 'Correctly connected to service.');
+            $this->get_wug();
+        }
+        else {
+            Logger::error('Authentication', 'WeatherUnderground', null, null, null, null, null, 'Unable to connect to service.');
+        }
+        return $wug->last_wug_error;
+    }
+
+    /**
+     * Disconnect from an WeatherUnderground API key.
+     *
+     * @since 3.0.0
+     */
+    protected function disconnect_wug() {
+        self::init_wug_options();
+        Logger::notice('Authentication', 'WeatherUnderground', null, null, null, null, null, 'Correctly disconnected from service.');
+        $this->clear_all_wug_id_stations();
+        Logger::notice('Backend', 'WeatherUnderground', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
+    }
+
+    /**
      * Add a Netatmo station.
      *
      * @param string $device_id The id of the station.
-     * @since    3.0.0
+     * @since 3.0.0
      */
     protected function add_netatmo($device_id=null) {
         if ($device_id) {
@@ -1284,42 +1442,6 @@ class Admin {
             add_settings_error('lws_nonce_error', 403, 'No station to add.', 'error');
             Logger::error('Security', 'Netatmo', null, null, null, null, null, 'An attempt was made to add a station without ID.');
         }
-    }
-
-    /**
-     * Connect to a Netatmo account.
-     *
-     * @param string $login The login for the account.
-     * @param string $password The password for the account.
-     * @return string The error string if an error occured, empty string if none.
-     *
-     * @since    3.0.0
-     */
-    protected function connect_netatmo($login, $password) {
-        $netatmo = new Netatmo_Collector();
-        if ($netatmo->authentication($login, $password)) {
-            Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly connected to service.');
-            if (get_option('live_weather_station_auto_manage_netatmo')) {
-                $this->get_netatmo(true);
-            }
-        }
-        else {
-            Logger::error('Authentication', 'Netatmo', null, null, null, null, null, 'Unable to connect to service.');
-        }
-        return $netatmo->last_netatmo_error;
-    }
-
-    /**
-     * Disconnect from an OpenWeatherMap API key.
-     *
-     * @since    2.0.0
-     */
-    protected function disconnect_owm() {
-        self::init_owm_options();
-        Logger::notice('Authentication', 'OpenWeatherMap', null, null, null, null, null, 'Correctly disconnected from service.');
-        $this->clear_all_owm_stations();
-        $this->clear_all_owm_id_stations();
-        Logger::notice('Backend', 'OpenWeatherMap', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
     }
 
     /**
@@ -1475,6 +1597,113 @@ class Admin {
     }
 
     /**
+     * Add a WUG station.
+     *
+     * @since 3.0.0
+     */
+    public function add_wug() {
+        $station = array();
+        $station_id = null;
+        $service_id = null;
+        $station_name = null;
+        if (array_key_exists('guid', $_POST) &&
+            array_key_exists('service_id', $_POST) &&
+            array_key_exists('station_model', $_POST)) {
+                $guid = 0;
+                if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-wug')) {
+                    if (($guid = stripslashes(htmlspecialchars_decode($_POST['guid']))) != 0) { // UPDATE
+                        $station = $this->get_wug_station($guid);
+                        if (array_key_exists('station_id', $station)) {
+                            $station_id = $station['station_id'];
+                        }
+                        if (array_key_exists('station_name', $station)) {
+                            $station_name = $station['station_name'];
+                        }
+                        if (!empty($station)) {
+                            if (array_key_exists('station_name', $_POST)) {
+                                $station['station_name'] = substr(stripslashes(htmlspecialchars_decode($_POST['station_name'])), 0, 59);
+                            }
+                            else {
+                                $station['station_name'] = '';
+                            }
+                            $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
+                            $this->update_table(self::live_weather_station_stations_table(), $station);
+                            $message = __('The station %s has been correctly updated.', 'live-weather-station');
+                            $message = sprintf($message, '<em>' . $station_name . '</em>');
+                            add_settings_error('lws_nonce_success', 200, $message, 'updated');
+                            Logger::notice($this->service, 'WeatherUnderground', $station_id, $station_name, null, null, null, 'Station updated.');
+                            $this->get_wug();
+                        }
+                        else {
+                            $message = __('Unable to update the station %s.', 'live-weather-station');
+                            $message = sprintf($message, '<em>' . $station_name . '</em>');
+                            add_settings_error('lws_nonce_error', 403, $message, 'error');
+                            Logger::error($this->service, 'WeatherUnderground', $station_id, $station_name, null, null, null, 'Unable to add this station.');
+                        }
+                    }
+                    else { // ADD NEW
+                        $station = $this->get_wug_station();
+                        $station['service_id'] = substr(stripslashes(htmlspecialchars_decode($_POST['service_id'])), 0, 19);
+                        if (array_key_exists('station_name', $_POST)) {
+                            $station['station_name'] = substr(stripslashes(htmlspecialchars_decode($_POST['station_name'])), 0, 59);
+                        }
+                        else {
+                            $station['station_name'] = '';
+                        }
+                        $station['station_model'] = substr(stripslashes(htmlspecialchars_decode($_POST['station_model'])), 0, 200);
+                        unset($station['guid']);
+                        if (WUG_Station_Collector::station_exists($station['service_id'])) {
+                            if (array_key_exists('station_id', $station)) {
+                                $station_id = $station['station_id'];
+                            }
+                            if (array_key_exists('station_name', $station)) {
+                                $station_name = $station['station_name'];
+                            }
+                            if ($guid = $this->update_stations_table($station, true)) {
+                                $message = __('The station %s has been correctly updated.', 'live-weather-station');
+                                $message = sprintf($message, '<em>' . $station_name . '</em>');
+                                add_settings_error('lws_nonce_success', 200, $message, 'updated');
+                                Logger::notice($this->service, 'WeatherUnderground', $station_id, $station_name, null, null, null, 'Station added.');
+                                $this->get_wug();
+                                $st = $this->get_station_informations_by_guid($guid);
+                                $this->modify_table(self::live_weather_station_log_table(), 'device_id', $station_id, $st['station_id']);
+                            }
+                            else {
+                                $message = __('Unable to add the station %s.', 'live-weather-station');
+                                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                                add_settings_error('lws_nonce_error', 403, $message, 'error');
+                                Logger::error($this->service, 'WeatherUnderground', null, null, null, null, null, 'Unable to add a station, service says : unknown station ID.');
+                            }
+                        }
+                        else {
+                            $message = __('Unable to add the station %s.', 'live-weather-station');
+                            $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                            add_settings_error('lws_nonce_error', 403, $message, 'error');
+                            Logger::error($this->service, 'WeatherUnderground', null, null, null, null, null, 'Unable to add a station, service says : unknown station ID.');
+                        }
+                    }
+                }
+                else {
+                    if ($guid == 0) {
+                        $message = __('Unable to add the station %s.', 'live-weather-station');
+                        $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                        add_settings_error('lws_nonce_error', 403, $message, 'error');
+                        Logger::critical('Security', 'WeatherUnderground', null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
+                        Logger::error($this->service, 'WeatherUnderground', null, null, null, null, 0, 'It had not been possible to securely add a station.');
+
+                    }
+                    else {
+                        $message = __('Unable to update the station %s.', 'live-weather-station');
+                        $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                        add_settings_error('lws_nonce_error', 403, $message, 'error');
+                        Logger::critical('Security', 'WeatherUnderground', $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
+                        Logger::error($this->service, 'WeatherUnderground', $station_id, $station_name, null, null, 0, 'It had not been possible to securely update this station.');
+                    }
+                }
+        }
+    }
+
+    /**
      * Add a located OWM station.
      *
      * @since 3.0.0
@@ -1585,38 +1814,5 @@ class Admin {
             $station['error'] = $error;
         }
         return $station;
-    }
-
-    /**
-     * Connect to an OpenWeatherMap account.
-     *
-     * @since    3.0.0
-     */
-    protected function get_current_and_pollution() {
-        $n = new OpenWeatherMap_Current_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
-        $n->run();
-        $n = new OpenWeatherMap_Pollution_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
-        $n->run();
-    }
-
-    /**
-     * Connect to an OpenWeatherMap account.
-     *
-     * @param string $key The API key of the account.
-     * @param string $plan The plan of the account.
-     * @return string The error string if an error occured, empty string if none.
-     *
-     * @since    3.0.0
-     */
-    protected function connect_owm($key, $plan) {
-        $owm = new Owm_Base_Collector();
-        if ($owm->authentication($key, $plan)) {
-            Logger::notice('Authentication', 'OpenWeatherMap', null, null, null, null, null, 'Correctly connected to service.');
-            $this->get_current_and_pollution();
-        }
-        else {
-            Logger::error('Authentication', 'OpenWeatherMap', null, null, null, null, null, 'Unable to connect to service.');
-        }
-        return $owm->last_owm_error;
     }
 }

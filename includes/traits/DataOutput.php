@@ -3481,27 +3481,22 @@ trait Output {
                 $module['module_name'] = $data['module_name'];
                 $module['module_type'] = $data['module_type'];
                 $module['module_type_name'] = $this->get_module_type($data['module_type'], false);
-                if ((strpos($data['measure_type'], '_ref') > 0) && !$full) {
+                if (($data['measure_type'] != 'last_refresh') && (strpos($data['measure_type'], '_ref') > 0) && !$full) {
                     continue;
                 }
                 if ($data['measure_type'] == 'firmware') {
                     $module['firmware'] = $data['measure_value'];
                     $module['firmware_txt'] = __('rev.', 'live-weather-station') . ' ' . $data['measure_value'];
                 }
-                if ($data['measure_type'] == 'loc_city') {
-                    if (strpos($module['module_name'], '[') == 0) {
-                        $module['last_refresh'] = $data['measure_timestamp'];
-                        $module['last_refresh_txt'] = $this->output_value($data['measure_timestamp'], 'last_refresh', false, false, $module['module_type'], $station['loc_timezone']);
-                        $module['last_refresh_diff_txt'] = self::get_positive_time_diff_from_mysql_utc($module['last_refresh']);
-                    }
+                if ($data['measure_type'] == 'last_refresh') {
+                    $module['last_refresh'] = $data['measure_value'];
+                    $module['last_refresh_txt'] = $this->output_value($data['measure_timestamp'], 'last_refresh', false, false, $module['module_type'], $station['loc_timezone']);
+                    $module['last_refresh_diff_txt'] = self::get_positive_time_diff_from_mysql_utc($module['last_refresh']);
                 }
                 if ($data['measure_type'] == 'last_seen') {
                     $module['last_seen'] = $data['measure_value'];
                     $module['last_seen_txt'] = $this->output_value($data['measure_value'], $data['measure_type'], false, false, $module['module_type'], $station['loc_timezone']);
                     $module['last_seen_diff_txt'] = self::get_positive_time_diff_from_mysql_utc($module['last_seen']);
-                    $module['last_refresh'] = $data['measure_timestamp'];
-                    $module['last_refresh_txt'] = $this->output_value($data['measure_timestamp'], $data['measure_type'], false, false, $module['module_type'], $station['loc_timezone']);
-                    $module['last_refresh_diff_txt'] = self::get_positive_time_diff_from_mysql_utc($module['last_refresh']);
                 }
                 if ($data['measure_type'] == 'first_setup') {
                     $module['first_setup'] = $data['measure_value'];

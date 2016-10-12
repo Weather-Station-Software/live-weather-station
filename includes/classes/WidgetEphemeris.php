@@ -37,7 +37,7 @@ class Ephemeris extends \WP_Widget {
         parent::__construct(
             'Live_Weather_Station_Widget_Ephemeris',
             __( 'Ephemeris' , 'live-weather-station'),
-            array( 'description' => __( 'Display ephemeris for sun and moon at the location of a Netatmo and/or OpenWeatherMap weather station.' , 'live-weather-station') )
+            array( 'description' => sprintf(__('Display ephemeris for sun and moon at the location of a station added to %s.' , 'live-weather-station'), LWS_PLUGIN_NAME))
         );
         if ( is_admin() ) {
             add_action( 'admin_enqueue_scripts', function () {wp_enqueue_script( 'wp-color-picker' );});
@@ -101,7 +101,7 @@ class Ephemeris extends \WP_Widget {
         $show_borders = (bool)$instance['show_borders'];
         $flat_design = (bool)$instance['flat_design'] ;
         $stations = $this->get_operational_stations_list();
-        include(LWS_ADMIN_DIR.'partials/WidgetEphemerisettings.php');
+        include(LWS_ADMIN_DIR.'partials/WidgetEphemerisSettings.php');
     }
 
     /**

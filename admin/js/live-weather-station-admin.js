@@ -52,15 +52,89 @@ jQuery(document).ready( function($) {
     });
 
     $('#add-edit-loc').click( function() {
-        $('.button').removeClass('button-primary').addClass('button-disabled');
-        $('.button').click(function() { return false; });
-        $('#span-sync').show();
+        var form_data=$('#add-edit-loc-form').serializeArray();
+        var error_free=true;
+        for (var input in form_data){
+            if (form_data[input]['name'] == 'station_name') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'loc_city') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'loc_altitude') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+        }
+        if (error_free) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#span-sync').show();
+        }
+    });
+
+    $('#add-edit-wug').click( function() {
+        var form_data=$('#add-edit-wug-form').serializeArray();
+        var error_free=true;
+        for (var input in form_data){
+            if (form_data[input]['name'] == 'service_id') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+        }
+        if (error_free) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#span-sync').show();
+        }
     });
 
     $('#partial-translation').click( function() {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });
         $('#span-sync').show();
+    });
+
+    $('#owm-connect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#owm-span-sync').show();
+    });
+
+    $('#owm-disconnect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#owm-span-sync').show();
+    });
+
+    $('#wug-connect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#wug-span-sync').show();
+    });
+
+    $('#wug-disconnect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#wug-span-sync').show();
+    });
+
+    $('#netatmo-connect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#netatmo-span-sync').show();
+    });
+
+    $('#netatmo-disconnect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#netatmo-span-sync').show();
     });
 
 } );

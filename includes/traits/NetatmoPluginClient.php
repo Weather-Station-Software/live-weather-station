@@ -175,10 +175,6 @@ trait Client {
      * @since 1.0.0
      */
     public function get_datas($store=true) {
-        /*if (get_option('live_weather_station_owm_connection_mode') == 2) {
-            $this->netatmo_datas = array ();
-            return array();
-        }*/
         $refresh_token = get_option('live_weather_station_netatmo_refresh_token');
         $access_token = get_option('live_weather_station_netatmo_access_token');
         $this->last_netatmo_error = '';

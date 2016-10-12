@@ -103,6 +103,9 @@ class InlineHelp {
         if ($number == -10) {
             $result = sprintf($message, '<a href="https://translate.wordpress.org/projects/wp-plugins/live-weather-station"' . $target . '>' . $anchor . '</a>');
         }
+        if ($number == -11) {
+            $result = sprintf($message, '<a href="https://www.wunderground.com/weather/api/d/pricing.html?apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>');
+        }
         if (LWS_INLINE_HELP) {
             return $result;
         }

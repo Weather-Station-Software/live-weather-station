@@ -21,6 +21,7 @@ trait BaseClient {
     use Dashboard_Manipulation, Id_Manipulation;
 
     protected $service_name = 'OpenWeatherMap';
+    public $last_owm_error;
 
     /**
      * Get station's datas.
@@ -118,7 +119,7 @@ trait BaseClient {
      */
     protected function synchronize_owm_true_station() {
         $list = array();
-        $stations = $this->get_all_owm_true_stations();
+        $stations = $this->get_all_owm_id_stations();
         if (count($stations) > 0) {
             foreach ($stations as $station) {
                 $device_id = self::get_unique_owm_true_id($station['guid']);

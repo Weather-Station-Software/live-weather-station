@@ -41,11 +41,10 @@ trait Description {
     /**
      * Get the module type in plain text.
      *
-     * @param   string  $type The type of the module.
-     * @param   boolean $module     Optional. Get the module name.
-     * @return  string  The type of the module in plain text.
-     * @since    1.0.0
-     * @access   protected
+     * @param string $type The type of the module.
+     * @param boolean $module Optional. Get the module name.
+     * @return string The type of the module in plain text.
+     * @since 1.0.0
      */
     protected function get_module_type($type, $module=true) {
         switch (strtolower($type)) {
@@ -95,7 +94,34 @@ trait Description {
                 }
                 break;
             default:
-                $result = __('Unknonw module', 'live-weather-station');
+                $result = __('Unknown module', 'live-weather-station');
+        }
+        return $result;
+    }
+
+    /**
+     * Get the full name for fake modules.
+     *
+     * @param string $type The type of the module.
+     * @return string The type of the module in plain text.
+     * @since 3.0.0
+     */
+    protected function get_fake_module_name($type) {
+        switch (strtolower($type)) {
+            case 'namain':
+                $result = __('Station', 'live-weather-station');
+                break;
+            case 'namodule1': // Outdoor module
+                $result = __('Outdoor', 'live-weather-station');
+                break;
+            case 'namodule2': // Wind gauge
+                $result = __('Wind', 'live-weather-station');
+                break;
+            case 'namodule3': // Rain gauge
+                $result = __('Rain', 'live-weather-station');
+                break;
+            default:
+                $result = __('Unknown module', 'live-weather-station');
         }
         return $result;
     }
