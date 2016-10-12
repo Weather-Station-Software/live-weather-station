@@ -97,6 +97,7 @@ class Handling {
         add_meta_box('lws-connect-netatmo', 'Netatmo', array($this, 'netatmo_box'), 'lws-settings', 'normal');
         // Right column
         add_meta_box('lws-connect-owm', 'OpenWeatherMap', array($this, 'owm_box'), 'lws-settings', 'side');
+        add_meta_box('lws-connect-wug', 'WeatherUnderground', array($this, 'wug_box'), 'lws-settings', 'side');
     }
 
     /**
@@ -115,5 +116,14 @@ class Handling {
      */
     public function owm_box() {
         include(LWS_ADMIN_DIR.'partials/ConnectOpenWeatherMap.php');
+    }
+
+    /**
+     * Get content of the WeatherUnderground box.
+     *
+     * @since 3.0.0
+     */
+    public function wug_box() {
+        include(LWS_ADMIN_DIR.'partials/ConnectWeatherUnderground.php');
     }
 }

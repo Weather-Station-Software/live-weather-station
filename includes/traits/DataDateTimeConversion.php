@@ -12,6 +12,20 @@ namespace WeatherStation\Data\DateTime;
  */
 trait Conversion {
     /**
+     * Converts a date expressed in specific TZ into an UTC date.
+     *
+     * @param integer $ts The date to be converted.
+     * @param string $tz The timezone.
+     * @return integer Epoch timestamp.
+     * @since 3.0.0
+     */
+    public static function get_date_from_tz($ts, $tz) {
+        $datetime = new \DateTime(date('Y-m-d H:i:s', $ts), new \DateTimeZone($tz));
+        $datetime->setTimezone(new \DateTimeZone('UTC'));
+        return $datetime->getTimestamp();
+    }
+
+    /**
      * Converts an UTC date into the correct format (all Netatmo timestamps are UTC).
      *
      * @param   integer $ts The UTC timestamp to be converted.

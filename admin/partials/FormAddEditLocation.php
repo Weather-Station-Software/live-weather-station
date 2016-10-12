@@ -14,15 +14,15 @@ $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
 
 <div class="wrap">
     <?php if ($station['guid'] == 0) { ?>
-        <h2><?php esc_html_e( 'Add a "virtual" weather station', 'live-weather-station' );?></h2>
+        <h1><?php esc_html_e( 'Add a "virtual" weather station', 'live-weather-station' );?></h1>
     <?php } ?>
     <?php if ($station['guid'] != 0) { ?>
-        <h2><?php esc_html_e( 'Edit a "virtual" weather station', 'live-weather-station' );?></h2>
+        <h1><?php esc_html_e( 'Edit a "virtual" weather station', 'live-weather-station' );?></h1>
     <?php } ?>
     <?php if ($error == 3) { ?>
         <p style="color:red;"><?php esc_html_e( 'Some required fields are missing!', 'live-weather-station' );?></p>
     <?php } ?>
-    <form method="post" name="add-owm" id="add-owm" action="<?php echo esc_url(get_admin_page_url($url)); ?>">
+    <form method="post" name="add-edit-loc-form" id="add-edit-loc-form" action="<?php echo esc_url(get_admin_page_url($url)); ?>">
         <input name="station_id" type="hidden" value="<?php echo $station['station_id']; ?>" />
         <input name="guid" type="hidden" value="<?php echo $station['guid']; ?>" />
         <input name="service" type="hidden" value="Location" />
@@ -34,15 +34,15 @@ $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
         <?php wp_nonce_field('add-edit-loc'); ?>
         <table class="form-table">
             <tr class="form-field form-required">
-                <th scope="row"><label for="station_name"><?php esc_html_e( 'Station name', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
+                <th scope="row"><label for="station_name"><?php esc_html_e('Station name', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
                 <td><input required name="station_name" aria-required="true" type="text" id="station_name" value="<?php echo htmlspecialchars($station['station_name']) ?>" maxlength="60" style="width:25em;" /></td>
             </tr>
             <tr class="form-field form-required">
-                <th scope="row"><label for="loc_city"><?php esc_html_e( 'City', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
+                <th scope="row"><label for="loc_city"><?php esc_html_e('City', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
                 <td><input required name="loc_city" type="text" id="loc_city" value="<?php echo htmlspecialchars($station['loc_city']) ?>" maxlength="60" style="width:25em;" /></td>
             </tr>
             <tr class="form-field form-required">
-                <th scope="row"><label for="loc_country_code"><?php esc_html_e( 'Country', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
+                <th scope="row"><label for="loc_country_code"><?php esc_html_e('Country', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
                 <td>
                     <select name="loc_country_code" id="loc_country_code" style="width:25em;">
                         <?php foreach ($countries as $key => $val) { ?>
@@ -52,7 +52,7 @@ $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
                 </td>
             </tr>
             <tr class="form-field form-required">
-                <th scope="row"><label for="loc_tz"><?php esc_html_e( 'Time zone', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
+                <th scope="row"><label for="loc_tz"><?php esc_html_e('Time zone', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
                 <td>
                     <select name="loc_tz" id="loc_tz" style="width:25em;">
                     </select>
@@ -87,7 +87,7 @@ $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
 
 
             <tr class="form-field form-required">
-                <th scope="row"><label for="loc_altitude"><?php esc_html_e( 'Altitude (in meters)', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
+                <th scope="row"><label for="loc_altitude"><?php esc_html_e('Altitude (in meters)', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
                 <td><input required name="loc_altitude" type="text" id="loc_altitude" value="<?php echo htmlspecialchars($station['loc_altitude']) ?>" maxlength="20" style="width:25em;" /></td>
             </tr>
         </table>

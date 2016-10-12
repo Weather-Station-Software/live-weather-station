@@ -41,6 +41,8 @@
   * Quota Manager (avec temps d'accès (+temps de génération Netatmo))
   * Marine (avec marées ?)
   * modules ext netatmo avec d'autres measurements
+  * UV, solar & visibility (WUG)
+
 
 
  ***********************
@@ -49,7 +51,8 @@
 
   * TBD : stat on datas timestamp
   * TBD : stat on events (full, by station, by service ?)
-  - display option
+  * TBD : last_refresh
+  * TBD : review widgets
 
 
 
@@ -100,6 +103,7 @@ After upgrading, please, review all your settings.
 * Improvement: better support for anti directory listing.
 * Improvement: event log now shows events numbers and supports direct access to detailed description.
 * Improvement: battery and signal levels for Netatmo stations are more accurate.
+* Bug fix: wind strength rounding in km/h are not accurate.
 * Bug fix: current weather from OpenWeatherMap is wrongly registered in the events log.
 * Bug fix: filtering events log by station doesn't work.
 * Bug fix: unable to validate site ID and AWS 6-digit PIN for sending data to MET Office.

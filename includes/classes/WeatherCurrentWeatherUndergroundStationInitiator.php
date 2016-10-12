@@ -1,16 +1,16 @@
 <?php
 
-namespace WeatherStation\SDK\OpenWeatherMap\Plugin;
+namespace WeatherStation\SDK\WeatherUnderground\Plugin;
 
 /**
- * This class is responsible for all the croned updates from OpenWeatherMap true station data.
+ * This class is responsible for the first update from WeatherUnderground stations.
  *
  * @package Includes\Classes
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */
-class StationUpdater {
+class StationInitiator {
 
     use StationClient;
 
@@ -24,7 +24,7 @@ class StationUpdater {
      * @param string $Live_Weather_Station The name of this plugin.
      * @param string $version The version of this plugin.
      */
-    public function __construct( $Live_Weather_Station, $version ) {
+    public function __construct($Live_Weather_Station, $version) {
         $this->Live_Weather_Station = $Live_Weather_Station;
         $this->version = $version;
     }
@@ -34,7 +34,7 @@ class StationUpdater {
      *
      * @since 3.0.0
      */
-    public function cron_run(){
-        $this->__run('Cron Engine');
+    public function run(){
+        $this->__run('Backend');
     }
 }

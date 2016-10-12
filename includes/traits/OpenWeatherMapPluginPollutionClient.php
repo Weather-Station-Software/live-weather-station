@@ -220,10 +220,10 @@ trait PollutionClient {
     protected function __run($system){
         try {
             $this->get_datas();
-            Logger::info($system, 'OpenWeatherMap', null, null, null, null, 0, 'Job done: collecting pollution data.');
+            Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting pollution data.');
         }
         catch (\Exception $ex) {
-            Logger::critical($system, 'OpenWeatherMap', null, null, null, null, $ex->getCode(), 'Error while collecting pollution data: ' . $ex->getMessage());
+            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while collecting pollution data: ' . $ex->getMessage());
         }
         $this->synchronize_modules_count();
     }

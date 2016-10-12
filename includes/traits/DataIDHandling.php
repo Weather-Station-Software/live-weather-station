@@ -18,7 +18,9 @@ trait Handling {
 
     private static $owm_current_id ='wm';
     private static $owm_pollution_id ='po';
+    private static $computed_id ='00';
     private static $ephemeris_id ='ep';
+    private static $fake_modulex_id ='mx';
 
     /**
      * Generate a unique id for a OWM station.
@@ -119,10 +121,10 @@ trait Handling {
     /**
      * Indicates if the id is the id of an OWM pollution module.
      *
-     * @param   integer     $module_id     The numeric id of the module.
-     * @return  boolean      True if it's an OWM station. False otherwise.
+     * @param integer $module_id The numeric id of the module.
+     * @return boolean True if it's an OWM station. False otherwise.
      *
-     * @since    2.0.0
+     * @since 2.0.0
      */
     public static function is_owm_pollution_module($module_id) {
         return (substr($module_id, 0, 2) == self::$owm_pollution_id);
@@ -132,23 +134,23 @@ trait Handling {
     /**
      * Get a "virtual" ID for NAComputed module type.
      *
-     * @param   string  $device_id      The device ID.
-     * @return  string  A virtual ID for a NAComputed module attached to the device.
+     * @param string $device_id The device ID.
+     * @return string A virtual ID for a NAComputed module attached to the device.
      *
-     * @since    2.0.0
+     * @since 2.0.0
      */
     public static function get_computed_virtual_id($device_id) {
-        $result = '00'.substr($device_id, 2, 40);
+        $result = self::$computed_id.substr($device_id, 2, 40);
         return $result;
     }
 
     /**
      * Get a "virtual" ID for NACurrent module type.
      *
-     * @param   string  $device_id      The device ID.
-     * @return  string  A virtual ID for a NACurrent module attached to the device.
+     * @param string $device_id The device ID.
+     * @return string A virtual ID for a NACurrent module attached to the device.
      *
-     * @since    2.0.0
+     * @since 2.0.0
      */
     public static function get_owm_current_virtual_id($device_id) {
         $result = self::$owm_current_id.substr($device_id, 2, 40);
@@ -158,10 +160,10 @@ trait Handling {
     /**
      * Get a "virtual" ID for NAPollution module type.
      *
-     * @param   string  $device_id      The device ID.
-     * @return  string  A virtual ID for a NAPollution module attached to the device.
+     * @param string $device_id The device ID.
+     * @return string A virtual ID for a NAPollution module attached to the device.
      *
-     * @since    2.7.0
+     * @since 2.7.0
      */
     public static function get_owm_pollution_virtual_id($device_id) {
         $result = self::$owm_pollution_id.substr($device_id, 2, 40);
@@ -171,13 +173,27 @@ trait Handling {
     /**
      * Get a "virtual" ID for NAEphemer module type.
      *
-     * @param   string  $device_id      The device ID.
-     * @return  string  A virtual ID for a NAEphemer module attached to the device.
+     * @param string $device_id The device ID.
+     * @return string A virtual ID for a NAEphemer module attached to the device.
      *
-     * @since    2.0.0
+     * @since 2.0.0
      */
     public static function get_ephemeris_virtual_id($device_id) {
         $result = self::$ephemeris_id.substr($device_id, 2, 40);
         return $result;
+    }
+
+    /**
+     * Generate a unique id for a fake module, for a given station.
+     *
+     * @param integer $guid The numeric guid of the station.
+     * @param integer $id The X number in NAModuleX type.
+     * @return string The unique id of the module.
+     * @since 3.0.0
+     */
+    public static function get_fake_modulex_id($guid, $id) {
+        $st = str_replace('x', $id, self::$fake_modulex_id).str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
+        $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
+        return strtolower($result);
     }
 }

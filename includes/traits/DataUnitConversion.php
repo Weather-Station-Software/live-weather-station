@@ -463,7 +463,7 @@ trait Conversion {
     {
         $result = $value;
         $format = '%d';
-        $prec = 1;
+        $prec = 0;
         switch ($id) {
             case 1:  // V(mph) = V(km/h) / 1.609344
                 $result = $result / 1.609344;

@@ -158,7 +158,7 @@ trait Storage {
         $sql .= " station_id varchar(17) DEFAULT '' NOT NULL,";
         $sql .= " station_type int(11) NOT NULL DEFAULT '0',";
         $sql .= " station_model varchar(200) DEFAULT 'N/A' NOT NULL,";
-        $sql .= " service_id varchar(20) DEFAULT '' NOT NULL,";
+        $sql .= " service_id varchar(250) DEFAULT '' NOT NULL,";
         $sql .= " station_name varchar(60) DEFAULT '' NOT NULL,";
         $sql .= " loc_city varchar(60) DEFAULT '' NOT NULL,";
         $sql .= " loc_country_code varchar(2) DEFAULT '' NOT NULL,";
@@ -661,6 +661,20 @@ trait Storage {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
         $sql = "DELETE FROM ".$table_name." WHERE device_id like 'xy:%' AND device_id NOT IN ( '" . implode($values, "', '") . "' )";
+        return $wpdb->query($sql);
+    }
+
+    /**
+     * Delete some wug stations.
+     *
+     * @param array $values The values NOT to delete from the table
+     * @return int|false The number of rows deleted, or false on error.
+     * @since 3.0.0
+     */
+    protected function clean_wug_from_table($values) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'xz:%' AND device_id NOT IN ( '" . implode($values, "', '") . "' )";
         return $wpdb->query($sql);
     }
 

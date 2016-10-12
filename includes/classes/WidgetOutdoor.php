@@ -39,7 +39,7 @@ class Outdoor extends \WP_Widget {
         parent::__construct(
             'Live_Weather_Station_Widget_Outdoor',
             __( 'Outdoor weather summary' , 'live-weather-station'),
-            array( 'description' => __( 'Display outdoor measurements of a Netatmo and/or OpenWeatherMap weather station.' , 'live-weather-station') )
+            array( 'description' => sprintf(__('Display outdoor measurements of a station added to %s.' , 'live-weather-station'), LWS_PLUGIN_NAME))
         );
         if ( is_admin() ) {
             add_action( 'admin_enqueue_scripts', function () {wp_enqueue_script( 'wp-color-picker' );});
@@ -150,7 +150,7 @@ class Outdoor extends \WP_Widget {
         $show_cloud_cover = (bool)$instance['show_cloud_cover'] ;
         $flat_design = (bool)$instance['flat_design'] ;
         $stations = $this->get_operational_stations_list();
-        include(LWS_ADMIN_DIR.'partials/live-weather-station-widget-outdoor-settings.php');
+        include(LWS_ADMIN_DIR.'partials/WidgetOutdoorSettings.php');
     }
 
     /**

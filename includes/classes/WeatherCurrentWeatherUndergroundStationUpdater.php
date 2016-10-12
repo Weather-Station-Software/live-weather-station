@@ -1,9 +1,9 @@
 <?php
 
-namespace WeatherStation\SDK\OpenWeatherMap\Plugin;
+namespace WeatherStation\SDK\WeatherUnderground\Plugin;
 
 /**
- * This class is responsible for all the croned updates from OpenWeatherMap true station data.
+ * This class is responsible for all the croned updates from WeatherUnderground station data.
  *
  * @package Includes\Classes
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.

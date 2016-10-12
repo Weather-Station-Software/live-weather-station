@@ -50,12 +50,15 @@ class Watchdog {
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_03_minutes_interval'));
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_05_minutes_interval'));
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_10_minutes_interval'));
+        add_filter('cron_schedules', array(get_called_class(), 'add_cron_11_minutes_interval'));
+        add_filter('cron_schedules', array(get_called_class(), 'add_cron_12_minutes_interval'));
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_15_minutes_interval'));
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_30_minutes_interval'));
         self::define_netatmo_update_cron();
         self::define_netatmo_push_cron();
         self::define_owm_current_update_cron();
         self::define_owm_station_update_cron();
+        self::define_wug_station_update_cron();
         self::define_owm_pollution_update_cron();
         self::define_log_rotate_cron();
         self::define_watchdog_cron();

@@ -133,7 +133,7 @@ select.option-at-100 {
     transform: rotate(315deg);
 }
 
-#span-sync {
+#span-sync, #netatmo-span-sync, #owm-span-sync, #wug-span-sync {
     color: #666;
 }
 

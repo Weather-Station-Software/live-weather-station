@@ -60,6 +60,13 @@ spl_autoload_register(
         case 'WeatherStation\SDK\OpenWeatherMap\Plugin\StationInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentOpenWeatherMapStationInitiator.php'; break;
         case 'WeatherStation\SDK\OpenWeatherMap\Plugin\StationUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentOpenWeatherMapStationUpdater.php'; break;
         case 'WeatherStation\SDK\OpenWeatherMap\OWMApiClient': $file = LWS_INCLUDES_DIR.'libraries/owm/autoload.php'; break;
+        case 'WeatherStation\SDK\WeatherUnderground\WUGApiClient': $file = LWS_INCLUDES_DIR.'libraries/wug/autoload.php'; break;
+        case 'WeatherStation\SDK\WeatherUnderground\Plugin\BaseClient': $file = LWS_INCLUDES_DIR.'traits/WeatherUndergroundPluginBaseClient.php'; break;
+        case 'WeatherStation\SDK\WeatherUnderground\Plugin\BaseCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherBaseWeatherUndergroundCollector.php'; break;
+        case 'WeatherStation\SDK\WeatherUnderground\Plugin\StationClient': $file = LWS_INCLUDES_DIR.'traits/WeatherUndergroundPluginStationClient.php'; break;
+        case 'WeatherStation\SDK\WeatherUnderground\Plugin\StationCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentWeatherUndergroundStationCollector.php'; break;
+        case 'WeatherStation\SDK\WeatherUnderground\Plugin\StationInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentWeatherUndergroundStationInitiator.php'; break;
+        case 'WeatherStation\SDK\WeatherUnderground\Plugin\StationUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentWeatherUndergroundStationUpdater.php'; break;
         case 'WeatherStation\SDK\PWSWeather\Plugin\Pusher': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentPWSWeatherPusher.php'; break;
         case 'WeatherStation\SDK\WeatherUnderground\Plugin\Pusher': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentWeatherUndergroundPusher.php'; break;
         case 'WeatherStation\System\Cache\Cache': $file = LWS_INCLUDES_DIR.'system/Cache.php'; break;

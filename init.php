@@ -47,7 +47,7 @@ function get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $ser
  * @since 1.0.0
  */
 define('LWS_FULL_NAME', 'Weather Station 3');
-define('LWS_VERSION', '3.0.0-dev3');
+define('LWS_VERSION', '3.0.0-dev4');
 define('LWS_INLINE_HELP', true);
 define('LWS_WEBSITE_READY', false);
 

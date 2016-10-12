@@ -7,6 +7,7 @@ use WeatherStation\SDK\Netatmo\Plugin\Pusher as Netatmo_Pusher;
 use WeatherStation\SDK\Netatmo\Plugin\Updater as Netatmo_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\CurrentUpdater as Owm_Current_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\StationUpdater as Owm_Station_Updater;
+use WeatherStation\SDK\WeatherUnderground\Plugin\StationUpdater as Wug_Station_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\PollutionUpdater as Owm_Pollution_Updater;
 use WeatherStation\System\I18N\Handling as i18n;
 
@@ -26,6 +27,7 @@ trait Handling {
     protected static $owm_update_schedule_name = 'lws_owm_update';
     protected static $owm_update_current_schedule_name = 'lws_owm_current_update';
     protected static $owm_update_station_schedule_name = 'lws_owm_station_update';
+    protected static $wug_update_station_schedule_name = 'lws_wug_station_update';
     protected static $owm_update_pollution_schedule_name = 'lws_owm_pollution_update';
     protected static $netatmo_push_schedule_name = 'lws_netatmo_push';
     protected static $log_rotate_name = 'lws_log_rotate';
@@ -113,8 +115,30 @@ trait Handling {
      */
     protected static function launch_owm_station_update_cron() {
         if (!wp_next_scheduled(self::$owm_update_station_schedule_name)) {
-            wp_schedule_event(time() + 40, 'ten_minutes', self::$owm_update_station_schedule_name);
+            wp_schedule_event(time() + 40, 'twelve_minutes', self::$owm_update_station_schedule_name);
             Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$owm_update_station_schedule_name.' cron job.');
+        }
+    }
+
+    /**
+     * Define WUG Station Updater cron job.
+     *
+     * @since 3.0.0
+     */
+    protected static function define_wug_station_update_cron() {
+        $plugin_wug_station_cron = new Wug_Station_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$wug_update_station_schedule_name, array($plugin_wug_station_cron, 'cron_run'));
+    }
+
+    /**
+     * Launch the WUG Station Updater cron job if needed.
+     *
+     * @since 3.0.0
+     */
+    protected static function launch_wug_station_update_cron() {
+        if (!wp_next_scheduled(self::$wug_update_station_schedule_name)) {
+            wp_schedule_event(time() + 40, 'eleven_minutes', self::$wug_update_station_schedule_name);
+            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$wug_update_station_schedule_name.' cron job.');
         }
     }
 
@@ -194,6 +218,7 @@ trait Handling {
         wp_clear_scheduled_hook(self::$owm_update_schedule_name);
         wp_clear_scheduled_hook(self::$owm_update_current_schedule_name);
         wp_clear_scheduled_hook(self::$owm_update_station_schedule_name);
+        wp_clear_scheduled_hook(self::$wug_update_station_schedule_name);
         wp_clear_scheduled_hook(self::$owm_update_pollution_schedule_name);
         wp_clear_scheduled_hook(self::$netatmo_push_schedule_name);
         wp_clear_scheduled_hook(self::$log_rotate_name);
@@ -210,6 +235,7 @@ trait Handling {
         self::launch_netatmo_push_cron();
         self::launch_owm_current_update_cron();
         self::launch_owm_station_update_cron();
+        self::launch_wug_station_update_cron();
         self::launch_owm_pollution_update_cron();
         self::launch_log_rotate_cron();
         self::launch_translation_update_cron();
@@ -260,6 +286,32 @@ trait Handling {
         $schedules['ten_minutes'] = array(
             'interval' => 600,
             'display'  => __( 'Every ten minutes', 'live-weather-station' ),
+        );
+        return $schedules;
+    }
+
+    /**
+     * Add a new 11 minutes interval capacity to the WP cron feature.
+     *
+     * @since 3.0.0
+     */
+    public static function add_cron_11_minutes_interval($schedules) {
+        $schedules['eleven_minutes'] = array(
+            'interval' => 660,
+            'display'  => __( 'Every eleven minutes', 'live-weather-station' ),
+        );
+        return $schedules;
+    }
+
+    /**
+     * Add a new 11 minutes interval capacity to the WP cron feature.
+     *
+     * @since 3.0.0
+     */
+    public static function add_cron_12_minutes_interval($schedules) {
+        $schedules['twelve_minutes'] = array(
+            'interval' => 720,
+            'display'  => __( 'Every twelve minutes', 'live-weather-station' ),
         );
         return $schedules;
     }
