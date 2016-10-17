@@ -734,8 +734,8 @@ class Admin {
      */
     public function lws_load_admin_page() {
         $page = filter_input(INPUT_GET, 'page');
-        if (!($tab = filter_input(INPUT_POST, 'tab'))) {
-            $tab = filter_input(INPUT_GET, 'tab');
+        if (!($tab = filter_input(INPUT_GET, 'tab'))) {
+            $tab = filter_input(INPUT_POST, 'tab');
         }
         if (!($action = filter_input(INPUT_GET, 'action'))) {
             $action = filter_input(INPUT_POST, 'action');
@@ -861,7 +861,7 @@ class Admin {
                             break;
                     }
                 }
-                if ($service != '' && $tab == 'manage' && $action == 'do') {
+                /*if ($service != '' && $tab == 'manage' && $action == 'do') {
                     switch ($service) {
                         case 'station':
                             if (array_key_exists('manage-station', $_POST)) {
@@ -878,18 +878,18 @@ class Admin {
                             }
                             break;
                     }
-                }
+                }*/
                 if ($service == 'station' && $tab == 'delete' && $action == 'do') {
                     if (array_key_exists('delete-station', $_POST)) {
                         $this->delete_station($id);
                     }
                 }
-                if (array_key_exists('_wpnonce', $_POST)) {
+                /*if (array_key_exists('_wpnonce', $_POST)) {
                     foreach ($this->settings as $s) {
                         $sec = wp_verify_nonce($_POST['_wpnonce'], $s . '-options');
                         if ($sec) { break;}
                     }
-                }
+                }*/
                 break;
             case 'lws-settings':
                 $view = 'settings';
@@ -919,13 +919,12 @@ class Admin {
         if ($view != 'dashboard' && $view != 'station') {
             $this->lws_view_admin_page($view, $args);
         }
-        if ($view == 'station') {
+        elseif ($view == 'station') {
             $this->_station->get();
         }
         elseif ($view == 'dashboard') {
             $this->_dashboard->get();
         }
-
     }
 
     /**
@@ -1707,7 +1706,7 @@ class Admin {
      * Add a located OWM station.
      *
      * @since 3.0.0
-     */
+     *
     public function manage_services() {
         $station = array();
         $error = array();
@@ -1814,5 +1813,5 @@ class Admin {
             $station['error'] = $error;
         }
         return $station;
-    }
+    }*/
 }

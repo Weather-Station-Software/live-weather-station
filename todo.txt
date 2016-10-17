@@ -2,7 +2,7 @@
 *  UPCOMING FEATURES  *
 ***********************
 
- * 2.x - Querying icons texts via shortcodes
+ * 3.x - Querying icons texts via shortcodes
  * 3.x - 4 hours forecasting
  * 3.x - 5 days forecasting
  * 3.x - Forest fire weather index computing
@@ -26,9 +26,7 @@
 
  * 3.x - Ability to (re)order displayed datas in controls like LCD Panel
  * 3.x - Ability to change text color in clean gauges
- * 3.x - About box have a direct link to the relevant GlotPress page
  * 3.x - Better cloud altitude display in widget
- * 4.x - Screen options in list tables
 
  --
 
@@ -53,6 +51,8 @@
   * TBD : stat on events (full, by station, by service ?)
   * TBD : last_refresh
   * TBD : review widgets
+  * TBD : review aggregated for WUG
+  * TBD : direct link to publishing services (as a box?)
 
 
 
@@ -71,6 +71,7 @@ After upgrading, please, review all your settings.
 * New: a full featured dashboard (like the WordPress one) provides a simplified way to access to all features and operating statistics of the plugin.
 * New: a new "station view" offers more in-depth visibility and understanding of the collected weather stations.
 * New: in addition to its nominal mode, Weather Station can now run in a simplified mode (automatic selection of settings, display options, units, etc.).
+* New: it's now possible to collect data from stations published on Weather Underground.
 * New: the min & max boundaries for controls (like meters or gauges) can be set for each measurement types.
 * New: the min & max alarms thresholds for controls (like LCD panel or meters) can be set for each measurement types.
 * New: a widget in the WordPress dashboard now display an "operating summary" of the plugin.

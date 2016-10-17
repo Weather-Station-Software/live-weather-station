@@ -40,7 +40,7 @@ $edit = ($station['guid'] != 0);
                 <td>
                     <select name="station_model" id="station_model" style="width:25em;">
                         <?php foreach ($models as $val) { ?>
-                            <option value="<?php echo $val[1] ?>"<?php if ($station['station_model']==$val[1]) {?> selected="selected"<?php } ?>><?php echo $val[1] ?></option>;
+                            <option value="<?php echo $val ?>"<?php if ($station['station_model']==$val) {?> selected="selected"<?php } ?>><?php echo $val; ?></option>;
                         <?php } ?>
                     </select>
                 </td>

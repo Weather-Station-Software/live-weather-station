@@ -169,8 +169,11 @@ trait Storage {
         $sql .= " comp_bas int(11) NOT NULL DEFAULT '0',";
         $sql .= " comp_ext int(11) NOT NULL DEFAULT '0',";
         $sql .= " comp_int int(11) NOT NULL DEFAULT '0',";
+        $sql .= " comp_xtd int(11) NOT NULL DEFAULT '0',";
         $sql .= " comp_vrt int(11) NOT NULL DEFAULT '0',";
         $sql .= " txt_sync boolean DEFAULT 0 NOT NULL,";
+        $sql .= " raw_sync boolean DEFAULT 0 NOT NULL,";
+        $sql .= " real_sync boolean DEFAULT 0 NOT NULL,";
         $sql .= " owm_user varchar(60) DEFAULT '' NOT NULL,";
         $sql .= " owm_password varchar(60) DEFAULT '' NOT NULL,";
         $sql .= " owm_id varchar(60) DEFAULT '' NOT NULL,";
@@ -191,12 +194,6 @@ trait Storage {
         $sql .= " UNIQUE KEY (station_id)";
         $sql .= ") $charset_collate;";
         $wpdb->query($sql);
-
-
-
-        // ALTER TABLE `dwp_live_weather_station_stations` ADD UNIQUE(` station_id `);»
-
-
     }
 
     /**

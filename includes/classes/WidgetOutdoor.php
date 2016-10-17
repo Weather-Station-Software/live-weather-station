@@ -4,6 +4,7 @@ namespace WeatherStation\UI\Widget;
 
 use WeatherStation\Data\Output;
 use WeatherStation\Utilities\ColorsManipulation as Color;
+use WeatherStation\Data\ID\Handling as ID;
 
 /**
  * Outdoor weather widget class for Weather Station plugin
@@ -15,7 +16,7 @@ use WeatherStation\Utilities\ColorsManipulation as Color;
  */
 class Outdoor extends \WP_Widget {
 
-    use Output;
+    use Output, ID;
 
     /**
      * Register the widget.
@@ -369,7 +370,8 @@ class Outdoor extends \WP_Widget {
                         }
                         break;
                     case 'NAModule3': // Rain gauge
-                        if (array_key_exists('rain', $module['datas'])) {
+                        $wug = ID::is_fake_modulex_id($module['id'], 3);
+                        if (array_key_exists('rain', $module['datas']) && !$wug) {
                             $NAModule3 = true;
                             $datas['rain'] = array();
                             $datas['rain']['value'] = $module['datas']['rain']['value'];
@@ -380,6 +382,12 @@ class Outdoor extends \WP_Widget {
                                 $datas['rain_day_aggregated']['unit'] = $module['datas']['rain_day_aggregated']['unit']['unit'];
                                 $rain_multipart = true;
                             }
+                        }
+                        elseif (array_key_exists('rain_day_aggregated', $module['datas']) && $wug) {
+                            $NAModule3 = true;
+                            $datas['rain'] = array();
+                            $datas['rain']['value'] = $module['datas']['rain_day_aggregated']['value'];
+                            $datas['rain']['unit'] = $module['datas']['rain_day_aggregated']['unit']['unit'];
                         }
                         else {
                             $show_rain = false;
@@ -497,8 +505,8 @@ class Outdoor extends \WP_Widget {
             $timestamp = self::get_date_from_utc($modules['timestamp']).', '.self::get_time_from_utc($modules['timestamp'], $tz);
         }
         $has_current = (count($current) > 0);
-        if (!$NAMain && $has_current && get_option('live_weather_station_owm_connection_mode') != 1) {
-            if ($hide_obsolete && get_option('live_weather_station_owm_connection_mode') == 0) {
+        if (!$NAMain && $has_current) {
+            if ($hide_obsolete) {
                 $show_pressure = false ;
             }
             else {
@@ -518,8 +526,8 @@ class Outdoor extends \WP_Widget {
                 }
             }
         }
-        if (!$NAModule1 && $has_current && get_option('live_weather_station_owm_connection_mode') != 1) {
-            if ($hide_obsolete && get_option('live_weather_station_owm_connection_mode') == 0) {
+        if (!$NAModule1 && $has_current) {
+            if ($hide_obsolete) {
                 $show_humidity = false ;
                 $show_temperature = false;
             }
@@ -543,8 +551,8 @@ class Outdoor extends \WP_Widget {
                 }
             }
         }
-        if (!$NAModule2 && $has_current && get_option('live_weather_station_owm_connection_mode') != 1) {
-            if ($hide_obsolete && get_option('live_weather_station_owm_connection_mode') == 0) {
+        if (!$NAModule2 && $has_current) {
+            if ($hide_obsolete) {
                 $show_wind = false;
             }
             else {
@@ -562,8 +570,8 @@ class Outdoor extends \WP_Widget {
                 }
             }
         }
-        if (!$NAModule3 && $has_current && get_option('live_weather_station_owm_connection_mode') != 1) {
-            if ($hide_obsolete && get_option('live_weather_station_owm_connection_mode') == 0) {
+        if (!$NAModule3 && $has_current) {
+            if ($hide_obsolete) {
                 $show_rain = false;
             }
             else {

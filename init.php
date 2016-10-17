@@ -25,7 +25,7 @@ use WeatherStation\System\Environment\Manager as EnvManager;
  * @return string The full url of the admin page.
  * @since 3.0.0
  */
-function get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $service=null, $dashboard=false) {
+function get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $service=null, $dashboard=false, $id=null) {
     $args = array('page' => $page);
     if (isset($tab)) {
         $args['tab'] = $tab;
@@ -35,6 +35,9 @@ function get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $ser
     }
     if (isset($service)) {
         $args['service'] = $service;
+    }
+    if (isset($id)) {
+        $args['id'] = $id;
     }
     $args['dashboard'] = $dashboard;
     $url = add_query_arg($args, admin_url('admin.php'));
@@ -47,9 +50,10 @@ function get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $ser
  * @since 1.0.0
  */
 define('LWS_FULL_NAME', 'Weather Station 3');
-define('LWS_VERSION', '3.0.0-dev4');
+define('LWS_VERSION', '3.0.0-dev5');
 define('LWS_INLINE_HELP', true);
 define('LWS_WEBSITE_READY', false);
+define('LWS_OWM_READY', false);
 
 define('LWS_MINIMUM_WP_VERSION', '4.0');
 define('LWS_PLUGIN_ID', 'live-weather-station');

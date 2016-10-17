@@ -19,7 +19,7 @@ trait Handling {
 
     private static $live_weather_station_version = '-' ;
     private static $live_weather_station_logger_level = 5 ;
-    private static $live_weather_station_logger_rotate = 20000 ;
+    private static $live_weather_station_logger_rotate = 10000 ;
     private static $live_weather_station_logger_retention = 14 ;
 
     private static $live_weather_station_advanced_mode = false;
