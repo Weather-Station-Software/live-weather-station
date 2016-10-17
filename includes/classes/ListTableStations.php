@@ -24,7 +24,7 @@ class Stations extends Base {
         Output::get_measurement_type insteadof Generator;
     }
 
-    private $limit = 10;
+    private $limit = 4;
     private $filters = array();
 
     public function __construct(){
@@ -58,7 +58,7 @@ class Stations extends Base {
     protected function column_title($item){
         switch ($item['station_type']) {
             case 0:
-                $actions['manage'] = sprintf('<a href="?page=lws-stations&action=form&tab=manage&service=station&id=%s">'.__('Manage services', 'live-weather-station').'</a>', $item['guid']);
+                //$actions['manage'] = sprintf('<a href="?page=lws-stations&action=form&tab=manage&service=station&id=%s">'.__('Manage services', 'live-weather-station').'</a>', $item['guid']);
                 if (!(bool)get_option('live_weather_station_auto_manage_netatmo')) {
                     $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 }
@@ -111,6 +111,12 @@ class Stations extends Base {
         else {
             $comp[] = '';
         }
+        if ($item['comp_xtd'] > 0) {
+            $comp[] = sprintf( _n('%s extra module', '%s extra modules', $item['comp_xtd'], 'live-weather-station'), $item['comp_xtd']);
+        }
+        else {
+            $comp[] = '';
+        }
         if ($item['comp_vrt'] > 0) {
             $comp[] = sprintf( _n('%s virtual module', '%s virtual modules', $item['comp_vrt'], 'live-weather-station'), $item['comp_vrt']);
         }
@@ -118,14 +124,14 @@ class Stations extends Base {
             $comp[] = '';
         }
         $result = '';
-        for ($i = 0; $i <= 3; $i++) {
+        for ($i = 0; $i <= 4; $i++) {
             if ($result == '') {
                 $result = $comp[$i];
             }
             else {
-                if ($i < 3 && ($comp[$i] != '')) {
+                if ($i < 4 && ($comp[$i] != '')) {
                     $follow = false;
-                    for ($j = $i+1; $j <= 3; $j++) {
+                    for ($j = $i+1; $j <= 4; $j++) {
                         if ($comp[$j] != '') {
                             $follow = true;
                         }
@@ -154,6 +160,10 @@ class Stations extends Base {
         return $result;
     }
 
+    protected function column_publishing($item){
+        return implode(', ', $this->get_sharing_details($item));
+    }
+
     protected function column_sc($item){
         if (($item['comp_bas'] + $item['comp_ext'] + $item['comp_int'] + $item['comp_vrt']) == 0) {
             return '';
@@ -169,6 +179,7 @@ class Stations extends Base {
         $columns = array('title' => __('Station', 'live-weather-station'),
                         'location' => __('Location', 'live-weather-station'),
                         'composition' => __('Composition', 'live-weather-station'),
+                        'publishing' => __('Sharing on&hellip;', 'live-weather-station'),
                         'sc' => __('Shortcodes', 'live-weather-station'));
         return $columns;
     }
@@ -297,7 +308,7 @@ class Stations extends Base {
     }
 
     public function get_line_number_select() {
-        $_disp = [10, 20, 30, 40, 50];
+        $_disp = [4, 8, 12, 16];
         $result = array();
         foreach ($_disp as $d) {
             $l = array();

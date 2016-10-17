@@ -114,7 +114,7 @@ class WUGApiClient
         $settings = array ('lang:' . strtoupper($lang), 'pws:1', 'bestfct:0');
         $query = 'pws:' . $id;
         $url = $this->buildUrl($key, $features, $settings, $query, $format);
-        Logger::dev($url);
+        //Logger::dev($url);
         return $this->cacheOrFetchResult($url);
     }
 

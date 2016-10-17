@@ -180,7 +180,7 @@ trait StationClient {
                 }
                 else {
                     //todo:remove before RC
-                    //Logger::critical('***EVAL TREND***', null, null, null, null, null, null, $observation['pressure_trend']);
+                    Logger::critical('***EVAL TREND***', null, null, null, null, null, null, $observation['pressure_trend']);
                 }
                 $this->update_data_table($updates);
             }

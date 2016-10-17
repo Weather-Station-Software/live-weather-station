@@ -113,6 +113,30 @@ jQuery(document).ready( function($) {
         $('#owm-span-sync').show();
     });
 
+    $('#wow-connect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#wow-span-sync').show();
+    });
+
+    $('#wow-disconnect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#wow-span-sync').show();
+    });
+
+    $('#pws-connect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#pws-span-sync').show();
+    });
+
+    $('#pws-disconnect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#pws-span-sync').show();
+    });
+
     $('#wug-connect').click( function() {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });

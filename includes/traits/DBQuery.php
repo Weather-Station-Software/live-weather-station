@@ -654,7 +654,7 @@ trait Query {
      * @return array An array containing the station informations.
      * @since  3.0.0
      */
-    protected function get_station_informations_by_guid($guid) {
+    protected static function get_station($guid) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
         $sql = "SELECT * FROM " . $table_name . " WHERE guid=" . $guid;
@@ -674,6 +674,17 @@ trait Query {
         } catch (\Exception $ex) {
             return array();
         }
+    }
+
+    /**
+     * Get station informations.
+     *
+     * @param integer $guid The station guid.
+     * @return array An array containing the station informations.
+     * @since  3.0.0
+     */
+    protected function get_station_informations_by_guid($guid) {
+        return self::get_station($guid);
     }
 
     /**

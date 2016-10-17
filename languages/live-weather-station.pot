@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Live Weather Station\n"
-"POT-Creation-Date: 2016-10-08 15:43+0200\n"
+"POT-Creation-Date: 2016-10-17 19:33+0200\n"
 "PO-Revision-Date: 2015-11-07 19:46+0100\n"
 "Last-Translator: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
 "Language-Team: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
@@ -20,484 +20,483 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: admin/SystemPluginAdmin.php:127 admin/SystemPluginAdmin.php:132
 #: admin/SystemPluginAdmin.php:137 admin/SystemPluginAdmin.php:142
+#: admin/SystemPluginAdmin.php:147 admin/SystemPluginAdmin.php:152
 #, php-format
 msgid "You can find help on these settings on %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:127 admin/SystemPluginAdmin.php:132
 #: admin/SystemPluginAdmin.php:137 admin/SystemPluginAdmin.php:142
-#: admin/SystemPluginAdmin.php:147 admin/partials/DetailedRequirements.php:62
+#: admin/SystemPluginAdmin.php:147 admin/SystemPluginAdmin.php:152
+#: admin/SystemPluginAdmin.php:157 admin/partials/DetailedRequirements.php:62
 #: admin/partials/SettingsGeneral.php:58
+#: includes/classes/StationHelper.php:578
 msgid "this page"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:128 includes/system/InlineHelp.php:209
+#: admin/SystemPluginAdmin.php:138 includes/system/InlineHelp.php:257
 #, php-format
 msgid ""
 "In order to work properly, %s has to be connected to some services. You can "
 "manage here these connections."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:133 includes/system/InlineHelp.php:210
+#: admin/SystemPluginAdmin.php:143 includes/system/InlineHelp.php:258
 msgid ""
 "You can set here all the units and display options for controls and widgets."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:138 includes/system/InlineHelp.php:211
+#: admin/SystemPluginAdmin.php:148 includes/system/InlineHelp.php:259
 msgid ""
 "You can set here all the thresholds which define limits and alarms in some "
 "controls (LCD panel, gauges, meters, etc.)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:143 includes/system/InlineHelp.php:212
+#: admin/SystemPluginAdmin.php:153 includes/system/InlineHelp.php:260
 #, php-format
 msgid ""
 "You can set here all the parameters related to the operation of the %s "
 "subsystems."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:147
+#: admin/SystemPluginAdmin.php:157
 #, php-format
 msgid "You can find help on these maintenance operations on %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:148 includes/system/InlineHelp.php:213
+#: admin/SystemPluginAdmin.php:158 includes/system/InlineHelp.php:261
 msgid ""
 "Here, you can make some maintenance operations that are not directly "
 "accessible elsewhere."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:157
+#: admin/SystemPluginAdmin.php:167
 msgid "Cache mechanism"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:161
+#: admin/SystemPluginAdmin.php:171
 msgid "Logging policy"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:163
+#: admin/SystemPluginAdmin.php:173
 msgid "Minimum level of severity that will be recorded in the events log."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:167
+#: admin/SystemPluginAdmin.php:177
 msgid "Maximum number and maximum age of events stored in the events log."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:169
+#: admin/SystemPluginAdmin.php:179
 msgid "Automatic management"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:173
+#: admin/SystemPluginAdmin.php:183
 msgid "Servers time shift"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:175
+#: admin/SystemPluginAdmin.php:185
 msgid ""
 "Maximum allowed servers time shift before warning (useful for Netatmo "
 "accuracy)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:177
+#: admin/SystemPluginAdmin.php:187
 msgid "Stations views"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:179
+#: admin/SystemPluginAdmin.php:189
 msgid ""
 "If you check this, stations views will display detailed technical "
 "information for each module."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:181
+#: admin/SystemPluginAdmin.php:191
 msgid "Links"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:193
+#: admin/SystemPluginAdmin.php:203
 msgid "Temperature unit"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:195
+#: admin/SystemPluginAdmin.php:205
 msgid "Unit of measurement in which temperatures are expressed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:197
+#: admin/SystemPluginAdmin.php:207
 msgid "Pressure unit"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:199
+#: admin/SystemPluginAdmin.php:209
 msgid "Unit of measurement in which pressures are expressed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:201
+#: admin/SystemPluginAdmin.php:211
 msgid "Wind speed unit"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:203
+#: admin/SystemPluginAdmin.php:213
 msgid "Unit of measurement in which wind speeds are expressed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:205
+#: admin/SystemPluginAdmin.php:215
 msgid "Carbon monoxide unit"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:207
+#: admin/SystemPluginAdmin.php:217
 msgid ""
 "Unit of measurement in which the concentrations of carbon monoxide are "
 "expressed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:209
+#: admin/SystemPluginAdmin.php:219
 msgid "Distances"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:211
+#: admin/SystemPluginAdmin.php:221
 msgid "Units system in which distances are expressed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:213
+#: admin/SystemPluginAdmin.php:223
 msgid "Altitudes"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:215
+#: admin/SystemPluginAdmin.php:225
 msgid "Units system in which altitudes are expressed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:217
+#: admin/SystemPluginAdmin.php:227
 msgid "Rain & snow"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:219
+#: admin/SystemPluginAdmin.php:229
 msgid "Units system in which rain and snow quantities are expressed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:221
+#: admin/SystemPluginAdmin.php:231
 msgid "Computed values"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:223
+#: admin/SystemPluginAdmin.php:233
 msgid ""
 "Check this if you want the controls and widgets display the computed values "
 "in addition to the measured data."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:225
+#: admin/SystemPluginAdmin.php:235
 msgid "Wind icon"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:227
+#: admin/SystemPluginAdmin.php:237
 msgid "Semantics of the icon representing the wind direction in widgets."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:229
+#: admin/SystemPluginAdmin.php:239
 msgid "Moon icon set"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:231
+#: admin/SystemPluginAdmin.php:241
 msgid "Type of icons to illustrate moon age and phase in widgets."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:233
+#: admin/SystemPluginAdmin.php:243
 msgid "Gauges boundaries"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:235
+#: admin/SystemPluginAdmin.php:245
 #, php-format
 msgid ""
 "By default, min/max boundaries in controls are fixed. If you check this, %s "
 "will try to adapt it to the amplitude of the measures."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:237
+#: admin/SystemPluginAdmin.php:247
 msgid "Data obsolescence"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:239
+#: admin/SystemPluginAdmin.php:249
 msgid ""
 "Duration beyond which a data is considered stale (and will therefore "
 "neither shown nor used in computations)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:281
+#: admin/SystemPluginAdmin.php:291
 msgid "events"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:287
-#: includes/traits/DataDateTimeConversion.php:249
+#: admin/SystemPluginAdmin.php:297
+#: includes/traits/DataDateTimeConversion.php:263
 msgid "days"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:299 includes/system/InlineHelp.php:265
+#: admin/SystemPluginAdmin.php:309 includes/system/InlineHelp.php:383
 msgid "Netatmo"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:302
+#: admin/SystemPluginAdmin.php:312
 #, php-format
 msgid ""
 "Check this to let %s manage Netatmo stations for you (add, remove, etc.)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:319
+#: admin/SystemPluginAdmin.php:329
 msgid "Cache backend features"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:322
+#: admin/SystemPluginAdmin.php:332
 #, php-format
 msgid ""
 "Check this to activate the cache manager of %s for backend rendering (admin "
 "panel, dashboard, station view, etc.)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:323
+#: admin/SystemPluginAdmin.php:333
 msgid "Do not cache generated text files"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:326
+#: admin/SystemPluginAdmin.php:336
 msgid ""
 "Check this to prevent caching of the generated text files. Required on some "
 "server configurations, particularly when using Varnish."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:337
+#: admin/SystemPluginAdmin.php:347
 msgid "seconds"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:348
+#: admin/SystemPluginAdmin.php:358
 msgid "Open internal links in a new window"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:351
+#: admin/SystemPluginAdmin.php:361
 msgid ""
 "Check this to have all auxiliary internal links (like events, etc.) opened "
 "in a new window."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:352
+#: admin/SystemPluginAdmin.php:362
 msgid "Open external links in a new window"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:355
+#: admin/SystemPluginAdmin.php:365
 msgid ""
 "Check this to have all external links (like help, etc.) opened in a new "
 "window."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:366
+#: admin/SystemPluginAdmin.php:376
 msgid "Display technical information"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:446
+#: admin/SystemPluginAdmin.php:456
 msgid "Display it in controls and widgets"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:476
+#: admin/SystemPluginAdmin.php:486
 msgid "Adjusted whenever possible"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:629
+#: admin/SystemPluginAdmin.php:639
 msgid "General settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:630
+#: admin/SystemPluginAdmin.php:640
 msgid "Services settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:631
+#: admin/SystemPluginAdmin.php:641
 msgid "Display settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:632
+#: admin/SystemPluginAdmin.php:642
 msgid "Thresholds settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:633
+#: admin/SystemPluginAdmin.php:643
 msgid "System settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:634
+#: admin/SystemPluginAdmin.php:644
 msgid "Unknown settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:639
+#: admin/SystemPluginAdmin.php:649
 #, php-format
 msgid "%s have been correctly updated."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:645
+#: admin/SystemPluginAdmin.php:655
 #, php-format
 msgid "%s have not been updated. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:653
+#: admin/SystemPluginAdmin.php:663
 #, php-format
 msgid "%s have been correctly reset to defaults."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:659
+#: admin/SystemPluginAdmin.php:669
 #, php-format
 msgid "%s have not been reset to defaults. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:671
+#: admin/SystemPluginAdmin.php:681
 #, php-format
 msgid "%s has not been updated. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:698 admin/SystemPluginAdmin.php:699
+#: admin/SystemPluginAdmin.php:708 admin/SystemPluginAdmin.php:709
 msgid "Dashboard"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:701 admin/partials/Settings.php:17
+#: admin/SystemPluginAdmin.php:711 admin/partials/Settings.php:17
 msgid "Settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:703 admin/partials/ListTableStations.php:16
+#: admin/SystemPluginAdmin.php:713 admin/partials/ListTableStations.php:16
 msgid "Stations"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:705 admin/SystemPluginAdmin.php:714
+#: admin/SystemPluginAdmin.php:715 admin/SystemPluginAdmin.php:724
 #: admin/partials/DashboardSummary.php:36 admin/partials/ListTableLogs.php:16
 msgid "Events log"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:705 admin/SystemPluginAdmin.php:714
+#: admin/SystemPluginAdmin.php:715 admin/SystemPluginAdmin.php:724
 msgid "Events"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:712 admin/SystemPluginAdmin.php:713
+#: admin/SystemPluginAdmin.php:722 admin/SystemPluginAdmin.php:723
 #: admin/partials/Requirements.php:10
 msgid "Requirements"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:940
+#: admin/SystemPluginAdmin.php:967
 #, php-format
 msgid "%s now runs in simplified mode."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:952
+#: admin/SystemPluginAdmin.php:979
 #, php-format
 msgid "%s now runs in extended mode."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:963
+#: admin/SystemPluginAdmin.php:990
 #, php-format
 msgid "%s now displays its data in the metric system."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:974
+#: admin/SystemPluginAdmin.php:1001
 #, php-format
 msgid "%s now displays its data in the imperial system."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:987
+#: admin/SystemPluginAdmin.php:1014
 #, php-format
 msgid "%s no longer uses partial translations."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1000
+#: admin/SystemPluginAdmin.php:1027
 #, php-format
 msgid "%s now uses a partial translation."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1012
+#: admin/SystemPluginAdmin.php:1039
 msgid "Dashboard view has been reset to defaults."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1023
+#: admin/SystemPluginAdmin.php:1050
 msgid "Services view has been reset to defaults."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1034
+#: admin/SystemPluginAdmin.php:1061
 msgid "Stations views have been reset to defaults."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1045
+#: admin/SystemPluginAdmin.php:1072
 msgid "All stations data have been purged."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1057
+#: admin/SystemPluginAdmin.php:1084
 msgid "All stations have been resynchronized."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1104
+#: admin/SystemPluginAdmin.php:1131
 msgid "Unkonwn service."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1112
+#: admin/SystemPluginAdmin.php:1134
+msgid "the login and password can not be empty"
+msgstr ""
+
+#: admin/SystemPluginAdmin.php:1142 admin/SystemPluginAdmin.php:1150
+msgid "the API key can not be empty"
+msgstr ""
+
+#: admin/SystemPluginAdmin.php:1157
 #, php-format
 msgid "%s is now connected to %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1118
+#: admin/SystemPluginAdmin.php:1163
 #, php-format
 msgid "Unable to connect %s to %s. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1120
+#: admin/SystemPluginAdmin.php:1165
 #, php-format
 msgid "The error message is \"%s\"."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1136
+#: admin/SystemPluginAdmin.php:1185
 #, php-format
 msgid "%s is now disconnected from %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1142
+#: admin/SystemPluginAdmin.php:1191
 #, php-format
 msgid "Unable to disconnect %s from %s. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1151
+#: admin/SystemPluginAdmin.php:1200
 #, php-format
 msgid "Connection to %s has not been updated. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1217
+#: admin/SystemPluginAdmin.php:1223
 #, php-format
 msgid "The station %s has been correctly removed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1223 admin/SystemPluginAdmin.php:1230
+#: admin/SystemPluginAdmin.php:1229 admin/SystemPluginAdmin.php:1236
 #, php-format
 msgid "Unable to remove the station %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1262 admin/SystemPluginAdmin.php:1422
+#: admin/SystemPluginAdmin.php:1419 admin/SystemPluginAdmin.php:1543
 #, php-format
 msgid "The station %s has been correctly added."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1269 admin/SystemPluginAdmin.php:1276
-#: admin/SystemPluginAdmin.php:1440 admin/SystemPluginAdmin.php:1457
+#: admin/SystemPluginAdmin.php:1426 admin/SystemPluginAdmin.php:1433
+#: admin/SystemPluginAdmin.php:1561 admin/SystemPluginAdmin.php:1578
+#: admin/SystemPluginAdmin.php:1671 admin/SystemPluginAdmin.php:1678
+#: admin/SystemPluginAdmin.php:1687
 #, php-format
 msgid "Unable to add the station %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1418 includes/classes/StationHelper.php:94
+#: admin/SystemPluginAdmin.php:1539 admin/SystemPluginAdmin.php:1630
+#: admin/SystemPluginAdmin.php:1662 includes/classes/StationHelper.php:229
 #, php-format
 msgid "The station %s has been correctly updated."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1434 admin/SystemPluginAdmin.php:1452
-#: includes/classes/StationHelper.php:100
+#: admin/SystemPluginAdmin.php:1555 admin/SystemPluginAdmin.php:1573
+#: admin/SystemPluginAdmin.php:1637 admin/SystemPluginAdmin.php:1695
+#: includes/classes/StationHelper.php:236
+#: includes/classes/StationHelper.php:243
 #, php-format
 msgid "Unable to update the station %s."
-msgstr ""
-
-#: admin/SystemPluginAdmin.php:1561
-#, php-format
-msgid ""
-"The services associated with the station %s have been correctly updated."
-msgstr ""
-
-#: admin/SystemPluginAdmin.php:1568
-#, php-format
-msgid "Unable to update the services associated with the station %s."
-msgstr ""
-
-#: admin/SystemPluginAdmin.php:1579 includes/classes/StationHelper.php:108
-msgid "Unable to perform this update."
 msgstr ""
 
 #: admin/partials/404.php:10
@@ -512,7 +511,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: admin/partials/ChooseStationType.php:14 includes/system/InlineHelp.php:265
+#: admin/partials/ChooseStationType.php:14 includes/system/InlineHelp.php:383
 msgid "a Netatmo station to which you have access to."
 msgstr ""
 
@@ -524,7 +523,7 @@ msgid ""
 "settings."
 msgstr ""
 
-#: admin/partials/ChooseStationType.php:25 includes/system/InlineHelp.php:266
+#: admin/partials/ChooseStationType.php:25 includes/system/InlineHelp.php:384
 msgid ""
 "a \"virtual\" weather station whose you only know the city or its "
 "coordinates."
@@ -537,11 +536,11 @@ msgid ""
 "To set it, click on this logo to be redirected to the services settings."
 msgstr ""
 
-#: admin/partials/ChooseStationType.php:36 includes/system/InlineHelp.php:267
+#: admin/partials/ChooseStationType.php:36 includes/system/InlineHelp.php:386
 msgid "a personal weather station published on OpenWeatherMap."
 msgstr ""
 
-#: admin/partials/ChooseStationType.php:47 includes/system/InlineHelp.php:268
+#: admin/partials/ChooseStationType.php:47 includes/system/InlineHelp.php:391
 msgid "a personal weather station published on Weather Underground."
 msgstr ""
 
@@ -558,6 +557,7 @@ msgstr ""
 
 #: admin/partials/ConnectNetatmo.php:10
 #: admin/partials/ConnectOpenWeatherMap.php:21
+#: admin/partials/ConnectWeatherUnderground.php:21
 #, php-format
 msgid "All stations associated to this service will be removed from %s."
 msgstr ""
@@ -567,48 +567,73 @@ msgid "Login"
 msgstr ""
 
 #: admin/partials/ConnectNetatmo.php:31
-#: admin/partials/FormManageStation.php:78
-#: admin/partials/FormManageStation.php:108
+#: admin/partials/FormManageStation.php:79
+#: admin/partials/FormManageStation.php:109
+#: includes/classes/StationHelper.php:568
+#: includes/classes/StationHelper.php:573
 msgid "Password"
 msgstr ""
 
 #: admin/partials/ConnectNetatmo.php:39
 #: admin/partials/ConnectOpenWeatherMap.php:56
+#: admin/partials/ConnectWeatherUnderground.php:56
 msgid "Status"
 msgstr ""
 
 #: admin/partials/ConnectNetatmo.php:42
 #: admin/partials/ConnectOpenWeatherMap.php:59
+#: admin/partials/ConnectWeatherUnderground.php:59
 msgid "Up and running"
 msgstr ""
 
 #: admin/partials/ConnectNetatmo.php:42
 #: admin/partials/ConnectOpenWeatherMap.php:59
-#: includes/classes/ListTableStations.php:79
-#: includes/system/InlineHelp.php:278
+#: admin/partials/ConnectWeatherUnderground.php:59
+#: includes/classes/ListTableStations.php:80
+#: includes/system/InlineHelp.php:400
 msgid "See events log"
 msgstr ""
 
-#: admin/partials/ConnectNetatmo.php:52
-#: admin/partials/ConnectOpenWeatherMap.php:76
+#: admin/partials/ConnectNetatmo.php:53
+#: admin/partials/ConnectOpenWeatherMap.php:77
+#: admin/partials/ConnectWeatherUnderground.php:77
+msgid "Connecting to service, please wait"
+msgstr ""
+
+#: admin/partials/ConnectNetatmo.php:55
+#: admin/partials/ConnectOpenWeatherMap.php:79
+#: admin/partials/ConnectWeatherUnderground.php:79
+#: admin/partials/StationSharing.php:51
 msgid "Connect"
 msgstr ""
 
-#: admin/partials/ConnectNetatmo.php:59
-#: admin/partials/ConnectOpenWeatherMap.php:83
+#: admin/partials/ConnectNetatmo.php:63
+#: admin/partials/ConnectOpenWeatherMap.php:87
+#: admin/partials/ConnectWeatherUnderground.php:87
+msgid "Disconnecting from service, please wait"
+msgstr ""
+
+#: admin/partials/ConnectNetatmo.php:65
+#: admin/partials/ConnectOpenWeatherMap.php:89
+#: admin/partials/ConnectWeatherUnderground.php:89
+#: admin/partials/StationSharing.php:61
 msgid "Disconnect"
 msgstr ""
 
 #: admin/partials/ConnectOpenWeatherMap.php:35
+#: admin/partials/ConnectWeatherUnderground.php:35
 msgid "API key"
 msgstr ""
 
 #: admin/partials/ConnectOpenWeatherMap.php:42
 #: admin/partials/ConnectOpenWeatherMap.php:63
+#: admin/partials/ConnectWeatherUnderground.php:42
+#: admin/partials/ConnectWeatherUnderground.php:63
 msgid "API plan"
 msgstr ""
 
 #: admin/partials/ConnectOpenWeatherMap.php:66
+#: admin/partials/ConnectWeatherUnderground.php:66
 msgid "get details"
 msgstr ""
 
@@ -671,7 +696,7 @@ msgid ""
 msgstr ""
 
 #: admin/partials/DashboardSummary.php:21
-#: includes/classes/ListTableStations.php:148
+#: includes/classes/ListTableStations.php:155
 #: includes/traits/DataUnitConversion.php:518
 msgid "none"
 msgstr ""
@@ -853,8 +878,8 @@ msgid "You can find detailed requirements on %s."
 msgstr ""
 
 #: admin/partials/FormAddEditLocation.php:9
-#: includes/classes/ListTableStations.php:85
-#: includes/system/InlineHelp.php:279
+#: includes/classes/ListTableStations.php:86
+#: includes/system/InlineHelp.php:401
 msgid "Verify on a map"
 msgstr ""
 
@@ -867,13 +892,15 @@ msgstr ""
 
 #: admin/partials/FormAddEditLocation.php:10
 #: admin/partials/FormAddEditLocation.php:122
+#: admin/partials/FormAddEditWeatherUnderground.php:54
 #: admin/partials/FormAddNetatmo.php:49
 msgid "Add This Station"
 msgstr ""
 
 #: admin/partials/FormAddEditLocation.php:10
 #: admin/partials/FormAddEditLocation.php:131
-#: admin/partials/FormManageStation.php:116
+#: admin/partials/FormAddEditWeatherUnderground.php:63
+#: admin/partials/FormManageStation.php:117
 msgid "Save Changes"
 msgstr ""
 
@@ -890,10 +917,10 @@ msgid "Some required fields are missing!"
 msgstr ""
 
 #: admin/partials/FormAddEditLocation.php:37
+#: admin/partials/FormAddEditWeatherUnderground.php:35
 #: includes/traits/DataArraysGenerator.php:280
-#: includes/traits/DataArraysGenerator.php:845
-#: includes/traits/DataArraysGenerator.php:850
-#: includes/traits/DataArraysGenerator.php:1363
+#: includes/traits/DataArraysGenerator.php:868
+#: includes/traits/DataArraysGenerator.php:873
 msgid "Station name"
 msgstr ""
 
@@ -902,6 +929,8 @@ msgstr ""
 #: admin/partials/FormAddEditLocation.php:45
 #: admin/partials/FormAddEditLocation.php:55
 #: admin/partials/FormAddEditLocation.php:90
+#: admin/partials/FormAddEditWeatherUnderground.php:39
+#: admin/partials/FormAddEditWeatherUnderground.php:49
 msgid "(required)"
 msgstr ""
 
@@ -914,7 +943,7 @@ msgid "Country"
 msgstr ""
 
 #: admin/partials/FormAddEditLocation.php:55
-#: includes/traits/DataTypeDescription.php:271
+#: includes/traits/DataTypeDescription.php:297
 msgid "Time zone"
 msgstr ""
 
@@ -934,6 +963,7 @@ msgstr ""
 
 #: admin/partials/FormAddEditLocation.php:99
 #: admin/partials/FormAddEditLocation.php:108
+#: admin/partials/FormAddEditWeatherUnderground.php:60
 #: admin/partials/FormAddNetatmo.php:50
 msgid "Adding this station, please wait"
 msgstr ""
@@ -954,7 +984,7 @@ msgid ""
 msgstr ""
 
 #: admin/partials/FormAddEditLocation.php:113
-#: includes/traits/DataTypeDescription.php:263
+#: includes/traits/DataTypeDescription.php:289
 msgid "Latitude"
 msgstr ""
 
@@ -963,7 +993,7 @@ msgid "(eg 49.85)"
 msgstr ""
 
 #: admin/partials/FormAddEditLocation.php:117
-#: includes/traits/DataTypeDescription.php:267
+#: includes/traits/DataTypeDescription.php:293
 msgid "Longitude"
 msgstr ""
 
@@ -975,13 +1005,39 @@ msgstr ""
 #: admin/partials/FormAddEditLocation.php:126
 #: admin/partials/FormAddEditLocation.php:133
 #: admin/partials/FormAddEditLocation.php:135
+#: admin/partials/FormAddEditWeatherUnderground.php:56
+#: admin/partials/FormAddEditWeatherUnderground.php:58
+#: admin/partials/FormAddEditWeatherUnderground.php:65
+#: admin/partials/FormAddEditWeatherUnderground.php:67
 #: admin/partials/FormAddNetatmo.php:49
-#: admin/partials/FormManageStation.php:116
+#: admin/partials/FormManageStation.php:117
 msgid "Cancel"
 msgstr ""
 
 #: admin/partials/FormAddEditLocation.php:137
+#: admin/partials/FormAddEditWeatherUnderground.php:69
 msgid "Updating this station, please wait"
+msgstr ""
+
+#: admin/partials/FormAddEditWeatherUnderground.php:17
+msgid "Add a weather station published on Weather Underground"
+msgstr ""
+
+#: admin/partials/FormAddEditWeatherUnderground.php:19
+msgid "Edit a weather station published on Weather Underground"
+msgstr ""
+
+#: admin/partials/FormAddEditWeatherUnderground.php:39
+msgid "Station model"
+msgstr ""
+
+#: admin/partials/FormAddEditWeatherUnderground.php:49
+#: admin/partials/FormManageStation.php:75
+#: admin/partials/FormManageStation.php:105
+#: includes/classes/StationHelper.php:567
+#: includes/classes/StationHelper.php:572
+#: includes/traits/DataArraysGenerator.php:279
+msgid "Station ID"
 msgstr ""
 
 #: admin/partials/FormAddNetatmo.php:24
@@ -990,8 +1046,9 @@ msgstr ""
 
 #: admin/partials/FormAddNetatmo.php:36 admin/partials/LogDetail.php:31
 #: includes/classes/ListTableLog.php:98
-#: includes/classes/ListTableStations.php:165
-#: includes/classes/StationHelper.php:273
+#: includes/classes/ListTableStations.php:179
+#: includes/classes/StationHelper.php:416
+#: includes/traits/DataTypeDescription.php:112
 msgid "Station"
 msgstr ""
 
@@ -1045,128 +1102,126 @@ msgid ""
 "please click on logos."
 msgstr ""
 
-#: admin/partials/FormManageStation.php:18
+#: admin/partials/FormManageStation.php:18 includes/system/InlineHelp.php:335
 msgid ""
 "Note that no data from inside your home (noise, temperature, CO₂ ...) are "
 "transmitted to these services."
 msgstr ""
 
-#: admin/partials/FormManageStation.php:31
+#: admin/partials/FormManageStation.php:32 includes/system/InlineHelp.php:342
 msgid ""
 "To obtain site ID and authentication key from Met Office please, follow "
 "these steps:"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:33
-#: admin/partials/FormManageStation.php:63
-#: admin/partials/FormManageStation.php:93
+#: admin/partials/FormManageStation.php:34
+#: admin/partials/FormManageStation.php:64
+#: admin/partials/FormManageStation.php:94 includes/system/InlineHelp.php:268
+#: includes/system/InlineHelp.php:278 includes/system/InlineHelp.php:343
+#: includes/system/InlineHelp.php:353 includes/system/InlineHelp.php:363
 msgid "Create an account"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:33
+#: admin/partials/FormManageStation.php:34
 msgid "on the Weather Observations Website from Met Office"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:34
-#: admin/partials/FormManageStation.php:64
-#: admin/partials/FormManageStation.php:94
+#: admin/partials/FormManageStation.php:35
+#: admin/partials/FormManageStation.php:65
+#: admin/partials/FormManageStation.php:95
 msgid "After registration, log in and"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:34
+#: admin/partials/FormManageStation.php:35 includes/system/InlineHelp.php:344
 msgid "create a site"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:35
+#: admin/partials/FormManageStation.php:36
 msgid ""
 "Then, copy and paste <em>Site ID</em> and <em>Authentication Key</em> in "
 "the following fields, and activate push."
 msgstr ""
 
-#: admin/partials/FormManageStation.php:37
-#: admin/partials/FormManageStation.php:67
-#: admin/partials/FormManageStation.php:97
+#: admin/partials/FormManageStation.php:38
+#: admin/partials/FormManageStation.php:68
+#: admin/partials/FormManageStation.php:98
 msgid "After a few hours you'll get something"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:37
-#: admin/partials/FormManageStation.php:67
-#: admin/partials/FormManageStation.php:97
+#: admin/partials/FormManageStation.php:38
+#: admin/partials/FormManageStation.php:68
+#: admin/partials/FormManageStation.php:98 includes/system/InlineHelp.php:346
+#: includes/system/InlineHelp.php:356 includes/system/InlineHelp.php:366
 msgid "like this!"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:41
+#: admin/partials/FormManageStation.php:42
 msgid ""
 "Unable to activate this service. Met Office servers have returned the "
 "following error:"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:44
+#: admin/partials/FormManageStation.php:45
+#: includes/classes/StationHelper.php:562
 msgid "Site ID"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:48
+#: admin/partials/FormManageStation.php:49
+#: includes/classes/StationHelper.php:563
 msgid "Authentication key"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:52
-#: admin/partials/FormManageStation.php:82
-#: admin/partials/FormManageStation.php:112
+#: admin/partials/FormManageStation.php:53
+#: admin/partials/FormManageStation.php:83
+#: admin/partials/FormManageStation.php:113
 msgid "Push data"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:61
+#: admin/partials/FormManageStation.php:62 includes/system/InlineHelp.php:352
 msgid "To obtain Station ID from PWS please, follow these steps:"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:63
+#: admin/partials/FormManageStation.php:64
 msgid "on the PWS website"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:64
+#: admin/partials/FormManageStation.php:65 includes/system/InlineHelp.php:354
 msgid "add a new station"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:65
-#: admin/partials/FormManageStation.php:95
+#: admin/partials/FormManageStation.php:66
+#: admin/partials/FormManageStation.php:96
 msgid ""
 "Then, copy and paste <em>Station ID</em> in the corresponding following "
 "field, set your password and activate push."
 msgstr ""
 
-#: admin/partials/FormManageStation.php:71
+#: admin/partials/FormManageStation.php:72
 msgid ""
 "Unable to activate this service. PWS servers have returned the following "
 "error:"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:74
-#: admin/partials/FormManageStation.php:104
-#: includes/traits/DataArraysGenerator.php:279
-#: includes/traits/DataArraysGenerator.php:1362
-msgid "Station ID"
-msgstr ""
-
-#: admin/partials/FormManageStation.php:91
+#: admin/partials/FormManageStation.php:92 includes/system/InlineHelp.php:362
 msgid ""
 "To obtain Station ID from Weather Underground please, follow these steps:"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:93
+#: admin/partials/FormManageStation.php:94
 msgid "on the Weather Underground website"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:94
+#: admin/partials/FormManageStation.php:95 includes/system/InlineHelp.php:364
 msgid "add a new station by following the 4 steps registration form"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:101
+#: admin/partials/FormManageStation.php:102
 msgid ""
 "Unable to activate this service. Weather Underground servers have returned "
 "the following error:"
 msgstr ""
 
-#: admin/partials/FormManageStation.php:117
+#: admin/partials/FormManageStation.php:118
 msgid "Contacting services, please wait"
 msgstr ""
 
@@ -1199,7 +1254,7 @@ msgid "Timestamp"
 msgstr ""
 
 #: admin/partials/LogDetail.php:26 admin/partials/Settings.php:26
-#: includes/system/InlineHelp.php:212
+#: includes/system/InlineHelp.php:260
 msgid "System"
 msgstr ""
 
@@ -1226,23 +1281,23 @@ msgstr ""
 msgid "PHP configuration of your server"
 msgstr ""
 
-#: admin/partials/Settings.php:21 includes/system/InlineHelp.php:208
+#: admin/partials/Settings.php:21 includes/system/InlineHelp.php:256
 msgid "General"
 msgstr ""
 
-#: admin/partials/Settings.php:22 includes/system/InlineHelp.php:209
+#: admin/partials/Settings.php:22 includes/system/InlineHelp.php:257
 msgid "Services"
 msgstr ""
 
-#: admin/partials/Settings.php:24 includes/system/InlineHelp.php:210
+#: admin/partials/Settings.php:24 includes/system/InlineHelp.php:258
 msgid "Display"
 msgstr ""
 
-#: admin/partials/Settings.php:25 includes/system/InlineHelp.php:211
+#: admin/partials/Settings.php:25 includes/system/InlineHelp.php:259
 msgid "Thresholds"
 msgstr ""
 
-#: admin/partials/Settings.php:27 includes/system/InlineHelp.php:213
+#: admin/partials/Settings.php:27 includes/system/InlineHelp.php:261
 msgid "Maintenance"
 msgstr ""
 
@@ -1402,7 +1457,7 @@ msgstr ""
 #: admin/partials/ShortcodesJustgage.php:28
 #: admin/partials/ShortcodesJustgage.php:181
 #: admin/partials/StationShortcodes.php:11
-#: includes/classes/ListTableStations.php:159
+#: includes/classes/ListTableStations.php:173
 msgid "clean gauge"
 msgstr ""
 
@@ -1449,8 +1504,8 @@ msgstr ""
 #: admin/partials/ShortcodesJustgage.php:149
 #: admin/partials/ShortcodesLCD.php:83
 #: admin/partials/ShortcodesSteelmeter.php:280
-#: includes/traits/DataTypeDescription.php:304
-#: includes/traits/DataTypeDescription.php:310
+#: includes/traits/DataTypeDescription.php:330
+#: includes/traits/DataTypeDescription.php:336
 msgid "Size"
 msgstr ""
 
@@ -1489,7 +1544,7 @@ msgstr ""
 #: admin/partials/ShortcodesLCD.php:27 admin/partials/ShortcodesLCD.php:141
 #: admin/partials/ShortcodesSteelmeter.php:189
 #: admin/partials/StationShortcodes.php:10
-#: includes/classes/ListTableStations.php:158
+#: includes/classes/ListTableStations.php:172
 msgid "LCD display"
 msgstr ""
 
@@ -1500,7 +1555,7 @@ msgstr ""
 #: admin/partials/ShortcodesSteelmeter.php:28
 #: admin/partials/ShortcodesSteelmeter.php:312
 #: admin/partials/StationShortcodes.php:12
-#: includes/classes/ListTableStations.php:160
+#: includes/classes/ListTableStations.php:174
 msgid "steel meter"
 msgstr ""
 
@@ -1571,29 +1626,47 @@ msgstr ""
 
 #: admin/partials/ShortcodesTextual.php:78
 #: admin/partials/StationShortcodes.php:9
-#: includes/classes/ListTableStations.php:157
+#: includes/classes/ListTableStations.php:171
 msgid "textual datas"
 msgstr ""
 
-#: admin/partials/StationDataSharing.php:13
+#: admin/partials/StationModule.php:72
+msgid "installed on"
+msgstr ""
+
+#: admin/partials/StationPublishing.php:13
 msgid "this URL"
 msgstr ""
 
-#: admin/partials/StationDataSharing.php:14
+#: admin/partials/StationPublishing.php:14
 #, php-format
 msgid "This stickertags file can be accessed at %s, or at alternates URLs."
 msgstr ""
 
-#: admin/partials/StationDataSharing.php:15
+#: admin/partials/StationPublishing.php:15
+#, php-format
+msgid "See %s for detailed information."
+msgstr ""
+
+#: admin/partials/StationPublishing.php:15
 msgid "documentation"
 msgstr ""
 
-#: admin/partials/StationDataSharing.php:30
+#: admin/partials/StationPublishing.php:30
 msgid "Publish outdoor data as stickertags format"
 msgstr ""
 
-#: admin/partials/StationModule.php:73
-msgid "installed on"
+#: admin/partials/StationSharing.php:9
+#, php-format
+msgid "%s will stop sending data from the station to this service."
+msgstr ""
+
+#: admin/partials/StationSharing.php:49
+msgid "Activating data sharing, please wait"
+msgstr ""
+
+#: admin/partials/StationSharing.php:59
+msgid "Deactivating data sharing, please wait"
 msgstr ""
 
 #: admin/partials/WidgetEphemerisSettings.php:10
@@ -1734,11 +1807,11 @@ msgid "Hide obsolete measurements"
 msgstr ""
 
 #: includes/classes/DashboardHelper.php:96
-#: includes/classes/StationHelper.php:175
+#: includes/classes/StationHelper.php:318
 msgid "Boxes"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:109 includes/system/InlineHelp.php:177
+#: includes/classes/DashboardHelper.php:109 includes/system/InlineHelp.php:225
 msgid "Welcome"
 msgstr ""
 
@@ -1747,15 +1820,15 @@ msgstr ""
 msgid "%s Dashboard"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:205 includes/system/InlineHelp.php:172
+#: includes/classes/DashboardHelper.php:205 includes/system/InlineHelp.php:220
 msgid "At a Glance"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:206 includes/system/InlineHelp.php:173
+#: includes/classes/DashboardHelper.php:206 includes/system/InlineHelp.php:221
 msgid "Versions"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:210 includes/system/InlineHelp.php:174
+#: includes/classes/DashboardHelper.php:210 includes/system/InlineHelp.php:222
 msgid "Translation"
 msgstr ""
 
@@ -1764,25 +1837,25 @@ msgstr ""
 msgid "%s News"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:215 includes/system/InlineHelp.php:175
+#: includes/classes/DashboardHelper.php:215 includes/system/InlineHelp.php:223
 msgid "About"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:216 includes/system/InlineHelp.php:176
+#: includes/classes/DashboardHelper.php:216 includes/system/InlineHelp.php:224
 msgid "Licenses"
 msgstr ""
 
-#: includes/classes/I18nHelper.php:192
+#: includes/classes/I18nHelper.php:198
 #, php-format
 msgid "%2$s is using a partial translation in %1$s."
 msgstr ""
 
-#: includes/classes/I18nHelper.php:195
+#: includes/classes/I18nHelper.php:201
 #, php-format
 msgid "There is a partial translation of %2$s in %1$s."
 msgstr ""
 
-#: includes/classes/I18nHelper.php:197
+#: includes/classes/I18nHelper.php:203
 #, php-format
 msgid ""
 "This translation is currently %3$d%% complete. We need your help to make it "
@@ -1790,7 +1863,7 @@ msgid ""
 "this translation!"
 msgstr ""
 
-#: includes/classes/I18nHelper.php:201
+#: includes/classes/I18nHelper.php:207
 #, php-format
 msgid ""
 "You're using WordPress in a language which is not supported yet by %2$s. "
@@ -1799,11 +1872,11 @@ msgid ""
 "goal!"
 msgstr ""
 
-#: includes/classes/I18nHelper.php:204 includes/classes/ListTableLog.php:50
+#: includes/classes/I18nHelper.php:210 includes/classes/ListTableLog.php:50
 msgid "see details"
 msgstr ""
 
-#: includes/classes/I18nHelper.php:206
+#: includes/classes/I18nHelper.php:212
 msgid "see here"
 msgstr ""
 
@@ -1904,7 +1977,7 @@ msgid "Errors &amp; beyond"
 msgstr ""
 
 #: includes/classes/ListTableLog.php:239
-#: includes/classes/ListTableStations.php:301
+#: includes/classes/ListTableStations.php:316
 #, php-format
 msgid "Show %d lines per page"
 msgstr ""
@@ -1921,128 +1994,159 @@ msgstr ""
 msgid "All stations"
 msgstr ""
 
-#: includes/classes/ListTableStations.php:60
-#: includes/system/InlineHelp.php:276
-msgid "Manage services"
-msgstr ""
-
-#: includes/classes/ListTableStations.php:62
-#: includes/classes/ListTableStations.php:67
-#: includes/classes/ListTableStations.php:71
-#: includes/classes/ListTableStations.php:75
-#: includes/system/InlineHelp.php:277
+#: includes/classes/ListTableStations.php:63
+#: includes/classes/ListTableStations.php:68
+#: includes/classes/ListTableStations.php:72
+#: includes/classes/ListTableStations.php:76
+#: includes/system/InlineHelp.php:399
 msgid "Remove"
 msgstr ""
 
-#: includes/classes/ListTableStations.php:66
-#: includes/classes/ListTableStations.php:70
-#: includes/classes/ListTableStations.php:74
-#: includes/system/InlineHelp.php:275
+#: includes/classes/ListTableStations.php:67
+#: includes/classes/ListTableStations.php:71
+#: includes/classes/ListTableStations.php:75
+#: includes/system/InlineHelp.php:398
 msgid "Edit"
 msgstr ""
 
-#: includes/classes/ListTableStations.php:87
-#: includes/traits/DataTypeDescription.php:259
+#: includes/classes/ListTableStations.php:88
+#: includes/traits/DataTypeDescription.php:285
 msgid "Altitude"
 msgstr ""
 
-#: includes/classes/ListTableStations.php:96
+#: includes/classes/ListTableStations.php:97
 #, php-format
 msgid "%s main base"
 msgid_plural "%s main bases"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/classes/ListTableStations.php:102
+#: includes/classes/ListTableStations.php:103
 #, php-format
 msgid "%s outdoor module"
 msgid_plural "%s outdoor modules"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/classes/ListTableStations.php:108
+#: includes/classes/ListTableStations.php:109
 #, php-format
 msgid "%s indoor module"
 msgid_plural "%s indoor modules"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/classes/ListTableStations.php:114
+#: includes/classes/ListTableStations.php:115
+#, php-format
+msgid "%s extra module"
+msgid_plural "%s extra modules"
+msgstr[0] ""
+msgstr[1] ""
+
+#: includes/classes/ListTableStations.php:121
 #, php-format
 msgid "%s virtual module"
 msgid_plural "%s virtual modules"
 msgstr[0] ""
 msgstr[1] ""
 
-#: includes/classes/ListTableStations.php:136
-#: includes/classes/ListTableStations.php:141
+#: includes/classes/ListTableStations.php:143
+#: includes/classes/ListTableStations.php:148
 msgid "and"
 msgstr ""
 
-#: includes/classes/ListTableStations.php:166
-#: includes/classes/StationHelper.php:274
+#: includes/classes/ListTableStations.php:180
+#: includes/classes/StationHelper.php:417
 msgid "Location"
 msgstr ""
 
-#: includes/classes/ListTableStations.php:167
+#: includes/classes/ListTableStations.php:181
 msgid "Composition"
 msgstr ""
 
-#: includes/classes/ListTableStations.php:168
-#: includes/classes/StationHelper.php:278 includes/system/InlineHelp.php:280
+#: includes/classes/ListTableStations.php:182
+#: includes/system/InlineHelp.php:402
+msgid "Sharing on&hellip;"
+msgstr ""
+
+#: includes/classes/ListTableStations.php:183
+#: includes/classes/StationHelper.php:418 includes/system/InlineHelp.php:403
 msgid "Shortcodes"
 msgstr ""
 
-#: includes/classes/StationHelper.php:177
+#: includes/classes/StationHelper.php:217
+#, php-format
+msgid "Unable to activate data sharing with %s."
+msgstr ""
+
+#: includes/classes/StationHelper.php:251
+msgid "Unable to perform this update."
+msgstr ""
+
+#: includes/classes/StationHelper.php:320
 msgid "Modules"
 msgstr ""
 
-#: includes/classes/StationHelper.php:276
-msgid "Data sharing"
+#: includes/classes/StationHelper.php:420
+msgid "Data publishing"
+msgstr ""
+
+#: includes/classes/StationHelper.php:423
+msgid "Sharing with Met Office"
+msgstr ""
+
+#: includes/classes/StationHelper.php:424
+msgid "Sharing with PWS Weather"
+msgstr ""
+
+#: includes/classes/StationHelper.php:425
+msgid "Sharing with Weather Underground"
+msgstr ""
+
+#: includes/classes/StationHelper.php:578
+msgid "This station is currently shared on"
 msgstr ""
 
 #: includes/classes/WidgetEphemeris.php:39
-#: includes/traits/DataTypeDescription.php:94
+#: includes/traits/DataTypeDescription.php:93
 msgid "Ephemeris"
 msgstr ""
 
 #: includes/classes/WidgetEphemeris.php:40
+#, php-format
 msgid ""
-"Display ephemeris for sun and moon at the location of a Netatmo and/or "
-"OpenWeatherMap weather station."
-msgstr ""
-
-#: includes/classes/WidgetOutdoor.php:41
-msgid "Outdoor weather summary"
+"Display ephemeris for sun and moon at the location of a station added to %s."
 msgstr ""
 
 #: includes/classes/WidgetOutdoor.php:42
-msgid ""
-"Display outdoor measurements of a Netatmo and/or OpenWeatherMap weather "
-"station."
+msgid "Outdoor weather summary"
 msgstr ""
 
-#: includes/system/InlineHelp.php:140
+#: includes/classes/WidgetOutdoor.php:43
+#, php-format
+msgid "Display outdoor measurements of a station added to %s."
+msgstr ""
+
+#: includes/system/InlineHelp.php:188
 msgid "See also:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:141
+#: includes/system/InlineHelp.php:189
 msgid "Documentation"
 msgstr ""
 
-#: includes/system/InlineHelp.php:142
+#: includes/system/InlineHelp.php:190
 msgid "FAQ"
 msgstr ""
 
-#: includes/system/InlineHelp.php:143
+#: includes/system/InlineHelp.php:191
 msgid "Support"
 msgstr ""
 
-#: includes/system/InlineHelp.php:144
+#: includes/system/InlineHelp.php:192
 msgid "Official website"
 msgstr ""
 
-#: includes/system/InlineHelp.php:154
+#: includes/system/InlineHelp.php:202
 #, php-format
 msgid ""
 "Welcome to your %1$s Dashboard! This is the screen you will see when you "
@@ -2050,161 +2154,281 @@ msgid ""
 "help for any %1$s screen by clicking the Help tab above the screen title."
 msgstr ""
 
-#: includes/system/InlineHelp.php:158 includes/system/InlineHelp.php:203
-#: includes/system/InlineHelp.php:244 includes/system/InlineHelp.php:261
-#: includes/system/InlineHelp.php:308 includes/system/InlineHelp.php:352
+#: includes/system/InlineHelp.php:206 includes/system/InlineHelp.php:251
+#: includes/system/InlineHelp.php:322 includes/system/InlineHelp.php:379
+#: includes/system/InlineHelp.php:431 includes/system/InlineHelp.php:475
 msgid "Overview"
 msgstr ""
 
-#: includes/system/InlineHelp.php:162
+#: includes/system/InlineHelp.php:210
 #, php-format
 msgid ""
 "You can use the following controls to arrange your %s Dashboard screen to "
 "suit your workflow:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:163 includes/system/InlineHelp.php:248
+#: includes/system/InlineHelp.php:211 includes/system/InlineHelp.php:326
 msgid "Screen Options"
 msgstr ""
 
-#: includes/system/InlineHelp.php:163
+#: includes/system/InlineHelp.php:211
 #, php-format
 msgid "Use the Screen Options tab to choose which %s Dashboard boxes to show."
 msgstr ""
 
-#: includes/system/InlineHelp.php:164 includes/system/InlineHelp.php:249
+#: includes/system/InlineHelp.php:212 includes/system/InlineHelp.php:327
 msgid "Drag and Drop"
 msgstr ""
 
-#: includes/system/InlineHelp.php:164 includes/system/InlineHelp.php:249
+#: includes/system/InlineHelp.php:212 includes/system/InlineHelp.php:327
 msgid ""
 "To rearrange the boxes, drag and drop by clicking on the title bar of the "
 "selected box and releasing when you see a gray dotted-line rectangle appear "
 "in the location you want to place the box."
 msgstr ""
 
-#: includes/system/InlineHelp.php:165 includes/system/InlineHelp.php:250
+#: includes/system/InlineHelp.php:213 includes/system/InlineHelp.php:328
 msgid "Box Controls"
 msgstr ""
 
-#: includes/system/InlineHelp.php:165 includes/system/InlineHelp.php:250
+#: includes/system/InlineHelp.php:213 includes/system/InlineHelp.php:328
 msgid "Click the title bar of the box to expand or collapse it."
 msgstr ""
 
-#: includes/system/InlineHelp.php:167 includes/system/InlineHelp.php:252
+#: includes/system/InlineHelp.php:215 includes/system/InlineHelp.php:330
 msgid "Layout"
 msgstr ""
 
-#: includes/system/InlineHelp.php:171
+#: includes/system/InlineHelp.php:219
 #, php-format
 msgid "The boxes on your %s Dashboard screen are:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:172
+#: includes/system/InlineHelp.php:220
 #, php-format
 msgid ""
 "Displays a summary of %s operations. Note that a similar box is displayed "
 "in your main WordPress Dashboard."
 msgstr ""
 
-#: includes/system/InlineHelp.php:173
+#: includes/system/InlineHelp.php:221
 msgid "Displays important versions numbers."
 msgstr ""
 
-#: includes/system/InlineHelp.php:174
+#: includes/system/InlineHelp.php:222
 msgid "If displayed, shows translations status."
 msgstr ""
 
-#: includes/system/InlineHelp.php:175
+#: includes/system/InlineHelp.php:223
 #, php-format
 msgid "Displays information about %s and contributors."
 msgstr ""
 
-#: includes/system/InlineHelp.php:176
+#: includes/system/InlineHelp.php:224
 msgid ""
 "Displays important information about the licenses under which are published "
 "some weather data."
 msgstr ""
 
-#: includes/system/InlineHelp.php:177
+#: includes/system/InlineHelp.php:225
 #, php-format
 msgid ""
 "Shows links for some of the most common tasks when getting started or using "
 "%s."
 msgstr ""
 
-#: includes/system/InlineHelp.php:179 includes/system/InlineHelp.php:215
+#: includes/system/InlineHelp.php:227 includes/system/InlineHelp.php:263
 msgid "Content"
 msgstr ""
 
-#: includes/system/InlineHelp.php:187 includes/system/InlineHelp.php:223
-#: includes/system/InlineHelp.php:291 includes/system/InlineHelp.php:336
-#: includes/system/InlineHelp.php:359
+#: includes/system/InlineHelp.php:235 includes/system/InlineHelp.php:291
+#: includes/system/InlineHelp.php:414 includes/system/InlineHelp.php:459
+#: includes/system/InlineHelp.php:482
 msgid "For more information:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:188
+#: includes/system/InlineHelp.php:236
 msgid "Dashboard description"
 msgstr ""
 
-#: includes/system/InlineHelp.php:199
+#: includes/system/InlineHelp.php:247
 #, php-format
 msgid ""
 "This screen allows you to adjust all settings required to adapt the "
 "operation of %s to what you expect."
 msgstr ""
 
-#: includes/system/InlineHelp.php:207
+#: includes/system/InlineHelp.php:255
 msgid "The tabs on the settings screen are:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:208
+#: includes/system/InlineHelp.php:256
 #, php-format
 msgid "Allows you to switch the mode in which %s runs."
 msgstr ""
 
-#: includes/system/InlineHelp.php:210 includes/system/InlineHelp.php:211
-#: includes/system/InlineHelp.php:212 includes/system/InlineHelp.php:213
+#: includes/system/InlineHelp.php:258 includes/system/InlineHelp.php:259
+#: includes/system/InlineHelp.php:260 includes/system/InlineHelp.php:261
 #, php-format
 msgid "This tab is visible only if %s runs in extended mode."
 msgstr ""
 
-#: includes/system/InlineHelp.php:224
+#: includes/system/InlineHelp.php:267
+msgid "To obtain an API key from OpenWeatherMap please, follow these steps:"
+msgstr ""
+
+#: includes/system/InlineHelp.php:268
+#, php-format
+msgid "%s on the OpenWeatherMap website."
+msgstr ""
+
+#: includes/system/InlineHelp.php:269
+#, php-format
+msgid "After registration, log in to %s."
+msgstr ""
+
+#: includes/system/InlineHelp.php:269
+msgid "create an get your API key"
+msgstr ""
+
+#: includes/system/InlineHelp.php:270
+msgid ""
+"Then, copy and paste your API key in the corresponding fields of the "
+"\"OpenWeatherMap\" box, set your plan and click on the \"connect\" button."
+msgstr ""
+
+#: includes/system/InlineHelp.php:271
+#, php-format
+msgid ""
+"Note: the <em>Free Plan</em> will allow you to add up to 10 OpenWeatherMap "
+"stations in %s."
+msgstr ""
+
+#: includes/system/InlineHelp.php:277
+msgid ""
+"To obtain an API key from Weather Underground please, follow these steps:"
+msgstr ""
+
+#: includes/system/InlineHelp.php:278 includes/system/InlineHelp.php:363
+#, php-format
+msgid "%s on the Weather Underground website."
+msgstr ""
+
+#: includes/system/InlineHelp.php:279
+#, php-format
+msgid "After registration, log in and %s after selecting your plan."
+msgstr ""
+
+#: includes/system/InlineHelp.php:279
+msgid "get your API key"
+msgstr ""
+
+#: includes/system/InlineHelp.php:280
+msgid ""
+"Then, copy and paste your API key in the corresponding fields of the "
+"\"Weather Underground\" box, set your plan and click on the \"connect\" "
+"button."
+msgstr ""
+
+#: includes/system/InlineHelp.php:281
+#, php-format
+msgid ""
+"Note: the <em>Stratus Developper Plan</em> - the free one - will allow you "
+"to add up to 3 Weather Underground stations in %s."
+msgstr ""
+
+#: includes/system/InlineHelp.php:292
 msgid "Settings management"
 msgstr ""
 
-#: includes/system/InlineHelp.php:240
+#: includes/system/InlineHelp.php:318
 msgid "This \"station view\" shows you the details of a station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:241
+#: includes/system/InlineHelp.php:319
 msgid ""
 "The left-hand column display statical information on the station as well as "
 "shortcodes or publishing format options."
 msgstr ""
 
-#: includes/system/InlineHelp.php:242
+#: includes/system/InlineHelp.php:320
 msgid ""
 "The right-hand column displays all modules (main base, outdoor, indoor and "
 "virtual modules) attached to the station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:247
+#: includes/system/InlineHelp.php:325
 msgid ""
 "You can use the following controls to arrange this station view to suit "
 "your workflow:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:248
+#: includes/system/InlineHelp.php:326
 msgid "Use the Screen Options tab to choose which boxes and modules to show."
 msgstr ""
 
-#: includes/system/InlineHelp.php:257
+#: includes/system/InlineHelp.php:334
+#, php-format
+msgid ""
+"You can participate in the dissemination and sharing of data collected by "
+"your personal weather station by enabling %s to send, every 10 minutes, "
+"outdoor data like temperature, pressure, humidity, dew point, wind and rain "
+"to online services. To obtain help for a specific service, please read the "
+"corresponding help tab."
+msgstr ""
+
+#: includes/system/InlineHelp.php:337
+msgid "Sharing data"
+msgstr ""
+
+#: includes/system/InlineHelp.php:343
+#, php-format
+msgid "%s on the Weather Observations Website from Met Office."
+msgstr ""
+
+#: includes/system/InlineHelp.php:344 includes/system/InlineHelp.php:354
+#: includes/system/InlineHelp.php:364
+#, php-format
+msgid "After registration, log in and %s."
+msgstr ""
+
+#: includes/system/InlineHelp.php:345
+msgid ""
+"Then, copy and paste <em>Site ID</em> and <em>Authentication Key</em> in "
+"the corresponding fields of the \"WOW Met Office\" box, and click on the "
+"\"connect\" button."
+msgstr ""
+
+#: includes/system/InlineHelp.php:346 includes/system/InlineHelp.php:356
+#: includes/system/InlineHelp.php:366
+#, php-format
+msgid "After a few hours you'll get something %s"
+msgstr ""
+
+#: includes/system/InlineHelp.php:353
+#, php-format
+msgid "%s on the PWS website."
+msgstr ""
+
+#: includes/system/InlineHelp.php:355
+msgid ""
+"Then, copy and paste <em>Station ID</em> in the corresponding fields of the "
+"\"PWS Weather\" box, set your password and click on the \"connect\" button."
+msgstr ""
+
+#: includes/system/InlineHelp.php:365
+msgid ""
+"Then, copy and paste <em>Station ID</em> in the corresponding fields of the "
+"\"Weather Underground\" box, set your password and click on the \"connect\" "
+"button."
+msgstr ""
+
+#: includes/system/InlineHelp.php:375
 #, php-format
 msgid "This screen displays all stations collected by %s."
 msgstr ""
 
-#: includes/system/InlineHelp.php:258
+#: includes/system/InlineHelp.php:376
 #, php-format
 msgid ""
 "To add a new weather station (to have its data collected by %s), just click "
@@ -2212,78 +2436,77 @@ msgid ""
 "of the station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:259
+#: includes/system/InlineHelp.php:377
 msgid ""
 "If you mouse over the line of an existing station, some of the station "
 "management features will appear. To display the full station view, just "
 "click on its name."
 msgstr ""
 
-#: includes/system/InlineHelp.php:264
+#: includes/system/InlineHelp.php:382
 #, php-format
 msgid ""
 "In this version of %s and depending of the API key you have set, you can "
 "add the following types of stations:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:266
+#: includes/system/InlineHelp.php:384
 msgid "Virtual"
 msgstr ""
 
-#: includes/system/InlineHelp.php:267
+#: includes/system/InlineHelp.php:386
 msgid "OpenWeatherMap"
 msgstr ""
 
-#: includes/system/InlineHelp.php:268
+#: includes/system/InlineHelp.php:391
 msgid "WeatherUndergroung"
 msgstr ""
 
-#: includes/system/InlineHelp.php:270
+#: includes/system/InlineHelp.php:393
 msgid "Stations types"
 msgstr ""
 
-#: includes/system/InlineHelp.php:274
+#: includes/system/InlineHelp.php:397
 msgid ""
 "Depending of the type of the station, you can access to these features:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:275
+#: includes/system/InlineHelp.php:398
 msgid ""
 "To modify or update the properties of the station (city, country, "
 "coordinates, etc.)."
 msgstr ""
 
-#: includes/system/InlineHelp.php:276
-#, php-format
-msgid "To let %s send outdoor data of the station to some online services."
-msgstr ""
-
-#: includes/system/InlineHelp.php:277
+#: includes/system/InlineHelp.php:399
 #, php-format
 msgid "To remove the station from the %s collect process."
 msgstr ""
 
-#: includes/system/InlineHelp.php:278
+#: includes/system/InlineHelp.php:400
 msgid "To see events associated with the station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:279
+#: includes/system/InlineHelp.php:401
 msgid "To verify, visually, the coordinates of the station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:280
+#: includes/system/InlineHelp.php:402
+msgid "To get the direct url where the station shares its data."
+msgstr ""
+
+#: includes/system/InlineHelp.php:403
 msgid "To obtain shortcodes ready to insert in a page or a post."
 msgstr ""
 
-#: includes/system/InlineHelp.php:282
+#: includes/system/InlineHelp.php:405
 msgid "Features"
 msgstr ""
 
-#: includes/system/InlineHelp.php:292
+#: includes/system/InlineHelp.php:415
 msgid "Stations management"
 msgstr ""
 
-#: includes/system/InlineHelp.php:303
+#: includes/system/InlineHelp.php:426
 #, php-format
 msgid ""
 "This screen displays all events generated by %s during its operation. These "
@@ -2291,73 +2514,73 @@ msgid ""
 "collecting weather data."
 msgstr ""
 
-#: includes/system/InlineHelp.php:304
+#: includes/system/InlineHelp.php:427
 msgid "To view the details of an event, just click on its name."
 msgstr ""
 
-#: includes/system/InlineHelp.php:312
+#: includes/system/InlineHelp.php:435
 msgid "Events have the following types:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:314
+#: includes/system/InlineHelp.php:437
 #, php-format
 msgid "A major error. %s doesn't run anymore or can't start."
 msgstr ""
 
-#: includes/system/InlineHelp.php:315
+#: includes/system/InlineHelp.php:438
 #, php-format
 msgid "An error that undoubtedly affects the %s system operations."
 msgstr ""
 
-#: includes/system/InlineHelp.php:316
+#: includes/system/InlineHelp.php:439
 #, php-format
 msgid "An error that undoubtedly affects the %s current operations."
 msgstr ""
 
-#: includes/system/InlineHelp.php:317
+#: includes/system/InlineHelp.php:440
 #, php-format
 msgid "An error that may affects the %s operations."
 msgstr ""
 
-#: includes/system/InlineHelp.php:318
+#: includes/system/InlineHelp.php:441
 #, php-format
 msgid ""
 "A warning related to a temporary condition. Does not usually affect the %s "
 "operations."
 msgstr ""
 
-#: includes/system/InlineHelp.php:319
+#: includes/system/InlineHelp.php:442
 msgid "An important information. Now you know!"
 msgstr ""
 
-#: includes/system/InlineHelp.php:320
+#: includes/system/InlineHelp.php:443
 msgid "A standard information, just for you to know... and forget!"
 msgstr ""
 
-#: includes/system/InlineHelp.php:321
+#: includes/system/InlineHelp.php:444
 msgid "An information for coders and testers, so not for humans."
 msgstr ""
 
-#: includes/system/InlineHelp.php:322
+#: includes/system/InlineHelp.php:445
 msgid "The event is not typed, this can't be a good news."
 msgstr ""
 
-#: includes/system/InlineHelp.php:329
+#: includes/system/InlineHelp.php:452
 msgid "Events types"
 msgstr ""
 
-#: includes/system/InlineHelp.php:337
+#: includes/system/InlineHelp.php:460
 msgid "Events log description"
 msgstr ""
 
-#: includes/system/InlineHelp.php:348
+#: includes/system/InlineHelp.php:471
 #, php-format
 msgid ""
 "Your installation of WordPress does not meet the minimum requirements "
 "needed for %s to run. The items to be corrected are shown on this screen."
 msgstr ""
 
-#: includes/system/InlineHelp.php:360
+#: includes/system/InlineHelp.php:483
 msgid "Plugin requirements"
 msgstr ""
 
@@ -2396,11 +2619,11 @@ msgstr ""
 #: includes/traits/DBQuery.php:300 includes/traits/DBQuery.php:327
 #: includes/traits/DBQuery.php:355 includes/traits/DBQuery.php:382
 #: includes/traits/DBQuery.php:408 includes/traits/DBQuery.php:435
-#: includes/traits/DataOutput.php:2775 includes/traits/DataOutput.php:2896
+#: includes/traits/DataOutput.php:2775 includes/traits/DataOutput.php:2897
 msgid "Database contains inconsistent datas"
 msgstr ""
 
-#: includes/traits/DBQuery.php:1048
+#: includes/traits/DBQuery.php:1095
 msgid "removed station"
 msgstr ""
 
@@ -2501,33 +2724,28 @@ msgid "DMS ending with cardinal"
 msgstr ""
 
 #: includes/traits/DataArraysGenerator.php:281
-#: includes/traits/DataArraysGenerator.php:1364
 msgid "Module ID"
 msgstr ""
 
 #: includes/traits/DataArraysGenerator.php:282
-#: includes/traits/DataArraysGenerator.php:1365
 msgid "Module type"
 msgstr ""
 
 #: includes/traits/DataArraysGenerator.php:283
-#: includes/traits/DataArraysGenerator.php:846
-#: includes/traits/DataArraysGenerator.php:850
-#: includes/traits/DataArraysGenerator.php:851
-#: includes/traits/DataArraysGenerator.php:1366
+#: includes/traits/DataArraysGenerator.php:869
+#: includes/traits/DataArraysGenerator.php:873
+#: includes/traits/DataArraysGenerator.php:874
 msgid "Module name"
 msgstr ""
 
 #: includes/traits/DataArraysGenerator.php:284
-#: includes/traits/DataArraysGenerator.php:1367
 msgid "Measurement timestamp"
 msgstr ""
 
 #: includes/traits/DataArraysGenerator.php:286
-#: includes/traits/DataArraysGenerator.php:848
-#: includes/traits/DataArraysGenerator.php:851
-#: includes/traits/DataArraysGenerator.php:853
-#: includes/traits/DataArraysGenerator.php:1369
+#: includes/traits/DataArraysGenerator.php:871
+#: includes/traits/DataArraysGenerator.php:874
+#: includes/traits/DataArraysGenerator.php:876
 msgid "Measurement type"
 msgstr ""
 
@@ -2541,1009 +2759,999 @@ msgstr ""
 #: includes/traits/DataArraysGenerator.php:327
 #: includes/traits/DataArraysGenerator.php:333
 #: includes/traits/DataArraysGenerator.php:336
-#: includes/traits/DataArraysGenerator.php:1373
-#: includes/traits/DataArraysGenerator.php:1380
-#: includes/traits/DataArraysGenerator.php:1386
-#: includes/traits/DataArraysGenerator.php:1389
-#: includes/traits/DataArraysGenerator.php:1393
-#: includes/traits/DataArraysGenerator.php:1397
-#: includes/traits/DataArraysGenerator.php:1404
-#: includes/traits/DataArraysGenerator.php:1410
-#: includes/traits/DataArraysGenerator.php:1413
 msgid "Measurement value"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:598
-#: includes/traits/DataArraysGenerator.php:1443
+#: includes/traits/DataArraysGenerator.php:619
 msgid "[all modules]"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:657
+#: includes/traits/DataArraysGenerator.php:680
 msgid "Fast"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:658
-#: includes/traits/DataArraysGenerator.php:743
+#: includes/traits/DataArraysGenerator.php:681
+#: includes/traits/DataArraysGenerator.php:766
 #: includes/traits/DataOutput.php:2408 includes/traits/DataOutput.php:2587
 #: includes/traits/DataOutput.php:2631
 msgid "Medium"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:659
+#: includes/traits/DataArraysGenerator.php:682
 msgid "Slow"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:672
-#: includes/traits/DataArraysGenerator.php:1079
+#: includes/traits/DataArraysGenerator.php:695
+#: includes/traits/DataArraysGenerator.php:1102
 msgid "Standard - Without backlight"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:673
+#: includes/traits/DataArraysGenerator.php:696
 msgid "Standard - With backlight"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:674
-#: includes/traits/DataArraysGenerator.php:1080
+#: includes/traits/DataArraysGenerator.php:697
+#: includes/traits/DataArraysGenerator.php:1103
 msgid "Translucent - Red"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:675
-#: includes/traits/DataArraysGenerator.php:1081
+#: includes/traits/DataArraysGenerator.php:698
+#: includes/traits/DataArraysGenerator.php:1104
 msgid "Translucent - Orange"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:676
-#: includes/traits/DataArraysGenerator.php:1082
+#: includes/traits/DataArraysGenerator.php:699
+#: includes/traits/DataArraysGenerator.php:1105
 msgid "Translucent - Beige"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:677
+#: includes/traits/DataArraysGenerator.php:700
 msgid "Translucent - Yellow"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:678
-#: includes/traits/DataArraysGenerator.php:1083
+#: includes/traits/DataArraysGenerator.php:701
+#: includes/traits/DataArraysGenerator.php:1106
 msgid "Translucent - Yellow green"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:679
+#: includes/traits/DataArraysGenerator.php:702
 msgid "Translucent - Light green"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:680
-#: includes/traits/DataArraysGenerator.php:1084
+#: includes/traits/DataArraysGenerator.php:703
+#: includes/traits/DataArraysGenerator.php:1107
 msgid "Translucent - Standard green"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:681
-#: includes/traits/DataArraysGenerator.php:1085
+#: includes/traits/DataArraysGenerator.php:704
+#: includes/traits/DataArraysGenerator.php:1108
 msgid "Translucent - Light blue"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:682
-#: includes/traits/DataArraysGenerator.php:1086
+#: includes/traits/DataArraysGenerator.php:705
+#: includes/traits/DataArraysGenerator.php:1109
 msgid "Translucent - Blue"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:683
-#: includes/traits/DataArraysGenerator.php:1088
+#: includes/traits/DataArraysGenerator.php:706
+#: includes/traits/DataArraysGenerator.php:1111
 msgid "Translucent - Light purple"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:684
-#: includes/traits/DataArraysGenerator.php:1089
+#: includes/traits/DataArraysGenerator.php:707
+#: includes/traits/DataArraysGenerator.php:1112
 msgid "Translucent - Gray"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:685
-#: includes/traits/DataArraysGenerator.php:1087
+#: includes/traits/DataArraysGenerator.php:708
+#: includes/traits/DataArraysGenerator.php:1110
 msgid "Translucent - White"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:686
-#: includes/traits/DataArraysGenerator.php:1090
+#: includes/traits/DataArraysGenerator.php:709
+#: includes/traits/DataArraysGenerator.php:1113
 msgid "Contrasted - Red"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:687
+#: includes/traits/DataArraysGenerator.php:710
 msgid "Contrasted - Amber"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:688
+#: includes/traits/DataArraysGenerator.php:711
 msgid "Contrasted - Green"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:689
-#: includes/traits/DataArraysGenerator.php:1091
+#: includes/traits/DataArraysGenerator.php:712
+#: includes/traits/DataArraysGenerator.php:1114
 msgid "Contrasted - Turquoise"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:690
+#: includes/traits/DataArraysGenerator.php:713
 msgid "Contrasted - Light blue"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:691
-#: includes/traits/DataArraysGenerator.php:1094
+#: includes/traits/DataArraysGenerator.php:714
+#: includes/traits/DataArraysGenerator.php:1117
 msgid "Contrasted - Blue"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:692
-#: includes/traits/DataArraysGenerator.php:1095
+#: includes/traits/DataArraysGenerator.php:715
+#: includes/traits/DataArraysGenerator.php:1118
 msgid "Contrasted - Dark blue"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:693
+#: includes/traits/DataArraysGenerator.php:716
 msgid "Contrasted - Purple"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:694
+#: includes/traits/DataArraysGenerator.php:717
 msgid "Contrasted - Dark purple"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:695
+#: includes/traits/DataArraysGenerator.php:718
 msgid "Contrasted - Black & Yellow"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:696
-#: includes/traits/DataArraysGenerator.php:1093
+#: includes/traits/DataArraysGenerator.php:719
+#: includes/traits/DataArraysGenerator.php:1116
 msgid "Contrasted - Black"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:697
-#: includes/traits/DataArraysGenerator.php:1092
+#: includes/traits/DataArraysGenerator.php:720
+#: includes/traits/DataArraysGenerator.php:1115
 msgid "Contrasted - Dark grey"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:698
-#: includes/traits/DataArraysGenerator.php:1096
+#: includes/traits/DataArraysGenerator.php:721
+#: includes/traits/DataArraysGenerator.php:1119
 msgid "Soft - Amber"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:699
-#: includes/traits/DataArraysGenerator.php:1097
+#: includes/traits/DataArraysGenerator.php:722
+#: includes/traits/DataArraysGenerator.php:1120
 msgid "Soft - Dark green"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:700
-#: includes/traits/DataArraysGenerator.php:1098
+#: includes/traits/DataArraysGenerator.php:723
+#: includes/traits/DataArraysGenerator.php:1121
 msgid "Soft - Blue"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:701
-#: includes/traits/DataArraysGenerator.php:1099
+#: includes/traits/DataArraysGenerator.php:724
+#: includes/traits/DataArraysGenerator.php:1122
 msgid "Soft - Dark blue"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:702
+#: includes/traits/DataArraysGenerator.php:725
 msgid "Soft - Navy"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:703
-#: includes/traits/DataArraysGenerator.php:1100
+#: includes/traits/DataArraysGenerator.php:726
+#: includes/traits/DataArraysGenerator.php:1123
 msgid "Soft - Purple"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:704
+#: includes/traits/DataArraysGenerator.php:727
 msgid "Soft - Dark purple"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:705
+#: includes/traits/DataArraysGenerator.php:728
 msgid "Soft - Grey"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:706
+#: includes/traits/DataArraysGenerator.php:729
 msgid "Flat - Pomegranate"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:707
+#: includes/traits/DataArraysGenerator.php:730
 msgid "Flat - Alizarin"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:708
+#: includes/traits/DataArraysGenerator.php:731
 msgid "Flat - Pumpkin"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:709
+#: includes/traits/DataArraysGenerator.php:732
 msgid "Flat - Carrot"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:710
+#: includes/traits/DataArraysGenerator.php:733
 msgid "Flat - Orange"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:711
+#: includes/traits/DataArraysGenerator.php:734
 msgid "Flat - Sunflower"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:712
+#: includes/traits/DataArraysGenerator.php:735
 msgid "Flat - Emerald"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:713
+#: includes/traits/DataArraysGenerator.php:736
 msgid "Flat - Nephritis"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:714
+#: includes/traits/DataArraysGenerator.php:737
 msgid "Flat - Turquoise"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:715
+#: includes/traits/DataArraysGenerator.php:738
 msgid "Flat - Peter river"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:716
+#: includes/traits/DataArraysGenerator.php:739
 msgid "Flat - Sky"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:717
+#: includes/traits/DataArraysGenerator.php:740
 msgid "Flat - Belize hole"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:718
+#: includes/traits/DataArraysGenerator.php:741
 msgid "Flat - Amethyst"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:719
+#: includes/traits/DataArraysGenerator.php:742
 msgid "Flat - Wisteria"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:720
+#: includes/traits/DataArraysGenerator.php:743
 msgid "Flat - Wet asphalt"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:721
+#: includes/traits/DataArraysGenerator.php:744
 msgid "Flat - Midnight blue"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:722
+#: includes/traits/DataArraysGenerator.php:745
 msgid "Flat - Black"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:723
+#: includes/traits/DataArraysGenerator.php:746
 msgid "Flat - Asbestos"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:724
+#: includes/traits/DataArraysGenerator.php:747
 msgid "Flat - Concrete"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:725
+#: includes/traits/DataArraysGenerator.php:748
 msgid "Flat - Silver"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:726
+#: includes/traits/DataArraysGenerator.php:749
 msgid "Flat - Clouds"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:740
+#: includes/traits/DataArraysGenerator.php:763
 msgid "Miniature"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:742
+#: includes/traits/DataArraysGenerator.php:765
 msgid "Small"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:744
+#: includes/traits/DataArraysGenerator.php:767
 msgid "Large"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:746
+#: includes/traits/DataArraysGenerator.php:769
 msgid "Scalable"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:749
+#: includes/traits/DataArraysGenerator.php:772
 msgid "Gigantic"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:763
+#: includes/traits/DataArraysGenerator.php:786
 msgid "Standard (for light background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:764
+#: includes/traits/DataArraysGenerator.php:787
 msgid "Standard (for dark background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:765
+#: includes/traits/DataArraysGenerator.php:788
 msgid "Flag (for light background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:766
+#: includes/traits/DataArraysGenerator.php:789
 msgid "Flag (for dark background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:767
+#: includes/traits/DataArraysGenerator.php:790
 msgid "Pinky (for light background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:768
+#: includes/traits/DataArraysGenerator.php:791
 msgid "Pinky (for dark background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:769
+#: includes/traits/DataArraysGenerator.php:792
 msgid "Aquamarine (for light background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:770
+#: includes/traits/DataArraysGenerator.php:793
 msgid "Aquamarine (for dark background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:771
+#: includes/traits/DataArraysGenerator.php:794
 msgid "B&W (for light background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:772
+#: includes/traits/DataArraysGenerator.php:795
 msgid "B&W (for dark background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:773
+#: includes/traits/DataArraysGenerator.php:796
 msgid "Solid red (for light background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:774
+#: includes/traits/DataArraysGenerator.php:797
 msgid "Solid red (for dark background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:775
+#: includes/traits/DataArraysGenerator.php:798
 msgid "Solid orange (for light background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:776
+#: includes/traits/DataArraysGenerator.php:799
 msgid "Solid orange (for dark background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:777
+#: includes/traits/DataArraysGenerator.php:800
 msgid "Solid yellow (for light background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:778
+#: includes/traits/DataArraysGenerator.php:801
 msgid "Solid yellow (for dark background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:779
+#: includes/traits/DataArraysGenerator.php:802
 msgid "Solid green (for light background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:780
+#: includes/traits/DataArraysGenerator.php:803
 msgid "Solid green (for dark background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:781
+#: includes/traits/DataArraysGenerator.php:804
 msgid "Solid blue (for light background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:782
+#: includes/traits/DataArraysGenerator.php:805
 msgid "Solid blue (for dark background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:783
+#: includes/traits/DataArraysGenerator.php:806
 msgid "Solid purple (for light background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:784
+#: includes/traits/DataArraysGenerator.php:807
 msgid "Solid purple (for dark background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:785
+#: includes/traits/DataArraysGenerator.php:808
 msgid "Solid black (for light background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:786
+#: includes/traits/DataArraysGenerator.php:809
 msgid "Solid black (for dark background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:787
+#: includes/traits/DataArraysGenerator.php:810
 msgid "Transparent (for light background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:788
+#: includes/traits/DataArraysGenerator.php:811
 msgid "Transparent (for dark background)"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:801
-#: includes/traits/DataArraysGenerator.php:844
-#: includes/traits/DataArraysGenerator.php:866
-#: includes/traits/DataArraysGenerator.php:1059
-#: includes/traits/DataArraysGenerator.php:1078
-#: includes/traits/DataArraysGenerator.php:1112
-#: includes/traits/DataArraysGenerator.php:1167
+#: includes/traits/DataArraysGenerator.php:824
+#: includes/traits/DataArraysGenerator.php:867
+#: includes/traits/DataArraysGenerator.php:889
+#: includes/traits/DataArraysGenerator.php:1082
+#: includes/traits/DataArraysGenerator.php:1101
+#: includes/traits/DataArraysGenerator.php:1135
+#: includes/traits/DataArraysGenerator.php:1190
 msgid "None"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:802
+#: includes/traits/DataArraysGenerator.php:825
 msgid "External"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:803
+#: includes/traits/DataArraysGenerator.php:826
 msgid "Internal"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:816
+#: includes/traits/DataArraysGenerator.php:839
 msgid "Half - Flat - Thin"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:817
+#: includes/traits/DataArraysGenerator.php:840
 msgid "Half - Flat - Standard"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:818
+#: includes/traits/DataArraysGenerator.php:841
 msgid "Half - Flat - Fat"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:819
+#: includes/traits/DataArraysGenerator.php:842
 msgid "Half - Flat - Pie"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:820
+#: includes/traits/DataArraysGenerator.php:843
 msgid "Half - 3D - Thin"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:821
+#: includes/traits/DataArraysGenerator.php:844
 msgid "Half - 3D - Standard"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:822
+#: includes/traits/DataArraysGenerator.php:845
 msgid "Half - 3D - Fat"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:823
+#: includes/traits/DataArraysGenerator.php:846
 msgid "Half - 3D - Pie"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:824
+#: includes/traits/DataArraysGenerator.php:847
 msgid "Full - Flat - Thin"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:825
+#: includes/traits/DataArraysGenerator.php:848
 msgid "Full - Flat - Standard"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:826
+#: includes/traits/DataArraysGenerator.php:849
 msgid "Full - Flat - Fat"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:827
+#: includes/traits/DataArraysGenerator.php:850
 msgid "Full - Flat - Pie"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:828
+#: includes/traits/DataArraysGenerator.php:851
 msgid "Full - 3D - Thin"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:829
+#: includes/traits/DataArraysGenerator.php:852
 msgid "Full - 3D - Standard"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:830
+#: includes/traits/DataArraysGenerator.php:853
 msgid "Full - 3D - Fat"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:831
+#: includes/traits/DataArraysGenerator.php:854
 msgid "Full - 3D - Pie"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:847
-#: includes/traits/DataArraysGenerator.php:852
+#: includes/traits/DataArraysGenerator.php:870
+#: includes/traits/DataArraysGenerator.php:875
 msgid "Short measurement type"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:849
-#: includes/traits/DataArraysGenerator.php:852
-#: includes/traits/DataArraysGenerator.php:853
-#: includes/traits/DataArraysGenerator.php:867
+#: includes/traits/DataArraysGenerator.php:872
+#: includes/traits/DataArraysGenerator.php:875
+#: includes/traits/DataArraysGenerator.php:876
+#: includes/traits/DataArraysGenerator.php:890
 msgid "Measurement unit"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:880
+#: includes/traits/DataArraysGenerator.php:903
 msgid "Test with actual background"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:881
+#: includes/traits/DataArraysGenerator.php:904
 msgid "Test with white background"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:882
+#: includes/traits/DataArraysGenerator.php:905
 msgid "Test with light background"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:883
+#: includes/traits/DataArraysGenerator.php:906
 msgid "Test with medium background"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:884
+#: includes/traits/DataArraysGenerator.php:907
 msgid "Test with dark background"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:885
+#: includes/traits/DataArraysGenerator.php:908
 msgid "Test with black background"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:898
+#: includes/traits/DataArraysGenerator.php:921
 msgid "Analog - 1/4"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:899
+#: includes/traits/DataArraysGenerator.php:922
 msgid "Analog - half"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:900
+#: includes/traits/DataArraysGenerator.php:923
 msgid "Analog - 3/4"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:901
+#: includes/traits/DataArraysGenerator.php:924
 msgid "Analog - full"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:902
+#: includes/traits/DataArraysGenerator.php:925
 msgid "Digital - 1/4"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:903
+#: includes/traits/DataArraysGenerator.php:926
 msgid "Digital - half"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:904
+#: includes/traits/DataArraysGenerator.php:927
 msgid "Digital - 3/4"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:905
+#: includes/traits/DataArraysGenerator.php:928
 msgid "Digital - full"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:906
+#: includes/traits/DataArraysGenerator.php:929
 msgid "Top meter"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:907
+#: includes/traits/DataArraysGenerator.php:930
 msgid "Left meter"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:908
+#: includes/traits/DataArraysGenerator.php:931
 msgid "Right meter"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:909
+#: includes/traits/DataArraysGenerator.php:932
 msgid "Vintage wind compass"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:910
+#: includes/traits/DataArraysGenerator.php:933
 msgid "Standard wind compass"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:911
+#: includes/traits/DataArraysGenerator.php:934
 msgid "Modern wind compass"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:912
+#: includes/traits/DataArraysGenerator.php:935
 msgid "Altimeter"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:924
+#: includes/traits/DataArraysGenerator.php:947
 msgid "Black metal"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:925
+#: includes/traits/DataArraysGenerator.php:948
 msgid "Metal"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:926
+#: includes/traits/DataArraysGenerator.php:949
 msgid "Shiny metal"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:927
+#: includes/traits/DataArraysGenerator.php:950
 msgid "Glossy metal"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:928
-#: includes/traits/DataArraysGenerator.php:956
+#: includes/traits/DataArraysGenerator.php:951
+#: includes/traits/DataArraysGenerator.php:979
 msgid "Anthracite"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:929
+#: includes/traits/DataArraysGenerator.php:952
 msgid "Tilted gray"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:930
+#: includes/traits/DataArraysGenerator.php:953
 msgid "Tilted black"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:931
+#: includes/traits/DataArraysGenerator.php:954
 msgid "Brass"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:932
+#: includes/traits/DataArraysGenerator.php:955
 msgid "Steel"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:933
+#: includes/traits/DataArraysGenerator.php:956
 msgid "Chrome"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:934
+#: includes/traits/DataArraysGenerator.php:957
 msgid "Gold"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:946
+#: includes/traits/DataArraysGenerator.php:969
 msgid "Dark gray"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:947
+#: includes/traits/DataArraysGenerator.php:970
 msgid "Satin gray"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:948
+#: includes/traits/DataArraysGenerator.php:971
 msgid "Light gray"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:949
-#: includes/traits/DataArraysGenerator.php:1028
-#: includes/traits/DataArraysGenerator.php:1153
+#: includes/traits/DataArraysGenerator.php:972
+#: includes/traits/DataArraysGenerator.php:1051
+#: includes/traits/DataArraysGenerator.php:1176
 msgid "White"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:950
-#: includes/traits/DataArraysGenerator.php:1030
-#: includes/traits/DataArraysGenerator.php:1156
+#: includes/traits/DataArraysGenerator.php:973
+#: includes/traits/DataArraysGenerator.php:1053
+#: includes/traits/DataArraysGenerator.php:1179
 msgid "Black"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:951
+#: includes/traits/DataArraysGenerator.php:974
 msgid "Beige"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:952
+#: includes/traits/DataArraysGenerator.php:975
 msgid "Brown"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:953
-#: includes/traits/DataArraysGenerator.php:1018
-#: includes/traits/DataArraysGenerator.php:1060
-#: includes/traits/DataArraysGenerator.php:1140
+#: includes/traits/DataArraysGenerator.php:976
+#: includes/traits/DataArraysGenerator.php:1041
+#: includes/traits/DataArraysGenerator.php:1083
+#: includes/traits/DataArraysGenerator.php:1163
 msgid "Red"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:954
-#: includes/traits/DataArraysGenerator.php:1021
-#: includes/traits/DataArraysGenerator.php:1063
-#: includes/traits/DataArraysGenerator.php:1145
+#: includes/traits/DataArraysGenerator.php:977
+#: includes/traits/DataArraysGenerator.php:1044
+#: includes/traits/DataArraysGenerator.php:1086
+#: includes/traits/DataArraysGenerator.php:1168
 msgid "Green"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:955
-#: includes/traits/DataArraysGenerator.php:1026
-#: includes/traits/DataArraysGenerator.php:1065
-#: includes/traits/DataArraysGenerator.php:1149
+#: includes/traits/DataArraysGenerator.php:978
+#: includes/traits/DataArraysGenerator.php:1049
+#: includes/traits/DataArraysGenerator.php:1088
+#: includes/traits/DataArraysGenerator.php:1172
 msgid "Blue"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:957
+#: includes/traits/DataArraysGenerator.php:980
 msgid "Mud"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:958
+#: includes/traits/DataArraysGenerator.php:981
 msgid "Punched sheet"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:959
+#: includes/traits/DataArraysGenerator.php:982
 msgid "Carbon"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:960
+#: includes/traits/DataArraysGenerator.php:983
 msgid "Stainless"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:961
+#: includes/traits/DataArraysGenerator.php:984
 msgid "Brushed metal"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:962
+#: includes/traits/DataArraysGenerator.php:985
 msgid "Brushed stainless"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:963
+#: includes/traits/DataArraysGenerator.php:986
 msgid "Turned"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:975
+#: includes/traits/DataArraysGenerator.php:998
 msgid "Standard glass"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:976
+#: includes/traits/DataArraysGenerator.php:999
 msgid "Crystal"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:977
+#: includes/traits/DataArraysGenerator.php:1000
 msgid "Sapphire crystal"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:978
+#: includes/traits/DataArraysGenerator.php:1001
 msgid "Plexiglass"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:979
+#: includes/traits/DataArraysGenerator.php:1002
 msgid "Rhodoid"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:991
+#: includes/traits/DataArraysGenerator.php:1014
 msgid "Thin triangle"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:992
+#: includes/traits/DataArraysGenerator.php:1015
 msgid "Fat Triangle"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:993
+#: includes/traits/DataArraysGenerator.php:1016
 msgid "3D triangle"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:994
+#: includes/traits/DataArraysGenerator.php:1017
 msgid "Clipped"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:995
+#: includes/traits/DataArraysGenerator.php:1018
 msgid "Double clipped"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:996
+#: includes/traits/DataArraysGenerator.php:1019
 msgid "Flat clipped"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:997
+#: includes/traits/DataArraysGenerator.php:1020
 msgid "Thin rod"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:998
+#: includes/traits/DataArraysGenerator.php:1021
 msgid "Fat rod"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:999
+#: includes/traits/DataArraysGenerator.php:1022
 msgid "Thin curved triangle"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1000
+#: includes/traits/DataArraysGenerator.php:1023
 msgid "3D curved triangle"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1001
+#: includes/traits/DataArraysGenerator.php:1024
 msgid "Double needle"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1002
+#: includes/traits/DataArraysGenerator.php:1025
 msgid "Culbuto"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1003
+#: includes/traits/DataArraysGenerator.php:1026
 msgid "Cessna"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1004
+#: includes/traits/DataArraysGenerator.php:1027
 msgid "Volvo"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1005
+#: includes/traits/DataArraysGenerator.php:1028
 msgid "Ferrari"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1006
+#: includes/traits/DataArraysGenerator.php:1029
 msgid "Ferrari arched"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1019
-#: includes/traits/DataArraysGenerator.php:1061
-#: includes/traits/DataArraysGenerator.php:1142
+#: includes/traits/DataArraysGenerator.php:1042
+#: includes/traits/DataArraysGenerator.php:1084
+#: includes/traits/DataArraysGenerator.php:1165
 msgid "Orange"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1020
-#: includes/traits/DataArraysGenerator.php:1062
-#: includes/traits/DataArraysGenerator.php:1143
+#: includes/traits/DataArraysGenerator.php:1043
+#: includes/traits/DataArraysGenerator.php:1085
+#: includes/traits/DataArraysGenerator.php:1166
 msgid "Yellow"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1022
+#: includes/traits/DataArraysGenerator.php:1045
 msgid "JUG Green"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1023
+#: includes/traits/DataArraysGenerator.php:1046
 msgid "Green LCD"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1024
-#: includes/traits/DataArraysGenerator.php:1064
+#: includes/traits/DataArraysGenerator.php:1047
+#: includes/traits/DataArraysGenerator.php:1087
 msgid "Cyan"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1025
+#: includes/traits/DataArraysGenerator.php:1048
 msgid "Raith"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1027
-#: includes/traits/DataArraysGenerator.php:1066
+#: includes/traits/DataArraysGenerator.php:1050
+#: includes/traits/DataArraysGenerator.php:1089
 msgid "Magenta"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1029
-#: includes/traits/DataArraysGenerator.php:1155
+#: includes/traits/DataArraysGenerator.php:1052
+#: includes/traits/DataArraysGenerator.php:1178
 msgid "Gray"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1042
+#: includes/traits/DataArraysGenerator.php:1065
 msgid "Plain - Black"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1043
+#: includes/traits/DataArraysGenerator.php:1066
 msgid "Plain - Brass"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1044
+#: includes/traits/DataArraysGenerator.php:1067
 msgid "Plain - Silver"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1045
+#: includes/traits/DataArraysGenerator.php:1068
 msgid "Embossed - Black"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1046
+#: includes/traits/DataArraysGenerator.php:1069
 msgid "Embossed - Brass"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1047
+#: includes/traits/DataArraysGenerator.php:1070
 msgid "Embossed - Silver"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1113
+#: includes/traits/DataArraysGenerator.php:1136
 msgid "Cursors"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1125
+#: includes/traits/DataArraysGenerator.php:1148
 msgid "Automatic"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1126
+#: includes/traits/DataArraysGenerator.php:1149
 msgid "Normal"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1127
+#: includes/traits/DataArraysGenerator.php:1150
 msgid "Horizontal"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1128
+#: includes/traits/DataArraysGenerator.php:1151
 msgid "Tangent"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1141
+#: includes/traits/DataArraysGenerator.php:1164
 msgid "Maroon"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1144
+#: includes/traits/DataArraysGenerator.php:1167
 msgid "Lime"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1146
+#: includes/traits/DataArraysGenerator.php:1169
 msgid "Teal"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1147
+#: includes/traits/DataArraysGenerator.php:1170
 msgid "Aqua"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1148
+#: includes/traits/DataArraysGenerator.php:1171
 msgid "Light blue"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1150
+#: includes/traits/DataArraysGenerator.php:1173
 msgid "Navy"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1151
+#: includes/traits/DataArraysGenerator.php:1174
 msgid "Fuchsia"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1152
+#: includes/traits/DataArraysGenerator.php:1175
 msgid "Purple"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1154
+#: includes/traits/DataArraysGenerator.php:1177
 msgid "Silver"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1168
+#: includes/traits/DataArraysGenerator.php:1191
 msgid "Plain - Translucent"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1169
+#: includes/traits/DataArraysGenerator.php:1192
 msgid "Plain - Liquid"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1170
+#: includes/traits/DataArraysGenerator.php:1193
 msgid "Plain - Soft"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1171
+#: includes/traits/DataArraysGenerator.php:1194
 msgid "Plain - Hard"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1172
+#: includes/traits/DataArraysGenerator.php:1195
 msgid "Fade-in - Translucent"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1173
+#: includes/traits/DataArraysGenerator.php:1196
 msgid "Fade-in - Liquid"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1174
+#: includes/traits/DataArraysGenerator.php:1197
 msgid "Fade-in - Soft"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1175
+#: includes/traits/DataArraysGenerator.php:1198
 msgid "Fade-in - Hard"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1176
+#: includes/traits/DataArraysGenerator.php:1199
 msgid "Fade-out - Translucent"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1177
+#: includes/traits/DataArraysGenerator.php:1200
 msgid "Fade-out - Liquid"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1178
+#: includes/traits/DataArraysGenerator.php:1201
 msgid "Fade-out - Soft"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1179
+#: includes/traits/DataArraysGenerator.php:1202
 msgid "Fade-out - Hard"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1180
+#: includes/traits/DataArraysGenerator.php:1203
 msgid "Complementary - Translucent"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1181
+#: includes/traits/DataArraysGenerator.php:1204
 msgid "Complementary - Liquid"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1182
+#: includes/traits/DataArraysGenerator.php:1205
 msgid "Complementary - Soft"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1183
+#: includes/traits/DataArraysGenerator.php:1206
 msgid "Complementary - Hard"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1184
+#: includes/traits/DataArraysGenerator.php:1207
 msgid "Inverted complementary - Translucent"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1185
+#: includes/traits/DataArraysGenerator.php:1208
 msgid "Inverted complementary - Liquid"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1186
+#: includes/traits/DataArraysGenerator.php:1209
 msgid "Inverted complementary - Soft"
 msgstr ""
 
-#: includes/traits/DataArraysGenerator.php:1187
+#: includes/traits/DataArraysGenerator.php:1210
 msgid "Inverted complementary - Hard"
 msgstr ""
 
-#: includes/traits/DataDateTimeConversion.php:120
-#: includes/traits/DataDateTimeConversion.php:136
-#: includes/traits/DataDateTimeConversion.php:152
+#: includes/traits/DataDateTimeConversion.php:134
+#: includes/traits/DataDateTimeConversion.php:150
+#: includes/traits/DataDateTimeConversion.php:166
 #, php-format
 msgid "%s ago"
 msgstr ""
 
-#: includes/traits/DataDateTimeConversion.php:123
-#: includes/traits/DataDateTimeConversion.php:155
+#: includes/traits/DataDateTimeConversion.php:137
+#: includes/traits/DataDateTimeConversion.php:169
 #, php-format
 msgid "in %s"
 msgstr ""
 
-#: includes/traits/DataDateTimeConversion.php:139
+#: includes/traits/DataDateTimeConversion.php:153
 msgid "currently"
 msgstr ""
 
-#: includes/traits/DataDateTimeConversion.php:249
+#: includes/traits/DataDateTimeConversion.php:263
 msgid "hours"
 msgstr ""
 
@@ -3556,23 +3764,25 @@ msgid "No data"
 msgstr ""
 
 #: includes/traits/DataOutput.php:282
+#: includes/traits/DataTypeDescription.php:115
 msgid "Outdoor"
 msgstr ""
 
 #: includes/traits/DataOutput.php:1024
-#: includes/traits/DataTypeDescription.php:173
-#: includes/traits/DataTypeDescription.php:230
-#: includes/traits/DataTypeDescription.php:233
-#: includes/traits/DataTypeDescription.php:244
-#: includes/traits/DataTypeDescription.php:249
-#: includes/traits/DataTypeDescription.php:252
-#: includes/traits/DataTypeDescription.php:255
+#: includes/traits/DataTypeDescription.php:118
+#: includes/traits/DataTypeDescription.php:199
+#: includes/traits/DataTypeDescription.php:256
+#: includes/traits/DataTypeDescription.php:259
+#: includes/traits/DataTypeDescription.php:270
+#: includes/traits/DataTypeDescription.php:275
+#: includes/traits/DataTypeDescription.php:278
+#: includes/traits/DataTypeDescription.php:281
 msgid "Wind"
 msgstr ""
 
 #: includes/traits/DataOutput.php:1024
-#: includes/traits/DataTypeDescription.php:236
-#: includes/traits/DataTypeDescription.php:239
+#: includes/traits/DataTypeDescription.php:262
+#: includes/traits/DataTypeDescription.php:265
 msgid "Gust"
 msgstr ""
 
@@ -3605,19 +3815,19 @@ msgid "gust"
 msgstr ""
 
 #: includes/traits/DataOutput.php:2274
-#: includes/traits/DataTypeDescription.php:125
+#: includes/traits/DataTypeDescription.php:151
 msgid "CO₂"
 msgstr ""
 
 #: includes/traits/DataOutput.php:2277
-#: includes/traits/DataTypeDescription.php:128
-#: includes/traits/DataTypeDescription.php:134
+#: includes/traits/DataTypeDescription.php:154
+#: includes/traits/DataTypeDescription.php:160
 msgid "CO"
 msgstr ""
 
 #: includes/traits/DataOutput.php:2280
-#: includes/traits/DataTypeDescription.php:131
-#: includes/traits/DataTypeDescription.php:137
+#: includes/traits/DataTypeDescription.php:157
+#: includes/traits/DataTypeDescription.php:163
 msgid "O₃"
 msgstr ""
 
@@ -3884,436 +4094,439 @@ msgstr ""
 msgid "Waning Crescent"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2772 includes/traits/DataOutput.php:2893
+#: includes/traits/DataOutput.php:2772 includes/traits/DataOutput.php:2894
 msgid "Successful operation"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2959 includes/traits/DataOutput.php:2966
+#: includes/traits/DataOutput.php:2960 includes/traits/DataOutput.php:2967
 msgid "O/DR"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3027
+#: includes/traits/DataOutput.php:3028
 msgid "clouds"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3132
+#: includes/traits/DataOutput.php:3133
 msgid "All data have been filtered: nothing to show"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3489
+#: includes/traits/DataOutput.php:3490
 msgid "rev."
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:53
+#: includes/traits/DataTypeDescription.php:52
 msgid "Base station"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:56
+#: includes/traits/DataTypeDescription.php:55
 msgid "Outdoor module"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:59
+#: includes/traits/DataTypeDescription.php:58
 msgid "Rain gauge"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:62
+#: includes/traits/DataTypeDescription.php:61
 msgid "Wind gauge"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:65
+#: includes/traits/DataTypeDescription.php:64
 msgid "Indoor module"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:68
+#: includes/traits/DataTypeDescription.php:67
 #: includes/traits/WeatherIndexClient.php:173
 msgid "[Computed Values]"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:70
+#: includes/traits/DataTypeDescription.php:69
 msgid "Indexes"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:70
-#: includes/traits/DataTypeDescription.php:76
-#: includes/traits/DataTypeDescription.php:82
-#: includes/traits/DataTypeDescription.php:88
-#: includes/traits/DataTypeDescription.php:94
+#: includes/traits/DataTypeDescription.php:69
+#: includes/traits/DataTypeDescription.php:75
+#: includes/traits/DataTypeDescription.php:81
+#: includes/traits/DataTypeDescription.php:87
+#: includes/traits/DataTypeDescription.php:93
 msgid "virtual module"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:74
+#: includes/traits/DataTypeDescription.php:73
 #: includes/traits/OpenWeatherMapPluginCurrentClient.php:77
+#: includes/traits/OpenWeatherMapPluginStationClient.php:55
 msgid "[OpenWeatherMap Records]"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:76
+#: includes/traits/DataTypeDescription.php:75
 msgid "Current records"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:80
-#: includes/traits/OpenWeatherMapPluginPollutionClient.php:154
+#: includes/traits/DataTypeDescription.php:79
+#: includes/traits/OpenWeatherMapPluginPollutionClient.php:152
 msgid "[OpenWeatherMap Pollution]"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:82
+#: includes/traits/DataTypeDescription.php:81
 msgid "Pollution probe"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:86
+#: includes/traits/DataTypeDescription.php:85
 msgid "[OpenWeatherMap Forecast]"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:88
+#: includes/traits/DataTypeDescription.php:87
 msgid "Forecast"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:92
+#: includes/traits/DataTypeDescription.php:91
 #: includes/traits/EphemerisClient.php:53
 msgid "[Ephemeris]"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:98
-msgid "Unknonw module"
+#: includes/traits/DataTypeDescription.php:97
+#: includes/traits/DataTypeDescription.php:124
+msgid "Unknown module"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:116
+#: includes/traits/DataTypeDescription.php:121
+#: includes/traits/DataTypeDescription.php:238
+#: includes/traits/DataTypeDescription.php:241
+#: includes/traits/DataTypeDescription.php:249
+#: includes/traits/DataTypeDescription.php:253
+msgid "Rain"
+msgstr ""
+
+#: includes/traits/DataTypeDescription.php:142
 msgid "Firmware"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:116
+#: includes/traits/DataTypeDescription.php:142
 msgid "Firmware version"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:119
+#: includes/traits/DataTypeDescription.php:145
 msgid "Battery"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:119
+#: includes/traits/DataTypeDescription.php:145
 msgid "Battery level"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:122
+#: includes/traits/DataTypeDescription.php:148
 msgid "WiFi"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:122
+#: includes/traits/DataTypeDescription.php:148
 msgid "RF/WiFi signal quality"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:125
+#: includes/traits/DataTypeDescription.php:151
 msgid "Carbon dioxide"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:128
+#: includes/traits/DataTypeDescription.php:154
 msgid "Carbon monoxide"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:131
+#: includes/traits/DataTypeDescription.php:157
 msgid "Ozone"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:134
+#: includes/traits/DataTypeDescription.php:160
 msgid "Carbon monoxide probe distance"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:137
+#: includes/traits/DataTypeDescription.php:163
 msgid "Ozone probe distance"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:140
-#: includes/traits/DataTypeDescription.php:149
+#: includes/traits/DataTypeDescription.php:166
+#: includes/traits/DataTypeDescription.php:175
 #: public/partials/WidgetOutdoorDisplay.php:88
 msgid "Humidity"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:143
+#: includes/traits/DataTypeDescription.php:169
 msgid "Indoor humidity"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:146
+#: includes/traits/DataTypeDescription.php:172
 msgid "Outdoor humidity"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:149
+#: includes/traits/DataTypeDescription.php:175
 msgid "Reference humidity"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:152
+#: includes/traits/DataTypeDescription.php:178
 msgid "Noise"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:152
+#: includes/traits/DataTypeDescription.php:178
 msgid "Noise level"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:155
-#: includes/traits/DataTypeDescription.php:158
+#: includes/traits/DataTypeDescription.php:181
+#: includes/traits/DataTypeDescription.php:184
 msgid "Pressure"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:155
+#: includes/traits/DataTypeDescription.php:181
 #: public/partials/WidgetOutdoorDisplay.php:73
 msgid "Atmospheric pressure"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:158
+#: includes/traits/DataTypeDescription.php:184
 msgid "Pressure trend"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:161
-#: includes/traits/DataTypeDescription.php:170
-#: includes/traits/DataTypeDescription.php:177
-#: includes/traits/DataTypeDescription.php:181
-#: includes/traits/DataTypeDescription.php:185
+#: includes/traits/DataTypeDescription.php:187
+#: includes/traits/DataTypeDescription.php:196
+#: includes/traits/DataTypeDescription.php:203
+#: includes/traits/DataTypeDescription.php:207
+#: includes/traits/DataTypeDescription.php:211
 #: public/partials/WidgetOutdoorDisplay.php:35
 #: public/partials/WidgetOutdoorDisplay.php:58
 msgid "Temperature"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:164
+#: includes/traits/DataTypeDescription.php:190
 msgid "Indoor temperature"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:167
+#: includes/traits/DataTypeDescription.php:193
 msgid "Outdoor temperature"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:170
+#: includes/traits/DataTypeDescription.php:196
 msgid "Reference temperature"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:173
+#: includes/traits/DataTypeDescription.php:199
 msgid "Reference wind strength"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:177
+#: includes/traits/DataTypeDescription.php:203
 msgid "Highest temperature of the day"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:181
+#: includes/traits/DataTypeDescription.php:207
 msgid "Lowest temperature of the day"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:185
+#: includes/traits/DataTypeDescription.php:211
 msgid "Temperature trend"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:188
+#: includes/traits/DataTypeDescription.php:214
 #: public/partials/WidgetOutdoorDisplay.php:222
 msgid "Dew point"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:191
+#: includes/traits/DataTypeDescription.php:217
 #: public/partials/WidgetOutdoorDisplay.php:237
 msgid "Frost point"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:194
+#: includes/traits/DataTypeDescription.php:220
 msgid "Heat"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:194
+#: includes/traits/DataTypeDescription.php:220
 #: public/partials/WidgetOutdoorDisplay.php:252
 msgid "Heat index"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:197
+#: includes/traits/DataTypeDescription.php:223
 #: public/partials/WidgetOutdoorDisplay.php:266
 msgid "Humidex"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:200
+#: includes/traits/DataTypeDescription.php:226
 #: public/partials/WidgetOutdoorDisplay.php:280
 msgid "Wind chill"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:203
+#: includes/traits/DataTypeDescription.php:229
 msgid "Cloud base"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:203
+#: includes/traits/DataTypeDescription.php:229
 #: public/partials/WidgetOutdoorDisplay.php:207
 msgid "Cloud base altitude"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:208
+#: includes/traits/DataTypeDescription.php:234
 #: public/partials/WidgetOutdoorDisplay.php:192
 msgid "Cloudiness"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:212
-#: includes/traits/DataTypeDescription.php:215
-#: includes/traits/DataTypeDescription.php:223
-#: includes/traits/DataTypeDescription.php:227
-msgid "Rain"
-msgstr ""
-
-#: includes/traits/DataTypeDescription.php:212
+#: includes/traits/DataTypeDescription.php:238
 msgid "Rain rate"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:215
+#: includes/traits/DataTypeDescription.php:241
 msgid "Accumulated rainfall for the last 3 hours"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:219
+#: includes/traits/DataTypeDescription.php:245
 msgid "Snow"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:219
+#: includes/traits/DataTypeDescription.php:245
 msgid "Accumulated snowfall for the last 3 hours"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:223
+#: includes/traits/DataTypeDescription.php:249
 msgid "Accumulated rainfall for the last hour"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:227
+#: includes/traits/DataTypeDescription.php:253
 msgid "Accumulated rainfall for today"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:230
+#: includes/traits/DataTypeDescription.php:256
 msgid "Wind direction"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:233
+#: includes/traits/DataTypeDescription.php:259
 msgid "Wind strength"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:236
+#: includes/traits/DataTypeDescription.php:262
 msgid "Gust direction"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:239
+#: includes/traits/DataTypeDescription.php:265
 msgid "Gust strength"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:244
+#: includes/traits/DataTypeDescription.php:270
 msgid "Wind direction for the maximal wind strength for the last hour"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:249
+#: includes/traits/DataTypeDescription.php:275
 msgid "Maximal wind strength for the last hour"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:252
+#: includes/traits/DataTypeDescription.php:278
 msgid "Wind direction for the maximal wind strength today"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:255
+#: includes/traits/DataTypeDescription.php:281
 msgid "Maximal wind strength today"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:271
+#: includes/traits/DataTypeDescription.php:297
 msgid "TZ"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:274
+#: includes/traits/DataTypeDescription.php:300
 msgid "all"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:274
+#: includes/traits/DataTypeDescription.php:300
 msgid "[all measures]"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:277
+#: includes/traits/DataTypeDescription.php:303
 msgid "outdoor"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:277
+#: includes/traits/DataTypeDescription.php:303
 msgid "[outdoor measures]"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:280
+#: includes/traits/DataTypeDescription.php:306
 #: public/partials/WidgetEphemerisDisplay.php:78
 msgid "Sunrise"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:283
+#: includes/traits/DataTypeDescription.php:309
 #: public/partials/WidgetEphemerisDisplay.php:91
 msgid "Sunset"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:286
+#: includes/traits/DataTypeDescription.php:312
 #: public/partials/WidgetEphemerisDisplay.php:165
 msgid "Moonrise"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:289
+#: includes/traits/DataTypeDescription.php:315
 #: public/partials/WidgetEphemerisDisplay.php:152
 msgid "Moonset"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:292
+#: includes/traits/DataTypeDescription.php:318
 msgid "Age"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:292
+#: includes/traits/DataTypeDescription.php:318
 msgid "Moon age"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:295
+#: includes/traits/DataTypeDescription.php:321
 msgid "Phase"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:295
+#: includes/traits/DataTypeDescription.php:321
 msgid "Moon phase"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:298
+#: includes/traits/DataTypeDescription.php:324
 msgid "Illumination"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:298
+#: includes/traits/DataTypeDescription.php:324
 msgid "Moon illumination"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:301
-#: includes/traits/DataTypeDescription.php:307
+#: includes/traits/DataTypeDescription.php:327
+#: includes/traits/DataTypeDescription.php:333
 msgid "Distance"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:301
+#: includes/traits/DataTypeDescription.php:327
 msgid "Moon distance"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:304
+#: includes/traits/DataTypeDescription.php:330
 msgid "Moon angular size"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:307
+#: includes/traits/DataTypeDescription.php:333
 msgid "Sun distance"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:310
+#: includes/traits/DataTypeDescription.php:336
 msgid "Sun angular size"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:313
+#: includes/traits/DataTypeDescription.php:339
 msgid "Last seen"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:316
+#: includes/traits/DataTypeDescription.php:342
 msgid "Last refresh"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:319
+#: includes/traits/DataTypeDescription.php:345
 msgid "First setup"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:322
+#: includes/traits/DataTypeDescription.php:348
 msgid "Last setup"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:325
+#: includes/traits/DataTypeDescription.php:351
 msgid "Last upgrade"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:328
+#: includes/traits/DataTypeDescription.php:354
 msgid "?"
 msgstr ""
 
-#: includes/traits/DataTypeDescription.php:328
+#: includes/traits/DataTypeDescription.php:354
 msgid "Unknown measurement"
 msgstr ""
 
@@ -4675,65 +4888,65 @@ msgid "high:"
 msgstr ""
 
 #: includes/traits/NetatmoPluginClient.php:63
-#: includes/traits/NetatmoPluginClient.php:223
+#: includes/traits/NetatmoPluginClient.php:219
 msgid "Wrong credentials. Please, verify your login and password."
 msgstr ""
 
-#: includes/traits/NetatmoPluginClient.php:228
+#: includes/traits/NetatmoPluginClient.php:224
 msgid "Application deactivated. Please contact support."
 msgstr ""
 
-#: includes/traits/NetatmoPluginClient.php:232
+#: includes/traits/NetatmoPluginClient.php:228
 msgid "Too many users with this IP."
 msgstr ""
 
-#: includes/traits/NetatmoPluginClient.php:236
+#: includes/traits/NetatmoPluginClient.php:232
 msgid ""
 "Temporary unable to contact Netatmo servers. Retry will be done shortly."
 msgstr ""
 
-#: includes/traits/OpenWeatherMapPluginBaseClient.php:61
-#: includes/traits/OpenWeatherMapPluginCurrentClient.php:197
-#: includes/traits/OpenWeatherMapPluginPollutionClient.php:198
+#: includes/traits/OpenWeatherMapPluginBaseClient.php:59
 msgid "Wrong OpenWeatherMap API key."
 msgstr ""
 
-#: includes/traits/OpenWeatherMapPluginBaseClient.php:64
+#: includes/traits/OpenWeatherMapPluginBaseClient.php:62
 msgid "OpenWeatherMap servers have returned empty response. Please retry."
 msgstr ""
 
-#: includes/traits/OpenWeatherMapPluginCurrentClient.php:203
-#: includes/traits/OpenWeatherMapPluginPollutionClient.php:204
-msgid ""
-"OpenWeatherMap servers have returned empty response for some weather "
-"stations. Retry will be done shortly."
-msgstr ""
-
-#: includes/traits/OpenWeatherMapPluginCurrentClient.php:206
-#: includes/traits/OpenWeatherMapPluginPollutionClient.php:207
-msgid ""
-"Temporary unable to contact OpenWeatherMap servers. Retry will be done "
-"shortly."
-msgstr ""
-
-#: includes/traits/SystemSchedulesHandling.php:210
+#: includes/traits/SystemSchedulesHandling.php:262
 msgid "Every three minutes"
 msgstr ""
 
-#: includes/traits/SystemSchedulesHandling.php:223
+#: includes/traits/SystemSchedulesHandling.php:275
 msgid "Every five minutes"
 msgstr ""
 
-#: includes/traits/SystemSchedulesHandling.php:236
+#: includes/traits/SystemSchedulesHandling.php:288
 msgid "Every ten minutes"
 msgstr ""
 
-#: includes/traits/SystemSchedulesHandling.php:249
+#: includes/traits/SystemSchedulesHandling.php:301
+msgid "Every eleven minutes"
+msgstr ""
+
+#: includes/traits/SystemSchedulesHandling.php:314
+msgid "Every twelve minutes"
+msgstr ""
+
+#: includes/traits/SystemSchedulesHandling.php:327
 msgid "Every fifteen minutes"
 msgstr ""
 
-#: includes/traits/SystemSchedulesHandling.php:262
+#: includes/traits/SystemSchedulesHandling.php:340
 msgid "Every thirty minutes"
+msgstr ""
+
+#: includes/traits/WeatherUndergroundPluginBaseClient.php:71
+msgid "Wrong WeatherUnderground API key."
+msgstr ""
+
+#: includes/traits/WeatherUndergroundPluginBaseClient.php:74
+msgid "WeatherUnderground servers have returned empty response. Please retry."
 msgstr ""
 
 #: public/partials/WidgetEphemerisDisplay.php:29

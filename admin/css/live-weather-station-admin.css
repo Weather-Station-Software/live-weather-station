@@ -91,7 +91,22 @@ select.option-at-100 {
     padding: 0;
 }
 
-#lws-datasharing .inside {
+#lws-datapublishing .inside {
+    margin: 0;
+    padding: 0;
+}
+
+#lws-sharing-wow .inside {
+    margin: 0;
+    padding: 0;
+}
+
+#lws-sharing-pws .inside {
+    margin: 0;
+    padding: 0;
+}
+
+#lws-sharing-wug .inside {
     margin: 0;
     padding: 0;
 }

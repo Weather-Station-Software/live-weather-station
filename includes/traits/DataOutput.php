@@ -2787,6 +2787,7 @@ trait Output {
                     $sub = array();
                     $sub['name'] = $data['module_name'];
                     $sub['type'] = $data['module_type'];
+                    $sub['id'] = $data['module_id'];
                     $sub['datas'] = array();
                 }
                 $ssub = array();
@@ -3525,6 +3526,10 @@ trait Output {
                 if ((!$full && in_array($data['measure_type'], $this->showable_measurements)) ||
                     ($full && in_array($data['measure_type'], array_merge($this->showable_measurements, $this->not_showable_measurements)))) {
                     $val = array();
+                    //fixme: how the hell windgauge have temperature max/min attributes?
+                    if ((strpos($data['measure_type'], 'perature') > 0) && ($data['module_type'] == 'NAModule2')) {
+                        continue;
+                    }
                     $val['measure_type'] = $data['measure_type'];
                     $val['measure_type_txt'] = $this->get_measurement_type($val['measure_type'], false, $module['module_type']);
                     $val['measure_value'] = $data['measure_value'];
@@ -3563,6 +3568,28 @@ trait Output {
             if (count($module) > 0) {
                 $result['module'][] = $module;
             }
+        }
+        return $result;
+    }
+
+    /**
+     * Get publishing details for a station.
+     *
+     * @param array $data The station data.
+     * @return array An array containing the effective details.
+     * @since 3.0.0
+     */
+    protected function get_sharing_details($data) {
+        $result = array();
+        $t = ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank"' : '');
+        if ($data['pws_sync']) {
+            $result[] = '<a href="http://www.pwsweather.com/obs/' . $data['pws_user'] . '.html"' . $t . '>PWS Weather</a>';
+        }
+        if ($data['wow_sync']) {
+            $result[] = '<a href="http://wow.metoffice.gov.uk/weather/view?siteID=' . $data['wow_user'] . '"' . $t . '>WOW Met Office</a>';
+        }
+        if ($data['wug_sync']) {
+            $result[] = '<a href="https://www.wunderground.com/personal-weather-station/dashboard?ID=' . $data['wug_user'] . '&apiref=d97bd03904cd49c5"' . $t . '>Weather Underground</a>';
         }
         return $result;
     }

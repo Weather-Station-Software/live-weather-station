@@ -86,7 +86,7 @@ trait Handling {
     }
 
     /**
-     * Indicates if the id is the id of an WUG station.
+     * Indicates if the id is the id of a WUG station.
      *
      * @param integer $station_id The numeric id of the station.
      * @return boolean True if it's an WUG station, false otherwise.
@@ -195,5 +195,17 @@ trait Handling {
         $st = str_replace('x', $id, self::$fake_modulex_id).str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower($result);
+    }
+
+    /**
+     * Indicates if the id is the id of fake module.
+     *
+     * @param string $device_id The device ID.
+     * @param integer $id The X number in NAModuleX type.
+     * @return boolean True if it's an WUG station, false otherwise.
+     * @since 3.0.0
+     */
+    public static function is_fake_modulex_id($device_id, $id) {
+        return (substr($device_id, 0, 2) == str_replace('x', $id, self::$fake_modulex_id));
     }
 }
