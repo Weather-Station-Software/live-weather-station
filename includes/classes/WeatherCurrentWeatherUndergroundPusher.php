@@ -25,73 +25,46 @@ class Pusher extends Abstract_Pusher {
     }
 
     /**
-     * Format Netatmo data to be pushed.
+     * Process the data before pushing it.
      *
-     * @param   array   $data      Collected Netatmo datas.
-     * @return  array   The data ready to push.
-     * @since   2.6.0
+     * @param array $data Collected data.
+     * @return array Data ready to push.
+     * @since 3.0.0
      */
-    protected function get_pushed_data($data) {
+    protected function process_data($data) {
         $result = array();
-        if (is_array($data) && !empty($data)) {
-            foreach ($data['devices'] as $device) {
-                $sub = array();
-                if (time() - $device['dashboard_data']['time_utc'] < $this->time_shift) {
-                    $sub['dateutc'] = date('Y-m-d H:i:s', $device['dashboard_data']['time_utc']);
-                    if (array_key_exists('Pressure', $device['dashboard_data'])) {
-                        $sub['baromin'] = $this->get_pressure($device['dashboard_data']['Pressure'], 1);
-                    }
-                }
-                else {
-                    continue;
-                }
-                foreach ($device['modules'] as $module) {
-                    $dashboard = $module['dashboard_data'];
-                    if (time() - $dashboard['time_utc'] > $this->time_shift) {
-                        continue;
-                    }
-                    switch (strtolower($module['type'])) {
-                        case 'namodule1': // Outdoor module
-                            if (array_key_exists('Temperature', $dashboard)) {
-                                $sub['tempf'] = $this->get_temperature($dashboard['Temperature'], 1);
-                            }
-                            if (array_key_exists('Humidity', $dashboard)) {
-                                $sub['humidity'] = $this->get_humidity($dashboard['Humidity']);
-                            }
-                            break;
-                        case 'namodule3': // Rain gauge
-                            if (array_key_exists('sum_rain_1', $dashboard)) {
-                                $sub['rainin'] = $this->get_rain($dashboard['sum_rain_1'], 2);
-                            }
-                            if (array_key_exists('sum_rain_24', $dashboard)) {
-                                $sub['dailyrainin'] = $this->get_rain($dashboard['sum_rain_24'], 2);
-                            }
-                            break;
-                        case 'namodule2': // Wind gauge
-                            if (array_key_exists('WindAngle', $dashboard)) {
-                                $sub['winddir'] = $this->get_wind_angle($dashboard['WindAngle']);
-                            }
-                            if (array_key_exists('WindStrength', $dashboard)) {
-                                $sub['windspeedmph'] = $this->get_wind_speed($dashboard['WindStrength'], 6);
-                            }
-                            if (array_key_exists('GustAngle', $dashboard)) {
-                                $sub['windgustdir'] = $this->get_wind_angle($dashboard['GustAngle']);
-                            }
-                            if (array_key_exists('GustStrength', $dashboard)) {
-                                $sub['windgustmph'] = $this->get_wind_speed($dashboard['GustStrength'], 6);
-                            }
-                            break;
-                        case 'nacomputed': // Computed values virtual module
-                            if (array_key_exists('dew_point', $dashboard)) {
-                                $sub['dewptf'] = $this->get_temperature($dashboard['dew_point'], 1);
-                            }
-                            break;
-                    }
-                }
-                if (!empty($sub)) {
-                    $result[$device['_id']] = $sub;
-                }
-            }
+        if (array_key_exists('timestamp', $data)) {
+            $result['dateutc'] = $data['timestamp'];
+        }
+        if (array_key_exists('pressure', $data)) {
+            $result['baromin'] = $this->get_pressure($data['pressure'], 1);
+        }
+        if (array_key_exists('temperature', $data)) {
+            $result['tempf'] = $this->get_temperature($data['temperature'], 1);
+        }
+        if (array_key_exists('humidity', $data)) {
+            $result['humidity'] = $this->get_humidity($data['humidity']);
+        }
+        if (array_key_exists('rain_hour_aggregated', $data)) {
+            $result['rainin'] = $this->get_rain($data['rain_hour_aggregated'], 2);
+        }
+        if (array_key_exists('rain_day_aggregated', $data)) {
+            $result['dailyrainin'] = $this->get_rain($data['rain_day_aggregated'], 2);
+        }
+        if (array_key_exists('windangle', $data)) {
+            $result['winddir'] = $this->get_wind_angle($data['windangle']);
+        }
+        if (array_key_exists('windstrength', $data)) {
+            $result['windspeedmph'] = $this->get_wind_speed($data['windstrength'], 6);
+        }
+        if (array_key_exists('gustangle', $data)) {
+            $result['windgustdir'] = $this->get_wind_angle($data['gustangle']);
+        }
+        if (array_key_exists('guststrength', $data)) {
+            $result['windgustmph'] = $this->get_wind_speed($data['guststrength'], 6);
+        }
+        if (array_key_exists('dew_point', $data)) {
+            $result['dewptf'] = $this->get_temperature($data['dew_point'], 1);
         }
         return $result;
     }

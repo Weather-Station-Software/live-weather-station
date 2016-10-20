@@ -32,6 +32,11 @@ trait Description {
             case 3:
                 $result = 'WeatherUnderground';
                 break;
+            case 4:
+            case 5:
+            case 6:
+                $result = 'File Handler';
+                break;
             default:
                 $result = null;
         }
@@ -62,6 +67,11 @@ trait Description {
                 break;
             case 'namodule4': // Additional indoor module
                 $result = __('Indoor module', 'live-weather-station');
+                break;
+
+
+            case 'namodule9': // Additional indoor module
+                $result = __('Extra module', 'live-weather-station');
                 break;
             case 'nacomputed': // Computed values virtual module
                 $result = __('[Computed Values]', 'live-weather-station');
@@ -336,22 +346,22 @@ trait Description {
                 $result = ($abbr ? __('Size', 'live-weather-station') : __('Sun angular size', 'live-weather-station'));
                 break;
             case 'last_seen':
-                $result = ($abbr ? __('Last seen', 'live-weather-station') : __('Last seen', 'live-weather-station'));
+                $result = ($abbr ? __('Seen', 'live-weather-station') : __('Last seen', 'live-weather-station'));
                 break;
             case 'last_refresh':
-                $result = ($abbr ? __('Last refresh', 'live-weather-station') : __('Last refresh', 'live-weather-station'));
+                $result = ($abbr ? __('Refresh', 'live-weather-station') : __('Last refresh', 'live-weather-station'));
                 break;
             case 'first_setup':
-                $result = ($abbr ? __('First setup', 'live-weather-station') : __('First setup', 'live-weather-station'));
+                $result = ($abbr ? __('Setup', 'live-weather-station') : __('First setup', 'live-weather-station'));
                 break;
             case 'last_setup':
-                $result = ($abbr ? __('Last setup', 'live-weather-station') : __('Last setup', 'live-weather-station'));
+                $result = ($abbr ? __('Setup', 'live-weather-station') : __('Last setup', 'live-weather-station'));
                 break;
             case 'last_upgrade':
-                $result = ($abbr ? __('Last upgrade', 'live-weather-station') : __('Last upgrade', 'live-weather-station'));
+                $result = ($abbr ? __('Upgrade', 'live-weather-station') : __('Last firmware upgrade', 'live-weather-station'));
                 break;
             default:
-                $result = ($abbr ? __('?', 'live-weather-station') : __('Unknown measurement', 'live-weather-station'));
+                $result = ($abbr ? '?' : __('Unknown measurement', 'live-weather-station'));
         }
         return $result;
     }

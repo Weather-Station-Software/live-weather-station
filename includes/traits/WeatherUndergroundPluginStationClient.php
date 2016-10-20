@@ -169,18 +169,12 @@ trait StationClient {
             }
             if (array_key_exists('pressure_trend', $observation)) {
                 $updates['measure_type'] = 'pressure_trend';
-                if ($observation['pressure_trend'] == '0') {
-                    $updates['measure_value'] = 'stable';
-                }
-                elseif ($observation['pressure_trend'] == '-') {
+                $updates['measure_value'] = 'stable';
+                if ($observation['pressure_trend'] == '-') {
                     $updates['measure_value'] = 'down';
                 }
                 elseif ($observation['pressure_trend'] == '+') {
                     $updates['measure_value'] = 'up';
-                }
-                else {
-                    //todo:remove before RC
-                    Logger::critical('***EVAL TREND***', null, null, null, null, null, null, $observation['pressure_trend']);
                 }
                 $this->update_data_table($updates);
             }

@@ -266,6 +266,7 @@ class InlineHelp {
 
         $s1 = __('To obtain an API key from OpenWeatherMap please, follow these steps:', 'live-weather-station' );
         $s2 = self::get(-23, __('%s on the OpenWeatherMap website.', 'live-weather-station'), __('Create an account', 'live-weather-station'));
+        //todo: verify following translation
         $s3 = self::get(-24, __('After registration, log in to %s.', 'live-weather-station'), __('create an get your API key', 'live-weather-station'));
         $s4 = __('Then, copy and paste your API key in the corresponding fields of the "OpenWeatherMap" box, set your plan and click on the "connect" button.', 'live-weather-station');
         $s5 = sprintf(__('Note: the <em>Free Plan</em> will allow you to add up to 10 OpenWeatherMap stations in %s.', 'live-weather-station'), LWS_PLUGIN_NAME);
@@ -389,10 +390,28 @@ class InlineHelp {
                 $s4 = '';
             }
             $s5 = '<img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_wug_color_logo()) . '" /><strong>' . __('WeatherUndergroung', 'live-weather-station') . '</strong> &mdash; ' . __('a personal weather station published on Weather Underground.', 'live-weather-station');
+            if (LWS_REAL_READY) {
+                $s6 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_real_color_logo()) . '" /><strong>' . __('Realtime File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>realtime.txt</em> file (Cumulus, etc.).', 'live-weather-station') . '</p>';
+            }
+            else {
+                $s6 = '';
+            }
+            if (LWS_RAW_READY) {
+                $s7 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_raw_color_logo()) . '" /><strong>' . __('Clientraw File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>clientraw.txt</em> file (Weather Display, WeeWX, etc.).', 'live-weather-station') . '</p>';
+            }
+            else {
+                $s7 = '';
+            }
+            if (LWS_TXT_READY) {
+                $s8 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_txt_color_logo()) . '" /><strong>' . __('Stickertags File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a stickertags file (WeatherLink, WsWin32, MeteoBridge, etc.).', 'live-weather-station') . '</p>';
+            }
+            else {
+                $s8 = '';
+            }
             $tabs[] = array(
                 'title'    => __('Stations types', 'live-weather-station'),
                 'id'       => 'lws-contextual-stations-types',
-                'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p>' . $s4 . '<p>' . $s5 . '</p>');
+                'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p>' . $s4 . '<p>' . $s5 . '</p>' . $s6 . $s7 . $s8);
 
             $s1 = __('Depending of the type of the station, you can access to these features:', 'live-weather-station');
             $s2 = '<strong>' . __('Edit', 'live-weather-station') . '</strong> &mdash; ' . __('To modify or update the properties of the station (city, country, coordinates, etc.).', 'live-weather-station');

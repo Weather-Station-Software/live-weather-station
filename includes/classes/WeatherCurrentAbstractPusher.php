@@ -18,7 +18,6 @@ abstract class Pusher {
 
     use Query, Unit_Conversion;
 
-    public $time_shift = 1200;  // consider data as obsolete after 20 minutes
     public $facility = 'Pusher';
 
     /**
@@ -28,15 +27,6 @@ abstract class Pusher {
      * @since   3.0.0
      */
     abstract protected function get_service_name();
-
-    /**
-     * Format Netatmo data to be pushed.
-     *
-     * @param   array   $data      Collected Netatmo datas.
-     * @return  array   The data ready to push.
-     * @since   2.5.0
-     */
-    abstract protected function get_pushed_data($data);
 
     /**
      * Completes data to be pushed.
@@ -82,6 +72,15 @@ abstract class Pusher {
      * @since   2.5.0
      */
     abstract protected function process_result($content, $station);
+
+    /**
+     * Process the data before pushing it.
+     *
+     * @param array $data Collected data.
+     * @return array Data ready to push.
+     * @since 3.0.0
+     */
+    abstract protected function process_data($data);
 
     /**
      * Process the result of the post.
@@ -170,6 +169,62 @@ abstract class Pusher {
                             Logger::error($this->facility, $this->get_service_name(), $sid, $sname, null, null, $ex->getCode(), $ex->getMessage());
                         }
                     }
+                }
+            }
+        }
+    }
+
+    /**
+     * Post station's datas to service.
+     *
+     * @param array $stations Optional. Test specificaly these stations.
+     * @return string Error string if any.
+     * @since 3.0.0
+     */
+    public function push_data($stations = array()) {
+        if (empty($stations)) {
+            $test = false;
+            $stations = $this->get_stations_informations();
+        }
+        else {
+            $test = true;
+        }
+        foreach ($stations as $station) {
+            if (!$this->ready_for_push($station) && !$test) {
+                continue;
+            }
+            $sid = $station['station_id'];
+            $sname = $station['station_name'];
+            $values = $this->complete_pushed_data($this->process_data($this->get_all_datas_for_push($station['station_id'])), $station);
+            $auth = $this->get_userpwd($station);
+            try {
+                $args = array();
+                if ($auth != '') {
+                    $args['headers'] = array ('Authorization' => 'Basic ' . base64_encode($auth));
+                }
+                $args['body'] = $values;
+                $content = wp_remote_post($this->get_post_url(), $args);
+                Logger::debug($this->facility, $this->get_service_name(), $sid, $sname, null, null, 999, 'Raw data: ' . print_r($content,true));
+                if (is_wp_error($content)) {
+                    throw new \Exception($content->get_error_message());
+                }
+                $this->process_result($content, $station);
+                if ($test) {
+                    Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, null, 'Service connectivity test: OK.');
+                    return '';
+                }
+                else {
+                    Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, null, 'Data pushed.');
+                    return '';
+                }
+            }
+            catch (\Exception $ex) {
+                if ($test) {
+                    Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, $ex->getCode(), 'Service connectivity test: KO / ' . $ex->getMessage());
+                    return $ex->getMessage();
+                }
+                else {
+                    Logger::error($this->facility, $this->get_service_name(), $sid, $sname, null, null, $ex->getCode(), $ex->getMessage());
                 }
             }
         }

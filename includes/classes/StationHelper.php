@@ -7,9 +7,6 @@ use WeatherStation\Engine\Page\Standalone\Framework;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\Arrays\Generator;
 
-use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
-use WeatherStation\SDK\Netatmo\Plugin\Collector as Netatmo_Collector;
-use WeatherStation\SDK\Netatmo\Plugin\Pusher as Netatmo_Merger;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\Pusher as OWM_Pusher;
 use WeatherStation\SDK\PWSWeather\Plugin\Pusher as PWS_Pusher;
 use WeatherStation\SDK\MetOffice\Plugin\Pusher as WOW_Pusher;
@@ -40,6 +37,8 @@ class Handling {
     private $station_id;
     private $station_name;
     private $service = 'Backend';
+    private $publishable = array(0, 1, 2, 3);
+    private $sharable = array(0, 4, 5, 6);
 
     /**
      * Initialize the class and set its properties.
@@ -111,25 +110,25 @@ class Handling {
                             }
                             $save = true;
                         }
-                        if (array_key_exists('wow-disconnect', $_POST)) {
+                        if (array_key_exists('wow-unshare', $_POST)) {
                             $station['wow_sync'] = 0;
                             $station['wow_user'] = '';
                             $station['wow_password'] = '';
                             $save = true;
                         }
-                        if (array_key_exists('pws-disconnect', $_POST)) {
+                        if (array_key_exists('pws-unshare', $_POST)) {
                             $station['pws_sync'] = 0;
                             $station['pws_user'] = '';
                             $station['pws_password'] = '';
                             $save = true;
                         }
-                        if (array_key_exists('wug-disconnect', $_POST)) {
+                        if (array_key_exists('wug-unshare', $_POST)) {
                             $station['wug_sync'] = 0;
                             $station['wug_user'] = '';
                             $station['wug_password'] = '';
                             $save = true;
                         }
-                        if (array_key_exists('wow-connect', $_POST)) {
+                        if (array_key_exists('wow-share', $_POST)) {
                             if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
                                 $station['wow_user'] = stripslashes(htmlspecialchars_decode($_POST['user']));
                                 $station['wow_password'] = stripslashes(htmlspecialchars_decode($_POST['password']));
@@ -138,7 +137,7 @@ class Handling {
                                 $connect = true;
                             }
                         }
-                        if (array_key_exists('pws-connect', $_POST)) {
+                        if (array_key_exists('pws-share', $_POST)) {
                             if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
                                 $station['pws_user'] = stripslashes(htmlspecialchars_decode($_POST['user']));
                                 $station['pws_password'] = stripslashes(htmlspecialchars_decode($_POST['password']));
@@ -147,7 +146,7 @@ class Handling {
                                 $connect = true;
                             }
                         }
-                        if (array_key_exists('wug-connect', $_POST)) {
+                        if (array_key_exists('wug-share', $_POST)) {
                             if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
                                 $station['wug_user'] = stripslashes(htmlspecialchars_decode($_POST['user']));
                                 $station['wug_password'] = stripslashes(htmlspecialchars_decode($_POST['password']));
@@ -163,19 +162,9 @@ class Handling {
                             $service_name = null;
                             $result = 'unknown reason...';
                             try {
-                                switch ($station['station_type']) {
-                                    case 0:
-                                        $collector = new Netatmo_Collector();
-                                        $merger = new Netatmo_Merger(LWS_PLUGIN_NAME, LWS_VERSION);
-                                        $n = $collector->get_datas();
-                                        $weather = new Weather_Index_Computer();
-                                        $w = $weather->compute();
-                                        $datas = $merger->merge_data($n, $w);
-                                        break;
-                                }
                                 if ($owm) {
                                     $push = new OWM_Pusher();
-                                    if (($result = $push->post_data($datas, array($station))) != '') {
+                                    if (($result = $push->push_data(array($station))) != '') {
                                         $station['owm_sync'] = 0;
                                         $station['owm_user'] = '';
                                         $station['owm_password'] = '';
@@ -185,7 +174,7 @@ class Handling {
                                 }
                                 if ($wug) {
                                     $push = new WUG_Pusher();
-                                    if (($result = $push->post_data($datas, array($station))) != '') {
+                                    if (($result = $push->push_data(array($station))) != '') {
                                         $station['wug_sync'] = 0;
                                         $station['wug_user'] = '';
                                         $station['wug_password'] = '';
@@ -195,7 +184,7 @@ class Handling {
                                 }
                                 if ($wow) {
                                     $push = new WOW_Pusher();
-                                    if (($result = $push->post_data($datas, array($station))) != '') {
+                                    if (($result = $push->push_data(array($station))) != '') {
                                         $station['wow_sync'] = 0;
                                         $station['wow_user'] = '';
                                         $station['wow_password'] = '';
@@ -205,7 +194,7 @@ class Handling {
                                 }
                                 if ($pws) {
                                     $push = new PWS_Pusher();
-                                    if (($result = $push->post_data($datas, array($station))) != '') {
+                                    if (($result = $push->push_data(array($station))) != '') {
                                         $station['pws_sync'] = 0;
                                         $station['pws_user'] = '';
                                         $station['pws_password'] = '';
@@ -416,10 +405,10 @@ class Handling {
             add_meta_box('lws-station', __('Station', 'live-weather-station' ), array($this, 'station_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
             add_meta_box('lws-location', __('Location', 'live-weather-station' ), array($this, 'location_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
             add_meta_box('lws-shortcodes', __('Shortcodes', 'live-weather-station' ), array($this, 'shortcodes_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
-            if ($station['station_type'] == 0) {
+            if (in_array($station['station_type'], $this->publishable)) {
                 add_meta_box('lws-datapublishing', __('Data publishing', 'live-weather-station' ), array($this, 'publishing_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
             }
-            if (($station['station_type'] == 0) /*|| ($station['station_type'] > 3)*/) {
+            if (in_array($station['station_type'], $this->sharable)) {
                 add_meta_box('lws-sharing-wow', __('Sharing with Met Office', 'live-weather-station'), array($this, 'sharing_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station, 'service' => 'wow'));
                 add_meta_box('lws-sharing-pws', __('Sharing with PWS Weather', 'live-weather-station'), array($this, 'sharing_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station, 'service' => 'pws'));
                 add_meta_box('lws-sharing-wug', __('Sharing with Weather Underground', 'live-weather-station'), array($this, 'sharing_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station, 'service' => 'wug'));

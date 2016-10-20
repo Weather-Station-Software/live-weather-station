@@ -57,6 +57,10 @@ trait Query {
                 $time = 24 * 60 * 60;
                 $time_owm = $time;
                 break;
+            case 99:
+                $time = 20 * 60;
+                $time_owm = floor(2 * 60 * 60);
+                break;
         }
         $time_filter = time() - $time;
         $time_filter_owm = time() - $time_owm;
@@ -434,6 +438,80 @@ trait Query {
         catch(\Exception $ex) {
             return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
         }
+    }
+
+    /**
+     * Get all data, ready to push, for a single station.
+     *
+     * @param string $device_id The device ID.
+     * @return array An array containing all the data.
+     * @since 3.0.0
+     */
+    protected function get_all_datas_for_push($device_id) {
+        $saved_obsolescence = get_option('live_weather_station_obsolescence');
+        update_option('live_weather_station_obsolescence', 99);
+        $data = $this->get_all_datas($device_id, true);
+        update_option('live_weather_station_obsolescence', $saved_obsolescence);
+        $result = array();
+        if (!array_key_exists('condition', $data)) {
+            foreach ($data as $line) {
+                switch (strtolower($line['module_type'])) {
+                    case 'namain': // Main base
+                        if ($line['measure_type'] == 'pressure') {
+                            $result['pressure'] = $line['measure_value'];
+                        }
+                        if ($line['measure_type'] == 'last_seen') {
+                            $result['timestamp'] = $line['measure_value'];
+                        }
+                        if ($line['measure_type'] == 'altitude') {
+                            $result['altitude'] = $line['measure_value'];
+                        }
+                        if ($line['measure_type'] == 'latitude') {
+                            $result['latitude'] = $line['measure_value'];
+                        }
+                        if ($line['measure_type'] == 'longitude') {
+                            $result['longitude'] = $line['measure_value'];
+                        }
+                        break;
+                    case 'namodule1': // Outdoor module
+                        if ($line['measure_type'] == 'temperature') {
+                            $result['temperature'] = $line['measure_value'];
+                        }
+                        if ($line['measure_type'] == 'humidity') {
+                            $result['humidity'] = $line['measure_value'];
+                        }
+                        break;
+                    case 'namodule3': // Rain gauge
+                        if ($line['measure_type'] == 'rain_hour_aggregated') {
+                            $result['rain_hour_aggregated'] = $line['measure_value'];
+                        }
+                        if ($line['measure_type'] == 'rain_day_aggregated') {
+                            $result['rain_day_aggregated'] = $line['measure_value'];
+                        }
+                        break;
+                    case 'namodule2': // Wind gauge
+                        if ($line['measure_type'] == 'windangle') {
+                            $result['windangle'] = $line['measure_value'];
+                        }
+                        if ($line['measure_type'] == 'windstrength') {
+                            $result['windstrength'] = $line['measure_value'];
+                        }
+                        if ($line['measure_type'] == 'gustangle') {
+                            $result['gustangle'] = $line['measure_value'];
+                        }
+                        if ($line['measure_type'] == 'guststrength') {
+                            $result['guststrength'] = $line['measure_value'];
+                        }
+                        break;
+                    case 'nacomputed': // Computed values virtual module
+                        if ($line['measure_type'] == 'dew_point') {
+                            $result['dew_point'] = $line['measure_value'];
+                        }
+                        break;
+                }
+            }
+        }
+        return $result;
     }
 
     /**

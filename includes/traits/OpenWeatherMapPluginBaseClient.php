@@ -106,6 +106,9 @@ trait BaseClient {
                 $updates['measure_type'] = 'loc_city';
                 $updates['measure_value'] = $station['loc_city'];
                 $this->update_data_table($updates);
+                $updates['measure_type'] = 'last_refresh';
+                $updates['measure_value'] = date('Y-m-d H:i:s');
+                $this->update_data_table($updates);
                 $list[] = $device_id;
             }
             $this->clean_owm_from_table($list);
@@ -126,31 +129,6 @@ trait BaseClient {
                 $s = $this->get_station_informations_by_guid($station['guid']);
                 $s['station_id'] = $device_id;
                 $this->update_stations_table($s);
-                /*$updates = array() ;
-                $updates['device_id'] = $device_id;
-                $updates['device_name'] = $station['station_name'];
-                $updates['module_id'] = $device_id;
-                $updates['module_type'] = 'NAMain';
-                $updates['module_name'] = $station['station_name'];
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s');
-                $updates['measure_type'] = 'loc_altitude';
-                $updates['measure_value'] = $station['loc_altitude'];
-                $this->update_data_table($updates);
-                $updates['measure_type'] = 'loc_latitude';
-                $updates['measure_value'] = $station['loc_latitude'];
-                $this->update_data_table($updates);
-                $updates['measure_type'] = 'loc_longitude';
-                $updates['measure_value'] = $station['loc_longitude'];
-                $this->update_data_table($updates);
-                $updates['measure_type'] = 'loc_timezone';
-                $updates['measure_value'] = $station['loc_timezone'];
-                $this->update_data_table($updates);
-                $updates['measure_type'] = 'loc_country';
-                $updates['measure_value'] = $station['loc_country_code'];
-                $this->update_data_table($updates);
-                $updates['measure_type'] = 'loc_city';
-                $updates['measure_value'] = $station['loc_city'];
-                $this->update_data_table($updates);*/
                 $list[] = $device_id;
             }
             $this->clean_owm_true_from_table($list);

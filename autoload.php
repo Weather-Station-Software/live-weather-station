@@ -35,6 +35,7 @@ spl_autoload_register(
         case 'WeatherStation\SDK\Generic\Plugin\Astronomy\MoonRiseSet': $file = LWS_INCLUDES_DIR.'libraries/misc/MoonRiseSet.php'; break;
         case 'WeatherStation\SDK\Generic\Plugin\Ephemeris\Client': $file = LWS_INCLUDES_DIR.'traits/EphemerisClient.php'; break;
         case 'WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer': $file = LWS_INCLUDES_DIR.'classes/EphemerisComputer.php'; break;
+        case 'WeatherStation\SDK\Generic\Plugin\Pusher': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentPusher.php'; break;
         case 'WeatherStation\SDK\Generic\Plugin\Weather\Current\Pusher': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentAbstractPusher.php'; break;
         case 'WeatherStation\SDK\Generic\Plugin\Weather\Index\Client': $file = LWS_INCLUDES_DIR.'traits/WeatherIndexClient.php'; break;
         case 'WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer': $file = LWS_INCLUDES_DIR.'classes/WeatherIndexComputer.php'; break;
@@ -42,7 +43,6 @@ spl_autoload_register(
         case 'WeatherStation\SDK\Netatmo\Plugin\Client': $file = LWS_INCLUDES_DIR.'traits/NetatmoPluginClient.php'; break;
         case 'WeatherStation\SDK\Netatmo\Plugin\Collector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentNetatmoCollector.php'; break;
         case 'WeatherStation\SDK\Netatmo\Plugin\Initiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentNetatmoInitiator.php'; break;
-        case 'WeatherStation\SDK\Netatmo\Plugin\Pusher': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentNetatmoPusher.php'; break;
         case 'WeatherStation\SDK\Netatmo\Plugin\Updater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentNetatmoUpdater.php'; break;
         case 'WeatherStation\SDK\OpenWeatherMap\Plugin\BaseClient': $file = LWS_INCLUDES_DIR.'traits/OpenWeatherMapPluginBaseClient.php'; break;
         case 'WeatherStation\SDK\OpenWeatherMap\Plugin\CurrentClient': $file = LWS_INCLUDES_DIR.'traits/OpenWeatherMapPluginCurrentClient.php'; break;

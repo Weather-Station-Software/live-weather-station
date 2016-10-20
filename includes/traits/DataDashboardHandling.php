@@ -32,7 +32,6 @@ trait Handling {
      * @since    2.0.0
      */
     private function get_dashboard($device_id, $device_name, $module_id, $module_name, $module_type, $types, $datas, $place=null) {
-
         foreach($types as $type) {
             if (array_key_exists($type, $datas)) {
                 $updates = array();
