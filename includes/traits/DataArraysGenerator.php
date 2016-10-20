@@ -373,6 +373,7 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                 }
                 if ($full) {
+                    $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
                     $result[] = array($this->get_measurement_type('loc_timezone'), 'loc_timezone', ($reduced ? array() : $this->get_measure_array($ref, $data, 'loc_timezone')));
                     $result[] = array($this->get_measurement_type('loc_altitude'), 'loc_altitude', ($reduced ? array() : $this->get_measure_array($ref, $data, 'loc_altitude')));
                     $result[] = array($this->get_measurement_type('loc_latitude'), 'loc_latitude', ($reduced ? array() : $this->get_measure_array($ref, $data, 'loc_latitude')));
@@ -415,6 +416,9 @@ trait Generator {
                 if ($full && $wug) {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                 }
+                if ($full) {
+                    $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
+                }
                 $result[] = array($this->get_measurement_type('humidity'), 'humidity', ($reduced ? array() : $this->get_measure_array($ref, $data, 'humidity')));
                 $result[] = array($this->get_measurement_type('temperature'), 'temperature', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature')));
                 if (($full || $mono) && !$wug) {
@@ -439,6 +443,9 @@ trait Generator {
                 if ($full && $wug) {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                 }
+                if ($full) {
+                    $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
+                }
                 if ($netatmo) {
                     $result[] = array($this->get_measurement_type('rain', false, $ref['module_type']), 'rain', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain')));
                 }
@@ -458,6 +465,9 @@ trait Generator {
                 }
                 if ($full && $wug) {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
+                }
+                if ($full) {
+                    $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
                 }
                 $result[] = array($this->get_measurement_type('windangle'), 'windangle', ($reduced ? array() : $this->get_measure_array($ref, $data, 'windangle')));
                 $result[] = array($this->get_measurement_type('windstrength'), 'windstrength', ($reduced ? array() : $this->get_measure_array($ref, $data, 'windstrength')));
@@ -481,6 +491,9 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                     $result[] = array($this->get_measurement_type('last_setup'), 'last_setup', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_setup')));
                 }
+                if ($full) {
+                    $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
+                }
                 $result[] = array($this->get_measurement_type('co2'), 'co2', ($reduced ? array() : $this->get_measure_array($ref, $data, 'co2')));
                 $result[] = array($this->get_measurement_type('humidity'), 'humidity', ($reduced ? array() : $this->get_measure_array($ref, $data, 'humidity')));
                 $result[] = array($this->get_measurement_type('temperature'), 'temperature', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature')));
@@ -497,6 +510,9 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('aggregated'), 'aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'aggregated')));
                     $result[] = array($this->get_measurement_type('outdoor'), 'outdoor', ($reduced ? array() : $this->get_measure_array($ref, $data, 'outdoor')));
                 }
+                if ($full) {
+                    $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
+                }
                 if ($netatmo) {
                     $result[] = array($this->get_measurement_type('co2'), 'co2', ($reduced ? array() : $this->get_measure_array($ref, $data, 'co2')));
                     $result[] = array($this->get_measurement_type('humidity'), 'humidity', ($reduced ? array() : $this->get_measure_array($ref, $data, 'humidity')));
@@ -507,6 +523,9 @@ trait Generator {
                 if ($computed) {
                     if ($aggregated) {
                         $result[] = array($this->get_measurement_type('aggregated'), 'aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'aggregated')));
+                    }
+                    if ($full) {
+                        $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
                     }
                     if ($full) {
                         $result[] = array($this->get_measurement_type('firmware'), 'firmware', ($reduced ? array() : $this->get_measure_array($ref, $data, 'firmware')));
@@ -528,6 +547,9 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('aggregated'), 'aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'aggregated')));
                 }
                 if ($full) {
+                    $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
+                }
+                if ($full) {
                     $result[] = array($this->get_measurement_type('firmware'), 'firmware', ($reduced ? array() : $this->get_measure_array($ref, $data, 'firmware')));
                 }
                 $result[] = array($this->get_measurement_type('pressure'), 'pressure', ($reduced ? array() : $this->get_measure_array($ref, $data, 'pressure')));
@@ -541,6 +563,9 @@ trait Generator {
                 break;
            case 'naephemer': // Virtual module for ephemeris
                 if ($computed) {
+                    if ($full) {
+                        $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
+                    }
                     if ($full) {
                         $result[] = array($this->get_measurement_type('firmware'), 'firmware', ($reduced ? array() : $this->get_measure_array($ref, $data, 'firmware')));
                     }
@@ -560,6 +585,9 @@ trait Generator {
             case 'napollution': // Virtual module for pollution
                 if ($aggregated) {
                     $result[] = array($this->get_measurement_type('aggregated'), 'aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'aggregated')));
+                }
+                if ($full) {
+                    $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
                 }
                 if ($full) {
                     $result[] = array($this->get_measurement_type('firmware'), 'firmware', ($reduced ? array() : $this->get_measure_array($ref, $data, 'firmware')));
@@ -1357,8 +1385,10 @@ trait Generator {
         $result = array();
         $result[] = 'N/A';
         $result[] = '1-Wire - Weather Station';
-        $result[] = 'AcuRite - 5-in-1 01000 Series';
+        $result[] = 'AcuRite - 3-in-1 Pro';
+        $result[] = 'AcuRite - 5-in-1 Pro';
         $result[] = 'Airmar - 150WX';
+        $result[] = 'Airmar - PB100';
         $result[] = 'Argent Data Systems - WS1';
         $result[] = 'Ambient Weather - WS-1000 Series';
         $result[] = 'Ambient Weather - WS-2000 Series';
@@ -1367,7 +1397,9 @@ trait Generator {
         $result[] = 'Campbell Scientific - CR3000 Series';
         $result[] = 'Campbell Scientific - CR800 Series';
         $result[] = 'Columbia - Capricorn';
+        $result[] = 'Columbia - Capricorn FLX';
         $result[] = 'Columbia - Magellan';
+        $result[] = 'Columbia - Magellan MX';
         $result[] = 'Columbia - Orion';
         $result[] = 'Columbia - Pulsar';
         $result[] = 'Davis Instruments - Vantage Pro';
@@ -1384,17 +1416,31 @@ trait Generator {
         $result[] = 'Fine Offset - WS Series';
         $result[] = 'Hideki - TE923';
         $result[] = 'Honeywell Meade - TFA / TE Series';
+        $result[] = 'Honeywell Meade - TN Series';
         $result[] = 'La Crosse - C84612';
         $result[] = 'La Crosse - WS-1500 Series';
         $result[] = 'La Crosse - WS-1600 Series';
         $result[] = 'La Crosse - WS-1900 Series';
         $result[] = 'La Crosse - WS-2000 Series';
+        $result[] = 'Maximum Inc. - Blackwatch';
+        $result[] = 'Maximum Inc. - Catalina';
+        $result[] = 'Maximum Inc. - Executive';
+        $result[] = 'Maximum Inc. - Hatteras';
+        $result[] = 'Maximum Inc. - Marconi';
+        $result[] = 'Maximum Inc. - Montauk';
+        $result[] = 'Maximum Inc. - Newport';
+        $result[] = 'Maximum Inc. - Observer';
+        $result[] = 'Maximum Inc. - Portland';
+        $result[] = 'Maximum Inc. - Professional';
+        $result[] = 'Maximum Inc. - Sorcerer';
+        $result[] = 'Maximum Inc. - WeatherMaster';
         $result[] = 'MEA - ETO Weather Station';
         $result[] = 'MEA - Feedlot Weather Station';
         $result[] = 'MEA - Junior Weather Station';
         $result[] = 'MEA - Portable Weather Station';
         $result[] = 'MEA - Premium Weather Station';
         $result[] = 'MEA - Spray Drift Weather Station';
+        $result[] = 'New Mountain Innovations - NM100';
         $result[] = 'New Mountain Innovations - NM150';
         $result[] = 'Onset - HOBO';
         $result[] = 'Oregon Scientific - LW301';
@@ -1405,8 +1451,15 @@ trait Generator {
         $result[] = 'Peet Bros - Ultimeter 100 Series';
         $result[] = 'Peet Bros - Ultimeter 800 Series';
         $result[] = 'Peet Bros - Ultimeter 2000 Series';
+        $result[] = 'Radioshack - Wireless';
+        $result[] = 'Radioshack - WX200';
         $result[] = 'RainWise - AgroMET';
+        $result[] = 'RainWise - CC3000';
         $result[] = 'RainWise - MKIII';
+        $result[] = 'RainWise - System 12 WeatherLog';
+        $result[] = 'RainWise - WS-1000CC';
+        $result[] = 'RainWise - WS-2000';
+        $result[] = 'Texas Weather Instruments - OneWire';
         $result[] = 'Texas Weather Instruments - WLS';
         $result[] = 'Texas Weather Instruments - WPS';
         $result[] = 'Texas Weather Instruments - WRx';

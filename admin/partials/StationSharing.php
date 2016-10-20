@@ -10,7 +10,7 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
 
 ?>
 
-<form action="<?php echo esc_url(get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid'])); ?>" method="POST" style="margin:0px;padding:0px;">
+<form name="<?php echo $service; ?>-share-form" id="<?php echo $service; ?>-share-form" action="<?php echo esc_url(get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid'])); ?>" method="POST" style="margin:0px;padding:0px;">
     <input type="hidden" name="action" value="manage" />
     <input type="hidden" name="service" value="station" />
     <input type="hidden" name="tab" value="edit" />
@@ -24,14 +24,14 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
                         <th class="lws-login" width="38%" align="left" scope="row"><?php echo $f1;?></th>
                         <td width="2%"/>
                         <td align="left">
-                            <span class="login"><input id="user" name="user" type="text" size="40" value="<?php echo $user;?>" class="regular-text"></span>
+                            <span class="login"><input required id="user" name="user" type="text" size="40" value="<?php echo $user;?>" class="regular-text"></span>
                         </td>
                     </tr>
                     <tr>
                         <th class="lws-password" width="38%" align="left" scope="row"><?php echo $f2;?></th>
                         <td width="2%"/>
                         <td align="left">
-                            <span class="password"><input id="password" name="password" type="text" size="40" value="<?php echo $password;?>" class="regular-text"></span>
+                            <span class="password"><input required id="password" name="password" type="text" size="40" value="<?php echo $password;?>" class="regular-text"></span>
                         </td>
                     </tr>
                 </tbody>
@@ -48,7 +48,7 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
                     <span id="<?php echo $service; ?>-span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Activating data sharing, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="<?php echo $service; ?>-connect" id="<?php echo $service; ?>-connect" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
+                <input type="submit" name="<?php echo $service; ?>-share" id="<?php echo $service; ?>-share" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
             </div>
             <div class="clear"></div>
         </div>
@@ -58,7 +58,7 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
                     <span id="<?php echo $service; ?>-span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Deactivating data sharing, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="<?php echo $service; ?>-disconnect" id="<?php echo $service; ?>-disconnect" class="button button-primary" onclick="return confirm('<?php echo $warning; ?>');" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+                <input type="submit" name="<?php echo $service; ?>-unshare" id="<?php echo $service; ?>-unshare" class="button button-primary" onclick="return confirm('<?php echo $warning; ?>');" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>
             <div class="clear"></div>
         </div>

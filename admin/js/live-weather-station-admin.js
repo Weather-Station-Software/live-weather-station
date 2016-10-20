@@ -113,30 +113,6 @@ jQuery(document).ready( function($) {
         $('#owm-span-sync').show();
     });
 
-    $('#wow-connect').click( function() {
-        $('.button').removeClass('button-primary').addClass('button-disabled');
-        $('.button').click(function() { return false; });
-        $('#wow-span-sync').show();
-    });
-
-    $('#wow-disconnect').click( function() {
-        $('.button').removeClass('button-primary').addClass('button-disabled');
-        $('.button').click(function() { return false; });
-        $('#wow-span-sync').show();
-    });
-
-    $('#pws-connect').click( function() {
-        $('.button').removeClass('button-primary').addClass('button-disabled');
-        $('.button').click(function() { return false; });
-        $('#pws-span-sync').show();
-    });
-
-    $('#pws-disconnect').click( function() {
-        $('.button').removeClass('button-primary').addClass('button-disabled');
-        $('.button').click(function() { return false; });
-        $('#pws-span-sync').show();
-    });
-
     $('#wug-connect').click( function() {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });
@@ -159,6 +135,118 @@ jQuery(document).ready( function($) {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });
         $('#netatmo-span-sync').show();
+    });
+
+    $('#wow-unshare').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#wow-span-sync').show();
+    });
+
+    $('#pws-unshare').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#pws-span-sync').show();
+    });
+
+    $('#owm-unshare').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#owm-span-sync').show();
+    });
+
+    $('#wug-unshare').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#wug-span-sync').show();
+    });
+
+    $('#wow-share').click( function() {
+        var form_data=$('#wow-share-form').serializeArray();
+        var error_free=true;
+        for (var input in form_data){
+            if (form_data[input]['name'] == 'user') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'password') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+        }
+        if (error_free) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#wow-span-sync').show();
+        }
+    });
+
+    $('#pws-share').click( function() {
+        var form_data=$('#pws-share-form').serializeArray();
+        var error_free=true;
+        for (var input in form_data){
+            if (form_data[input]['name'] == 'user') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'password') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+        }
+        if (error_free) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#pws-span-sync').show();
+        }
+    });
+
+    $('#owm-share').click( function() {
+        var form_data=$('#owm-share-form').serializeArray();
+        var error_free=true;
+        for (var input in form_data){
+            if (form_data[input]['name'] == 'user') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'password') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+        }
+        if (error_free) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#owm-span-sync').show();
+        }
+    });
+
+    $('#wug-share').click( function() {
+        var form_data=$('#wug-share-form').serializeArray();
+        var error_free=true;
+        for (var input in form_data){
+            if (form_data[input]['name'] == 'user') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'password') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+        }
+        if (error_free) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#wug-span-sync').show();
+        }
     });
 
 } );

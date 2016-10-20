@@ -58,8 +58,8 @@ class Handling {
      * Returns a base64 svg resource for the OpenWeatherMap icon.
      *
      * @param string $color Optional. Color of the icon.
-     * @return  string  The svg resource as a base64.
-     * @since    3.0.0
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
      */
     public static function get_base64_owm_icon($color='#000') {
         $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="-1000 -1000 6000 6000">';
@@ -73,8 +73,8 @@ class Handling {
     /**
      * Returns a base64 svg resource for the monochrome OpenWeatherMap logo.
      *
-     * @return  string  The svg resource as a base64.
-     * @since    3.0.0
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
      */
     public static function get_base64_owm_grey_logo() {
         return self::get_base64_owm_icon('#666666');
@@ -83,8 +83,8 @@ class Handling {
     /**
      * Returns a base64 svg resource for the colored OpenWeatherMap logo.
      *
-     * @return  string  The svg resource as a base64.
-     * @since    3.0.0
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
      */
     public static function get_base64_owm_color_logo() {
         return self::get_base64_owm_icon('#F9853B');
@@ -94,8 +94,8 @@ class Handling {
      * Returns a base64 svg resource for the Weather Underground icon.
      *
      * @param string $color Optional. Color of the icon.
-     * @return  string  The svg resource as a base64.
-     * @since    3.0.0
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
      */
     public static function get_base64_wug_icon($color='#000') {
         $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="-500 -500 9500 9500">';
@@ -110,8 +110,8 @@ class Handling {
     /**
      * Returns a base64 svg resource for the monochrome Weather Underground logo.
      *
-     * @return  string  The svg resource as a base64.
-     * @since    3.0.0
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
      */
     public static function get_base64_wug_grey_logo() {
         return self::get_base64_wug_icon('#666666');
@@ -120,8 +120,8 @@ class Handling {
     /**
      * Returns a base64 svg resource for the colored Weather Underground logo.
      *
-     * @return  string  The svg resource as a base64.
-     * @since    3.0.0
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
      */
     public static function get_base64_wug_color_logo() {
         return self::get_base64_wug_icon('#077DC2');
@@ -131,8 +131,8 @@ class Handling {
      * Returns a base64 svg resource for the owm icon.
      *
      * @param string $color Optional. Color of the icon.
-     * @return  string  The svg resource as a base64.
-     * @since    3.0.0
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
      */
     public static function get_base64_netatmo_icon($color='#000') {
         $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 9000 9000">';
@@ -153,8 +153,8 @@ class Handling {
     /**
      * Returns a base64 svg resource for the monochrome Netatmo logo.
      *
-     * @return  string  The svg resource as a base64.
-     * @since    3.0.0
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
      */
     public static function get_base64_netatmo_grey_logo() {
         return self::get_base64_netatmo_icon('#666666');
@@ -163,8 +163,8 @@ class Handling {
     /**
      * Returns a base64 svg resource for the colored Netatmo logo.
      *
-     * @return  string  The svg resource as a base64.
-     * @since    3.0.0
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
      */
     public static function get_base64_netatmo_color_logo() {
         return self::get_base64_netatmo_icon('#57919A');
@@ -174,8 +174,8 @@ class Handling {
      * Returns a base64 svg resource for the owm icon.
      *
      * @param string $color Optional. Color of the icon.
-     * @return  string  The svg resource as a base64.
-     * @since    3.0.0
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
      */
     public static function get_base64_loc_icon($color='#000') {
         $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="-500 -500 9500 9500">';
@@ -190,8 +190,8 @@ class Handling {
     /**
      * Returns a base64 svg resource for the monochrome Netatmo logo.
      *
-     * @return  string  The svg resource as a base64.
-     * @since    3.0.0
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
      */
     public static function get_base64_loc_grey_logo() {
         return self::get_base64_loc_icon('#666666');
@@ -200,12 +200,124 @@ class Handling {
     /**
      * Returns a base64 svg resource for the colored OpenWeatherMap logo.
      *
-     * @return  string  The svg resource as a base64.
-     * @since    3.0.0
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
      */
     public static function get_base64_loc_color_logo() {
         return self::get_base64_loc_icon('#FFA501');
     }
 
+    /**
+     * Returns a base64 svg resource for the clientraw.txt icon.
+     *
+     * @param string $color Optional. Color of the icon.
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
+     */
+    public static function get_base64_raw_icon($color='#000') {
+        $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 400 400">';
+        $source .= '<g transform="translate(32,24) scale(0.85,0.85)">';
+        $source .= '<path style="fill:' . $color . '" d="M 183.3125,43.09375 L 183.3125,83.8125 L 152.71875,66.125 L 137.1875,92.9375 L 183.3125,119.65625 L 183.3125,179.75 L 131.5,149.8125 L 131.40625,96.28125 L 100.40625,96.34375 L 100.46875,131.90625 L 65.09375,111.46875 L 49.59375,138.3125 L 84.875,158.6875 L 54.25,176.3125 L 69.6875,203.1875 L 115.90625,176.59375 L 167.90625,206.625 L 116.09375,236.53125 L 69.6875,209.84375 L 54.25,236.71875 L 85.0625,254.46875 L 49.6875,274.875 L 65.1875,301.71875 L 100.46875,281.34375 L 100.40625,316.6875 L 131.40625,316.75 L 131.5,263.4375 L 183.5,233.4375 L 183.5,293.25 L 137.1875,320.09375 L 152.71875,346.90625 L 183.5,329.09375 L 183.5,369.9375 L 214.5,369.9375 L 214.5,329.21875 L 245.09375,346.90625 L 260.625,320.09375 L 214.5,293.375 L 214.5,233.28125 L 266.3125,263.21875 L 266.40625,316.75 L 297.40625,316.6875 L 297.34375,281.125 L 332.71875,301.5625 L 348.21875,274.71875 L 312.9375,254.34375 L 343.5625,236.71875 L 328.125,209.84375 L 281.9375,236.4375 L 229.90625,206.40625 L 281.75,176.46875 L 328.125,203.1875 L 343.5625,176.3125 L 312.75,158.5625 L 348.125,138.15625 L 332.625,111.3125 L 297.34375,131.6875 L 297.40625,96.34375 L 266.40625,96.28125 L 266.3125,149.59375 L 214.3125,179.59375 L 214.3125,119.78125 L 260.625,92.9375 L 245.09375,66.125 L 214.3125,83.9375 L 214.3125,43.09375 L 183.3125,43.09375 z"/>';
+        $source .= '</g>';
+        $source .= '</svg>';
+        return 'data:image/svg+xml;base64,' . base64_encode($source);
+    }
 
+    /**
+     * Returns a base64 svg resource for the monochrome clientraw.txt logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
+     */
+    public static function get_base64_raw_grey_logo() {
+        return self::get_base64_raw_icon('#666666');
+    }
+
+    /**
+     * Returns a base64 svg resource for the colored clientraw.txt logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
+     */
+    public static function get_base64_raw_color_logo() {
+        return self::get_base64_raw_icon('#2A39CE');
+    }
+
+    /**
+     * Returns a base64 svg resource for the realtime.txt icon.
+     *
+     * @param string $color Optional. Color of the icon.
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
+     */
+    public static function get_base64_real_icon($color='#000') {
+        $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 96 96">';
+        $source .= '<g transform="translate(-11,-11) scale(1.24,1.24)">';
+        $source .= '<path style="fill:' . $color . '" d="M30.5,34.7c-1-1-1-2.6,0-3.5c1-1,2.5-1,3.5,0l16.6,13.3l0.9,0.7c1.9,1.9,1.9,5.1,0,7c-1.9,1.9-5.1,1.9-7,0 l-0.7-0.9L30.5,34.7 M48,68.5c10.9,0,19.8-8.9,19.8-19.8c0-5.5-2.2-10.4-5.8-14l3.5-3.5c4.5,4.5,7.3,10.7,7.3,17.5 c0,13.7-11.1,24.8-24.8,24.8S23.2,62.4,23.2,48.7h5C28.2,59.7,37.1,68.5,48,68.5 M48,21.5c2.7,0,5,2.2,5,5s-2.2,5-5,5s-5-2.2-5-5 S45.3,21.5,48,21.5z"/>';
+        $source .= '</g>';
+        $source .= '</svg>';
+        return 'data:image/svg+xml;base64,' . base64_encode($source);
+    }
+
+    /**
+     * Returns a base64 svg resource for the monochrome realtime.txt logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
+     */
+    public static function get_base64_real_grey_logo() {
+        return self::get_base64_real_icon('#666666');
+    }
+
+    /**
+     * Returns a base64 svg resource for the colored realtime.txt logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
+     */
+    public static function get_base64_real_color_logo() {
+        return self::get_base64_real_icon('#A6E22E');
+    }
+
+    /**
+     * Returns a base64 svg resource for the stickertags icon.
+     *
+     * @param string $color1 Optional. Color of the icon.
+     * @param string $color2 Optional. Color of the icon.
+     * @param string $color3 Optional. Color of the icon.
+     * @param string $color4 Optional. Color of the icon.
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
+     */
+    public static function get_base64_txt_icon($color1='#000', $color4='#000', $color3='#000', $color2='#000') {
+        $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 1000 1000">';
+        $source .= '<g transform="translate(160,160) scale(0.7,0.7)">';
+        $source .= '<path style="fill:' . $color1 . '" d="M500,480.1c-20.4,0-40-3.3-55.2-9.2L48.1,316.8c-9.8-3.8-17.8-8.7-23.9-14.5c-9.1-8.7-14.2-20-14.2-31.6c0-9.4,3.7-32.8,38.1-46.1L444.8,70.5c15.2-5.9,34.8-9.2,55.2-9.2c20.3,0,39.9,3.3,55.2,9.2l396.7,154.1c9.8,3.8,17.8,8.7,23.9,14.5c9.1,8.7,14.2,20,14.2,31.6c0,9.4-3.7,32.8-38.1,46.1L555.2,470.9C539.9,476.8,520.3,480.1,500,480.1z M101.6,270.7l365.8,142.1c8,3.1,20.2,4.9,32.6,4.9c12.4,0,24.6-1.9,32.6-4.9l365.8-142.1L532.6,128.6c-8-3.1-20.2-4.9-32.6-4.9c-12.4,0-24.6,1.8-32.6,4.9L101.6,270.7z"/>';
+        $source .= '<path style="fill:' . $color2 . '" d="M492.8,938.7c-19.7,0-39.5-3.1-55.2-9.2L40.8,775.4l22.6-58.1l396.7,154.1c17.1,6.6,48.2,6.6,65.2,0l396.7-154.1l22.6,58.1L547.9,929.5C532.2,935.6,512.5,938.7,492.8,938.7z"/>';
+        $source .= '<path style="fill:' . $color3 . '" d="M492.8,783.5c-19.7,0-39.5-3.1-55.2-9.2L40.8,620.3l22.6-58.1l396.7,154.1c17.1,6.6,48.2,6.6,65.2,0l396.7-154.1l22.6,58.1L547.9,774.4C532.2,780.5,512.5,783.5,492.8,783.5z"/>';
+        $source .= '<path style="fill:' . $color4 . '" d="M492.8,624.8c-19.7,0-39.5-3.1-55.2-9.2L40.8,461.5l22.6-58.1l396.7,154.1c17.1,6.6,48.2,6.6,65.2,0l396.7-154.1l22.6,58.1L547.9,615.6C532.2,621.7,512.5,624.8,492.8,624.8z"/>';
+        $source .= '</g>';
+        $source .= '</svg>';
+        return 'data:image/svg+xml;base64,' . base64_encode($source);
+    }
+
+    /**
+     * Returns a base64 svg resource for the monochrome stickertags logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
+     */
+    public static function get_base64_txt_grey_logo() {
+        return self::get_base64_txt_icon('#666666', '#666666', '#666666', '#666666');
+    }
+
+    /**
+     * Returns a base64 svg resource for the colored stickertags logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.0.0
+     */
+    public static function get_base64_txt_color_logo() {
+        return self::get_base64_txt_icon('#D4161E', '#776666', '#A69999', '#D0CCCC');
+    }
 }

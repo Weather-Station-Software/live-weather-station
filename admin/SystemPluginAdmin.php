@@ -5,7 +5,6 @@ namespace WeatherStation\System\Plugin;
 use WeatherStation\UI\Dashboard\Handling as Dashboard;
 use WeatherStation\UI\Services\Handling as Services;
 use WeatherStation\UI\Station\Handling as Station;
-use WeatherStation\Engine\Page\Standalone\Framework;
 use WeatherStation\System\Help\InlineHelp;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\System\Options\Handling as Options;
@@ -13,9 +12,6 @@ use WeatherStation\Data\Arrays\Generator as Arrays;
 use WeatherStation\UI\Forms\Handling as FormsRenderer;
 use WeatherStation\UI\SVG\Handling as SVG;
 use WeatherStation\System\I18N\Handling as Intl;
-use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
-use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
-
 use WeatherStation\SDK\Netatmo\Plugin\Collector as Netatmo_Collector;
 use WeatherStation\SDK\Netatmo\Plugin\Initiator as Netatmo_Initiator;
 
@@ -23,19 +19,11 @@ use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector
 use WeatherStation\SDK\WeatherUnderground\Plugin\BaseCollector as WUG_Base_Collector;
 use WeatherStation\SDK\WeatherUnderground\Plugin\StationCollector as WUG_Station_Collector;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\CurrentCollector as OWM_Current_Collector;
-use WeatherStation\SDK\OpenWeatherMap\Plugin\PollutionCollector as OWM_Pollution_Collector;
 
 
 use WeatherStation\SDK\OpenWeatherMap\Plugin\CurrentInitiator as OpenWeatherMap_Current_Initiator;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\PollutionInitiator as OpenWeatherMap_Pollution_Initiator;
 use WeatherStation\SDK\WeatherUnderground\Plugin\StationInitiator as WeatherUnderground_Station_Initiator;
-
-use WeatherStation\SDK\Netatmo\Plugin\Pusher as Netatmo_Merger;
-use WeatherStation\SDK\OpenWeatherMap\Plugin\Pusher as OWM_Pusher;
-use WeatherStation\SDK\PWSWeather\Plugin\Pusher as PWS_Pusher;
-use WeatherStation\SDK\MetOffice\Plugin\Pusher as WOW_Pusher;
-use WeatherStation\SDK\WeatherUnderground\Plugin\Pusher as WUG_Pusher;
-
 
 
 
@@ -861,35 +849,11 @@ class Admin {
                             break;
                     }
                 }
-                /*if ($service != '' && $tab == 'manage' && $action == 'do') {
-                    switch ($service) {
-                        case 'station':
-                            if (array_key_exists('manage-station', $_POST)) {
-                                $station = $this->manage_services();
-                                $error = array();
-                                if (array_key_exists('error', $station)) {
-                                    $error = $station['error'];
-                                    unset($station['error']);
-                                }
-                                if (count($error) > 0) {
-                                    $view = 'form-manage-station' ;
-                                    $args = compact('station', 'error');
-                                }
-                            }
-                            break;
-                    }
-                }*/
                 if ($service == 'station' && $tab == 'delete' && $action == 'do') {
                     if (array_key_exists('delete-station', $_POST)) {
                         $this->delete_station($id);
                     }
                 }
-                /*if (array_key_exists('_wpnonce', $_POST)) {
-                    foreach ($this->settings as $s) {
-                        $sec = wp_verify_nonce($_POST['_wpnonce'], $s . '-options');
-                        if ($sec) { break;}
-                    }
-                }*/
                 break;
             case 'lws-settings':
                 $view = 'settings';
@@ -1701,117 +1665,4 @@ class Admin {
                 }
         }
     }
-
-    /**
-     * Add a located OWM station.
-     *
-     * @since 3.0.0
-     *
-    public function manage_services() {
-        $station = array();
-        $error = array();
-        if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'manage-station')) {
-            if (array_key_exists('guid', $_POST) &&
-                array_key_exists('wow_user', $_POST) &&
-                array_key_exists('wow_password', $_POST) &&
-                array_key_exists('pws_user', $_POST) &&
-                array_key_exists('pws_password', $_POST) &&
-                array_key_exists('wug_user', $_POST) &&
-                array_key_exists('wug_password', $_POST)) {
-                if (array_key_exists('guid', $_POST)) {
-                    $guid = stripslashes(htmlspecialchars_decode($_POST['guid']));
-                    if ($guid != 0) {
-                        $station = $this->get_station_informations_by_guid($guid);
-                        if (array_key_exists('wow_user', $_POST)) {
-                            $station['wow_user'] = stripslashes(htmlspecialchars_decode($_POST['wow_user']));
-                        }
-                        if (array_key_exists('wow_password', $_POST)) {
-                            $station['wow_password'] = stripslashes(htmlspecialchars_decode($_POST['wow_password']));
-                        }
-                        if (array_key_exists('pws_user', $_POST)) {
-                            $station['pws_user'] = stripslashes(htmlspecialchars_decode($_POST['pws_user']));
-                        }
-                        if (array_key_exists('pws_password', $_POST)) {
-                            $station['pws_password'] = stripslashes(htmlspecialchars_decode($_POST['pws_password']));
-                        }
-                        if (array_key_exists('wug_user', $_POST)) {
-                            $station['wug_user'] = stripslashes(htmlspecialchars_decode($_POST['wug_user']));
-                        }
-                        if (array_key_exists('wug_password', $_POST)) {
-                            $station['wug_password'] = stripslashes(htmlspecialchars_decode($_POST['wug_password']));
-                        }
-                        try {
-                            switch ($station['station_type']) {
-                                case 0:
-                                    $collector = new Netatmo_Collector();
-                                    $merger = new Netatmo_Merger(LWS_PLUGIN_NAME, LWS_VERSION);
-                                    break;
-                            }
-                            $n = $collector->get_datas();
-                            $weather = new Weather_Index_Computer();
-                            $w = $weather->compute();
-                            $datas = $merger->merge_data($n, $w);
-                            foreach ($this->pushers as $pusher) {
-                                $key = strtolower($pusher) . '_sync';
-                                if (array_key_exists($key, $_POST)) {
-                                    $station[$key] = 1;
-                                    switch (strtolower($pusher)) {
-                                        case 'owm':
-                                            $push = new OWM_Pusher();
-                                            break;
-                                        case 'pws':
-                                            $push = new PWS_Pusher();
-                                            break;
-                                        case 'wow':
-                                            $push = new WOW_Pusher();
-                                            break;
-                                        case 'wug':
-                                            $push = new WUG_Pusher();
-                                            break;
-
-                                    }
-                                    $result = $push->post_data($datas, array($station));
-                                    if ($result != '') {
-                                        $error[strtolower($pusher)] = $result;
-                                        $station[$key] = 0;
-                                    }
-                                }
-                                else {
-                                    $station[$key] = 0;
-                                }
-                            }
-                        }
-                        catch (\Exception $ex) {
-                            //error_log(LWS_PLUGIN_NAME . ' / ' . LWS_VERSION . ' / ' . get_class() . ' / ' . get_class($this) . ' / Error code: ' . $ex->getCode() . ' / Error message: ' . $ex->getMessage());
-                        }
-                        if (count($error) == 0) {
-                            if ($this->update_stations_table($station, true)) {
-                                $message = __('The services associated with the station %s have been correctly updated.', 'live-weather-station');
-                                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
-                                add_settings_error('lws_nonce_success', 200, $message, 'updated');
-                                Logger::notice($this->service, null, $station['station_id'], $station['station_name'], null, null, null, 'Services updated.');
-                                //Framework::apply_configuration();
-                            }
-                            else {
-                                $message = __('Unable to update the services associated with the station %s.', 'live-weather-station');
-                                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
-                                add_settings_error('lws_nonce_error', 403, $message, 'error');
-                                Logger::error($this->service, null, $station['station_id'], $station['station_name'], null, null, null, 'Unable to update the services.');
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        else {
-            $message = __('Unable to perform this update.', 'live-weather-station');
-            add_settings_error('lws_nonce_error', 403, $message, 'error');
-            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-            Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to securely perform an update for a station.');
-        }
-        if (count($error) > 0) {
-            $station['error'] = $error;
-        }
-        return $station;
-    }*/
 }

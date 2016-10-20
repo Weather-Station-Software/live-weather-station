@@ -28,6 +28,7 @@ class Stickertags extends TXTGenerator {
      * @since 3.0.0
      */
      protected function get_data($params, $subformat='standard') {
+         Logger::debug('Stickertags Renderer', null, null, null, null, null, null, print_r($params, true));
          if (is_array($params) && !empty($params) && array_key_exists('station', $params)) {
              try {
                  $station = $this->get_station_informations_by_station_id($params['station']);

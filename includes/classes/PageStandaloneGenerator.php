@@ -25,7 +25,7 @@ class Generator extends Framework {
         $result = array();
         $result['type'] = ['stickertags'];
         $result['fields'] = ['station'];
-        $result['variables']['station'] = '@/([A-F0-9]{2}:[A-F0-9]{2}:[A-F0-9]{2}:[A-F0-9]{2}:[A-F0-9]{2}:[a-fA-F0-9]{2})/@i';
+        $result['variables']['station'] = '@/([A-Z0-9]{2}:[A-F0-9]{2}:[A-F0-9]{2}:[A-F0-9]{2}:[A-F0-9]{2}:[A-F0-9]{2})/@i';
         return $result;
     }
 
