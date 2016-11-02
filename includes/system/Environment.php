@@ -166,11 +166,30 @@ class Manager {
     }
 
     /**
+     * Get the Wordpress version.
+     *
+     * @since 3.0.0
+     */
+    public static function wordpress_version_id() {
+        global $wp_version;
+        return 'WordPress/' . $wp_version;
+    }
+
+    /**
      * Get the Weather Station version human readable.
      *
      * @since 3.0.0
      */
     public static function weatherstation_version_text() {
         return LWS_PLUGIN_NAME . ' ' . LWS_VERSION;
+    }
+
+    /**
+     * Get the Weather Station version human readable.
+     *
+     * @since 3.0.0
+     */
+    public static function weatherstation_version_id() {
+        return 'WeatherStation/' . LWS_VERSION;
     }
 }

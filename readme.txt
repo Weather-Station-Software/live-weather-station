@@ -1,6 +1,6 @@
 === Live Weather Station ===
 Contributors: PierreLannoy
-Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, CO2, rain, snow, cloudiness, cloud, moon, moon phase, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill, weather plugin, wordpress widget, wind gauge, rain gauge, pws, met office, personal weather station, weather underground, wunderground, weather observations website, wow, observation, pollution, CO₂, CO, O3, O₃, ozone, carbon dioxide, carbon monoxide
+Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, CO2, rain, snow, cloudiness, cloud, moon, moon phase, sun, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill, weather plugin, wordpress widget, wind gauge, rain gauge, pws, met office, personal weather station, weather underground, wunderground, weather observations website, wow, observation, pollution, CO₂, CO, O3, O₃, ozone, carbon dioxide, carbon monoxide, clientraw, clientraw.txt, realtime, realtime.txt
 Requires at least: 4.0
 Tested up to: 4.6
 Stable tag: 2.9.3
@@ -8,7 +8,7 @@ License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://support.laquadrature.net/
 
-Display, in many different and elegant ways, the meteorological data collected by your Netatmo weather station or coming from OpenWeatherMap.
+Display on your WordPress site, in many different and elegant ways, the meteorological data collected by public or personal weather stations.
 
 == Description ==
 
@@ -51,21 +51,6 @@ Live Weather Station allows you to send your Netatmo outdoor data, at a 10 minut
 * [Met Office](http://wow.metoffice.gov.uk/) weather observations website
 * [PWS Weather](http://www.pwsweather.com/)
 * [Weather Underground](https://www.wunderground.com/)
-
-= Supported languages =
-Right now, Live Weather Station supports the following languages:
-
-* Dutch (thanks to [@hanstis](https://profiles.wordpress.org/hanstis))
-* English (default)
-* English / Australia (thanks to [translation team](https://translate.wordpress.org/locale/en-au/default/wp-plugins/live-weather-station))
-* English / Canada (thanks to [translation team](https://translate.wordpress.org/locale/en-ca/default/wp-plugins/live-weather-station))
-* English / New Zealand (thanks to [translation team](https://translate.wordpress.org/locale/en-nz/default/wp-plugins/live-weather-station))
-* English / South Africa (thanks to [translation team](https://translate.wordpress.org/locale/en-za/default/wp-plugins/live-weather-station))
-* English / UK (thanks to [translation team](https://translate.wordpress.org/locale/en-gb/default/wp-plugins/live-weather-station))
-* French / Belgium (thanks to [translation team](https://translate.wordpress.org/locale/fr-be/default/wp-plugins/live-weather-station))
-* French / Canada (thanks to [translation team](https://translate.wordpress.org/locale/fr-ca/default/wp-plugins/live-weather-station))
-* French / France (thanks to [translation team](https://translate.wordpress.org/locale/fr/default/wp-plugins/live-weather-station))
-* Russian  (thanks to [translation team](https://translate.wordpress.org/locale/ru/default/wp-plugins/live-weather-station))
 
 = Instructions =
 You can find a more in-depth description and instructions to configure [on this page](https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo/).
@@ -135,15 +120,20 @@ After upgrading, please, review all your settings.
 * New: a new "station view" offers more in-depth visibility and understanding of the collected weather stations.
 * New: in addition to its nominal mode, Weather Station can now run in a simplified mode (automatic selection of settings, display options, units, etc.).
 * New: it's now possible to collect data from stations published on Weather Underground.
+* New: it's now possible to collect data from stations publishing its data via realtime.txt file (Cumulus, etc.).
+* New: it's now possible to collect data from stations publishing its data via clientraw.txt file (Weather Display, WeeWX, etc.).
 * New: the min & max boundaries for controls (like meters or gauges) can be set for each measurement types.
 * New: the min & max alarms thresholds for controls (like LCD panel or meters) can be set for each measurement types.
 * New: a widget in the WordPress dashboard now display an "operating summary" of the plugin.
 * New: it's now possible to manually purge and resynchronize data.
+* New: humidity min & max collecting for station supporting it. Output rendering in all shortcodes.
+* New: pressure min & max collecting for station supporting it. Output rendering in all shortcodes.
+* New: yesterday, month, season and year aggregated rain collecting for station supporting it. Output rendering in all shortcodes.
 * New: for Netatmo stations first setup, last setup and last upgrade dates are collected and may be rendered like other measurements.
 * New: for all personal stations last seen and last refresh dates are collected and may be rendered like other measurements.
 * New: new alternate icons set to display moon ephemeris values.
 * New: ability to publish outdoor data of personal stations as stickertags format (for local, national or transnational weather networks like FRWN, etc.).
-* New: a caching mechanism is implemented to accelerate all backend operations.
+* New: a caching mechanism is implemented to accelerate all backend rendering.
 * Improvement: stability and speed are dramatically optimized.
 * Improvement: it's now possible to use partial translations.
 * Improvement: Weather Station has a new stylized (and stylish) logo!
@@ -157,6 +147,7 @@ After upgrading, please, review all your settings.
 * Improvement: short codes previews are now based on true values (before it was on estimated values).
 * Improvement: namespaces refactored for avoiding name collision with other plugins.
 * Improvement: Weather Station now use the last version of Netatmo SDK.
+* Improvement: pressure displayed in hPa have now reasonable accuracy with 1 decimal.
 * Improvement: better cURL error reporting (now in event log) when SSL issues occurs.
 * Improvement: it's now possible to be warned when time difference between Netatmo server and your server is too large (settings 'Server Time shift' in 'system' tab)'.
 * Improvement: the plugin now verify all prerequisites (mandatory extensions) at startup and shows warning if there's something missing.

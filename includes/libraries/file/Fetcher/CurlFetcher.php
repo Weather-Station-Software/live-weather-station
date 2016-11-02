@@ -1,12 +1,12 @@
 <?php
 
-namespace WeatherStation\SDK\OpenWeatherMap\Fetcher;
+namespace WeatherStation\SDK\Generic\Fetcher;
 
 /**
  * @package Includes\Libraries
  * @author Originally written by Christian Flach <https://github.com/cmfcmf>.
  * @author Modified by Pierre Lannoy <https://pierre.lannoy.fr/>.
- * @since 2.0.0
+ * @since 3.0.0
  * @license MIT
  */
 class CurlFetcher implements FetcherInterface

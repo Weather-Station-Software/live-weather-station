@@ -72,6 +72,11 @@ $hw = (strpos($module['module_type'], 'AModule') == 1);
                 <span style="width:100%;cursor: default;"><?php echo $firmware_icn; ?>&nbsp;<?php echo $module['firmware_txt']; ?> <?php echo __('installed on', 'live-weather-station'); ?> <?php echo $module['last_upgrade_txt']; ?></span>
             </div>
         <?php } ?>
+        <?php if (array_key_exists('firmware', $module) && !array_key_exists('last_upgrade', $module)) { ?>
+            <div style="margin-bottom: 10px;">
+                <span style="width:100%;cursor: default;"><?php echo $firmware_icn; ?>&nbsp;<?php echo $module['firmware_txt']; ?></span>
+            </div>
+        <?php } ?>
         <?php if (array_key_exists('first_setup', $module)) { ?>
             <div style="margin-bottom: 10px;">
                 <span style="width:100%;cursor: default;"><?php echo $setup_icn; ?>&nbsp;<?php echo $module['first_setup_txt']; ?></span><span style="color:silver"> (<?php echo $module['first_setup_diff_txt']; ?>)</span>

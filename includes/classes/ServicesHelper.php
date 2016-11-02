@@ -97,7 +97,7 @@ class Handling {
         add_meta_box('lws-connect-netatmo', 'Netatmo', array($this, 'netatmo_box'), 'lws-settings', 'normal');
         // Right column
         add_meta_box('lws-connect-owm', 'OpenWeatherMap', array($this, 'owm_box'), 'lws-settings', 'side');
-        add_meta_box('lws-connect-wug', 'WeatherUnderground', array($this, 'wug_box'), 'lws-settings', 'side');
+        add_meta_box('lws-connect-wug', 'Weather Underground', array($this, 'wug_box'), 'lws-settings', 'side');
     }
 
     /**

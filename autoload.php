@@ -31,6 +31,11 @@ spl_autoload_register(
         case 'WeatherStation\DB\Query': $file = LWS_INCLUDES_DIR.'traits/DBQuery.php'; break;
         case 'WeatherStation\DB\Stats': $file = LWS_INCLUDES_DIR.'classes/DatabaseStats.php'; break;
         case 'WeatherStation\DB\Storage': $file = LWS_INCLUDES_DIR.'traits/DBStorage.php'; break;
+        case 'WeatherStation\SDK\Clientraw\Plugin\StationClient': $file = LWS_INCLUDES_DIR.'traits/ClientrawPluginStationClient.php'; break;
+        case 'WeatherStation\SDK\Clientraw\Plugin\StationCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentClientrawStationCollector.php'; break;
+        case 'WeatherStation\SDK\Clientraw\Plugin\StationInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentClientrawStationInitiator.php'; break;
+        case 'WeatherStation\SDK\Clientraw\Plugin\StationUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentClientrawStationUpdater.php'; break;
+        case 'WeatherStation\SDK\Generic\FileClient': $file = LWS_INCLUDES_DIR.'libraries/file/autoload.php'; break;
         case 'WeatherStation\SDK\Generic\Plugin\Astronomy\MoonPhase': $file = LWS_INCLUDES_DIR.'libraries/solaris/MoonPhase.php'; break;
         case 'WeatherStation\SDK\Generic\Plugin\Astronomy\MoonRiseSet': $file = LWS_INCLUDES_DIR.'libraries/misc/MoonRiseSet.php'; break;
         case 'WeatherStation\SDK\Generic\Plugin\Ephemeris\Client': $file = LWS_INCLUDES_DIR.'traits/EphemerisClient.php'; break;
@@ -60,6 +65,10 @@ spl_autoload_register(
         case 'WeatherStation\SDK\OpenWeatherMap\Plugin\StationInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentOpenWeatherMapStationInitiator.php'; break;
         case 'WeatherStation\SDK\OpenWeatherMap\Plugin\StationUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentOpenWeatherMapStationUpdater.php'; break;
         case 'WeatherStation\SDK\OpenWeatherMap\OWMApiClient': $file = LWS_INCLUDES_DIR.'libraries/owm/autoload.php'; break;
+        case 'WeatherStation\SDK\Realtime\Plugin\StationClient': $file = LWS_INCLUDES_DIR.'traits/RealtimePluginStationClient.php'; break;
+        case 'WeatherStation\SDK\Realtime\Plugin\StationCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentRealtimeStationCollector.php'; break;
+        case 'WeatherStation\SDK\Realtime\Plugin\StationInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentRealtimeStationInitiator.php'; break;
+        case 'WeatherStation\SDK\Realtime\Plugin\StationUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentRealtimeStationUpdater.php'; break;
         case 'WeatherStation\SDK\WeatherUnderground\WUGApiClient': $file = LWS_INCLUDES_DIR.'libraries/wug/autoload.php'; break;
         case 'WeatherStation\SDK\WeatherUnderground\Plugin\BaseClient': $file = LWS_INCLUDES_DIR.'traits/WeatherUndergroundPluginBaseClient.php'; break;
         case 'WeatherStation\SDK\WeatherUnderground\Plugin\BaseCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherBaseWeatherUndergroundCollector.php'; break;

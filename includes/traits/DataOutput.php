@@ -24,13 +24,14 @@ trait Output {
 
     private $unit_espace = '&nbsp;';
     private $showable_measurements = array('co2', 'co', 'o3', 'humidity', 'humint', 'humext', 'humidity_ref',
-        'cloudiness', 'noise', 'rain', 'rain_hour_aggregated', 'rain_day_aggregated', 'snow', 'windangle', 'gustangle',
+        'cloudiness', 'noise', 'rain', 'rain_hour_aggregated', 'rain_day_aggregated' , 'rain_yesterday_aggregated',
+        'rain_month_aggregated','rain_season_aggregated', 'rain_year_aggregated','snow', 'windangle', 'gustangle',
         'windangle_max', 'windangle_day_max', 'windangle_hour_max', 'windstrength', 'guststrength', 'windstrength_max',
         'windstrength_day_max', 'windstrength_hour_max', 'wind_ref', 'pressure', 'temperature', 'tempint', 'tempext',
         'temperature_min', 'temperature_max', 'temperature_ref', 'dew_point', 'frost_point', 'heat_index', 'humidex',
         'wind_chill', 'cloud_ceiling', 'temperature_trend', 'pressure_trend', 'sunrise', 'sunset', 'moonrise',
         'moonset', 'moon_illumination', 'moon_diameter', 'sun_diameter', 'moon_distance', 'sun_distance', 'moon_phase',
-        'moon_age', 'o3_distance', 'co_distance');
+        'moon_age', 'o3_distance', 'co_distance', 'humidity_min', 'humidity_max', 'pressure_min', 'pressure_max');
     private $not_showable_measurements = array('battery', 'firmware', 'signal', 'loc_timezone', 'loc_altitude',
         'loc_latitude', 'loc_longitude', 'last_seen', 'last_refresh', 'first_setup', 'last_upgrade', 'last_setup');
 
@@ -242,6 +243,7 @@ trait Output {
             }
             $min = round($this->output_value($this->get_measurement_min($measure_type, $module_type), $measure_type), $prec);
             $max = round($this->output_value($this->get_measurement_max($measure_type, $module_type), $measure_type), $prec);
+            // Adapted min & max for temperature
             if ($measure_type == 'temperature' && (get_option('live_weather_station_min_max_mode') == 1)) {
                 $min_t = array();
                 $max_t = array();
@@ -263,6 +265,62 @@ trait Output {
                     if ($min <= $max) {
                         $min = round($this->output_value($min - $delta, $measure_type));
                         $max = round($this->output_value($max + $delta, $measure_type));
+                    }
+                }
+            }
+            // Adapted min & max for pressure
+            if ($measure_type == 'pressure' && (get_option('live_weather_station_min_max_mode') == 1)) {
+                $min_t = array();
+                $max_t = array();
+                foreach ($_result as $line) {
+                    if ($line['measure_type'] == 'pressure_min') {
+                        $min_t = $line;
+                    }
+                    if ($line['measure_type'] == 'pressure_max') {
+                        $max_t = $line;
+                    }
+                }
+                if (!empty($min_t) && !empty($max_t)) {
+                    $min = $min_t['measure_value'];
+                    $max = $max_t['measure_value'];
+                    $delta = 5 ;
+                    if ($min <= $max) {
+                        $min = round($this->output_value($min - $delta, $measure_type));
+                        $max = round($this->output_value($max + $delta, $measure_type));
+                        if ($min < 980) {
+                            $min = 980;
+                        }
+                        if ($max > 1080) {
+                            $max = 1080;
+                        }
+                    }
+                }
+            }
+            // Adapted min & max for humidity
+            if ($measure_type == 'humidity' && (get_option('live_weather_station_min_max_mode') == 1)) {
+                $min_t = array();
+                $max_t = array();
+                foreach ($_result as $line) {
+                    if ($line['measure_type'] == 'humidity_min') {
+                        $min_t = $line;
+                    }
+                    if ($line['measure_type'] == 'humidity_max') {
+                        $max_t = $line;
+                    }
+                }
+                if (!empty($min_t) && !empty($max_t)) {
+                    $min = $min_t['measure_value'];
+                    $max = $max_t['measure_value'];
+                    $delta = 10 ;
+                    if ($min <= $max) {
+                        $min = round($this->output_value($min - $delta, $measure_type));
+                        $max = round($this->output_value($max + $delta, $measure_type));
+                        if ($min < 0) {
+                            $min = 0;
+                        }
+                        if ($max > 100) {
+                            $max = 100;
+                        }
                     }
                 }
             }
@@ -679,7 +737,31 @@ trait Output {
                     if ($line['measure_type'] == 'temperature_max') {
                         $value_max = $this->output_value($line['measure_value'], $measure_type);
                     }
-                    if ($line['measure_type'] == 'temperature_trend' || $line['measure_type'] == 'pressure_trend') {
+                    if ($line['measure_type'] == 'temperature_trend') {
+                        $value_trend = strtolower($line['measure_value']);
+                        if ($value_trend == 'stable') {
+                            $value_trend = 'steady';
+                        }
+                    }
+                    if ($line['measure_type'] == 'humidity_min') {
+                        $value_min = $this->output_value($line['measure_value'], $measure_type);
+                    }
+                    if ($line['measure_type'] == 'humidity_max') {
+                        $value_max = $this->output_value($line['measure_value'], $measure_type);
+                    }
+                    if ($line['measure_type'] == 'humidity_trend') {
+                        $value_trend = strtolower($line['measure_value']);
+                        if ($value_trend == 'stable') {
+                            $value_trend = 'steady';
+                        }
+                    }
+                    if ($line['measure_type'] == 'pressure_min') {
+                        $value_min = $this->output_value($line['measure_value'], $measure_type);
+                    }
+                    if ($line['measure_type'] == 'pressure_max') {
+                        $value_max = $this->output_value($line['measure_value'], $measure_type);
+                    }
+                    if ($line['measure_type'] == 'pressure_trend') {
                         $value_trend = strtolower($line['measure_value']);
                         if ($value_trend == 'stable') {
                             $value_trend = 'steady';
@@ -705,6 +787,7 @@ trait Output {
             }
             $min = round($this->output_value($this->get_measurement_min($measure_type, $module_type), $measure_type), $prec);
             $max = round($this->output_value($this->get_measurement_max($measure_type, $module_type), $measure_type), $prec);
+            // Adapted min & max for temperature
             if ($measure_type == 'temperature' && (get_option('live_weather_station_min_max_mode') == 1)) {
                 $min_t = array();
                 $max_t = array();
@@ -726,6 +809,62 @@ trait Output {
                     if ($min <= $max) {
                         $min = round($this->output_value($min - $delta, $measure_type));
                         $max = round($this->output_value($max + $delta, $measure_type));
+                    }
+                }
+            }
+            // Adapted min & max for pressure
+            if ($measure_type == 'pressure' && (get_option('live_weather_station_min_max_mode') == 1)) {
+                $min_t = array();
+                $max_t = array();
+                foreach ($_result as $line) {
+                    if ($line['measure_type'] == 'pressure_min') {
+                        $min_t = $line;
+                    }
+                    if ($line['measure_type'] == 'pressure_max') {
+                        $max_t = $line;
+                    }
+                }
+                if (!empty($min_t) && !empty($max_t)) {
+                    $min = $min_t['measure_value'];
+                    $max = $max_t['measure_value'];
+                    $delta = 5 ;
+                    if ($min <= $max) {
+                        $min = round($this->output_value($min - $delta, $measure_type));
+                        $max = round($this->output_value($max + $delta, $measure_type));
+                        if ($min < 980) {
+                            $min = 980;
+                        }
+                        if ($max > 1080) {
+                            $max = 1080;
+                        }
+                    }
+                }
+            }
+            // Adapted min & max for humidity
+            if ($measure_type == 'humidity' && (get_option('live_weather_station_min_max_mode') == 1)) {
+                $min_t = array();
+                $max_t = array();
+                foreach ($_result as $line) {
+                    if ($line['measure_type'] == 'humidity_min') {
+                        $min_t = $line;
+                    }
+                    if ($line['measure_type'] == 'humidity_max') {
+                        $max_t = $line;
+                    }
+                }
+                if (!empty($min_t) && !empty($max_t)) {
+                    $min = $min_t['measure_value'];
+                    $max = $max_t['measure_value'];
+                    $delta = 10 ;
+                    if ($min <= $max) {
+                        $min = round($this->output_value($min - $delta, $measure_type));
+                        $max = round($this->output_value($max + $delta, $measure_type));
+                        if ($min < 0) {
+                            $min = 0;
+                        }
+                        if ($max > 100) {
+                            $max = 100;
+                        }
                     }
                 }
             }
@@ -1454,6 +1593,8 @@ trait Output {
             case 'humint':
             case 'humext':
             case 'humidity_ref':
+            case 'humidity_min':
+            case 'humidity_max':
                 $result = $this->get_humidity($value);
                 $result .= ($unit ? $this->unit_espace.$this->get_humidity_unit() : '');
                 break;
@@ -1475,6 +1616,10 @@ trait Output {
                 break;
             case 'rain_hour_aggregated':
             case 'rain_day_aggregated':
+            case 'rain_month_aggregated':
+            case 'rain_season_aggregated':
+            case 'rain_year_aggregated':
+            case 'rain_yesterday_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
                 $result = $this->get_rain($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_rain_unit($ref) : '');
@@ -1503,6 +1648,8 @@ trait Output {
                 $result .= ($unit ? $this->unit_espace.$this->get_wind_speed_unit($ref) : '');
                 break;
             case 'pressure':
+            case 'pressure_min':
+            case 'pressure_max':
                 $ref = get_option('live_weather_station_unit_pressure') ;
                 $result = $this->get_pressure($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_pressure_unit($ref) : '');
@@ -1694,6 +1841,12 @@ trait Output {
             case 'pressure_trend':
                 $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-arrows-v"></i></span>';
                 break;
+            case 'pressure_max':
+                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-long-arrow-up"></i></span>';
+                break;
+            case 'pressure_min':
+                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-long-arrow-down"></i></span>';
+                break;
             case 'temperature':
             case 'tempint':
             case 'tempext':
@@ -1709,12 +1862,25 @@ trait Output {
             case 'temperature_min':
                 $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-thermometer"></i><i %1$s class="fa fa-long-arrow-down"></i></span>';
                 break;
+            case 'humidity_trend':
+                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-humidity"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+                break;
+            case 'humidity_max':
+                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-humidity"></i><i %1$s class="fa fa-long-arrow-up"></i></span>';
+                break;
+            case 'humidity_min':
+                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-humidity"></i><i %1$s class="fa fa-long-arrow-down"></i></span>';
+                break;
             case 'cloudiness':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-cloud" aria-hidden="true"></i>';
                 break;
             case 'rain':
             case 'rain_hour_aggregated':
             case 'rain_day_aggregated':
+            case 'rain_month_aggregated':
+            case 'rain_season_aggregated':
+            case 'rain_year_aggregated':
+            case 'rain_yesterday_aggregated':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-umbrella" aria-hidden="true"></i>';
                 break;
             case 'snow':
@@ -2005,6 +2171,8 @@ trait Output {
                 $result['long'] = $this->get_o3_unit_full($ref) ;
                 break;
             case 'humidity':
+            case 'humidity_min':
+            case 'humidity_max':
             case 'humint':
             case 'humext':
             case 'humidity_ref':
@@ -2056,12 +2224,48 @@ trait Output {
                 $result['unit'] = $this->get_rain_unit($ref) ;
                 $result['long'] = $this->get_rain_unit_full($ref) ;
                 break;
+            case 'rain_month_aggregated':
+                $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['comp'] = __('month', 'live-weather-station') ;
+                $result['unit'] = $this->get_rain_unit($ref) ;
+                $result['long'] = $this->get_rain_unit_full($ref) ;
+                break;
+            case 'rain_year_aggregated':
+                $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['comp'] = __('year', 'live-weather-station') ;
+                $result['unit'] = $this->get_rain_unit($ref) ;
+                $result['long'] = $this->get_rain_unit_full($ref) ;
+                break;
             case 'rain_day_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
                 }
                 $result['comp'] = __('today', 'live-weather-station') ;
+                $result['unit'] = $this->get_rain_unit($ref) ;
+                $result['long'] = $this->get_rain_unit_full($ref) ;
+                break;
+            case 'rain_yesterday_aggregated':
+                $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['comp'] = __('yda.', 'live-weather-station') ;
+                $result['unit'] = $this->get_rain_unit($ref) ;
+                $result['long'] = $this->get_rain_unit_full($ref) ;
+                break;
+            case 'rain_season_aggregated':
+                $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['comp'] = __('season', 'live-weather-station') ;
                 $result['unit'] = $this->get_rain_unit($ref) ;
                 $result['long'] = $this->get_rain_unit_full($ref) ;
                 break;
@@ -2125,6 +2329,8 @@ trait Output {
                 $result['long'] = $this->get_wind_speed_unit_full($ref);
                 break;
             case 'pressure':
+            case 'pressure_min':
+            case 'pressure_max':
                 $ref = get_option('live_weather_station_unit_pressure') ;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
@@ -2217,8 +2423,13 @@ trait Output {
                 $result = 1 ;
                 break;
             case 'pressure':
+            case 'pressure_min':
+            case 'pressure_max':
                 if (get_option('live_weather_station_unit_pressure') == 1) {
                     $result = 2 ;
+                }
+                else {
+                    $result = 1 ;
                 }
                 break;
             case 'co':
@@ -2280,6 +2491,8 @@ trait Output {
                 $result = __('O₃', 'live-weather-station') ;
                 break;
             case 'humidity':
+            case 'humidity_min':
+            case 'humidity_max':
                 $result = __('humidity', 'live-weather-station') ;
                 break;
             case 'noise':
@@ -2288,6 +2501,10 @@ trait Output {
             case 'rain':
             case 'rain_hour_aggregated':
             case 'rain_day_aggregated':
+            case 'rain_yesterday_aggregated':
+            case 'rain_month_aggregated':
+            case 'rain_season_aggregated':
+            case 'rain_year_aggregated':
                 $result = __('rain', 'live-weather-station') ;
                 break;
             case 'snow':
@@ -2306,6 +2523,8 @@ trait Output {
                 $result = __('wind', 'live-weather-station') ;
                 break;
             case 'pressure':
+            case 'pressure_min':
+            case 'pressure_max':
                 $result = __('atm pressure', 'live-weather-station') ;
                 break;
             case 'dew_point':
@@ -2434,7 +2653,7 @@ trait Output {
      * @access   protected
      */
     protected function get_windangle_text($value) {
-        if ($value < 0) {
+        while ($value < 0) {
             $value = $value + 360;
         }
         $val = round(($value / 22.5) + 0.5);
@@ -2467,6 +2686,9 @@ trait Output {
      * @access   protected
      */
     protected function get_angle_text($value) {
+        while ($value < 0) {
+            $value = $value + 360;
+        }
         $val = round((($value%360) / 22.5) + 0.4);
         $dir = array();
         $dir[] = __('N', 'live-weather-station') ;
@@ -2498,6 +2720,9 @@ trait Output {
      * @access   protected
      */
     protected function get_angle_full_text($value) {
+        while ($value < 0) {
+            $value = $value + 360;
+        }
         $val = round((($value%360) / 22.5) + 0.4);
         $dir = array();
         $dir[] = __('North', 'live-weather-station') ;
@@ -2624,6 +2849,9 @@ trait Output {
     protected function get_wifi_level_text($value) {
         $level = $this->get_wifi_level($value);
         switch ($level) {
+            case 9999:
+                $result = __('Unknown', 'live-weather-station') ;
+                break;
             case 2:
                 $result = __('High', 'live-weather-station') ;
                 break;
@@ -2832,6 +3060,10 @@ trait Output {
             case 'rain':
             case 'rain_hour_aggregated':
             case 'rain_day_aggregated':
+            case 'rain_yesterday_aggregated':
+            case 'rain_month_aggregated':
+            case 'rain_season_aggregated':
+            case 'rain_year_aggregated':
             case 'windstrength':
             case 'windangle':
             case 'guststrength':
@@ -2878,6 +3110,7 @@ trait Output {
         $value_types = array ('humidity' => 'NAModule1', 'rain' => 'NAModule3', 'windangle' => 'NAModule2', 'windstrength' => 'NAModule2', 'pressure' => 'NAMain', 'temperature' => 'NAModule1');
         $temperature_trend = array();
         $pressure_trend = array();
+        $humidity_trend = array();
         $err = 0;
         $aggregated = ($measure_type == 'aggregated');
         $outdoor = ($measure_type == 'outdoor');
@@ -2905,16 +3138,31 @@ trait Output {
                     $signal[$data['module_id']] = $this->get_signal_lcd_level_text($data['measure_value'], $data['module_type']);
                 }
                 if ($data['measure_type'] == 'temperature_max') {
-                    $max[$data['module_id']] = $this->output_value($data['measure_value'], $data['measure_type']);
+                    $max[$data['module_id']]['temperature'] = $this->output_value($data['measure_value'], $data['measure_type']);
                 }
                 if ($data['measure_type'] == 'temperature_min') {
-                    $min[$data['module_id']] = $this->output_value($data['measure_value'], $data['measure_type']);
+                    $min[$data['module_id']]['temperature'] = $this->output_value($data['measure_value'], $data['measure_type']);
                 }
                 if ($data['measure_type'] == 'temperature_trend') {
                     $temperature_trend[$data['module_id']] = ($data['measure_value'] == 'stable' ? 'steady' : $data['measure_value']);
                 }
+                if ($data['measure_type'] == 'pressure_max') {
+                    $max[$data['module_id']]['pressure'] = $this->output_value($data['measure_value'], $data['measure_type']);
+                }
+                if ($data['measure_type'] == 'pressure_min') {
+                    $min[$data['module_id']]['pressure'] = $this->output_value($data['measure_value'], $data['measure_type']);
+                }
                 if ($data['measure_type'] == 'pressure_trend') {
                     $pressure_trend[$data['module_id']] = ($data['measure_value'] == 'stable' ? 'steady' : $data['measure_value']);
+                }
+                if ($data['measure_type'] == 'humidity_max') {
+                    $max[$data['module_id']]['humidity'] = $this->output_value($data['measure_value'], $data['measure_type']);
+                }
+                if ($data['measure_type'] == 'humidity_min') {
+                    $min[$data['module_id']]['humidity'] = $this->output_value($data['measure_value'], $data['measure_type']);
+                }
+                if ($data['measure_type'] == 'humidity_trend') {
+                    $humidity_trend[$data['module_id']] = ($data['measure_value'] == 'stable' ? 'steady' : $data['measure_value']);
                 }
                 if ($data['measure_type'] == 'dew_point') {
                     $dew_point = $data['measure_value'];
@@ -3031,6 +3279,17 @@ trait Output {
                             $response[] = $measure;
                             break;
                         case 'humidity':
+                            if (array_key_exists($data['module_id'], $humidity_trend)) {
+                                $measure['trend'] = $humidity_trend[$data['module_id']];
+                                $measure['show_trend'] = true;
+                            }
+                            if (array_key_exists($data['module_id'], $min) && array_key_exists($data['module_id'], $max)) {
+                                if (array_key_exists('humidity', $min[$data['module_id']]) && array_key_exists('humidity', $max[$data['module_id']])) {
+                                    $measure['min'] = $min[$data['module_id']]['humidity'];
+                                    $measure['max'] = $max[$data['module_id']]['humidity'];
+                                    $measure['show_min_max'] = true;
+                                }
+                            }
                             if (($data['measure_type'] == $measure_type) || ($data['measure_type'] != $measure_type && $aggregated)) {
                                 $response[] = $measure;
                             }
@@ -3045,6 +3304,13 @@ trait Output {
                             if (array_key_exists($data['module_id'], $pressure_trend)) {
                                 $measure['trend'] = $pressure_trend[$data['module_id']];
                                 $measure['show_trend'] = true;
+                            }
+                            if (array_key_exists($data['module_id'], $min) && array_key_exists($data['module_id'], $max)) {
+                                if (array_key_exists('pressure', $min[$data['module_id']]) && array_key_exists('pressure', $max[$data['module_id']])) {
+                                    $measure['min'] = $min[$data['module_id']]['pressure'];
+                                    $measure['max'] = $max[$data['module_id']]['pressure'];
+                                    $measure['show_min_max'] = true;
+                                }
                             }
                             if (($data['measure_type'] == $measure_type) || ($data['measure_type'] != $measure_type && $aggregated)) {
                                 $response[] = $measure;
@@ -3062,9 +3328,11 @@ trait Output {
                                 $measure['show_trend'] = true;
                             }
                             if (array_key_exists($data['module_id'], $min) && array_key_exists($data['module_id'], $max)) {
-                                $measure['min'] = $min[$data['module_id']];
-                                $measure['max'] = $max[$data['module_id']];
-                                $measure['show_min_max'] = true;
+                                if (array_key_exists('temperature', $min[$data['module_id']]) && array_key_exists('temperature', $max[$data['module_id']])) {
+                                    $measure['min'] = $min[$data['module_id']]['temperature'];
+                                    $measure['max'] = $max[$data['module_id']]['temperature'];
+                                    $measure['show_min_max'] = true;
+                                }
                             }
                             if (($data['measure_type'] == $measure_type) || ($data['measure_type'] != $measure_type && $aggregated)) {
                                 $response[] = $measure;
@@ -3095,6 +3363,10 @@ trait Output {
                             break;
                         case 'rain_hour_aggregated':
                         case 'rain_day_aggregated':
+                        case 'rain_yesterday_aggregated':
+                        case 'rain_month_aggregated':
+                        case 'rain_season_aggregated':
+                        case 'rain_year_aggregated':
                             if ($this->is_valid_rain($temperature_test)) {
                                 $response[] = $measure;
                             }
@@ -3377,7 +3649,7 @@ trait Output {
      * @param string $type The type of the value.
      * @param string $module_type The type of the module.
      * @param string $opt The specific type of option.
-     * @return integer The the measurement minimal to render in controls.
+     * @return integer The measurement minimal to render in controls.
      * @since 3.0.0
      */
     protected function get_measurement_option ($type, $module_type, $opt) {
@@ -3399,12 +3671,24 @@ trait Output {
                 }
                 break;
             case 'humidity':
+            case 'humidity_min':
+            case 'humidity_max':
                 if (strtolower($module_type)=='namodule4' || strtolower($module_type)=='namain') {
                     $t = 'humint';
                 }
                 else {
                     $t = 'humext';
                 }
+                break;
+            case 'pressure_min':
+            case 'pressure_max':
+                $t = 'pressure';
+                break;
+            case 'rain_yesterday_aggregated':
+                $t = 'rain_day_aggregated';
+                break;
+            case 'rain_season_aggregated':
+                $t = 'rain_year_aggregated';
                 break;
             default:
                 $t = $type;

@@ -101,7 +101,7 @@ class InlineHelp {
             $result = '<a href="http://www.meteo-daoulas.fr/"' . $target . '>Patrice Corre</a>';
         }
         if ($number == -9) {
-            $result = '<a href="http://creativecommons.org/licenses/by-sa/4.0/"' . $target . '>Creative Commons CC:BY-SA 4.0 license</a>';
+            $result = '<a href="http://creativecommons.org/licenses/by-sa/4.0/"' . $target . '>' . __('Creative Commons CC:BY-SA 4.0 license', 'live-weather-station') . '</a>';
         }
         if ($number == -10) {
             $result = sprintf($message, '<a href="https://translate.wordpress.org/projects/wp-plugins/live-weather-station"' . $target . '>' . $anchor . '</a>');
@@ -390,18 +390,8 @@ class InlineHelp {
                 $s4 = '';
             }
             $s5 = '<img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_wug_color_logo()) . '" /><strong>' . __('WeatherUndergroung', 'live-weather-station') . '</strong> &mdash; ' . __('a personal weather station published on Weather Underground.', 'live-weather-station');
-            if (LWS_REAL_READY) {
-                $s6 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_real_color_logo()) . '" /><strong>' . __('Realtime File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>realtime.txt</em> file (Cumulus, etc.).', 'live-weather-station') . '</p>';
-            }
-            else {
-                $s6 = '';
-            }
-            if (LWS_RAW_READY) {
-                $s7 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_raw_color_logo()) . '" /><strong>' . __('Clientraw File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>clientraw.txt</em> file (Weather Display, WeeWX, etc.).', 'live-weather-station') . '</p>';
-            }
-            else {
-                $s7 = '';
-            }
+            $s6 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_real_color_logo()) . '" /><strong>' . __('Realtime File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>realtime.txt</em> file (Cumulus, etc.).', 'live-weather-station') . '</p>';
+            $s7 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_raw_color_logo()) . '" /><strong>' . __('Clientraw File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>clientraw.txt</em> file (Weather Display, WeeWX, etc.).', 'live-weather-station') . '</p>';
             if (LWS_TXT_READY) {
                 $s8 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_txt_color_logo()) . '" /><strong>' . __('Stickertags File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a stickertags file (WeatherLink, WsWin32, MeteoBridge, etc.).', 'live-weather-station') . '</p>';
             }

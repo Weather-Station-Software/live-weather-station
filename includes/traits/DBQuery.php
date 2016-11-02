@@ -131,8 +131,18 @@ trait Query {
                 break;
             case 'pressure':
                 $sub_attributes[] = 'pressure';
+                $sub_attributes[] = 'pressure_min';
+                $sub_attributes[] = 'pressure_max';
                 if ($full_mode) {
                     $sub_attributes[] = 'pressure_trend';
+                }
+                break;
+            case 'humidity':
+                $sub_attributes[] = 'humidity';
+                $sub_attributes[] = 'humidity_min';
+                $sub_attributes[] = 'humidity_max';
+                if ($full_mode) {
+                    $sub_attributes[] = 'humidity_trend';
                 }
                 break;
             case 'windangle':
@@ -199,7 +209,7 @@ trait Query {
             $result = array();
             foreach ($qresult as $line) {
                 if (!array_key_exists($line['device_id'], $result)) {
-                    $result[$line['device_id']] = array('comp_bas' => 0, 'comp_ext' => 0, 'comp_int' => 0, 'comp_vrt' => 0);
+                    $result[$line['device_id']] = array('comp_bas' => 0, 'comp_ext' => 0, 'comp_int' => 0, 'comp_xtd' => 0, 'comp_vrt' => 0);
                 }
                 switch (strtolower($line['module_type'])) {
                     case 'namain':
@@ -212,6 +222,9 @@ trait Query {
                         break;
                     case 'namodule4': // Additional indoor module
                         $result[$line['device_id']]['comp_int'] = $result[$line['device_id']]['comp_int'] + 1;
+                        break;
+                    case 'namodule9': // Additional module
+                        $result[$line['device_id']]['comp_xtd'] = $result[$line['device_id']]['comp_xtd'] + 1;
                         break;
                     case 'nacomputed': // Computed values virtual module
                     case 'nacurrent': // Current weather (from OWM) virtual module
@@ -717,6 +730,7 @@ trait Query {
                     $station['comp_bas'] = $module['comp_bas'];
                     $station['comp_ext'] = $module['comp_ext'];
                     $station['comp_int'] = $module['comp_int'];
+                    $station['comp_xtd'] = $module['comp_xtd'];
                     $station['comp_vrt'] = $module['comp_vrt'];
                     $this->update_table(self::live_weather_station_stations_table(), $station);
                 }
@@ -890,6 +904,100 @@ trait Query {
             $nothing['loc_latitude'] = '';
             $nothing['loc_longitude'] = '';
             $nothing['loc_altitude'] = '';
+            return $nothing;
+        }
+        else {
+            global $wpdb;
+            $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            $sql = "SELECT * FROM " . $table_name . " WHERE guid=" . $guid;
+            try {
+                $query = (array)$wpdb->get_results($sql);
+                $query_a = (array)$query;
+                $result = array();
+                foreach ($query_a as $val) {
+                    $result[] = (array)$val;
+                }
+                return $result[0];
+            } catch (\Exception $ex) {
+                return array();
+            }
+        }
+    }
+
+    /**
+     * Get an Clientraw station.
+     *
+     * @param integer $guid Optional. The station guid.
+     * @return array An array containing the station details.
+     * @since 3.0.0
+     */
+    protected function get_raw_station($guid=0) {
+        if ($guid == 0) {
+            $ccs = '';
+            $cc = explode ('_', get_locale());
+            if (count($cc) > 1) {
+                $ccs = strtoupper($cc[1][0].$cc[1][1]);
+            }
+            $nothing = array();
+            $nothing['guid'] = 0;
+            $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
+            $nothing['station_type'] = 4;
+            $nothing['station_name'] = '';
+            $nothing['loc_city'] = '';
+            $nothing['loc_country_code'] = $ccs;
+            $nothing['loc_timezone'] = '';
+            $nothing['loc_latitude'] = '';
+            $nothing['loc_longitude'] = '';
+            $nothing['loc_altitude'] = '';
+            $nothing['connection_type'] = 1;
+            $nothing['service_id'] = '';
+            return $nothing;
+        }
+        else {
+            global $wpdb;
+            $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            $sql = "SELECT * FROM " . $table_name . " WHERE guid=" . $guid;
+            try {
+                $query = (array)$wpdb->get_results($sql);
+                $query_a = (array)$query;
+                $result = array();
+                foreach ($query_a as $val) {
+                    $result[] = (array)$val;
+                }
+                return $result[0];
+            } catch (\Exception $ex) {
+                return array();
+            }
+        }
+    }
+
+    /**
+     * Get an Realtime station.
+     *
+     * @param integer $guid Optional. The station guid.
+     * @return array An array containing the station details.
+     * @since 3.0.0
+     */
+    protected function get_real_station($guid=0) {
+        if ($guid == 0) {
+            $ccs = '';
+            $cc = explode ('_', get_locale());
+            if (count($cc) > 1) {
+                $ccs = strtoupper($cc[1][0].$cc[1][1]);
+            }
+            $nothing = array();
+            $nothing['guid'] = 0;
+            $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
+            $nothing['station_type'] = 5;
+            $nothing['station_name'] = '';
+            $nothing['loc_city'] = '';
+            $nothing['loc_country_code'] = $ccs;
+            $nothing['loc_timezone'] = '';
+            $nothing['loc_latitude'] = '';
+            $nothing['loc_longitude'] = '';
+            $nothing['loc_altitude'] = '';
+            $nothing['connection_type'] = 1;
+            $nothing['service_id'] = '';
             return $nothing;
         }
         else {
@@ -1097,6 +1205,44 @@ trait Query {
      */
     protected function clear_all_wug_id_stations() {
         $this->clear_all_stations_by_type(3);
+    }
+
+    /**
+     * Get a list of all clientraw (by Id) stations.
+     *
+     * @return array An array containing the details of all stations.
+     * @since 3.0.0
+     */
+    protected function get_all_clientraw_id_stations() {
+        return $this->get_all_stations_by_type(4);
+    }
+
+    /**
+     * Delete all clientraw (by Id) stations.
+     *
+     * @since 3.0.0
+     */
+    protected function clear_all_clientraw_id_stations() {
+        $this->clear_all_stations_by_type(4);
+    }
+
+    /**
+     * Get a list of all realtime (by Id) stations.
+     *
+     * @return array An array containing the details of all stations.
+     * @since 3.0.0
+     */
+    protected function get_all_realtime_id_stations() {
+        return $this->get_all_stations_by_type(5);
+    }
+
+    /**
+     * Delete all realtime (by Id) stations.
+     *
+     * @since 3.0.0
+     */
+    protected function clear_all_realtime_id_stations() {
+        $this->clear_all_stations_by_type(5);
     }
 
     /**

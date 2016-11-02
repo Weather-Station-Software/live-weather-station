@@ -58,7 +58,7 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
                     <span id="<?php echo $service; ?>-span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Deactivating data sharing, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="<?php echo $service; ?>-unshare" id="<?php echo $service; ?>-unshare" class="button button-primary" onclick="return confirm('<?php echo $warning; ?>');" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+                <input type="submit" name="<?php echo $service; ?>-unshare" id="<?php echo $service; ?>-unshare" class="button button-primary" onclick="lws_<?php echo $service; ?>_confirmation = confirm('<?php echo $warning; ?>'); return lws_<?php echo $service; ?>_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>
             <div class="clear"></div>
         </div>

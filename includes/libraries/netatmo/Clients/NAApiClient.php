@@ -196,7 +196,8 @@ class NAApiClient
         CURLOPT_RETURNTRANSFER => TRUE,
         CURLOPT_HEADER         => TRUE,
         CURLOPT_TIMEOUT        => 60,
-        CURLOPT_USERAGENT      => 'netatmoclient',
+        //CURLOPT_USERAGENT      => 'netatmoclient',
+        CURLOPT_USERAGENT      => LWS_PLUGIN_AGENT,
         CURLOPT_SSL_VERIFYPEER => TRUE,
         CURLOPT_HTTPHEADER     => array("Accept: application/json"),
     );
@@ -276,7 +277,7 @@ class NAApiClient
         {
             Logger::error('API / SDK', 'Netatmo', null, null, null, null, $errno, 'Error while executing cURL: peer certificate cannot be authenticated with known CA certificates.');
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            \Logger::warning('API / SDK', 'Netatmo', null, null, null, null, $errno, 'SSL verification has been temporarily disabled.');
+            Logger::warning('API / SDK', 'Netatmo', null, null, null, null, $errno, 'SSL verification has been temporarily disabled.');
             $result = curl_exec($ch);
         }
         // CURLE_SSL_CACERT_BADFILE

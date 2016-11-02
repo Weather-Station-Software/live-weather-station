@@ -36,6 +36,7 @@ class CurlFetcher implements FetcherInterface
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        curl_setopt($ch, CURLOPT_USERAGENT, LWS_PLUGIN_AGENT);
         curl_setopt_array($ch, $this->curlOptions);
         
         $content = curl_exec($ch);

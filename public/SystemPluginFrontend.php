@@ -3,6 +3,7 @@
 namespace WeatherStation\System\Plugin;
 
 use WeatherStation\Data\Output;
+use WeatherStation\SDK\Clientraw\Plugin\StationCollector;
 
 
 /**
@@ -23,11 +24,11 @@ class Frontend {
 	/**
 	 * Initialize the class and set its properties.
 	 *
-	 * @since    1.0.0
-	 * @param      string    $Live_Weather_Station       The name of the plugin.
-	 * @param      string    $version    				The version of this plugin.
-	 * @access	public
-	 */
+	 * @param string $Live_Weather_Station The name of the plugin.
+	 * @param string $version The version of this plugin.
+     * @since 1.0.0
+     *
+     */
 	public function __construct( $Live_Weather_Station, $version ) {
 		$this->Live_Weather_Station = $Live_Weather_Station;
 		$this->version = $version;
@@ -36,8 +37,7 @@ class Frontend {
 	/**
 	 * Enqueues the stylesheets for the public-front side of the site.
 	 *
-	 * @since    1.0.0
-	 * @access 	public
+	 * @since 1.0.0
 	 */
 	public function enqueue_styles() {
 		wp_enqueue_style($this->Live_Weather_Station, LWS_PUBLIC_URL.'css/live-weather-station-public.min.css', array(), $this->version, 'all' );
@@ -46,8 +46,7 @@ class Frontend {
 	/**
 	 * Enqueues the scripts for the public-front side of the site.
 	 *
-	 * @since    1.0.0
-	 * @access	public
+	 * @since 1.0.0
 	 */
 	public function enqueue_scripts() {
 		//wp_enqueue_script( $this->Live_Weather_Station, plugin_dir_url( __FILE__ ) . 'js/live-weather-station-public.min.js', array( 'jquery' ), $this->version, false );
@@ -58,8 +57,7 @@ class Frontend {
      *
      * In doing this way, we can enqueue the needed scripts only when rendering shortcodes...
      *
-     * @since    1.0.0
-     * @access	public
+     * @since 1.0.0
      */
     public function register_scripts() {
         wp_register_script( 'lws-lcd.js', LWS_PUBLIC_URL.'js/lws-lcd.min.js', array('jquery'), $this->version, true );
@@ -72,7 +70,7 @@ class Frontend {
 	/**
 	 * Callback method for querying datas by the lcd control.
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public function lws_query_lcd_datas_callback() {
         $_attributes = array();
@@ -86,7 +84,7 @@ class Frontend {
     /**
      * Callback method for querying config for the clean gauge control.
      *
-     * @since    2.1.0
+     * @since 2.1.0
      */
     public function lws_query_justgage_config_callback() {
         $_attributes = array();
@@ -108,7 +106,7 @@ class Frontend {
     /**
      * Callback method for querying datas by the clean gauge control.
      *
-     * @since    2.1.0
+     * @since 2.1.0
      */
     public function lws_query_justgage_datas_callback() {
         $_attributes = array();
@@ -122,7 +120,7 @@ class Frontend {
     /**
      * Callback method for querying config for the clean gauge control.
      *
-     * @since    2.2.0
+     * @since 2.2.0
      */
     public function lws_query_steelmeter_config_callback() {
         $_attributes = array();
@@ -153,7 +151,7 @@ class Frontend {
     /**
      * Callback method for querying datas by the clean gauge control.
      *
-     * @since    2.2.0
+     * @since 2.2.0
      */
     public function lws_query_steelmeter_datas_callback() {
         $_attributes = array();
@@ -162,5 +160,22 @@ class Frontend {
         $_attributes['measure_type'] = wp_kses($_POST['measure_type'], array());
         $response = $this->steelmeter_value($_attributes);
         exit (json_encode ($response));
+    }
+
+    /**
+     * Callback method for testing clientraw.txt validity.
+     *
+     * @since 3.0.0
+     */
+    public function lws_clientraw_test_callback() {
+        $_attributes = array();
+        $_attributes['connection_type'] = wp_kses($_POST['connection_type'], array());
+        $_attributes['resource'] = wp_kses($_POST['resource'], array());
+        $collector = new StationCollector();
+        $s = $collector->test($_attributes['connection_type'], $_attributes['resource']);
+        if ($s == '') {
+            $s = __('File is accessible and its format seems good.', 'live-weather-station');
+        }
+        exit (json_encode(array('result' => $s)));
     }
 }
