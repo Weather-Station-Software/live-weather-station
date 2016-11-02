@@ -25,7 +25,7 @@ class Handling {
     private $count_translated;
     private $translation_exists;
     private $last_modified;
-    private $percent_min = 101;  //todo: set to 96 before RC
+    private $percent_min = 96;
     private $cpt;
 
     private $service_name = 'I18n Helper';

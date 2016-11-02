@@ -1892,163 +1892,165 @@ trait Output {
             case 'frost_point':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-stars" aria-hidden="true"></i>';
                 break;
-            //fixme: find better icons
             case 'heat_index':
             case 'humidex':
             case 'wind_chill':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer-internal" aria-hidden="true"></i>';
-                break;
-            case 'cloud_ceiling':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-cloud-up" aria-hidden="true"></i>';
-                break;
-            case 'o3_distance':
-            case 'co_distance':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-crosshairs" aria-hidden="true"></i>';
-                break;
-            case 'loc_timezone':
-            case 'timezone':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-clock-o" aria-hidden="true"></i>';
-                break;
-            case 'city':
-            case 'country':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-globe" aria-hidden="true"></i>';
-                break;
-            case 'station_name':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-tags" aria-hidden="true"></i>';
-                break;
-            case 'module':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-database" aria-hidden="true"></i>';
-                break;
-            case 'location':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-map-marker" aria-hidden="true"></i>';
-                break;
-            case 'altitude':
-            case 'loc_altitude':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-rotate-315 fa-location-arrow" aria-hidden="true"></i>';
-                break;
-            case 'last_seen':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-eye" aria-hidden="true"></i>';
-                break;
-            case 'refresh':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-refresh" aria-hidden="true"></i>';
-                break;
-            case 'last_upgrade':
-            case 'firmware':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-cog" aria-hidden="true"></i>';
-                break;
-            case 'last_setup':
-            case 'first_setup':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-wrench" aria-hidden="true"></i>';
-                break;
-            case 'windstrength':
-            case 'guststrength':
-            case 'windstrength_max':
-            case 'windstrength_day_max':
-            case 'windstrength_hour_max':
-            case 'wind_ref':
-                $level = $this->get_wind_speed($value, 3);
-                if ($show_value) {
-                    $result ='<i %1$s class="wi wi-fw %2$s wi-wind-beaufort-'. $level . '" aria-hidden="true"></i>';
+            /*
+             * @fixme find better icons
+             */
+            $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer-internal" aria-hidden="true"></i>';
+            break;
+        case 'cloud_ceiling':
+            $result = '<i %1$s class="wi wi-fw %2$s wi-cloud-up" aria-hidden="true"></i>';
+            break;
+        case 'o3_distance':
+        case 'co_distance':
+            $result = '<i %1$s class="fa fa-fw %2$s fa-crosshairs" aria-hidden="true"></i>';
+            break;
+        case 'loc_timezone':
+        case 'timezone':
+            $result = '<i %1$s class="fa fa-fw %2$s fa-clock-o" aria-hidden="true"></i>';
+            break;
+        case 'city':
+        case 'country':
+            $result = '<i %1$s class="fa fa-fw %2$s fa-globe" aria-hidden="true"></i>';
+            break;
+        case 'station_name':
+            $result = '<i %1$s class="fa fa-fw %2$s fa-tags" aria-hidden="true"></i>';
+            break;
+        case 'module':
+            $result = '<i %1$s class="fa fa-fw %2$s fa-database" aria-hidden="true"></i>';
+            break;
+        case 'location':
+            $result = '<i %1$s class="fa fa-fw %2$s fa-map-marker" aria-hidden="true"></i>';
+            break;
+        case 'altitude':
+        case 'loc_altitude':
+            $result = '<i %1$s class="fa fa-fw %2$s fa-rotate-315 fa-location-arrow" aria-hidden="true"></i>';
+            break;
+        case 'last_seen':
+            $result = '<i %1$s class="fa fa-fw %2$s fa-eye" aria-hidden="true"></i>';
+            break;
+        case 'refresh':
+            $result = '<i %1$s class="fa fa-fw %2$s fa-refresh" aria-hidden="true"></i>';
+            break;
+        case 'last_upgrade':
+        case 'firmware':
+            $result = '<i %1$s class="fa fa-fw %2$s fa-cog" aria-hidden="true"></i>';
+            break;
+        case 'last_setup':
+        case 'first_setup':
+            $result = '<i %1$s class="fa fa-fw %2$s fa-wrench" aria-hidden="true"></i>';
+            break;
+        case 'windstrength':
+        case 'guststrength':
+        case 'windstrength_max':
+        case 'windstrength_day_max':
+        case 'windstrength_hour_max':
+        case 'wind_ref':
+            $level = $this->get_wind_speed($value, 3);
+            if ($show_value) {
+                $result ='<i %1$s class="wi wi-fw %2$s wi-wind-beaufort-'. $level . '" aria-hidden="true"></i>';
+            }
+            else {
+                $result ='<i %1$s class="wi wi-fw %2$s wi-strong-wind" aria-hidden="true"></i>';
+            }
+            break;
+        case 'warn_windstrength':
+        case 'warn_guststrength':
+        case 'warn_windstrength_max':
+        case 'warn_windstrength_day_max':
+        case 'warn_windstrength_hour_max':
+        case 'warn_wind_ref':
+            $level = $this->get_wind_state($value);
+            if ($show_value) {
+                switch ($level) {
+                    case 1:
+                        $result ='<i %1$s class="wi wi-fw %2$s wi-small-craft-advisory" aria-hidden="true"></i>';
+                        break;
+                    case 2:
+                        $result ='<i %1$s class="wi wi-fw %2$s wi-gale-warning" aria-hidden="true"></i>';
+                        break;
+                    case 3:
+                        $result ='<i %1$s class="wi wi-fw %2$s wi-storm-warning" aria-hidden="true"></i>';
+                        break;
+                    case 4:
+                        $result ='<i %1$s class="wi wi-fw %2$s wi-hurricane-warning" aria-hidden="true"></i>';
+                        break;
+                    default:
+                        $result ='<i %1$s class="wi wi-fw %2$s wi-strong-wind" aria-hidden="true"></i>';
                 }
-                else {
-                    $result ='<i %1$s class="wi wi-fw %2$s wi-strong-wind" aria-hidden="true"></i>';
-                }
-                break;
-            case 'warn_windstrength':
-            case 'warn_guststrength':
-            case 'warn_windstrength_max':
-            case 'warn_windstrength_day_max':
-            case 'warn_windstrength_hour_max':
-            case 'warn_wind_ref':
-                $level = $this->get_wind_state($value);
-                if ($show_value) {
-                    switch ($level) {
-                        case 1:
-                            $result ='<i %1$s class="wi wi-fw %2$s wi-small-craft-advisory" aria-hidden="true"></i>';
-                            break;
-                        case 2:
-                            $result ='<i %1$s class="wi wi-fw %2$s wi-gale-warning" aria-hidden="true"></i>';
-                            break;
-                        case 3:
-                            $result ='<i %1$s class="wi wi-fw %2$s wi-storm-warning" aria-hidden="true"></i>';
-                            break;
-                        case 4:
-                            $result ='<i %1$s class="wi wi-fw %2$s wi-hurricane-warning" aria-hidden="true"></i>';
-                            break;
-                        default:
-                            $result ='<i %1$s class="wi wi-fw %2$s wi-strong-wind" aria-hidden="true"></i>';
-                    }
-                }
-                else {
-                    $result ='<i %1$s class="wi wi-fw %2$s wi-strong-wind" aria-hidden="true"></i>';
-                }
-                break;
-            case 'windangle':
-            case 'gustangle':
-            case 'windangle_max':
-            case 'windangle_day_max':
-            case 'windangle_hour_max':
-                if ($show_value) {
-                    $s = (get_option('live_weather_station_wind_semantics') == 0 ? 'towards' : 'from') . '-' . $value . '-deg';
-                    $result = '<i %1$s class="wi wi-fw %2$s wi-wind ' . $s . '" aria-hidden="true"></i>';
-                }
-                else {
-                    $result = '<i %1$s class="wi wi-fw %2$s wi-wind towards-0-deg" aria-hidden="true"></i>';
-                }
-                break;
-            case 'sunrise':
-            case 'sunset':
-            case 'moonrise':
-            case 'moonset':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-' . strtolower($type) . '" aria-hidden="true"></i>';
-                break;
-            case 'moon_phase':
-                if ($show_value) {
-                    $result = '<i %1$s class="wi wi-fw %2$s wi-moon-' . $this->get_moon_phase_icon($value) . '" aria-hidden="true"></i>';
-                }
-                else {
-                    $result = '<i %1$s class="wi wi-fw %2$s wi-moon-waxing-crescent-4" aria-hidden="true"></i>';
-                }
-                break;
-            case 'moon_age':
-                if ($show_value) {
-                    $result = '<i %1$s class="wi wi-fw %2$s wi-moon-' . $this->get_lunation_icon($value) . '" aria-hidden="true"></i>';
-                }
-                else {
-                    $result = '<i %1$s class="wi wi-fw %2$s wi-moon-waxing-crescent-4" aria-hidden="true"></i>';
-                }
-                break;
-            case 'moon_illumination':
-            case 'moon_diameter':
-            case 'moon_distance':
+            }
+            else {
+                $result ='<i %1$s class="wi wi-fw %2$s wi-strong-wind" aria-hidden="true"></i>';
+            }
+            break;
+        case 'windangle':
+        case 'gustangle':
+        case 'windangle_max':
+        case 'windangle_day_max':
+        case 'windangle_hour_max':
+            if ($show_value) {
+                $s = (get_option('live_weather_station_wind_semantics') == 0 ? 'towards' : 'from') . '-' . $value . '-deg';
+                $result = '<i %1$s class="wi wi-fw %2$s wi-wind ' . $s . '" aria-hidden="true"></i>';
+            }
+            else {
+                $result = '<i %1$s class="wi wi-fw %2$s wi-wind towards-0-deg" aria-hidden="true"></i>';
+            }
+            break;
+        case 'sunrise':
+        case 'sunset':
+        case 'moonrise':
+        case 'moonset':
+            $result = '<i %1$s class="wi wi-fw %2$s wi-' . strtolower($type) . '" aria-hidden="true"></i>';
+            break;
+        case 'moon_phase':
+            if ($show_value) {
+                $result = '<i %1$s class="wi wi-fw %2$s wi-moon-' . $this->get_moon_phase_icon($value) . '" aria-hidden="true"></i>';
+            }
+            else {
                 $result = '<i %1$s class="wi wi-fw %2$s wi-moon-waxing-crescent-4" aria-hidden="true"></i>';
-                break;
-            case 'sun_diameter':
-            case 'sun_distance':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-day-sunny" aria-hidden="true"></i>';
-                break;
-            default:
-                $result = '<i %s class="fa fa-fw %s fa-sun-o" aria-hidden="true"></i>';
-        }
-        return sprintf($result, $style, $extra);
+            }
+            break;
+        case 'moon_age':
+            if ($show_value) {
+                $result = '<i %1$s class="wi wi-fw %2$s wi-moon-' . $this->get_lunation_icon($value) . '" aria-hidden="true"></i>';
+            }
+            else {
+                $result = '<i %1$s class="wi wi-fw %2$s wi-moon-waxing-crescent-4" aria-hidden="true"></i>';
+            }
+            break;
+        case 'moon_illumination':
+        case 'moon_diameter':
+        case 'moon_distance':
+            $result = '<i %1$s class="wi wi-fw %2$s wi-moon-waxing-crescent-4" aria-hidden="true"></i>';
+            break;
+        case 'sun_diameter':
+        case 'sun_distance':
+            $result = '<i %1$s class="wi wi-fw %2$s wi-day-sunny" aria-hidden="true"></i>';
+            break;
+        default:
+            $result = '<i %s class="fa fa-fw %s fa-sun-o" aria-hidden="true"></i>';
     }
+    return sprintf($result, $style, $extra);
+}
 
-    /**
-     * Output a latitude or longitude with user's unit.
-     *
-     * @param   mixed       $value          The value to output.
-     * @param   string      $type           The type of the value.
-     * @param   integer     $mode           Optional. The mode in wich to output:
-     *                                          1: Geodetic system WGS 84
-     *                                          2: Geodetic system WGS 84 with unit
-     *                                          3: DMS
-     *                                          4: DMS starting with cardinal
-     *                                          5: DMS ending with cardinal
-     * @param   boolean     $html           Optional. Replace space by &nbsp;
-     * @return  string      The value outputed with the right unit.
-     * @since    1.1.0
-     * @access   protected
-     */
+/**
+ * Output a latitude or longitude with user's unit.
+ *
+ * @param   mixed       $value          The value to output.
+ * @param   string      $type           The type of the value.
+ * @param   integer     $mode           Optional. The mode in wich to output:
+ *                                          1: Geodetic system WGS 84
+ *                                          2: Geodetic system WGS 84 with unit
+ *                                          3: DMS
+ *                                          4: DMS starting with cardinal
+ *                                          5: DMS ending with cardinal
+ * @param   boolean     $html           Optional. Replace space by &nbsp;
+ * @return  string      The value outputed with the right unit.
+ * @since    1.1.0
+ * @access   protected
+ */
     protected function output_coordinate($value, $type, $mode=0, $html=false) {
         switch ($mode) {
             case 1:
@@ -2584,7 +2586,7 @@ trait Output {
 
         $result = [];
         $letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $continue = array('BU', 'DY', 'EU', 'HV', 'FX', 'NH', 'QO', 'RH', 'TP', 'YU', 'ZR', 'ZZ');
+        $continue = array('BU', 'CS', 'DD', 'DY', 'EU', 'HV', 'FX', 'NH', 'QO', 'RH', 'SU', 'TP', 'UK', 'VD', 'YD', 'YU', 'ZR', 'ZZ');
         $locale = get_locale();
         for ($i=0; $i<26; $i++) {
             for ($j=0; $j<26; $j++) {
@@ -3693,12 +3695,6 @@ trait Output {
             default:
                 $t = $type;
         }
-        $s = 'live_weather_station_' . $t . '_' . $opt . ' => ' . $this->output_value(get_option('live_weather_station_' . $t . '_' . $opt), $type);
-        if (strpos($s, 'rain_hour') > 0) {
-            //Logger::alert(null, null, null, null, null, null, null, $s);
-        }
-
-
         return $this->output_value(get_option('live_weather_station_' . $t . '_' . $opt), $type);
     }
 
@@ -3816,7 +3812,9 @@ trait Output {
                 if ((!$full && in_array($data['measure_type'], $this->showable_measurements)) ||
                     ($full && in_array($data['measure_type'], array_merge($this->showable_measurements, $this->not_showable_measurements)))) {
                     $val = array();
-                    //fixme: how the hell windgauge have temperature max/min attributes?
+                    /*
+                     * @fixme how the hell windgauge have temperature max/min attributes?
+                     */
                     if ((strpos($data['measure_type'], 'perature') > 0) && ($data['module_type'] == 'NAModule2')) {
                         continue;
                     }

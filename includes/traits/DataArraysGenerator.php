@@ -465,7 +465,9 @@ trait Generator {
                 if ($netatmo || $raw || $real) {
                     $result[] = array($this->get_measurement_type('rain', false, $ref['module_type']), 'rain', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain')));
                 }
-                $result[] = array($this->get_measurement_type('rain_hour_aggregated', false, $ref['module_type']), 'rain_hour_aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain_hour_aggregated')));
+                if (!$raw) {
+                    $result[] = array($this->get_measurement_type('rain_hour_aggregated', false, $ref['module_type']), 'rain_hour_aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain_hour_aggregated')));
+                }
                 $result[] = array($this->get_measurement_type('rain_day_aggregated', false, $ref['module_type']), 'rain_day_aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain_day_aggregated')));
                 if ($raw) {
                     $result[] = array($this->get_measurement_type('rain_yesterday_aggregated', false, $ref['module_type']), 'rain_yesterday_aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain_yesterday_aggregated')));

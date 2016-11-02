@@ -1,52 +1,46 @@
-=== Live Weather Station ===
+=== Weather Station ===
 Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, CO2, rain, snow, cloudiness, cloud, moon, moon phase, sun, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill, weather plugin, wordpress widget, wind gauge, rain gauge, pws, met office, personal weather station, weather underground, wunderground, weather observations website, wow, observation, pollution, CO₂, CO, O3, O₃, ozone, carbon dioxide, carbon monoxide, clientraw, clientraw.txt, realtime, realtime.txt
 Requires at least: 4.0
-Tested up to: 4.6
+Tested up to: 4.7
 Stable tag: 2.9.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://support.laquadrature.net/
 
-Display on your WordPress site, in many different and elegant ways, the meteorological data collected by public or personal weather stations.
+Display on your site, in many different and elegant ways, the meteorological data collected by public or personal weather stations.
 
 == Description ==
+Weather Station is a plugin that allows you to display, on your WordPress site, meteorological data from weather stations you have access to. It provides full support for many models of weather stations and for free or paid OpenWeatherMap and Weather Underground services&hellip;
+Whether you own a weather station or not, you can enjoy the power of Weather Station!
 
-> Since 2.0 version of Live Weather Station plugin you can now display weather data even if you don't have a Netatmo station, simply by getting [a free OpenWeatherMap API key](http://openweathermap.org/appid). Of course, this plugin works always as well with all your Netatmo stations.
+To see it in action, go to the [demo page](https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo-demo/).
 
+= Simple and efficient =
+The use of Weather Station requires no knowledge in programming and does not requires writing code.
+Just set it, insert (in a page or an article) the provided shortcodes. And it works!
 
-= Live Weather Station =
-Live Weather Station is a plugin that allows you to display, on your WordPress site, meteorological data from the Netatmo weather stations you have access to. Initialy designed for Netatmo products, it provides now full support for free OpenWeatherMap services too...
-To date, you can display data as follows:
+= How does it work? =
+Once you have connected the plugin to your weather stations (via the dashboard of your WordPress site), the data you have access to are collected every 5 or 10 minutes and stored in the database of your WordPress site.
+The various controls and viewers now will get their data from this database with the certainty of having fresh and cached data.
+To date, you can display data with the following controls:
 
 * a "classical" configurable widget that displays outdoor weather data
 * an "ephemeris" configurable widget that displays astronomical computed values
 * a highly configurable LCD panel which displays selected weather data
 * a highly configurable clean gauge control which displays the live weather data you have selected
-* a hugely configurable steel meter control which displays the live weather data you have selected
 * textual and numerical values you can insert in articles and pages via configurable shortcodes
+* a hugely configurable steel meter control which displays the live weather data you have selected
 
-To see it in action, go to the [demo page](https://pierre.lannoy.fr/wordpress-live-weather-station-for-netatmo-demo/).
+= Supported devices & services =
+Weather Station supports:
 
-= Simple and efficient =
-The use of Live Weather Station requires no knowledge in programming and does not requires writing code.
-Just set it, insert (in a page or an article) the provided shortcodes. And it works!
+* the Netatmo station (all modules)
+* all stations supported by softwares like Cumulus, Weather Display, WeeWX, etc. (so, yes, stations from Davis, La Crosse, Oregon Scientific, RainWise, etc. are supported)
+* all stations published on Weather Underground (regardless which model it is)
+* all geolocated stations from OpenWeatherMap
 
-= How does it work? =
-Once you have connected the plugin to your Netatmo account (via the dashboard of your WordPress site), the data you have access to (your stations, plus all those for which you have permission) are collected every 5 minutes and stored in the database of your WordPress site.
-For OpenWeatherMap the process is the same: after entering your free API key, the weather data are collected every 15 minutes and stored in the database of your WordPress site.
-The various controls and viewers (like widgets, LCD panel, gauges, etc.) now will get their data from this database with the certainty of having fresh and cached data.
-
-= Supported data, devices, modules & services =
-Live Weather Station supports all measured values coming from OpenWeatherMap excluding UV index, brightness and radiations.
-It supports all current devices and modules from Netatmo. This includes, in addition to the main station base:
-
-* indoor modules
-* outdoor modules
-* rain gauges
-* wind gauges
-
-Live Weather Station allows you to send your Netatmo outdoor data, at a 10 minutes frequency, to the following services:
+If you want, Weather Station can send outdoor data, at a 10 minutes frequency, to the following services:
 
 * [Met Office](http://wow.metoffice.gov.uk/) weather observations website
 * [PWS Weather](http://www.pwsweather.com/)
@@ -63,7 +57,7 @@ Anyway, I'll be glad to help you if you encounter issues when using this plugin.
 = Donation =
 If you like this plugin or find it useful and want to thank me for the work done, please consider making a donation to [La Quadrature Du Net](https://www.laquadrature.net/en) which is an advocacy group defending the rights and freedoms of citizens on the Internet. By supporting them, you help the daily actions they perform to defend our fundamental freedoms!
 
-> **DISCLAIMER:** *This plugin is developed and maintained by me, [Pierre Lannoy](https://pierre.lannoy.fr "Pierre Lannoy"). This plugin **IS NOT** an official software from [Netatmo](http://www.netatmo.com "Netatmo Homepage") or [OpenWeatherMap](http://openweathermap.org/) and is not endorsed or supported by these companies. Moreover, I am not a partner, employee, affiliate, or licensee of Netatmo or OpenWeatherMap. I'm just a happy customer/user of their products and a fan of meteorology.*
+> **DISCLAIMER:** *This plugin is developed and maintained by me, [Pierre Lannoy](https://pierre.lannoy.fr "Pierre Lannoy"). This plugin **IS NOT** an official software from [Netatmo](http://www.netatmo.com "Netatmo Homepage"), [OpenWeatherMap](http://openweathermap.org/) or [Weather Underground](https://www.wunderground.com/) and is not endorsed or supported by these companies. Moreover, I am not a partner, employee, affiliate, or licensee of Netatmo, OpenWeatherMap or Weather Underground. I'm just a happy customer/user of their products and a fan of meteorology.*
 
 
 == Installation ==
@@ -83,14 +77,14 @@ If you like this plugin or find it useful and want to thank me for the work done
 
 = Once Activated =
 
-1. Visit 'Settings > Live Weather Station' and set your Netatmo credentials and/or your OpenWeatherMap API key (you can get it for free [here](http://openweathermap.org/appid)).
+1. Visit 'Weather Station' in the lef-hand menu of your WP Admin to adjust settings.
 2. Enjoy!
 
 == Frequently Asked Questions ==
 
 = What are the requirements for this plugin to work? =
 
-You need **WordPress 4.X** and at least **PHP 5.4** (with internationalisation extension).
+You need **WordPress 4.X** and at least **PHP 5.4** with internationalisation, curl and json extensions.
 
 = Can this plugin work on multisite? =
 
@@ -116,7 +110,7 @@ This new release is a major update of the plugin which is now named **Weather St
 After upgrading, please, review all your settings.
 
 * New: totally redesigned plugin admin pages to provide a simpler and easier access to all features and settings.
-* New: a full featured dashboard (like the WordPress one) provides a simplified way to access to all features and operating statistics of the plugin.
+* New: a full featured dashboard (like the WordPress one) provides a simplified way to access to all features and operating analytics of the plugin.
 * New: a new "station view" offers more in-depth visibility and understanding of the collected weather stations.
 * New: in addition to its nominal mode, Weather Station can now run in a simplified mode (automatic selection of settings, display options, units, etc.).
 * New: it's now possible to collect data from stations published on Weather Underground.
@@ -158,6 +152,7 @@ After upgrading, please, review all your settings.
 * Improvement: better support for anti directory listing.
 * Improvement: event log now shows events numbers and supports direct access to detailed description.
 * Improvement: battery and signal levels for Netatmo stations are more accurate.
+* Improvement: optimized country / time zones list for Deutchland, United-Kingdom, Russia, Serbia, Vietnam and Yemen.
 * Bug fix: wind strength rounding in km/h are not accurate.
 * Bug fix: current weather from OpenWeatherMap is wrongly registered in the events log.
 * Bug fix: filtering events log by station doesn't work.
@@ -166,9 +161,10 @@ After upgrading, please, review all your settings.
 
 = 2.9.3 =
 
-Release date: July xxxxx, 2016
+Release date: August 4th, 2016
 
 * New language: Russian (thanks to [@tefal](https://profiles.wordpress.org/tefal/) for its involvement).
+* Support for WordPress 4.6
 * Improvement: `readme.txt`.
 
 = 2.9.2 =
