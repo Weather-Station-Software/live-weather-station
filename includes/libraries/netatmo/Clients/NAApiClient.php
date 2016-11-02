@@ -564,7 +564,7 @@ class NAApiClient
                 }
                 catch(\Exception $ex2)
                             {
-                                //Invalid refresh token TODO: Throw a special exception
+                                //Invalid refresh token
                                 throw $ex;
                             }
                         }

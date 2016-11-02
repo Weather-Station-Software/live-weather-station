@@ -834,8 +834,6 @@ JustGage.prototype.refresh = function(val, max) {
   // set new max
   if (max !== null) {
     obj.config.max = max;
-    // TODO: update customSectors
-
     obj.txtMaximum = obj.config.max;
     if (obj.config.humanFriendly) {
       obj.txtMaximum = humanFriendlyNumber(obj.config.max, obj.config.humanFriendlyDecimal);

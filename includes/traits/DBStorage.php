@@ -160,7 +160,6 @@ trait Storage {
         $sql .= " station_model varchar(200) DEFAULT 'N/A' NOT NULL,";
         $sql .= " service_id varchar(250) DEFAULT '' NOT NULL,";
         $sql .= " connection_type int(11) NOT NULL DEFAULT '0',";
-        //$sql .= " server_id int(11) NOT NULL DEFAULT '0',";
         $sql .= " station_name varchar(60) DEFAULT '' NOT NULL,";
         $sql .= " loc_city varchar(60) DEFAULT '' NOT NULL,";
         $sql .= " loc_country_code varchar(2) DEFAULT '' NOT NULL,";
@@ -176,6 +175,7 @@ trait Storage {
         $sql .= " txt_sync boolean DEFAULT 0 NOT NULL,";
         $sql .= " raw_sync boolean DEFAULT 0 NOT NULL,";
         $sql .= " real_sync boolean DEFAULT 0 NOT NULL,";
+        $sql .= " yow_sync boolean DEFAULT 0 NOT NULL,";
         $sql .= " owm_user varchar(60) DEFAULT '' NOT NULL,";
         $sql .= " owm_password varchar(60) DEFAULT '' NOT NULL,";
         $sql .= " owm_id varchar(60) DEFAULT '' NOT NULL,";
@@ -363,8 +363,7 @@ trait Storage {
         self::migrate_owm_stations_table();
         self::migrate_infos_table();
 
-        //todo : add alter unique... on log table / migrating old events
-        $table_name = $wpdb->prefix.self::live_weather_station_infos_table();
+         $table_name = $wpdb->prefix.self::live_weather_station_infos_table();
         $sql = 'DROP TABLE '.$table_name;
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_owm_stations_table();

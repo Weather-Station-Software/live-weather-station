@@ -597,7 +597,9 @@ trait Query {
                 }
                 $i++;
             }
-            //ToDo: correct obsolescence filtering for this type of array
+            /*
+             * @todo correct obsolescence filtering for this type of array
+             */
             return ($obsolescence_filtering ? $this->obsolescence_filtering($result) : $result);
         }
         catch (\Exception $ex) {
