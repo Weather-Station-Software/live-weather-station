@@ -20,7 +20,7 @@ trait BaseClient {
 
     use Dashboard_Manipulation, Id_Manipulation, Description;
 
-    protected $service_name = 'WeatherUnderground';
+    protected $service_name = 'Weather Underground';
     public $last_wug_error;
 
     /**
@@ -47,7 +47,7 @@ trait BaseClient {
                         throw new \Exception($weather['response']['error']['description']);
                     }
                     else {
-                        throw new \Exception('WeatherUnderground unknown exception');
+                        throw new \Exception('Weather Underground unknown exception');
                     }
                 }
                 if (array_key_exists('features', $weather['response'])) {
@@ -57,7 +57,7 @@ trait BaseClient {
                         }
                     }
                     else {
-                        throw new \Exception('WeatherUnderground unknown exception');
+                        throw new \Exception('Weather Underground unknown exception');
                     }
                 }
             }
@@ -68,10 +68,10 @@ trait BaseClient {
         catch(\Exception $ex)
         {
             if (strpos($ex->getMessage(), 'this key does not exist') !== false) {
-                $this->last_wug_error = __('Wrong WeatherUnderground API key.', 'live-weather-station');
+                $this->last_wug_error = __('Wrong Weather Underground API key.', 'live-weather-station');
             }
             else {
-                $this->last_wug_error = __('WeatherUnderground servers have returned empty response. Please retry.', 'live-weather-station');
+                $this->last_wug_error = __('Weather Underground servers have returned empty response. Please retry.', 'live-weather-station');
             }
             update_option('live_weather_station_wug_apikey', '');
             update_option('live_weather_station_wug_plan', 0);

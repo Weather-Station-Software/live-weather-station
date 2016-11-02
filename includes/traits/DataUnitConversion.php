@@ -409,8 +409,8 @@ trait Conversion {
     protected function get_pressure($value, $id = 0)
     {
         $result = $value;
-        $format = '%d';
-        $prec = 0;
+        $format = '%.1F';
+        $prec = 1;
         switch ($id) {
             case 1:  // P(inHg) = P(hPa) / 33.8639
                 $result = $result / 33.8639;
@@ -746,6 +746,9 @@ trait Conversion {
         if ($value < \WeatherStation\SDK\Netatmo\Common\NAWifiRssiThreshold::RSSI_THRESHOLD_0 + $this->wifi_correct_db) {$result = 0;}
         if ($value < \WeatherStation\SDK\Netatmo\Common\NAWifiRssiThreshold::RSSI_THRESHOLD_1) {$result = 1;}
         if ($value < \WeatherStation\SDK\Netatmo\Common\NAWifiRssiThreshold::RSSI_THRESHOLD_2) {$result = 2;}
+        if ($value == 9999) {
+            $result = $value;
+        }
         return $result;
     }
 
@@ -840,9 +843,13 @@ trait Conversion {
         $result = $value;
         switch (strtolower($type)) {
             case 'pressure':
+            case 'pressure_min':
+            case 'pressure_max':
                 $result = $this->get_reverse_pressure($value, get_option('live_weather_station_unit_pressure'));
                 break;
             case 'humidity':
+            case 'humidity_min':
+            case 'humidity_max':
             case 'humint':
             case 'humext':
             case 'humidity_ref':
@@ -883,6 +890,10 @@ trait Conversion {
             case 'rain':
             case 'rain_hour_aggregated':
             case 'rain_day_aggregated':
+            case 'rain_yesterday_aggregated':
+            case 'rain_month_aggregated':
+            case 'rain_season_aggregated':
+            case 'rain_year_aggregated':
                 $result = $this->get_reverse_rain($value, get_option('live_weather_station_unit_rain_snow'));
                 break;
             case 'snow':

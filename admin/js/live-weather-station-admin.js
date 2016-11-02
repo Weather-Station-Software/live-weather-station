@@ -95,6 +95,80 @@ jQuery(document).ready( function($) {
         }
     });
 
+    $('#add-edit-raw').click( function() {
+        var form_data=$('#add-edit-raw-form').serializeArray();
+        var error_free=true;
+        for (var input in form_data){
+            if (form_data[input]['name'] == 'station_name') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'loc_city') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'loc_altitude') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'service_id') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+        }
+        if (error_free) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#span-sync').show();
+        }
+    });
+
+    $('#add-edit-real').click( function() {
+        var form_data=$('#add-edit-real-form').serializeArray();
+        var error_free=true;
+        for (var input in form_data){
+            if (form_data[input]['name'] == 'station_name') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'loc_city') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'loc_altitude') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'service_id') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'loc_latitude') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'loc_longitude') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+        }
+        if (error_free) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#span-sync').show();
+        }
+    });
+
     $('#partial-translation').click( function() {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });
@@ -108,9 +182,11 @@ jQuery(document).ready( function($) {
     });
 
     $('#owm-disconnect').click( function() {
-        $('.button').removeClass('button-primary').addClass('button-disabled');
-        $('.button').click(function() { return false; });
-        $('#owm-span-sync').show();
+        if (lws_owm_confirmation) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#owm-span-sync').show();
+        }
     });
 
     $('#wug-connect').click( function() {
@@ -120,9 +196,11 @@ jQuery(document).ready( function($) {
     });
 
     $('#wug-disconnect').click( function() {
-        $('.button').removeClass('button-primary').addClass('button-disabled');
-        $('.button').click(function() { return false; });
-        $('#wug-span-sync').show();
+        if (lws_wug_confirmation) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#wug-span-sync').show();
+        }
     });
 
     $('#netatmo-connect').click( function() {
@@ -132,33 +210,43 @@ jQuery(document).ready( function($) {
     });
 
     $('#netatmo-disconnect').click( function() {
-        $('.button').removeClass('button-primary').addClass('button-disabled');
-        $('.button').click(function() { return false; });
-        $('#netatmo-span-sync').show();
+        if (lws_netatmo_confirmation) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#netatmo-span-sync').show();
+        }
     });
 
     $('#wow-unshare').click( function() {
-        $('.button').removeClass('button-primary').addClass('button-disabled');
-        $('.button').click(function() { return false; });
-        $('#wow-span-sync').show();
+        if (lws_wow_confirmation) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#wow-span-sync').show();
+        }
     });
 
     $('#pws-unshare').click( function() {
-        $('.button').removeClass('button-primary').addClass('button-disabled');
-        $('.button').click(function() { return false; });
-        $('#pws-span-sync').show();
+        if (lws_pws_confirmation) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#pws-span-sync').show();
+        }
     });
 
     $('#owm-unshare').click( function() {
-        $('.button').removeClass('button-primary').addClass('button-disabled');
-        $('.button').click(function() { return false; });
-        $('#owm-span-sync').show();
+        if (lws_owm_confirmation) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#owm-span-sync').show();
+        }
     });
 
     $('#wug-unshare').click( function() {
-        $('.button').removeClass('button-primary').addClass('button-disabled');
-        $('.button').click(function() { return false; });
-        $('#wug-span-sync').show();
+        if (lws_wow_confirmation) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#wug-span-sync').show();
+        }
     });
 
     $('#wow-share').click( function() {

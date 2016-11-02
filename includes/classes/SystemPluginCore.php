@@ -142,6 +142,8 @@ class Core {
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_steelmeter_config', $plugin_public, 'lws_query_steelmeter_config_callback' );
         $this->loader->add_action( 'wp_ajax_lws_query_steelmeter_datas', $plugin_public, 'lws_query_steelmeter_datas_callback' );
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_steelmeter_datas', $plugin_public, 'lws_query_steelmeter_datas_callback' );
+        $this->loader->add_action( 'wp_ajax_lws_query_steelmeter_datas', $plugin_public, 'lws_clientraw_test_callback' );
+        $this->loader->add_action( 'wp_ajax_nopriv_lws_query_steelmeter_datas', $plugin_public, 'lws_clientraw_test_callback' );
         add_shortcode( 'live-weather-station-textual', array($plugin_public, 'textual_shortcodes') );
         add_shortcode( 'live-weather-station-lcd', array($plugin_public, 'lcd_shortcodes') );
 		add_shortcode( 'live-weather-station-justgage', array($plugin_public, 'justgage_shortcodes') );

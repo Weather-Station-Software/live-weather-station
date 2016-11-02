@@ -56,7 +56,7 @@ $warning = sprintf(__('All stations associated to this service will be removed f
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('Status', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(get_admin_page_url('lws-events', null, null, 'WeatherUnderground')); ?>"<?php echo $target; ?>><?php echo strtolower(__('See events log', 'live-weather-station')); ?></a>)</span>
+                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(get_admin_page_url('lws-events', null, null, 'Weather Underground')); ?>"<?php echo $target; ?>><?php echo strtolower(__('See events log', 'live-weather-station')); ?></a>)</span>
                     </td>
                 </tr>
                 <tr>
@@ -86,7 +86,7 @@ $warning = sprintf(__('All stations associated to this service will be removed f
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
                     <span id="wug-span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="disconnect" id="wug-disconnect" class="button button-primary" onclick="return confirm('<?php echo $warning; ?>');" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+                <input type="submit" name="disconnect" id="wug-disconnect" class="button button-primary" onclick="lws_wug_confirmation = confirm('<?php echo $warning; ?>'); return lws_wug_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>
             <div class="clear"></div>
         </div>

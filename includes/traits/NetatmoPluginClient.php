@@ -108,10 +108,10 @@ trait Client {
         if (array_key_exists('time_server', $datas)) {
             $datas['timeshift'] = time() - $datas['time_server'];
             if (abs($datas['timeshift']) > get_option('live_weather_station_time_shift_threshold')) {
-                Logger::warning('API / SDK', 'Netatmo', null, null, null, null, 0, 'Server time shift: ' . $datas['timeshift'] . 's.');
+                Logger::warning('API / SDK', $this->service_name, null, null, null, null, 0, 'Server time shift: ' . $datas['timeshift'] . 's.');
             }
             else {
-                Logger::debug('API / SDK', 'Netatmo', null, null, null, null, 0, 'Server time shift: ' . $datas['timeshift'] . 's.');
+                Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, 'Server time shift: ' . $datas['timeshift'] . 's.');
             }
 
         }
@@ -274,10 +274,10 @@ trait Client {
                     }
                 }
             }
-            Logger::info('Backend', 'Netatmo', null, null, null, null, 0, 'Job done: detecting stations.');
+            Logger::info('Backend', $this->service_name, null, null, null, null, 0, 'Job done: detecting stations.');
         }
         catch (\Exception $ex) {
-            Logger::critical('Backend', 'Netatmo', null, null, null, null, $ex->getCode(), 'Error while detecting stations: ' . $ex->getMessage());
+            Logger::critical('Backend', $this->service_name, null, null, null, null, $ex->getCode(), 'Error while detecting stations: ' . $ex->getMessage());
             return array();
         }
         return $result;
@@ -300,10 +300,10 @@ trait Client {
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
             $ephemeris->compute();
-            Logger::info($system, 'Netatmo', null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
+            Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
         catch (\Exception $ex) {
-            Logger::critical($system, 'Netatmo', null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
         }
         $this->synchronize_modules_count();
     }

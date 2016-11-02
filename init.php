@@ -50,11 +50,10 @@ function get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $ser
  * @since 1.0.0
  */
 define('LWS_FULL_NAME', 'Weather Station 3');
-define('LWS_VERSION', '3.0.0-dev6');
+define('LWS_VERSION', '3.0.0-dev7');
 define('LWS_INLINE_HELP', true);
 define('LWS_WEBSITE_READY', false);
 define('LWS_OWM_READY', false);
-define('LWS_REAL_READY', false);
 define('LWS_TXT_READY', false);
 
 define('LWS_MINIMUM_WP_VERSION', '4.0');
@@ -78,6 +77,8 @@ define('LWS_I18N_LOADED', EnvManager::is_i18n_loaded());
 define('LWS_CURL_LOADED', EnvManager::is_curl_loaded());
 define('LWS_JSON_LOADED', EnvManager::is_json_loaded());
 define('LWS_PHPVERSION_OK', EnvManager::is_php_version_ok());
+define('LWS_PLUGIN_AGENT', LWS_FULL_NAME . ' (' . EnvManager::wordpress_version_id() . '; ' . EnvManager::weatherstation_version_id() . '; +https://weather.station.software)');
+
 
 /**
  * Initialize the Logger class that is responsible for logging.

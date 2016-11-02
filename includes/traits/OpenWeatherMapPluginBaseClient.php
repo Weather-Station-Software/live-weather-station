@@ -6,8 +6,6 @@ use WeatherStation\SDK\OpenWeatherMap\OWMApiClient;
 use WeatherStation\Data\Dashboard\Handling as Dashboard_Manipulation;
 use WeatherStation\Data\ID\Handling as Id_Manipulation;
 
-use WeatherStation\System\Logs\Logger;
-
 /**
  * OpenWeatherMap base client for Weather Station plugin.
  *

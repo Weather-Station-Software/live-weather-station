@@ -70,7 +70,7 @@ trait Description {
                 break;
 
 
-            case 'namodule9': // Additional indoor module
+            case 'namodule9': // Additional module
                 $result = __('Extra module', 'live-weather-station');
                 break;
             case 'nacomputed': // Computed values virtual module
@@ -130,6 +130,13 @@ trait Description {
             case 'namodule3': // Rain gauge
                 $result = __('Rain', 'live-weather-station');
                 break;
+            case 'namodule4': // Indoor module
+                $result = __('Indoor', 'live-weather-station');
+                break;
+
+            case 'namodule9': // Extra module
+                $result = __('Extra', 'live-weather-station');
+                break;
             default:
                 $result = __('Unknown module', 'live-weather-station');
         }
@@ -175,6 +182,12 @@ trait Description {
             case 'humidity':
                 $result = ($abbr ? __('Humidity', 'live-weather-station') : __('Humidity', 'live-weather-station'));
                 break;
+            case 'humidity_min':
+                $result = ($abbr ? __('Humidity', 'live-weather-station') : __('Lowest humidity of the day', 'live-weather-station'));
+                break;
+            case 'humidity_max':
+                $result = ($abbr ? __('Humidity', 'live-weather-station') : __('Highest humidity of the day', 'live-weather-station'));
+                break;
             case 'humint':
                 $result = ($abbr ? __('Indoor humidity', 'live-weather-station') : __('Indoor humidity', 'live-weather-station'));
                 break;
@@ -189,6 +202,12 @@ trait Description {
                 break;
             case 'pressure':
                 $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Atmospheric pressure', 'live-weather-station'));
+                break;
+            case 'pressure_min':
+                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Lowest atmospheric pressure of the day', 'live-weather-station'));
+                break;
+            case 'pressure_max':
+                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Highest atmospheric pressure of the day', 'live-weather-station'));
                 break;
             case 'pressure_trend':
                 $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Pressure trend', 'live-weather-station'));
@@ -261,6 +280,18 @@ trait Description {
             case 'rain_day_aggregated':
             case 'sum_rain_24':
                 $result = ($abbr ? __('Rain', 'live-weather-station') : __('Accumulated rainfall for today', 'live-weather-station'));
+                break;
+            case 'rain_yesterday_aggregated':
+                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Accumulated rainfall for yesterday', 'live-weather-station'));
+                break;
+            case 'rain_month_aggregated':
+                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Accumulated rainfall for the month', 'live-weather-station'));
+                break;
+            case 'rain_season_aggregated':
+                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Accumulated rainfall for the season', 'live-weather-station'));
+                break;
+            case 'rain_year_aggregated':
+                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Accumulated rainfall for the year', 'live-weather-station'));
                 break;
             case 'windangle':
                 $result = ($abbr ? __('Wind', 'live-weather-station') : __('Wind direction', 'live-weather-station'));

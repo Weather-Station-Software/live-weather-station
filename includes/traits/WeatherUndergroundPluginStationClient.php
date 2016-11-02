@@ -20,7 +20,6 @@ trait StationClient {
 
     use BaseClient;
 
-    protected $wug_data;
     protected $facility = 'Weather Collector';
 
     /**
@@ -72,7 +71,7 @@ trait StationClient {
                     throw new \Exception($weather['response']['error']['description']);
                 }
                 else {
-                    throw new \Exception('WeatherUnderground unknown exception');
+                    throw new \Exception('Weather Underground unknown exception');
                 }
             }
             if (array_key_exists('features', $weather['response'])) {
@@ -82,7 +81,7 @@ trait StationClient {
                     }
                 }
                 else {
-                    throw new \Exception('WeatherUnderground unknown exception');
+                    throw new \Exception('Weather Underground unknown exception');
                 }
             }
         }
@@ -178,6 +177,8 @@ trait StationClient {
                 }
                 $this->update_data_table($updates);
             }
+            $this->update_table(self::live_weather_station_stations_table(), $station);
+            Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
             // NAModule1
             $type = 'NAModule1';
@@ -206,7 +207,6 @@ trait StationClient {
                 $updates['measure_value'] = (integer)str_replace('%', '', $updates['measure_value']);
                 $this->update_data_table($updates);
             }
-            $this->update_table(self::live_weather_station_stations_table(), $station);
             Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
             // NAModule2
@@ -243,7 +243,6 @@ trait StationClient {
                 $updates['measure_value'] = $observation['wind_gust_kph'];
                 $this->update_data_table($updates);
             }
-            $this->update_table(self::live_weather_station_stations_table(), $station);
             Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
             // NAModule3
@@ -273,7 +272,6 @@ trait StationClient {
                 $updates['measure_value'] = $observation['precip_today_metric'];
                 $this->update_data_table($updates);
             }
-            $this->update_table(self::live_weather_station_stations_table(), $station);
             Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
 
@@ -287,16 +285,13 @@ trait StationClient {
     /**
      * Get and store station's data.
      *
-     * @return array WUG collected data.
      * @since 3.0.0
      */
     public function get_and_store_data() {
         if (($key = get_option('live_weather_station_wug_apikey')) == '') {
-            $this->wug_data = array ();
-            return array ();
+            return;
         }
         $this->synchronize_wug_station();
-        $this->wug_data = array();
         $stations = $this->get_all_wug_id_stations();
         $wug = new WUGApiClient();
         foreach ($stations as $station) {
@@ -315,22 +310,18 @@ trait StationClient {
                     $device_name = null;
                 }
                 if (strpos($ex->getMessage(), 'this key does not exist') !== false) {
-                    Logger::critical($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your WeatherUnderground API key.');
+                    Logger::critical($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your Weather Underground API key.');
                     return array();
                 }
                 if (strpos($ex->getMessage(), 'JSON /') > -1) {
-                    Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'WeatherUnderground servers has returned empty response. Retry will be done shortly.');
+                    Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Weather Underground servers has returned empty response. Retry will be done shortly.');
                 }
                 else {
-                    Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Temporary unable to contact WeatherUnderground servers. Retry will be done shortly.');
+                    Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Temporary unable to contact Weather Underground servers. Retry will be done shortly.');
                     return array();
                 }
             }
-            if (isset($values) && is_array($values)) {
-                $this->wug_data[] = $values;
-            }
         }
-        return $this->wug_data;
     }
 
     /**

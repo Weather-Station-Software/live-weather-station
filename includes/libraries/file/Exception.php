@@ -1,9 +1,9 @@
 <?php
 
-namespace WeatherStation\SDK\WeatherUnderground;
+namespace WeatherStation\SDK\Generic;
 
 /**
- * Dummy class extending \Exception to allow checking if it is a WeatherUnderground error
+ * Dummy class extending \Exception to allow checking if it is a HTTP error
  * or an argument error.
  *
  * @package Includes\Libraries

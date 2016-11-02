@@ -5,6 +5,8 @@ namespace WeatherStation\System\Schedules;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\SDK\Generic\Plugin\Pusher as Pusher;
 use WeatherStation\SDK\Netatmo\Plugin\Updater as Netatmo_Updater;
+use WeatherStation\SDK\Clientraw\Plugin\StationUpdater as Clientraw_Updater;
+use WeatherStation\SDK\Realtime\Plugin\StationUpdater as Realtime_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\CurrentUpdater as Owm_Current_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\StationUpdater as Owm_Station_Updater;
 use WeatherStation\SDK\WeatherUnderground\Plugin\StationUpdater as Wug_Station_Updater;
@@ -28,6 +30,8 @@ trait Handling {
     protected static $owm_update_current_schedule_name = 'lws_owm_current_update';
     protected static $owm_update_station_schedule_name = 'lws_owm_station_update';
     protected static $wug_update_station_schedule_name = 'lws_wug_station_update';
+    protected static $raw_update_station_schedule_name = 'lws_raw_station_update';
+    protected static $real_update_station_schedule_name = 'lws_real_station_update';
     protected static $owm_update_pollution_schedule_name = 'lws_owm_pollution_update';
     protected static $netatmo_push_schedule_name = 'lws_netatmo_push';
     protected static $push_schedule_name = 'lws_current_push';
@@ -36,7 +40,7 @@ trait Handling {
     /**
      * Define Netatmo Updater cron job.
      *
-     * @since    2.7.0
+     * @since 2.7.0
      */
     protected static function define_netatmo_update_cron() {
         $plugin_netatmo_update_cron = new Netatmo_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
@@ -46,12 +50,56 @@ trait Handling {
     /**
      * Launch the Netatmo Updater cron job if needed.
      *
-     * @since    2.7.0
+     * @since 2.7.0
      */
     protected static function launch_netatmo_update_cron() {
         if (!wp_next_scheduled(self::$netatmo_update_schedule_name)) {
             wp_schedule_event(time() + 10, 'five_minutes', self::$netatmo_update_schedule_name);
             Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$netatmo_update_schedule_name.' cron job.');
+        }
+    }
+
+    /**
+     * Define Clientraw Updater cron job.
+     *
+     * @since 3.0.0
+     */
+    protected static function define_raw_station_update_cron() {
+        $plugin_raw_update_cron = new Clientraw_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$raw_update_station_schedule_name, array($plugin_raw_update_cron, 'cron_run'));
+    }
+
+    /**
+     * Launch the Clientraw Updater cron job if needed.
+     *
+     * @since 3.0.0
+     */
+    protected static function launch_raw_station_update_cron() {
+        if (!wp_next_scheduled(self::$raw_update_station_schedule_name)) {
+            wp_schedule_event(time() + 100, 'five_minutes', self::$raw_update_station_schedule_name);
+            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$raw_update_station_schedule_name.' cron job.');
+        }
+    }
+
+    /**
+     * Define Realtime Updater cron job.
+     *
+     * @since 3.0.0
+     */
+    protected static function define_real_station_update_cron() {
+        $plugin_real_update_cron = new Realtime_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$real_update_station_schedule_name, array($plugin_real_update_cron, 'cron_run'));
+    }
+
+    /**
+     * Launch the Realtime Updater cron job if needed.
+     *
+     * @since 3.0.0
+     */
+    protected static function launch_real_station_update_cron() {
+        if (!wp_next_scheduled(self::$real_update_station_schedule_name)) {
+            wp_schedule_event(time() + 190, 'five_minutes', self::$real_update_station_schedule_name);
+            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$real_update_station_schedule_name.' cron job.');
         }
     }
 
@@ -220,6 +268,8 @@ trait Handling {
         wp_clear_scheduled_hook(self::$owm_update_current_schedule_name);
         wp_clear_scheduled_hook(self::$owm_update_station_schedule_name);
         wp_clear_scheduled_hook(self::$wug_update_station_schedule_name);
+        wp_clear_scheduled_hook(self::$raw_update_station_schedule_name);
+        wp_clear_scheduled_hook(self::$real_update_station_schedule_name);
         wp_clear_scheduled_hook(self::$owm_update_pollution_schedule_name);
         wp_clear_scheduled_hook(self::$netatmo_push_schedule_name);
         wp_clear_scheduled_hook(self::$push_schedule_name);
@@ -238,6 +288,8 @@ trait Handling {
         self::launch_owm_current_update_cron();
         self::launch_owm_station_update_cron();
         self::launch_wug_station_update_cron();
+        self::launch_raw_station_update_cron();
+        self::launch_real_station_update_cron();
         self::launch_owm_pollution_update_cron();
         self::launch_log_rotate_cron();
         self::launch_translation_update_cron();

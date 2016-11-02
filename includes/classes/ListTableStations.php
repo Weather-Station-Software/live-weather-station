@@ -51,6 +51,15 @@ class Stations extends Base {
             case 3 :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_wug_icon('#666666')) . '" />';
                 break;
+            case 4 :
+                $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_raw_icon('#666666')) . '" />';
+                break;
+            case 5 :
+                $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_real_icon('#666666')) . '" />';
+                break;
+            case 6 :
+                $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_txt_icon('#666666')) . '" />';
+                break;
         }
         return $result;
     }
@@ -73,6 +82,18 @@ class Stations extends Base {
                 break;
             case 3:
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=WeatherUnderground&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
+                $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
+                break;
+            case 4:
+                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=clientraw&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
+                $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
+                break;
+            case 5:
+                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=realtime&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
+                $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
+                break;
+            case 6:
+                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=stickertags&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
         }
@@ -165,13 +186,13 @@ class Stations extends Base {
     }
 
     protected function column_sc($item){
-        if (($item['comp_bas'] + $item['comp_ext'] + $item['comp_int'] + $item['comp_vrt']) == 0) {
+        if (($item['comp_bas'] + $item['comp_ext'] + $item['comp_int'] + $item['comp_xtd'] + $item['comp_vrt']) == 0) {
             return '';
         }
-        $s = '<a href="#" id="textual-datas-link-' . $item['guid'] . '">' . __('textual datas', 'live-weather-station') . '</a>, ';
+        $s = '<a href="#" id="textual-datas-link-' . $item['guid'] . '">' . ucfirst(__('textual datas', 'live-weather-station')) . '</a>, ';
         $s .= '<a href="#" id="lcd-datas-link-' . $item['guid'] . '">' . __('LCD display', 'live-weather-station') . '</a>, ';
         $s .= '<a href="#" id="justgage-datas-link-' . $item['guid'] . '">' . __('clean gauge', 'live-weather-station') . '</a>, ';
-        $s .= '<a href="#" id="steelmeter-datas-link-' . $item['guid'] . '">' . __('steel meter', 'live-weather-station') . '</a>';
+        $s .= '<a href="#" id="steelmeter-datas-link-' . $item['guid'] . '">' . __('steel meter', 'live-weather-station') . '</a>.';
         return $s;
     }
 

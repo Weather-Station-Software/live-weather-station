@@ -61,7 +61,6 @@ class Handling {
         }
         $this->station_id = $id;
 
-        //Logger::alert(null, null, null, null, null, null, null, $id);
         if ($id != 0) {
             $this->edit_station();
             $this->station_name = $this->get_infos_station_name_by_guid($id);

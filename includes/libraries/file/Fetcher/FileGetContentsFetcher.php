@@ -1,17 +1,21 @@
 <?php
 
-namespace WeatherStation\SDK\WeatherUnderground;
+namespace WeatherStation\SDK\Generic\Fetcher;
 
 /**
- * Dummy class extending \Exception to allow checking if it is a WeatherUnderground error
- * or an argument error.
- *
  * @package Includes\Libraries
  * @author Originally written by Christian Flach <https://github.com/cmfcmf>.
  * @author Modified by Pierre Lannoy <https://pierre.lannoy.fr/>.
  * @since 3.0.0
  * @license MIT
  */
-class Exception extends \Exception
+class FileGetContentsFetcher implements FetcherInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function fetch($url)
+    {
+        return file_get_contents($url);
+    }
 }

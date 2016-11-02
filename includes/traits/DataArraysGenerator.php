@@ -355,6 +355,8 @@ trait Generator {
         $result = array();
         $netatmo = OWM_Base_Collector::is_netatmo_station($ref['device_id']);
         $wug = OWM_Base_Collector::is_wug_station($ref['device_id']);
+        $raw = OWM_Base_Collector::is_raw_station($ref['device_id']);
+        $real = OWM_Base_Collector::is_real_station($ref['device_id']);
         switch (strtolower($ref['module_type'])) {
             case 'namain':
                 if ($aggregated) {
@@ -372,6 +374,12 @@ trait Generator {
                 if ($full && $wug) {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                 }
+                if ($full && ($raw || $real)) {
+                    $result[] = array($this->get_measurement_type('battery'), 'battery', ($reduced ? array() : $this->get_measure_array($ref, $data, 'battery')));
+                    $result[] = array($this->get_measurement_type('firmware'), 'firmware', ($reduced ? array() : $this->get_measure_array($ref, $data, 'firmware')));
+                    $result[] = array($this->get_measurement_type('signal'), 'signal', ($reduced ? array() : $this->get_measure_array($ref, $data, 'signal')));
+                    $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
+                }
                 if ($full) {
                     $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
                     $result[] = array($this->get_measurement_type('loc_timezone'), 'loc_timezone', ($reduced ? array() : $this->get_measure_array($ref, $data, 'loc_timezone')));
@@ -385,11 +393,15 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('noise'), 'noise', ($reduced ? array() : $this->get_measure_array($ref, $data, 'noise')));
                     $result[] = array($this->get_measurement_type('pressure'), 'pressure', ($reduced ? array() : $this->get_measure_array($ref, $data, 'pressure')));
                 }
-                if ($wug) {
+                if ($wug || $real || $raw) {
                     $result[] = array($this->get_measurement_type('pressure'), 'pressure', ($reduced ? array() : $this->get_measure_array($ref, $data, 'pressure')));
                 }
-                if ($full && $netatmo) {
+                if ($full && ($netatmo || $real || $raw)) {
                     $result[] = array($this->get_measurement_type('pressure_trend'), 'pressure_trend', ($reduced ? array() : $this->get_measure_array($ref, $data, 'pressure_trend')));
+                }
+                if (($full || $mono) && ($real || $raw)) {
+                    $result[] = array($this->get_measurement_type('pressure_max'), 'pressure_max', ($reduced ? array() : $this->get_measure_array($ref, $data, 'pressure_max')));
+                    $result[] = array($this->get_measurement_type('pressure_min'), 'pressure_min', ($reduced ? array() : $this->get_measure_array($ref, $data, 'pressure_min')));
                 }
                 if ($netatmo) {
                     $result[] = array($this->get_measurement_type('temperature'), 'temperature', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature')));
@@ -413,13 +425,17 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                     $result[] = array($this->get_measurement_type('last_setup'), 'last_setup', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_setup')));
                 }
-                if ($full && $wug) {
+                if ($full && ($wug || $real || $raw)) {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                 }
                 if ($full) {
                     $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
                 }
                 $result[] = array($this->get_measurement_type('humidity'), 'humidity', ($reduced ? array() : $this->get_measure_array($ref, $data, 'humidity')));
+                if (($full || $mono) && $raw) {
+                    $result[] = array($this->get_measurement_type('humidity_max'), 'humidity_max', ($reduced ? array() : $this->get_measure_array($ref, $data, 'humidity_max')));
+                    $result[] = array($this->get_measurement_type('humidity_min'), 'humidity_min', ($reduced ? array() : $this->get_measure_array($ref, $data, 'humidity_min')));
+                }
                 $result[] = array($this->get_measurement_type('temperature'), 'temperature', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature')));
                 if (($full || $mono) && !$wug) {
                     $result[] = array($this->get_measurement_type('temperature_max'), 'temperature_max', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature_max')));
@@ -440,17 +456,27 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                     $result[] = array($this->get_measurement_type('last_setup'), 'last_setup', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_setup')));
                 }
-                if ($full && $wug) {
+                if ($full && ($wug || $real || $raw)) {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                 }
                 if ($full) {
                     $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
                 }
-                if ($netatmo) {
+                if ($netatmo || $raw || $real) {
                     $result[] = array($this->get_measurement_type('rain', false, $ref['module_type']), 'rain', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain')));
                 }
                 $result[] = array($this->get_measurement_type('rain_hour_aggregated', false, $ref['module_type']), 'rain_hour_aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain_hour_aggregated')));
                 $result[] = array($this->get_measurement_type('rain_day_aggregated', false, $ref['module_type']), 'rain_day_aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain_day_aggregated')));
+                if ($raw) {
+                    $result[] = array($this->get_measurement_type('rain_yesterday_aggregated', false, $ref['module_type']), 'rain_yesterday_aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain_yesterday_aggregated')));
+                    $result[] = array($this->get_measurement_type('rain_month_aggregated', false, $ref['module_type']), 'rain_month_aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain_month_aggregated')));
+                    $result[] = array($this->get_measurement_type('rain_season_aggregated', false, $ref['module_type']), 'rain_season_aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain_season_aggregated')));
+                }
+                if ($real) {
+                    $result[] = array($this->get_measurement_type('rain_yesterday_aggregated', false, $ref['module_type']), 'rain_yesterday_aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain_yesterday_aggregated')));
+                    $result[] = array($this->get_measurement_type('rain_month_aggregated', false, $ref['module_type']), 'rain_month_aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain_month_aggregated')));
+                    $result[] = array($this->get_measurement_type('rain_year_aggregated', false, $ref['module_type']), 'rain_year_aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain_year_aggregated')));
+                }
                 break;
             case 'namodule2': // Wind gauge
                 if ($aggregated) {
@@ -463,7 +489,7 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                     $result[] = array($this->get_measurement_type('last_setup'), 'last_setup', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_setup')));
                 }
-                if ($full && $wug) {
+                if ($full && ($wug || $real || $raw)) {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                 }
                 if ($full) {
@@ -491,19 +517,34 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                     $result[] = array($this->get_measurement_type('last_setup'), 'last_setup', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_setup')));
                 }
+                if ($full && ($wug || $real || $raw)) {
+                    $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
+                }
                 if ($full) {
                     $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
                 }
-                $result[] = array($this->get_measurement_type('co2'), 'co2', ($reduced ? array() : $this->get_measure_array($ref, $data, 'co2')));
+                if ($netatmo) {
+                    $result[] = array($this->get_measurement_type('co2'), 'co2', ($reduced ? array() : $this->get_measure_array($ref, $data, 'co2')));
+                }
                 $result[] = array($this->get_measurement_type('humidity'), 'humidity', ($reduced ? array() : $this->get_measure_array($ref, $data, 'humidity')));
                 $result[] = array($this->get_measurement_type('temperature'), 'temperature', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature')));
-                if ($full || $mono) {
+                if (($full || $mono) && ($netatmo || $raw)) {
                     $result[] = array($this->get_measurement_type('temperature_max'), 'temperature_max', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature_max')));
                     $result[] = array($this->get_measurement_type('temperature_min'), 'temperature_min', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature_min')));
                 }
-                if ($full) {
+                if ($full && $netatmo) {
                     $result[] = array($this->get_measurement_type('temperature_trend'), 'temperature_trend', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature_trend')));
                 }
+                break;
+
+            case 'namodule9': // Additional indoor module
+                if ($aggregated) {
+                    $result[] = array($this->get_measurement_type('aggregated'), 'aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'aggregated')));
+                }
+                $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
+                $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
+                $result[] = array($this->get_measurement_type('humidity'), 'humidity', ($reduced ? array() : $this->get_measure_array($ref, $data, 'humidity')));
+                $result[] = array($this->get_measurement_type('temperature'), 'temperature', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature')));
                 break;
             case 'aggregated': // All modules aggregated in one
                 if ($aggregated) {
@@ -515,6 +556,8 @@ trait Generator {
                 }
                 if ($netatmo) {
                     $result[] = array($this->get_measurement_type('co2'), 'co2', ($reduced ? array() : $this->get_measure_array($ref, $data, 'co2')));
+                }
+                if ($netatmo || $raw || $real) {
                     $result[] = array($this->get_measurement_type('humidity'), 'humidity', ($reduced ? array() : $this->get_measure_array($ref, $data, 'humidity')));
                     $result[] = array($this->get_measurement_type('temperature'), 'temperature', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature')));
                 }
@@ -626,6 +669,8 @@ trait Generator {
             $result[] = $data['station']['station_id'];
             $netatmo = OWM_Base_Collector::is_netatmo_station($data['station']['station_id']);
             $wug = OWM_Base_Collector::is_wug_station($data['station']['station_id']);
+            $raw = OWM_Base_Collector::is_raw_station($data['station']['station_id']);
+            $real = OWM_Base_Collector::is_real_station($data['station']['station_id']);
             $mainbase = array();
             if (count($data['module']) > 0) {
                 foreach ($data['module'] as $module) {
@@ -638,9 +683,9 @@ trait Generator {
                 Logger::error('Backend', null, $data['station']['station_id'], $data['station']['station_name'], null, null, null, 'Unable to find a main base for this station.');
                 return array();
             }
-            if ($aggregated  && ($netatmo || $wug)) {
+            if ($aggregated  && ($netatmo || $wug || $raw || $real)) {
                 $ref = array();
-                $ref['device_id'] = 'aggregated';
+                $ref['device_id'] = $data['station']['station_id'];//'aggregated';
                 $ref['device_name'] = $data['station']['station_name'];
                 $ref['module_id'] = 'aggregated';
                 $ref['module_type'] = 'aggregated';
@@ -688,7 +733,7 @@ trait Generator {
         $stations = $this->get_stations_table_list();
         if (count($stations) > 0) {
             foreach ($stations as $station) {
-                if (($station['comp_bas'] + $station['comp_ext'] + $station['comp_int'] + $station['comp_vrt']) > 0) {
+                if (($station['comp_bas'] + $station['comp_ext'] + $station['comp_int'] + $station['comp_xtd'] + $station['comp_vrt']) > 0) {
                     $result[$station['guid']] = $this->get_station_array($station['guid'], $full, $aggregated, $reduced, $computed, $mono);
                 }
             }
@@ -1469,6 +1514,22 @@ trait Generator {
         $result[] = 'Weather Hawk - 500 Series';
         $result[] = 'Weather Hawk - 600 Series';
         $result[] = 'Weather Hawk - Signature Series';
+        return $result;
+    }
+
+    /**
+     * Get server types.
+     *
+     * @return array An array containing the available server types (0=direct API access).
+     * @since 3.0.0
+     */
+    public function get_server_type_array() {
+        $result = array();
+        $result[] = array(1, __('Local file', 'live-weather-station'));
+        $result[] = array(2, __('Web server (HTTP)', 'live-weather-station'));
+        $result[] = array(3, __('Web server (HTTPS)', 'live-weather-station'));
+        $result[] = array(4, __('File server (FTP)', 'live-weather-station'));
+        $result[] = array(5, __('File server (FTPS)', 'live-weather-station'));
         return $result;
     }
 }

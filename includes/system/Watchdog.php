@@ -59,6 +59,8 @@ class Watchdog {
         self::define_owm_current_update_cron();
         self::define_owm_station_update_cron();
         self::define_wug_station_update_cron();
+        self::define_raw_station_update_cron();
+        self::define_real_station_update_cron();
         self::define_owm_pollution_update_cron();
         self::define_log_rotate_cron();
         self::define_watchdog_cron();
