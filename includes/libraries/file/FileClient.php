@@ -89,7 +89,7 @@ class FileClient
     public function getRawStationData($url) {
         switch ($this->type) {
             case 1:
-                $proto = 'file://';
+                $proto = '';//'file://';
                 break;
             case 2:
                 $proto = 'http://';
