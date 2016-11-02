@@ -7,6 +7,7 @@ use WeatherStation\Data\Type\Description as Type_Description;
 use WeatherStation\Data\Unit\Description as Unit_Description;
 use WeatherStation\Data\Unit\Conversion as Unit_Conversion;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector;
+use WeatherStation\System\Logs\Logger;
 use WeatherStation\Utilities\ColorsManipulation;
 use WeatherStation\DB\Query;
 
@@ -188,8 +189,7 @@ trait Output {
      * @return  string  $attributes The value queryed.
      * @since    2.1.0
      */
-    public function justgage_value($attributes, $full=false)
-    {
+    public function justgage_value($attributes, $full=false) {
         $_attributes = shortcode_atts(array('device_id' => '', 'module_id' => '', 'measure_type' => '', 'element' => '', 'format' => ''), $attributes);
         $_result = $this->get_line_datas($_attributes, false, true);
         $result = array();
@@ -3693,6 +3693,12 @@ trait Output {
             default:
                 $t = $type;
         }
+        $s = 'live_weather_station_' . $t . '_' . $opt . ' => ' . $this->output_value(get_option('live_weather_station_' . $t . '_' . $opt), $type);
+        if (strpos($s, 'rain_hour') > 0) {
+            //Logger::alert(null, null, null, null, null, null, null, $s);
+        }
+
+
         return $this->output_value(get_option('live_weather_station_' . $t . '_' . $opt), $type);
     }
 

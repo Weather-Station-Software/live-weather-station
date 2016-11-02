@@ -52,15 +52,7 @@
 
   * TBD : stat on datas timestamp
   * TBD : stat on events (full, by station, by service ?)
-  * TBD : enlever (ou ajouter) l'aide dans l'ajout des stations...
-  * TBD : ajouter aide pour 'retirer' dans la liste des stations
   * TBD : vérifier pays / fuseaux pour Royaume Uni et Russie
-
-
-  new = pressure_min, pressure_max, humidity_min, humidity_max, rain_month_aggregated, rain_season_aggregated, rain_year_aggregated, rain_yesterday_aggregated
-
-
-
 
 
 

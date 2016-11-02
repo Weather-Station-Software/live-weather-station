@@ -14,9 +14,9 @@ $edit = ($station['guid'] != 0);
 
 <div class="wrap">
     <?php if (!$edit) { ?>
-        <h1><?php esc_html_e('Add a weather station published on Weather Underground', 'live-weather-station' );?></h1>
+        <h1><?php echo sprintf(__('Add a weather station published on %s', 'live-weather-station'), 'Weather Underground');?></h1>
     <?php } else { ?>
-        <h1><?php esc_html_e('Edit a weather station published on Weather Underground', 'live-weather-station' );?></h1>
+        <h1><?php echo sprintf(__('Edit a weather station published on %s', 'live-weather-station'), 'Weather Underground');?></h1>
     <?php } ?>
     <form method="post" name="add-edit-wug-form" id="add-edit-wug-form" action="<?php echo esc_url(get_admin_page_url($url)); ?>">
         <input name="guid" type="hidden" value="<?php echo $station['guid']; ?>" />
