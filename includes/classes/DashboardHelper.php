@@ -209,9 +209,7 @@ class Handling {
         if ($intl->is_translatable()) {
             add_meta_box('lws-translation', __('Translation', 'live-weather-station' ), array($this, 'translation_widget'), 'lws-dashboard', 'side', 'high', array('message' => $intl->get_message()));
         }
-        if (LWS_WEBSITE_READY) {
-            add_meta_box('lws-news', sprintf(__('%s News', 'live-weather-station' ), LWS_PLUGIN_NAME), array($this, 'news_widget'), 'lws-dashboard', 'side');
-        }
+        add_meta_box('lws-news', sprintf(__('%s News', 'live-weather-station' ), LWS_PLUGIN_NAME), array($this, 'news_widget'), 'lws-dashboard', 'side');
         add_meta_box('lws-about', __('About', 'live-weather-station' ), array($this, 'about_widget'), 'lws-dashboard', 'side');
         add_meta_box('lws-licenses', __('Licenses', 'live-weather-station' ), array($this, 'licenses_widget'), 'lws-dashboard', 'side');
     }

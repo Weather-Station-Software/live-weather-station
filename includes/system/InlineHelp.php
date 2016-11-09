@@ -20,6 +20,50 @@ class InlineHelp {
 
     private $Live_Weather_Station;
     private $version;
+    private static $links = array (
+        'en' => array (
+            'handbook/settings/general', //0  source: settings - general tab
+            '---', //1  unused
+            'handbook/settings/services', //2  source: settings - service tab
+            'handbook/settings/display', //3  source: settings - display tab
+            'handbook/settings/thresholds', //4  source: settings - thresholds tab
+            'handbook/settings/system', //5  source: settings - system tab
+            'handbook/settings', //6  settings section
+            'support/frequently-asked-questions', //7  faq section
+            'handbook/dashboard', //8  dashboard
+            'handbook/stations-management', //9  stations
+            'handbook/events', //10 events
+            'handbook/requirements', //11 requirements
+            'support/languages-translations', //12 translation help
+            'blog', //13 Blog
+            'handbook/getting-started', //14 Starting guide
+            'handbook/settings/maintenance-operations', //15 source: settings - maintenance tab
+            'handbook/technical-specifications#url', //16 stickertags documentation
+            'handbook', //17 main documentation
+            'support', //18 main support page
+            ),
+        'fr' => array (
+            'documentation/reglages/generaux', //0  source: settings - general tab
+            '---', //1  unused
+            'documentation/reglages/les-services', //2  source: settings - service tab
+            'documentation/reglages/affichage', //3  source: settings - display tab
+            'documentation/reglages/seuils', //4  source: settings - thresholds tab
+            'documentation/reglages/systeme', //5  source: settings - system tab
+            'documentation/reglages', //6  settings section
+            'assistance/question-frequentes', //7  faq section
+            'documentation/tableau-de-bord', //8  dashboard
+            'documentation/gestion-des-stations', //9  stations
+            'documentation/evenements', //10 events
+            'documentation/prerequis-techniques', //11 requirements
+            'assistance/langues-traductions', //12 translation help
+            'journal', //13 Blog
+            'documentation/demarrage-rapide', //14 Starting guide
+            'documentation/reglages/operations-de-maintenance', //15 source: settings - maintenance tab
+            'documentation/specifications-techniques#url', //16 stickertags documentation
+            'documentation', //17 main documentation
+            'assistance', //18 main support page
+            ),
+    );
 
     /**
      * Initialize the class and set its properties.
@@ -51,40 +95,32 @@ class InlineHelp {
         $extra_language = array ('fr');
         $l = strtolower(get_locale());
         foreach ($extra_language as $extra) {
-            if (strpos($l, $extra) == 0) {
+            if (strpos($l, $extra) === 0) {
                 $lang = $extra;
                 break;
             }
         }
+        $wplang = '';
+        $l = str_replace('_', '-', $l);
+        if ($l == $l[0].$l[1].'-'.$l[0].$l[1]) {
+            $wplang = $l[0].$l[1];
+        }
+        else {
+            $wplang = $l;
+        }
+        $wplang = $wplang . '.';
         $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
             $target = ' target="_blank" ';
         }
-        switch ($number) {
-            case 0: $path = '---'; break; //source: settings - general tab
-            case 1: $path = '---'; break; //source: requirements + phpinfo page
-            case 2: $path = '---'; break; //source: settings - service tab
-            case 3: $path = '---'; break; //source: settings - display tab
-            case 4: $path = '---'; break; //source: settings - thresholds tab
-            case 5: $path = '---'; break; //source: settings - system tab
-            case 6: $path = '---'; break; //settings section
-            case 7: $path = '---'; break; //faq section
-            case 8: $path = '---'; break; //dashboard
-            case 9: $path = '---'; break; //stations
-            case 10: $path = '---'; break; //events
-            case 11: $path = '---'; break; //requirements
-            case 12: $path = '---'; break; //translation help
-            case 13: $path = '---'; break; //Blog
-            case 14: $path = '---'; break; //Starting guide
-            case 15: $path = '---'; break; //source: settings - maintenance tab
-            case 16: $path = '---'; break; //stickertags documentation
-            case 17: $path = '---'; break; //main documentation
+        if ($number >= 0) {
+            $path = self::$links[$lang][$number];
         }
         if ($path != '') {
             $result = sprintf($message, '<a href="https://weather.station.software/' . $lang . '/' . $path . '"' . $target . '>' . $anchor . '</a>');
         }
         if ($number == -1) {
-            $result = sprintf($message, '<a href="https://weather.station.software/' . $lang . '/' . '"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://weather.station.software/' . '"' . $target . '>' . $anchor . '</a>');
         }
         if ($number == -2) {
             $result = sprintf($message, '<a href="https://wordpress.org/support/plugin/live-weather-station"' . $target . '>' . $anchor . '</a>');
@@ -94,10 +130,10 @@ class InlineHelp {
         }
         if ($number == -4) {
             //todo: replace by the true rss feed
-            $result = 'https://pierre.lannoy.fr/feed/';
+            $result = 'https://weather.station.software/' . $lang . '/feed/';
         }
         if ($number == -5) {
-            $result = sprintf($message, '<a href="https://wordpress.org/support/plugin/live-weather-station/reviews/"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://' . $wplang . 'wordpress.org/support/plugin/live-weather-station/reviews/"' . $target . '>' . $anchor . '</a>');
         }
         if ($number == -6) {
             $result = '<a href="https://twitter.com/cyril_lakech"' . $target . '>Cyril Lakech</a>';
@@ -158,18 +194,7 @@ class InlineHelp {
         if ($number == -24) {
             $result = sprintf($message, '<a href="https://home.openweathermap.org/api_keys"' . $target . '>' . $anchor . '</a>');
         }
-
-        if (LWS_INLINE_HELP) {
-            return $result;
-        }
-        else {
-            if ($number < 0) {
-                return $result;
-            }
-            else {
-                return '';
-            }
-        }
+        return $result;
     }
 
     /**
@@ -181,9 +206,7 @@ class InlineHelp {
      * @since 3.0.0
      */
     public static function set_contextual_help($loader, $type) {
-        if (LWS_INLINE_HELP) {
-            add_action($loader, array('WeatherStation\System\Help\InlineHelp', 'set_contextual_' . $type));
-        }
+        add_action($loader, array('WeatherStation\System\Help\InlineHelp', 'set_contextual_' . $type));
     }
 
     /**
@@ -195,8 +218,7 @@ class InlineHelp {
     public static function get_standard_help_sidebar() {
         return'<br/><p><strong>' . __('See also:', 'live-weather-station') . '</strong></p>' .
             '<p>' . self::get(17, '%s', __('Documentation', 'live-weather-station')) . '</p>'.
-            '<p>' . self::get(7, '%s', __('FAQ', 'live-weather-station')) . '</p>'.
-            '<p>' . self::get(-2, '%s', __('Support', 'live-weather-station')) . '</p>'.
+            '<p>' . self::get(18, '%s', __('Support', 'live-weather-station')) . '</p>'.
             '<p>' . self::get(-1, '%s', __('Official website', 'live-weather-station')) . '</p>';
     }
 
@@ -320,7 +342,7 @@ class InlineHelp {
         if (!($id = filter_input(INPUT_GET, 'id'))) {
             $id = filter_input(INPUT_POST, 'id');
         }
-        if ($id) {
+        if (is_numeric($id)) {
             $station = self::get_station($id);
             $type = $station['station_type'];
         }
@@ -511,7 +533,7 @@ class InlineHelp {
             else {
                 $s4 = '';
             }
-            $s5 = '<img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_wug_color_logo()) . '" /><strong>' . __('WeatherUndergroung', 'live-weather-station') . '</strong> &mdash; ' . __('a personal weather station published on Weather Underground.', 'live-weather-station');
+            $s5 = '<img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_wug_color_logo()) . '" /><strong>' . __('Weather Undergroung', 'live-weather-station') . '</strong> &mdash; ' . __('a personal weather station published on Weather Underground.', 'live-weather-station');
             $s6 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_real_color_logo()) . '" /><strong>' . __('Realtime File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>realtime.txt</em> file (Cumulus, etc.).', 'live-weather-station') . '</p>';
             $s7 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_raw_color_logo()) . '" /><strong>' . __('Clientraw File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>clientraw.txt</em> file (Weather Display, WeeWX, etc.).', 'live-weather-station') . '</p>';
             if (LWS_TXT_READY) {

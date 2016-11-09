@@ -363,13 +363,7 @@ trait Storage {
         self::migrate_owm_stations_table();
         self::migrate_infos_table();
 
-         $table_name = $wpdb->prefix.self::live_weather_station_infos_table();
-        $sql = 'DROP TABLE '.$table_name;
-        $wpdb->query($sql);
-        $table_name = $wpdb->prefix.self::live_weather_station_owm_stations_table();
-        $sql = 'DROP TABLE '.$table_name;
-        $wpdb->query($sql);
-        
+
     }
 
     /**
@@ -387,6 +381,8 @@ trait Storage {
             foreach ($query_a as $val) {
                 self::insert_table(self::live_weather_station_stations_table(), (array)$val);
             }
+            $sql = 'DROP TABLE '.$table_name;
+            $wpdb->query($sql);
             return true;
         } catch (\Exception $ex) {
             return false;
@@ -409,6 +405,8 @@ trait Storage {
                 $a['station_type'] = 1;
                 self::insert_table(self::live_weather_station_stations_table(), $a);
             }
+            $sql = 'DROP TABLE '.$table_name;
+            $wpdb->query($sql);
             return true;
         } catch (\Exception $ex) {
             return false;

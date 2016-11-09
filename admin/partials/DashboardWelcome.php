@@ -40,9 +40,7 @@ $welcome = true;
                     <ul>
                         <li><i class="fa fa-lg fa-fw fa-cogs" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<a href="<?php echo get_admin_page_url('lws-settings'); ?>"><?php echo __('Adjust settings', 'live-weather-station');?></a></li>
                         <li><i class="fa fa-lg fa-fw fa-newspaper-o" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<a href="<?php echo get_admin_page_url('lws-events'); ?>"><?php echo __('Browse events log', 'live-weather-station');?></a></li>
-                        <?php if (LWS_INLINE_HELP) { ?>
-                            <li><i class="fa fa-lg fa-fw fa-graduation-cap" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<?php echo Help::get(14, '%s', __('Learn more about getting started', 'live-weather-station'));?></li>
-                        <?php } ?>
+                        <li><i class="fa fa-lg fa-fw fa-graduation-cap" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<?php echo Help::get(14, '%s', __('Learn more about getting started', 'live-weather-station'));?></li>
                     </ul>
                 </ul>
             </div>

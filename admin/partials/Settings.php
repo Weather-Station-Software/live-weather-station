@@ -7,7 +7,7 @@
  */
 
 $active_tab = (isset($_GET['tab']) ? $_GET['tab'] : 'general');
-$buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; ' . str_replace('<p class="submit">', '', get_submit_button('Reset to Defaults', 'secondary', 'reset'));
+$buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; ' . str_replace('<p class="submit">', '', get_submit_button(__('Reset to Defaults', 'live-weather-station'), 'secondary', 'reset'));
 
 
 ?>

@@ -751,7 +751,7 @@ trait Query {
     protected static function get_station($guid) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE guid=" . $guid;
+        $sql = "SELECT * FROM " . $table_name . " WHERE guid='" . $guid."'";
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -911,7 +911,7 @@ trait Query {
         else {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-            $sql = "SELECT * FROM " . $table_name . " WHERE guid=" . $guid;
+            $sql = "SELECT * FROM " . $table_name . " WHERE guid='" . $guid . "'";
             try {
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
@@ -958,7 +958,7 @@ trait Query {
         else {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-            $sql = "SELECT * FROM " . $table_name . " WHERE guid=" . $guid;
+            $sql = "SELECT * FROM " . $table_name . " WHERE guid='" . $guid . "'";
             try {
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
@@ -1005,7 +1005,7 @@ trait Query {
         else {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-            $sql = "SELECT * FROM " . $table_name . " WHERE guid=" . $guid;
+            $sql = "SELECT * FROM " . $table_name . " WHERE guid='" . $guid . "'";
             try {
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
@@ -1041,7 +1041,7 @@ trait Query {
         else {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-            $sql = "SELECT * FROM " . $table_name . " WHERE guid=" . $guid;
+            $sql = "SELECT * FROM " . $table_name . " WHERE guid='" . $guid . "'";
             try {
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
