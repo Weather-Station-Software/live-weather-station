@@ -59,7 +59,7 @@ use WeatherStation\System\Help\InlineHelp;
         </div>
         <div id="major-publishing-actions">
             <div>
-                <?php echo InlineHelp::get(1, __('You can find detailed requirements on %s.', 'live-weather-station'), __('this page', 'live-weather-station'));?>
+                <?php echo InlineHelp::get(11, __('You can find detailed requirements on %s.', 'live-weather-station'), __('this page', 'live-weather-station'));?>
             </div>
             <div class="clear"></div>
         </div>

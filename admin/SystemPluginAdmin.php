@@ -47,11 +47,11 @@ class Admin {
 
 	private $Live_Weather_Station;
 	private $version;
-    private $netatmo_error = '';
+    /*private $netatmo_error = '';
     private $netatmo_warning = '';
     private $owm_error = '';
     private $owm_warning = '';
-    private $pushers = array('owm', 'pws', 'wow', 'wug');
+    private $pushers = array('owm', 'pws', 'wow', 'wug');*/
 
     private $settings = array('general', 'services', 'display', 'thresholds', 'system');
     private $services = array('Netatmo', 'OpenWeatherMap', 'WeatherUnderground');
@@ -697,11 +697,11 @@ class Admin {
             add_menu_page(LWS_FULL_NAME . ' - ' . __('Dashboard', 'live-weather-station'), LWS_PLUGIN_NAME, $manage_options_cap, 'lws-dashboard', array($this, 'lws_load_admin_page'), $icon_svg, '99.001357');
             $dashboard = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Dashboard', 'live-weather-station'), __('Dashboard', 'live-weather-station'), $manage_options_cap, 'lws-dashboard', array($this, 'lws_load_admin_page'));
             $this->_dashboard = new Dashboard(LWS_PLUGIN_NAME, LWS_VERSION, $dashboard);
-            $settings = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Settings', 'live-weather-station'), __('Settings', 'live-weather-station'), $manage_options_cap, 'lws-settings', array($this, 'lws_load_admin_page'));
-            $this->_services = new Services(LWS_PLUGIN_NAME, LWS_VERSION, $settings);
             $stations = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Stations', 'live-weather-station'), __('Stations', 'live-weather-station'), $manage_options_cap, 'lws-stations', array($this, 'lws_load_admin_page'));
             $this->_station = new Station(LWS_PLUGIN_NAME, LWS_VERSION, $stations);
             $events = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Events log', 'live-weather-station'), __('Events', 'live-weather-station'), $manage_options_cap, 'lws-events', array($this, 'lws_load_admin_page'));
+            $settings = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Settings', 'live-weather-station'), __('Settings', 'live-weather-station'), $manage_options_cap, 'lws-settings', array($this, 'lws_load_admin_page'));
+            $this->_services = new Services(LWS_PLUGIN_NAME, LWS_VERSION, $settings);
             InlineHelp::set_contextual_help('load-' . $dashboard, 'dashboard');
             InlineHelp::set_contextual_help('load-' . $settings, 'settings');
             InlineHelp::set_contextual_help('load-' . $stations, 'stations');

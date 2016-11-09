@@ -65,19 +65,19 @@ If you like this plugin or find it useful and want to thank me for the work done
 = From your WordPress dashboard =
 
 1. Visit 'Plugins > Add New'.
-2. Search for 'Live Weather Station'.
+2. Search for 'Weather Station'.
 3. Click on the 'Install Now' button.
-4. Activate Live Weather Station.
+4. Activate Weather Station.
 
 = From WordPress.org =
 
-1. Download Live Weather Station.
+1. Download Weather Station.
 2. Upload the `live-weather-station` directory to your `/wp-content/plugins/` directory, using your favorite method (ftp, sftp, scp, etc...).
-3. Activate Live Weather Station from your Plugins page.
+3. Activate Weather Station from your Plugins page.
 
 = Once Activated =
 
-1. Visit 'Weather Station' in the lef-hand menu of your WP Admin to adjust settings.
+1. Visit 'Weather Station' in the left-hand menu of your WP Admin to adjust settings.
 2. Enjoy!
 
 == Frequently Asked Questions ==
@@ -104,7 +104,7 @@ You can report bugs and suggest ideas via the [support section](https://wordpres
 
 == Changelog ==
 
-= 3.0.0 / November xxxx, 2016 =
+= 3.0.0 / November 14th, 2016 =
 
 This new release is a major update of the plugin which is now named **Weather Station**.
 After upgrading, please, review all your settings.
@@ -114,8 +114,8 @@ After upgrading, please, review all your settings.
 * New: a new "station view" offers more in-depth visibility and understanding of the collected weather stations.
 * New: in addition to its nominal mode, Weather Station can now run in a simplified mode (automatic selection of settings, display options, units, etc.).
 * New: it's now possible to collect data from stations published on Weather Underground.
-* New: it's now possible to collect data from stations publishing its data via realtime.txt file (Cumulus, etc.).
-* New: it's now possible to collect data from stations publishing its data via clientraw.txt file (Weather Display, WeeWX, etc.).
+* New: it's now possible to collect data from stations publishing their data via realtime.txt file (Cumulus, etc.).
+* New: it's now possible to collect data from stations publishing their data via clientraw.txt file (Weather Display, WeeWX, etc.).
 * New: the min & max boundaries for controls (like meters or gauges) can be set for each measurement types.
 * New: the min & max alarms thresholds for controls (like LCD panel or meters) can be set for each measurement types.
 * New: a widget in the WordPress dashboard now display an "operating summary" of the plugin.
@@ -140,7 +140,7 @@ After upgrading, please, review all your settings.
 * Improvement: events log and logging policy are now configurable (settings in 'system' tab)'.
 * Improvement: short codes previews are now based on true values (before it was on estimated values).
 * Improvement: namespaces refactored for avoiding name collision with other plugins.
-* Improvement: Weather Station now use the last version of Netatmo SDK.
+* Improvement: Weather Station now use the latest version of Netatmo SDK.
 * Improvement: pressure displayed in hPa have now reasonable accuracy with 1 decimal.
 * Improvement: better cURL error reporting (now in event log) when SSL issues occurs.
 * Improvement: it's now possible to be warned when time difference between Netatmo server and your server is too large (settings 'Server Time shift' in 'system' tab)'.
@@ -153,6 +153,7 @@ After upgrading, please, review all your settings.
 * Improvement: event log now shows events numbers and supports direct access to detailed description.
 * Improvement: battery and signal levels for Netatmo stations are more accurate.
 * Improvement: optimized country / time zones list for Deutchland, United-Kingdom, Russia, Serbia, Vietnam and Yemen.
+* Improvement: Weather Station now use the latest version of Font Awesome (4.7).
 * Bug fix: wind strength rounding in km/h are not accurate.
 * Bug fix: current weather from OpenWeatherMap is wrongly registered in the events log.
 * Bug fix: filtering events log by station doesn't work.
@@ -470,6 +471,9 @@ Release date: November 14th, 2015
 * First public version.
 
 == Upgrade Notice ==
+
+= 3.0.X =
+New major release with tones of new features, optimization and options. Live Weather Station become Weather Station!
 
 = 2.9.X =
 New wind values collected from Netatmo stations and one new language. Many optimizations, improvements and bug fixes.

@@ -24,7 +24,7 @@ class Stations extends Base {
         Output::get_measurement_type insteadof Generator;
     }
 
-    private $limit = 4;
+    private $limit = 5;
     private $filters = array();
 
     public function __construct(){
@@ -329,7 +329,7 @@ class Stations extends Base {
     }
 
     public function get_line_number_select() {
-        $_disp = [4, 8, 12, 16];
+        $_disp = [5, 10, 15, 20];
         $result = array();
         foreach ($_disp as $d) {
             $l = array();
