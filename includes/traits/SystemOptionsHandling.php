@@ -25,6 +25,7 @@ trait Handling {
     private static $live_weather_station_advanced_mode = false;
     private static $live_weather_station_txt_cache_bypass = false;
     private static $live_weather_station_backend_cache = true;
+    private static $live_weather_station_query_cache = true;
     private static $live_weather_station_frontend_cache = true;
     private static $live_weather_station_redirect_internal_links = false;
     private static $live_weather_station_redirect_external_links = true;
@@ -304,6 +305,7 @@ trait Handling {
         delete_option('live_weather_station_advanced_mode');
         delete_option('live_weather_station_txt_cache_bypass');
         delete_option('live_weather_station_frontend_cache');
+        delete_option('live_weather_station_query_cache');
         delete_option('live_weather_station_backend_cache');
         delete_option('live_weather_station_redirect_internal_links');
         delete_option('live_weather_station_redirect_external_links');
@@ -357,6 +359,7 @@ trait Handling {
         update_option('live_weather_station_logger_retention', self::$live_weather_station_logger_retention);
         update_option('live_weather_station_txt_cache_bypass', self::$live_weather_station_txt_cache_bypass);
         update_option('live_weather_station_frontend_cache', self::$live_weather_station_frontend_cache);
+        update_option('live_weather_station_query_cache', self::$live_weather_station_query_cache);
         update_option('live_weather_station_backend_cache', self::$live_weather_station_backend_cache);
         update_option('live_weather_station_redirect_internal_links', self::$live_weather_station_redirect_internal_links);
         update_option('live_weather_station_redirect_external_links', self::$live_weather_station_redirect_external_links);
@@ -540,6 +543,7 @@ trait Handling {
         self::verify_option_integer('live_weather_station_logger_retention', self::$live_weather_station_logger_retention);
         self::verify_option_boolean('live_weather_station_txt_cache_bypass', self::$live_weather_station_txt_cache_bypass);
         self::verify_option_boolean('live_weather_station_frontend_cache', self::$live_weather_station_frontend_cache);
+        self::verify_option_boolean('live_weather_station_query_cache', self::$live_weather_station_query_cache);
         self::verify_option_boolean('live_weather_station_backend_cache', self::$live_weather_station_backend_cache);
         self::verify_option_boolean('live_weather_station_redirect_internal_links', self::$live_weather_station_redirect_internal_links);
         self::verify_option_boolean('live_weather_station_redirect_external_links', self::$live_weather_station_redirect_external_links);

@@ -383,6 +383,7 @@ trait Storage {
             }
             $sql = 'DROP TABLE '.$table_name;
             $wpdb->query($sql);
+            update_option('live_weather_station_force_resync', 'yes');
             return true;
         } catch (\Exception $ex) {
             return false;
@@ -407,6 +408,7 @@ trait Storage {
             }
             $sql = 'DROP TABLE '.$table_name;
             $wpdb->query($sql);
+            update_option('live_weather_station_force_resync', 'yes');
             return true;
         } catch (\Exception $ex) {
             return false;

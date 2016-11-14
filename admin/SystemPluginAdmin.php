@@ -47,11 +47,6 @@ class Admin {
 
 	private $Live_Weather_Station;
 	private $version;
-    /*private $netatmo_error = '';
-    private $netatmo_warning = '';
-    private $owm_error = '';
-    private $owm_warning = '';
-    private $pushers = array('owm', 'pws', 'wow', 'wug');*/
 
     private $settings = array('general', 'services', 'display', 'thresholds', 'system');
     private $services = array('Netatmo', 'OpenWeatherMap', 'WeatherUnderground');
@@ -81,7 +76,7 @@ class Admin {
     public function enqueue_styles() {
         wp_enqueue_style($this->Live_Weather_Station, LWS_ADMIN_URL.'css/live-weather-station-admin.min.css', array(), $this->version, 'all');
         wp_enqueue_style('live-weather-station-public.css', LWS_PUBLIC_URL.'css/live-weather-station-public.min.css', array(), $this->version, 'all');
-        wp_enqueue_style('font-awesome.css', LWS_PUBLIC_URL.'css/font-awesome.min.css', array(), '4.6.3', 'all');
+        wp_enqueue_style('font-awesome.css', LWS_PUBLIC_URL.'css/font-awesome.min.css', array(), '4.7.0', 'all');
         wp_enqueue_style('thickbox');
     }
 
@@ -116,6 +111,18 @@ class Admin {
         $this->init_display_settings();
         $this->init_thresholds_settings();
 
+    }
+
+    /**
+     * Force resync data if it is needed (i.e. by a migration).
+     *
+     * @since 3.0.0
+     */
+    public function force_resync_if_needed() {
+        if (get_option('live_weather_station_force_resync') == 'yes') {
+            update_option('live_weather_station_force_resync', 'no');
+            $this->sync_data(true);
+        }
     }
 
     public function general_section_callback() {
@@ -1113,25 +1120,37 @@ class Admin {
 
     /**
      * Purge data table.
+     * @param boolean $auto Optional. The message to display.
      *
      * @since 3.0.0
      */
-    private function purge_data() {
+    private function purge_data($auto=false) {
         self::truncate_data_table();
-        add_settings_error('lws_nonce_success', 200, __('All stations data have been purged.', 'live-weather-station'), 'updated');
-        Logger::info($this->service, null, null, null, null, null, 0, 'Data table has been truncated.');
+        if (!$auto) {
+            add_settings_error('lws_nonce_success', 200, __('All stations data have been purged.', 'live-weather-station'), 'updated');
+            Logger::info($this->service, null, null, null, null, null, 0, 'Data table has been truncated.');
+        }
+        else {
+            Logger::notice('Updater', null, null, null, null, null, 0, 'Data table has been truncated.');
+        }
     }
 
     /**
      * Repopulate data table.
+     * @param boolean $auto Optional. The message to display.
      *
      * @since 3.0.0
      */
-    private function sync_data() {
-        $this->purge_data();
+    private function sync_data($auto=false) {
+        $this->purge_data($auto);
         $this->get_all();
-        add_settings_error('lws_nonce_success', 200, __('All stations have been resynchronized.', 'live-weather-station'), 'updated');
-        Logger::info($this->service, null, null, null, null, null, 0, 'All stations have been resynchronized.');
+        if (!$auto) {
+            add_settings_error('lws_nonce_success', 200, __('All stations have been resynchronized.', 'live-weather-station'), 'updated');
+            Logger::info($this->service, null, null, null, null, null, 0, 'All stations have been resynchronized.');
+        }
+        else {
+            Logger::notice('Updater', null, null, null, null, null, 0, 'All stations have been resynchronized.');
+        }
     }
 
     /**
