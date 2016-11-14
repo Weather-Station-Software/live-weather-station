@@ -6,14 +6,24 @@
  * @since 3.0.0
  */
 
-$rss = fetch_feed($url);
+try {
+    $rss = fetch_feed($url);
+} catch (\Exception $ex) {
+    //$rss = null;
+}
+$maxitems = 0;
 if (!is_wp_error($rss)) {
     setlocale(LC_ALL, get_locale());
     $maxitems = $rss->get_item_quantity(4);
-    if ($maxitems > 0) {
-        $rss_items = $rss->get_items(0, $maxitems);
-        $description = wp_trim_words(wp_strip_all_tags($rss_items[0]->get_description(true)), 35);
-        $id = $rss_items[0]->get_id();
+    if (isset($maxitems)) {
+        if ($maxitems > 0) {
+            $rss_items = $rss->get_items(0, $maxitems);
+            $description = wp_trim_words(wp_strip_all_tags($rss_items[0]->get_description(true)), 35);
+            $id = $rss_items[0]->get_id();
+        }
+    }
+    else {
+        $maxitems = 0;
     }
 }
 

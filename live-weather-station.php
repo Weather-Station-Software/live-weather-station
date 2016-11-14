@@ -12,7 +12,7 @@ use WeatherStation\System\Plugin\Deactivator;
  * @wordpress-plugin
  * Plugin Name:       Weather Station
  * Plugin URI:        https://weather.station.software/
- * Description:       Display on your WordPress site, in many different and elegant ways, the meteorological data collected by public or personal weather stations.
+ * Description:       Display on your WordPress site, in many elegant ways, the meteorological data collected by public or personal weather stations.
  * Version:           3.0.0
  * Author:            Pierre Lannoy
  * Author URI:        https://pierre.lannoy.fr

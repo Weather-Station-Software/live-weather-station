@@ -114,7 +114,8 @@ class Core {
 		$plugin_admin = new Admin($this->get_Live_Weather_Station(), $this->get_version() );
         $this->loader->add_action('wp_dashboard_setup', 'WeatherStation\UI\Dashboard\Handling', 'add_wp_dashboard_widget');
         $this->loader->add_action('admin_init', $plugin_admin, 'init_settings' );
-		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
+        $this->loader->add_action('admin_init', $plugin_admin, 'force_resync_if_needed' );
+        $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles' );
 		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
         $this->loader->add_action('admin_menu', $plugin_admin, 'lws_admin_menu' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Outdoor', 'widget_registering' );

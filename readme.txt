@@ -3,12 +3,12 @@ Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, CO2, rain, snow, cloudiness, cloud, moon, moon phase, sun, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill, weather plugin, wordpress widget, wind gauge, rain gauge, pws, met office, personal weather station, weather underground, wunderground, weather observations website, wow, observation, pollution, CO₂, CO, O3, O₃, ozone, carbon dioxide, carbon monoxide, clientraw, clientraw.txt, realtime, realtime.txt
 Requires at least: 4.0
 Tested up to: 4.7
-Stable tag: 2.9.3
+Stable tag: 3.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://support.laquadrature.net/
 
-Display on your site, in many different and elegant ways, the meteorological data collected by public or personal weather stations.
+Display on your WordPress site, in many elegant ways, the meteorological data collected by public or personal weather stations.
 
 == Description ==
 Weather Station is a plugin that allows you to display, on your WordPress site, meteorological data from weather stations you have access to. It provides full support for many models of weather stations and for free or paid OpenWeatherMap and Weather Underground services&hellip;
@@ -38,7 +38,7 @@ Weather Station supports:
 * the Netatmo station (all modules)
 * all stations supported by softwares like Cumulus, Weather Display, WeeWX, etc. (so, yes, stations from Davis, La Crosse, Oregon Scientific, RainWise, etc. are supported)
 * all stations published on Weather Underground (regardless which model it is)
-* all geolocated stations from OpenWeatherMap
+* all geolocation from OpenWeatherMap
 
 If you want, Weather Station can send outdoor data, at a 10 minutes frequency, to the following services:
 

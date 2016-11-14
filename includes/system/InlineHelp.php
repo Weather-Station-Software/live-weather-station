@@ -45,7 +45,7 @@ class InlineHelp {
         'fr' => array (
             'documentation/reglages/generaux', //0  source: settings - general tab
             '---', //1  unused
-            'documentation/reglages/les-services', //2  source: settings - service tab
+            'documentation/reglages/services', //2  source: settings - service tab
             'documentation/reglages/affichage', //3  source: settings - display tab
             'documentation/reglages/seuils', //4  source: settings - thresholds tab
             'documentation/reglages/systeme', //5  source: settings - system tab
@@ -129,7 +129,6 @@ class InlineHelp {
             $result = sprintf($message, '<a href="http://openweathermap.org/price"' . $target . '>' . $anchor . '</a>');
         }
         if ($number == -4) {
-            //todo: replace by the true rss feed
             $result = 'https://weather.station.software/' . $lang . '/feed/';
         }
         if ($number == -5) {
@@ -180,19 +179,20 @@ class InlineHelp {
         if ($number == -20) {
             $result = sprintf($message, '<a href="https://www.wunderground.com/personal-weather-station/dashboard?ID=INORDPAS92&apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>');
         }
-
         if ($number == -21) {
             $result = sprintf($message, '<a href="https://www.wunderground.com/member/registration?apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>');
         }
         if ($number == -22) {
             $result = sprintf($message, '<a href="https://www.wunderground.com/weather/api/d/pricing.html?apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>');
         }
-
         if ($number == -23) {
             $result = sprintf($message, '<a href="https://home.openweathermap.org/users/sign_up"' . $target . '>' . $anchor . '</a>');
         }
         if ($number == -24) {
             $result = sprintf($message, '<a href="https://home.openweathermap.org/api_keys"' . $target . '>' . $anchor . '</a>');
+        }
+        if ($number == -25) {
+            $result = sprintf($message, '<a href="https://wordpress.org/support/topic/howto-translate-this-plugin-in-your-own-language/"' . $target . '>' . $anchor . '</a>');
         }
         return $result;
     }
