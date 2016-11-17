@@ -241,8 +241,8 @@ trait Output {
             else {
                 $prec = 1;
             }
-            $min = round($this->output_value($this->get_measurement_min($measure_type, $module_type), $measure_type), $prec);
-            $max = round($this->output_value($this->get_measurement_max($measure_type, $module_type), $measure_type), $prec);
+            $min = round($this->get_measurement_min($measure_type, $module_type), $prec);
+            $max = round($this->get_measurement_max($measure_type, $module_type), $prec);
             // Adapted min & max for temperature
             if ($measure_type == 'temperature' && (get_option('live_weather_station_min_max_mode') == 1)) {
                 $min_t = array();
@@ -285,14 +285,15 @@ trait Output {
                     $max = $max_t['measure_value'];
                     $delta = 5 ;
                     if ($min <= $max) {
+                        if ($min - $delta < 980) {
+                            $min = 980 + $delta;
+                        }
+                        if ($max + $delta > 1080) {
+                            $max = 1080 - $delta;
+                        }
                         $min = round($this->output_value($min - $delta, $measure_type));
                         $max = round($this->output_value($max + $delta, $measure_type));
-                        if ($min < 980) {
-                            $min = 980;
-                        }
-                        if ($max > 1080) {
-                            $max = 1080;
-                        }
+
                     }
                 }
             }
@@ -719,8 +720,8 @@ trait Output {
                 else {
                     $prec = 1;
                 }
-                $min = round($this->output_value($this->get_measurement_min($measure_type, $module_type), $measure_type), $prec);
-                $max = round($this->output_value($this->get_measurement_max($measure_type, $module_type), $measure_type), $prec);
+                $min = round($this->get_measurement_min($measure_type, $module_type), $prec);
+                $max = round($this->get_measurement_max($measure_type, $module_type), $prec);
                 $value = $min;
             }
         }
@@ -785,8 +786,8 @@ trait Output {
             else {
                 $prec = 1;
             }
-            $min = round($this->output_value($this->get_measurement_min($measure_type, $module_type), $measure_type), $prec);
-            $max = round($this->output_value($this->get_measurement_max($measure_type, $module_type), $measure_type), $prec);
+            $min = round($this->get_measurement_min($measure_type, $module_type), $prec);
+            $max = round($this->get_measurement_max($measure_type, $module_type), $prec);
             // Adapted min & max for temperature
             if ($measure_type == 'temperature' && (get_option('live_weather_station_min_max_mode') == 1)) {
                 $min_t = array();
@@ -829,14 +830,14 @@ trait Output {
                     $max = $max_t['measure_value'];
                     $delta = 5 ;
                     if ($min <= $max) {
+                        if ($min - $delta < 980) {
+                            $min = 980 + $delta;
+                        }
+                        if ($max + $delta > 1080) {
+                            $max = 1080 - $delta;
+                        }
                         $min = round($this->output_value($min - $delta, $measure_type));
                         $max = round($this->output_value($max + $delta, $measure_type));
-                        if ($min < 980) {
-                            $min = 980;
-                        }
-                        if ($max > 1080) {
-                            $max = 1080;
-                        }
                     }
                 }
             }
@@ -3691,6 +3692,9 @@ trait Output {
                 break;
             case 'rain_season_aggregated':
                 $t = 'rain_year_aggregated';
+                break;
+            case 'cloudiness':
+                $t = 'cloud_cover';
                 break;
             default:
                 $t = $type;

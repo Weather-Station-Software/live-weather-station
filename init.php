@@ -53,7 +53,7 @@ function get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $ser
 //---------------------------------------------------------------------------------------------------
 
 define('LWS_FULL_NAME', 'Weather Station 3');
-define('LWS_VERSION', '3.0.1');
+define('LWS_VERSION', '3.0.2');
 define('LWS_OWM_READY', false);
 define('LWS_TXT_READY', false);
 
@@ -81,6 +81,7 @@ define('LWS_CURL_LOADED', EnvManager::is_curl_loaded());
 define('LWS_JSON_LOADED', EnvManager::is_json_loaded());
 define('LWS_PHPVERSION_OK', EnvManager::is_php_version_ok());
 define('LWS_PLUGIN_AGENT', LWS_FULL_NAME . ' (' . EnvManager::wordpress_version_id() . '; ' . EnvManager::weatherstation_version_id() . '; +https://weather.station.software)');
+//define('LWS_PLUGIN_AGENT', 'Mozilla/5.0 (Windows NT 5.1; rv:15.0) Gecko/20100101 Firefox/15.0.1');
 
 
 /**

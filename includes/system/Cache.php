@@ -165,7 +165,7 @@ class Cache {
             return false;
         }
         else {
-            return get_transient($cache_id);
+            return wp_cache_get($cache_id);
         }
     }
 
@@ -186,7 +186,7 @@ class Cache {
             return false;
         }
         else {
-            return set_transient($cache_id, $value, self::$query_expiry);
+            return wp_cache_set($cache_id, $value);
         }
     }
 
@@ -203,7 +203,7 @@ class Cache {
             return false;
         }
         else {
-            return delete_transient($cache_id);
+            return wp_cache_delete($cache_id);
         }
     }
 }
