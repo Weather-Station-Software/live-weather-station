@@ -13,13 +13,13 @@
             <div id="normal-sortables" class="meta-box-sortables ui-sortable">
                 <div class="postbox ">
                     <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
-                    <h3 class="hndle"><span><?php esc_html_e( 'OpenWeatherMap error', 'live-weather-station' );?></span></h3>
+                    <h3 class="hndle"><span><?php esc_html_e('No data', 'live-weather-station' );?></span></h3>
                     <div class="inside">
-                        <?php esc_html_e( 'OpenWeatherMap servers have returned an empty response for this weather station. For this reason, it is currently not possible to generate a shortcode. This is normally a temporary error so, please, retry again later.', 'live-weather-station' );?>
+                        <?php esc_html_e('There is currently no data collected for this station and, for this reason, it is not possible to generate shortcodes. This is normally a temporary condition so, please, retry later or force a resynchronization.', 'live-weather-station' );?>
                     </div>
                 </div>
             </div>
-            <?php if(json_encode($js_array_justgage[$station_guid][2]) == '[]') { ?>
+            <?php if (!isset($js_array_justgage[$station_guid][2])) { ?>
                 <script language="javascript" type="text/javascript">
                     jQuery(document).ready(function($) {
                         $("#justgage-datas-link-<?php echo $station_guid; ?>").click(function(){
@@ -34,135 +34,135 @@
         </div>
     </div>
 </div>
-<div id="justgage-datas-<?php echo $station_guid; ?>" class="wrap" style="display:none;">
-    <div id="justgage-datas-container-<?php echo $station_guid; ?>" class="metabox-holder">
-        <div class="postbox-container" style="width: 49%;margin-right: 16px;margin-top:16px;">
-            <div id="normal-sortables" class="meta-box-sortables ui-sortable">
-                <div class="postbox ">
-                    <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
-                    <h3 class="hndle"><span><?php esc_html_e( '1. Set parameters for the shortcode', 'live-weather-station' );?></span></h3>
-                    <div class="inside">
-                        <table cellspacing="0">
-                            <tbody>
-                            <tr>
-                                <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Module', 'live-weather-station');?></th>
-                                <td width="5%"/>
-                                <td align="left">
-                                    <span class="select-option">
-                                        <select class="option-select" style="width: 270px;" id="justgage-datas-module-<?php echo $station_guid; ?>">
-                                            <?php foreach($js_array_justgage[$station_guid][2] as $key_module => $module) { ?>
-                                                <option value="<?php echo $key_module; ?>"><?php echo $module[0]; ?></option>;
-                                            <?php } ?>
-                                        </select>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Measurement', 'live-weather-station');?></th>
-                                <td width="5%"/>
-                                <td align="left">
-                                    <span class="select-option">
-                                        <select class="option-select" style="width: 270px;" id="justgage-datas-measurement-<?php echo $station_guid; ?>">
-                                        </select>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Design', 'live-weather-station');?></th>
-                                <td width="5%"/>
-                                <td align="left">
-                                    <span class="select-option">
-                                        <select class="option-select" style="width: 270px;" id="justgage-datas-design-<?php echo $station_guid; ?>">
-                                            <?php foreach($js_array_justgage_design as $design) { ?>
-                                                <option value="<?php echo $design[0]; ?>"><?php echo $design[1]; ?></option>;
-                                            <?php } ?>
-                                        </select>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Colors', 'live-weather-station');?></th>
-                                <td width="5%"/>
-                                <td align="left">
-                                    <span class="select-option">
-                                        <select class="option-select" style="width: 270px;" id="justgage-datas-color-<?php echo $station_guid; ?>">
-                                            <?php foreach($js_array_justgage_color as $color) { ?>
-                                                <option value="<?php echo $color[0]; ?>"><?php echo $color[1]; ?></option>;
-                                            <?php } ?>
-                                        </select>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Pointer', 'live-weather-station');?></th>
-                                <td width="5%"/>
-                                <td align="left">
-                                    <span class="select-option">
-                                        <select class="option-select" style="width: 270px;" id="justgage-datas-pointer-<?php echo $station_guid; ?>">
-                                            <?php foreach($js_array_justgage_pointer as $pointer) { ?>
-                                                <option value="<?php echo $pointer[0]; ?>"><?php echo $pointer[1]; ?></option>;
-                                            <?php } ?>
-                                        </select>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Title', 'live-weather-station');?></th>
-                                <td width="5%"/>
-                                <td align="left">
-                                    <span class="select-option">
-                                        <select class="option-select" style="width: 270px;" id="justgage-datas-title-<?php echo $station_guid; ?>">
-                                            <?php foreach($js_array_justgage_title as $title) { ?>
-                                                <option value="<?php echo $title[0]; ?>"><?php echo $title[1]; ?></option>;
-                                            <?php } ?>
-                                        </select>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Label', 'live-weather-station');?></th>
-                                <td width="5%"/>
-                                <td align="left">
-                                    <span class="select-option">
-                                        <select class="option-select" style="width: 270px;" id="justgage-datas-subtitle-<?php echo $station_guid; ?>">
-                                            <?php foreach($js_array_justgage_title as $subtitle) { ?>
-                                                <option value="<?php echo $subtitle[0]; ?>"><?php echo $subtitle[1]; ?></option>;
-                                            <?php } ?>
-                                        </select>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Unit', 'live-weather-station');?></th>
-                                <td width="5%"/>
-                                <td align="left">
-                                    <span class="select-option">
-                                        <select class="option-select" style="width: 270px;" id="justgage-datas-unit-<?php echo $station_guid; ?>">
-                                            <?php foreach($js_array_justgage_unit as $unit) { ?>
-                                                <option value="<?php echo $unit[0]; ?>"><?php echo $unit[1]; ?></option>;
-                                            <?php } ?>
-                                        </select>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Size', 'live-weather-station');?></th>
-                                <td width="5%"/>
-                                <td align="left">
-                                    <span class="select-option">
-                                        <select class="option-select" style="width: 270px;" id="justgage-datas-size-<?php echo $station_guid; ?>">
-                                            <?php foreach($js_array_justgage_size as $size) { ?>
-                                                <option value="<?php echo $size[0]; ?>"<?php echo($size[0]=='medium'?'SELECTED':''); ?>><?php echo $size[1]; ?></option>;
-                                            <?php } ?>
-                                        </select>
-                                    </span>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+<?php if (isset($js_array_justgage[$station_guid][2])) { ?>
+    <div id="justgage-datas-<?php echo $station_guid; ?>" class="wrap" style="display:none;">
+        <div id="justgage-datas-container-<?php echo $station_guid; ?>" class="metabox-holder">
+            <div class="postbox-container" style="width: 49%;margin-right: 16px;margin-top:16px;">
+                <div id="normal-sortables" class="meta-box-sortables ui-sortable">
+                    <div class="postbox ">
+                        <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
+                        <h3 class="hndle"><span><?php esc_html_e( '1. Set parameters for the shortcode', 'live-weather-station' );?></span></h3>
+                        <div class="inside">
+                            <table cellspacing="0">
+                                <tbody>
+                                <tr>
+                                    <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Module', 'live-weather-station');?></th>
+                                    <td width="5%"/>
+                                    <td align="left">
+                                        <span class="select-option">
+                                            <select class="option-select" style="width: 270px;" id="justgage-datas-module-<?php echo $station_guid; ?>">
+                                                <?php foreach($js_array_justgage[$station_guid][2] as $key_module => $module) { ?>
+                                                    <option value="<?php echo $key_module; ?>"><?php echo $module[0]; ?></option>;
+                                                <?php } ?>
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Measurement', 'live-weather-station');?></th>
+                                    <td width="5%"/>
+                                    <td align="left">
+                                        <span class="select-option">
+                                            <select class="option-select" style="width: 270px;" id="justgage-datas-measurement-<?php echo $station_guid; ?>">
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Design', 'live-weather-station');?></th>
+                                    <td width="5%"/>
+                                    <td align="left">
+                                        <span class="select-option">
+                                            <select class="option-select" style="width: 270px;" id="justgage-datas-design-<?php echo $station_guid; ?>">
+                                                <?php foreach($js_array_justgage_design as $design) { ?>
+                                                    <option value="<?php echo $design[0]; ?>"><?php echo $design[1]; ?></option>;
+                                                <?php } ?>
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Colors', 'live-weather-station');?></th>
+                                    <td width="5%"/>
+                                    <td align="left">
+                                        <span class="select-option">
+                                            <select class="option-select" style="width: 270px;" id="justgage-datas-color-<?php echo $station_guid; ?>">
+                                                <?php foreach($js_array_justgage_color as $color) { ?>
+                                                    <option value="<?php echo $color[0]; ?>"><?php echo $color[1]; ?></option>;
+                                                <?php } ?>
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Pointer', 'live-weather-station');?></th>
+                                    <td width="5%"/>
+                                    <td align="left">
+                                        <span class="select-option">
+                                            <select class="option-select" style="width: 270px;" id="justgage-datas-pointer-<?php echo $station_guid; ?>">
+                                                <?php foreach($js_array_justgage_pointer as $pointer) { ?>
+                                                    <option value="<?php echo $pointer[0]; ?>"><?php echo $pointer[1]; ?></option>;
+                                                <?php } ?>
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Title', 'live-weather-station');?></th>
+                                    <td width="5%"/>
+                                    <td align="left">
+                                        <span class="select-option">
+                                            <select class="option-select" style="width: 270px;" id="justgage-datas-title-<?php echo $station_guid; ?>">
+                                                <?php foreach($js_array_justgage_title as $title) { ?>
+                                                    <option value="<?php echo $title[0]; ?>"><?php echo $title[1]; ?></option>;
+                                                <?php } ?>
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Label', 'live-weather-station');?></th>
+                                    <td width="5%"/>
+                                    <td align="left">
+                                        <span class="select-option">
+                                            <select class="option-select" style="width: 270px;" id="justgage-datas-subtitle-<?php echo $station_guid; ?>">
+                                                <?php foreach($js_array_justgage_title as $subtitle) { ?>
+                                                    <option value="<?php echo $subtitle[0]; ?>"><?php echo $subtitle[1]; ?></option>;
+                                                <?php } ?>
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Unit', 'live-weather-station');?></th>
+                                    <td width="5%"/>
+                                    <td align="left">
+                                        <span class="select-option">
+                                            <select class="option-select" style="width: 270px;" id="justgage-datas-unit-<?php echo $station_guid; ?>">
+                                                <?php foreach($js_array_justgage_unit as $unit) { ?>
+                                                    <option value="<?php echo $unit[0]; ?>"><?php echo $unit[1]; ?></option>;
+                                                <?php } ?>
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Size', 'live-weather-station');?></th>
+                                    <td width="5%"/>
+                                    <td align="left">
+                                        <span class="select-option">
+                                            <select class="option-select" style="width: 270px;" id="justgage-datas-size-<?php echo $station_guid; ?>">
+                                                <?php foreach($js_array_justgage_size as $size) { ?>
+                                                    <option value="<?php echo $size[0]; ?>"<?php echo($size[0]=='medium'?'SELECTED':''); ?>><?php echo $size[1]; ?></option>;
+                                                <?php } ?>
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-                <?php if(json_encode($js_array_justgage[$station_guid][2]) != '[]') { ?>
                     <script language="javascript" type="text/javascript">
                         jQuery(document).ready(function($) {
 
@@ -304,61 +304,61 @@
 
                         });
                     </script>
-                <?php } ?>
-            </div>
-            <div id="normal-sortables" class="meta-box-sortables ui-sortable">
-                <div class="postbox ">
-                    <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
-                    <h3 class="hndle"><span><?php esc_html_e( '3. Copy the following shortcode', 'live-weather-station' );?></span></h3>
-                    <div class="inside">
-                        <textarea readonly rows="4" style="width:100%;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="justgage-datas-shortcode-<?php echo $station_guid; ?>"></textarea>
+                </div>
+                <div id="normal-sortables" class="meta-box-sortables ui-sortable">
+                    <div class="postbox ">
+                        <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
+                        <h3 class="hndle"><span><?php esc_html_e( '3. Copy the following shortcode', 'live-weather-station' );?></span></h3>
+                        <div class="inside">
+                            <textarea readonly rows="4" style="width:100%;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="justgage-datas-shortcode-<?php echo $station_guid; ?>"></textarea>
+                        </div>
+                        <div id="major-publishing-actions">
+                            <div id="delete-action">
+                                <?php esc_html_e('This shortcode is ready for use.', 'live-weather-station' );?>
+                            </div>
+                            <div id="publishing-action">
+                                <button data-clipboard-target="#justgage-datas-shortcode-<?php echo $station_guid; ?>" class="button button-primary justgage-cpy-<?php echo $station_guid; ?>"><?php esc_attr_e('Copy', 'live-weather-station');?></button>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
                     </div>
-                    <div id="major-publishing-actions">
-                        <div id="delete-action">
-                            <?php esc_html_e('This shortcode is ready for use.', 'live-weather-station' );?>
+                </div>
+            </div>
+            <div class="postbox-container" style="width: 49%;margin-top:16px;">
+                <div id="normal-sortables" class="meta-box-sortables ui-sortable">
+                    <div class="postbox ">
+                        <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
+                        <h3 class="hndle"><span><?php esc_html_e( '2. Verify the generated output', 'live-weather-station' );?></span></h3>
+                        <div class="inside" style="height: 460px">
+                            <table cellspacing="0" style="margin-bottom: 8px;">
+                                <tbody>
+                                <tr>
+                                    <td align="left">
+                                        <span class="select-option">
+                                            <select class="option-select" style="width:360px;" id="justgage-bg-color-<?php echo $station_guid; ?>">
+                                                <?php foreach($js_array_justgage_background as $color) { ?>
+                                                    <option value="<?php echo $color[0]; ?>"><?php echo $color[1]; ?></option>;
+                                                <?php } ?>
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <div id="justgage-spinner-<?php echo $station_guid; ?>" style="margin:0;width:100%;height:100%;background-position-x:50%;background-position-y:50%;" class="spinner"></div>
+                            <div id="justgage-bg-<?php echo $station_guid; ?>" style="border-radius: 5px;margin-bottom:10px;height:98%;width: 100%;float: inherit;display: flex;align-items: center;justify-content: center;top: -460px;position: relative;">
+                                <div id="<?php echo $fingerprint; ?>"></div>
+                            </div>
                         </div>
-                        <div id="publishing-action">
-                            <button data-clipboard-target="#justgage-datas-shortcode-<?php echo $station_guid; ?>" class="button button-primary justgage-cpy-<?php echo $station_guid; ?>"><?php esc_attr_e('Copy', 'live-weather-station');?></button>
-                        </div>
+                        <span id="justgage-info-<?php echo $station_guid; ?>" style="display: none;">
+                                <div id="major-publishing-actions">
+                                    <?php esc_html_e('This controls will be dynamically resized to fit its parent\'s size.', 'live-weather-station' );?>
+                                </div>
+                            </span>
                         <div class="clear"></div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="postbox-container" style="width: 49%;margin-top:16px;">
-            <div id="normal-sortables" class="meta-box-sortables ui-sortable">
-                <div class="postbox ">
-                    <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
-                    <h3 class="hndle"><span><?php esc_html_e( '2. Verify the generated output', 'live-weather-station' );?></span></h3>
-                    <div class="inside" style="height: 460px">
-                        <table cellspacing="0" style="margin-bottom: 8px;">
-                            <tbody>
-                            <tr>
-                                <td align="left">
-                                    <span class="select-option">
-                                        <select class="option-select" style="width:360px;" id="justgage-bg-color-<?php echo $station_guid; ?>">
-                                            <?php foreach($js_array_justgage_background as $color) { ?>
-                                                <option value="<?php echo $color[0]; ?>"><?php echo $color[1]; ?></option>;
-                                            <?php } ?>
-                                        </select>
-                                    </span>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
-                        <div id="justgage-spinner-<?php echo $station_guid; ?>" style="margin:0;width:100%;height:100%;background-position-x:50%;background-position-y:50%;" class="spinner"></div>
-                        <div id="justgage-bg-<?php echo $station_guid; ?>" style="border-radius: 5px;margin-bottom:10px;height:98%;width: 100%;float: inherit;display: flex;align-items: center;justify-content: center;top: -460px;position: relative;">
-                            <div id="<?php echo $fingerprint; ?>"></div>
-                        </div>
-                    </div>
-                    <span id="justgage-info-<?php echo $station_guid; ?>" style="display: none;">
-                            <div id="major-publishing-actions">
-                                <?php esc_html_e('This controls will be dynamically resized to fit its parent\'s size.', 'live-weather-station' );?>
-                            </div>
-                        </span>
-                    <div class="clear"></div>
-                </div>
-            </div>
-        </div>
     </div>
-</div>
+<?php } ?>

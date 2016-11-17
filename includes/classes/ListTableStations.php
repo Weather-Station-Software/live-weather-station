@@ -318,12 +318,28 @@ class Stations extends Base {
 
             foreach ($js_array_textual as $guid => $station) {
                 $station_guid = $guid;
-                $station_name = $station[0];
-                $station_id = $station[1];
+                if (isset($station[0])) {
+                    $station_name = $station[0];
+                }
+                if (isset($station[1])) {
+                    $station_id = $station[1];
+                }
                 include(LWS_ADMIN_DIR.'partials/ShortcodesTextual.php');
                 include(LWS_ADMIN_DIR.'partials/ShortcodesJustgage.php');
                 include(LWS_ADMIN_DIR.'partials/ShortcodesLCD.php');
                 include(LWS_ADMIN_DIR.'partials/ShortcodesSteelmeter.php');
+                /*if (isset($js_array_textual[$guid][2])) {
+                    include(LWS_ADMIN_DIR.'partials/ShortcodesTextual.php');
+                }
+                if (isset($js_array_justgage[$guid][2])) {
+                    include(LWS_ADMIN_DIR.'partials/ShortcodesJustgage.php');
+                }
+                if (isset($js_array_lcd[$guid][2])) {
+                    include(LWS_ADMIN_DIR.'partials/ShortcodesLCD.php');
+                }
+                if (isset($js_array_steelmeter[$guid][2])) {
+                    include(LWS_ADMIN_DIR.'partials/ShortcodesSteelmeter.php');
+                }*/
             }
         }
     }

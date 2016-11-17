@@ -682,7 +682,7 @@ trait Generator {
                 }
             }
             if (!(count($mainbase) > 0)) {
-                Logger::error('Backend', null, $data['station']['station_id'], $data['station']['station_name'], null, null, null, 'Unable to find a main base for this station.');
+                Logger::debug('Backend', null, $data['station']['station_id'], $data['station']['station_name'], null, null, null, 'Unable to find a main base for this station.');
                 return array();
             }
             if ($aggregated  && ($netatmo || $wug || $raw || $real)) {

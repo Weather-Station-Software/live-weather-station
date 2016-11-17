@@ -12,13 +12,13 @@
             <div id="normal-sortables" class="meta-box-sortables ui-sortable">
                 <div class="postbox ">
                     <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
-                    <h3 class="hndle"><span><?php esc_html_e( 'OpenWeatherMap error', 'live-weather-station' );?></span></h3>
+                    <h3 class="hndle"><span><?php esc_html_e('No data', 'live-weather-station' );?></span></h3>
                     <div class="inside">
-                        <?php esc_html_e( 'OpenWeatherMap servers have returned an empty response for this weather station. For this reason, it is currently not possible to generate a shortcode. This is normally a temporary error so, please, retry again later.', 'live-weather-station' );?>
+                        <?php esc_html_e('There is currently no data collected for this station and, for this reason, it is not possible to generate shortcodes. This is normally a temporary condition so, please, retry later or force a resynchronization.', 'live-weather-station' );?>
                     </div>
                 </div>
             </div>
-            <?php if(json_encode($js_array_lcd[$station_guid][2]) == '[]') { ?>
+            <?php if (!isset($js_array_lcd[$station_guid][2])) { ?>
                 <script language="javascript" type="text/javascript">
                     jQuery(document).ready(function($) {
                         $("#lcd-datas-link-<?php echo $station_guid; ?>").click(function(){
@@ -33,84 +33,83 @@
         </div>
     </div>
 </div>
-<div id="lcd-datas-<?php echo $station_guid; ?>" class="wrap" style="display:none;">
-    <div id="lcd-datas-container-<?php echo $station_guid; ?>" class="metabox-holder">
-        <div class="postbox-container" style="width: 100%;margin-right: 10px;margin-top:16px;">
-            <div id="normal-sortables" class="meta-box-sortables ui-sortable">
-                <div class="postbox ">
-                    <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
-                    <h3 class="hndle"><span><?php esc_html_e( '1. Set parameters for the shortcode', 'live-weather-station' );?></span></h3>
-                    <div class="inside">
-                        <table cellspacing="0">
-                            <tbody>
-                            <tr>
-                                <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Module', 'live-weather-station');?></th>
-                                <td width="5%"/>
-                                <td align="left">
-                                    <span class="select-option">
-                                        <select class="option-select" id="lcd-datas-module-<?php echo $station_guid; ?>">
-                                            <?php foreach($js_array_lcd[$station_guid][2] as $key_module => $module) { ?>
-                                                <option value="<?php echo $key_module; ?>"><?php echo $module[0]; ?></option>;
-                                            <?php } ?>
-                                        </select>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Measurement', 'live-weather-station');?></th>
-                                <td width="5%"/>
-                                <td align="left">
-                                    <span class="select-option">
-                                        <select class="option-select" id="lcd-datas-measurement-<?php echo $station_guid; ?>">
-                                        </select>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Design', 'live-weather-station');?></th>
-                                <td width="5%"/>
-                                <td align="left">
-                                    <span class="select-option">
-                                        <select class="option-select" id="lcd-datas-design-<?php echo $station_guid; ?>">
-                                            <?php foreach($js_array_lcd_design as $design) { ?>
-                                                <option value="<?php echo $design[0]; ?>"><?php echo $design[1]; ?></option>;
-                                            <?php } ?>
-                                        </select>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Size', 'live-weather-station');?></th>
-                                <td width="5%"/>
-                                <td align="left">
-                                    <span class="select-option">
-                                        <select class="option-select" id="lcd-datas-size-<?php echo $station_guid; ?>">
-                                            <?php foreach($js_array_lcd_size as $size) { ?>
-                                                <option value="<?php echo $size[0]; ?>"><?php echo $size[1]; ?></option>;
-                                            <?php } ?>
-                                        </select>
-                                    </span>
-                                </td>
-                            </tr>
-                            <tr>
-                                <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Speed', 'live-weather-station');?></th>
-                                <td width="5%"/>
-                                <td align="left">
-                                    <span class="select-option">
-                                        <select class="option-select" id="lcd-datas-speed-<?php echo $station_guid; ?>">
-                                            <?php foreach($js_array_lcd_speed as $speed) { ?>
-                                                <option value="<?php echo $speed[0]; ?>"><?php echo $speed[1]; ?></option>;
-                                            <?php } ?>
-                                        </select>
-                                    </span>
-                                </td>
-                            </tr>
-                            </tbody>
-                        </table>
+<?php if (isset($js_array_lcd[$station_guid][2])) { ?>
+    <div id="lcd-datas-<?php echo $station_guid; ?>" class="wrap" style="display:none;">
+        <div id="lcd-datas-container-<?php echo $station_guid; ?>" class="metabox-holder">
+            <div class="postbox-container" style="width: 100%;margin-right: 10px;margin-top:16px;">
+                <div id="normal-sortables" class="meta-box-sortables ui-sortable">
+                    <div class="postbox ">
+                        <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
+                        <h3 class="hndle"><span><?php esc_html_e( '1. Set parameters for the shortcode', 'live-weather-station' );?></span></h3>
+                        <div class="inside">
+                            <table cellspacing="0">
+                                <tbody>
+                                <tr>
+                                    <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Module', 'live-weather-station');?></th>
+                                    <td width="5%"/>
+                                    <td align="left">
+                                        <span class="select-option">
+                                            <select class="option-select" id="lcd-datas-module-<?php echo $station_guid; ?>">
+                                                <?php foreach($js_array_lcd[$station_guid][2] as $key_module => $module) { ?>
+                                                    <option value="<?php echo $key_module; ?>"><?php echo $module[0]; ?></option>;
+                                                <?php } ?>
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Measurement', 'live-weather-station');?></th>
+                                    <td width="5%"/>
+                                    <td align="left">
+                                        <span class="select-option">
+                                            <select class="option-select" id="lcd-datas-measurement-<?php echo $station_guid; ?>">
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Design', 'live-weather-station');?></th>
+                                    <td width="5%"/>
+                                    <td align="left">
+                                        <span class="select-option">
+                                            <select class="option-select" id="lcd-datas-design-<?php echo $station_guid; ?>">
+                                                <?php foreach($js_array_lcd_design as $design) { ?>
+                                                    <option value="<?php echo $design[0]; ?>"><?php echo $design[1]; ?></option>;
+                                                <?php } ?>
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Size', 'live-weather-station');?></th>
+                                    <td width="5%"/>
+                                    <td align="left">
+                                        <span class="select-option">
+                                            <select class="option-select" id="lcd-datas-size-<?php echo $station_guid; ?>">
+                                                <?php foreach($js_array_lcd_size as $size) { ?>
+                                                    <option value="<?php echo $size[0]; ?>"><?php echo $size[1]; ?></option>;
+                                                <?php } ?>
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th class="lws-option" width="35%" align="left" scope="row"><?php esc_html_e('Speed', 'live-weather-station');?></th>
+                                    <td width="5%"/>
+                                    <td align="left">
+                                        <span class="select-option">
+                                            <select class="option-select" id="lcd-datas-speed-<?php echo $station_guid; ?>">
+                                                <?php foreach($js_array_lcd_speed as $speed) { ?>
+                                                    <option value="<?php echo $speed[0]; ?>"><?php echo $speed[1]; ?></option>;
+                                                <?php } ?>
+                                            </select>
+                                        </span>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-
-                <?php if(json_encode($js_array_lcd[$station_guid][2]) != '[]') { ?>
                     <script language="javascript" type="text/javascript">
                         jQuery(document).ready(function($) {
 
@@ -190,38 +189,37 @@
 
                         });
                     </script>
-                <?php } ?>
-
-                <div class="postbox ">
-                    <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
-                    <h3 class="hndle"><span><?php esc_html_e( '2. Verify the generated output', 'live-weather-station' );?></span></h3>
-                    <div class="inside" style="text-align: center;">
-                        <div id="<?php echo $fingerprint; ?>" style="padding:0px;"></div>
-                    </div>
-                    <span id="lcd-info-<?php echo $station_guid; ?>" style="display: none;">
-                        <div id="major-publishing-actions">
-                            <?php esc_html_e('This controls will be dynamically resized to fit its parent\'s size.', 'live-weather-station' );?>
+                    <div class="postbox ">
+                        <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
+                        <h3 class="hndle"><span><?php esc_html_e( '2. Verify the generated output', 'live-weather-station' );?></span></h3>
+                        <div class="inside" style="text-align: center;">
+                            <div id="<?php echo $fingerprint; ?>" style="padding:0px;"></div>
                         </div>
-                    </span>
-                    <div class="clear"></div>
-                </div>
-                <div class="postbox ">
-                    <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
-                    <h3 class="hndle"><span><?php esc_html_e( '3. Copy the following shortcode', 'live-weather-station' );?></span></h3>
-                    <div class="inside">
-                        <textarea readonly rows="3" style="width:100%;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="lcd-datas-shortcode-<?php echo $station_guid; ?>"></textarea>
-                    </div>
-                    <div id="major-publishing-actions">
-                        <div id="delete-action">
-                            <?php esc_html_e('This shortcode is ready for use.', 'live-weather-station' );?>
-                        </div>
-                        <div id="publishing-action">
-                            <button data-clipboard-target="#lcd-datas-shortcode-<?php echo $station_guid; ?>" class="button button-primary lcd-cpy-<?php echo $station_guid; ?>"><?php esc_attr_e('Copy', 'live-weather-station');?></button>
-                        </div>
+                        <span id="lcd-info-<?php echo $station_guid; ?>" style="display: none;">
+                            <div id="major-publishing-actions">
+                                <?php esc_html_e('This controls will be dynamically resized to fit its parent\'s size.', 'live-weather-station' );?>
+                            </div>
+                        </span>
                         <div class="clear"></div>
+                    </div>
+                    <div class="postbox ">
+                        <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
+                        <h3 class="hndle"><span><?php esc_html_e( '3. Copy the following shortcode', 'live-weather-station' );?></span></h3>
+                        <div class="inside">
+                            <textarea readonly rows="3" style="width:100%;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="lcd-datas-shortcode-<?php echo $station_guid; ?>"></textarea>
+                        </div>
+                        <div id="major-publishing-actions">
+                            <div id="delete-action">
+                                <?php esc_html_e('This shortcode is ready for use.', 'live-weather-station' );?>
+                            </div>
+                            <div id="publishing-action">
+                                <button data-clipboard-target="#lcd-datas-shortcode-<?php echo $station_guid; ?>" class="button button-primary lcd-cpy-<?php echo $station_guid; ?>"><?php esc_attr_e('Copy', 'live-weather-station');?></button>
+                            </div>
+                            <div class="clear"></div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+<?php } ?>
