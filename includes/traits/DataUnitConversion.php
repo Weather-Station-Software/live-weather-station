@@ -912,7 +912,7 @@ trait Conversion {
             case 'windstrength_day_max':
             case 'windstrength_hour_max':
             case 'wind_ref':
-                $result = $this->get_wind_speed($value, get_option('live_weather_station_unit_wind_strength'));
+                $result = $this->get_reverse_wind_speed($value, get_option('live_weather_station_unit_wind_strength'));
                 break;
         }
         return $result;
