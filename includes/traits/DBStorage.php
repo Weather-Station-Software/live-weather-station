@@ -381,9 +381,12 @@ trait Storage {
             foreach ($query_a as $val) {
                 self::insert_table(self::live_weather_station_stations_table(), (array)$val);
             }
+            $sql = 'SELECT * FROM TABLE '.$table_name;
+            if ($wpdb->query($sql) !== false) {
+                update_option('live_weather_station_force_resync', 'yes');
+            }
             $sql = 'DROP TABLE '.$table_name;
             $wpdb->query($sql);
-            update_option('live_weather_station_force_resync', 'yes');
             return true;
         } catch (\Exception $ex) {
             return false;
@@ -406,9 +409,12 @@ trait Storage {
                 $a['station_type'] = 1;
                 self::insert_table(self::live_weather_station_stations_table(), $a);
             }
+            $sql = 'SELECT * FROM TABLE '.$table_name;
+            if ($wpdb->query($sql) !== false) {
+                update_option('live_weather_station_force_resync', 'yes');
+            }
             $sql = 'DROP TABLE '.$table_name;
             $wpdb->query($sql);
-            update_option('live_weather_station_force_resync', 'yes');
             return true;
         } catch (\Exception $ex) {
             return false;
