@@ -141,7 +141,7 @@ class InlineHelp {
             $result = '<a href="http://www.punz.info/"' . $target . '>Martin Punz</a>';
         }
         if ($number == -8) {
-            $result = '<a href="http://www.meteo-daoulas.fr/"' . $target . '>Patrice Corre</a>';
+            $result = '<a href="http://reseaumeteofrance.fr/"' . $target . '>Patrice Corre</a>';
         }
         if ($number == -9) {
             $result = '<a href="http://creativecommons.org/licenses/by-sa/4.0/"' . $target . '>' . __('Creative Commons CC:BY-SA 4.0 license', 'live-weather-station') . '</a>';

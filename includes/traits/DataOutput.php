@@ -263,8 +263,8 @@ trait Output {
                         $delta = 6 ;
                     }
                     if ($min <= $max) {
-                        $min = round($this->output_value($min - $delta, $measure_type));
-                        $max = round($this->output_value($max + $delta, $measure_type));
+                        $min = floor($this->output_value($min - $delta, $measure_type));
+                        $max = ceil($this->output_value($max + $delta, $measure_type));
                     }
                 }
             }
@@ -291,9 +291,8 @@ trait Output {
                         if ($max + $delta > 1080) {
                             $max = 1080 - $delta;
                         }
-                        $min = round($this->output_value($min - $delta, $measure_type));
-                        $max = round($this->output_value($max + $delta, $measure_type));
-
+                        $min = floor($this->output_value($min - $delta, $measure_type));
+                        $max = ceil($this->output_value($max + $delta, $measure_type));
                     }
                 }
             }
@@ -808,8 +807,8 @@ trait Output {
                         $delta = 6 ;
                     }
                     if ($min <= $max) {
-                        $min = round($this->output_value($min - $delta, $measure_type));
-                        $max = round($this->output_value($max + $delta, $measure_type));
+                        $min = floor($this->output_value($min - $delta, $measure_type));
+                        $max = ceil($this->output_value($max + $delta, $measure_type));
                     }
                 }
             }
@@ -836,8 +835,8 @@ trait Output {
                         if ($max + $delta > 1080) {
                             $max = 1080 - $delta;
                         }
-                        $min = round($this->output_value($min - $delta, $measure_type));
-                        $max = round($this->output_value($max + $delta, $measure_type));
+                        $min = floor($this->output_value($min - $delta, $measure_type));
+                        $max = ceil($this->output_value($max + $delta, $measure_type));
                     }
                 }
             }
@@ -3695,6 +3694,16 @@ trait Output {
                 break;
             case 'cloudiness':
                 $t = 'cloud_cover';
+                break;
+            case 'gustangle':
+            case 'windangle_hour_max':
+            case 'windangle_day_max':
+                $t = 'windangle';
+                break;
+            case 'guststrength':
+            case 'windstrength_hour_max':
+            case 'windstrength_day_max':
+                $t = 'windstrength';
                 break;
             default:
                 $t = $type;
