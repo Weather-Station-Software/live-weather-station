@@ -53,7 +53,7 @@ function get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $ser
 //---------------------------------------------------------------------------------------------------
 
 define('LWS_FULL_NAME', 'Weather Station 3');
-define('LWS_VERSION', '3.0.4');
+define('LWS_VERSION', '3.0.5');
 define('LWS_OWM_READY', false);
 define('LWS_TXT_READY', false);
 

@@ -75,7 +75,7 @@ trait StationClient {
         $updates['measure_type'] = 'loc_latitude';
         $updates['measure_value'] = $station['loc_latitude'];
         $this->update_data_table($updates);
-        $station['loc_longitude'] = $weather[161];
+        $station['loc_longitude'] = 0 - $weather[161];
         $updates['measure_type'] = 'loc_longitude';
         $updates['measure_value'] = $station['loc_longitude'];
         $this->update_data_table($updates);
@@ -105,7 +105,12 @@ trait StationClient {
         $updates['measure_value'] = 9999;
         $this->update_data_table($updates);
         $updates['measure_type'] = 'firmware';
-        $updates['measure_value'] = str_replace('!!', '', $weather[174]);
+        if (strpos($weather[174], '!!') !== false) {
+            $updates['measure_value'] = str_replace('!!', '', $weather[174]);
+        }
+        else {
+            $updates['measure_value'] = 0;
+        }
         $this->update_data_table($updates);
         $this->update_table(self::live_weather_station_stations_table(), $station);
         Logger::debug($this->facility, null, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
@@ -308,9 +313,9 @@ trait StationClient {
                 if ($weather[0] != '12345') {
                     return false;
                 }
-                if (strpos($weather[174], '!!') === false) {
+                /*if (strpos($weather[174], '!!') === false) {
                     return false;
-                }
+                }*/
             }
         }
         catch(\Exception $ex)
