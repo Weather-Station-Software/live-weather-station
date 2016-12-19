@@ -15,7 +15,6 @@ class Cache {
     private $Live_Weather_Station;
     private $version;
     private static $backend_expiry = 1800;
-    private static $query_expiry = 120;
     private static $frontend_expiry = 1800;
 
     public static $db_stat_log = 'db_stat_log';
@@ -88,6 +87,23 @@ class Cache {
         }
         else {
             return delete_transient($cache_id);
+        }
+    }
+
+    /**
+     * Flush all the cached element.
+     *
+     * @return bool True if successful, false otherwise.
+     * @since 3.0.0
+     *
+     */
+    public static function flush_backend() {
+        if (!(bool)get_option('live_weather_station_backend_cache')) {
+            return false;
+        }
+        else {
+            delete_transient(self::$db_stat_log);
+            delete_transient(self::$frontend_expiry);
         }
     }
 
@@ -204,6 +220,22 @@ class Cache {
         }
         else {
             return wp_cache_delete($cache_id);
+        }
+    }
+
+    /**
+     * Flush the cache.
+     *
+     * @return bool True if successful, false otherwise.
+     * @since 3.0.0
+     *
+     */
+    public static function flush_query() {
+        if (!(bool)get_option('live_weather_station_query_cache')) {
+            return false;
+        }
+        else {
+            return wp_cache_flush();
         }
     }
 }

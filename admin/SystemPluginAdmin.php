@@ -4,6 +4,7 @@ namespace WeatherStation\System\Plugin;
 
 use WeatherStation\SDK\Clientraw\Plugin\StationCollector as ClientrawCollector;
 use WeatherStation\SDK\Realtime\Plugin\StationCollector as RealtimeCollector;
+use WeatherStation\System\Cache\Cache;
 use WeatherStation\UI\Dashboard\Handling as Dashboard;
 use WeatherStation\UI\Services\Handling as Services;
 use WeatherStation\UI\Station\Handling as Station;
@@ -686,7 +687,7 @@ class Admin {
     /**
      * Returns the manage_options cap.
      *
-     * @return mixed|void
+     * @return mixed
      */
     private function get_manage_options_cap() {
         return apply_filters('lws_manage_options_capability', 'manage_options');
@@ -1324,6 +1325,10 @@ class Admin {
         $n->run();
         $n = new WeatherUnderground_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
         $n->run();
+        $n = new Clientraw_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run();
+        $n = new Realtime_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run();
         $this->get_current_and_pollution();
     }
 
@@ -1383,6 +1388,8 @@ class Admin {
         $n->run();
         $n = new OpenWeatherMap_Pollution_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
         $n->run();
+        Cache::flush_query();
+        Cache::flush_backend();
     }
 
     /**
@@ -2015,7 +2022,8 @@ class Admin {
                         }
                         $station['station_model'] = substr(stripslashes(htmlspecialchars_decode($_POST['station_model'])), 0, 200);
                         unset($station['guid']);
-                        if (WUG_Station_Collector::station_exists($station['service_id'])) {
+                        $WUG_test = WUG_Station_Collector::test_station($station['service_id']);
+                        if ($WUG_test == '') {
                             if (array_key_exists('station_id', $station)) {
                                 $station_id = $station['station_id'];
                             }
@@ -2035,14 +2043,14 @@ class Admin {
                                 $message = __('Unable to add the station %s.', 'live-weather-station');
                                 $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                                 add_settings_error('lws_nonce_error', 403, $message, 'error');
-                                Logger::error($this->service, 'Weather Underground', null, null, null, null, null, 'Unable to add a station, service says : unknown station ID.');
+                                Logger::error($this->service, 'Weather Underground', null, null, null, null, null, 'Unable to add a station, service says: unknown station ID.');
                             }
                         }
                         else {
                             $message = __('Unable to add the station %s.', 'live-weather-station');
                             $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                             add_settings_error('lws_nonce_error', 403, $message, 'error');
-                            Logger::error($this->service, 'Weather Underground', null, null, null, null, null, 'Unable to add a station, service says : unknown station ID.');
+                            Logger::error($this->service, 'Weather Underground', null, null, null, null, null, sprintf('Unable to add a station, error message: %s.', $WUG_test));
                         }
                     }
                 }

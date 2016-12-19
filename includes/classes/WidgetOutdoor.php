@@ -26,7 +26,7 @@ class Outdoor extends \WP_Widget {
      * @static
      */
     public static function widget_registering() {
-        register_widget( '\WeatherStation\UI\Widget\Outdoor' );
+        register_widget('\WeatherStation\UI\Widget\Outdoor');
     }
 
     /**

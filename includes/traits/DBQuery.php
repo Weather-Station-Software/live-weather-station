@@ -896,35 +896,6 @@ trait Query {
         catch(\Exception $ex) {
             return array() ;
         }
-
-        /*
-        global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
-        $order = " ORDER BY CASE module_type WHEN 'NAMain' THEN 1 WHEN 'NAModule1' THEN 2 WHEN 'NAModule2' THEN 3 WHEN 'NAModule3' THEN 4 WHEN 'NAComputed' THEN 5 WHEN 'NAModule4' THEN 6 WHEN 'NAEphemer' THEN 7 WHEN 'NACurrent' THEN 8 ELSE 10 END";
-        $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $device_id . "'" . $order ;
-        try {
-            $cache_id = 'get_all_datas_'.$device_id;
-            $query = Cache::get_query($cache_id);
-            if ($query === false) {
-                $query = (array)$wpdb->get_results($sql);
-                Cache::set_query($cache_id, $query);
-            }
-            $query_a = (array)$query;
-            $result = array();
-            foreach ($query_a as $val) {
-                $result[] = (array)$val;
-            }
-            return ($obsolescence_filtering ? $this->obsolescence_filtering($result) : $result);
-        }
-        catch(\Exception $ex) {
-            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
-        }
-        */
-
-
-
-
-
     }
 
     /**

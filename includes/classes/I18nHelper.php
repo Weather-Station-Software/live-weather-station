@@ -25,7 +25,7 @@ class Handling {
     private $count_translated;
     private $translation_exists;
     private $last_modified;
-    private $percent_min = 95;
+    private $percent_min = 99;
     private $cpt;
 
     private $service_name = 'I18n Helper';
@@ -207,7 +207,7 @@ class Handling {
             $message = __('You\'re using WordPress in a language which is not supported yet by %2$s. For now, this plugin is already translated in %5$d languages and we\'d love to add %1$s to this list. Please %4$s on how you can help to achieve this goal!', 'live-weather-station');
             $locale = (strpos($message, 'you can help to achieve this goal!') > 0 ? $this->locale_name : $this->locale_native_name);
         }
-        $help = InlineHelp::get(-25, '%s', __('see details', 'live-weather-station'));
+        $help = InlineHelp::get(12, '%s', __('see details', 'live-weather-station'));
         if (!EnvManager::is_plugin_in_production_mode()) {
             $help = InlineHelp::get(-10, '%s', __('see here', 'live-weather-station'));
         }
