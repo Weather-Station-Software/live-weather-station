@@ -313,9 +313,6 @@
                             <textarea readonly rows="4" style="width:100%;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="justgage-datas-shortcode-<?php echo $station_guid; ?>"></textarea>
                         </div>
                         <div id="major-publishing-actions">
-                            <div id="delete-action">
-                                <?php esc_html_e('This shortcode is ready for use.', 'live-weather-station' );?>
-                            </div>
                             <div id="publishing-action">
                                 <button data-clipboard-target="#justgage-datas-shortcode-<?php echo $station_guid; ?>" class="button button-primary justgage-cpy-<?php echo $station_guid; ?>"><?php esc_attr_e('Copy', 'live-weather-station');?></button>
                             </div>

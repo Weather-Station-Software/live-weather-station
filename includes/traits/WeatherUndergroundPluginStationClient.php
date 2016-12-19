@@ -23,33 +23,49 @@ trait StationClient {
     protected $facility = 'Weather Collector';
 
     /**
-     * Verify if a station exists.
+     * Verify if a station is accessible.
      *
      * @param string $id The station ID.
-     * @return boolean True if the station exists, false otherwise.
+     * @return string The error message, empty string otherwise.
      * @since 3.0.0
      */
-    public static function station_exists($id) {
+    public static function test_station($id) {
+        $result = 'unknown station ID';
         if (($key = get_option('live_weather_station_wug_apikey')) == '') {
-            return false;
+            $result = 'no API key specified';
         }
-        $wug = new WUGApiClient();
-        try {
-            $raw_data = $wug->getRawStationData($id, $key);
-            $weather = json_decode($raw_data, true);
-            if (is_array($weather)) {
-                if (array_key_exists('response', $weather)) {
-                    if (!array_key_exists('error', $weather['response'])) {
-                        return true;
+        else {
+            $wug = new WUGApiClient();
+            try {
+                $raw_data = $wug->getRawStationData($id, $key);
+                $weather = json_decode($raw_data, true);
+                if (is_array($weather)) {
+                    if (array_key_exists('response', $weather)) {
+                        if (array_key_exists('error', $weather['response'])) {
+                            if (array_key_exists('type', $weather['response']['error'])) {
+                                if ($weather['response']['error']['type'] != '') {
+                                    $result = $weather['response']['error']['type'];
+                                }
+                            }
+                        }
+                        else {
+                            $result = '';
+                        }
+                    }
+                    else {
+                        $result = 'Weather Underground servers have returned empty response';
                     }
                 }
+                else {
+                    $result = 'internal Weather Underground error';
+                }
+            }
+            catch(\Exception $ex)
+            {
+                $result = 'unable to contact Weather Underground servers';
             }
         }
-        catch(\Exception $ex)
-        {
-            return false;
-        }
-        return false;
+        return $result;
     }
 
     /**
@@ -102,7 +118,7 @@ trait StationClient {
                     }
                 }
             }
-            Logger::debug($this->facility, null, null, null, null, null, null, print_r($observation, true));
+            Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($observation, true));
             if (array_key_exists('observation_epoch', $observation)) {
                 $timestamp = date('Y-m-d H:i:s', $observation['observation_epoch']);
             }

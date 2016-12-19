@@ -22,19 +22,19 @@ class InlineHelp {
     private $version;
     private static $links = array (
         'en' => array (
-            'handbook/settings/general', //0  source: settings - general tab
+            'handbook/settings', //0  source: settings - general tab
             '---', //1  unused
             'handbook/settings/services', //2  source: settings - service tab
             'handbook/settings/display', //3  source: settings - display tab
             'handbook/settings/thresholds', //4  source: settings - thresholds tab
             'handbook/settings/system', //5  source: settings - system tab
-            'handbook/settings', //6  settings section
+            '---', //6  unused
             'support/frequently-asked-questions', //7  faq section
             'handbook/dashboard', //8  dashboard
             'handbook/stations-management', //9  stations
             'handbook/events', //10 events
             'handbook/requirements', //11 requirements
-            'support/languages-translations', //12 translation help
+            'support/languages-translation', //12 translation help
             'blog', //13 Blog
             'handbook/getting-started', //14 Starting guide
             'handbook/settings/maintenance-operations', //15 source: settings - maintenance tab
@@ -43,14 +43,14 @@ class InlineHelp {
             'support', //18 main support page
             ),
         'fr' => array (
-            'documentation/reglages/generaux', //0  source: settings - general tab
+            'documentation/reglages', //0  source: settings - general tab
             '---', //1  unused
             'documentation/reglages/services', //2  source: settings - service tab
             'documentation/reglages/affichage', //3  source: settings - display tab
             'documentation/reglages/seuils', //4  source: settings - thresholds tab
             'documentation/reglages/systeme', //5  source: settings - system tab
-            'documentation/reglages', //6  settings section
-            'assistance/question-frequentes', //7  faq section
+            '---', //6  unused
+            'assistance/questions-frequentes', //7  faq section
             'documentation/tableau-de-bord', //8  dashboard
             'documentation/gestion-des-stations', //9  stations
             'documentation/evenements', //10 events
@@ -319,7 +319,7 @@ class InlineHelp {
         }
         $screen->set_help_sidebar(
             '<p><strong>' . __('For more information:', 'live-weather-station') . '</strong></p>' .
-            '<p>' . self::get(6, '%s', __('Settings management', 'live-weather-station')) . '</p>'.
+            '<p>' . self::get(0, '%s', __('Settings management', 'live-weather-station')) . '</p>'.
             self::get_standard_help_sidebar());
     }
 

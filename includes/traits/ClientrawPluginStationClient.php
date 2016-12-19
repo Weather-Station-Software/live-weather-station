@@ -40,7 +40,6 @@ trait StationClient {
         if (!$weather) {
             throw new \Exception('Bad file format.');
         }
-        Logger::debug($this->facility, null, null, null, null, null, null, print_r($weather, true));
         $locat_ts = gmmktime($weather[29], $weather[30], $weather[31], $weather[36], $weather[35], $weather[141]);
         $timestamp = date('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $station['loc_timezone']));
 
@@ -306,6 +305,7 @@ trait StationClient {
         $weather = false;
         try {
             $weather = explode(' ', $raw_data);
+            Logger::debug($this->facility, null, null, null, null, null, null, print_r($weather, true));
             if (count($weather) < 175) {
                 return false;
             }
@@ -313,9 +313,6 @@ trait StationClient {
                 if ($weather[0] != '12345') {
                     return false;
                 }
-                /*if (strpos($weather[174], '!!') === false) {
-                    return false;
-                }*/
             }
         }
         catch(\Exception $ex)

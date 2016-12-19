@@ -26,12 +26,13 @@ class Updater {
      *
      * Creates table if needed and updates existing ones. Activates post update too.
      *
+     * @param string $oldversion Version id before migration.
      * @since    2.0.0
      */
     public static function update($oldversion) {
         Logger::notice('Updater',null,null,null,null,null,null,'Starting ' . LWS_PLUGIN_NAME . ' update.', $oldversion);
-        self::create_tables();
-        self::update_tables();
+        self::create_tables($oldversion);
+        self::update_tables($oldversion);
         Logger::notice('Updater',null,null,null,null,null,null,'Restarting ' . LWS_PLUGIN_NAME . '.', $oldversion);
         Logger::notice('Updater',null,null,null,null,null,null, LWS_PLUGIN_NAME . ' successfully updated from version ' . $oldversion . ' to version ' . LWS_VERSION . '.');
         Watchdog::restart();

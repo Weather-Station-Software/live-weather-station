@@ -252,7 +252,7 @@ trait Handling {
      */
     protected static function launch_translation_update_cron() {
         if (!wp_next_scheduled(self::$translation_update_name)) {
-            wp_schedule_event(time() + 15, 'hourly', self::$translation_update_name);
+            wp_schedule_event(time() + 15, 'daily', self::$translation_update_name);
             Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$translation_update_name.' cron job.');
         }
     }

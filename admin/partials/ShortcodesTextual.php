@@ -26,7 +26,7 @@
                         $("#textual-datas-link-<?php echo $station_guid; ?>").click(function(){
                                 tb_show('', '#TB_inline?width=400&height=200&inlineId=textual-error-<?php echo $station_guid; ?>');
                                 $("#TB_ajaxContent").css("background-color",$(".wp-toolbar").css("backgroundColor"));
-                                $("#TB_ajaxWindowTitle").html("<?php esc_html_e('Shortcodes for', 'live-weather-station');?> <?php esc_html_e('steel meter', 'live-weather-station');?>");
+                                $("#TB_ajaxWindowTitle").html("<?php esc_html_e('Shortcodes for', 'live-weather-station');?> <?php esc_html_e('textual data', 'live-weather-station');?>");
                             }
                         );
                     });
@@ -103,7 +103,7 @@
                             $("#textual-datas-link-<?php echo $station_guid; ?>").click(function(){
                                     tb_show('', '#TB_inline?width=600&height=560&inlineId=textual-datas-<?php echo $station_guid; ?>');
                                     $("#TB_ajaxContent").css("background-color",$(".wp-toolbar").css("backgroundColor"));
-                                    $("#TB_ajaxWindowTitle").html("<?php esc_html_e('Shortcodes for', 'live-weather-station');?> <?php esc_html_e('textual datas', 'live-weather-station');?> - <?php echo $station_name; ?>");
+                                    $("#TB_ajaxWindowTitle").html("<?php esc_html_e('Shortcodes for', 'live-weather-station');?> <?php esc_html_e('textual data', 'live-weather-station');?> - <?php echo $station_name; ?>");
                                 }
                             );
 
