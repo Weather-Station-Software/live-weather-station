@@ -126,7 +126,9 @@ class Log extends Base {
                 $this->level = '';
             }
             else {
-                $this->filters['level'] = $this->level;
+                if ($this->level != '') {
+                    $this->filters['level'] = $this->level;
+                }
             }
         }
         if (isset($_GET['station'])) {
@@ -135,7 +137,9 @@ class Log extends Base {
                 $this->station = '';
             }
             else {
-                $this->filters['station'] = $this->station;
+                if ($this->station != '') {
+                    $this->filters['station'] = $this->station;
+                }
             }
         }
         if (isset($_GET['system'])) {
@@ -144,7 +148,9 @@ class Log extends Base {
                 $this->system = '';
             }
             else {
-                $this->filters['system'] = $this->system;
+                if ($this->system != '') {
+                    $this->filters['system'] = $this->system;
+                }
             }
         }
         if (isset($_GET['service'])) {
@@ -153,7 +159,9 @@ class Log extends Base {
                 $this->service = '';
             }
             else {
-                $this->filters['service'] = $this->service;
+                if ($this->service != '') {
+                    $this->filters['service'] = $this->service;
+                }
             }
         }
     }
@@ -285,11 +293,13 @@ class Log extends Base {
         $l['selected'] = ($this->station == '' ? 'selected="selected" ' : '');
         $result[] = $l;
         foreach ($this->stations as $key => $station) {
-            $l = array();
-            $l['value'] = $key;
-            $l['text'] = $station;
-            $l['selected'] = ($this->station == $key ? 'selected="selected" ' : '');
-            $result[] = $l;
+            if ($key) {
+                $l = array();
+                $l['value'] = $key;
+                $l['text'] = $station;
+                $l['selected'] = ($this->station == $key ? 'selected="selected" ' : '');
+                $result[] = $l;
+            }
         }
         return $result;
     }

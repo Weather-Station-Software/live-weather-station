@@ -229,42 +229,48 @@ class InlineHelp {
      * @since    3.0.0
      */
     public static function set_contextual_dashboard() {
-        $s = sprintf(__('Welcome to your %1$s Dashboard! This is the screen you will see when you click on %1$s icon in the WordPress left-hand navigation menu. You can get help for any %1$s screen by clicking the Help tab above the screen title.', 'live-weather-station'), LWS_PLUGIN_NAME);
-        $screen = get_current_screen();
-        $tabs = array();
-        $tabs[] = array(
-                'title'    => __('Overview', 'live-weather-station'),
-                'id'       => 'lws-contextual-dashboard',
-                'content'  => '<p>' . $s . '</p>');
-
-        $s1 = sprintf(__('You can use the following controls to arrange your %s Dashboard screen to suit your workflow:', 'live-weather-station'), LWS_PLUGIN_NAME);
-        $s2 = '<strong>' . __('Screen Options', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Use the Screen Options tab to choose which %s Dashboard boxes to show.', 'live-weather-station'), LWS_PLUGIN_NAME);
-        $s3 = '<strong>' . __('Drag and Drop', 'live-weather-station') . '</strong> &mdash; ' . __('To rearrange the boxes, drag and drop by clicking on the title bar of the selected box and releasing when you see a gray dotted-line rectangle appear in the location you want to place the box.', 'live-weather-station');
-        $s4 = '<strong>' . __('Box Controls', 'live-weather-station') . '</strong> &mdash; ' . __('Click the title bar of the box to expand or collapse it.', 'live-weather-station');
-        $tabs[] = array(
-                'title'    => __('Layout', 'live-weather-station'),
-                'id'       => 'lws-contextual-dashboard-layout',
-                'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p>');
-
-        $s1 = sprintf(__('The boxes on your %s Dashboard screen are:', 'live-weather-station'), LWS_PLUGIN_NAME);
-        $s2 = '<strong>' . __('At a Glance', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Displays a summary of %s operations. Note that a similar box is displayed in your main WordPress Dashboard.', 'live-weather-station'), LWS_PLUGIN_NAME);
-        $s3 = '<strong>' . __('Versions', 'live-weather-station') . '</strong> &mdash; ' . __('Displays important versions numbers.', 'live-weather-station');
-        $s4 = '<strong>' . __('Translation', 'live-weather-station') . '</strong> &mdash; ' . __('If displayed, shows translations status.', 'live-weather-station');
-        $s5 = '<strong>' . __('About', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Displays information about %s and contributors.', 'live-weather-station'), LWS_PLUGIN_NAME);
-        $s6 = '<strong>' . __('Licenses', 'live-weather-station') . '</strong> &mdash; ' . __('Displays important information about the licenses under which are published some weather data.', 'live-weather-station');
-        $s7 = '<strong>' . __('Welcome', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Shows links for some of the most common tasks when getting started or using %s.', 'live-weather-station'), LWS_PLUGIN_NAME);
-        $tabs[] = array(
-            'title'    => __('Content', 'live-weather-station'),
-            'id'       => 'lws-contextual-dashboard-content',
-            'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p><p>' . $s5 . '</p><p>' . $s6 . '</p><p>' . $s7 . '</p>');
-
-        foreach($tabs as $tab) {
-            $screen->add_help_tab($tab);
+        $action = null;
+        if (!($action = filter_input(INPUT_GET, 'action'))) {
+            $action = filter_input(INPUT_POST, 'action');
         }
-        $screen->set_help_sidebar(
-            '<p><strong>' . __('For more information:', 'live-weather-station') . '</strong></p>' .
-            '<p>' . self::get(8, '%s', __('Dashboard description', 'live-weather-station')) . '</p>'.
-            self::get_standard_help_sidebar());
+        if (!isset($action)) {
+            $s = sprintf(__('Welcome to your %1$s Dashboard! This is the screen you will see when you click on %1$s icon in the WordPress left-hand navigation menu. You can get help for any %1$s screen by clicking the Help tab above the screen title.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $screen = get_current_screen();
+            $tabs = array();
+            $tabs[] = array(
+                'title' => __('Overview', 'live-weather-station'),
+                'id' => 'lws-contextual-dashboard',
+                'content' => '<p>' . $s . '</p>');
+
+            $s1 = sprintf(__('You can use the following controls to arrange your %s Dashboard screen to suit your workflow:', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s2 = '<strong>' . __('Screen Options', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Use the Screen Options tab to choose which %s Dashboard boxes to show.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s3 = '<strong>' . __('Drag and Drop', 'live-weather-station') . '</strong> &mdash; ' . __('To rearrange the boxes, drag and drop by clicking on the title bar of the selected box and releasing when you see a gray dotted-line rectangle appear in the location you want to place the box.', 'live-weather-station');
+            $s4 = '<strong>' . __('Box Controls', 'live-weather-station') . '</strong> &mdash; ' . __('Click the title bar of the box to expand or collapse it.', 'live-weather-station');
+            $tabs[] = array(
+                'title' => __('Layout', 'live-weather-station'),
+                'id' => 'lws-contextual-dashboard-layout',
+                'content' => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p>');
+
+            $s1 = sprintf(__('The boxes on your %s Dashboard screen are:', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s2 = '<strong>' . __('At a Glance', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Displays a summary of %s operations. Note that a similar box is displayed in your main WordPress Dashboard.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s3 = '<strong>' . __('Versions', 'live-weather-station') . '</strong> &mdash; ' . __('Displays important versions numbers.', 'live-weather-station');
+            $s4 = '<strong>' . __('Translation', 'live-weather-station') . '</strong> &mdash; ' . __('If displayed, shows translations status.', 'live-weather-station');
+            $s5 = '<strong>' . __('About', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Displays information about %s and contributors.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s6 = '<strong>' . __('Licenses', 'live-weather-station') . '</strong> &mdash; ' . __('Displays important information about the licenses under which are published some weather data.', 'live-weather-station');
+            $s7 = '<strong>' . __('Welcome', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Shows links for some of the most common tasks when getting started or using %s.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $tabs[] = array(
+                'title' => __('Content', 'live-weather-station'),
+                'id' => 'lws-contextual-dashboard-content',
+                'content' => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p><p>' . $s5 . '</p><p>' . $s6 . '</p><p>' . $s7 . '</p>');
+
+            foreach ($tabs as $tab) {
+                $screen->add_help_tab($tab);
+            }
+            $screen->set_help_sidebar(
+                '<p><strong>' . __('For more information:', 'live-weather-station') . '</strong></p>' .
+                '<p>' . self::get(8, '%s', __('Dashboard description', 'live-weather-station')) . '</p>' .
+                self::get_standard_help_sidebar());
+        }
     }
 
     /**

@@ -20,7 +20,7 @@ $rc = EnvManager::is_plugin_in_rc_mode();
 <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
     <ul>
         <li><i style="color:#999" class="fa fa-lg fa-wordpress"></i>&nbsp;<?php echo $wp_str; ?></li>
-        <li><img style="width:18px;float:left;padding-right: 4px;" src="<?php echo set_url_scheme(SVG::get_base64_menu_icon('#999', '#999')); ?>" /><?php echo $lws_str; ?></li>
+        <li><img style="width:18px;float:left;padding-right: 4px;" src="<?php echo set_url_scheme(SVG::get_base64_menu_icon('#999', '#999')); ?>" /><?php echo $lws_str; ?> (<a href="<?php echo get_admin_page_url('lws-dashboard', 'changelog'); ?>"><?php echo __('changelog', 'live-weather-station'); ?></a>)</li>
     </ul>
 </div>
 <?php if ($dev) { ?>

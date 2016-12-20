@@ -778,6 +778,9 @@ class Admin {
                 else {
                     $view = 'dashboard';
                 }
+                if ($action == 'changelog') {
+                    $view = 'changelog';
+                }
                 if ($service == 'station' && ($tab == 'edit' || $tab == 'view') && $action == 'manage') {
                     $view = 'station';
                 }
