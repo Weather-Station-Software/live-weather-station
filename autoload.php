@@ -112,6 +112,7 @@ spl_autoload_register(
         case 'WeatherStation\UI\Widget\Ephemeris': $file = LWS_INCLUDES_DIR.'classes/WidgetEphemeris.php'; break;
         case 'WeatherStation\UI\Widget\Outdoor': $file = LWS_INCLUDES_DIR.'classes/WidgetOutdoor.php'; break;
         case 'WeatherStation\Utilities\ColorsManipulation': $file = LWS_INCLUDES_DIR.'libraries/misc/ColorsManipulation.php'; break;
+        case 'WeatherStation\Utilities\Markdown': $file = LWS_INCLUDES_DIR.'libraries/misc/Markdown.php'; break;
         case 'WeatherStation\Utilities\Settings': $file = LWS_INCLUDES_DIR.'classes/SettingsHelper.php'; break;
         default: $file = null;
     }

@@ -19,6 +19,7 @@ class Handling {
     private $Live_Weather_Station;
     private $version;
     private $screen;
+    private $action;
 
     /**
      * Initialize the class and set its properties.
@@ -32,9 +33,17 @@ class Handling {
         $this->Live_Weather_Station = $Live_Weather_Station;
         $this->version = $version;
         $this->screen = $dashboard;
-        add_action('load-' . $dashboard, array($this, 'dashboard_add_options'));
+        $this->action = null;
+        if (!($this->action = filter_input(INPUT_GET, 'action'))) {
+            $this->action = filter_input(INPUT_POST, 'action');
+        }
+        if (!isset($this->action)) {
+            add_action('load-' . $dashboard, array($this, 'dashboard_add_options'));
+        }
         add_action('admin_footer-' . $dashboard, array($this, 'dashboard_add_footer'));
-        add_filter('screen_settings', array($this, 'append_screen_settings'), 10, 2);
+        if (!isset($this->action)) {
+            add_filter('screen_settings', array($this, 'append_screen_settings'), 10, 2);
+        }
     }
 
     /**
@@ -202,16 +211,16 @@ class Handling {
      */
     public function add_metaboxes() {
         // Left column
-        add_meta_box('lws-summary', __('At a Glance', 'live-weather-station' ), array($this, 'summary_widget'), 'lws-dashboard', 'normal');
-        add_meta_box('lws-version', __('Versions', 'live-weather-station' ), array($this, 'version_widget'), 'lws-dashboard', 'normal');
+        add_meta_box('lws-summary', __('At a Glance', 'live-weather-station'), array($this, 'summary_widget'), 'lws-dashboard', 'normal');
+        add_meta_box('lws-version', __('Versions', 'live-weather-station'), array($this, 'version_widget'), 'lws-dashboard', 'normal');
         // Right column
         $intl = new I18N();
         if ($intl->is_translatable()) {
-            add_meta_box('lws-translation', __('Translation', 'live-weather-station' ), array($this, 'translation_widget'), 'lws-dashboard', 'side', 'high', array('message' => $intl->get_message()));
+            add_meta_box('lws-translation', __('Translation', 'live-weather-station'), array($this, 'translation_widget'), 'lws-dashboard', 'side', 'high', array('message' => $intl->get_message()));
         }
-        add_meta_box('lws-news', sprintf(__('%s News', 'live-weather-station' ), LWS_PLUGIN_NAME), array($this, 'news_widget'), 'lws-dashboard', 'side');
-        add_meta_box('lws-about', __('About', 'live-weather-station' ), array($this, 'about_widget'), 'lws-dashboard', 'side');
-        add_meta_box('lws-licenses', __('Licenses', 'live-weather-station' ), array($this, 'licenses_widget'), 'lws-dashboard', 'side');
+        add_meta_box('lws-news', sprintf(__('%s News', 'live-weather-station'), LWS_PLUGIN_NAME), array($this, 'news_widget'), 'lws-dashboard', 'side');
+        add_meta_box('lws-about', __('About', 'live-weather-station'), array($this, 'about_widget'), 'lws-dashboard', 'side');
+        add_meta_box('lws-licenses', __('Licenses', 'live-weather-station'), array($this, 'licenses_widget'), 'lws-dashboard', 'side');
     }
 
     /**
