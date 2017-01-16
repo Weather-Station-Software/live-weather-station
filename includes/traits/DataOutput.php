@@ -119,8 +119,8 @@ trait Output {
             $measure['title'] = __( 'Error code ' , 'live-weather-station').$raw_datas['condition']['value'];
             if ($raw_datas['condition']['value'] == 3 || $raw_datas['condition']['value'] == 4) {
                 $save_locale = setlocale(LC_ALL,'');
-                setlocale(LC_ALL, get_locale());
-                $measure['title'] = iconv('UTF-8', 'ASCII//TRANSLIT', __( 'No data' , 'live-weather-station'));
+                setlocale(LC_ALL, get_display_locale());
+                $measure['title'] = iconv('UTF-8', 'ASCII//TRANSLIT', __('No data', 'live-weather-station'));
                 setlocale(LC_ALL, $save_locale);
             }
             $measure['battery'] = 'full';
@@ -144,8 +144,8 @@ trait Output {
                 $measure['title'] = __( 'Error code ' , 'live-weather-station').$datas['condition']['value'];
                 if ($datas['condition']['value'] == 3 || $datas['condition']['value'] == 4) {
                     $save_locale = setlocale(LC_ALL,'');
-                    setlocale(LC_ALL, get_locale());
-                    $measure['title'] = iconv('UTF-8', 'ASCII//TRANSLIT', __( 'No data' , 'live-weather-station'));
+                    setlocale(LC_ALL, get_display_locale());
+                    $measure['title'] = iconv('UTF-8', 'ASCII//TRANSLIT', __('No data', 'live-weather-station'));
                     setlocale(LC_ALL, $save_locale);
                 }
                 $measure['battery'] = 'full';
@@ -2567,7 +2567,7 @@ trait Output {
      * @since    2.0.0
      */
     protected function get_country_name($value) {
-        return \Locale::getDisplayRegion('-'.$value, get_locale());
+        return \Locale::getDisplayRegion('-'.$value, get_display_locale());
     }
 
     /**
@@ -2587,7 +2587,7 @@ trait Output {
         $result = [];
         $letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $continue = array('BU', 'CS', 'DD', 'DY', 'EU', 'HV', 'FX', 'NH', 'QO', 'RH', 'SU', 'TP', 'UK', 'VD', 'YD', 'YU', 'ZR', 'ZZ');
-        $locale = get_locale();
+        $locale = get_display_locale();
         for ($i=0; $i<26; $i++) {
             for ($j=0; $j<26; $j++) {
                 $s = $letters[$i].$letters[$j];
@@ -3101,7 +3101,7 @@ trait Output {
      */
     protected function format_lcd_datas($datas, $measure_type, $computed=false) {
         $save_locale = setlocale(LC_ALL,'');
-        setlocale(LC_ALL, get_locale());
+        setlocale(LC_ALL, get_display_locale());
         $result = array();
         $response = array ();
         $battery = array();

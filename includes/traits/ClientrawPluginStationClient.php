@@ -306,7 +306,7 @@ trait StationClient {
         try {
             $weather = explode(' ', $raw_data);
             Logger::debug($this->facility, null, null, null, null, null, null, print_r($weather, true));
-            if (count($weather) < 175) {
+            if (count($weather) < 167) {
                 return false;
             }
             else {

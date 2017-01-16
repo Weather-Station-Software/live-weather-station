@@ -2,6 +2,7 @@
 *  UPCOMING FEATURES  *
 ***********************
 
+ * 3.x - Probe distance for CO2
  * 3.x - Cache queries
  * 3.x - Purge event log
  * 3.x - Querying icons texts via shortcodes
@@ -35,6 +36,7 @@
  * 4.x - Widget with changing background
  * 5.x - Marine widget
  * 5.x - Aero widget
+ * 5.x - Snow widget
 
 
 
@@ -42,7 +44,6 @@
 * FUTURE IMPROVEMENTS *
 ***********************
 
- * 3.x - Supporting get_user_locale() from 4.7
  * 3.x - Ability to change text color in clean gauges
  * 3.x - Better cloud altitude display in widget
  * 3.x - Yards as units
@@ -57,5 +58,6 @@
  * 3.x - Clientraw as export
  * 3.x - Realtime as export
  * 3.x - YOWindow.xml as export
+ * 3.x - all-sensors.xml as import
  * 4.x - Metar
  * 4.x - NOAA

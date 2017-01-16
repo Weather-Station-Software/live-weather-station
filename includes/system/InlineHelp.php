@@ -93,22 +93,13 @@ class InlineHelp {
         $path = '';
         $lang = 'en';
         $extra_language = array ('fr');
-        $l = strtolower(get_locale());
+        $l = strtolower(get_display_locale());
         foreach ($extra_language as $extra) {
             if (strpos($l, $extra) === 0) {
                 $lang = $extra;
                 break;
             }
         }
-        $wplang = '';
-        $l = str_replace('_', '-', $l);
-        if ($l == $l[0].$l[1].'-'.$l[0].$l[1]) {
-            $wplang = $l[0].$l[1];
-        }
-        else {
-            $wplang = $l;
-        }
-        $wplang = $wplang . '.';
         $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
             $target = ' target="_blank" ';
@@ -132,7 +123,7 @@ class InlineHelp {
             $result = 'https://weather.station.software/' . $lang . '/feed/';
         }
         if ($number == -5) {
-            $result = sprintf($message, '<a href="https://' . $wplang . 'wordpress.org/support/plugin/live-weather-station/reviews/"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://wordpress.org/support/plugin/live-weather-station/reviews/"' . $target . '>' . $anchor . '</a>');
         }
         if ($number == -6) {
             $result = '<a href="https://twitter.com/cyril_lakech"' . $target . '>Cyril Lakech</a>';

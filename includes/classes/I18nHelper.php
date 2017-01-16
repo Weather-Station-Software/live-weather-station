@@ -36,7 +36,7 @@ class Handling {
      * @since 3.0.0
      */
     public function __construct() {
-        $this->locale = get_locale();
+        $this->locale = get_user_locale();
         if ('en_US' === $this->locale) {
             update_option('live_weather_station_partial_translation', 0);
             return false;
@@ -92,7 +92,7 @@ class Handling {
         if (!EnvManager::is_plugin_in_production_mode()) {
             $branch = 'dev';
         }
-        return LWS_LANGUAGES_DIR . LWS_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . get_locale() . '.mo';
+        return LWS_LANGUAGES_DIR . LWS_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . get_display_locale() . '.mo';
     }
 
     /**

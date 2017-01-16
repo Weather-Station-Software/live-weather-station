@@ -45,6 +45,25 @@ function get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $ser
 }
 
 /**
+ * Get the proper user locale regarding WP version differences.
+ *
+ * @param int|WP_User $user_id User's ID or a WP_User object. Defaults to current user.
+ * @return string The locale of the user.
+ * @since 3.0.8
+ */
+function get_display_locale($user_id = 0) {
+    /*
+    * @fixme how to manage ajax calls made from frontend?
+    */
+    if (function_exists('get_user_locale') && is_admin()) {
+        return get_user_locale($user_id);
+    }
+    else {
+        return get_locale();
+    }
+}
+
+/**
  * Definition of main constants.
  *
  * @since 1.0.0
@@ -53,7 +72,7 @@ function get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $ser
 //---------------------------------------------------------------------------------------------------
 
 define('LWS_FULL_NAME', 'Weather Station 3');
-define('LWS_VERSION', '3.0.7');
+define('LWS_VERSION', '3.0.8');
 define('LWS_OWM_READY', false);
 define('LWS_TXT_READY', false);
 
