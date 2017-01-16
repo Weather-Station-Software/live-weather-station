@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Live Weather Station\n"
-"POT-Creation-Date: 2016-12-19 19:18+0100\n"
+"POT-Creation-Date: 2016-12-20 17:11+0100\n"
 "PO-Revision-Date: 2015-11-07 19:46+0100\n"
 "Last-Translator: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
 "Language-Team: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
@@ -34,25 +34,25 @@ msgstr ""
 msgid "this page"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:135 includes/system/InlineHelp.php:287
+#: admin/SystemPluginAdmin.php:135 includes/system/InlineHelp.php:293
 #, php-format
 msgid ""
 "In order to work properly, %s has to be connected to some services. You can "
 "manage here these connections."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:140 includes/system/InlineHelp.php:288
+#: admin/SystemPluginAdmin.php:140 includes/system/InlineHelp.php:294
 msgid ""
 "You can set here all the units and display options for controls and widgets."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:145 includes/system/InlineHelp.php:289
+#: admin/SystemPluginAdmin.php:145 includes/system/InlineHelp.php:295
 msgid ""
 "You can set here all the thresholds which define limits and alarms in some "
 "controls (LCD panel, gauges, meters, etc.)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:150 includes/system/InlineHelp.php:290
+#: admin/SystemPluginAdmin.php:150 includes/system/InlineHelp.php:296
 #, php-format
 msgid ""
 "You can set here all the parameters related to the operation of the %s "
@@ -64,7 +64,7 @@ msgstr ""
 msgid "You can find help on these maintenance operations on %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:155 includes/system/InlineHelp.php:291
+#: admin/SystemPluginAdmin.php:155 includes/system/InlineHelp.php:297
 msgid ""
 "Here, you can make some maintenance operations that are not directly "
 "accessible elsewhere."
@@ -228,7 +228,7 @@ msgstr ""
 msgid "days"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:306 includes/system/InlineHelp.php:528
+#: admin/SystemPluginAdmin.php:306 includes/system/InlineHelp.php:534
 msgid "Netatmo"
 msgstr ""
 
@@ -362,8 +362,8 @@ msgid "Events"
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:711 admin/partials/Settings.php:17
-#: includes/system/InlineHelp.php:429 includes/system/InlineHelp.php:450
-#: includes/system/InlineHelp.php:483 includes/system/InlineHelp.php:514
+#: includes/system/InlineHelp.php:435 includes/system/InlineHelp.php:456
+#: includes/system/InlineHelp.php:489 includes/system/InlineHelp.php:520
 msgid "Settings"
 msgstr ""
 
@@ -372,135 +372,135 @@ msgstr ""
 msgid "Requirements"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1024
+#: admin/SystemPluginAdmin.php:1027
 #, php-format
 msgid "%s now runs in simplified mode."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1036
+#: admin/SystemPluginAdmin.php:1039
 #, php-format
 msgid "%s now runs in extended mode."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1047
+#: admin/SystemPluginAdmin.php:1050
 #, php-format
 msgid "%s now displays its data in the metric system."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1058
+#: admin/SystemPluginAdmin.php:1061
 #, php-format
 msgid "%s now displays its data in the imperial system."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1071
+#: admin/SystemPluginAdmin.php:1074
 #, php-format
 msgid "%s no longer uses partial translations."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1084
+#: admin/SystemPluginAdmin.php:1087
 #, php-format
 msgid "%s now uses a partial translation."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1096
+#: admin/SystemPluginAdmin.php:1099
 msgid "Dashboard view has been reset to defaults."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1107
+#: admin/SystemPluginAdmin.php:1110
 msgid "Services view has been reset to defaults."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1118
+#: admin/SystemPluginAdmin.php:1121
 msgid "Stations views have been reset to defaults."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1131
+#: admin/SystemPluginAdmin.php:1134
 msgid "All stations data have been purged."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1149
+#: admin/SystemPluginAdmin.php:1152
 msgid "All stations have been resynchronized."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1200
+#: admin/SystemPluginAdmin.php:1203
 msgid "Unkonwn service."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1203
+#: admin/SystemPluginAdmin.php:1206
 msgid "the login and password can not be empty"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1211 admin/SystemPluginAdmin.php:1219
+#: admin/SystemPluginAdmin.php:1214 admin/SystemPluginAdmin.php:1222
 msgid "the API key can not be empty"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1226
+#: admin/SystemPluginAdmin.php:1229
 #, php-format
 msgid "%s is now connected to %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1232
+#: admin/SystemPluginAdmin.php:1235
 #, php-format
 msgid "Unable to connect %s to %s. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1234
+#: admin/SystemPluginAdmin.php:1237
 #, php-format
 msgid "The error message is \"%s\"."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1254
+#: admin/SystemPluginAdmin.php:1257
 #, php-format
 msgid "%s is now disconnected from %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1260
+#: admin/SystemPluginAdmin.php:1263
 #, php-format
 msgid "Unable to disconnect %s from %s. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1269
+#: admin/SystemPluginAdmin.php:1272
 #, php-format
 msgid "Connection to %s has not been updated. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1292
+#: admin/SystemPluginAdmin.php:1295
 #, php-format
 msgid "The station %s has been correctly removed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1298 admin/SystemPluginAdmin.php:1305
+#: admin/SystemPluginAdmin.php:1301 admin/SystemPluginAdmin.php:1308
 #, php-format
 msgid "Unable to remove the station %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1516 admin/SystemPluginAdmin.php:1640
-#: admin/SystemPluginAdmin.php:1775 admin/SystemPluginAdmin.php:1913
+#: admin/SystemPluginAdmin.php:1519 admin/SystemPluginAdmin.php:1643
+#: admin/SystemPluginAdmin.php:1778 admin/SystemPluginAdmin.php:1916
 #, php-format
 msgid "The station %s has been correctly added."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1523 admin/SystemPluginAdmin.php:1530
-#: admin/SystemPluginAdmin.php:1658 admin/SystemPluginAdmin.php:1675
-#: admin/SystemPluginAdmin.php:1793 admin/SystemPluginAdmin.php:1810
-#: admin/SystemPluginAdmin.php:1931 admin/SystemPluginAdmin.php:1948
-#: admin/SystemPluginAdmin.php:2043 admin/SystemPluginAdmin.php:2050
-#: admin/SystemPluginAdmin.php:2059
+#: admin/SystemPluginAdmin.php:1526 admin/SystemPluginAdmin.php:1533
+#: admin/SystemPluginAdmin.php:1661 admin/SystemPluginAdmin.php:1678
+#: admin/SystemPluginAdmin.php:1796 admin/SystemPluginAdmin.php:1813
+#: admin/SystemPluginAdmin.php:1934 admin/SystemPluginAdmin.php:1951
+#: admin/SystemPluginAdmin.php:2046 admin/SystemPluginAdmin.php:2053
+#: admin/SystemPluginAdmin.php:2062
 #, php-format
 msgid "Unable to add the station %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1636 admin/SystemPluginAdmin.php:1771
-#: admin/SystemPluginAdmin.php:1909 admin/SystemPluginAdmin.php:2001
-#: admin/SystemPluginAdmin.php:2034 includes/classes/StationHelper.php:217
+#: admin/SystemPluginAdmin.php:1639 admin/SystemPluginAdmin.php:1774
+#: admin/SystemPluginAdmin.php:1912 admin/SystemPluginAdmin.php:2004
+#: admin/SystemPluginAdmin.php:2037 includes/classes/StationHelper.php:217
 #, php-format
 msgid "The station %s has been correctly updated."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1652 admin/SystemPluginAdmin.php:1670
-#: admin/SystemPluginAdmin.php:1787 admin/SystemPluginAdmin.php:1805
-#: admin/SystemPluginAdmin.php:1925 admin/SystemPluginAdmin.php:1943
-#: admin/SystemPluginAdmin.php:2008 admin/SystemPluginAdmin.php:2067
+#: admin/SystemPluginAdmin.php:1655 admin/SystemPluginAdmin.php:1673
+#: admin/SystemPluginAdmin.php:1790 admin/SystemPluginAdmin.php:1808
+#: admin/SystemPluginAdmin.php:1928 admin/SystemPluginAdmin.php:1946
+#: admin/SystemPluginAdmin.php:2011 admin/SystemPluginAdmin.php:2070
 #: includes/classes/StationHelper.php:224
 #: includes/classes/StationHelper.php:231
 #, php-format
@@ -509,6 +509,14 @@ msgstr ""
 
 #: admin/partials/404.php:10
 msgid "This view does not exist"
+msgstr ""
+
+#: admin/partials/Changelog.php:20 admin/partials/Changelog.php:24
+msgid "Sorry, unable to find or read changelog file."
+msgstr ""
+
+#: admin/partials/Changelog.php:31 admin/partials/DashboardVersions.php:23
+msgid "changelog"
 msgstr ""
 
 #: admin/partials/ChooseStationType.php:14
@@ -522,7 +530,7 @@ msgstr ""
 msgid "Add"
 msgstr ""
 
-#: admin/partials/ChooseStationType.php:14 includes/system/InlineHelp.php:528
+#: admin/partials/ChooseStationType.php:14 includes/system/InlineHelp.php:534
 msgid "a Netatmo station to which you have access to."
 msgstr ""
 
@@ -534,7 +542,7 @@ msgid ""
 "settings."
 msgstr ""
 
-#: admin/partials/ChooseStationType.php:25 includes/system/InlineHelp.php:529
+#: admin/partials/ChooseStationType.php:25 includes/system/InlineHelp.php:535
 msgid ""
 "a \"virtual\" weather station whose you only know the city or its "
 "coordinates."
@@ -547,11 +555,11 @@ msgid ""
 "To set it, click on this logo to be redirected to the services settings."
 msgstr ""
 
-#: admin/partials/ChooseStationType.php:36 includes/system/InlineHelp.php:531
+#: admin/partials/ChooseStationType.php:36 includes/system/InlineHelp.php:537
 msgid "a personal weather station published on OpenWeatherMap."
 msgstr ""
 
-#: admin/partials/ChooseStationType.php:47 includes/system/InlineHelp.php:536
+#: admin/partials/ChooseStationType.php:47 includes/system/InlineHelp.php:542
 msgid "a personal weather station published on Weather Underground."
 msgstr ""
 
@@ -562,19 +570,19 @@ msgid ""
 "settings."
 msgstr ""
 
-#: admin/partials/ChooseStationType.php:57 includes/system/InlineHelp.php:537
+#: admin/partials/ChooseStationType.php:57 includes/system/InlineHelp.php:543
 msgid ""
 "a station exporting its data via a <em>realtime.txt</em> file (Cumulus, "
 "etc.)."
 msgstr ""
 
-#: admin/partials/ChooseStationType.php:61 includes/system/InlineHelp.php:538
+#: admin/partials/ChooseStationType.php:61 includes/system/InlineHelp.php:544
 msgid ""
 "a station exporting its data via a <em>clientraw.txt</em> file (Weather "
 "Display, WeeWX, etc.)."
 msgstr ""
 
-#: admin/partials/ChooseStationType.php:65 includes/system/InlineHelp.php:540
+#: admin/partials/ChooseStationType.php:65 includes/system/InlineHelp.php:546
 msgid ""
 "a station exporting its data via a stickertags file (WeatherLink, WsWin32, "
 "MeteoBridge, etc.)."
@@ -616,7 +624,7 @@ msgstr ""
 #: admin/partials/ConnectOpenWeatherMap.php:59
 #: admin/partials/ConnectWeatherUnderground.php:59
 #: includes/classes/ListTableStations.php:101
-#: includes/system/InlineHelp.php:553
+#: includes/system/InlineHelp.php:559
 msgid "See events log"
 msgstr ""
 
@@ -925,7 +933,7 @@ msgid "Unable to use this source for a station:"
 msgstr ""
 
 #: admin/partials/FormAddEditClientraw.php:22
-#: includes/system/InlineHelp.php:489
+#: includes/system/InlineHelp.php:495
 msgid "Add a station via <em>clientraw</em> file"
 msgstr ""
 
@@ -937,8 +945,8 @@ msgstr ""
 #: admin/partials/FormAddEditLocation.php:37
 #: admin/partials/FormAddEditRealtime.php:39
 #: admin/partials/FormAddEditWeatherUnderground.php:35
-#: includes/system/InlineHelp.php:418 includes/system/InlineHelp.php:443
-#: includes/system/InlineHelp.php:464 includes/system/InlineHelp.php:497
+#: includes/system/InlineHelp.php:424 includes/system/InlineHelp.php:449
+#: includes/system/InlineHelp.php:470 includes/system/InlineHelp.php:503
 #: includes/traits/DataArraysGenerator.php:280
 #: includes/traits/DataArraysGenerator.php:943
 #: includes/traits/DataArraysGenerator.php:948
@@ -976,32 +984,32 @@ msgstr ""
 #: admin/partials/FormAddEditClientraw.php:43
 #: admin/partials/FormAddEditRealtime.php:43
 #: admin/partials/FormAddEditWeatherUnderground.php:39
-#: includes/system/InlineHelp.php:444 includes/system/InlineHelp.php:465
-#: includes/system/InlineHelp.php:498
+#: includes/system/InlineHelp.php:450 includes/system/InlineHelp.php:471
+#: includes/system/InlineHelp.php:504
 msgid "Station model"
 msgstr ""
 
 #: admin/partials/FormAddEditClientraw.php:53
 #: admin/partials/FormAddEditLocation.php:41
 #: admin/partials/FormAddEditRealtime.php:53
-#: includes/system/InlineHelp.php:419 includes/system/InlineHelp.php:466
-#: includes/system/InlineHelp.php:499
+#: includes/system/InlineHelp.php:425 includes/system/InlineHelp.php:472
+#: includes/system/InlineHelp.php:505
 msgid "City"
 msgstr ""
 
 #: admin/partials/FormAddEditClientraw.php:57
 #: admin/partials/FormAddEditLocation.php:45
 #: admin/partials/FormAddEditRealtime.php:57
-#: includes/system/InlineHelp.php:420 includes/system/InlineHelp.php:467
-#: includes/system/InlineHelp.php:500
+#: includes/system/InlineHelp.php:426 includes/system/InlineHelp.php:473
+#: includes/system/InlineHelp.php:506
 msgid "Country"
 msgstr ""
 
 #: admin/partials/FormAddEditClientraw.php:67
 #: admin/partials/FormAddEditLocation.php:55
 #: admin/partials/FormAddEditRealtime.php:67
-#: includes/system/InlineHelp.php:421 includes/system/InlineHelp.php:468
-#: includes/system/InlineHelp.php:501
+#: includes/system/InlineHelp.php:427 includes/system/InlineHelp.php:474
+#: includes/system/InlineHelp.php:507
 #: includes/traits/DataTypeDescription.php:338
 msgid "Time zone"
 msgstr ""
@@ -1014,16 +1022,16 @@ msgstr ""
 
 #: admin/partials/FormAddEditClientraw.php:103
 #: admin/partials/FormAddEditRealtime.php:111
-#: includes/system/InlineHelp.php:472 includes/system/InlineHelp.php:503
+#: includes/system/InlineHelp.php:478 includes/system/InlineHelp.php:509
 msgid "Source type"
 msgstr ""
 
 #: admin/partials/FormAddEditClientraw.php:113
 #: admin/partials/FormAddEditRealtime.php:121
-#: includes/system/InlineHelp.php:473 includes/system/InlineHelp.php:475
-#: includes/system/InlineHelp.php:477 includes/system/InlineHelp.php:479
-#: includes/system/InlineHelp.php:504 includes/system/InlineHelp.php:506
-#: includes/system/InlineHelp.php:508 includes/system/InlineHelp.php:510
+#: includes/system/InlineHelp.php:479 includes/system/InlineHelp.php:481
+#: includes/system/InlineHelp.php:483 includes/system/InlineHelp.php:485
+#: includes/system/InlineHelp.php:510 includes/system/InlineHelp.php:512
+#: includes/system/InlineHelp.php:514 includes/system/InlineHelp.php:516
 msgid "Source name"
 msgstr ""
 
@@ -1073,7 +1081,7 @@ msgstr ""
 
 #: admin/partials/FormAddEditLocation.php:9
 #: includes/classes/ListTableStations.php:107
-#: includes/system/InlineHelp.php:554
+#: includes/system/InlineHelp.php:560
 msgid "Verify on a map"
 msgstr ""
 
@@ -1123,7 +1131,7 @@ msgstr ""
 
 #: admin/partials/FormAddEditLocation.php:113
 #: admin/partials/FormAddEditRealtime.php:103
-#: includes/system/InlineHelp.php:424 includes/system/InlineHelp.php:470
+#: includes/system/InlineHelp.php:430 includes/system/InlineHelp.php:476
 #: includes/traits/DataTypeDescription.php:330
 msgid "Latitude"
 msgstr ""
@@ -1134,7 +1142,7 @@ msgstr ""
 
 #: admin/partials/FormAddEditLocation.php:117
 #: admin/partials/FormAddEditRealtime.php:107
-#: includes/system/InlineHelp.php:425 includes/system/InlineHelp.php:471
+#: includes/system/InlineHelp.php:431 includes/system/InlineHelp.php:477
 #: includes/traits/DataTypeDescription.php:334
 msgid "Longitude"
 msgstr ""
@@ -1144,7 +1152,7 @@ msgid "(eg -1.6)"
 msgstr ""
 
 #: admin/partials/FormAddEditRealtime.php:22
-#: includes/system/InlineHelp.php:456
+#: includes/system/InlineHelp.php:462
 msgid "Add a station via <em>realtime</em> file"
 msgstr ""
 
@@ -1164,8 +1172,8 @@ msgstr ""
 
 #: admin/partials/FormAddEditWeatherUnderground.php:49
 #: includes/classes/StationHelper.php:555
-#: includes/classes/StationHelper.php:560 includes/system/InlineHelp.php:445
-#: includes/system/InlineHelp.php:446
+#: includes/classes/StationHelper.php:560 includes/system/InlineHelp.php:451
+#: includes/system/InlineHelp.php:452
 #: includes/traits/DataArraysGenerator.php:279
 msgid "Station ID"
 msgstr ""
@@ -1241,7 +1249,7 @@ msgid "Timestamp"
 msgstr ""
 
 #: admin/partials/LogDetail.php:26 admin/partials/Settings.php:26
-#: includes/system/InlineHelp.php:290
+#: includes/system/InlineHelp.php:296
 msgid "System"
 msgstr ""
 
@@ -1272,23 +1280,23 @@ msgstr ""
 msgid "Reset to Defaults"
 msgstr ""
 
-#: admin/partials/Settings.php:21 includes/system/InlineHelp.php:286
+#: admin/partials/Settings.php:21 includes/system/InlineHelp.php:292
 msgid "General"
 msgstr ""
 
-#: admin/partials/Settings.php:22 includes/system/InlineHelp.php:287
+#: admin/partials/Settings.php:22 includes/system/InlineHelp.php:293
 msgid "Services"
 msgstr ""
 
-#: admin/partials/Settings.php:24 includes/system/InlineHelp.php:288
+#: admin/partials/Settings.php:24 includes/system/InlineHelp.php:294
 msgid "Display"
 msgstr ""
 
-#: admin/partials/Settings.php:25 includes/system/InlineHelp.php:289
+#: admin/partials/Settings.php:25 includes/system/InlineHelp.php:295
 msgid "Thresholds"
 msgstr ""
 
-#: admin/partials/Settings.php:27 includes/system/InlineHelp.php:291
+#: admin/partials/Settings.php:27 includes/system/InlineHelp.php:297
 msgid "Maintenance"
 msgstr ""
 
@@ -1799,42 +1807,42 @@ msgstr ""
 msgid "Hide obsolete measurements"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:96
+#: includes/classes/DashboardHelper.php:105
 #: includes/classes/StationHelper.php:306
 msgid "Boxes"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:109 includes/system/InlineHelp.php:255
+#: includes/classes/DashboardHelper.php:118 includes/system/InlineHelp.php:260
 msgid "Welcome"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:172
+#: includes/classes/DashboardHelper.php:181
 #, php-format
 msgid "%s Dashboard"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:205 includes/system/InlineHelp.php:250
+#: includes/classes/DashboardHelper.php:214 includes/system/InlineHelp.php:255
 msgid "At a Glance"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:206 includes/system/InlineHelp.php:251
+#: includes/classes/DashboardHelper.php:215 includes/system/InlineHelp.php:256
 msgid "Versions"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:210 includes/system/InlineHelp.php:252
+#: includes/classes/DashboardHelper.php:219 includes/system/InlineHelp.php:257
 msgid "Translation"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:212
+#: includes/classes/DashboardHelper.php:221
 #, php-format
 msgid "%s News"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:213 includes/system/InlineHelp.php:253
+#: includes/classes/DashboardHelper.php:222 includes/system/InlineHelp.php:258
 msgid "About"
 msgstr ""
 
-#: includes/classes/DashboardHelper.php:214 includes/system/InlineHelp.php:254
+#: includes/classes/DashboardHelper.php:223 includes/system/InlineHelp.php:259
 msgid "Licenses"
 msgstr ""
 
@@ -1957,33 +1965,33 @@ msgstr ""
 msgid "Message"
 msgstr ""
 
-#: includes/classes/ListTableLog.php:192
+#: includes/classes/ListTableLog.php:200
 msgid "All"
 msgstr ""
 
-#: includes/classes/ListTableLog.php:194
+#: includes/classes/ListTableLog.php:202
 msgid "Notices &amp; beyond"
 msgstr ""
 
-#: includes/classes/ListTableLog.php:196
+#: includes/classes/ListTableLog.php:204
 msgid "Errors &amp; beyond"
 msgstr ""
 
-#: includes/classes/ListTableLog.php:239
+#: includes/classes/ListTableLog.php:247
 #: includes/classes/ListTableStations.php:353
 #, php-format
 msgid "Show %d lines per page"
 msgstr ""
 
-#: includes/classes/ListTableLog.php:250
+#: includes/classes/ListTableLog.php:258
 msgid "All systems"
 msgstr ""
 
-#: includes/classes/ListTableLog.php:267
+#: includes/classes/ListTableLog.php:275
 msgid "All services"
 msgstr ""
 
-#: includes/classes/ListTableLog.php:284
+#: includes/classes/ListTableLog.php:292
 msgid "All stations"
 msgstr ""
 
@@ -1994,7 +2002,7 @@ msgstr ""
 #: includes/classes/ListTableStations.php:89
 #: includes/classes/ListTableStations.php:93
 #: includes/classes/ListTableStations.php:97
-#: includes/system/InlineHelp.php:552
+#: includes/system/InlineHelp.php:558
 msgid "Remove"
 msgstr ""
 
@@ -2004,13 +2012,13 @@ msgstr ""
 #: includes/classes/ListTableStations.php:88
 #: includes/classes/ListTableStations.php:92
 #: includes/classes/ListTableStations.php:96
-#: includes/system/InlineHelp.php:551
+#: includes/system/InlineHelp.php:557
 msgid "Edit"
 msgstr ""
 
 #: includes/classes/ListTableStations.php:109
-#: includes/system/InlineHelp.php:422 includes/system/InlineHelp.php:469
-#: includes/system/InlineHelp.php:502
+#: includes/system/InlineHelp.php:428 includes/system/InlineHelp.php:475
+#: includes/system/InlineHelp.php:508
 #: includes/traits/DataTypeDescription.php:326
 msgid "Altitude"
 msgstr ""
@@ -2052,10 +2060,10 @@ msgstr[1] ""
 
 #: includes/classes/ListTableStations.php:164
 #: includes/classes/ListTableStations.php:169
-#: includes/system/InlineHelp.php:422 includes/system/InlineHelp.php:425
-#: includes/system/InlineHelp.php:445 includes/system/InlineHelp.php:471
-#: includes/system/InlineHelp.php:473 includes/system/InlineHelp.php:502
-#: includes/system/InlineHelp.php:504
+#: includes/system/InlineHelp.php:428 includes/system/InlineHelp.php:431
+#: includes/system/InlineHelp.php:451 includes/system/InlineHelp.php:477
+#: includes/system/InlineHelp.php:479 includes/system/InlineHelp.php:508
+#: includes/system/InlineHelp.php:510
 msgid "and"
 msgstr ""
 
@@ -2069,12 +2077,12 @@ msgid "Composition"
 msgstr ""
 
 #: includes/classes/ListTableStations.php:203
-#: includes/system/InlineHelp.php:555
+#: includes/system/InlineHelp.php:561
 msgid "Sharing on&hellip;"
 msgstr ""
 
 #: includes/classes/ListTableStations.php:204
-#: includes/classes/StationHelper.php:406 includes/system/InlineHelp.php:556
+#: includes/classes/StationHelper.php:406 includes/system/InlineHelp.php:562
 msgid "Shortcodes"
 msgstr ""
 
@@ -2159,7 +2167,7 @@ msgstr ""
 msgid "Official website"
 msgstr ""
 
-#: includes/system/InlineHelp.php:232
+#: includes/system/InlineHelp.php:237
 #, php-format
 msgid ""
 "Welcome to your %1$s Dashboard! This is the screen you will see when you "
@@ -2167,228 +2175,228 @@ msgid ""
 "help for any %1$s screen by clicking the Help tab above the screen title."
 msgstr ""
 
-#: includes/system/InlineHelp.php:236 includes/system/InlineHelp.php:281
-#: includes/system/InlineHelp.php:355 includes/system/InlineHelp.php:413
-#: includes/system/InlineHelp.php:438 includes/system/InlineHelp.php:459
-#: includes/system/InlineHelp.php:492 includes/system/InlineHelp.php:524
-#: includes/system/InlineHelp.php:588 includes/system/InlineHelp.php:633
+#: includes/system/InlineHelp.php:241 includes/system/InlineHelp.php:287
+#: includes/system/InlineHelp.php:361 includes/system/InlineHelp.php:419
+#: includes/system/InlineHelp.php:444 includes/system/InlineHelp.php:465
+#: includes/system/InlineHelp.php:498 includes/system/InlineHelp.php:530
+#: includes/system/InlineHelp.php:594 includes/system/InlineHelp.php:639
 msgid "Overview"
 msgstr ""
 
-#: includes/system/InlineHelp.php:240
+#: includes/system/InlineHelp.php:245
 #, php-format
 msgid ""
 "You can use the following controls to arrange your %s Dashboard screen to "
 "suit your workflow:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:241 includes/system/InlineHelp.php:359
+#: includes/system/InlineHelp.php:246 includes/system/InlineHelp.php:365
 msgid "Screen Options"
 msgstr ""
 
-#: includes/system/InlineHelp.php:241
+#: includes/system/InlineHelp.php:246
 #, php-format
 msgid "Use the Screen Options tab to choose which %s Dashboard boxes to show."
 msgstr ""
 
-#: includes/system/InlineHelp.php:242 includes/system/InlineHelp.php:360
+#: includes/system/InlineHelp.php:247 includes/system/InlineHelp.php:366
 msgid "Drag and Drop"
 msgstr ""
 
-#: includes/system/InlineHelp.php:242 includes/system/InlineHelp.php:360
+#: includes/system/InlineHelp.php:247 includes/system/InlineHelp.php:366
 msgid ""
 "To rearrange the boxes, drag and drop by clicking on the title bar of the "
 "selected box and releasing when you see a gray dotted-line rectangle appear "
 "in the location you want to place the box."
 msgstr ""
 
-#: includes/system/InlineHelp.php:243 includes/system/InlineHelp.php:361
+#: includes/system/InlineHelp.php:248 includes/system/InlineHelp.php:367
 msgid "Box Controls"
 msgstr ""
 
-#: includes/system/InlineHelp.php:243 includes/system/InlineHelp.php:361
+#: includes/system/InlineHelp.php:248 includes/system/InlineHelp.php:367
 msgid "Click the title bar of the box to expand or collapse it."
 msgstr ""
 
-#: includes/system/InlineHelp.php:245 includes/system/InlineHelp.php:363
+#: includes/system/InlineHelp.php:250 includes/system/InlineHelp.php:369
 msgid "Layout"
 msgstr ""
 
-#: includes/system/InlineHelp.php:249
+#: includes/system/InlineHelp.php:254
 #, php-format
 msgid "The boxes on your %s Dashboard screen are:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:250
+#: includes/system/InlineHelp.php:255
 #, php-format
 msgid ""
 "Displays a summary of %s operations. Note that a similar box is displayed "
 "in your main WordPress Dashboard."
 msgstr ""
 
-#: includes/system/InlineHelp.php:251
+#: includes/system/InlineHelp.php:256
 msgid "Displays important versions numbers."
 msgstr ""
 
-#: includes/system/InlineHelp.php:252
+#: includes/system/InlineHelp.php:257
 msgid "If displayed, shows translations status."
 msgstr ""
 
-#: includes/system/InlineHelp.php:253
+#: includes/system/InlineHelp.php:258
 #, php-format
 msgid "Displays information about %s and contributors."
 msgstr ""
 
-#: includes/system/InlineHelp.php:254
+#: includes/system/InlineHelp.php:259
 msgid ""
 "Displays important information about the licenses under which are published "
 "some weather data."
 msgstr ""
 
-#: includes/system/InlineHelp.php:255
+#: includes/system/InlineHelp.php:260
 #, php-format
 msgid ""
 "Shows links for some of the most common tasks when getting started or using "
 "%s."
 msgstr ""
 
-#: includes/system/InlineHelp.php:257 includes/system/InlineHelp.php:293
+#: includes/system/InlineHelp.php:262 includes/system/InlineHelp.php:299
 msgid "Content"
 msgstr ""
 
-#: includes/system/InlineHelp.php:265 includes/system/InlineHelp.php:321
-#: includes/system/InlineHelp.php:567 includes/system/InlineHelp.php:616
-#: includes/system/InlineHelp.php:640
+#: includes/system/InlineHelp.php:270 includes/system/InlineHelp.php:327
+#: includes/system/InlineHelp.php:573 includes/system/InlineHelp.php:622
+#: includes/system/InlineHelp.php:646
 msgid "For more information:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:266
+#: includes/system/InlineHelp.php:271
 msgid "Dashboard description"
 msgstr ""
 
-#: includes/system/InlineHelp.php:277
+#: includes/system/InlineHelp.php:283
 #, php-format
 msgid ""
 "This screen allows you to adjust all settings required to adapt the "
 "operation of %s to what you expect."
 msgstr ""
 
-#: includes/system/InlineHelp.php:285
+#: includes/system/InlineHelp.php:291
 msgid "The tabs on the settings screen are:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:286
+#: includes/system/InlineHelp.php:292
 #, php-format
 msgid "Allows you to switch the mode in which %s runs."
 msgstr ""
 
-#: includes/system/InlineHelp.php:288 includes/system/InlineHelp.php:289
-#: includes/system/InlineHelp.php:290 includes/system/InlineHelp.php:291
+#: includes/system/InlineHelp.php:294 includes/system/InlineHelp.php:295
+#: includes/system/InlineHelp.php:296 includes/system/InlineHelp.php:297
 #, php-format
 msgid "This tab is visible only if %s runs in extended mode."
 msgstr ""
 
-#: includes/system/InlineHelp.php:297
+#: includes/system/InlineHelp.php:303
 msgid "To obtain an API key from OpenWeatherMap please, follow these steps:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:298
+#: includes/system/InlineHelp.php:304
 #, php-format
 msgid "%s on the OpenWeatherMap website."
 msgstr ""
 
-#: includes/system/InlineHelp.php:298 includes/system/InlineHelp.php:308
-#: includes/system/InlineHelp.php:376 includes/system/InlineHelp.php:386
-#: includes/system/InlineHelp.php:396
+#: includes/system/InlineHelp.php:304 includes/system/InlineHelp.php:314
+#: includes/system/InlineHelp.php:382 includes/system/InlineHelp.php:392
+#: includes/system/InlineHelp.php:402
 msgid "Create an account"
 msgstr ""
 
-#: includes/system/InlineHelp.php:299
+#: includes/system/InlineHelp.php:305
 #, php-format
 msgid "After registration, log in to %s."
 msgstr ""
 
-#: includes/system/InlineHelp.php:299
+#: includes/system/InlineHelp.php:305
 msgid "create an get your API key"
 msgstr ""
 
-#: includes/system/InlineHelp.php:300
+#: includes/system/InlineHelp.php:306
 msgid ""
 "Then, copy and paste your API key in the corresponding fields of the "
 "\"OpenWeatherMap\" box, set your plan and click on the \"connect\" button."
 msgstr ""
 
-#: includes/system/InlineHelp.php:301
+#: includes/system/InlineHelp.php:307
 #, php-format
 msgid ""
 "Note: the <em>Free Plan</em> will allow you to add up to 10 OpenWeatherMap "
 "stations in %s."
 msgstr ""
 
-#: includes/system/InlineHelp.php:307
+#: includes/system/InlineHelp.php:313
 msgid ""
 "To obtain an API key from Weather Underground please, follow these steps:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:308 includes/system/InlineHelp.php:396
+#: includes/system/InlineHelp.php:314 includes/system/InlineHelp.php:402
 #, php-format
 msgid "%s on the Weather Underground website."
 msgstr ""
 
-#: includes/system/InlineHelp.php:309
+#: includes/system/InlineHelp.php:315
 #, php-format
 msgid "After registration, log in and %s after selecting your plan."
 msgstr ""
 
-#: includes/system/InlineHelp.php:309
+#: includes/system/InlineHelp.php:315
 msgid "get your API key"
 msgstr ""
 
-#: includes/system/InlineHelp.php:310
+#: includes/system/InlineHelp.php:316
 msgid ""
 "Then, copy and paste your API key in the corresponding fields of the "
 "\"Weather Underground\" box, set your plan and click on the \"connect\" "
 "button."
 msgstr ""
 
-#: includes/system/InlineHelp.php:311
+#: includes/system/InlineHelp.php:317
 #, php-format
 msgid ""
 "Note: the <em>Stratus Developper Plan</em> - the free one - will allow you "
 "to add up to 3 Weather Underground stations in %s."
 msgstr ""
 
-#: includes/system/InlineHelp.php:322
+#: includes/system/InlineHelp.php:328
 msgid "Settings management"
 msgstr ""
 
-#: includes/system/InlineHelp.php:351
+#: includes/system/InlineHelp.php:357
 msgid "This \"station view\" shows you the details of a station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:352
+#: includes/system/InlineHelp.php:358
 msgid ""
 "The left-hand column display statical information on the station as well as "
 "shortcodes or publishing format options."
 msgstr ""
 
-#: includes/system/InlineHelp.php:353
+#: includes/system/InlineHelp.php:359
 msgid ""
 "The right-hand column displays all modules (main base, outdoor, indoor and "
 "virtual modules) attached to the station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:358
+#: includes/system/InlineHelp.php:364
 msgid ""
 "You can use the following controls to arrange this station view to suit "
 "your workflow:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:359
+#: includes/system/InlineHelp.php:365
 msgid "Use the Screen Options tab to choose which boxes and modules to show."
 msgstr ""
 
-#: includes/system/InlineHelp.php:367
+#: includes/system/InlineHelp.php:373
 #, php-format
 msgid ""
 "You can participate in the dissemination and sharing of data collected by "
@@ -2398,100 +2406,100 @@ msgid ""
 "corresponding help tab."
 msgstr ""
 
-#: includes/system/InlineHelp.php:368
+#: includes/system/InlineHelp.php:374
 msgid ""
 "Note that no data from inside your home (noise, temperature, CO₂ ...) are "
 "transmitted to these services."
 msgstr ""
 
-#: includes/system/InlineHelp.php:370
+#: includes/system/InlineHelp.php:376
 msgid "Sharing data"
 msgstr ""
 
-#: includes/system/InlineHelp.php:375
+#: includes/system/InlineHelp.php:381
 msgid ""
 "To obtain site ID and authentication key from Met Office please, follow "
 "these steps:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:376
+#: includes/system/InlineHelp.php:382
 #, php-format
 msgid "%s on the Weather Observations Website from Met Office."
 msgstr ""
 
-#: includes/system/InlineHelp.php:377 includes/system/InlineHelp.php:387
-#: includes/system/InlineHelp.php:397
+#: includes/system/InlineHelp.php:383 includes/system/InlineHelp.php:393
+#: includes/system/InlineHelp.php:403
 #, php-format
 msgid "After registration, log in and %s."
 msgstr ""
 
-#: includes/system/InlineHelp.php:377
+#: includes/system/InlineHelp.php:383
 msgid "create a site"
 msgstr ""
 
-#: includes/system/InlineHelp.php:378
+#: includes/system/InlineHelp.php:384
 msgid ""
 "Then, copy and paste <em>Site ID</em> and <em>Authentication Key</em> in "
 "the corresponding fields of the \"WOW Met Office\" box, and click on the "
 "\"connect\" button."
 msgstr ""
 
-#: includes/system/InlineHelp.php:379 includes/system/InlineHelp.php:389
-#: includes/system/InlineHelp.php:399
+#: includes/system/InlineHelp.php:385 includes/system/InlineHelp.php:395
+#: includes/system/InlineHelp.php:405
 #, php-format
 msgid "After a few hours you'll get something %s"
 msgstr ""
 
-#: includes/system/InlineHelp.php:379 includes/system/InlineHelp.php:389
-#: includes/system/InlineHelp.php:399
+#: includes/system/InlineHelp.php:385 includes/system/InlineHelp.php:395
+#: includes/system/InlineHelp.php:405
 msgid "like this!"
 msgstr ""
 
-#: includes/system/InlineHelp.php:385
+#: includes/system/InlineHelp.php:391
 msgid "To obtain Station ID from PWS please, follow these steps:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:386
+#: includes/system/InlineHelp.php:392
 #, php-format
 msgid "%s on the PWS website."
 msgstr ""
 
-#: includes/system/InlineHelp.php:387
+#: includes/system/InlineHelp.php:393
 msgid "add a new station"
 msgstr ""
 
-#: includes/system/InlineHelp.php:388
+#: includes/system/InlineHelp.php:394
 msgid ""
 "Then, copy and paste <em>Station ID</em> in the corresponding fields of the "
 "\"PWS Weather\" box, set your password and click on the \"connect\" button."
 msgstr ""
 
-#: includes/system/InlineHelp.php:395
+#: includes/system/InlineHelp.php:401
 msgid ""
 "To obtain Station ID from Weather Underground please, follow these steps:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:397
+#: includes/system/InlineHelp.php:403
 msgid "add a new station by following the 4 steps registration form"
 msgstr ""
 
-#: includes/system/InlineHelp.php:398
+#: includes/system/InlineHelp.php:404
 msgid ""
 "Then, copy and paste <em>Station ID</em> in the corresponding fields of the "
 "\"Weather Underground\" box, set your password and click on the \"connect\" "
 "button."
 msgstr ""
 
-#: includes/system/InlineHelp.php:409 includes/system/InlineHelp.php:434
-#: includes/system/InlineHelp.php:455 includes/system/InlineHelp.php:488
+#: includes/system/InlineHelp.php:415 includes/system/InlineHelp.php:440
+#: includes/system/InlineHelp.php:461 includes/system/InlineHelp.php:494
 msgid "In this screen, you can"
 msgstr ""
 
-#: includes/system/InlineHelp.php:410
+#: includes/system/InlineHelp.php:416
 msgid "Add or edit a \"virtual\" weather station"
 msgstr ""
 
-#: includes/system/InlineHelp.php:411
+#: includes/system/InlineHelp.php:417
 #, php-format
 msgid ""
 "A \"virtual\" weather station is not a real, hardware station. This is in "
@@ -2500,59 +2508,59 @@ msgid ""
 "presented by %s as those from a real station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:417
+#: includes/system/InlineHelp.php:423
 msgid "To add a \"virtual\" weather station, first complete the fields"
 msgstr ""
 
-#: includes/system/InlineHelp.php:423
+#: includes/system/InlineHelp.php:429
 msgid ""
 "If you know the precise coordinates of the location, then complete the "
 "fields"
 msgstr ""
 
-#: includes/system/InlineHelp.php:426
+#: includes/system/InlineHelp.php:432
 #, php-format
 msgid ""
 "If you don't know these coordinates, left blank the corresponding fields, "
 "%s will try to find them based on the city and country information."
 msgstr ""
 
-#: includes/system/InlineHelp.php:427 includes/system/InlineHelp.php:448
-#: includes/system/InlineHelp.php:481 includes/system/InlineHelp.php:512
+#: includes/system/InlineHelp.php:433 includes/system/InlineHelp.php:454
+#: includes/system/InlineHelp.php:487 includes/system/InlineHelp.php:518
 msgid ""
 "Note that the information you enter here is required for computations and "
 "presentations of meteorological and astronomical data. It is therefore "
 "crucial that they are as accurate as possible."
 msgstr ""
 
-#: includes/system/InlineHelp.php:435
+#: includes/system/InlineHelp.php:441
 #, php-format
 msgid "Add or edit a weather station published on %s"
 msgstr ""
 
-#: includes/system/InlineHelp.php:436
+#: includes/system/InlineHelp.php:442
 #, php-format
 msgid ""
 "This station may be a station that belongs to you or a station you know. "
 "The main thing is that it must be publicly available on the %s website."
 msgstr ""
 
-#: includes/system/InlineHelp.php:442
+#: includes/system/InlineHelp.php:448
 msgid "To add a station of this type, complete the fields"
 msgstr ""
 
-#: includes/system/InlineHelp.php:446
+#: includes/system/InlineHelp.php:452
 msgid "You could find the value of the field"
 msgstr ""
 
-#: includes/system/InlineHelp.php:447
+#: includes/system/InlineHelp.php:453
 #, php-format
 msgid ""
 "on the %s website (in the dashboard) or right in the url of the station's "
 "page."
 msgstr ""
 
-#: includes/system/InlineHelp.php:457 includes/system/InlineHelp.php:490
+#: includes/system/InlineHelp.php:463 includes/system/InlineHelp.php:496
 #, php-format
 msgid ""
 "If you operate your weather station using a software such as %1$s or %2$s, "
@@ -2560,60 +2568,60 @@ msgid ""
 "be locally accessible, via a file server or a web server to be read by %4$s."
 msgstr ""
 
-#: includes/system/InlineHelp.php:463 includes/system/InlineHelp.php:496
+#: includes/system/InlineHelp.php:469 includes/system/InlineHelp.php:502
 msgid "To add a station of this type, first complete the fields"
 msgstr ""
 
-#: includes/system/InlineHelp.php:472 includes/system/InlineHelp.php:503
+#: includes/system/InlineHelp.php:478 includes/system/InlineHelp.php:509
 msgid "Then, complete"
 msgstr ""
 
-#: includes/system/InlineHelp.php:474 includes/system/InlineHelp.php:505
+#: includes/system/InlineHelp.php:480 includes/system/InlineHelp.php:511
 msgid "as follow:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:475 includes/system/InlineHelp.php:506
+#: includes/system/InlineHelp.php:481 includes/system/InlineHelp.php:512
 #: includes/traits/DataArraysGenerator.php:1530
 msgid "Local file"
 msgstr ""
 
-#: includes/system/InlineHelp.php:475 includes/system/InlineHelp.php:477
-#: includes/system/InlineHelp.php:479 includes/system/InlineHelp.php:506
-#: includes/system/InlineHelp.php:508 includes/system/InlineHelp.php:510
+#: includes/system/InlineHelp.php:481 includes/system/InlineHelp.php:483
+#: includes/system/InlineHelp.php:485 includes/system/InlineHelp.php:512
+#: includes/system/InlineHelp.php:514 includes/system/InlineHelp.php:516
 msgid "for the field"
 msgstr ""
 
-#: includes/system/InlineHelp.php:476 includes/system/InlineHelp.php:507
+#: includes/system/InlineHelp.php:482 includes/system/InlineHelp.php:513
 #, php-format
 msgid "you can specify the full path of the file like %1$s or %2$s or %3$s."
 msgstr ""
 
-#: includes/system/InlineHelp.php:477 includes/system/InlineHelp.php:508
+#: includes/system/InlineHelp.php:483 includes/system/InlineHelp.php:514
 msgid "Web server"
 msgstr ""
 
-#: includes/system/InlineHelp.php:478 includes/system/InlineHelp.php:509
+#: includes/system/InlineHelp.php:484 includes/system/InlineHelp.php:515
 #, php-format
 msgid "you can specify the resource like %1$s."
 msgstr ""
 
-#: includes/system/InlineHelp.php:479 includes/system/InlineHelp.php:510
+#: includes/system/InlineHelp.php:485 includes/system/InlineHelp.php:516
 msgid "File server"
 msgstr ""
 
-#: includes/system/InlineHelp.php:480 includes/system/InlineHelp.php:511
+#: includes/system/InlineHelp.php:486 includes/system/InlineHelp.php:517
 #, php-format
 msgid ""
 "you can specify the resource like %1$s (anonymous file server) or %2$s "
 "(authenticated file server)."
 msgstr ""
 
-#: includes/system/InlineHelp.php:520
+#: includes/system/InlineHelp.php:526
 #, php-format
 msgid "This screen displays all stations collected by %s."
 msgstr ""
 
-#: includes/system/InlineHelp.php:521
+#: includes/system/InlineHelp.php:527
 #, php-format
 msgid ""
 "To add a new weather station (to have its data collected by %s), just click "
@@ -2621,89 +2629,89 @@ msgid ""
 "of the station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:522
+#: includes/system/InlineHelp.php:528
 msgid ""
 "If you mouse over the line of an existing station, some of the station "
 "management features will appear. To display the full station view, just "
 "click on its name."
 msgstr ""
 
-#: includes/system/InlineHelp.php:527
+#: includes/system/InlineHelp.php:533
 #, php-format
 msgid ""
 "In this version of %s and depending of the API key you have set, you can "
 "add the following types of stations:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:529
+#: includes/system/InlineHelp.php:535
 msgid "Virtual"
 msgstr ""
 
-#: includes/system/InlineHelp.php:531
+#: includes/system/InlineHelp.php:537
 msgid "OpenWeatherMap"
 msgstr ""
 
-#: includes/system/InlineHelp.php:536
+#: includes/system/InlineHelp.php:542
 msgid "Weather Undergroung"
 msgstr ""
 
-#: includes/system/InlineHelp.php:537
+#: includes/system/InlineHelp.php:543
 msgid "Realtime File"
 msgstr ""
 
-#: includes/system/InlineHelp.php:538
+#: includes/system/InlineHelp.php:544
 msgid "Clientraw File"
 msgstr ""
 
-#: includes/system/InlineHelp.php:540
+#: includes/system/InlineHelp.php:546
 msgid "Stickertags File"
 msgstr ""
 
-#: includes/system/InlineHelp.php:546
+#: includes/system/InlineHelp.php:552
 msgid "Stations types"
 msgstr ""
 
-#: includes/system/InlineHelp.php:550
+#: includes/system/InlineHelp.php:556
 msgid ""
 "Depending of the type of the station, you can access to these features:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:551
+#: includes/system/InlineHelp.php:557
 msgid ""
 "To modify or update the properties of the station (city, country, "
 "coordinates, etc.)."
 msgstr ""
 
-#: includes/system/InlineHelp.php:552
+#: includes/system/InlineHelp.php:558
 #, php-format
 msgid "To remove the station from the %s collect process."
 msgstr ""
 
-#: includes/system/InlineHelp.php:553
+#: includes/system/InlineHelp.php:559
 msgid "To see events associated with the station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:554
+#: includes/system/InlineHelp.php:560
 msgid "To verify, visually, the coordinates of the station."
 msgstr ""
 
-#: includes/system/InlineHelp.php:555
+#: includes/system/InlineHelp.php:561
 msgid "To get the direct url where the station shares its data."
 msgstr ""
 
-#: includes/system/InlineHelp.php:556
+#: includes/system/InlineHelp.php:562
 msgid "To obtain shortcodes ready to insert in a page or a post."
 msgstr ""
 
-#: includes/system/InlineHelp.php:558
+#: includes/system/InlineHelp.php:564
 msgid "Features"
 msgstr ""
 
-#: includes/system/InlineHelp.php:568
+#: includes/system/InlineHelp.php:574
 msgid "Stations management"
 msgstr ""
 
-#: includes/system/InlineHelp.php:583
+#: includes/system/InlineHelp.php:589
 #, php-format
 msgid ""
 "This screen displays all events generated by %s during its operation. These "
@@ -2711,73 +2719,73 @@ msgid ""
 "collecting weather data."
 msgstr ""
 
-#: includes/system/InlineHelp.php:584
+#: includes/system/InlineHelp.php:590
 msgid "To view the details of an event, just click on its name."
 msgstr ""
 
-#: includes/system/InlineHelp.php:592
+#: includes/system/InlineHelp.php:598
 msgid "Events have the following types:"
 msgstr ""
 
-#: includes/system/InlineHelp.php:594
+#: includes/system/InlineHelp.php:600
 #, php-format
 msgid "A major error. %s doesn't run anymore or can't start."
 msgstr ""
 
-#: includes/system/InlineHelp.php:595
+#: includes/system/InlineHelp.php:601
 #, php-format
 msgid "An error that undoubtedly affects the %s system operations."
 msgstr ""
 
-#: includes/system/InlineHelp.php:596
+#: includes/system/InlineHelp.php:602
 #, php-format
 msgid "An error that undoubtedly affects the %s current operations."
 msgstr ""
 
-#: includes/system/InlineHelp.php:597
+#: includes/system/InlineHelp.php:603
 #, php-format
 msgid "An error that may affects the %s operations."
 msgstr ""
 
-#: includes/system/InlineHelp.php:598
+#: includes/system/InlineHelp.php:604
 #, php-format
 msgid ""
 "A warning related to a temporary condition. Does not usually affect the %s "
 "operations."
 msgstr ""
 
-#: includes/system/InlineHelp.php:599
+#: includes/system/InlineHelp.php:605
 msgid "An important information. Now you know!"
 msgstr ""
 
-#: includes/system/InlineHelp.php:600
+#: includes/system/InlineHelp.php:606
 msgid "A standard information, just for you to know... and forget!"
 msgstr ""
 
-#: includes/system/InlineHelp.php:601
+#: includes/system/InlineHelp.php:607
 msgid "An information for coders and testers, so not for humans."
 msgstr ""
 
-#: includes/system/InlineHelp.php:602
+#: includes/system/InlineHelp.php:608
 msgid "The event is not typed, this can't be a good news."
 msgstr ""
 
-#: includes/system/InlineHelp.php:609
+#: includes/system/InlineHelp.php:615
 msgid "Events types"
 msgstr ""
 
-#: includes/system/InlineHelp.php:617
+#: includes/system/InlineHelp.php:623
 msgid "Events log description"
 msgstr ""
 
-#: includes/system/InlineHelp.php:629
+#: includes/system/InlineHelp.php:635
 #, php-format
 msgid ""
 "Your installation of WordPress does not meet the minimum requirements "
 "needed for %s to run. The items to be corrected are shown on this screen."
 msgstr ""
 
-#: includes/system/InlineHelp.php:641
+#: includes/system/InlineHelp.php:647
 msgid "Plugin requirements"
 msgstr ""
 

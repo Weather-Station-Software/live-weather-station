@@ -13,7 +13,7 @@ try {
 }
 $maxitems = 0;
 if (!is_wp_error($rss)) {
-    setlocale(LC_ALL, get_locale());
+    setlocale(LC_ALL, get_display_locale());
     $maxitems = $rss->get_item_quantity(4);
     if (isset($maxitems)) {
         if ($maxitems > 0) {
