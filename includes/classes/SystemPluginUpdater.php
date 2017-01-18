@@ -31,7 +31,7 @@ class Updater {
      */
     public static function update($oldversion) {
         Logger::notice('Updater',null,null,null,null,null,null,'Starting ' . LWS_PLUGIN_NAME . ' update.', $oldversion);
-        self::create_tables($oldversion);
+        self::create_tables();
         self::update_tables($oldversion);
         Logger::notice('Updater',null,null,null,null,null,null,'Restarting ' . LWS_PLUGIN_NAME . '.', $oldversion);
         Logger::notice('Updater',null,null,null,null,null,null, LWS_PLUGIN_NAME . ' successfully updated from version ' . $oldversion . ' to version ' . LWS_VERSION . '.');

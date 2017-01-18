@@ -4,7 +4,7 @@
 
  * 3.x - Probe distance for CO2
  * 3.x - Cache queries
- * 3.x - Purge event log
+ * 3.x - Purge events log
  * 3.x - Querying icons texts via shortcodes
  * 3.x - Forest fire weather index computing (Chandler burning index)
  * 3.x - Wet bulb
@@ -45,9 +45,6 @@
 ***********************
 
  * 3.x - Ability to change text color in clean gauges
- * 3.x - Better cloud altitude display in widget
- * 3.x - Yards as units
- * 3.x - Other plugin compatibility= wp-Typography,
 
 
 
@@ -61,3 +58,10 @@
  * 3.x - all-sensors.xml as import
  * 4.x - Metar
  * 4.x - NOAA
+
+
+***********************
+* DOCUMENTATION TO DO *
+***********************
+
+ *

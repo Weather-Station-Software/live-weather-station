@@ -1,3 +1,13 @@
+
+###3.0.9 / January 18th, 2017
+
+* Improvement: more readable cloud base altitude (logarithmic scale accuracy).
+* Improvement: better detection of firmware revision in file-based stations.
+* Improvement: widgets are now automatically exempted to be rendered/modified by wp-Typography plugin.
+* Improvement: better support for WP 4.7 languages mode in multisite installation.
+* Bug fix: the data manager doesn't catch attempts to insert null measured values into data table.
+* Bug fix: PHP 7.1 "Uncaught ArgumentCountError" while activating the plugin (many thanks to Brad-NZ to find this bug).
+
 ###3.0.8 / January 16th, 2017
 
 * Improvement: full compatibility with WordPress 4.7 language management (for administrations screens).

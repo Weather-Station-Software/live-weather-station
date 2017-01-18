@@ -104,8 +104,8 @@ trait StationClient {
         $updates['measure_value'] = 9999;
         $this->update_data_table($updates);
         $updates['measure_type'] = 'firmware';
-        if (strpos($weather[174], '!!') !== false) {
-            $updates['measure_value'] = str_replace('!!', '', $weather[174]);
+        if (strpos($weather[count($weather)-1], '!!') !== false) {
+            $updates['measure_value'] = str_replace('!!', '', $weather[count($weather)-1]);
         }
         else {
             $updates['measure_value'] = 0;

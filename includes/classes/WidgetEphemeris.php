@@ -39,7 +39,7 @@ class Ephemeris extends \WP_Widget {
             __( 'Ephemeris' , 'live-weather-station'),
             array( 'description' => sprintf(__('Display ephemeris for sun and moon at the location of a station added to %s.' , 'live-weather-station'), LWS_PLUGIN_NAME))
         );
-        if ( is_admin() ) {
+        if ( is_admin() || is_blog_admin()) {
             add_action( 'admin_enqueue_scripts', function () {wp_enqueue_script( 'wp-color-picker' );});
             wp_enqueue_style( 'wp-color-picker' );
             wp_enqueue_script( 'wp-color-picker' );

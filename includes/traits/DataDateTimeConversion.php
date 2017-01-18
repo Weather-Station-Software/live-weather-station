@@ -253,14 +253,47 @@ trait Conversion {
     /**
      * Converts a decimal number of days into the correct format.
      *
-     * @param   float   $age The age in decimal number of days.
-     * @return  string  Formatted age in years, month, days, hour and minutes.
-     * @since    2.0.0
+     * @param float $age The age in decimal number of days.
+     * @return string Formatted age in days and hours.
+     * @since 2.0.0
      */
     public static function get_age_from_days($age) {
         $days = floor($age);
         $hours = round(($age-$days)*24);
         $result = $days.' '.__('days', 'live-weather-station').', '.$hours.' '.__('hours', 'live-weather-station');
         return $result;
+    }
+
+    /**
+     * Converts a decimal number of seconds into the correct format.
+     *
+     * @param integer $age The age in seconds.
+     * @return string Formatted age in days, hours, minutes and seconds.
+     * @since 3.1.0
+     */
+    public static function get_age_days_from_seconds($age) {
+        return '';
+        /*
+        $intervals = array(
+            array(60, __('second', 'live-weather-station'), __('seconds', 'live-weather-station')),
+            array(60, __('minute', 'live-weather-station'), __('minutes', 'live-weather-station')),
+            array(24, __('hour', 'live-weather-station'), __('hours', 'live-weather-station')),
+            array(100000, __('day', 'live-weather-station'), __('days', 'live-weather-station')),
+        );
+        $value = array();
+        foreach ($intervals as $key => $interval) {
+            $val = $age % $interval[$key];
+            if ($val > 0) {
+                if ($val == 1) {
+                    $value[] = $val . ' ' . $interval[1];
+                }
+                else {
+                    $value[] = $val . ' ' . $interval[2];
+                }
+            }
+            $age = round($age/$interval[$key], 0);
+        }
+        return explode(array_reverse($value), ',');
+        */
     }
 }

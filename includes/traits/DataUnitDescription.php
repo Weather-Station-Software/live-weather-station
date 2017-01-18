@@ -356,6 +356,28 @@ trait Description {
     }
 
     /**
+     * Get available dusk an dawn twilight units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.1.0
+     */
+    protected function get_dusk_dawn_unit( $id = 0 ) {
+        return '';//__( 's' , 'live-weather-station');
+    }
+
+    /**
+     * Get available dusk an dawn twilight full units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.1.0
+     */
+    protected function get_dusk_dawn_unit_full( $id = 0 ) {
+        return '';//__( 'second' , 'live-weather-station');
+    }
+
+    /**
      * Get available wind direction units.
      *
      * @param   integer $id     Optional. The unit id.

@@ -7,7 +7,7 @@
  */
 ?>
 <div class="lws-widget-container-<?php echo $id ?>">
-    <div class="lws-widget-outdoor-<?php echo $id ?>">
+    <div class="lws-widget-outdoor-<?php echo $id ?> noTypo">
         <?php if ( $show_current ):?>
             <!-- CURRENT CONDITIONS -->
             <div class="lws-widget-header-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Current weather conditions', 'live-weather-station').'"' : ''); ?>>

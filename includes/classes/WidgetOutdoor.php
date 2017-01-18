@@ -42,7 +42,7 @@ class Outdoor extends \WP_Widget {
             __( 'Outdoor weather summary' , 'live-weather-station'),
             array( 'description' => sprintf(__('Display outdoor measurements of a station added to %s.' , 'live-weather-station'), LWS_PLUGIN_NAME))
         );
-        if ( is_admin() ) {
+        if ( is_admin() || is_blog_admin()) {
             add_action( 'admin_enqueue_scripts', function () {wp_enqueue_script( 'wp-color-picker' );});
             wp_enqueue_style( 'wp-color-picker' );
             wp_enqueue_script( 'wp-color-picker' );
