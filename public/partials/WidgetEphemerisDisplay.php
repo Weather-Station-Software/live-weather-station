@@ -7,7 +7,7 @@
  */
 ?>
 <div class="lws-widget-container-<?php echo $id ?>">
-    <div class="lws-widget-outdoor-<?php echo $id ?>">
+    <div class="lws-widget-ephemeris-<?php echo $id ?> noTypo">
         <!-- STATION NAME -->
         <div class="lws-widget-row-<?php echo $id ?>">
             <div class="lws-widget-column-<?php echo $id ?>">

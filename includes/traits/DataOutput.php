@@ -1673,9 +1673,13 @@ trait Output {
                 $result = round($this->get_temperature($value, $ref));
                 break;
             case 'loc_altitude':
-            case 'cloud_ceiling':
                 $ref = get_option('live_weather_station_unit_altitude');
                 $result = $this->get_altitude($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_altitude_unit($ref) : '');
+                break;
+            case 'cloud_ceiling':
+                $ref = get_option('live_weather_station_unit_altitude');
+                $result = $this->get_cloud_ceiling($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_altitude_unit($ref) : '');
                 break;
             case 'temperature_trend':
@@ -1686,13 +1690,36 @@ trait Output {
                 }
                 break;
             case 'sunrise':
+            case 'sunrise_c':
+            case 'sunrise_n':
+            case 'sunrise_a':
             case 'sunset':
+            case 'sunset_c':
+            case 'sunset_n':
+            case 'sunset_a':
                 $result = $value;
                 if ($unit) {
                     $result = $this->get_rise_set_short_from_utc($value, $tz);
                 }
                 if ($textual) {
                     $result = $this->get_rise_set_long_from_utc($value, $tz);
+                }
+                break;
+            case 'dawn':
+            case 'dawn_c':
+            case 'dawn_n':
+            case 'dawn_a':
+            case 'dusk':
+            case 'dusk_c':
+            case 'dusk_n':
+            case 'dusk_a':
+                $result = $value;
+                if ($unit) {
+                    $result = $this->get_dusk_dawn($value);
+                    $result .= ($unit ? $this->unit_espace.$this->get_dusk_dawn_unit() : '');
+                }
+                if ($textual) {
+                    $result = $this->get_age_days_from_seconds($value);
                 }
                 break;
             case 'moonrise':
@@ -2356,6 +2383,17 @@ trait Output {
                 $result['unit'] = $this->get_temperature_unit($ref);
                 $result['long'] = $this->get_temperature_unit_full($ref);
                 break;
+            case 'dawn':
+            case 'dawn_c':
+            case 'dawn_n':
+            case 'dawn_a':
+            case 'dusk':
+            case 'dusk_c':
+            case 'dusk_n':
+            case 'dusk_a':
+                $result['unit'] = $this->get_dusk_dawn_unit();
+                $result['long'] = $this->get_dusk_dawn_unit_full();
+                break;
             case 'moon_illumination':
                 $ref = 0;
                 if ($force_ref != 0) {
@@ -2555,6 +2593,18 @@ trait Output {
             case 'temperature_max':
                 $result = __('temperature', 'live-weather-station') ;
                 break;
+            /*case 'dawn':
+            case 'dawn_c':
+            case 'dawn_n':
+            case 'dawn_a':
+                $result = __('dawn', 'live-weather-station') ;
+                break;
+            case 'dusk':
+            case 'dusk_c':
+            case 'dusk_n':
+            case 'dusk_a':
+                $result = __('dusk', 'live-weather-station') ;
+                break;*/
         }
         return $result;
     }

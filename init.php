@@ -55,7 +55,7 @@ function get_display_locale($user_id = 0) {
     /*
     * @fixme how to manage ajax calls made from frontend?
     */
-    if (function_exists('get_user_locale') && is_admin()) {
+    if (function_exists('get_user_locale') && (is_admin() || is_blog_admin())) {
         return get_user_locale($user_id);
     }
     else {
@@ -72,7 +72,7 @@ function get_display_locale($user_id = 0) {
 //---------------------------------------------------------------------------------------------------
 
 define('LWS_FULL_NAME', 'Weather Station 3');
-define('LWS_VERSION', '3.0.8');
+define('LWS_VERSION', '3.0.9');
 define('LWS_OWM_READY', false);
 define('LWS_TXT_READY', false);
 

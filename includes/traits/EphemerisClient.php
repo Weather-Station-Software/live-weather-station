@@ -56,8 +56,28 @@ trait Client {
             $nm['firmware'] = LWS_VERSION;
             $dashboard = array() ;
             $dashboard['time_utc'] = time();
+            // sunrise & sunset
             $dashboard['sunrise'] = date_sunrise(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon);
             $dashboard['sunset'] = date_sunset(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon);
+            $dashboard['sunrise_c'] = date_sunrise(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 96);
+            $dashboard['sunset_c'] = date_sunset(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 96);
+            $dashboard['sunrise_n'] = date_sunrise(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 102);
+            $dashboard['sunset_n'] = date_sunset(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 102);
+            $dashboard['sunrise_a'] = date_sunrise(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 108);
+            $dashboard['sunset_a'] = date_sunset(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 108);
+            // lengths of day
+            $dashboard['day_length'] = $dashboard['sunset'] - $dashboard['sunrise'];
+            $dashboard['day_length_c'] = $dashboard['sunset_c'] - $dashboard['sunrise_c'];
+            $dashboard['day_length_n'] = $dashboard['sunset_n'] - $dashboard['sunrise_n'];
+            $dashboard['day_length_a'] = $dashboard['sunset_a'] - $dashboard['sunrise_a'];
+            // lengths of dawn
+            $dashboard['dawn_length_a'] = $dashboard['sunrise_n'] - $dashboard['sunrise_a'];
+            $dashboard['dawn_length_n'] = $dashboard['sunrise_c'] - $dashboard['sunrise_n'];
+            $dashboard['dawn_length_c'] = $dashboard['sunrise'] - $dashboard['sunrise_c'];
+            // lengths of dusk
+            $dashboard['dusk_length_a'] = $dashboard['sunset_a'] - $dashboard['sunset_n'];
+            $dashboard['dusk_length_n'] = $dashboard['sunset_n'] - $dashboard['sunset_c'];
+            $dashboard['dusk_length_c'] = $dashboard['sunset_c'] - $dashboard['sunset'];
             try {
                 $datetime = new \DateTime(date('Y-m-d H:i:s',time()), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
@@ -123,7 +143,11 @@ trait Client {
                 $dashboard['sun_diameter'] = -9999;
             }
             $nm['dashboard_data'] = $dashboard;
-            $nm['data_type'] = array('sunrise', 'sunset', 'moonrise', 'moonset', 'moon_age', 'moon_phase', 'moon_illumination', 'moon_distance', 'moon_diameter', 'sun_distance', 'sun_diameter');
+            $nm['data_type'] = array('sunrise','sunrise_c','sunrise_n','sunrise_a', 'sunset','sunset_c','sunset_n',
+                                     'sunset_m', 'moonrise', 'moonset', 'day_length', 'day_length_c', 'day_length_n',
+                                     'day_length_a', 'dawn_length_a','dawn_length_n', 'dawn_length_c', 'dusk_length_a',
+                                     'dusk_length_n', 'dusk_length_c', 'moon_age', 'moon_phase', 'moon_illumination',
+                                     'moon_distance', 'moon_diameter', 'sun_distance', 'sun_diameter');
             if (count($nm['dashboard_data']) > 0) {
                 $result[] = $nm;
             }

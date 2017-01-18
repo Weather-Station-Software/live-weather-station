@@ -55,6 +55,8 @@ trait Storage {
         return 'live_weather_station_log';
     }
 
+    protected $facility_DM = 'Data Manager';
+
     /**
      * Performs a safe add column.
      *
@@ -286,10 +288,9 @@ trait Storage {
     /**
      * Creates tables for the plugin.
      *
-     * @param string $oldversion Version id before migration.
      * @since 1.0.0
      */
-    protected static function create_tables($oldversion) {
+    protected static function create_tables() {
         self::create_live_weather_station_datas_table();
         self::create_live_weather_station_stations_table();
         self::create_live_weather_station_owm_stations_table();
@@ -509,7 +510,27 @@ trait Storage {
      * @since    1.0.0
      */
     protected function update_data_table($value) {
-        $this->update_table(self::live_weather_station_datas_table(), $value);
+        $verified = isset($value['measure_value']);
+        if ($verified) {
+            $verified = !is_null($value['measure_value']);
+        }
+        if ($verified) {
+            try {
+                $this->update_table(self::live_weather_station_datas_table(), $value);
+            }
+            catch (\Exception $ex) {
+                Logger::error($this->facility_DM, null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
+            }
+        }
+        else {
+            try {
+                Logger::error($this->facility_DM, null, $value['device_id'], $value['device_name'], $value['module_id'], $value['module_name'], 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
+            }
+            catch (\Exception $ex) {
+                Logger::error($this->facility_DM, null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
+            }
+
+        }
     }
 
     /**
@@ -544,10 +565,10 @@ trait Storage {
                         return $this->update_stations_table($value);
                     }
                     else {
-                        Logger::error('Backend', null, null, null, null, null, 0, 'Inconsistent data in stations table: unable to insert station ' . $value['station_id'] . '.');
+                        Logger::error($this->facility_DM, null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to insert station ' . $value['station_id'] . '.');
                     }
                 } else {
-                    Logger::error('Backend', null, null, null, null, null, 0, 'Inconsistent data in stations table: unable to find station ' . $value['station_id'] . '.');
+                    Logger::error($this->facility_DM, null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to find station ' . $value['station_id'] . '.');
                 }
             }
         }
@@ -558,7 +579,7 @@ trait Storage {
             Cache::invalidate_query($cache_id);
         }
         else {
-            Logger::error('Backend', null, null, null, null, null, 0, 'Inconsistent data in stations table: unable to get guid for this record: ' . print_r($value, true));
+            Logger::error($this->facility_DM, null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to get guid for this record: ' . print_r($value, true));
         }
         return $result;
     }

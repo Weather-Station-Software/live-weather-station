@@ -326,6 +326,19 @@ trait Conversion {
     }
 
     /**
+     * Get the dusk or dawn expressed in its unique unit.
+     *
+     * @param mixed $value The value of the dusk or dawn twilight.
+     * @return string The dusk or dawn twilight expressed in its unique unit.
+     * @since 3.1.0
+     */
+    protected function get_dusk_dawn($value)
+    {
+        $result = $value;
+        return sprintf('%d', round($result, 0));
+    }
+
+    /**
      * Get the wind angle expressed in its unique unit.
      *
      * @param   mixed   $value  The value of the wind angle.
@@ -750,6 +763,38 @@ trait Conversion {
             $result = $value;
         }
         return $result;
+    }
+
+    /**
+     * Get the altitude of cloud ceiling expressed in specific unit.
+     *
+     * @param mixed $value The value of the altitude.
+     * @param integer $id Optional. The unit id.
+     * @return string The cloud ceiling altitude expressed in specific unit.
+     * @since 3.0.9
+     */
+    protected function get_cloud_ceiling($value, $id = 0)
+    {
+        $result = $this->get_altitude($value, $id);
+        if ($result < 100) {
+            $result = 5 * round($result/5, 0);
+        }
+        elseif ($result < 200) {
+            $result = 10 * round($result/10, 0);
+        }
+        elseif ($result < 500) {
+            $result = 50 * round($result/50, 0);
+        }
+        elseif ($result < 2000) {
+            $result = 100 * round($result/100, 0);
+        }
+        elseif ($result < 10000) {
+            $result = 500 * round($result/500, 0);
+        }
+        else {
+            $result = 1000 * round($result/1000, 0);
+        }
+        return sprintf('%d', round($result, 0));
     }
 
     /**
