@@ -4,10 +4,6 @@
 
 * Bug fix: ephemeris widget doesn't correctly displays its background since 3.0.9 version.
 
-###3.0.10 / January 20th, 2017
-
-* Bug fix: ephemeris widget doesn't correctly displays its background since 3.0.9 version.
-
 ###3.0.9 / January 18th, 2017
 
 * Improvement: more readable cloud base altitude (logarithmic scale accuracy).
