@@ -1,4 +1,7 @@
 
+###3.0.11 / February 1st, 2017
+
+* Bug fix: coordinates for stations based on realtime.txt files are truncated (many thanks to sebs42 to find it).
 
 ###3.0.10 / January 20th, 2017
 

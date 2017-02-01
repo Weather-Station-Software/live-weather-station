@@ -1881,10 +1881,10 @@ class Admin {
                 $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
             }
             if (array_key_exists('loc_latitude', $_POST)) {
-                $station['loc_latitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_latitude']));
+                $station['loc_latitude'] = stripslashes(htmlspecialchars_decode($_POST['loc_latitude']));
             }
             if (array_key_exists('loc_longitude', $_POST)) {
-                $station['loc_longitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_longitude']));
+                $station['loc_longitude'] = stripslashes(htmlspecialchars_decode($_POST['loc_longitude']));
             }
             $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
             $collector = new RealtimeCollector();
