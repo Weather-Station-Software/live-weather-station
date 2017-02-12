@@ -441,7 +441,7 @@ class InlineHelp {
                 $s1 .= ', <strong>' . lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
                 $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Station ID', 'live-weather-station')) . '</strong>.';
                 $s1 .= ' ' . __('You could find the value of the field', 'live-weather-station') . ' <strong>' . lcfirst(__('Station ID', 'live-weather-station')) . '</strong>';
-                $s1 .= ' ' . sprintf(__('on the %s website (in the dashboard) or right in the url of the station\'s page.', 'live-weather-station'), 'Weather Underground');
+                $s1 .= ' ' . sprintf(__('on the %s website (in the dashboard) or right in the URL of the station\'s page.', 'live-weather-station'), 'Weather Underground');
                 $s2 = '<em>' . __('Note that the information you enter here is required for computations and presentations of meteorological and astronomical data. It is therefore crucial that they are as accurate as possible.', 'live-weather-station') . '</em>';
                 $tabs[] = array(
                     'title'    => __('Settings', 'live-weather-station'),
@@ -549,7 +549,7 @@ class InlineHelp {
             $s3 = '<strong>' . __('Remove', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('To remove the station from the %s collect process.', 'live-weather-station'), LWS_PLUGIN_NAME);
             $s4 = '<strong>' . __('See events log', 'live-weather-station') . '</strong> &mdash; ' . __('To see events associated with the station.', 'live-weather-station');
             $s5 = '<strong>' . __('Verify on a map', 'live-weather-station') . '</strong> &mdash; ' . __('To verify, visually, the coordinates of the station.', 'live-weather-station');
-            $s6 = '<strong>' . __('Sharing on&hellip;', 'live-weather-station') . '</strong> &mdash; ' . __('To get the direct url where the station shares its data.', 'live-weather-station');
+            $s6 = '<strong>' . __('Sharing on&hellip;', 'live-weather-station') . '</strong> &mdash; ' . __('To get the direct URL where the station shares its data.', 'live-weather-station');
             $s7 = '<strong>' . __('Shortcodes', 'live-weather-station') . '</strong> &mdash; ' . __('To obtain shortcodes ready to insert in a page or a post.', 'live-weather-station');
             $tabs[] = array(
                 'title'    => __('Features', 'live-weather-station'),

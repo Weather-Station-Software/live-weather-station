@@ -180,7 +180,7 @@ class Indoor extends \WP_Widget {
      * @param string $uid Identifier of the widget.
      * @param boolean $flat_design Enabling flat design mode.
      * @param integer $health_idx Health index from 0%(poor) to 100%(good).
-     * @param string $background Optional. CSS for background image url.
+     * @param string $background Optional. CSS for background Image URL.
      * @param string $attachment Optional. CSS for background-attachment.
      * @since 3.1.0
      */

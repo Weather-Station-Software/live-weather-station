@@ -71,15 +71,15 @@
     <?php } ?>
 </select>
 <p>
-    <label for="<?php echo $this->get_field_id('good_url'); ?>"><?php esc_html_e( 'Image url for good air quality' , 'live-weather-station'); ?></label><br/>
+    <label for="<?php echo $this->get_field_id('good_url'); ?>"><?php esc_html_e( 'Image URL for good air quality' , 'live-weather-station'); ?></label><br/>
     <input type="text" class="widefat" id="<?php echo $this->get_field_id('good_url'); ?>" name="<?php echo $this->get_field_name('good_url'); ?>" value="<?php echo $good_url; ?>" />
 </p>
 <p>
-    <label for="<?php echo $this->get_field_id('medium_url'); ?>"><?php esc_html_e( 'Image url for intermediate air quality' , 'live-weather-station'); ?></label><br/>
+    <label for="<?php echo $this->get_field_id('medium_url'); ?>"><?php esc_html_e( 'Image URL for intermediate air quality' , 'live-weather-station'); ?></label><br/>
     <input type="text" class="widefat" id="<?php echo $this->get_field_id('medium_url'); ?>" name="<?php echo $this->get_field_name('medium_url'); ?>" value="<?php echo $medium_url; ?>" />
 </p>
 <p>
-    <label for="<?php echo $this->get_field_id('bad_url'); ?>"><?php esc_html_e( 'Image url for bad air quality' , 'live-weather-station'); ?></label><br/>
+    <label for="<?php echo $this->get_field_id('bad_url'); ?>"><?php esc_html_e( 'Image URL for bad air quality' , 'live-weather-station'); ?></label><br/>
     <input type="text" class="widefat" id="<?php echo $this->get_field_id('bad_url'); ?>" name="<?php echo $this->get_field_name('bad_url'); ?>" value="<?php echo $bad_url; ?>" />
 </p>
 <p>
