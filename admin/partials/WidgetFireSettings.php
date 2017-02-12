@@ -68,23 +68,23 @@
     <?php } ?>
 </select>
 <p>
-    <label for="<?php echo $this->get_field_id('low_url'); ?>"><?php esc_html_e( 'Image url for low risk' , 'live-weather-station'); ?></label><br/>
+    <label for="<?php echo $this->get_field_id('low_url'); ?>"><?php esc_html_e( 'Image URL for low risk' , 'live-weather-station'); ?></label><br/>
     <input type="text" class="widefat" id="<?php echo $this->get_field_id('low_url'); ?>" name="<?php echo $this->get_field_name('low_url'); ?>" value="<?php echo $low_url; ?>" />
 </p>
 <p>
-    <label for="<?php echo $this->get_field_id('moderate_url'); ?>"><?php esc_html_e( 'Image url for moderate risk' , 'live-weather-station'); ?></label><br/>
+    <label for="<?php echo $this->get_field_id('moderate_url'); ?>"><?php esc_html_e( 'Image URL for moderate risk' , 'live-weather-station'); ?></label><br/>
     <input type="text" class="widefat" id="<?php echo $this->get_field_id('moderate_url'); ?>" name="<?php echo $this->get_field_name('moderate_url'); ?>" value="<?php echo $moderate_url; ?>" />
 </p>
 <p>
-    <label for="<?php echo $this->get_field_id('high_url'); ?>"><?php esc_html_e( 'Image url for high risk' , 'live-weather-station'); ?></label><br/>
+    <label for="<?php echo $this->get_field_id('high_url'); ?>"><?php esc_html_e( 'Image URL for high risk' , 'live-weather-station'); ?></label><br/>
     <input type="text" class="widefat" id="<?php echo $this->get_field_id('high_url'); ?>" name="<?php echo $this->get_field_name('high_url'); ?>" value="<?php echo $high_url; ?>" />
 </p>
 <p>
-    <label for="<?php echo $this->get_field_id('very_high_url'); ?>"><?php esc_html_e( 'Image url for very high risk' , 'live-weather-station'); ?></label><br/>
+    <label for="<?php echo $this->get_field_id('very_high_url'); ?>"><?php esc_html_e( 'Image URL for very high risk' , 'live-weather-station'); ?></label><br/>
     <input type="text" class="widefat" id="<?php echo $this->get_field_id('very_high_url'); ?>" name="<?php echo $this->get_field_name('very_high_url'); ?>" value="<?php echo $very_high_url; ?>" />
 </p>
 <p>
-    <label for="<?php echo $this->get_field_id('extreme_url'); ?>"><?php esc_html_e( 'Image url for extreme risk' , 'live-weather-station'); ?></label><br/>
+    <label for="<?php echo $this->get_field_id('extreme_url'); ?>"><?php esc_html_e( 'Image URL for extreme risk' , 'live-weather-station'); ?></label><br/>
     <input type="text" class="widefat" id="<?php echo $this->get_field_id('extreme_url'); ?>" name="<?php echo $this->get_field_name('extreme_url'); ?>" value="<?php echo $extreme_url; ?>" />
 </p>
 <p>

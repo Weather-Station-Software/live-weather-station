@@ -175,7 +175,7 @@ class Outdoor extends \WP_Widget {
      * @param string $uid Identifiant of the widget.
      * @param boolean $flat_design Enabling flat design mode.
      * @param integer $dawndusk Luminosity factor from 0% to 100%.
-     * @param string $background Optional. CSS for background image url.
+     * @param string $background Optional. CSS for background Image URL.
      * @param string $attachment Optional. CSS for background-attachment.
      * @since 1.0.0
      */

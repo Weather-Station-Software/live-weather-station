@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Live Weather Station\n"
-"POT-Creation-Date: 2017-02-12 19:30+0100\n"
+"POT-Creation-Date: 2017-02-12 22:01+0100\n"
 "PO-Revision-Date: 2015-11-07 19:46+0100\n"
 "Last-Translator: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
 "Language-Team: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
@@ -1827,22 +1827,22 @@ msgstr ""
 
 #: admin/partials/WidgetEphemerisSettings.php:66
 #: admin/partials/WidgetOutdoorSettings.php:95
-msgid "Image url for day"
+msgid "Image URL for day"
 msgstr ""
 
 #: admin/partials/WidgetEphemerisSettings.php:70
 #: admin/partials/WidgetOutdoorSettings.php:99
-msgid "Image url for night"
+msgid "Image URL for night"
 msgstr ""
 
 #: admin/partials/WidgetEphemerisSettings.php:74
 #: admin/partials/WidgetOutdoorSettings.php:103
-msgid "Image url for dawn"
+msgid "Image URL for dawn"
 msgstr ""
 
 #: admin/partials/WidgetEphemerisSettings.php:78
 #: admin/partials/WidgetOutdoorSettings.php:107
-msgid "Image url for dusk"
+msgid "Image URL for dusk"
 msgstr ""
 
 #: admin/partials/WidgetEphemerisSettings.php:83
@@ -1921,23 +1921,23 @@ msgid "Hide obsolete measurements"
 msgstr ""
 
 #: admin/partials/WidgetFireSettings.php:71
-msgid "Image url for low risk"
+msgid "Image URL for low risk"
 msgstr ""
 
 #: admin/partials/WidgetFireSettings.php:75
-msgid "Image url for moderate risk"
+msgid "Image URL for moderate risk"
 msgstr ""
 
 #: admin/partials/WidgetFireSettings.php:79
-msgid "Image url for high risk"
+msgid "Image URL for high risk"
 msgstr ""
 
 #: admin/partials/WidgetFireSettings.php:83
-msgid "Image url for very high risk"
+msgid "Image URL for very high risk"
 msgstr ""
 
 #: admin/partials/WidgetFireSettings.php:87
-msgid "Image url for extreme risk"
+msgid "Image URL for extreme risk"
 msgstr ""
 
 #: admin/partials/WidgetFireSettings.php:96
@@ -1965,15 +1965,15 @@ msgid "Show status"
 msgstr ""
 
 #: admin/partials/WidgetIndoorSettings.php:71
-msgid "Image url for optimal comfort"
+msgid "Image URL for optimal comfort"
 msgstr ""
 
 #: admin/partials/WidgetIndoorSettings.php:75
-msgid "Image url for intermediate comfort"
+msgid "Image URL for intermediate comfort"
 msgstr ""
 
 #: admin/partials/WidgetIndoorSettings.php:79
-msgid "Image url for degraded comfort"
+msgid "Image URL for degraded comfort"
 msgstr ""
 
 #: admin/partials/WidgetIndoorSettings.php:88
@@ -2045,15 +2045,15 @@ msgid "Hide probe distances"
 msgstr ""
 
 #: admin/partials/WidgetPollutionSettings.php:74
-msgid "Image url for good air quality"
+msgid "Image URL for good air quality"
 msgstr ""
 
 #: admin/partials/WidgetPollutionSettings.php:78
-msgid "Image url for intermediate air quality"
+msgid "Image URL for intermediate air quality"
 msgstr ""
 
 #: admin/partials/WidgetPollutionSettings.php:82
-msgid "Image url for bad air quality"
+msgid "Image URL for bad air quality"
 msgstr ""
 
 #: admin/partials/WidgetPollutionSettings.php:91
@@ -2840,7 +2840,7 @@ msgstr ""
 #: includes/system/InlineHelp.php:444
 #, php-format
 msgid ""
-"on the %s website (in the dashboard) or right in the url of the station's "
+"on the %s website (in the dashboard) or right in the URL of the station's "
 "page."
 msgstr ""
 
@@ -2980,7 +2980,7 @@ msgid "To verify, visually, the coordinates of the station."
 msgstr ""
 
 #: includes/system/InlineHelp.php:552
-msgid "To get the direct url where the station shares its data."
+msgid "To get the direct URL where the station shares its data."
 msgstr ""
 
 #: includes/system/InlineHelp.php:553
