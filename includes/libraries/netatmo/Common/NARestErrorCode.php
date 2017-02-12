@@ -49,5 +49,7 @@ class NARestErrorCode
     const CAMERA_NO_SPACE_AVAILABLE = 37;
     const PASSWORD_COMPLEXITY_TOO_LOW = 38;
     const TOO_MANY_CONNECTION_FAILURE = 39;
+
+    const BAD_REQUEST = 400;
 }
 ?>

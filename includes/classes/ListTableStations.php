@@ -39,25 +39,26 @@ class Stations extends Base {
     private function get_icon($type) {
         $result = '';
         switch ($type) {
-            case 0 :
+            case LWS_NETATMO_SID :
+            case LWS_NETATMOHC_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_netatmo_icon()) . '" />';
                 break;
-            case 1 :
+            case LWS_LOC_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_loc_icon('#666666')) . '" />';
                 break;
-            case 2 :
+            case LWS_OWM_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_owm_icon('#666666')) . '" />';
                 break;
-            case 3 :
+            case LWS_WUG_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_wug_icon('#666666')) . '" />';
                 break;
-            case 4 :
+            case LWS_RAW_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_raw_icon('#666666')) . '" />';
                 break;
-            case 5 :
+            case LWS_REAL_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_real_icon('#666666')) . '" />';
                 break;
-            case 6 :
+            case LWS_TXT_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_txt_icon('#666666')) . '" />';
                 break;
         }
@@ -67,7 +68,6 @@ class Stations extends Base {
     protected function column_title($item){
         switch ($item['station_type']) {
             case 0:
-                //$actions['manage'] = sprintf('<a href="?page=lws-stations&action=form&tab=manage&service=station&id=%s">'.__('Manage services', 'live-weather-station').'</a>', $item['guid']);
                 if (!(bool)get_option('live_weather_station_auto_manage_netatmo')) {
                     $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 }

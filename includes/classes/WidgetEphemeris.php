@@ -4,6 +4,7 @@ namespace WeatherStation\UI\Widget;
 
 use WeatherStation\Data\Output;
 use WeatherStation\Utilities\ColorsManipulation as Color;
+use WeatherStation\System\Logs\Logger;
 
 
 /**
@@ -66,6 +67,7 @@ class Ephemeris extends \WP_Widget {
             array('title' => '',
                 'subtitle' => 1,
                 'format' => 1,
+                'mode' => 0,
                 'station' => 'N/A',
                 'bg_color' => '#444444',
                 'bg_opacity' => 0,
@@ -73,9 +75,17 @@ class Ephemeris extends \WP_Widget {
                 'txt_color' => '#ffffff',
                 'show_tooltip' => false,
                 'show_borders' => false,
+                'follow_light' => false,
+                'fixed_background' => false,
+                'day_url' => '',
+                'night_url' => '',
+                'dawn_url' => '',
+                'dusk_url' => '',
                 'flat_design' => false));
         $result['show_tooltip'] = !empty($result['show_tooltip']) ? 1 : 0;
         $result['show_borders'] = !empty($result['show_borders']) ? 1 : 0;
+        $result['follow_light'] = !empty($result['follow_light']) ? 1 : 0;
+        $result['fixed_background'] = !empty($result['fixed_background']) ? 1 : 0;
         $result['flat_design'] = !empty($result['flat_design']) ? 1 : 0;
         return $result;
     }
@@ -92,6 +102,7 @@ class Ephemeris extends \WP_Widget {
         $title = $instance['title'];
         $subtitle = $instance['subtitle'];
         $format = $instance['format'];
+        $mode = $instance['mode'];
         $station = $instance['station'];
         $bg_color = $instance['bg_color'];
         $bg_opacity = $instance['bg_opacity'];
@@ -100,6 +111,12 @@ class Ephemeris extends \WP_Widget {
         $show_tooltip = (bool)$instance['show_tooltip'];
         $show_borders = (bool)$instance['show_borders'];
         $flat_design = (bool)$instance['flat_design'] ;
+        $follow_light = (bool)$instance['follow_light'] ;
+        $fixed_background = (bool)$instance['fixed_background'] ;
+        $day_url = $instance['day_url'];
+        $night_url = $instance['night_url'];
+        $dawn_url = $instance['dawn_url'];
+        $dusk_url = $instance['dusk_url'];
         $stations = $this->get_operational_stations_list();
         include(LWS_ADMIN_DIR.'partials/WidgetEphemerisSettings.php');
     }
@@ -107,12 +124,15 @@ class Ephemeris extends \WP_Widget {
     /**
      * Set the (inline) css for the widget rendering.
      *
-     * @param    array  $instance   An array containing settings for the widget.
-     * @param    string  $uid   Identifiant of the widget.
-     * @param    boolean  $flat_design   Enabling flat design mode.
-     * @since    2.0.0
+     * @param array $instance An array containing settings for the widget.
+     * @param string $uid Identifiant of the widget.
+     * @param boolean $flat_design Enabling flat design mode.
+     * @param integer $dawndusk Optional. Luminosity factor from 0% to 100%.
+     * @param string $background Optional. CSS for background image url.
+     * @param string $attachment Optional. CSS for background-attachment.
+     * @since 2.0.0
      */
-    public function css($instance, $uid, $flat_design) {
+    public function css($instance, $uid, $flat_design, $dawndusk=100, $background='', $attachment='local') {
         try
         {
             $maxwidth = round ($instance['width']);
@@ -122,7 +142,19 @@ class Ephemeris extends \WP_Widget {
             $maxwidth = 0;
         }
         $txt_color = $instance['txt_color'];
-        $color = new Color($instance['bg_color']);
+        if ($flat_design) {
+            $fact = 80;
+        }
+        else {
+            $fact = 98;
+        }
+        $c = new Color($instance['bg_color']);
+        if ($dawndusk < 100) {
+            $color = new Color($c->darken(round(($fact * $c->getHsl()['L']) * (1 - ($dawndusk / 100)), 0)));
+        }
+        else {
+            $color = $c;
+        }
         $opacity = (11 - $instance['bg_opacity'])/11;
         if ($opacity < 0.1) {
             $opacity = 0;
@@ -161,8 +193,8 @@ class Ephemeris extends \WP_Widget {
             }
         }
         if ($flat_design) {
-            $gradient_dark = Color::hexToRgbString($instance['bg_color'], $opacity);
-            $gradient_light = Color::hexToRgbString($instance['bg_color'], $opacity);
+            $gradient_dark = Color::hexToRgbString('#'.$color->getHex(), $opacity);
+            $gradient_light = Color::hexToRgbString('#'.$color->getHex(), $opacity);
             $border_color1 = '#'.$bcc;
             $border_color2 = '#'.$bcc;
         }
@@ -175,6 +207,8 @@ class Ephemeris extends \WP_Widget {
         $id = $uid;
         $shadows = !$flat_design;
         $borders = $instance['show_borders'];
+        $background_attachment = $attachment;
+        $bg_url = $background;
         include(LWS_PUBLIC_DIR.'partials/WidgetEphemerisDisplayCSS.php');
     }
 
@@ -200,6 +234,13 @@ class Ephemeris extends \WP_Widget {
         $instance['show_tooltip'] = !empty($new_instance['show_tooltip']) ? 1 : 0;
         $instance['show_borders'] = !empty($new_instance['show_borders']) ? 1 : 0;
         $instance['flat_design'] = !empty($new_instance['flat_design']) ? 1 : 0;
+        $instance['follow_light'] = !empty($new_instance['follow_light']) ? 1 : 0;
+        $instance['fixed_background'] = !empty($new_instance['fixed_background']) ? 1 : 0;
+        $instance['day_url'] = $new_instance['day_url'];
+        $instance['night_url'] = $new_instance['night_url'];
+        $instance['dawn_url'] = $new_instance['dawn_url'];
+        $instance['dusk_url'] = $new_instance['dusk_url'];
+        $instance['mode'] = $new_instance['mode'];
         return $instance;
     }
 
@@ -215,11 +256,32 @@ class Ephemeris extends \WP_Widget {
         $title = $instance['title'];
         $subtitle = $instance['subtitle'];
         $format = $instance['format'];
+        $mode = $instance['mode'];
         $show_title = !($title=='');
         $show_tooltip = (bool)$instance['show_tooltip'];
         $show_borders =  (bool)$instance['show_borders'];
         $flat = (bool)$instance['flat_design'] ;
-        $modules = $this->format_widget_datas($this->get_ephemeris_datas($instance['station']));
+        $follow_light = (bool)$instance['follow_light'] ;
+        $fixed_background = (bool)$instance['fixed_background'] ;
+        $background_attachment = 'local';
+        if ($fixed_background) {
+            $background_attachment = 'fixed';
+        }
+        $day_url = $instance['day_url'];
+        $night_url = $instance['night_url'];
+        $dawn_url = $instance['dawn_url'];
+        $dusk_url = $instance['dusk_url'];
+        $bg_url = '';
+        $sunrise_a = 0;
+        $sunrise = 0;
+        $sunset = 0;
+        $sunset_a = 0;
+        $isday = false;
+        $isnight = false;
+        $isdawn = false;
+        $isdusk = false;
+        $dawndusk = 100;
+        $modules = $this->get_widget_data($instance['station'], 'ephemeris');
         $location = '';
         $show_sun = false;
         $show_moon = false;
@@ -251,9 +313,36 @@ class Ephemeris extends \WP_Widget {
                         break;
                     case 'NAEphemer':
                         if (array_key_exists('sunrise', $module['datas']) && array_key_exists('sunset', $module['datas'])) {
-                            $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise']['value'], 'sunrise', true, false, '', $tz);
-                            $datas['sunset']['value'] = $this->output_value($module['datas']['sunset']['value'], 'sunset', true, false, '', $tz);
-                            $show_sun = true;
+                            if ($mode==0) {
+                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise']['value'], 'sunrise', true, false, '', $tz);
+                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset']['value'], 'sunset', true, false, '', $tz);
+                                $show_sun = true;
+                            }
+                            $sunrise = $module['datas']['sunrise']['raw_value'];
+                            $sunset = $module['datas']['sunset']['raw_value'];
+                        }
+                        if (array_key_exists('sunrise_c', $module['datas']) && array_key_exists('sunset_c', $module['datas'])) {
+                            if ($mode==1) {
+                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise_c']['value'], 'sunrise_c', true, false, '', $tz);
+                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset_c']['value'], 'sunset_c', true, false, '', $tz);
+                                $show_sun = true;
+                            }
+                        }
+                        if (array_key_exists('sunrise_n', $module['datas']) && array_key_exists('sunset_n', $module['datas'])) {
+                            if ($mode==2) {
+                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise_n']['value'], 'sunrise_n', true, false, '', $tz);
+                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset_n']['value'], 'sunset_n', true, false, '', $tz);
+                                $show_sun = true;
+                            }
+                        }
+                        if (array_key_exists('sunrise_a', $module['datas']) && array_key_exists('sunset_a', $module['datas'])) {
+                            if ($mode==3) {
+                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise_a']['value'], 'sunrise_a', true, false, '', $tz);
+                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset_a']['value'], 'sunset_a', true, false, '', $tz);
+                                $show_sun = true;
+                            }
+                            $sunrise_a = $module['datas']['sunrise_a']['raw_value'];
+                            $sunset_a = $module['datas']['sunset_a']['raw_value'];
                         }
                         if (array_key_exists('sun_distance', $module['datas']) && array_key_exists('sun_diameter', $module['datas'])) {
                             $datas['sun_distance']['value'] = $this->output_value($module['datas']['sun_distance']['value'], 'sun_distance');
@@ -294,11 +383,38 @@ class Ephemeris extends \WP_Widget {
                         break;
                 }
             }
-            $timestamp = self::get_date_from_utc($modules['timestamp']).', '.self::get_time_from_utc($modules['timestamp'], $tz);
+            $timestamp = self::get_date_from_utc($modules['timestamp'], $tz).', '.self::get_time_from_utc($modules['timestamp'], $tz);
+        }
+        if ($isnight = $this->is_it_night($sunrise_a, $sunset_a)) {
+            $dawndusk = 0;
+            if ($night_url != '') {
+                $bg_url = 'background-image: url("' . $night_url . '");';
+            }
+        }
+        if ($isdawn = $this->is_it_dawn($sunrise, $sunrise_a, $sunset_a)) {
+            if ($dawn_url != '') {
+                $bg_url = 'background-image: url("' . $dawn_url . '");';
+            }
+            $dawndusk = $this->dawn_percentage($sunrise, $sunrise_a);
+        }
+        if ($isdusk = $this->is_it_dusk($sunset, $sunrise_a, $sunset_a)) {
+            if ($dusk_url != '') {
+                $bg_url = 'background-image: url("' . $dusk_url . '");';
+            }
+            $dawndusk = 100 - $this->dusk_percentage($sunset, $sunset_a);
+        }
+        if ($isday = (!$isnight && !$isdawn && !$isdusk)) {
+            $dawndusk = 100;
+            if ($day_url != '') {
+                $bg_url = 'background-image: url("' . $day_url . '");';
+            }
+        }
+        if (!$follow_light) {
+            $dawndusk = 100;
         }
         echo $args['before_widget'];
         $id = uniqid();
-        $this->css($instance, $id, $flat);
+        $this->css($instance, $id, $flat, $dawndusk, $bg_url, $background_attachment);
         include(LWS_PUBLIC_DIR.'partials/WidgetEphemerisDisplay.php');
         echo $args['after_widget'];
     }

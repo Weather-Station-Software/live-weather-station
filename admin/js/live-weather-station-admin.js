@@ -39,6 +39,12 @@ jQuery(document).ready( function($) {
         $('#span-sync').show();
     });
 
+    $('#add-netatmohc .button').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#span-sync').show();
+    });
+
     $('#delete-station').click( function() {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });

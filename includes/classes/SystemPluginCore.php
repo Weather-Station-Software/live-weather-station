@@ -119,7 +119,10 @@ class Core {
 		$this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts' );
         $this->loader->add_action('admin_menu', $plugin_admin, 'lws_admin_menu' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Outdoor', 'widget_registering' );
-		$this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Ephemeris', 'widget_registering' );
+        $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Ephemeris', 'widget_registering' );
+        $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Indoor', 'widget_registering' );
+        //$this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Pollution', 'widget_registering' );
+        $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Fire', 'widget_registering' );
         $this->loader->add_action('wp_ajax_update_lws_welcome_panel', 'WeatherStation\UI\Dashboard\Handling', 'update_lws_welcome_panel_callback' );
     }
 

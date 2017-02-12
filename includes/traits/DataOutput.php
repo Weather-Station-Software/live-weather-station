@@ -7,6 +7,7 @@ use WeatherStation\Data\Type\Description as Type_Description;
 use WeatherStation\Data\Unit\Description as Unit_Description;
 use WeatherStation\Data\Unit\Conversion as Unit_Conversion;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector;
+use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Utilities\ColorsManipulation;
 use WeatherStation\DB\Query;
@@ -32,9 +33,13 @@ trait Output {
         'temperature_min', 'temperature_max', 'temperature_ref', 'dew_point', 'frost_point', 'heat_index', 'humidex',
         'wind_chill', 'cloud_ceiling', 'temperature_trend', 'pressure_trend', 'sunrise', 'sunset', 'moonrise',
         'moonset', 'moon_illumination', 'moon_diameter', 'sun_diameter', 'moon_distance', 'sun_distance', 'moon_phase',
-        'moon_age', 'o3_distance', 'co_distance', 'humidity_min', 'humidity_max', 'pressure_min', 'pressure_max');
+        'moon_age', 'o3_distance', 'co_distance', 'humidity_min', 'humidity_max', 'pressure_min', 'pressure_max',
+        'day_length', 'health_idx', 'cbi');
     private $not_showable_measurements = array('battery', 'firmware', 'signal', 'loc_timezone', 'loc_altitude',
-        'loc_latitude', 'loc_longitude', 'last_seen', 'last_refresh', 'first_setup', 'last_upgrade', 'last_setup');
+        'loc_latitude', 'loc_longitude', 'last_seen', 'last_refresh', 'first_setup', 'last_upgrade', 'last_setup',
+        'sunrise_c','sunrise_n','sunrise_a', 'sunset_c','sunset_n', 'sunset_a', 'day_length_c', 'day_length_n',
+        'day_length_a', 'dawn_length_a','dawn_length_n', 'dawn_length_c', 'dusk_length_a', 'dusk_length_n',
+        'dusk_length_c');
 
 
 
@@ -88,6 +93,11 @@ trait Output {
      */
     public function lcd_value($attributes)
     {
+        $fingerprint = md5(json_encode($attributes));
+        $response = Cache::get_frontend($fingerprint);
+        if ($response) {
+            return $response;
+        }
         $device_id = $attributes['device_id'];
         $module_id = $attributes['module_id'];
         $measure_type = $attributes['measure_type'];
@@ -159,6 +169,7 @@ trait Output {
                 $response = $datas['datas'];
             }
         }
+        Cache::set_frontend($fingerprint, $response);
         return $response;
     }
 
@@ -191,6 +202,11 @@ trait Output {
      */
     public function justgage_value($attributes, $full=false) {
         $_attributes = shortcode_atts(array('device_id' => '', 'module_id' => '', 'measure_type' => '', 'element' => '', 'format' => ''), $attributes);
+        $fingerprint = md5(($full?'full':'partial').json_encode($attributes));
+        $result = Cache::get_frontend($fingerprint);
+        if ($result) {
+            return $result;
+        }
         $_result = $this->get_line_datas($_attributes, false, true);
         $result = array();
         $val = array();
@@ -339,6 +355,7 @@ trait Output {
         if ($full && substr($result['module'], 0, 1) == '[') {
             $result['module'] = __('Outdoor', 'live-weather-station');
         }
+        Cache::set_frontend($fingerprint, $result);
         return $result;
     }
 
@@ -682,6 +699,11 @@ trait Output {
     public function steelmeter_value($attributes, $full=false)
     {
         $_attributes = shortcode_atts(array('device_id' => '', 'module_id' => '', 'measure_type' => '', 'element' => '', 'format' => ''), $attributes);
+        $fingerprint = md5(($full?'full':'partial').json_encode($attributes));
+        $result = Cache::get_frontend($fingerprint);
+        if ($result) {
+            return $result;
+        }
         $result = array();
         $value = 0;
         $min = 0;
@@ -883,6 +905,7 @@ trait Output {
         $result['value_trend'] = $value_trend;
         $result['value_aux'] = ($value_aux != -9999 ? $value_aux : $result['value'] );
         $result['alarm'] = $alarm;
+        Cache::set_frontend($fingerprint, $result);
         return $result;
     }
 
@@ -1359,6 +1382,11 @@ trait Output {
      */
     public function textual_shortcodes($attributes) {
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => ''), $attributes );
+        $fingerprint = md5(json_encode($attributes));
+        $result = Cache::get_frontend($fingerprint);
+        if ($result) {
+            return $result;
+        }
         $_result = $this->get_specific_datas($_attributes);
         $err = __('Malformed shortcode. Please verify it!', 'live-weather-station') ;
         if (empty($_result)) {
@@ -1464,6 +1492,24 @@ trait Output {
                     case 'windangle_hour_max':
                         $result = $this->get_angle_full_text($result);
                         break;
+                    case 'health_idx':
+                        $result = $this->get_health_index_text($result);
+                        break;
+                    case 'cbi':
+                        $result = $this->get_cbi_text($result);
+                        break;
+                    case 'day_length':
+                    case 'day_length_c':
+                    case 'day_length_n':
+                    case 'day_length_a':
+                    case 'dawn_length_c':
+                    case 'dawn_length_n':
+                    case 'dawn_length_a':
+                    case 'dusk_length_c':
+                    case 'dusk_length_n':
+                    case 'dusk_length_a':
+                        $result = $this->get_age_hours_from_seconds($result);
+                        break;
                     default:
                         $result = $this->output_value($result, $_attributes['measure_type'], false, true, $module_type);
                 }
@@ -1543,6 +1589,7 @@ trait Output {
             default:
                 $result = esc_html($result);
         }
+        Cache::set_frontend($fingerprint, $result);
         return $result;
     }
 
@@ -1576,12 +1623,27 @@ trait Output {
                     $result = $this->get_signal_level_text($value, $module_type);
                 }
                 break;
+            case 'health_idx':
+                $result = $this->get_health_index($value);
+                $result .= ($unit ? $this->unit_espace.$this->get_health_index_unit() : '');
+                if ($textual) {
+                    $result = $this->get_health_index_text($value);
+                }
+                break;
+            case 'cbi':
+                $result = $this->get_cbi($value);
+                $result .= ($unit ? $this->unit_espace.$this->get_cbi_unit() : '');
+                if ($textual) {
+                    $result = $this->get_cbi_text($value);
+                }
+                break;
             case 'co2':
-                $result = $this->get_co2($value);
-                $result .= ($unit ? $this->unit_espace.$this->get_co2_unit() : '');
+                $ref = get_option('live_weather_station_unit_gas');
+                $result = $this->get_co2($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_co2_unit($ref) : '');
                 break;
             case 'co':
-                $ref = get_option('live_weather_station_unit_co');
+                $ref = get_option('live_weather_station_unit_gas');
                 $result = $this->get_co($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_co_unit($ref) : '');
                 break;
@@ -1705,22 +1767,33 @@ trait Output {
                     $result = $this->get_rise_set_long_from_utc($value, $tz);
                 }
                 break;
-            case 'dawn':
-            case 'dawn_c':
-            case 'dawn_n':
-            case 'dawn_a':
-            case 'dusk':
-            case 'dusk_c':
-            case 'dusk_n':
-            case 'dusk_a':
+            case 'dawn_length_c':
+            case 'dawn_length_n':
+            case 'dawn_length_a':
+            case 'dusk_length_c':
+            case 'dusk_length_n':
+            case 'dusk_length_a':
                 $result = $value;
                 if ($unit) {
                     $result = $this->get_dusk_dawn($value);
                     $result .= ($unit ? $this->unit_espace.$this->get_dusk_dawn_unit() : '');
                 }
                 if ($textual) {
-                    $result = $this->get_age_days_from_seconds($value);
+                    $result = $this->get_age_hours_from_seconds($value);
                 }
+                break;
+            case 'day_length':
+            case 'day_length_c':
+            case 'day_length_n':
+            case 'day_length_a':
+                $result = $value;
+                if ($unit) {
+                    $result = $this->get_day_length($value);
+                    $result .= ($unit ? $this->unit_espace.$this->get_day_length_unit() : '');
+                }
+                if ($textual) {
+                $result = $this->get_age_hours_from_seconds($value);
+            }
                 break;
             case 'moonrise':
             case 'moonset':
@@ -1848,8 +1921,18 @@ trait Output {
                     $result = '<i %1$s class="fa fa-fw %2$s fa-signal" aria-hidden="true"></i>';
                 }
                 break;
+            case 'health_idx':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-heartbeat" aria-hidden="true"></i>';
+                break;
+            case 'cbi':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-fire" aria-hidden="true"></i>';
+                break;
             case 'co2':
             case 'co':
+            case 'so2':
+            case 'no2':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-smoke" aria-hidden="true"></i>';
+                break;
             case 'o3':
                 $result = '<i %1$s class="fa fa-fw %2$s fa-circle-o-notch" aria-hidden="true"></i>';
                 break;
@@ -1927,157 +2010,157 @@ trait Output {
              */
             $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer-internal" aria-hidden="true"></i>';
             break;
-        case 'cloud_ceiling':
-            $result = '<i %1$s class="wi wi-fw %2$s wi-cloud-up" aria-hidden="true"></i>';
-            break;
-        case 'o3_distance':
-        case 'co_distance':
-            $result = '<i %1$s class="fa fa-fw %2$s fa-crosshairs" aria-hidden="true"></i>';
-            break;
-        case 'loc_timezone':
-        case 'timezone':
-            $result = '<i %1$s class="fa fa-fw %2$s fa-clock-o" aria-hidden="true"></i>';
-            break;
-        case 'city':
-        case 'country':
-            $result = '<i %1$s class="fa fa-fw %2$s fa-globe" aria-hidden="true"></i>';
-            break;
-        case 'station_name':
-            $result = '<i %1$s class="fa fa-fw %2$s fa-tags" aria-hidden="true"></i>';
-            break;
-        case 'module':
-            $result = '<i %1$s class="fa fa-fw %2$s fa-database" aria-hidden="true"></i>';
-            break;
-        case 'location':
-            $result = '<i %1$s class="fa fa-fw %2$s fa-map-marker" aria-hidden="true"></i>';
-            break;
-        case 'altitude':
-        case 'loc_altitude':
-            $result = '<i %1$s class="fa fa-fw %2$s fa-rotate-315 fa-location-arrow" aria-hidden="true"></i>';
-            break;
-        case 'last_seen':
-            $result = '<i %1$s class="fa fa-fw %2$s fa-eye" aria-hidden="true"></i>';
-            break;
-        case 'refresh':
-            $result = '<i %1$s class="fa fa-fw %2$s fa-refresh" aria-hidden="true"></i>';
-            break;
-        case 'last_upgrade':
-        case 'firmware':
-            $result = '<i %1$s class="fa fa-fw %2$s fa-cog" aria-hidden="true"></i>';
-            break;
-        case 'last_setup':
-        case 'first_setup':
-            $result = '<i %1$s class="fa fa-fw %2$s fa-wrench" aria-hidden="true"></i>';
-            break;
-        case 'windstrength':
-        case 'guststrength':
-        case 'windstrength_max':
-        case 'windstrength_day_max':
-        case 'windstrength_hour_max':
-        case 'wind_ref':
-            $level = $this->get_wind_speed($value, 3);
-            if ($show_value) {
-                $result ='<i %1$s class="wi wi-fw %2$s wi-wind-beaufort-'. $level . '" aria-hidden="true"></i>';
-            }
-            else {
-                $result ='<i %1$s class="wi wi-fw %2$s wi-strong-wind" aria-hidden="true"></i>';
-            }
-            break;
-        case 'warn_windstrength':
-        case 'warn_guststrength':
-        case 'warn_windstrength_max':
-        case 'warn_windstrength_day_max':
-        case 'warn_windstrength_hour_max':
-        case 'warn_wind_ref':
-            $level = $this->get_wind_state($value);
-            if ($show_value) {
-                switch ($level) {
-                    case 1:
-                        $result ='<i %1$s class="wi wi-fw %2$s wi-small-craft-advisory" aria-hidden="true"></i>';
-                        break;
-                    case 2:
-                        $result ='<i %1$s class="wi wi-fw %2$s wi-gale-warning" aria-hidden="true"></i>';
-                        break;
-                    case 3:
-                        $result ='<i %1$s class="wi wi-fw %2$s wi-storm-warning" aria-hidden="true"></i>';
-                        break;
-                    case 4:
-                        $result ='<i %1$s class="wi wi-fw %2$s wi-hurricane-warning" aria-hidden="true"></i>';
-                        break;
-                    default:
-                        $result ='<i %1$s class="wi wi-fw %2$s wi-strong-wind" aria-hidden="true"></i>';
+            case 'cloud_ceiling':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-cloud-up" aria-hidden="true"></i>';
+                break;
+            case 'o3_distance':
+            case 'co_distance':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-crosshairs" aria-hidden="true"></i>';
+                break;
+            case 'loc_timezone':
+            case 'timezone':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-clock-o" aria-hidden="true"></i>';
+                break;
+            case 'city':
+            case 'country':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-globe" aria-hidden="true"></i>';
+                break;
+            case 'station_name':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-tags" aria-hidden="true"></i>';
+                break;
+            case 'module':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-database" aria-hidden="true"></i>';
+                break;
+            case 'location':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-map-marker" aria-hidden="true"></i>';
+                break;
+            case 'altitude':
+            case 'loc_altitude':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-rotate-315 fa-location-arrow" aria-hidden="true"></i>';
+                break;
+            case 'last_seen':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-eye" aria-hidden="true"></i>';
+                break;
+            case 'refresh':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-refresh" aria-hidden="true"></i>';
+                break;
+            case 'last_upgrade':
+            case 'firmware':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-cog" aria-hidden="true"></i>';
+                break;
+            case 'last_setup':
+            case 'first_setup':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-wrench" aria-hidden="true"></i>';
+                break;
+            case 'windstrength':
+            case 'guststrength':
+            case 'windstrength_max':
+            case 'windstrength_day_max':
+            case 'windstrength_hour_max':
+            case 'wind_ref':
+                $level = $this->get_wind_speed($value, 3);
+                if ($show_value) {
+                    $result ='<i %1$s class="wi wi-fw %2$s wi-wind-beaufort-'. $level . '" aria-hidden="true"></i>';
                 }
-            }
-            else {
-                $result ='<i %1$s class="wi wi-fw %2$s wi-strong-wind" aria-hidden="true"></i>';
-            }
-            break;
-        case 'windangle':
-        case 'gustangle':
-        case 'windangle_max':
-        case 'windangle_day_max':
-        case 'windangle_hour_max':
-            if ($show_value) {
-                $s = (get_option('live_weather_station_wind_semantics') == 0 ? 'towards' : 'from') . '-' . $value . '-deg';
-                $result = '<i %1$s class="wi wi-fw %2$s wi-wind ' . $s . '" aria-hidden="true"></i>';
-            }
-            else {
-                $result = '<i %1$s class="wi wi-fw %2$s wi-wind towards-0-deg" aria-hidden="true"></i>';
-            }
-            break;
-        case 'sunrise':
-        case 'sunset':
-        case 'moonrise':
-        case 'moonset':
-            $result = '<i %1$s class="wi wi-fw %2$s wi-' . strtolower($type) . '" aria-hidden="true"></i>';
-            break;
-        case 'moon_phase':
-            if ($show_value) {
-                $result = '<i %1$s class="wi wi-fw %2$s wi-moon-' . $this->get_moon_phase_icon($value) . '" aria-hidden="true"></i>';
-            }
-            else {
+                else {
+                    $result ='<i %1$s class="wi wi-fw %2$s wi-strong-wind" aria-hidden="true"></i>';
+                }
+                break;
+            case 'warn_windstrength':
+            case 'warn_guststrength':
+            case 'warn_windstrength_max':
+            case 'warn_windstrength_day_max':
+            case 'warn_windstrength_hour_max':
+            case 'warn_wind_ref':
+                $level = $this->get_wind_state($value);
+                if ($show_value) {
+                    switch ($level) {
+                        case 1:
+                            $result ='<i %1$s class="wi wi-fw %2$s wi-small-craft-advisory" aria-hidden="true"></i>';
+                            break;
+                        case 2:
+                            $result ='<i %1$s class="wi wi-fw %2$s wi-gale-warning" aria-hidden="true"></i>';
+                            break;
+                        case 3:
+                            $result ='<i %1$s class="wi wi-fw %2$s wi-storm-warning" aria-hidden="true"></i>';
+                            break;
+                        case 4:
+                            $result ='<i %1$s class="wi wi-fw %2$s wi-hurricane-warning" aria-hidden="true"></i>';
+                            break;
+                        default:
+                            $result ='<i %1$s class="wi wi-fw %2$s wi-strong-wind" aria-hidden="true"></i>';
+                    }
+                }
+                else {
+                    $result ='<i %1$s class="wi wi-fw %2$s wi-strong-wind" aria-hidden="true"></i>';
+                }
+                break;
+            case 'windangle':
+            case 'gustangle':
+            case 'windangle_max':
+            case 'windangle_day_max':
+            case 'windangle_hour_max':
+                if ($show_value) {
+                    $s = (get_option('live_weather_station_wind_semantics') == 0 ? 'towards' : 'from') . '-' . $value . '-deg';
+                    $result = '<i %1$s class="wi wi-fw %2$s wi-wind ' . $s . '" aria-hidden="true"></i>';
+                }
+                else {
+                    $result = '<i %1$s class="wi wi-fw %2$s wi-wind towards-0-deg" aria-hidden="true"></i>';
+                }
+                break;
+            case 'sunrise':
+            case 'sunset':
+            case 'moonrise':
+            case 'moonset':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-' . strtolower($type) . '" aria-hidden="true"></i>';
+                break;
+            case 'moon_phase':
+                if ($show_value) {
+                    $result = '<i %1$s class="wi wi-fw %2$s wi-moon-' . $this->get_moon_phase_icon($value) . '" aria-hidden="true"></i>';
+                }
+                else {
+                    $result = '<i %1$s class="wi wi-fw %2$s wi-moon-waxing-crescent-4" aria-hidden="true"></i>';
+                }
+                break;
+            case 'moon_age':
+                if ($show_value) {
+                    $result = '<i %1$s class="wi wi-fw %2$s wi-moon-' . $this->get_lunation_icon($value) . '" aria-hidden="true"></i>';
+                }
+                else {
+                    $result = '<i %1$s class="wi wi-fw %2$s wi-moon-waxing-crescent-4" aria-hidden="true"></i>';
+                }
+                break;
+            case 'moon_illumination':
+            case 'moon_diameter':
+            case 'moon_distance':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-moon-waxing-crescent-4" aria-hidden="true"></i>';
-            }
-            break;
-        case 'moon_age':
-            if ($show_value) {
-                $result = '<i %1$s class="wi wi-fw %2$s wi-moon-' . $this->get_lunation_icon($value) . '" aria-hidden="true"></i>';
-            }
-            else {
-                $result = '<i %1$s class="wi wi-fw %2$s wi-moon-waxing-crescent-4" aria-hidden="true"></i>';
-            }
-            break;
-        case 'moon_illumination':
-        case 'moon_diameter':
-        case 'moon_distance':
-            $result = '<i %1$s class="wi wi-fw %2$s wi-moon-waxing-crescent-4" aria-hidden="true"></i>';
-            break;
-        case 'sun_diameter':
-        case 'sun_distance':
-            $result = '<i %1$s class="wi wi-fw %2$s wi-day-sunny" aria-hidden="true"></i>';
-            break;
-        default:
-            $result = '<i %s class="fa fa-fw %s fa-sun-o" aria-hidden="true"></i>';
+                break;
+            case 'sun_diameter':
+            case 'sun_distance':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-day-sunny" aria-hidden="true"></i>';
+                break;
+            default:
+                $result = '<i %s class="fa fa-fw %s fa-sun-o" aria-hidden="true"></i>';
     }
-    return sprintf($result, $style, $extra);
+        return sprintf($result, $style, $extra);
 }
 
-/**
- * Output a latitude or longitude with user's unit.
- *
- * @param   mixed       $value          The value to output.
- * @param   string      $type           The type of the value.
- * @param   integer     $mode           Optional. The mode in wich to output:
- *                                          1: Geodetic system WGS 84
- *                                          2: Geodetic system WGS 84 with unit
- *                                          3: DMS
- *                                          4: DMS starting with cardinal
- *                                          5: DMS ending with cardinal
- * @param   boolean     $html           Optional. Replace space by &nbsp;
- * @return  string      The value outputed with the right unit.
- * @since    1.1.0
- * @access   protected
- */
+    /**
+     * Output a latitude or longitude with user's unit.
+     *
+     * @param   mixed       $value          The value to output.
+     * @param   string      $type           The type of the value.
+     * @param   integer     $mode           Optional. The mode in wich to output:
+     *                                          1: Geodetic system WGS 84
+     *                                          2: Geodetic system WGS 84 with unit
+     *                                          3: DMS
+     *                                          4: DMS starting with cardinal
+     *                                          5: DMS ending with cardinal
+     * @param   boolean     $html           Optional. Replace space by &nbsp;
+     * @return  string      The value outputed with the right unit.
+     * @since    1.1.0
+     * @access   protected
+     */
     protected function output_coordinate($value, $type, $mode=0, $html=false) {
         switch ($mode) {
             case 1:
@@ -2176,7 +2259,7 @@ trait Output {
                 $result['long'] = $this->get_signal_unit_full($ref) ;
                 break;
             case 'co2':
-                $ref = 0;
+                $ref = get_option('live_weather_station_unit_gas');
                 if ($force_ref != 0) {
                     $ref = $force_ref;
                 }
@@ -2184,7 +2267,7 @@ trait Output {
                 $result['long'] = $this->get_co2_unit_full($ref) ;
                 break;
             case 'co':
-                $ref = get_option('live_weather_station_unit_co');
+                $ref = get_option('live_weather_station_unit_gas');
                 if ($force_ref != 0) {
                     $ref = $force_ref;
                 }
@@ -2211,6 +2294,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_humidity_unit($ref) ;
                 $result['long'] = $this->get_humidity_unit_full($ref) ;
+                $result['comp'] = __('hum', 'live-weather-station') ;
                 break;
             case 'cloudiness':
             case 'cloud_cover':
@@ -2228,6 +2312,24 @@ trait Output {
                 }
                 $result['unit'] = $this->get_noise_unit($ref) ;
                 $result['long'] = $this->get_noise_unit_full($ref) ;
+                break;
+            case 'health_idx':
+                $ref = 0;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_health_index_unit($ref) ;
+                $result['long'] = $this->get_health_index_unit_full($ref) ;
+                $result['comp'] = __('hlth', 'live-weather-station') ;
+                break;
+            case 'cbi':
+                $ref = 0;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_cbi_unit($ref) ;
+                $result['long'] = $this->get_cbi_unit_full($ref) ;
+                $result['comp'] = __('CBi', 'live-weather-station') ;
                 break;
             case 'rain':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
@@ -2383,16 +2485,21 @@ trait Output {
                 $result['unit'] = $this->get_temperature_unit($ref);
                 $result['long'] = $this->get_temperature_unit_full($ref);
                 break;
-            case 'dawn':
-            case 'dawn_c':
-            case 'dawn_n':
-            case 'dawn_a':
-            case 'dusk':
-            case 'dusk_c':
-            case 'dusk_n':
-            case 'dusk_a':
+            case 'dawn_length_c':
+            case 'dawn_length_n':
+            case 'dawn_length_a':
+            case 'dusk_length_c':
+            case 'dusk_length_n':
+            case 'dusk_length_a':
                 $result['unit'] = $this->get_dusk_dawn_unit();
                 $result['long'] = $this->get_dusk_dawn_unit_full();
+                break;
+            case 'day_length':
+            case 'day_length_c':
+            case 'day_length_n':
+            case 'day_length_a':
+                $result['unit'] = $this->get_day_length_unit();
+                $result['long'] = $this->get_day_length_unit_full();
                 break;
             case 'moon_illumination':
                 $ref = 0;
@@ -2460,6 +2567,7 @@ trait Output {
             case 'wind_chill':
             case 'humidex':
             case 'heat_index':
+            case 'cbi':
                 $result = 1 ;
                 break;
             case 'pressure':
@@ -2472,14 +2580,14 @@ trait Output {
                     $result = 1 ;
                 }
                 break;
-            case 'co':
+            /*case 'co':
                 $ref = get_option('live_weather_station_unit_co');
                 switch ($ref) {
                     case 0 : $result = 6 ; break;
                     case 1 : $result = 4 ; break;
                     case 2 : $result = 5 ; break;
                 }
-                break;
+                break;*/
             case 'windstrength':
             case 'guststrength':
             case 'windstrength_max':
@@ -2521,6 +2629,12 @@ trait Output {
     protected function output_abbreviation($type) {
         $result = '';
         switch ($type) {
+            case 'health_idx':
+                $result = __('health', 'live-weather-station') ;
+                break;
+            case 'cbi':
+                $result = __('CBi', 'live-weather-station') ;
+                break;
             case 'co2':
                 $result = __('CO₂', 'live-weather-station') ;
                 break;
@@ -2593,7 +2707,7 @@ trait Output {
             case 'temperature_max':
                 $result = __('temperature', 'live-weather-station') ;
                 break;
-            /*case 'dawn':
+            case 'dawn':
             case 'dawn_c':
             case 'dawn_n':
             case 'dawn_a':
@@ -2604,7 +2718,7 @@ trait Output {
             case 'dusk_n':
             case 'dusk_a':
                 $result = __('dusk', 'live-weather-station') ;
-                break;*/
+                break;
         }
         return $result;
     }
@@ -2689,6 +2803,54 @@ trait Output {
                 break;
             default:
                 $result = __('Unknown Power State', 'live-weather-station');
+        }
+        return $result;
+    }
+
+    /**
+     * Get the health index in human readable text.
+     *
+     * @param integer $value The value of the health index.
+     * @return string The health index in human readable text.
+     * @since 3.1.0
+     */
+    protected function get_health_index_text($value) {
+        $result = __('Healthy', 'live-weather-station') ;
+        if ($value < 80) {
+            $result = __('Fine', 'live-weather-station') ;
+        }
+        if ($value < 60) {
+            $result = __('Fair', 'live-weather-station') ;
+        }
+        if ($value < 40) {
+            $result = __('Poor', 'live-weather-station') ;
+        }
+        if ($value < 20) {
+            $result = __('Unhealthy', 'live-weather-station') ;
+        }
+        return $result;
+    }
+
+    /**
+     * Get the Chandler Burning index in human readable text.
+     *
+     * @param integer $value The value of the Chandler Burning index.
+     * @return string The Chandler Burning index in human readable text.
+     * @since 3.1.0
+     */
+    protected function get_cbi_text($value) {
+        $result = __('Extreme', 'live-weather-station') ;
+        if ($value <= 97.5) {
+            $result = __('Very high', 'live-weather-station') ;
+        }
+        if ($value <= 90) {
+            $result = __('High', 'live-weather-station') ;
+        }
+        if ($value <= 75) {
+            $result = __('Moderate', 'live-weather-station') ;
+        }
+        if ($value < 50) {
+            $result = __('Low', 'live-weather-station') ;
         }
         return $result;
     }
@@ -3038,15 +3200,31 @@ trait Output {
     }
 
     /**
-     * Format the selected datas for widget usage.
+     * Retrieve and format data for widget.
      *
-     * @param   array   $datas  An array containing the selected datas.
-     * @return  array   An array containing the formated datas, ready to be read by widgets.
-     * @since    1.0.0
-     * @access   protected
+     * @param string $id The device or module id.
+     * @param string $type Optional. The type of widget.
+     * @param boolean $obsolescence_filtering Optional. True if data must be filtered.
+     * @return array An array containing the formated datas, ready to be read by widgets.
+     * @since 3.1.0
      */
-    protected function format_widget_datas($datas) {
+    protected function get_widget_data($id, $type='outdoor', $obsolescence_filtering=false) {
+        $fingerprint = md5($id.$type.($obsolescence_filtering?'filtered':'unfiltered'));
+        $result = Cache::get_widget($fingerprint);
+        if ($result) {
+            return $result;
+        }
         $result = array();
+        switch ($type) {
+            case 'ephemeris' :
+                $datas = $this->get_ephemeris_datas($id);
+                break;
+            case 'indoor':
+                $datas = $this->get_indoor_datas($id, $obsolescence_filtering);
+                break;
+            default:
+                $datas = $this->get_outdoor_datas($id, $obsolescence_filtering);
+        }
         $err = 0 ;
         $ts = 0;
         $msg = __('Successful operation', 'live-weather-station');
@@ -3071,6 +3249,7 @@ trait Output {
                     $sub['datas'] = array();
                 }
                 $ssub = array();
+                $ssub['raw_value'] = $data['measure_value'];
                 $ssub['value'] = $this->output_value($data['measure_value'], $data['measure_type'], false, false, $data['module_type']);
                 $ssub['unit'] = $this->output_unit($data['measure_type'], $data['module_type']);
                 $sub_ts = strtotime ($data['measure_timestamp']);
@@ -3083,6 +3262,7 @@ trait Output {
         }
         $result['condition'] = array('value' => $err, 'message' =>$msg);
         $result['timestamp'] = $ts;
+        Cache::set_widget($fingerprint, $result);
         return $result;
     }
 
@@ -3102,6 +3282,7 @@ trait Output {
         switch ($measure_type) {
             case 'co2':
             case 'noise':
+            case 'health_idx':
                 $result = $aggregated && !$outdoor;
                 break;
             case 'cloudiness':
@@ -3129,6 +3310,7 @@ trait Output {
             case 'wind_chill':
             case 'heat_index':
             case 'cloud_ceiling':
+            case 'cbi':
                 $result = $computed && $outdoor;
                 break;
             case 'o3':
@@ -3291,6 +3473,8 @@ trait Output {
                         case 'o3':
                         case 'co':
                         case 'noise':
+                        case 'health_idx':
+                        case 'cbi':
                             $response[] = $measure;
                             break;
                         case 'dew_point':
@@ -3465,9 +3649,9 @@ trait Output {
     /**
      * Format the selected datas for stickertags usage.
      *
-     * @param   array   $datas  An array containing the selected datas.
-     * @return  string   The formated datas, ready to be outputed as stickertags.txt file.
-     * @since    3.0.0
+     * @param array $datas An array containing the selected datas.
+     * @return string The formated datas, ready to be outputed as stickertags.txt file.
+     * @since 3.0.0
      *
      */
     protected function format_stickertags_data($datas) {
@@ -3909,7 +4093,7 @@ trait Output {
                         $val['measure_value_txt'] = 'O₃&nbsp;/&nbsp;' . $val['measure_value_txt'];
                     }
                     $unit = $this->output_unit($val['measure_type'], $module['module_type']);
-                    if (array_key_exists('comp', $unit)) {
+                    if (array_key_exists('comp', $unit) && ($val['measure_type'] != 'humidity') && ($val['measure_type'] != 'health_idx')) {
                         $val['measure_value_txt'] .= ' ' . $unit['comp'];
                     }
                     $val['measure_value_txt'] = str_replace(' ', '&nbsp;', $val['measure_value_txt']);

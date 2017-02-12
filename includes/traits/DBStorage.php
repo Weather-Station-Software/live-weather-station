@@ -13,6 +13,15 @@ use WeatherStation\System\Cache\Cache;
  * @since 1.0.0
  */
 
+define('LWS_NETATMO_SID', 0);
+define('LWS_LOC_SID', 1);
+define('LWS_OWM_SID', 2);
+define('LWS_WUG_SID', 3);
+define('LWS_RAW_SID', 4);
+define('LWS_REAL_SID', 5);
+define('LWS_NETATMOHC_SID', 6);
+define('LWS_TXT_SID', 7);
+
 trait Storage {
 
     /**
@@ -588,13 +597,19 @@ trait Storage {
      * Insert a new station in stations table.
      *
      * @param string $station_id The device id of the station to insert in the table
+     * @param integer $station_type Optional. The type id of the station.
      * @return int|false The number of rows inserted, or false on error.
      * @since 2.3.0
      */
-    protected function insert_ignore_stations_table($station_id) {
+    protected function insert_ignore_stations_table($station_id, $station_type=null) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-        $sql = "INSERT IGNORE INTO ".$table_name." (station_id) VALUES('".$station_id."');";
+        if (isset($station_type)) {
+            $sql = "INSERT IGNORE INTO ".$table_name." (station_id,station_type) VALUES('".$station_id."',".$station_type.");";
+        }
+        else {
+            $sql = "INSERT IGNORE INTO ".$table_name." (station_id) VALUES('".$station_id."');";
+        }
         return $wpdb->query($sql);
     }
 

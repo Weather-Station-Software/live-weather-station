@@ -21,30 +21,191 @@ trait Conversion {
     private $beaufort_thresholds = array(1.1, 5.5, 11.9, 19.7, 28.7, 38.8, 49.9, 61.8, 74.6, 88.1, 102.4, 117.4, 143);
 
     /**
-     * Get the co2 expressed in its unique unit.
+     * Get the health index expressed in its unique unit.
      *
-     * @param   mixed   $value  The value of the co2.
-     * @return  string  The co2 expressed in its unique unit.
-     * @since    1.0.0
-     * @access   protected
+     * @param mixed $value The value of the health index.
+     * @return string The health index expressed in its unique unit.
+     * @since 3.1.0
      */
-    protected function get_co2($value)
+    protected function get_health_index($value)
     {
         $result = $value;
         return sprintf('%d', round($result, 0));
     }
 
     /**
-     * Get co2 expressed in standard unit.
+     * Get the Chandler Burning index expressed in its unique unit.
      *
-     * @param mixed $value The value of co2.
-     * @return string The co2 expressed in standard unit.
-     * @since 3.0.0
+     * @param mixed $value The value of the Chandler Burning index.
+     * @return string The Chandler Burning index expressed in its unique unit.
+     * @since 3.1.0
      */
-    protected function get_reverse_co2($value)
+    protected function get_cbi($value)
     {
         $result = $value;
-        return sprintf('%d', round($result, 0));
+        return sprintf('%.1F', round($result, 1));
+    }
+
+    /**
+     * Get the mass mixing ratio from volume mixing ratio.
+     *
+     * @param float $vmr The volume mixing ratio value.
+     * @param float $density The density/air of the converted gas.
+     * @return float The mass mixing ratio value.
+     * @since 3.1.0
+     */
+    protected function convert_from_vmr_to_mmr($vmr, $density)
+    {
+        $result = $vmr / $density;
+        return $result;
+    }
+
+    /**
+     * Get the mass concentration from volume mixing ratio.
+     *
+     * @param float $vmr The volume mixing ratio value.
+     * @param float $molecular_mass The molecular mass of the converted gas.
+     * @param float $molar_volume Optional. The molar volume of the air.
+     * @return float The mass concentration value.
+     * @since 3.1.0
+     */
+    protected function convert_from_vmr_to_mass_concentration($vmr, $molecular_mass, $molar_volume=24.45 )
+    {
+        $result = ($vmr * $molecular_mass) / $molar_volume;
+        return $result;
+    }
+
+    /**
+     * Get the partial pressure from volume mixing ratio.
+     *
+     * @param float $vmr The volume mixing ratio value.
+     * @param float $pressure Optional. The total gas pressure (in Pa).
+     * @return float The partial pressure value.
+     * @since 3.1.0
+     */
+    protected function convert_from_vmr_to_partial_pressure($vmr, $pressure=100000.0)
+    {
+        $result = $vmr * $pressure / 1000000;
+        return $result;
+    }
+
+    /**
+     * Get the co2 expressed in specific unit.
+     *
+     * @param mixed $value The value of the co2.
+     * @param integer $id Optional. The unit id.
+     * @return string The co2 expressed in specific unit.
+     * @since 1.0.0
+     */
+    protected function get_co2($value, $id=0)
+    {
+        $result = $value;
+        $format = '%d';
+        $prec = 0;
+        switch ($id) {
+            case 1:
+                $result = $this->convert_from_vmr_to_mmr($value, 1.53);
+                break;
+            case 2:
+                $result = $this->convert_from_vmr_to_mass_concentration($value, 44.01);
+                break;
+            case 3:
+                $result = $this->convert_from_vmr_to_partial_pressure($value, 101325);
+                $format = '%.1F';
+                $prec = 1;
+                break;
+        }
+        return sprintf($format, round($result, $prec));
+    }
+
+    /**
+     * Get the CO expressed in specific unit.
+     *
+     * @param mixed $value The value of the CO.
+     * @param integer $id Optional. The unit id.
+     * @return string The CO expressed in specific unit.
+     * @since 2.7.0
+     */
+    protected function get_co($value, $id=0)
+    {
+        $value *= 1000;
+        $result = $value;
+        $format = '%d';
+        $prec = 0;
+        switch ($id) {
+            case 1:
+                $result = $this->convert_from_vmr_to_mmr($value, 0.97);
+                break;
+            case 2:
+                $result = $this->convert_from_vmr_to_mass_concentration($value, 28.01);
+                break;
+            case 3:
+                $result = $this->convert_from_vmr_to_partial_pressure($value);
+                //$format = '%.1F';
+                //$prec = 1;
+                break;
+        }
+        return sprintf($format, round($result, $prec));
+    }
+
+    /**
+     * Get the SO2 expressed in specific unit.
+     *
+     * @param mixed $value The value of the SO2.
+     * @param integer $id Optional. The unit id.
+     * @return string The SO2 expressed in specific unit.
+     * @since 3.1.0
+     */
+    protected function get_so2($value, $id=0)
+    {
+        $value *= 1000;
+        $result = $value;
+        $format = '%d';
+        $prec = 0;
+        switch ($id) {
+            case 1:
+                $result = $this->convert_from_vmr_to_mmr($value, 2.22);
+                break;
+            case 2:
+                $result = $this->convert_from_vmr_to_mass_concentration($value, 64.06);
+                break;
+            case 3:
+                $result = $this->convert_from_vmr_to_partial_pressure($value);
+                //$format = '%.1F';
+                //$prec = 1;
+                break;
+        }
+        return sprintf($format, round($result, $prec));
+    }
+
+    /**
+     * Get the NO2 expressed in specific unit.
+     *
+     * @param mixed $value The value of the NO2.
+     * @param integer $id Optional. The unit id.
+     * @return string The NO2 expressed in specific unit.
+     * @since 3.1.0
+     */
+    protected function get_no2($value, $id=0)
+    {
+        $value *= 1000;
+        $result = $value;
+        $format = '%d';
+        $prec = 0;
+        switch ($id) {
+            case 1:
+                $result = $this->convert_from_vmr_to_mmr($value, 1.88);
+                break;
+            case 2:
+                $result = $this->convert_from_vmr_to_mass_concentration($value, 46.01);
+                break;
+            case 3:
+                $result = $this->convert_from_vmr_to_partial_pressure($value);
+                //$format = '%.1F';
+                //$prec = 1;
+                break;
+        }
+        return sprintf($format, round($result, $prec));
     }
 
     /**
@@ -72,57 +233,6 @@ trait Conversion {
     {
         $result = $value;
         return sprintf('%d', round($result, 0));
-    }
-
-    /**
-     * Get the CO expressed in specific unit.
-     *
-     * @param   mixed   $value  The value of the CO.
-     * @param   integer $id     Optional. The unit id.
-     * @return  string  The CO expressed in specific unit.
-     * @since    2.7.0
-     * @access   protected
-     */
-    protected function get_co($value, $id = 0)
-    {
-        $result = $value;
-        $format = '%.6F';
-        $prec = 6;
-        switch ($id) {
-            case 1:  // pCO = vmrCO * pressure
-                $result = $result * 10;
-                $format = '%.4F';
-                $prec = 4;
-                break;
-            case 2:  // mCO = vmrCO * 1.66
-                $result = $result * 1.66;
-                $format = '%.5F';
-                $prec = 5;
-                break;
-        }
-        return sprintf($format, round($result, $prec));
-    }
-
-    /**
-     * Get CO expressed in standard unit.
-     *
-     * @param mixed $value The value of CO.
-     * @param integer $id The unit id.
-     * @return string The CO expressed in standard unit.
-     * @since 3.0.0
-     */
-    protected function get_reverse_co($value, $id = 0)
-    {
-        $result = $value;
-        switch ($id) {
-            case 1:  // vmrCO = pCO /  pressure
-                $result = $result / 10;
-                break;
-            case 2:  // vmrCO = mCO / 1.66
-                $result = $result / 1.66;
-                break;
-        }
-        return sprintf('%.6F', round($result, 6));
     }
 
     /**
@@ -322,6 +432,19 @@ trait Conversion {
                 $result = $value * 25.4;
                 break;
         }
+        return sprintf('%d', round($result, 0));
+    }
+
+    /**
+     * Get the day expressed in its unique unit.
+     *
+     * @param mixed $value The value of the day.
+     * @return string The day length expressed in its unique unit.
+     * @since 3.1.0
+     */
+    protected function get_day_length($value)
+    {
+        $result = $value;
         return sprintf('%d', round($result, 0));
     }
 
@@ -920,7 +1043,7 @@ trait Conversion {
             case 'cloudiness':
                 $result = $this->get_cloudiness($value);
                 break;
-            case 'co2':
+            /*case 'co2':
                 $result = $this->get_reverse_co2($value);
                 break;
             case 'o3':
@@ -928,7 +1051,7 @@ trait Conversion {
                 break;
             case 'co':
                 $result = $this->get_reverse_co($value, get_option('live_weather_station_unit_co'));
-                break;
+                break;*/
             case 'noise':
                 $result = $this->get_reverse_noise($value);
                 break;

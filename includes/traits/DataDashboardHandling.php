@@ -3,6 +3,7 @@
 namespace WeatherStation\Data\Dashboard;
 
 use \WeatherStation\DB\Query;
+use \WeatherStation\SDK\Generic\Plugin\Common\Utilities;
 
 /**
  * Dashboard handling for Weather Station plugin.
@@ -14,7 +15,7 @@ use \WeatherStation\DB\Query;
  */
 trait Handling {
 
-    use Query;
+    use Query, Utilities;
 
     private $time_shift = 500;
 
@@ -230,14 +231,14 @@ trait Handling {
      * @param   integer $signal             The radio or wifi signal quality.
      * @param   integer $firmware           The firmware version.
      * @param   integer $lastseen           The last seen timestamp.
-     * @param   integer $firstsetup         The first setup timestamp.
-     * @param   integer $lastsetup          The last setup timestamp.
-     * @param   integer $lastupgrade        The last upgrade timestamp.
      * @param   integer $battery            Optional. The battery status.
-     * @since    1.0.0
-     * @access   private
+     * @param   integer $firstsetup         Optional. The first setup timestamp.
+     * @param   integer $lastsetup          Optional. The last setup timestamp.
+     * @param   integer $lastupgrade        Optional. The last upgrade timestamp.
+     * @param   boolean $is_hc              Optional. True if it's a healthy home coach.
+     * @since   1.0.0
      */
-    private function get_netatmo_dashboard($device_id, $device_name, $module_id, $module_name, $module_type, $types, $datas, $place, $signal, $firmware, $lastseen, $battery=0, $firstsetup=null, $lastsetup=null, $lastupgrade=null) {
+    private function get_netatmo_dashboard($device_id, $device_name, $module_id, $module_name, $module_type, $types, $datas, $place, $signal, $firmware, $lastseen, $battery=0, $firstsetup=null, $lastsetup=null, $lastupgrade=null, $is_hc=false) {
         if ($module_type == 'NAModule2') { // Corrects types for the wind gauge module
             $types = array('WindAngle','WindStrength','GustAngle','GustStrength');
         }
@@ -252,13 +253,24 @@ trait Handling {
                 $station['station_name'] = $device_name;
                 $station['station_id'] = $device_id;
             }
-            $station['station_model'] = 'Netatmo - Personal Weather Station';
+            if ($is_hc) {
+                $station['station_model'] = 'Netatmo - Healthy Home Coach';
+                $station['station_type'] = LWS_NETATMOHC_SID;
+            }
+            else {
+                $station['station_model'] = 'Netatmo - Personal Weather Station';
+                $station['station_type'] = LWS_NETATMO_SID;
+            }
             $is_station = true;
         }
         else {
             $station = array();
             $is_station = false;
         }
+        $hi_tmp = null;
+        $hi_hmd = null;
+        $hi_co2 = null;
+        $hi_nse = null;
         foreach($types as $type) {
             if (array_key_exists($type, $datas)) {
                 $updates = array();
@@ -274,6 +286,18 @@ trait Handling {
                     $updates['measure_timestamp'] = date('Y-m-d H:i:s', $datas['wind_time_utc']);
                 }
                 $this->update_data_table($updates);
+                if (strtolower($type) == 'temperature') {
+                    $hi_tmp = $datas[$type];
+                }
+                if (strtolower($type) == 'humidity') {
+                    $hi_hmd = $datas[$type];
+                }
+                if (strtolower($type) == 'co2') {
+                    $hi_co2 = $datas[$type];
+                }
+                if (strtolower($type) == 'noise') {
+                    $hi_nse = $datas[$type];
+                }
             }
         }
         $updates['measure_timestamp'] = date('Y-m-d H:i:s');
@@ -600,6 +624,30 @@ trait Handling {
             $updates['measure_type'] = 'windstrength_day_max';
             $updates['measure_value'] =$datas['max_wind_str'] ;
             $this->update_data_table($updates);
+        }
+
+        // Health index computing
+        if ($module_type == 'NAMain' || $module_type == 'NAModule4') {
+            $updates = array();
+            $updates['device_id'] = $device_id;
+            $updates['device_name'] = $device_name;
+            $updates['module_id'] = $module_id;
+            $updates['module_type'] = $module_type;
+            $updates['module_name'] = $module_name;
+            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $datas['time_utc']);
+            $health = $this->compute_health_index($hi_tmp, $hi_hmd, $hi_co2, $hi_nse);
+            if ($is_hc && !get_option('live_weather_station_overload_hc')) {
+                $updates['measure_type'] = 'health_idx';
+                $updates['measure_value'] = 90 - (20*$datas['health_idx']) ;
+                $this->update_data_table($updates);
+            }
+            else {
+                foreach ($health as $key => $idx) {
+                    $updates['measure_type'] = $key;
+                    $updates['measure_value'] = $idx;
+                    $this->update_data_table($updates);
+                }
+            }
         }
         if ($is_station) {
             $this->update_stations_table($station, true);

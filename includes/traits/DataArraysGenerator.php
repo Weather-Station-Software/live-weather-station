@@ -287,6 +287,18 @@ trait Generator {
         switch ($mtype) {
             case 'battery':
             case 'signal':
+            case 'health_idx':
+            case 'cbi':
+            case 'day_length':
+            case 'day_length_c':
+            case 'day_length_n':
+            case 'day_length_a':
+            case 'dawn_length_c':
+            case 'dawn_length_n':
+            case 'dawn_length_a':
+            case 'dusk_length_c':
+            case 'dusk_length_n':
+            case 'dusk_length_a':
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_special_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']), $this->output_value($mvalue, $mtype, true, false, $ref['module_type']), $this->output_value($mvalue, $mtype, false, true, $ref['module_type']))));
                 break;
             case 'temperature_trend':
@@ -321,7 +333,13 @@ trait Generator {
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_wind_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']), $this->output_value($mvalue, $mtype, true, false, $ref['module_type']), $this->get_angle_text($mvalue), $this->get_angle_full_text($mvalue))));
                 break;
             case 'sunrise':
+            case 'sunrise_c':
+            case 'sunrise_n':
+            case 'sunrise_a':
             case 'sunset':
+            case 'sunset_c':
+            case 'sunset_n':
+            case 'sunset_a':
             case 'moonrise':
             case 'moonset':
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_time_format(array($mvalue, $this->get_date_from_utc($mvalue, $ref['loc_timezone']), $this->get_time_from_utc($mvalue, $ref['loc_timezone']), $this->get_time_diff_from_utc($mvalue))));
@@ -392,6 +410,7 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('humidity'), 'humidity', ($reduced ? array() : $this->get_measure_array($ref, $data, 'humidity')));
                     $result[] = array($this->get_measurement_type('noise'), 'noise', ($reduced ? array() : $this->get_measure_array($ref, $data, 'noise')));
                     $result[] = array($this->get_measurement_type('pressure'), 'pressure', ($reduced ? array() : $this->get_measure_array($ref, $data, 'pressure')));
+                    $result[] = array($this->get_measurement_type('health_idx'), 'health_idx', ($reduced ? array() : $this->get_measure_array($ref, $data, 'health_idx')));
                 }
                 if ($wug || $real || $raw) {
                     $result[] = array($this->get_measurement_type('pressure'), 'pressure', ($reduced ? array() : $this->get_measure_array($ref, $data, 'pressure')));
@@ -530,6 +549,7 @@ trait Generator {
                 }
                 $result[] = array($this->get_measurement_type('humidity'), 'humidity', ($reduced ? array() : $this->get_measure_array($ref, $data, 'humidity')));
                 $result[] = array($this->get_measurement_type('temperature'), 'temperature', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature')));
+                $result[] = array($this->get_measurement_type('health_idx'), 'health_idx', ($reduced ? array() : $this->get_measure_array($ref, $data, 'health_idx')));
                 if (($full || $mono) && ($netatmo || $raw)) {
                     $result[] = array($this->get_measurement_type('temperature_max'), 'temperature_max', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature_max')));
                     $result[] = array($this->get_measurement_type('temperature_min'), 'temperature_min', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature_min')));
@@ -547,6 +567,7 @@ trait Generator {
                 $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
                 $result[] = array($this->get_measurement_type('humidity'), 'humidity', ($reduced ? array() : $this->get_measure_array($ref, $data, 'humidity')));
                 $result[] = array($this->get_measurement_type('temperature'), 'temperature', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature')));
+                $result[] = array($this->get_measurement_type('health_idx'), 'health_idx', ($reduced ? array() : $this->get_measure_array($ref, $data, 'health_idx')));
                 break;
             case 'aggregated': // All modules aggregated in one
                 if ($aggregated) {
@@ -562,6 +583,7 @@ trait Generator {
                 if ($netatmo || $raw || $real) {
                     $result[] = array($this->get_measurement_type('humidity'), 'humidity', ($reduced ? array() : $this->get_measure_array($ref, $data, 'humidity')));
                     $result[] = array($this->get_measurement_type('temperature'), 'temperature', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature')));
+                    $result[] = array($this->get_measurement_type('health_idx'), 'health_idx', ($reduced ? array() : $this->get_measure_array($ref, $data, 'health_idx')));
                 }
                 break;
             case 'nacomputed': // Virtual module for computed values
@@ -585,6 +607,7 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('humidex'), 'humidex', ($reduced ? array() : $this->get_measure_array($ref, $data, 'humidex')));
                     $result[] = array($this->get_measurement_type('wind_chill'), 'wind_chill', ($reduced ? array() : $this->get_measure_array($ref, $data, 'wind_chill')));
                     $result[] = array($this->get_measurement_type('cloud_ceiling'), 'cloud_ceiling', ($reduced ? array() : $this->get_measure_array($ref, $data, 'cloud_ceiling')));
+                    $result[] = array($this->get_measurement_type('cbi'), 'cbi', ($reduced ? array() : $this->get_measure_array($ref, $data, 'cbi')));
                 }
                 break;
             case 'nacurrent': // Virtual module for current values from OpenWeatherMap.org
@@ -615,7 +638,23 @@ trait Generator {
                         $result[] = array($this->get_measurement_type('firmware'), 'firmware', ($reduced ? array() : $this->get_measure_array($ref, $data, 'firmware')));
                     }
                     $result[] = array($this->get_measurement_type('sunrise'), 'sunrise', ($reduced ? array() : $this->get_measure_array($ref, $data, 'sunrise')));
+                    $result[] = array($this->get_measurement_type('sunrise_c'), 'sunrise_c', ($reduced ? array() : $this->get_measure_array($ref, $data, 'sunrise_c')));
+                    $result[] = array($this->get_measurement_type('sunrise_n'), 'sunrise_n', ($reduced ? array() : $this->get_measure_array($ref, $data, 'sunrise_n')));
+                    $result[] = array($this->get_measurement_type('sunrise_a'), 'sunrise_a', ($reduced ? array() : $this->get_measure_array($ref, $data, 'sunrise_a')));
+                    $result[] = array($this->get_measurement_type('dawn_length_c'), 'dawn_length_c', ($reduced ? array() : $this->get_measure_array($ref, $data, 'dawn_length_c')));
+                    $result[] = array($this->get_measurement_type('dawn_length_n'), 'dawn_length_n', ($reduced ? array() : $this->get_measure_array($ref, $data, 'dawn_length_n')));
+                    $result[] = array($this->get_measurement_type('dawn_length_a'), 'dawn_length_a', ($reduced ? array() : $this->get_measure_array($ref, $data, 'dawn_length_a')));
                     $result[] = array($this->get_measurement_type('sunset'), 'sunset', ($reduced ? array() : $this->get_measure_array($ref, $data, 'sunset')));
+                    $result[] = array($this->get_measurement_type('sunset_c'), 'sunset_c', ($reduced ? array() : $this->get_measure_array($ref, $data, 'sunset_c')));
+                    $result[] = array($this->get_measurement_type('sunset_n'), 'sunset_n', ($reduced ? array() : $this->get_measure_array($ref, $data, 'sunset_n')));
+                    $result[] = array($this->get_measurement_type('sunset_a'), 'sunset_a', ($reduced ? array() : $this->get_measure_array($ref, $data, 'sunset_a')));
+                    $result[] = array($this->get_measurement_type('dusk_length_c'), 'dusk_length_c', ($reduced ? array() : $this->get_measure_array($ref, $data, 'dusk_length_c')));
+                    $result[] = array($this->get_measurement_type('dusk_length_n'), 'dusk_length_n', ($reduced ? array() : $this->get_measure_array($ref, $data, 'dusk_length_n')));
+                    $result[] = array($this->get_measurement_type('dusk_length_a'), 'dusk_length_a', ($reduced ? array() : $this->get_measure_array($ref, $data, 'dusk_length_a')));
+                    $result[] = array($this->get_measurement_type('day_length'), 'day_length', ($reduced ? array() : $this->get_measure_array($ref, $data, 'day_length')));
+                    $result[] = array($this->get_measurement_type('day_length_c'), 'day_length_c', ($reduced ? array() : $this->get_measure_array($ref, $data, 'day_length_c')));
+                    $result[] = array($this->get_measurement_type('day_length_n'), 'day_length_n', ($reduced ? array() : $this->get_measure_array($ref, $data, 'day_length_n')));
+                    $result[] = array($this->get_measurement_type('day_length_a'), 'day_length_a', ($reduced ? array() : $this->get_measure_array($ref, $data, 'day_length_a')));
                     $result[] = array($this->get_measurement_type('sun_distance'), 'sun_distance', ($reduced ? array() : $this->get_measure_array($ref, $data, 'sun_distance')));
                     $result[] = array($this->get_measurement_type('sun_diameter'), 'sun_diameter', ($reduced ? array() : $this->get_measure_array($ref, $data, 'sun_diameter')));
                     $result[] = array($this->get_measurement_type('moonrise'), 'moonrise', ($reduced ? array() : $this->get_measure_array($ref, $data, 'moonrise')));
@@ -1506,6 +1545,7 @@ trait Generator {
         $result[] = 'RainWise - System 12 WeatherLog';
         $result[] = 'RainWise - WS-1000CC';
         $result[] = 'RainWise - WS-2000';
+        $result[] = 'Reinhardt - 5MVH';
         $result[] = 'Texas Weather Instruments - OneWire';
         $result[] = 'Texas Weather Instruments - WLS';
         $result[] = 'Texas Weather Instruments - WPS';

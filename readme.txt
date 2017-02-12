@@ -104,16 +104,11 @@ You can report bugs and suggest ideas via the [support section](https://wordpres
 
 == Changelog ==
 
-= 3.0.11 / February 1st, 2017 =
-
-* Bug fix: coordinates for stations based on realtime.txt files are truncated (many thanks to sebs42 to find it).
-
 See [full changelog](https://weather.station.software/changelog.php).
 
 == Upgrade Notice ==
 
-= 3.0.X =
-New major release with tons of new features, optimization and options. Live Weather Station become Weather Station!
+Please, see [full changelog](https://weather.station.software/changelog.php) and [requirements](https://weather.station.software/en/handbook/requirements/).
 
 == Screenshots ==
 

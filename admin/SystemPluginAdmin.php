@@ -17,6 +17,8 @@ use WeatherStation\UI\SVG\Handling as SVG;
 use WeatherStation\System\I18N\Handling as Intl;
 use WeatherStation\SDK\Netatmo\Plugin\Collector as Netatmo_Collector;
 use WeatherStation\SDK\Netatmo\Plugin\Initiator as Netatmo_Initiator;
+use WeatherStation\SDK\Netatmo\Plugin\HCCollector as Netatmo_HCCollector;
+use WeatherStation\SDK\Netatmo\Plugin\HCInitiator as Netatmo_HCInitiator;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector;
 use WeatherStation\SDK\WeatherUnderground\Plugin\BaseCollector as WUG_Base_Collector;
 use WeatherStation\SDK\WeatherUnderground\Plugin\StationCollector as WUG_Station_Collector;
@@ -209,10 +211,10 @@ class Admin {
             array($this, 'lws_display_wind_strength_unit_callback'), 'lws_display', 'lws_display_section',
             array(__('Unit of measurement in which wind speeds are expressed.', 'live-weather-station')));
         register_setting('lws_display', 'lws_display_wind_strength_unit');
-        add_settings_field('lws_display_co_unit', __('Carbon monoxide unit', 'live-weather-station'),
-            array($this, 'lws_display_co_unit_callback'), 'lws_display', 'lws_display_section',
-            array(__('Unit of measurement in which the concentrations of carbon monoxide are expressed.', 'live-weather-station')));
-        register_setting('lws_display', 'lws_display_co_unit');
+        add_settings_field('lws_display_gas_unit', __('Gases', 'live-weather-station'),
+            array($this, 'lws_display_gas_unit_callback'), 'lws_display', 'lws_display_section',
+            array(__('Way to express the concentrations of gases.', 'live-weather-station')));
+        register_setting('lws_display', 'lws_display_gas_unit');
         add_settings_field('lws_display_distance_unit', __('Distances', 'live-weather-station'),
             array($this, 'lws_display_distance_unit_callback'), 'lws_display', 'lws_display_section',
             array(__('Units system in which distances are expressed.', 'live-weather-station')));
@@ -318,11 +320,14 @@ class Admin {
      */
     public function lws_system_cache_manage_callback($args) {
         $cbxs = array();
-        /*$cbxs[] = array('text' => __('Cache frontend features', 'live-weather-station'),
+        $cbxs[] = array('text' => __('Cache controls', 'live-weather-station'),
             'id' => 'lws_system_frontend_cache',
             'checked' => (bool)get_option('live_weather_station_frontend_cache'),
-            'description' => sprintf(__('Check this to activate the cache manager of %s for frontend rendering (widgets, gauges, meters, etc.).', 'live-weather-station'), LWS_PLUGIN_NAME));
-        */
+            'description' => sprintf(__('Check this to activate the cache manager of %s for the controls rendering (gauges, meters, etc.).', 'live-weather-station'), LWS_PLUGIN_NAME));
+        $cbxs[] = array('text' => __('Cache widgets', 'live-weather-station'),
+            'id' => 'lws_system_widget_cache',
+            'checked' => (bool)get_option('live_weather_station_widget_cache'),
+            'description' => sprintf(__('Check this to activate the cache manager of %s for the widgets rendering.', 'live-weather-station'), LWS_PLUGIN_NAME));
         $cbxs[] = array('text' => __('Cache backend features', 'live-weather-station'),
             'id' => 'lws_system_backend_cache',
             'checked' => (bool)get_option('live_weather_station_backend_cache'),
@@ -409,8 +414,8 @@ class Admin {
      * @param array $args An array of arguments which first element is the description to be displayed next to the control.
      * @since 3.0.0
      */
-    public function lws_display_co_unit_callback($args) {
-        echo $this->field_select($this->get_co_unit_name_array(), get_option('live_weather_station_unit_co'), 'lws_display_co_unit', $args[0]);
+    public function lws_display_gas_unit_callback($args) {
+        echo $this->field_select($this->get_gas_unit_name_array(), get_option('live_weather_station_unit_gas'), 'lws_display_gas_unit', $args[0]);
     }
 
     /**
@@ -517,7 +522,7 @@ class Admin {
                 update_option('live_weather_station_unit_temperature', (integer)$_POST['lws_display_temperature_unit']);
                 update_option('live_weather_station_unit_pressure', (integer)$_POST['lws_display_pressure_unit']);
                 update_option('live_weather_station_unit_wind_strength', (integer)$_POST['lws_display_wind_strength_unit']);
-                update_option('live_weather_station_unit_co', (integer)$_POST['lws_display_co_unit']);
+                update_option('live_weather_station_unit_gas', (integer)$_POST['lws_display_gas_unit']);
                 update_option('live_weather_station_unit_distance', (integer)$_POST['lws_display_distance_unit']);
                 update_option('live_weather_station_unit_altitude', (integer)$_POST['lws_display_altitude_unit']);
                 update_option('live_weather_station_unit_rain_snow', (integer)$_POST['lws_display_rain_snow_unit']);
@@ -554,6 +559,7 @@ class Admin {
                 update_option('live_weather_station_logger_retention', (integer)$_POST['lws_system_log_retention']);
                 update_option('live_weather_station_txt_cache_bypass', (array_key_exists('lws_system_txt_cache_bypass', $_POST) ? 1 : 0));
                 update_option('live_weather_station_frontend_cache', (array_key_exists('lws_system_frontend_cache', $_POST) ? 1 : 0));
+                update_option('live_weather_station_widget_cache', (array_key_exists('lws_system_widget_cache', $_POST) ? 1 : 0));
                 update_option('live_weather_station_backend_cache', (array_key_exists('lws_system_backend_cache', $_POST) ? 1 : 0));
                 update_option('live_weather_station_redirect_internal_links', (array_key_exists('lws_system_redirect_internal_links', $_POST) ? 1 : 0));
                 update_option('live_weather_station_redirect_external_links', (array_key_exists('lws_system_redirect_external_links', $_POST) ? 1 : 0));
@@ -562,6 +568,7 @@ class Admin {
                 update_option('live_weather_station_show_technical', (array_key_exists('lws_system_show_technical', $_POST) ? 1 : 0));
                 if (!$save_auto && get_option('live_weather_station_auto_manage_netatmo')) {
                     $this->get_netatmo(true);
+                    $this->get_netatmohc(true);
                 }
             }
             else {
@@ -859,6 +866,12 @@ class Admin {
                                     $view = 'dashboard' ;
                                 }
                             }
+                            if (array_key_exists('add-netatmohc', $_POST)) {
+                                $this->add_netatmo($id, true);
+                                if ($dashboard) {
+                                    $view = 'dashboard' ;
+                                }
+                            }
                             break;
                         case 'location':
                             if (array_key_exists('add-edit-loc', $_POST)) {
@@ -1008,7 +1021,7 @@ class Admin {
         $s = $f;
         $f = LWS_ADMIN_DIR.'partials/'.$f.'.php';
         if (file_exists($f)) {
-            wp_dequeue_script('media-upload');
+            //wp_dequeue_script('media-upload');
             include($f);
         }
         else {
@@ -1132,7 +1145,7 @@ class Admin {
         self::truncate_data_table();
         if (!$auto) {
             add_settings_error('lws_nonce_success', 200, __('All stations data have been purged.', 'live-weather-station'), 'updated');
-            Logger::info($this->service, null, null, null, null, null, 0, 'Data table has been truncated.');
+            Logger::notice($this->service, null, null, null, null, null, 0, 'Data table has been truncated.');
         }
         else {
             Logger::notice('Updater', null, null, null, null, null, 0, 'Data table has been truncated.');
@@ -1150,7 +1163,7 @@ class Admin {
         $this->get_all();
         if (!$auto) {
             add_settings_error('lws_nonce_success', 200, __('All stations have been resynchronized.', 'live-weather-station'), 'updated');
-            Logger::info($this->service, null, null, null, null, null, 0, 'All stations have been resynchronized.');
+            Logger::notice($this->service, null, null, null, null, null, 0, 'All stations have been resynchronized.');
         }
         else {
             Logger::notice('Updater', null, null, null, null, null, 0, 'All stations have been resynchronized.');
@@ -1326,6 +1339,8 @@ class Admin {
     private function get_all() {
         $n = new Netatmo_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
         $n->run();
+        $n = new Netatmo_HCInitiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run();
         $n = new WeatherUnderground_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
         $n->run();
         $n = new Clientraw_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
@@ -1339,11 +1354,23 @@ class Admin {
      * First getting of data for Netatmo station.
      *
      * @param boolean $auto_init Optional. Force creation of stations.
-     *
      * @since 3.0.0
      */
     private function get_netatmo($auto_init=false) {
         $n = new Netatmo_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run($auto_init);
+        $this->get_current_and_pollution();
+    }
+
+    /**
+     * First getting of data for Netatmo healthy home coaches.
+     *
+     * @param boolean $auto_init Optional. Force creation of stations.
+     *
+     * @since 3.1.0
+     */
+    private function get_netatmohc($auto_init=false) {
+        $n = new Netatmo_HCInitiator(LWS_PLUGIN_ID, LWS_VERSION);
         $n->run($auto_init);
         $this->get_current_and_pollution();
     }
@@ -1410,6 +1437,7 @@ class Admin {
             Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly connected to service.');
             if (get_option('live_weather_station_auto_manage_netatmo')) {
                 $this->get_netatmo(true);
+                $this->get_netatmohc(true);
             }
         }
         else {
@@ -1427,6 +1455,7 @@ class Admin {
         self::init_netatmo_options();
         Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly disconnected from service.');
         $this->clear_all_netatmo_stations();
+        $this->clear_all_netatmo_hc_stations();
         Logger::notice('Backend', 'Netatmo', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
     }
 
@@ -1500,27 +1529,43 @@ class Admin {
     /**
      * Add a Netatmo station.
      *
+     * @param boolean $is_hc Optional. True if it's a healthy home coach;
      * @param string $device_id The id of the station.
      * @since 3.0.0
      */
-    protected function add_netatmo($device_id=null) {
+    protected function add_netatmo($device_id=null, $is_hc=false) {
         if ($device_id) {
-            $n = new Netatmo_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+            if ($is_hc) {
+                $n = new Netatmo_HCInitiator(LWS_PLUGIN_ID, LWS_VERSION);
+                $nonce = 'add-netatmohc';
+                $station_type = LWS_NETATMOHC_SID;
+            }
+            else {
+                $n = new Netatmo_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+                $nonce = 'add-netatmo';
+                $station_type = LWS_NETATMO_SID;
+            }
             $stations = $n->detect_stations();
             $station['station_name'] = '<unnamed>';
+            $station['station_type'] = $station_type;
             $station['station_id'] = $device_id;
             foreach ($stations as $item) {
                 if ($item['device_id'] == $device_id) {
                     $station = $item;
                 }
             }
-            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-netatmo')) {
-                if ($this->insert_ignore_stations_table($device_id)) {
+            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), $nonce)) {
+                if ($this->insert_ignore_stations_table($device_id, $station_type)) {
                     $message = __('The station %s has been correctly added.', 'live-weather-station');
                     $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, 'Netatmo', $device_id, $station['station_name'], null, null, null, 'Station added.');
-                    $this->get_netatmo();
+                    if ($is_hc) {
+                        $this->get_netatmohc();
+                    }
+                    else {
+                        $this->get_netatmo();
+                    }
                 }
                 else {
                     $message = __('Unable to add the station %s.', 'live-weather-station');
@@ -1558,7 +1603,7 @@ class Admin {
             array_key_exists('loc_country_code', $_POST) &&
             array_key_exists('loc_tz', $_POST) &&
             array_key_exists('loc_altitude', $_POST)) {
-            $station['station_type'] = 1;
+            $station['station_type'] = LWS_LOC_SID;
             if (array_key_exists('guid', $_POST)) {
                 $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
             }
@@ -1714,7 +1759,7 @@ class Admin {
             array_key_exists('service_id', $_POST) &&
             array_key_exists('station_model', $_POST) &&
             array_key_exists('loc_altitude', $_POST)) {
-            $station['station_type'] = 4;
+            $station['station_type'] = LWS_RAW_SID;
             if (array_key_exists('guid', $_POST)) {
                 $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
             }
@@ -1742,12 +1787,12 @@ class Admin {
             if (array_key_exists('loc_altitude', $_POST)) {
                 $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
             }
-            if (array_key_exists('loc_latitude', $_POST)) {
+            /*if (array_key_exists('loc_latitude', $_POST)) {
                 $station['loc_latitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_latitude']));
             }
             if (array_key_exists('loc_longitude', $_POST)) {
                 $station['loc_longitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_longitude']));
-            }
+            }*/
             $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
             $collector = new ClientrawCollector();
             if ($message = $collector->test($station['connection_type'], $station['service_id'])) {
@@ -1852,7 +1897,7 @@ class Admin {
             array_key_exists('loc_latitude', $_POST) &&
             array_key_exists('loc_longitude', $_POST) &&
             array_key_exists('loc_altitude', $_POST)) {
-            $station['station_type'] = 5;
+            $station['station_type'] = LWS_REAL_SID;
             if (array_key_exists('guid', $_POST)) {
                 $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
             }
@@ -1881,10 +1926,10 @@ class Admin {
                 $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
             }
             if (array_key_exists('loc_latitude', $_POST)) {
-                $station['loc_latitude'] = stripslashes(htmlspecialchars_decode($_POST['loc_latitude']));
+                $station['loc_latitude'] = sprintf("%.7F", (float)stripslashes(htmlspecialchars_decode($_POST['loc_latitude'])));
             }
             if (array_key_exists('loc_longitude', $_POST)) {
-                $station['loc_longitude'] = stripslashes(htmlspecialchars_decode($_POST['loc_longitude']));
+                $station['loc_longitude'] = sprintf("%.7F", (float)stripslashes(htmlspecialchars_decode($_POST['loc_longitude'])));
             }
             $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
             $collector = new RealtimeCollector();

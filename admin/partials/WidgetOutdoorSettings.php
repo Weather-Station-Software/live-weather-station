@@ -92,6 +92,30 @@
     <?php } ?>
 </select>
 <p>
+    <label for="<?php echo $this->get_field_id('day_url'); ?>"><?php esc_html_e( 'Image url for day' , 'live-weather-station'); ?></label><br/>
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('day_url'); ?>" name="<?php echo $this->get_field_name('day_url'); ?>" value="<?php echo $day_url; ?>" />
+</p>
+<p>
+    <label for="<?php echo $this->get_field_id('night_url'); ?>"><?php esc_html_e( 'Image url for night' , 'live-weather-station'); ?></label><br/>
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('night_url'); ?>" name="<?php echo $this->get_field_name('night_url'); ?>" value="<?php echo $night_url; ?>" />
+</p>
+<p>
+    <label for="<?php echo $this->get_field_id('dawn_url'); ?>"><?php esc_html_e( 'Image url for dawn' , 'live-weather-station'); ?></label><br/>
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('dawn_url'); ?>" name="<?php echo $this->get_field_name('dawn_url'); ?>" value="<?php echo $dawn_url; ?>" />
+</p>
+<p>
+    <label for="<?php echo $this->get_field_id('dusk_url'); ?>"><?php esc_html_e( 'Image url for dusk' , 'live-weather-station'); ?></label><br/>
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('dusk_url'); ?>" name="<?php echo $this->get_field_name('dusk_url'); ?>" value="<?php echo $dusk_url; ?>" />
+</p>
+<p>
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('fixed_background'); ?>" name="<?php echo $this->get_field_name('fixed_background'); ?>"<?php checked( $fixed_background ); ?> />
+    <label for="<?php echo $this->get_field_id('fixed_background'); ?>"><?php esc_html_e( 'Fixed background' , 'live-weather-station'); ?></label>
+</p>
+<p>
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('follow_light'); ?>" name="<?php echo $this->get_field_name('follow_light'); ?>"<?php checked( $follow_light ); ?> />
+    <label for="<?php echo $this->get_field_id('follow_light'); ?>"><?php esc_html_e( 'Luminosity follows current light' , 'live-weather-station'); ?></label>
+</p>
+<p>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_borders'); ?>" name="<?php echo $this->get_field_name('show_borders'); ?>"<?php checked( $show_borders ); ?> />
     <label for="<?php echo $this->get_field_id('show_borders'); ?>"><?php esc_html_e( 'Show borders' , 'live-weather-station'); ?></label>
 </p>

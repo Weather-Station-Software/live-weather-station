@@ -190,6 +190,37 @@ trait Query {
     }
 
     /**
+     * Get indoor stations list.
+     *
+     * @return array An array containing the available stations.
+     * @since 3.1.0
+     */
+    protected function get_operational_indoor_stations_list() {
+        $ids = array();
+        foreach ($this->get_all_id_by_type(0) as $id) {
+            $ids[] = '\'' . $id['station_id'] . '\'';
+        }
+        foreach ($this->get_all_id_by_type(6) as $id) {
+            $ids[] = '\'' . $id['station_id'] . '\'';
+        }
+        global $wpdb;
+        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $sql = "SELECT DISTINCT device_id, device_name, module_id, module_name FROM ".$table_name . " WHERE (module_type='NAModule4') OR (module_type='NAModule9') OR (module_type='NAMain' AND device_id IN (".implode(',', $ids)."));";
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $result = array();
+            foreach ($query_a as $val) {
+                $result[] = (array)$val;
+            }
+            return $result;
+        }
+        catch(\Exception $ex) {
+            return array('device_name' => __(LWS_PLUGIN_NAME, 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
+        }
+    }
+
+    /**
      * Get modules array.
      *
      * @return array An array containing modules by stations.
@@ -243,12 +274,41 @@ trait Query {
     }
 
     /**
+     * Filter stations list by type.
+     *
+     * @param array $values The values to filter
+     * @param mixed $station_type Optional. The station type to query..
+     * @return array An array containing the filtered values.
+     * @since 3.1.0
+     */
+    private function filter_values_by_stations_type($values, $station_type=false) {
+        if ($station_type === false) {
+            $result = $values;
+        }
+        else {
+            $result = array();
+            $stations_list = $this->get_all_stations_by_type($station_type);
+            $stations = array();
+            foreach ($stations_list as $station) {
+                $stations[] = strtoupper($station['station_id']);
+            }
+            foreach ($values as $value) {
+                if (in_array(strtoupper($value['device_id']), $stations)) {
+                    $result[] = $value;
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Get stations list with latitude and longitude set.
      *
+     * @param mixed $station_type Optional. The station type to query..
      * @return array An array containing the located stations.
      * @since 2.0.0
      */
-    protected function get_located_operational_stations_list() {
+    protected function get_located_operational_stations_list($station_type=false) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
         $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name ;
@@ -259,6 +319,7 @@ trait Query {
             foreach ($query_a as $val) {
                 $result[] = (array)$val;
             }
+            $result = $this->filter_values_by_stations_type($result, $station_type);
         }
         catch(\Exception $ex) {
             $result = array() ;
@@ -296,6 +357,62 @@ trait Query {
     }
 
     /**
+     * Get stations list with reference values (to compute dew point, wind chill,...).
+     *
+     * @param mixed $station_type Optional. The station type to query.
+     * @return array An array containing the stations with reference values.
+     * @since 2.0.0
+     */
+    private function get_reference_values($station_type=false) {
+        global $wpdb;
+        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $sql = "SELECT device_id, device_name, module_type, measure_timestamp, measure_type, measure_value FROM ".$table_name." WHERE (module_type='NAMain' OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NACurrent') AND (measure_type='temperature' OR measure_type='humidity' OR measure_type='windstrength' OR measure_type LIKE 'loc_%')" ;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $result = array();
+            foreach ($query_a as $val) {
+                $result[] = (array)$val;
+            }
+            $result = $this->filter_values_by_stations_type($result, $station_type);
+        }
+        catch(\Exception $ex) {
+            $result = array() ;
+        }
+        $return = array();
+        foreach ($result as $res) {
+            $return[$res['device_id']]['device_name'] = $res['device_name'] ;
+            $return[$res['device_id']][$res['measure_type']][$res['module_type']]['value'] = $res['measure_value'] ;
+            $return[$res['device_id']][$res['measure_type']][$res['module_type']]['timestamp'] = $res['measure_timestamp'] ;
+        }
+        $result = array();
+        foreach ($return as $device_id => $device) {
+            foreach ($device as $measure_type => $measure) {
+                if (is_array($measure)) {
+                    $value = -9999;
+                    foreach ($measure as $module_type => $module) {
+                        $value = $module['value'];
+                        $diff = round ((abs( strtotime(get_date_from_gmt(date('Y-m-d H:i:s'))) - strtotime(get_date_from_gmt($module['timestamp']))))/60);
+                        $ts = $module['timestamp'];
+                        if ($measure_type == 'temperature' && $module_type == 'NAModule1' && ($diff < $this->delta_time)) {
+                            break;
+                        }
+                        if ($measure_type == 'humidity' && $module_type == 'NAModule1' && ($diff < $this->delta_time)) {
+                            break;
+                        }
+                        if ($measure_type == 'windstrength' && $module_type == 'NAModule2' && ($diff < $this->delta_time)) {
+                            break;
+                        }
+                    }
+                    $result[$device_id]['name'] = $device['device_name'];
+                    $result[$device_id][$measure_type] = $value;
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Get the name of a station.
      *
      * @param string $device_id The device ID.
@@ -321,11 +438,10 @@ trait Query {
     /**
      * Get all datas for a single module.
      *
-     * @param   string  $module_id  The module ID.
-     * @param   boolean     $obsolescence_filtering     Don't return obsolete data.
+     * @param string $module_id The module ID.
+     * @param boolean $obsolescence_filtering Don't return obsolete data.
      * @return array An array containing all the datas.
-     * @since    1.0.0
-     * @access   protected
+     * @since  1.0.0
      */
     protected function get_module_datas($module_id, $obsolescence_filtering=false) {
         global $wpdb;
@@ -358,7 +474,7 @@ trait Query {
     protected function get_outdoor_datas($device_id, $obsolescence_filtering=false, $strict_filtering=false) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
-        $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAMain' OR module_type='NAComputed' " . ($strict_filtering ? "OR module_type='NAEphemer' " : "OR module_type='NACurrent' ") . "OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NAModule3') ORDER BY module_id ASC" ;
+        $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAMain' OR module_type='NAEphemer' OR module_type='NAComputed' OR module_type='NAPollution' " . ($strict_filtering ? "" : "OR module_type='NACurrent' ") . "OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NAModule3') ORDER BY module_id ASC" ;
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -371,6 +487,21 @@ trait Query {
         catch(\Exception $ex) {
             return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
         }
+    }
+
+    /**
+     * Get outdoor datas.
+     *
+     * @param string $_id The module ID.
+     * @param boolean $obsolescence_filtering Don't return obsolete data.
+     * @return array An array containing the indoor datas.
+     * @since 3.1.0
+     */
+    protected function get_indoor_datas($_id, $obsolescence_filtering=false) {
+        $a = explode ('-', $_id);
+        $device_id = $a[0];
+        $module_id = $a[1];
+        return $this->get_module_datas($module_id, $obsolescence_filtering);
     }
 
     /**
@@ -613,60 +744,6 @@ trait Query {
     }
 
     /**
-     * Get stations list with reference values (to compute dew point, wind chill,...).
-     *
-     * @return  array   An array containing the stations with reference values.
-     * @since    2.0.0
-     */
-    private function get_reference_values() {
-        global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
-        $sql = "SELECT device_id, device_name, module_type, measure_timestamp, measure_type, measure_value FROM ".$table_name." WHERE (module_type='NAModule1' OR module_type='NAModule2' OR module_type='NACurrent') AND (measure_type='temperature' OR measure_type='humidity' OR measure_type='windstrength' OR measure_type LIKE 'loc_%')" ;
-        try {
-            $query = (array)$wpdb->get_results($sql);
-            $query_a = (array)$query;
-            $result = array();
-            foreach ($query_a as $val) {
-                $result[] = (array)$val;
-            }
-        }
-        catch(\Exception $ex) {
-            $result = array() ;
-        }
-        $return = array();
-        foreach ($result as $res) {
-            $return[$res['device_id']]['device_name'] = $res['device_name'] ;
-            $return[$res['device_id']][$res['measure_type']][$res['module_type']]['value'] = $res['measure_value'] ;
-            $return[$res['device_id']][$res['measure_type']][$res['module_type']]['timestamp'] = $res['measure_timestamp'] ;
-        }
-        $result = array();
-        foreach ($return as $device_id => $device) {
-            foreach ($device as $measure_type => $measure) {
-                if (is_array($measure)) {
-                    $value = -9999;
-                    foreach ($measure as $module_type => $module) {
-                        $value = $module['value'];
-                        $diff = round ((abs( strtotime(get_date_from_gmt(date('Y-m-d H:i:s'))) - strtotime(get_date_from_gmt($module['timestamp']))))/60);
-                        $ts = $module['timestamp'];
-                        if ($measure_type == 'temperature' && $module_type == 'NAModule1' && ($diff < $this->delta_time)) {
-                            break;
-                        }
-                        if ($measure_type == 'humidity' && $module_type == 'NAModule1' && ($diff < $this->delta_time)) {
-                            break;
-                        }
-                        if ($measure_type == 'windstrength' && $module_type == 'NAModule2' && ($diff < $this->delta_time)) {
-                            break;
-                        }
-                    }
-                    $result[$device_id]['name'] = $device['device_name'];
-                    $result[$device_id][$measure_type] = $value;
-                }
-            }
-        }
-        return $result;
-    }
-
-    /**
      * Get station informations.
      *
      * @param integer $station_id The station id.
@@ -846,7 +923,7 @@ trait Query {
     protected function get_owm_stations_list() {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_stations_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE station_type=1";
+        $sql = "SELECT * FROM " . $table_name . " WHERE station_type=".LWS_LOC_SID;
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -915,7 +992,7 @@ trait Query {
             $nothing = array();
             $nothing['guid'] = 0;
             $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
-            $nothing['station_type'] = 1;
+            $nothing['station_type'] = LWS_LOC_SID;
             $nothing['station_name'] = '';
             $nothing['loc_city'] = '';
             $nothing['loc_country_code'] = $ccs;
@@ -960,7 +1037,7 @@ trait Query {
             $nothing = array();
             $nothing['guid'] = 0;
             $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
-            $nothing['station_type'] = 4;
+            $nothing['station_type'] = LWS_RAW_SID;
             $nothing['station_name'] = '';
             $nothing['loc_city'] = '';
             $nothing['loc_country_code'] = $ccs;
@@ -1007,7 +1084,7 @@ trait Query {
             $nothing = array();
             $nothing['guid'] = 0;
             $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
-            $nothing['station_type'] = 5;
+            $nothing['station_type'] = LWS_REAL_SID;
             $nothing['station_name'] = '';
             $nothing['loc_city'] = '';
             $nothing['loc_country_code'] = $ccs;
@@ -1049,7 +1126,7 @@ trait Query {
             $nothing = array();
             $nothing['guid'] = 0;
             $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
-            $nothing['station_type'] = 3;
+            $nothing['station_type'] = LWS_WUG_SID;
             $nothing['station_name'] = '';
             $nothing['service_id'] = '';
             $nothing['station_model'] = 'N/A';
@@ -1098,6 +1175,30 @@ trait Query {
             }
         }
         else {
+            return array();
+        }
+    }
+
+    /**
+     * Get a list of all stations id of a given type.
+     *
+     * @param integer $type The type of stations.
+     * @return array An array containing the details of all stations.
+     * @since 3.0.0
+     */
+    protected function get_all_id_by_type($type) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+        $sql = "SELECT station_id FROM " . $table_name . " WHERE station_type=" . $type;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $result = array();
+            foreach ($query_a as $val) {
+                $result[] = (array)$val;
+            }
+            return $result;
+        } catch (\Exception $ex) {
             return array();
         }
     }
@@ -1157,7 +1258,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function get_all_netatmo_stations() {
-        return $this->get_all_stations_by_type(0);
+        return $this->get_all_stations_by_type(LWS_NETATMO_SID);
     }
 
     /**
@@ -1166,7 +1267,26 @@ trait Query {
      * @since 3.0.0
      */
     protected function clear_all_netatmo_stations() {
-        $this->clear_all_stations_by_type(0);
+        $this->clear_all_stations_by_type(LWS_NETATMO_SID);
+    }
+
+    /**
+     * Get a list of all Netatmo healthy home coaches.
+     *
+     * @return array An array containing the details of all stations.
+     * @since 3.1.0
+     */
+    protected function get_all_netatmo_hc_stations() {
+        return $this->get_all_stations_by_type(LWS_NETATMOHC_SID);
+    }
+
+    /**
+     * Delete all Netatmo healthy home coaches.
+     *
+     * @since 3.1.0
+     */
+    protected function clear_all_netatmo_hc_stations() {
+        $this->clear_all_stations_by_type(LWS_NETATMOHC_SID);
     }
 
     /**
@@ -1176,7 +1296,7 @@ trait Query {
      * @since 2.0.0
      */
     protected function get_all_owm_stations() {
-        return $this->get_all_stations_by_type(1);
+        return $this->get_all_stations_by_type(LWS_LOC_SID);
     }
 
     /**
@@ -1185,7 +1305,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function clear_all_owm_stations() {
-        $this->clear_all_stations_by_type(1);
+        $this->clear_all_stations_by_type(LWS_LOC_SID);
     }
 
     /**
@@ -1195,7 +1315,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function get_all_owm_id_stations() {
-        return $this->get_all_stations_by_type(2);
+        return $this->get_all_stations_by_type(LWS_OWM_SID);
     }
 
     /**
@@ -1204,7 +1324,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function clear_all_owm_id_stations() {
-        $this->clear_all_stations_by_type(2);
+        $this->clear_all_stations_by_type(LWS_OWM_SID);
     }
 
     /**
@@ -1214,7 +1334,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function get_all_wug_id_stations() {
-        return $this->get_all_stations_by_type(3);
+        return $this->get_all_stations_by_type(LWS_WUG_SID);
     }
 
     /**
@@ -1223,7 +1343,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function clear_all_wug_id_stations() {
-        $this->clear_all_stations_by_type(3);
+        $this->clear_all_stations_by_type(LWS_WUG_SID);
     }
 
     /**
@@ -1233,7 +1353,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function get_all_clientraw_id_stations() {
-        return $this->get_all_stations_by_type(4);
+        return $this->get_all_stations_by_type(LWS_RAW_SID);
     }
 
     /**
@@ -1242,7 +1362,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function clear_all_clientraw_id_stations() {
-        $this->clear_all_stations_by_type(4);
+        $this->clear_all_stations_by_type(LWS_RAW_SID);
     }
 
     /**
@@ -1252,7 +1372,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function get_all_realtime_id_stations() {
-        return $this->get_all_stations_by_type(5);
+        return $this->get_all_stations_by_type(LWS_REAL_SID);
     }
 
     /**
@@ -1261,7 +1381,7 @@ trait Query {
      * @since 3.0.0
      */
     protected function clear_all_realtime_id_stations() {
-        $this->clear_all_stations_by_type(5);
+        $this->clear_all_stations_by_type(LWS_REAL_SID);
     }
 
     /**

@@ -1,4 +1,29 @@
 
+###3.1.0 / February xxth, 2017
+
+* New: a new widget "Indoor Comfort" to display indoor measurements health quality and advices.
+* New: a new widget "Fire Weather" to display fire risk at the station location.
+* New: an health index (computed for all indoor modules) is available for all controls (via shortcodes).
+* New: the Chandler burning index is computed for all stations and available in all controls.
+* New: dawn and dusk time (civil, nautical and astronomical) are computed and available in textual data.
+* New: day duration (standard, civil, nautical and astronomical) are computed and available in textual data.
+* New: twilight for dawn and dusk (civil, nautical and astronomical) are computed and available in textual data.
+* New: ephemeris widget can now display standard, civil, nautical and astronomical daylight times.
+* New: support for the "Healthy Home Coach" from Netatmo.
+* Improvement: all widgets and controls can now be cached (settings in 'system' tab).
+* Improvement: outdoor weather and ephemeris widgets can have background images for day, twilight and night.
+* Improvement: outdoor weather and ephemeris widget can have a background color which luminosity follows current light.
+* Improvement: better precision of the measurement type in the LCD display in case of ambiguity.
+* Improvement: gases concentrations (for now CO & CO₂) can now be expressed as volume and mass mixing ratio, mass concentration and partial pressure (settings in 'display' tab).
+* Improvement: strong accuracy and speed optimization for weather indexes and ephemeris computing.
+* Improvement: O₃ measurements are now renamed in "O₃ layer" and "ozone layer" to avoid confusion and misinterpretations.
+* Improvement: better coordinates managament for stations based on realtime.txt files.
+* Bug fix: with stations based on clientraw.txt files, collected wind speeds and gusts may be wrong.
+* Bug fix: in some conditions, widget in flat design mode doesn't shows the right background color.
+* Bug fix: in outdoor weather summary widget, the "hide obsolete measurements" doesn't work as expected for OpenWeatherMap data.
+* Bug fix: message "Inconsistent data to insert..." in events log just after forcing a synchronization.
+* Bug fix: the wrong system send an events while regenerating access token (must be "Authentication").
+
 ###3.0.11 / February 1st, 2017
 
 * Bug fix: coordinates for stations based on realtime.txt files are truncated (many thanks to sebs42 to find it).
@@ -99,15 +124,15 @@ After upgrading, please, review all your settings.
 * Improvement: all UI have been redesigned for easy use (icons, information messages, confirmation prompts, etc.).
 * Improvement: each admin page have now a contextual help.
 * Improvement: the settings page now adheres to the "standard" WordPress admin look & feel.
-* Improvement: external and auxiliary links can now be opened in same or new window (settings in 'system' tab)'.
+* Improvement: external and auxiliary links can now be opened in same or new window (settings in 'system' tab).
 * Improvement: all mapping features are now provided by OpenStreetMap.
-* Improvement: events log and logging policy are now configurable (settings in 'system' tab)'.
+* Improvement: events log and logging policy are now configurable (settings in 'system' tab).
 * Improvement: short codes previews are now based on true values (before it was on estimated values).
 * Improvement: namespaces refactored for avoiding name collision with other plugins.
 * Improvement: Weather Station now use the latest version of Netatmo SDK.
 * Improvement: pressure displayed in hPa have now reasonable accuracy with 1 decimal.
 * Improvement: better cURL error reporting (now in event log) when SSL issues occurs.
-* Improvement: it's now possible to be warned when time difference between Netatmo server and your server is too large (settings 'Server Time shift' in 'system' tab)'.
+* Improvement: it's now possible to be warned when time difference between Netatmo server and your server is too large (settings 'Server Time shift' in 'system' tab).
 * Improvement: the plugin now verify all prerequisites (mandatory extensions) at startup and shows warning if there's something missing.
 * Improvement: connection status, dashboard and stations provides direct links to filtered events log.
 * Improvement: it's now possible to manage individually each Netatmo station (i.e. add or remove station to the mechanism of collect).

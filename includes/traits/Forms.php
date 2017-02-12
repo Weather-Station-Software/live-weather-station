@@ -192,7 +192,7 @@ trait Handling {
         $unit = $this->output_unit($type, ($type == 'rain' ? 'namodule3' : 'NAMain'))['unit'];
         $unitlong = $this->output_unit($type, ($type == 'rain' ? 'namodule3' : 'NAMain'))['long'];
         $typetxt = strtolower($this->get_measurement_type($type, false, ($type == 'rain' ? 'namodule3' : 'NAMain')));
-        if ($type == 'humidex' || $type == 'heat_index') {
+        if ($type == 'humidex' || $type == 'heat_index' || $type == 'cbi') {
             $txt_value = sprintf(__('Limits for %s, dimensionless index.', 'live-weather-station'), $typetxt, $unitlong);
             $txt_alarm = sprintf(__('Alarms for %s, dimensionless index.', 'live-weather-station'), $typetxt, $unitlong);
         }

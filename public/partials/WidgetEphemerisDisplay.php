@@ -7,7 +7,8 @@
  */
 ?>
 <div class="lws-widget-container-<?php echo $id ?>">
-    <div class="lws-widget-ephemeris-<?php echo $id ?> noTypo">
+    <div class="lws-widget-outer-ephemeris-<?php echo $id ?>">
+        <div class="lws-widget-ephemeris-<?php echo $id ?> noTypo">
         <!-- STATION NAME -->
         <div class="lws-widget-row-<?php echo $id ?>">
             <div class="lws-widget-column-<?php echo $id ?>">
@@ -19,6 +20,15 @@
                 <?php endif;?>
                 <?php if ( $subtitle == 2 && $location != '' ):?>
                     <div class="lws-widget-subtitle-<?php echo $id ?>"><?php echo $location; ?></div>
+                <?php endif;?>
+                <?php if ( $mode == 1 ):?>
+                    <div class="lws-widget-subtitle-<?php echo $id ?>"><?php _e('Civil Daylight Times', 'live-weather-station') ?></div>
+                <?php endif;?>
+                <?php if ( $mode == 2 ):?>
+                    <div class="lws-widget-subtitle-<?php echo $id ?>"><?php _e('Nautical Daylight Times', 'live-weather-station') ?></div>
+                <?php endif;?>
+                <?php if ( $mode == 3 ):?>
+                    <div class="lws-widget-subtitle-<?php echo $id ?>"><?php _e('Astronomical Daylight Times', 'live-weather-station') ?></div>
                 <?php endif;?>
             </div>
         </div>
@@ -198,5 +208,6 @@
                 </div>
             <?php endif;?>
         <?php endif;?>
+        </div>
     </div>
 </div>

@@ -5,6 +5,7 @@ namespace WeatherStation\System\Schedules;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\SDK\Generic\Plugin\Pusher as Pusher;
 use WeatherStation\SDK\Netatmo\Plugin\Updater as Netatmo_Updater;
+use WeatherStation\SDK\Netatmo\Plugin\HCUpdater as Netatmo_HCUpdater;
 use WeatherStation\SDK\Clientraw\Plugin\StationUpdater as Clientraw_Updater;
 use WeatherStation\SDK\Realtime\Plugin\StationUpdater as Realtime_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\CurrentUpdater as Owm_Current_Updater;
@@ -26,6 +27,7 @@ trait Handling {
     protected static $watchdog_name = 'lws_watchdog';
     protected static $translation_update_name = 'lws_translation_update';
     protected static $netatmo_update_schedule_name = 'lws_netatmo_update';
+    protected static $netatmo_hc_update_schedule_name = 'lws_netatmo_hc_update';
     protected static $owm_update_schedule_name = 'lws_owm_update';
     protected static $owm_update_current_schedule_name = 'lws_owm_current_update';
     protected static $owm_update_station_schedule_name = 'lws_owm_station_update';
@@ -56,6 +58,28 @@ trait Handling {
         if (!wp_next_scheduled(self::$netatmo_update_schedule_name)) {
             wp_schedule_event(time() + 10, 'five_minutes', self::$netatmo_update_schedule_name);
             Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$netatmo_update_schedule_name.' cron job.');
+        }
+    }
+
+    /**
+     * Define Netatmo HC Updater cron job.
+     *
+     * @since 3.1.0
+     */
+    protected static function define_netatmo_hc_update_cron() {
+        $plugin_netatmo_hc_update_cron = new Netatmo_HCUpdater(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$netatmo_hc_update_schedule_name, array($plugin_netatmo_hc_update_cron, 'cron_run'));
+    }
+
+    /**
+     * Launch the Netatmo HC Updater cron job if needed.
+     *
+     * @since 3.1.0
+     */
+    protected static function launch_netatmo_hc_update_cron() {
+        if (!wp_next_scheduled(self::$netatmo_hc_update_schedule_name)) {
+            wp_schedule_event(time() + 30, 'five_minutes', self::$netatmo_hc_update_schedule_name);
+            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$netatmo_hc_update_schedule_name.' cron job.');
         }
     }
 
@@ -264,6 +288,7 @@ trait Handling {
      */
     protected static function delete_schedules() {
         wp_clear_scheduled_hook(self::$netatmo_update_schedule_name);
+        wp_clear_scheduled_hook(self::$netatmo_hc_update_schedule_name);
         wp_clear_scheduled_hook(self::$owm_update_schedule_name);
         wp_clear_scheduled_hook(self::$owm_update_current_schedule_name);
         wp_clear_scheduled_hook(self::$owm_update_station_schedule_name);
@@ -284,6 +309,7 @@ trait Handling {
      */
     protected static function init_schedules() {
         self::launch_netatmo_update_cron();
+        self::launch_netatmo_hc_update_cron();
         self::launch_push_cron();
         self::launch_owm_current_update_cron();
         self::launch_owm_station_update_cron();
