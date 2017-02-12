@@ -29,11 +29,13 @@ trait Client {
     /**
      * Compute ephemeris.
      *
+     * @param mixed $station_type Optional. The station type to compute.
+     * @return array Computed values.
      * @since    2.0.0
      */
-    public function compute() {
+    public function compute($station_type=false) {
         $result = array();
-        $stations = $this->get_located_operational_stations_list();
+        $stations = $this->get_located_operational_stations_list($station_type);
         foreach ($stations as $id => $station) {
             $lat = $station['loc_latitude'];
             $lon = $station['loc_longitude'];
@@ -57,14 +59,41 @@ trait Client {
             $dashboard = array() ;
             $dashboard['time_utc'] = time();
             // sunrise & sunset
-            $dashboard['sunrise'] = date_sunrise(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon);
-            $dashboard['sunset'] = date_sunset(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon);
-            $dashboard['sunrise_c'] = date_sunrise(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 96);
-            $dashboard['sunset_c'] = date_sunset(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 96);
-            $dashboard['sunrise_n'] = date_sunrise(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 102);
-            $dashboard['sunset_n'] = date_sunset(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 102);
-            $dashboard['sunrise_a'] = date_sunrise(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 108);
-            $dashboard['sunset_a'] = date_sunset(time(), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 108);
+            $time_rise = time();
+            $time_set = time();
+            $datetime = new \DateTime();
+            $datetime->setTimestamp(time());
+            $datetime->setTimezone(new \DateTimeZone($tz));
+            $month = $datetime->format('m');
+            $day = $datetime->format('d');
+            for ($fact = -1; $fact <= 2; $fact++) {
+                $sunrise = date_sunrise(time()+(86400*$fact), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+                $verif = new \DateTime();
+                $verif->setTimestamp($sunrise);
+                $verif->setTimezone(new \DateTimeZone($tz));
+                if ($month == $verif->format('m') && $day == $verif->format('d')) {
+                    $time_rise = time()+(86400*$fact);
+                    break;
+                }
+            }
+            for ($fact = -1; $fact <= 2; $fact++) {
+                $sunset = date_sunset(time()+(86400*$fact), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+                $verif = new \DateTime();
+                $verif->setTimestamp($sunset);
+                $verif->setTimezone(new \DateTimeZone($tz));
+                if ($month == $verif->format('m') && $day == $verif->format('d')) {
+                    $time_set = time()+(86400*$fact);
+                    break;
+                }
+            }
+            $dashboard['sunrise'] = date_sunrise($time_rise, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+            $dashboard['sunrise_c'] = date_sunrise($time_rise, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 96);
+            $dashboard['sunrise_n'] = date_sunrise($time_rise, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 102);
+            $dashboard['sunrise_a'] = date_sunrise($time_rise, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 108);
+            $dashboard['sunset'] = date_sunset($time_set, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+            $dashboard['sunset_c'] = date_sunset($time_set, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 96);
+            $dashboard['sunset_n'] = date_sunset($time_set, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 102);
+            $dashboard['sunset_a'] = date_sunset($time_set, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 108);
             // lengths of day
             $dashboard['day_length'] = $dashboard['sunset'] - $dashboard['sunrise'];
             $dashboard['day_length_c'] = $dashboard['sunset_c'] - $dashboard['sunrise_c'];
@@ -144,7 +173,7 @@ trait Client {
             }
             $nm['dashboard_data'] = $dashboard;
             $nm['data_type'] = array('sunrise','sunrise_c','sunrise_n','sunrise_a', 'sunset','sunset_c','sunset_n',
-                                     'sunset_m', 'moonrise', 'moonset', 'day_length', 'day_length_c', 'day_length_n',
+                                     'sunset_a', 'moonrise', 'moonset', 'day_length', 'day_length_c', 'day_length_n',
                                      'day_length_a', 'dawn_length_a','dawn_length_n', 'dawn_length_c', 'dusk_length_a',
                                      'dusk_length_n', 'dusk_length_c', 'moon_age', 'moon_phase', 'moon_illumination',
                                      'moon_distance', 'moon_diameter', 'sun_distance', 'sun_diameter');

@@ -28,6 +28,17 @@ class NAWSApiClient extends NAApiClient
        return $this->api('getstationsdata', 'GET', array($device_id, $get_favorites));
    }
 
+    /**
+     * @type PRIVATE & PARTNER API
+     * @param string $device_id
+     * @return array of devices
+     * @brief Method used to retrieve data for the given healthy home coach or all healthy home coaches linked to the user
+     */
+    public function getHCData($device_id = NULL)
+    {
+        return $this->api('gethomecoachsdata', 'GET', array($device_id));
+    }
+
    /**
     * @type PUBLIC, PRIVATE & PARTNER API
     * @param string $device_id

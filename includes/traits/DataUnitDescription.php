@@ -140,6 +140,50 @@ trait Description {
     }
 
     /**
+     * Get available health index units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.1.0
+     */
+    protected function get_health_index_unit( $id = 0 ) {
+        return __( '%' , 'live-weather-station');
+    }
+
+    /**
+     * Get available Chandler Burning index units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.1.0
+     */
+    protected function get_cbi_unit( $id = 0 ) {
+        return '';
+    }
+
+    /**
+     * Get available health index units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.1.0
+     */
+    protected function get_health_index_unit_full( $id = 0 ) {
+        return __( 'percent' , 'live-weather-station');
+    }
+
+    /**
+     * Get available Chandler Burning index units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.1.0
+     */
+    protected function get_cbi_unit_full( $id = 0 ) {
+        return '';
+    }
+
+    /**
      * Get available signal level full units.
      *
      * @param   integer $id     Optional. The unit id.
@@ -266,25 +310,209 @@ trait Description {
     /**
      * Get available CO2 units.
      *
-     * @param   integer $id     Optional. The unit id.
-     * @return  string  The unit in plain text.
-     * @since    1.0.0
-     * @access   protected
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 1.0.0
      */
-    protected function get_co2_unit( $id = 0 ) {
-        return __( 'ppm' , 'live-weather-station');
+    protected function get_co2_unit($id = 0) {
+        $result = '';
+        switch ($id) {
+            case 0:
+                $result = __( 'ppm' , 'live-weather-station');
+                break;
+            case 1:
+                $result = __( 'ppm' , 'live-weather-station');
+                break;
+            case 2:
+                $result = __( 'mg/m³' , 'live-weather-station');
+                break;
+            case 3:
+                $result = __( 'Pa' , 'live-weather-station');
+                break;
+        }
+        return $result;
     }
 
     /**
      * Get available CO2 full units.
      *
-     * @param   integer $id     Optional. The unit id.
-     * @return  string  The unit in plain text.
-     * @since    2.6.0
-     * @access   protected
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 2.6.0
      */
-    protected function get_co2_unit_full( $id = 0 ) {
-        return __( 'part per million' , 'live-weather-station');
+    protected function get_co2_unit_full($id = 0) {
+        $result = '';
+        switch ($id) {
+            case 0:
+                $result = __( 'part per million' , 'live-weather-station') . ' (' . __( 'volume' , 'live-weather-station') . ')';
+                break;
+            case 1:
+                $result = __( 'part per million' , 'live-weather-station') . ' (' . __( 'mass' , 'live-weather-station') . ')';
+                break;
+            case 2:
+                $result = __( 'milligram per cubic meter' , 'live-weather-station');
+                break;
+            case 3:
+                $result = __( 'pascal' , 'live-weather-station');
+                break;
+        }
+        return $result;
+    }
+
+    /**
+     * Get available CO units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 2.7.0
+     */
+    protected function get_co_unit($id = 0) {
+        $result = '';
+        switch ($id) {
+            case 0:
+                $result = __( 'ppb' , 'live-weather-station');
+                break;
+            case 1:
+                $result = __( 'ppb' , 'live-weather-station');
+                break;
+            case 2:
+                $result = __( 'μg/m³' , 'live-weather-station');
+                break;
+            case 3:
+                $result = __( 'mPa' , 'live-weather-station');
+                break;
+        }
+        return $result;
+    }
+
+    /**
+     * Get available CO full units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 2.7.0
+     */
+    protected function get_co_unit_full($id = 0) {
+        $result = '';
+        switch ($id) {
+            case 0:
+                $result = __( 'part per billion' , 'live-weather-station') . ' (' . __( 'volume' , 'live-weather-station') . ')';
+                break;
+            case 1:
+                $result = __( 'part per billion' , 'live-weather-station') . ' (' . __( 'mass' , 'live-weather-station') . ')';
+                break;
+            case 2:
+                $result = __( 'microgram per cubic meter' , 'live-weather-station');
+                break;
+            case 3:
+                $result = __( 'millipascal' , 'live-weather-station');
+                break;
+        }
+        return $result;
+    }
+
+    /**
+     * Get available SO2 units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.1.0
+     */
+    protected function get_so2_unit($id = 0) {
+        $result = '';
+        switch ($id) {
+            case 0:
+                $result = __( 'ppb' , 'live-weather-station');
+                break;
+            case 1:
+                $result = __( 'ppb' , 'live-weather-station');
+                break;
+            case 2:
+                $result = __( 'μg/m³' , 'live-weather-station');
+                break;
+            case 3:
+                $result = __( 'mPa' , 'live-weather-station');
+                break;
+        }
+        return $result;
+    }
+
+    /**
+     * Get available SO2 full units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.1.0
+     */
+    protected function get_so2_unit_full($id = 0) {
+        $result = '';
+        switch ($id) {
+            case 0:
+                $result = __( 'part per billion' , 'live-weather-station') . ' (' . __( 'volume' , 'live-weather-station') . ')';
+                break;
+            case 1:
+                $result = __( 'part per billion' , 'live-weather-station') . ' (' . __( 'mass' , 'live-weather-station') . ')';
+                break;
+            case 2:
+                $result = __( 'microgram per cubic meter' , 'live-weather-station');
+                break;
+            case 3:
+                $result = __( 'millipascal' , 'live-weather-station');
+                break;
+        }
+        return $result;
+    }
+
+    /**
+     * Get available NO2 units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.1.0
+     */
+    protected function get_no2_unit($id = 0) {
+        $result = '';
+        switch ($id) {
+            case 0:
+                $result = __( 'ppb' , 'live-weather-station');
+                break;
+            case 1:
+                $result = __( 'ppb' , 'live-weather-station');
+                break;
+            case 2:
+                $result = __( 'μg/m³' , 'live-weather-station');
+                break;
+            case 3:
+                $result = __( 'mPa' , 'live-weather-station');
+                break;
+        }
+        return $result;
+    }
+
+    /**
+     * Get available NO2 full units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.1.0
+     */
+    protected function get_no2_unit_full($id = 0) {
+        $result = '';
+        switch ($id) {
+            case 0:
+                $result = __( 'part per billion' , 'live-weather-station') . ' (' . __( 'volume' , 'live-weather-station') . ')';
+                break;
+            case 1:
+                $result = __( 'part per billion' , 'live-weather-station') . ' (' . __( 'mass' , 'live-weather-station') . ')';
+                break;
+            case 2:
+                $result = __( 'microgram per cubic meter' , 'live-weather-station');
+                break;
+            case 3:
+                $result = __( 'millipascal' , 'live-weather-station');
+                break;
+        }
+        return $result;
     }
 
     /**
@@ -302,57 +530,34 @@ trait Description {
     /**
      * Get available o3 full units.
      *
-     * @param   integer $id     Optional. The unit id.
-     * @return  string  The unit in plain text.
-     * @since    2.7.0
-     * @access   protected
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 2.7.0
      */
     protected function get_o3_unit_full( $id = 0 ) {
         return __( 'dobson unit' , 'live-weather-station');
     }
 
     /**
-     * Get available CO units.
+     * Get available day length units.
      *
-     * @param   integer $id     Optional. The unit id.
-     * @return  string  The unit in plain text.
-     * @since    2.7.0
-     * @access   protected
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.1.0
      */
-    protected function get_co_unit( $id = 0 ) {
-        switch ($id) {
-            case 1:
-                $result =  __( 'Pa' , 'live-weather-station');
-                break;
-            case 2:
-                $result =  __( 'μg/g' , 'live-weather-station');
-                break;
-            default:
-                $result = __( 'ppmv' , 'live-weather-station');
-        }
-        return $result;
+    protected function get_day_length_unit( $id = 0 ) {
+        return __( 's' , 'live-weather-station');
     }
 
     /**
-     * Get available CO units.
+     * Get available day length full units.
      *
-     * @param   integer $id     Optional. The unit id.
-     * @return  string  The unit in plain text.
-     * @since    2.7.0
-     * @access   protected
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.1.0
      */
-    protected function get_co_unit_full( $id = 0 ) {
-        switch ($id) {
-            case 1:
-                $result =  __( 'pascal' , 'live-weather-station');
-                break;
-            case 2:
-                $result =  __( 'microgram per gram' , 'live-weather-station');
-                break;
-            default:
-                $result = __( 'part per million by volume' , 'live-weather-station');
-        }
-        return $result;
+    protected function get_day_length_unit_full( $id = 0 ) {
+        return __( 'second' , 'live-weather-station');
     }
 
     /**
@@ -363,7 +568,7 @@ trait Description {
      * @since 3.1.0
      */
     protected function get_dusk_dawn_unit( $id = 0 ) {
-        return '';//__( 's' , 'live-weather-station');
+        return __( 's' , 'live-weather-station');
     }
 
     /**
@@ -374,7 +579,7 @@ trait Description {
      * @since 3.1.0
      */
     protected function get_dusk_dawn_unit_full( $id = 0 ) {
-        return '';//__( 'second' , 'live-weather-station');
+        return __( 'second' , 'live-weather-station');
     }
 
     /**
@@ -843,17 +1048,17 @@ trait Description {
     }
 
     /**
-     * Get carbon monoxyde unit names.
+     * Get gases unit expression.
      *
-     * @return  array   An array containing the available CO units names.
-     * @since    2.7.0
-     * @access   protected
+     * @return array An array containing the available gases expression names.
+     * @since 3.1.0
      */
-    protected function get_co_unit_name_array() {
+    protected function get_gas_unit_name_array() {
         $result = array();
-        for ($i = 0; $i <= 2; $i++) {
-            $result[] = array($i, $this->get_co_unit($i));
-        }
+        $result[] = array(0, __( 'Volume mixing ratio' , 'live-weather-station'));
+        $result[] = array(1, __( 'Mass mixing ratio' , 'live-weather-station'));
+        $result[] = array(2, __( 'Mass concentration' , 'live-weather-station'));
+        $result[] = array(3, __( 'Partial pressure' , 'live-weather-station'));
         return $result;
     }
 }

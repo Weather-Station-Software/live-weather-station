@@ -18,15 +18,15 @@ trait PollutionClient {
     use BaseClient;
 
     private $api_url = 'http://api.openweathermap.org/pollution/v1';
-    private $indexes = ['o3', 'co'];
+    private $indexes = ['o3', 'co'];//, 'so2', 'no2'];
     protected $facility = 'Pollution Collector';
     protected $owm_datas;
 
     /**
      * Get the distance between two points.
      *
-     * @return  float  The distance expressed in meters.
-     * @since    2.7.0
+     * @return float The distance expressed in meters.
+     * @since 2.7.0
      */
     private function distanceGeoPoints ($lat1, $lng1, $lat2, $lng2) {
         $earthRadius = 3958.75;
@@ -106,19 +106,33 @@ trait PollutionClient {
                     }
                     break;
                 case 'co' :
+                //case 'so2' :
                     $result[$index] = 0;
                     if (array_key_exists('data', $pollution)) {
                         $result[$index] = 0;
                         if (is_array($pollution['data'])) {
-                            foreach ($pollution['data'] as $co) {
-                                if ($co['pressure'] == 1000) {
-                                    $result[$index] = $co['value'] * 1000000;
+                            foreach ($pollution['data'] as $pol) {
+                                if ($pol['pressure'] == 1000) {
+                                    $result[$index] = $pol['value'] * 1000000;
                                     break;
                                 }
                             }
                         }
                     }
                     break;
+                /*case 'no2' :
+                    $result[$index] = 0;
+                    if (array_key_exists('data', $pollution)) {
+                        $result[$index] = 0;
+                        if (is_array($pollution['data'])) {
+                            if ($pollution['data']['no2_trop'] && is_array($pollution['data']['no2_trop'])) {
+                                $result[$index] = $pollution['data']['no2_trop']['value'];
+                                $result[$index] += $pollution['data']['no2_strat']['value'];
+                                $result[$index] += $pollution['data']['no2']['value'];
+                            }
+                        }
+                    }
+                    break;*/
             }
             if (array_key_exists('location', $pollution) && is_array($pollution['location']) && isset($pollution['location']['latitude']) && isset($pollution['location']['longitude'])) {
                 $result[$index.'_distance'] = round($this->distanceGeoPoints($lat, $long, $pollution['location']['latitude'], $pollution['location']['longitude']));
@@ -155,6 +169,7 @@ trait PollutionClient {
             $st['firmware'] = LWS_VERSION;
             $st['data_type'] = array();
             $st['dashboard_data'] = array();
+            $values = array();
             try {
                 foreach ($this->indexes as $index) {
                     $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index, 2), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
@@ -193,7 +208,7 @@ trait PollutionClient {
             catch(\Exception $ex)
             {
                 if (strpos($ex->getMessage(), 'Invalid API key') > -1) {
-                    Logger::critical($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], $ex->getCode(), 'Wrong credentials. Please, verify your OpenWeatherMap API key.');
+                    Logger::critical('Authentication', $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], $ex->getCode(), 'Wrong credentials. Please, verify your OpenWeatherMap API key.');
                     return array();
                 }
                 if (strpos($ex->getMessage(), 'JSON /') > -1) {

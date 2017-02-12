@@ -173,7 +173,7 @@ trait StationClient {
                 }
 
                 if (strpos($ex->getMessage(), 'Invalid API key') > -1) {
-                    Logger::critical($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your OpenWeatherMap API key.');
+                    Logger::critical('Authentication', $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your OpenWeatherMap API key.');
                     return array();
                 }
                 if (strpos($ex->getMessage(), 'JSON /') > -1) {
@@ -206,10 +206,10 @@ trait StationClient {
             $this->get_datas();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute();
+            $weather->compute(LWS_LOC_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute();
+            $ephemeris->compute(LWS_LOC_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
         catch (\Exception $ex) {

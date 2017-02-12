@@ -56,6 +56,9 @@ trait Description {
             case 'namain':
                 $result = __('Base station', 'live-weather-station');
                 break;
+            case 'nahc': // Home Coach
+                $result = __('Home coach', 'live-weather-station');
+                break;
             case 'namodule1': // Outdoor module
                 $result = __('Outdoor module', 'live-weather-station');
                 break;
@@ -121,6 +124,9 @@ trait Description {
             case 'namain':
                 $result = __('Station', 'live-weather-station');
                 break;
+            case 'nahc':
+                $result = __('Coach', 'live-weather-station');
+                break;
             case 'namodule1': // Outdoor module
                 $result = __('Outdoor', 'live-weather-station');
                 break;
@@ -167,17 +173,23 @@ trait Description {
             case 'co2':
                 $result = ($abbr ? __('CO₂', 'live-weather-station') : __('Carbon dioxide', 'live-weather-station'));
                 break;
+            case 'health_idx':
+                $result = ($abbr ? __('Health', 'live-weather-station') : __('Health index', 'live-weather-station'));
+                break;
+            case 'cbi':
+                $result = ($abbr ? __('CBi', 'live-weather-station') : __('Chandler burning index', 'live-weather-station'));
+                break;
             case 'co':
                 $result = ($abbr ? __('CO', 'live-weather-station') : __('Carbon monoxide', 'live-weather-station'));
                 break;
             case 'o3':
-                $result = ($abbr ? __('O₃', 'live-weather-station') : __('Ozone', 'live-weather-station'));
+                $result = ($abbr ? __('O₃', 'live-weather-station') : __('Ozone layer', 'live-weather-station'));
                 break;
             case 'co_distance':
                 $result = ($abbr ? __('CO', 'live-weather-station') : __('Carbon monoxide probe distance', 'live-weather-station'));
                 break;
             case 'o3_distance':
-                $result = ($abbr ? __('O₃', 'live-weather-station') : __('Ozone probe distance', 'live-weather-station'));
+                $result = ($abbr ? __('O₃', 'live-weather-station') : __('Ozone layer probe distance', 'live-weather-station'));
                 break;
             case 'humidity':
                 $result = ($abbr ? __('Humidity', 'live-weather-station') : __('Humidity', 'live-weather-station'));
@@ -346,11 +358,59 @@ trait Description {
             case 'sunrise':
                 $result = ($abbr ? __('Sunrise', 'live-weather-station') : __('Sunrise', 'live-weather-station'));
                 break;
+            case 'sunrise_c':
+                $result = ($abbr ? __('C. dawn', 'live-weather-station') : __('Civil dawn', 'live-weather-station'));
+                break;
+            case 'sunrise_n':
+                $result = ($abbr ? __('N. dawn', 'live-weather-station') : __('Nautical dawn', 'live-weather-station'));
+                break;
+            case 'sunrise_a':
+                $result = ($abbr ? __('A. dawn', 'live-weather-station') : __('Astronomical dawn', 'live-weather-station'));
+                break;
             case 'sunset':
                 $result = ($abbr ? __('Sunset', 'live-weather-station') : __('Sunset', 'live-weather-station'));
                 break;
+            case 'sunset_c':
+                $result = ($abbr ? __('C. dusk', 'live-weather-station') : __('Civil dusk', 'live-weather-station'));
+                break;
+            case 'sunset_n':
+                $result = ($abbr ? __('N. dusk', 'live-weather-station') : __('Nautical dusk', 'live-weather-station'));
+                break;
+            case 'sunset_a':
+                $result = ($abbr ? __('A. dusk', 'live-weather-station') : __('Astronomical dusk', 'live-weather-station'));
+                break;
             case 'moonrise':
                 $result = ($abbr ? __('Moonrise', 'live-weather-station') : __('Moonrise', 'live-weather-station'));
+                break;
+            case 'day_length':
+                $result = ($abbr ? __('C. day', 'live-weather-station') : __('Day duration', 'live-weather-station'));
+                break;
+            case 'day_length_c':
+                $result = ($abbr ? __('C. day', 'live-weather-station') : __('Civil day duration', 'live-weather-station'));
+                break;
+            case 'day_length_n':
+                $result = ($abbr ? __('N. day', 'live-weather-station') : __('Nautical day duration', 'live-weather-station'));
+                break;
+            case 'day_length_a':
+                $result = ($abbr ? __('A. day', 'live-weather-station') : __('Astronomical day duration', 'live-weather-station'));
+                break;
+            case 'dawn_length_c':
+                $result = ($abbr ? __('C.T. dawn', 'live-weather-station') : __('Civil twilight - dawn', 'live-weather-station'));
+                break;
+            case 'dawn_length_n':
+                $result = ($abbr ? __('N.T. dawn', 'live-weather-station') : __('Nautical twilight - dawn', 'live-weather-station'));
+                break;
+            case 'dawn_length_a':
+                $result = ($abbr ? __('A.T. dawn', 'live-weather-station') : __('Astronomical twilight - dawn', 'live-weather-station'));
+                break;
+            case 'dusk_length_c':
+                $result = ($abbr ? __('C.T. dusk', 'live-weather-station') : __('Civil twilight - dusk', 'live-weather-station'));
+                break;
+            case 'dusk_length_n':
+                $result = ($abbr ? __('N.T. dusk', 'live-weather-station') : __('Nautical twilight - dusk', 'live-weather-station'));
+                break;
+            case 'dusk_length_a':
+                $result = ($abbr ? __('A.T. dusk', 'live-weather-station') : __('Astronomical twilight - dusk', 'live-weather-station'));
                 break;
             case 'moonset':
                 $result = ($abbr ? __('Moonset', 'live-weather-station') : __('Moonset', 'live-weather-station'));

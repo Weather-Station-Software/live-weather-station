@@ -347,7 +347,7 @@ class NAApiClient
         }
         else if($this->refresh_token)// grant_type == refresh_token
         {
-            return $this->getAccessTokenFromRefreshToken($this->refresh_token);
+            return $this->getAccessTokenFromRefreshToken();
         }
         else if($this->getVariable('username') && $this->getVariable('password'))  //grant_type == password
         {
@@ -476,7 +476,7 @@ class NAApiClient
     * @thrown
     *  A NAClientException if unable to retrieve an access_token
     */
-    private function getAccessTokenFromRefreshToken()
+    public function getAccessTokenFromRefreshToken()
     {
         if ($this->getVariable('access_token_uri') && ($client_id = $this->getVariable('client_id')) != NULL && ($client_secret = $this->getVariable('client_secret')) != NULL && ($refresh_token = $this->refresh_token) != NULL)
         {
@@ -549,20 +549,23 @@ class NAApiClient
         }
         catch(NAApiErrorType $ex)
         {
+            //Logger::notice('Authentication', 'Netatmo', null, null, null, null, $ex->getCode(), $ex->getMessage());
+
             if($reget_token == true)
             {
                 switch($ex->getCode())
                 {
                     case NARestErrorCode::INVALID_ACCESS_TOKEN:
                     case NARestErrorCode::ACCESS_TOKEN_EXPIRED:
+                    case NARestErrorCode::BAD_REQUEST:
                         //Ok token has expired let's retry once
                         if($this->refresh_token)
                         {
                             try
                             {
                                 $this->getAccessTokenFromRefreshToken();//exception will be thrown otherwise
-                }
-                catch(\Exception $ex2)
+                            }
+                            catch(\Exception $ex2)
                             {
                                 //Invalid refresh token
                                 throw $ex;
@@ -578,7 +581,7 @@ class NAApiClient
             }
             else throw $ex;
         }
-        return $res;
+        //return $res;
     }
     /**
      * Make an API call.

@@ -7,6 +7,7 @@ use WeatherStation\SDK\Generic\FileClient;
 use WeatherStation\Data\Dashboard\Handling as Dashboard_Manipulation;
 use WeatherStation\Data\ID\Handling as Id_Manipulation;
 use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
+use WeatherStation\SDK\Generic\Plugin\Weather\Index as Weather_Index_Client;
 use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
 use WeatherStation\Data\DateTime\Conversion;
 use WeatherStation\Data\Type\Description;
@@ -23,7 +24,7 @@ use WeatherStation\Data\Unit\Conversion as Units;
  */
 trait StationClient {
 
-    use Dashboard_Manipulation, Id_Manipulation, Conversion, Description, Units;
+    use Id_Manipulation, Conversion, Description, Units, Dashboard_Manipulation;
 
     protected $facility = 'Weather Collector';
 
@@ -170,13 +171,13 @@ trait StationClient {
         $updates['measure_value'] = $weather[3];
         $this->update_data_table($updates);
         $updates['measure_type'] = 'windstrength';
-        $updates['measure_value'] = $this->get_reverse_wind_speed($weather[1], 4);
+        $updates['measure_value'] = $this->get_reverse_wind_speed($weather[2], 4);
         $this->update_data_table($updates);
         $updates['measure_type'] = 'gustangle';
         $updates['measure_value'] = $weather[3];
         $this->update_data_table($updates);
         $updates['measure_type'] = 'guststrength';
-        $updates['measure_value'] = $this->get_reverse_wind_speed($weather[140], 4);
+        $updates['measure_value'] = $this->get_reverse_wind_speed($weather[133], 4);
         $this->update_data_table($updates);
         Logger::debug($this->facility, null, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
@@ -240,8 +241,13 @@ trait StationClient {
         $updates['measure_type'] = 'humidity';
         $updates['measure_value'] = $weather[13];
         $this->update_data_table($updates);
+        $health = $this->compute_health_index($weather[12], $weather[13], null, null);
+        foreach ($health as $key => $idx) {
+            $updates['measure_type'] = $key;
+            $updates['measure_value'] = $idx;
+            $this->update_data_table($updates);
+        }
         Logger::debug($this->facility, null, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
-
         $tmp = array(16, 20, 21, 22,  23,  24,  25, 120, 121);
         $hum = array(17, 26, 27, 28, 122, 123, 124, 125, 126);
         $max = $weather[18];
@@ -271,6 +277,12 @@ trait StationClient {
                 $updates['measure_type'] = 'humidity';
                 $updates['measure_value'] = $weather[$hum[$i]];
                 $this->update_data_table($updates);
+                $health = $this->compute_health_index($weather[$tmp[$i]], $weather[$hum[$i]], null, null);
+                foreach ($health as $key => $idx) {
+                    $updates['measure_type'] = $key;
+                    $updates['measure_value'] = $idx;
+                    $this->update_data_table($updates);
+                }
                 Logger::debug($this->facility, null, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
             }
         }
@@ -415,10 +427,10 @@ trait StationClient {
             $this->get_and_store_data();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute();
+            $weather->compute(LWS_RAW_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute();
+            $ephemeris->compute(LWS_RAW_SID);
             Logger::info($system, null, null, null, null, null, 0, 'Job done: collecting from clientraw file and computing weather and ephemeris data.');
         }
         catch (\Exception $ex) {

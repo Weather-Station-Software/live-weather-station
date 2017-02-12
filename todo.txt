@@ -2,15 +2,14 @@
 *  UPCOMING FEATURES  *
 ***********************
 
- * 3.x - Probe distance for CO2
- * 3.x - Cache queries
+ * 3.x - Sun (meridian) transit time
  * 3.x - Purge events log
+ * 3.x - Purge caches
  * 3.x - Querying icons texts via shortcodes
- * 3.x - Forest fire weather index computing (Chandler burning index)
+ * 3.x - Forest fire weather index computing
  * 3.x - Wet bulb
  * 3.x - Air density
  * 3.x - Aridity index computing
- * 3.x - length of day
  * 3.x - Pushing data to twitter / slack / fb / ...
  * 3.x - Extra heat indexes
  * 3.x - Solar measurements
@@ -30,10 +29,8 @@
 *  UPCOMING CONTROLS  *
 ***********************
 
- * 3.x - Indoor widget
  * 4.x - Icons dashboard
  * 4.x - Pollution widget
- * 4.x - Widget with changing background
  * 5.x - Marine widget
  * 5.x - Aero widget
  * 5.x - Snow widget
@@ -61,7 +58,5 @@
 
 
 ***********************
-* DOCUMENTATION TO DO *
+* FIXES TO DO         *
 ***********************
-
- *

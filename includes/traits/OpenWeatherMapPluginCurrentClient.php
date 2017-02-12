@@ -192,7 +192,7 @@ trait CurrentClient {
                 }
 
                 if (strpos($ex->getMessage(), 'Invalid API key') > -1) {
-                    Logger::critical($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your OpenWeatherMap API key.');
+                    Logger::critical('Authentication', $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your OpenWeatherMap API key.');
                     return array();
                 }
                 if (strpos($ex->getMessage(), 'JSON /') > -1) {

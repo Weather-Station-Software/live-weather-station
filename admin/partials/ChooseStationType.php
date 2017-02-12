@@ -21,6 +21,17 @@ else {
     $netatmo_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
 
+if (get_option('live_weather_station_netatmo_connected')) {
+    $netatmo_hc_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a Netatmo "Healthy Home Coach" device to which you have access to.', 'live-weather-station'));
+    $netatmo_hc_l = get_admin_page_url('lws-stations', 'form', 'add', 'NetatmoHC', $dashboard);
+    $netatmo_hc_t = '_self';
+}
+else {
+    $netatmo_hc_s = addslashes(sprintf(__('To add a station of this type, you need to connect %s to your Netatmo account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LWS_PLUGIN_NAME));
+    $netatmo_hc_l = get_admin_page_url('lws-settings', null, 'services');
+    $netatmo_hc_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
+}
+
 if (get_option('live_weather_station_owm_apikey') != '') {
     $loc_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a "virtual" weather station whose you only know the city or its coordinates.', 'live-weather-station'));
     $loc_l = get_admin_page_url('lws-stations', 'form', 'add-edit', 'Location', $dashboard);
@@ -80,6 +91,7 @@ $txt_t = '_self';
                     .actionable {border-radius:6px;cursor:pointer; -moz-transition: all .5s ease-in; -o-transition: all .5s ease-in; -webkit-transition: all .5s ease-in; transition: all .5s ease-in; background: transparent;border:1px solid transparent;}
                 </style>
                 <div style="flex:auto;padding:14px;"><img id="netatmo" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_netatmo_color_logo());?>" /></div>
+                <div style="flex:auto;padding:14px;"><img id="netatmohc" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_netatmo_hc_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="loc" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_loc_color_logo());?>" /></div>
                 <?php if (LWS_OWM_READY) { ?>
                     <div style="flex:auto;padding:14px;"><img id="owm" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_owm_color_logo());?>" /></div>
@@ -107,6 +119,12 @@ $txt_t = '_self';
             });
             $("#netatmo").click(function() {
                 window.open('<?php echo $netatmo_l; ?>', '<?php echo $netatmo_t; ?>');
+            });
+            $("#netatmohc").mouseover(function() {
+                $("#tip-text").html("<?php echo $netatmo_hc_s; ?>");
+            });
+            $("#netatmohc").click(function() {
+                window.open('<?php echo $netatmo_hc_l; ?>', '<?php echo $netatmo_hc_t; ?>');
             });
             $("#loc").mouseover(function() {
                 $("#tip-text").html("<?php echo $loc_s; ?>");

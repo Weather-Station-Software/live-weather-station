@@ -171,6 +171,16 @@ class Handling {
     }
 
     /**
+     * Returns a base64 svg resource for the colored Netatmo HC logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.1.0
+     */
+    public static function get_base64_netatmo_hc_color_logo() {
+        return self::get_base64_netatmo_icon('#d497a8');
+    }
+
+    /**
      * Returns a base64 svg resource for the owm icon.
      *
      * @param string $color Optional. Color of the icon.

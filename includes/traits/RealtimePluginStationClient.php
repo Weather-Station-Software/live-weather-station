@@ -268,6 +268,12 @@ trait StationClient {
         $updates['measure_type'] = 'humidity';
         $updates['measure_value'] = $weather[23];
         $this->update_data_table($updates);
+        $health = $this->compute_health_index($this->get_reverse_temperature($weather[22], $temperature_unit), $weather[23], null, null);
+        foreach ($health as $key => $idx) {
+            $updates['measure_type'] = $key;
+            $updates['measure_value'] = $idx;
+            $this->update_data_table($updates);
+        }
         Logger::debug($this->facility, null, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
         /*
@@ -396,10 +402,10 @@ trait StationClient {
             $this->get_and_store_data();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute();
+            $weather->compute(LWS_REAL_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute();
+            $ephemeris->compute(LWS_REAL_SID);
             Logger::info($system, null, null, null, null, null, 0, 'Job done: collecting from Realtime file and computing weather and ephemeris data.');
         }
         catch (\Exception $ex) {

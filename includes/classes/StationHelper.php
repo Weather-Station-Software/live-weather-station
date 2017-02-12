@@ -37,8 +37,8 @@ class Handling {
     private $station_id;
     private $station_name;
     private $service = 'Backend';
-    private $publishable = array(0, 1, 2, 3);
-    private $sharable = array(0, 4, 5, 6);
+    private $publishable = array(LWS_NETATMO_SID, LWS_LOC_SID, LWS_OWM_SID, LWS_WUG_SID);
+    private $sharable = array(LWS_NETATMO_SID, LWS_RAW_SID, LWS_REAL_SID);
 
     /**
      * Initialize the class and set its properties.

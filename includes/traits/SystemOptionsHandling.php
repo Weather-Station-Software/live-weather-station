@@ -27,10 +27,12 @@ trait Handling {
     private static $live_weather_station_backend_cache = true;
     private static $live_weather_station_query_cache = true;
     private static $live_weather_station_frontend_cache = true;
+    private static $live_weather_station_widget_cache = true;
     private static $live_weather_station_redirect_internal_links = false;
     private static $live_weather_station_redirect_external_links = true;
     private static $live_weather_station_time_shift_threshold = 30;
     private static $live_weather_station_auto_manage_netatmo = true;
+    private static $live_weather_station_overload_hc = false;
     private static $live_weather_station_show_technical = false;
 
     private static $live_weather_station_map_zoom = 16;
@@ -49,7 +51,7 @@ trait Handling {
     private static $live_weather_station_unit_altitude = 0;     
     private static $live_weather_station_unit_distance = 0;
     private static $live_weather_station_unit_rain_snow = 0;
-    private static $live_weather_station_unit_co = 0;
+    private static $live_weather_station_unit_gas = 0;
     private static $live_weather_station_measure_only = 0;
     private static $live_weather_station_obsolescence = 0;
     private static $live_weather_station_min_max_mode = 0;
@@ -228,8 +230,8 @@ trait Handling {
                                                 'max_boundary' => 5000),
             'o3' => array (                     'min_value' => 100,
                                                 'max_value' => 500,
-                                                'min_alarm' => 0,
-                                                'max_alarm' => 200,
+                                                'min_alarm' => 200,
+                                                'max_alarm' => 1000,
                                                 'min_boundary' => 0,
                                                 'max_boundary' => 1000),
             'co' => array (                     'min_value' => 0.1,
@@ -242,6 +244,18 @@ trait Handling {
                                                 'max_value' => 90,
                                                 'min_alarm' => 0,
                                                 'max_alarm' => 55,
+                                                'min_boundary' => 0,
+                                                'max_boundary' => 100),
+            'health_idx' => array (             'min_value' => 0,
+                                                'max_value' => 100,
+                                                'min_alarm' => 40,
+                                                'max_alarm' => 100,
+                                                'min_boundary' => 0,
+                                                'max_boundary' => 100),
+            'cbi' => array (                    'min_value' => -20,
+                                                'max_value' => 120,
+                                                'min_alarm' => -20,
+                                                'max_alarm' => 75,
                                                 'min_boundary' => 0,
                                                 'max_boundary' => 100),
         );
@@ -295,7 +309,7 @@ trait Handling {
         delete_option('live_weather_station_unit_altitude');
         delete_option('live_weather_station_unit_distance');
         delete_option('live_weather_station_unit_rain_snow');
-        delete_option('live_weather_station_unit_co');
+        delete_option('live_weather_station_unit_gas');
         delete_option('live_weather_station_measure_only');
         delete_option('live_weather_station_obsolescence');
         delete_option('live_weather_station_min_max_mode');
@@ -305,6 +319,7 @@ trait Handling {
         delete_option('live_weather_station_advanced_mode');
         delete_option('live_weather_station_txt_cache_bypass');
         delete_option('live_weather_station_frontend_cache');
+        delete_option('live_weather_station_widget_cache');
         delete_option('live_weather_station_query_cache');
         delete_option('live_weather_station_backend_cache');
         delete_option('live_weather_station_redirect_internal_links');
@@ -313,6 +328,7 @@ trait Handling {
         delete_option('live_weather_station_map_zoom');
         delete_option('live_weather_station_map_layer');
         delete_option('live_weather_station_auto_manage_netatmo');
+        delete_option('live_weather_station_overload_hc');
         delete_option('live_weather_station_show_technical');
         self::delete_thresholds_options();
     }
@@ -359,12 +375,14 @@ trait Handling {
         update_option('live_weather_station_logger_retention', self::$live_weather_station_logger_retention);
         update_option('live_weather_station_txt_cache_bypass', self::$live_weather_station_txt_cache_bypass);
         update_option('live_weather_station_frontend_cache', self::$live_weather_station_frontend_cache);
+        update_option('live_weather_station_widget_cache', self::$live_weather_station_widget_cache);
         update_option('live_weather_station_query_cache', self::$live_weather_station_query_cache);
         update_option('live_weather_station_backend_cache', self::$live_weather_station_backend_cache);
         update_option('live_weather_station_redirect_internal_links', self::$live_weather_station_redirect_internal_links);
         update_option('live_weather_station_redirect_external_links', self::$live_weather_station_redirect_external_links);
         update_option('live_weather_station_time_shift_threshold', self::$live_weather_station_time_shift_threshold);
-        update_option('live_weather_station_auto_manage_netatmo', self::$live_weather_station_time_shift_threshold);
+        update_option('live_weather_station_auto_manage_netatmo', self::$live_weather_station_auto_manage_netatmo);
+        update_option('live_weather_station_overload_hc', self::$live_weather_station_overload_hc);
         update_option('live_weather_station_show_technical', self::$live_weather_station_show_technical);
     }
 
@@ -390,7 +408,7 @@ trait Handling {
         update_option('live_weather_station_min_max_mode', self::$live_weather_station_min_max_mode);
         update_option('live_weather_station_wind_semantics', self::$live_weather_station_wind_semantics);
         update_option('live_weather_station_moon_icons', self::$live_weather_station_moon_icons);
-        update_option('live_weather_station_unit_co', self::$live_weather_station_unit_co);
+        update_option('live_weather_station_unit_gas', self::$live_weather_station_unit_gas);
     }
 
     /**
@@ -543,6 +561,7 @@ trait Handling {
         self::verify_option_integer('live_weather_station_logger_retention', self::$live_weather_station_logger_retention);
         self::verify_option_boolean('live_weather_station_txt_cache_bypass', self::$live_weather_station_txt_cache_bypass);
         self::verify_option_boolean('live_weather_station_frontend_cache', self::$live_weather_station_frontend_cache);
+        self::verify_option_boolean('live_weather_station_widget_cache', self::$live_weather_station_widget_cache);
         self::verify_option_boolean('live_weather_station_query_cache', self::$live_weather_station_query_cache);
         self::verify_option_boolean('live_weather_station_backend_cache', self::$live_weather_station_backend_cache);
         self::verify_option_boolean('live_weather_station_redirect_internal_links', self::$live_weather_station_redirect_internal_links);
@@ -552,6 +571,7 @@ trait Handling {
         self::verify_option_integer('live_weather_station_map_zoom', self::$live_weather_station_map_zoom);
         self::verify_option_string('live_weather_station_map_layer', self::$live_weather_station_map_layer);
         self::verify_option_boolean('live_weather_station_auto_manage_netatmo', self::$live_weather_station_auto_manage_netatmo);
+        self::verify_option_boolean('live_weather_station_overload_hc', self::$live_weather_station_overload_hc);
         self::verify_option_boolean('live_weather_station_show_technical', self::$live_weather_station_show_technical);
         self::verify_option_boolean('live_weather_station_advanced_mode', self::$live_weather_station_advanced_mode);
         self::verify_option_boolean('live_weather_station_partial_translation', self::$live_weather_station_partial_translation);
@@ -588,7 +608,7 @@ trait Handling {
             self::verify_option_integer('live_weather_station_unit_altitude', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[4] : self::$live_weather_station_unit_altitude));
             self::verify_option_integer('live_weather_station_unit_distance', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[5] : self::$live_weather_station_unit_distance));
             self::verify_option_integer('live_weather_station_unit_rain_snow', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[9] : self::$live_weather_station_unit_rain_snow));
-            self::verify_option_integer('live_weather_station_unit_co', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[10] : self::$live_weather_station_unit_co));
+            self::verify_option_integer('live_weather_station_unit_gas', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[10] : self::$live_weather_station_unit_gas));
             self::verify_option_integer('live_weather_station_measure_only', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[3] : self::$live_weather_station_measure_only));
             self::verify_option_integer('live_weather_station_obsolescence', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[6] : self::$live_weather_station_obsolescence));
             self::verify_option_integer('live_weather_station_min_max_mode', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[7] : self::$live_weather_station_min_max_mode));
@@ -602,7 +622,7 @@ trait Handling {
             self::verify_option_integer('live_weather_station_unit_altitude', self::$live_weather_station_unit_altitude);
             self::verify_option_integer('live_weather_station_unit_distance', self::$live_weather_station_unit_distance);
             self::verify_option_integer('live_weather_station_unit_rain_snow', self::$live_weather_station_unit_rain_snow);
-            self::verify_option_integer('live_weather_station_unit_co', self::$live_weather_station_unit_co);
+            self::verify_option_integer('live_weather_station_unit_gas', self::$live_weather_station_unit_gas);
             self::verify_option_integer('live_weather_station_measure_only', self::$live_weather_station_measure_only);
             self::verify_option_integer('live_weather_station_obsolescence', self::$live_weather_station_obsolescence);
             self::verify_option_integer('live_weather_station_min_max_mode', self::$live_weather_station_min_max_mode);

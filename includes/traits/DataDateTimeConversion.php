@@ -2,6 +2,8 @@
 
 namespace WeatherStation\Data\DateTime;
 
+use WeatherStation\System\Logs\Logger;
+
 /**
  * Date/Time conversions functionalities for Weather Station plugin.
  *
@@ -74,14 +76,13 @@ trait Conversion {
     }
 
     /**
-     * Converts an UTC time into the correct format (all Netatmo timestamps are UTC).
+     * Converts an UTC time into the correct format (all timestamps *are* UTC).
      *
-     * @param   integer $ts The UTC timestamp to be converted.
-     * @param   string  $tz Optional. The timezone.
-     * @param   string  $format Optional. The time format.
-     * @return  string  Formatted time relative to the given timezone.
-     * @since    1.0.0
-     * @access   protected
+     * @param integer $ts The UTC timestamp to be converted.
+     * @param string $tz Optional. The timezone.
+     * @param string $format Optional. The time format.
+     * @return string Formatted time relative to the given timezone.
+     * @since 1.0.0
      */
     public static function get_time_from_utc($ts, $tz='', $format='-') {
         if ($format == '-') {
@@ -98,7 +99,7 @@ trait Conversion {
     }
 
     /**
-     * Converts an UTC time into the correct format (all Netatmo timestamps are UTC).
+     * Converts an UTC time into the correct format (all timestamps *are* UTC).
      *
      * @param   string  $ts The UTC MySql datetime to be converted.
      * @param   string  $tz Optional. The timezone.
@@ -190,7 +191,7 @@ trait Conversion {
      * @since    2.0.0
      * @access   protected
      */
-    public static function get_minute_diff_from_mysql_utc( $from ) {
+    public static function get_minute_diff_from_mysql_utc($from) {
         return round ((abs( strtotime(get_date_from_gmt(date('Y-m-d H:i:s'))) - strtotime(get_date_from_gmt($from))))/60);
     }
 
@@ -204,6 +205,13 @@ trait Conversion {
      * @since    2.0.0
      */
     public static function get_rise_set_short_from_utc($ts, $tz='', $comp=false) {
+        $mod = $ts % 60;
+        if ($mod > 29) {
+            $ts = $ts + 60 - $mod;
+        }
+        else {
+            $ts = $ts - $mod;
+        }
         $result = self::get_time_from_utc($ts, $tz);
         $now = time();
         if ($comp) {
@@ -246,7 +254,7 @@ trait Conversion {
             return date_i18n(get_option('date_format').', '.get_option('time_format'), strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
-            return date_i18n(get_option('date_format').', '.get_option('time_format'), strtotime( get_date_from_gmt(date('Y-m-d H:i:s',$ts))) );
+            return date_i18n(get_option('date_format').', '.get_option('time_format'), strtotime(get_date_from_gmt(date('Y-m-d H:i:s',$ts))));
         }
     }
 
@@ -271,18 +279,17 @@ trait Conversion {
      * @return string Formatted age in days, hours, minutes and seconds.
      * @since 3.1.0
      */
-    public static function get_age_days_from_seconds($age) {
-        return '';
-        /*
+    public static function get_age_hours_from_seconds($age) {
         $intervals = array(
             array(60, __('second', 'live-weather-station'), __('seconds', 'live-weather-station')),
             array(60, __('minute', 'live-weather-station'), __('minutes', 'live-weather-station')),
-            array(24, __('hour', 'live-weather-station'), __('hours', 'live-weather-station')),
-            array(100000, __('day', 'live-weather-station'), __('days', 'live-weather-station')),
+            array(100000, __('hour', 'live-weather-station'), __('hours', 'live-weather-station')),
         );
         $value = array();
-        foreach ($intervals as $key => $interval) {
-            $val = $age % $interval[$key];
+        $cage = 1;
+        foreach ($intervals as $interval) {
+            $val = $age % $interval[0];
+            $cage = $cage * $interval[0];
             if ($val > 0) {
                 if ($val == 1) {
                     $value[] = $val . ' ' . $interval[1];
@@ -291,9 +298,104 @@ trait Conversion {
                     $value[] = $val . ' ' . $interval[2];
                 }
             }
-            $age = round($age/$interval[$key], 0);
+            $age = round($age/$cage, 0);
         }
-        return explode(array_reverse($value), ',');
-        */
+        return implode(', ', array_reverse($value));
+    }
+
+    /**
+     * Verify if it's really the night (astronomical night).
+     *
+     * @param integer $sunrise_a The astronomical sunrise timestamp.
+     * @param integer $sunset_a The astronomical sunset timestamp.
+     * @param integer $time Optional. The time to match.
+     * @return boolean True if it's night, false otherwise.
+     * @since 3.1.0
+     */
+    public function is_it_night($sunrise_a, $sunset_a, $time=null) {
+        if (is_null($time)) {
+            $time = time();
+        }
+        if ($time < $sunrise_a) {
+            return true;
+        }
+        if ($time > $sunset_a) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Verify if we are in dawn twilight.
+     *
+     * @param integer $sunrise The sunrise utc timestamp.
+     * @param integer $sunrise_a The astronomical sunrise timestamp.
+     * @param integer $sunset_a The astronomical sunset timestamp.
+     * @param integer $time Optional. The time to match.
+     * @return boolean True if it's dawn, false otherwise.
+     * @since 3.1.0
+     */
+    public function is_it_dawn($sunrise, $sunrise_a, $sunset_a, $time=null) {
+        if (is_null($time)) {
+            $time = time();
+        }
+        if (($time < $sunrise) && !$this->is_it_night($sunrise_a, $sunset_a, $time)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Verify if we are in dusk twilight.
+     *
+     * @param integer $sunset The sunset utc timestamp.
+     * @param integer $sunrise_a The astronomical sunrise timestamp.
+     * @param integer $sunset_a The astronomical sunset timestamp.
+     * @param integer $time Optional. The time to match.
+     * @return boolean True if it's dusk, false otherwise.
+     * @since 3.1.0
+     */
+    public function is_it_dusk($sunset, $sunrise_a, $sunset_a, $time=null) {
+        if (is_null($time)) {
+            $time = time();
+        }
+        if (($time > $sunset) && !$this->is_it_night($sunrise_a, $sunset_a, $time)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Calculate the percentage of elapsed dawn twilight.
+     *
+     * @param integer $sunrise The sunrise timestamp.
+     * @param integer $sunrise_a The astronomical sunrise timestamp.
+     * @param integer $time Optional. The time to match.
+     * @return integer The percentage of dawn.
+     * @since 3.1.0
+     */
+    public function dawn_percentage($sunrise, $sunrise_a, $time=null) {
+        if (is_null($time)) {
+            $time = time();
+        }
+        $result = ($sunrise - $time) / ($sunrise - $sunrise_a);
+        return round(100*$result, 0);
+    }
+
+    /**
+     * Calculate the percentage of elapsed dusk twilight.
+     *
+     * @param integer $sunset The sunset timestamp.
+     * @param integer $sunset_a The astronomical sunset timestamp.
+     * @param integer $time Optional. The time to match.
+     * @return boolean True if it's dusk, false otherwise.
+     * @since 3.1.0
+     */
+    public function dusk_percentage($sunset, $sunset_a, $time=null) {
+        if (is_null($time)) {
+            $time = time();
+        }
+        $result = ($sunset_a - $time) / ($sunset_a - $sunset);
+        return round(100*$result, 0);
     }
 }

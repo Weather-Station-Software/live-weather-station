@@ -23,6 +23,16 @@
     </select>
 </p>
 <p>
+    <label for="<?php echo $this->get_field_id( 'mode' ); ?>"><?php esc_html_e( 'Ephemeris mode' , 'live-weather-station'); ?></label>
+    <select class="widefat" id="<?php echo $this->get_field_id( 'mode' ); ?>" name="<?php echo $this->get_field_name( 'mode' ); ?>">
+        <option value="0"<?php if ($mode ==0) {echo'selected="selected"';}?>><?php esc_html_e( 'Standard' , 'live-weather-station'); ?></option>;
+        <option value="1"<?php if ($mode ==1) {echo'selected="selected"';}?>><?php esc_html_e( 'Civil' , 'live-weather-station'); ?></option>;
+        <option value="2"<?php if ($mode ==2) {echo'selected="selected"';}?>><?php esc_html_e( 'Nautical' , 'live-weather-station'); ?></option>;
+        <option value="3"<?php if ($mode ==3) {echo'selected="selected"';}?>><?php esc_html_e( 'Astronomical' , 'live-weather-station'); ?></option>;
+    </select>
+</p>
+<hr>
+<p>
     <label for="<?php echo $this->get_field_id( 'title' ); ?>"><?php esc_html_e( 'Displayed name' , 'live-weather-station'); ?></label>
     <input class="widefat" id="<?php echo $this->get_field_id( 'title' ); ?>" name="<?php echo $this->get_field_name( 'title' ); ?>" type="text" value="<?php echo esc_attr( $title ); ?>" />
 </p>
@@ -52,6 +62,30 @@
         <option value="<?php echo $i ?>"<?php if ($bg_opacity==$i):?> selected="selected"<?php endif;?>><?php echo ($i*10).'%' ?></option>;
     <?php } ?>
 </select>
+<p>
+    <label for="<?php echo $this->get_field_id('day_url'); ?>"><?php esc_html_e( 'Image url for day' , 'live-weather-station'); ?></label><br/>
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('day_url'); ?>" name="<?php echo $this->get_field_name('day_url'); ?>" value="<?php echo $day_url; ?>" />
+</p>
+<p>
+    <label for="<?php echo $this->get_field_id('night_url'); ?>"><?php esc_html_e( 'Image url for night' , 'live-weather-station'); ?></label><br/>
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('night_url'); ?>" name="<?php echo $this->get_field_name('night_url'); ?>" value="<?php echo $night_url; ?>" />
+</p>
+<p>
+    <label for="<?php echo $this->get_field_id('dawn_url'); ?>"><?php esc_html_e( 'Image url for dawn' , 'live-weather-station'); ?></label><br/>
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('dawn_url'); ?>" name="<?php echo $this->get_field_name('dawn_url'); ?>" value="<?php echo $dawn_url; ?>" />
+</p>
+<p>
+    <label for="<?php echo $this->get_field_id('dusk_url'); ?>"><?php esc_html_e( 'Image url for dusk' , 'live-weather-station'); ?></label><br/>
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('dusk_url'); ?>" name="<?php echo $this->get_field_name('dusk_url'); ?>" value="<?php echo $dusk_url; ?>" />
+</p>
+<p>
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('fixed_background'); ?>" name="<?php echo $this->get_field_name('fixed_background'); ?>"<?php checked( $fixed_background ); ?> />
+    <label for="<?php echo $this->get_field_id('fixed_background'); ?>"><?php esc_html_e( 'Fixed background' , 'live-weather-station'); ?></label>
+</p>
+<p>
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('follow_light'); ?>" name="<?php echo $this->get_field_name('follow_light'); ?>"<?php checked( $follow_light ); ?> />
+    <label for="<?php echo $this->get_field_id('follow_light'); ?>"><?php esc_html_e( 'Luminosity follows current light' , 'live-weather-station'); ?></label>
+</p>
 <p>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_borders'); ?>" name="<?php echo $this->get_field_name('show_borders'); ?>"<?php checked( $show_borders ); ?> />
     <label for="<?php echo $this->get_field_id('show_borders'); ?>"><?php esc_html_e( 'Show borders' , 'live-weather-station'); ?></label>

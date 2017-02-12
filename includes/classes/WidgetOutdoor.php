@@ -91,6 +91,12 @@ class Outdoor extends \WP_Widget {
                 'show_location' => false,
                 'show_cloud_ceiling' => false,
                 'show_cloud_cover' => false,
+                'follow_light' => false,
+                'fixed_background' => false,
+                'day_url' => '',
+                'night_url' => '',
+                'dawn_url' => '',
+                'dusk_url' => '',
                 'flat_design' => false));
         $result['show_tooltip'] = !empty($result['show_tooltip']) ? 1 : 0;
         $result['show_borders'] = !empty($result['show_borders']) ? 1 : 0;
@@ -111,6 +117,8 @@ class Outdoor extends \WP_Widget {
         $result['show_cloud_ceiling'] = !empty($result['show_cloud_ceiling']) ? 1 : 0;
         $result['show_cloud_cover'] = !empty($result['show_cloud_cover']) ? 1 : 0;
         $result['flat_design'] = !empty($result['flat_design']) ? 1 : 0;
+        $result['follow_light'] = !empty($result['follow_light']) ? 1 : 0;
+        $result['fixed_background'] = !empty($result['fixed_background']) ? 1 : 0;
         return $result;
     }
 
@@ -150,6 +158,12 @@ class Outdoor extends \WP_Widget {
         $show_cloud_ceiling = (bool)$instance['show_cloud_ceiling'] ;
         $show_cloud_cover = (bool)$instance['show_cloud_cover'] ;
         $flat_design = (bool)$instance['flat_design'] ;
+        $follow_light = (bool)$instance['follow_light'] ;
+        $fixed_background = (bool)$instance['fixed_background'] ;
+        $day_url = $instance['day_url'];
+        $night_url = $instance['night_url'];
+        $dawn_url = $instance['dawn_url'];
+        $dusk_url = $instance['dusk_url'];
         $stations = $this->get_operational_stations_list();
         include(LWS_ADMIN_DIR.'partials/WidgetOutdoorSettings.php');
     }
@@ -157,13 +171,15 @@ class Outdoor extends \WP_Widget {
     /**
      * Set the (inline) css for the widget rendering.
      *
-     * @param    array  $instance   An array containing settings for the widget.
-     * @param    string  $uid   Identifiant of the widget.
-     * @param    boolean  $flat_design   Enabling flat design mode.
-     * @since    1.0.0
-     * @access   public
+     * @param array $instance An array containing settings for the widget.
+     * @param string $uid Identifiant of the widget.
+     * @param boolean $flat_design Enabling flat design mode.
+     * @param integer $dawndusk Luminosity factor from 0% to 100%.
+     * @param string $background Optional. CSS for background image url.
+     * @param string $attachment Optional. CSS for background-attachment.
+     * @since 1.0.0
      */
-    public function css($instance, $uid, $flat_design) {
+    public function css($instance, $uid, $flat_design, $dawndusk=100, $background='', $attachment) {
         try
         {
             $maxwidth = round ($instance['width']);
@@ -174,7 +190,19 @@ class Outdoor extends \WP_Widget {
             $maxwidth = 0;
         }
         $txt_color = $instance['txt_color'];
-        $color = new Color($instance['bg_color']);
+        if ($flat_design) {
+            $fact = 80;
+        }
+        else {
+            $fact = 98;
+        }
+        $c = new Color($instance['bg_color']);
+        if ($dawndusk < 100) {
+            $color = new Color($c->darken(round(($fact * $c->getHsl()['L']) * (1 - ($dawndusk / 100)), 0)));
+        }
+        else {
+            $color = $c;
+        }
         $opacity = (11 - $instance['bg_opacity'])/11;
         if ($opacity < 0.1) {
             $opacity = 0;
@@ -213,8 +241,8 @@ class Outdoor extends \WP_Widget {
             }
         }
         if ($flat_design) {
-            $gradient_dark = Color::hexToRgbString($instance['bg_color'], $opacity);
-            $gradient_light = Color::hexToRgbString($instance['bg_color'], $opacity);
+            $gradient_dark = Color::hexToRgbString('#'.$color->getHex(), $opacity);
+            $gradient_light = Color::hexToRgbString('#'.$color->getHex(), $opacity);
             $border_color1 = '#'.$bcc;
             $border_color2 = '#'.$bcc;
         }
@@ -227,6 +255,8 @@ class Outdoor extends \WP_Widget {
         $id = $uid;
         $shadows = !$flat_design;
         $borders = $instance['show_borders'];
+        $background_attachment = $attachment;
+        $bg_url = $background;
         include(LWS_PUBLIC_DIR.'partials/WidgetOutdoorDisplayCSS.php');
     }
 
@@ -268,6 +298,12 @@ class Outdoor extends \WP_Widget {
         $instance['show_cloud_ceiling'] = !empty($new_instance['show_cloud_ceiling']) ? 1 : 0;
         $instance['show_cloud_cover'] = !empty($new_instance['show_cloud_cover']) ? 1 : 0;
         $instance['flat_design'] = !empty($new_instance['flat_design']) ? 1 : 0;
+        $instance['follow_light'] = !empty($new_instance['follow_light']) ? 1 : 0;
+        $instance['fixed_background'] = !empty($new_instance['fixed_background']) ? 1 : 0;
+        $instance['day_url'] = $new_instance['day_url'];
+        $instance['night_url'] = $new_instance['night_url'];
+        $instance['dawn_url'] = $new_instance['dawn_url'];
+        $instance['dusk_url'] = $new_instance['dusk_url'];
         return $instance;
     }
 
@@ -303,6 +339,26 @@ class Outdoor extends \WP_Widget {
         $show_cloud_ceiling = (bool)$instance['show_cloud_ceiling'] ;
         $show_cloud_cover = (bool)$instance['show_cloud_cover'] ;
         $flat = (bool)$instance['flat_design'] ;
+        $follow_light = (bool)$instance['follow_light'] ;
+        $fixed_background = (bool)$instance['fixed_background'] ;
+        $background_attachment = 'local';
+        if ($fixed_background) {
+            $background_attachment = 'fixed';
+        }
+        $day_url = $instance['day_url'];
+        $night_url = $instance['night_url'];
+        $dawn_url = $instance['dawn_url'];
+        $dusk_url = $instance['dusk_url'];
+        $bg_url = '';
+        $sunrise_a = 0;
+        $sunrise = 0;
+        $sunset = 0;
+        $sunset_a = 0;
+        $isday = false;
+        $isnight = false;
+        $isdawn = false;
+        $isdusk = false;
+        $dawndusk = 0;
         $rain_multipart = false;
         $wind_multipart = false;
         $temp_multipart = false;
@@ -312,7 +368,7 @@ class Outdoor extends \WP_Widget {
         $NAModule3 = false;
         $NACurrent = false;
         $NAComputed = false;
-        $modules = $this->format_widget_datas($this->get_outdoor_datas($instance['station'], true));
+        $modules = $this->get_widget_data($instance['station'], 'outdoor', $hide_obsolete);
         $timestamp = '';
         $tz = '';
         $location = '';
@@ -338,6 +394,16 @@ class Outdoor extends \WP_Widget {
                         }
                         if (array_key_exists('loc_timezone', $module['datas'])) {
                             $tz = $module['datas']['loc_timezone']['value'];
+                        }
+                        break;
+                    case 'NAEphemer':
+                        if (array_key_exists('sunrise', $module['datas']) && array_key_exists('sunset', $module['datas'])) {
+                            $sunrise = $module['datas']['sunrise']['value'];
+                            $sunset = $module['datas']['sunset']['value'];
+                        }
+                        if (array_key_exists('sunrise_a', $module['datas']) && array_key_exists('sunset_a', $module['datas'])) {
+                            $sunrise_a = $module['datas']['sunrise_a']['value'];
+                            $sunset_a = $module['datas']['sunset_a']['value'];
                         }
                         break;
                     case 'NAModule1': // Outdoor module
@@ -502,88 +568,62 @@ class Outdoor extends \WP_Widget {
                         break;
                 }
             }
-            $timestamp = self::get_date_from_utc($modules['timestamp']).', '.self::get_time_from_utc($modules['timestamp'], $tz);
+            $timestamp = self::get_date_from_utc($modules['timestamp'], $tz).', '.self::get_time_from_utc($modules['timestamp'], $tz);
         }
         $has_current = (count($current) > 0);
         if (!$NAMain && $has_current) {
-            if ($hide_obsolete) {
-                $show_pressure = false ;
+            $NAMain = true;
+            if (array_key_exists('pressure', $current['datas'])) {
+                $datas['pressure'] = array();
+                $datas['pressure']['value'] = $current['datas']['pressure']['value'];
+                $datas['pressure']['unit'] = $current['datas']['pressure']['unit']['unit'];
+            } else {
+                $show_pressure = false;
             }
-            else {
-                $NAMain = true;
-                if (array_key_exists('pressure', $current['datas'])) {
-                    $datas['pressure'] = array();
-                    $datas['pressure']['value'] = $current['datas']['pressure']['value'];
-                    $datas['pressure']['unit'] = $current['datas']['pressure']['unit']['unit'];
-                    $show_pressure = (bool)$instance['show_pressure'];
-                } else {
-                    $show_pressure = false;
-                }
-                if (array_key_exists('loc_latitude', $current['datas']) && array_key_exists('loc_longitude', $current['datas']) && array_key_exists('loc_altitude', $current['datas'])) {
-                    $location = $this->output_coordinate($current['datas']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
-                        $this->output_coordinate($current['datas']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
-                        $this->output_value($current['datas']['loc_altitude']['value'], 'loc_altitude', true) . ')';
-                }
+            if (array_key_exists('loc_latitude', $current['datas']) && array_key_exists('loc_longitude', $current['datas']) && array_key_exists('loc_altitude', $current['datas'])) {
+                $location = $this->output_coordinate($current['datas']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
+                    $this->output_coordinate($current['datas']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
+                    $this->output_value($current['datas']['loc_altitude']['value'], 'loc_altitude', true) . ')';
             }
         }
         if (!$NAModule1 && $has_current) {
-            if ($hide_obsolete) {
-                $show_humidity = false ;
-                $show_temperature = false;
+            $NAModule1 = true;
+            if (array_key_exists('humidity', $current['datas'])) {
+                $datas['humidity'] = array();
+                $datas['humidity']['value'] = $current['datas']['humidity']['value'];
+                $datas['humidity']['unit'] = $current['datas']['humidity']['unit']['unit'];
+            } else {
+                $show_humidity = false;
             }
-            else {
-                $NAModule1 = true;
-                if (array_key_exists('humidity', $current['datas'])) {
-                    $datas['humidity'] = array();
-                    $datas['humidity']['value'] = $current['datas']['humidity']['value'];
-                    $datas['humidity']['unit'] = $current['datas']['humidity']['unit']['unit'];
-                    $show_humidity = (bool)$instance['show_humidity'];
-                } else {
-                    $show_humidity = false;
-                }
-                if (array_key_exists('temperature', $current['datas'])) {
-                    $datas['temperature'] = array();
-                    $datas['temperature']['value'] = $current['datas']['temperature']['value'];
-                    $datas['temperature']['unit'] = $current['datas']['temperature']['unit']['unit'];
-                    $show_temperature = (bool)$instance['show_temperature'];
-                } else {
-                    $show_temperature = false;
-                }
+            if (array_key_exists('temperature', $current['datas'])) {
+                $datas['temperature'] = array();
+                $datas['temperature']['value'] = $current['datas']['temperature']['value'];
+                $datas['temperature']['unit'] = $current['datas']['temperature']['unit']['unit'];
+            } else {
+                $show_temperature = false;
             }
         }
         if (!$NAModule2 && $has_current) {
-            if ($hide_obsolete) {
+            $NAModule2 = true;
+            if (array_key_exists('windangle', $current['datas']) && array_key_exists('windstrength', $current['datas'])) {
+                $datas['windangle'] = array();
+                $datas['windangle']['value'] = $current['datas']['windangle']['value'];
+                $datas['windangle']['from'] = $this->get_angle_full_text($current['datas']['windangle']['value']);
+                $datas['windstrength'] = array();
+                $datas['windstrength']['value'] = $current['datas']['windstrength']['value'];
+                $datas['windstrength']['unit'] = $current['datas']['windstrength']['unit']['unit'];
+            } else {
                 $show_wind = false;
-            }
-            else {
-                $NAModule2 = true;
-                if (array_key_exists('windangle', $current['datas']) && array_key_exists('windstrength', $current['datas'])) {
-                    $datas['windangle'] = array();
-                    $datas['windangle']['value'] = $current['datas']['windangle']['value'];
-                    $datas['windangle']['from'] = $this->get_angle_full_text($current['datas']['windangle']['value']);
-                    $datas['windstrength'] = array();
-                    $datas['windstrength']['value'] = $current['datas']['windstrength']['value'];
-                    $datas['windstrength']['unit'] = $current['datas']['windstrength']['unit']['unit'];
-                    $show_wind = (bool)$instance['show_wind'];
-                } else {
-                    $show_wind = false;
-                }
             }
         }
         if (!$NAModule3 && $has_current) {
-            if ($hide_obsolete) {
+            $NAModule3 = true;
+            if (array_key_exists('rain', $current['datas'])) {
+                $datas['rain'] = array();
+                $datas['rain']['value'] = $current['datas']['rain']['value'];
+                $datas['rain']['unit'] = $current['datas']['rain']['unit']['unit'];
+            } else {
                 $show_rain = false;
-            }
-            else {
-                $NAModule3 = true;
-                if (array_key_exists('rain', $current['datas'])) {
-                    $datas['rain'] = array();
-                    $datas['rain']['value'] = $current['datas']['rain']['value'];
-                    $datas['rain']['unit'] = $current['datas']['rain']['unit']['unit'];
-                    $show_rain = (bool)$instance['show_rain'];
-                } else {
-                    $show_rain = false;
-                }
             }
         }
         if (!$NAMain) {
@@ -622,15 +662,43 @@ class Outdoor extends \WP_Widget {
         if ($show_current) {
             $show_current = ($datas['weather']['value'] != 0);
         }
-        echo $args['before_widget'];
         if (get_option('live_weather_station_wind_semantics') == 0) {
             $windsemantic = 'towards';
         }
         else {
             $windsemantic = 'from';
         }
+        if ($isnight = $this->is_it_night($sunrise_a, $sunset_a)) {
+            $dawndusk = 0;
+            if ($night_url != '') {
+                $bg_url = 'background-image: url("' . $night_url . '");';
+            }
+        }
+        if ($isdawn = $this->is_it_dawn($sunrise, $sunrise_a, $sunset_a)) {
+            if ($dawn_url != '') {
+                $bg_url = 'background-image: url("' . $dawn_url . '");';
+            }
+            $dawndusk = $this->dawn_percentage($sunrise, $sunrise_a);
+        }
+        if ($isdusk = $this->is_it_dusk($sunset, $sunrise_a, $sunset_a)) {
+            if ($dusk_url != '') {
+                $bg_url = 'background-image: url("' . $dusk_url . '");';
+            }
+            $dawndusk = 100 - $this->dusk_percentage($sunset, $sunset_a);
+        }
+        if (!$isnight && !$isdawn && !$isdusk) {
+            $isday = true;
+            $dawndusk = 100;
+            if ($day_url != '') {
+                $bg_url = 'background-image: url("' . $day_url . '");';
+            }
+        }
+        if (!$follow_light) {
+            $dawndusk = 100;
+        }
+        echo $args['before_widget'];
         $id = uniqid();
-        $this->css($instance, $id, $flat);
+        $this->css($instance, $id, $flat, $dawndusk, $bg_url, $background_attachment);
         include(LWS_PUBLIC_DIR.'partials/WidgetOutdoorDisplay.php');
         echo $args['after_widget'];
     }
