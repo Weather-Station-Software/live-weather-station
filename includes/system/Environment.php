@@ -1,6 +1,7 @@
 <?php
 
 namespace WeatherStation\System\Environment;
+use WeatherStation\SDK\Generic\Exception;
 
 /**
  * The class to manage and detect environment.
@@ -30,6 +31,26 @@ class Manager {
     }
 
     /**
+     * Check if the server config allows shell_exec().
+     *
+     * @since 3.1.0
+     */
+    private static function isShellEnabled() {
+        if (function_exists('shell_exec') && !in_array('shell_exec', array_map('trim', explode(', ', ini_get('disable_functions')))) && strtolower(ini_get('safe_mode')) != 1 ) {
+            $return = shell_exec('cat /proc/cpuinfo');
+            if (!empty($return)) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
      * The detection of this url allows the plugin to make ajax calls when
      * the site has not a standard /wp-admin/ path.
      *
@@ -49,6 +70,163 @@ class Manager {
     public static function admin_dir_relative_url() {
         $url = preg_replace('/(http[s]?:\/\/.*\/)/iU', '',  get_admin_url(), 1);
         return (substr($url, 0) == '/' ? '' : '/') . $url . (substr($url, -1) == '/' ? '' : '/') .'admin.php';
+    }
+
+    /**
+     * Get the name of this web server software.
+     *
+     * @since 3.1.0
+     */
+    public static function webserver_software_name() {
+        return $_SERVER['SERVER_SOFTWARE'];
+    }
+
+    /**
+     * Get the API of this web server.
+     *
+     * @since 3.1.0
+     */
+    public static function webserver_api() {
+        return $_SERVER['GATEWAY_INTERFACE'];
+    }
+
+    /**
+     * Get the protocol of this web server.
+     *
+     * @since 3.1.0
+     */
+    public static function webserver_protocol() {
+        return $_SERVER['SERVER_PROTOCOL'];
+    }
+
+    /**
+     * Get the port of this web server.
+     *
+     * @since 3.1.0
+     */
+    public static function webserver_port() {
+        return $_SERVER['SERVER_PORT'];
+    }
+
+    /**
+     * Get the document root of this web server.
+     *
+     * @since 3.1.0
+     */
+    public static function webserver_document_root() {
+        return $_SERVER['DOCUMENT_ROOT'];
+    }
+
+    /**
+     * Get the domain of this web server.
+     *
+     * @since 3.1.0
+     */
+    public static function webserver_domain() {
+        $domain = get_option('siteurl');
+        $domain = str_replace('http://', '', $domain);
+        $domain = str_replace('https://', '', $domain);
+        return $domain;
+    }
+
+    /**
+     * Get the ip adresss of the server.
+     *
+     * @since 3.1.0
+     */
+    public static function server_ip() {
+        return gethostbyname(self::webserver_domain());
+    }
+
+    /**
+     * Get the OS of the server.
+     *
+     * @since 3.1.0
+     */
+    public static function server_os() {
+        $os_detail = php_uname();
+        $os = explode( " ", trim($os_detail));
+        return $os[0] . ' ' . $os[12];
+    }
+
+    /**
+     * Get CPU count of the server.
+     *
+     * @since 3.1.0
+     */
+    public static function server_cpu() {
+        $cpu_count = get_transient('lws_cpu_count');
+        if ($cpu_count === false) {
+            if (self::isShellEnabled()) {
+                $cpu_count = shell_exec('cat /proc/cpuinfo |grep "physical id" | sort | uniq | wc -l');
+                set_transient ('lws_cpu_count', $cpu_count, HOUR_IN_SECONDS);
+            } else {
+                return false;
+            }
+        }
+        return $cpu_count;
+    }
+    
+    /**
+     * Get core count of the server.
+     *
+     * @since 3.1.0
+     */
+    public static function server_core() {
+        $core_count = get_transient('lws_core_count');
+        if ($core_count === false) {
+            if (self::isShellEnabled()) {
+                $core_count = shell_exec("echo \"$((`cat /proc/cpuinfo | grep cores | grep -o '[0-9]' | uniq` * `cat /proc/cpuinfo |grep 'physical id' | sort | uniq | wc -l`))\"");
+                set_transient ('lws_core_count', $core_count, HOUR_IN_SECONDS);
+            } else {
+                return false;
+            }
+        }
+        return $core_count;
+    }
+
+    /**
+     * Get the full information for the ip of the server.
+     *
+     * @since 3.1.0
+     */
+    public static function server_full_information() {
+        if ($result = get_transient('lws_server_location')) {
+            return $result;
+        }
+        try {
+            $result = @unserialize(file_get_contents('http://ip-api.com/php/'.self::server_ip()));
+        }
+        catch (Exception $e) {
+            return false;
+        }
+        if( $result && $result['status'] == 'success' ) {
+            set_transient('lws_server_location', $result, HOUR_IN_SECONDS);
+            return $result;
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * Get the hoster detail.
+     *
+     * @since 3.1.0
+     */
+    public static function hoster_name() {
+        $s = self::server_full_information();
+        return $s['org'];
+    }
+
+    /**
+     * Get the hoster location.
+     *
+     * @since 3.1.0
+     */
+    public static function hoster_location() {
+        $s = self::server_full_information();
+        return $s['city'] . ', ' . $s['country'];
     }
 
     /**
@@ -192,4 +370,5 @@ class Manager {
     public static function weatherstation_version_id() {
         return 'WeatherStation/' . LWS_VERSION;
     }
+
 }

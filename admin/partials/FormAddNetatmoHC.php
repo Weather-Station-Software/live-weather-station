@@ -46,7 +46,7 @@ $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
                 </tr>
 
             </table>
-            <p class="submit"><input type="submit" name="add-netatmohc" id="add-netatmohc" class="button button-primary" value="<?php esc_html_e( 'Add This device', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp; <input type="submit" name="donot-add-netatmohc" id="donot-add-netatmohc" class="button" value="<?php esc_html_e( 'Cancel', 'live-weather-station' );?>"  />
+            <p class="submit"><input type="submit" name="add-netatmohc" id="add-netatmohc" class="button button-primary" value="<?php esc_html_e( 'Add This Device', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp; <input type="submit" name="donot-add-netatmohc" id="donot-add-netatmohc" class="button" value="<?php esc_html_e( 'Cancel', 'live-weather-station' );?>"  />
                 <span id="span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Adding this device, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
         </form>
     <?php } else { ?>

@@ -2,6 +2,8 @@
 
 namespace WeatherStation\System\Schedules;
 
+use WeatherStation\System\Cache\Cache;
+use WeatherStation\System\Analytics\Performance;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\SDK\Generic\Plugin\Pusher as Pusher;
 use WeatherStation\SDK\Netatmo\Plugin\Updater as Netatmo_Updater;
@@ -38,6 +40,8 @@ trait Handling {
     protected static $netatmo_push_schedule_name = 'lws_netatmo_push';
     protected static $push_schedule_name = 'lws_current_push';
     protected static $log_rotate_name = 'lws_log_rotate';
+    protected static $cache_flush_name = 'lws_cache_flush';
+    protected static $stats_clean_name = 'lws_stats_clean';
 
     /**
      * Define Netatmo Updater cron job.
@@ -260,6 +264,50 @@ trait Handling {
     }
 
     /**
+     * Define cache flushing cron job.
+     *
+     * @since 3.1.0
+     */
+    protected static function define_cache_flush_cron() {
+        $cache = new Cache(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$cache_flush_name, array($cache, 'flush'));
+    }
+
+    /**
+     * Launch the cache flushing cron job if needed.
+     *
+     * @since 3.1.0
+     */
+    protected static function launch_cache_flush_cron() {
+        if (!wp_next_scheduled(self::$cache_flush_name)) {
+            wp_schedule_event(time() + 65, 'twicedaily', self::$cache_flush_name);
+            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$cache_flush_name.' cron job.');
+        }
+    }
+
+    /**
+     * Define stats cleaning cron job.
+     *
+     * @since 3.1.0
+     */
+    protected static function define_stats_clean_cron() {
+        $perf = new Performance(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$stats_clean_name, array($perf, 'rotate'));
+    }
+
+    /**
+     * Launch the stats cleaning cron job if needed.
+     *
+     * @since 3.1.0
+     */
+    protected static function launch_stats_clean_cron() {
+        if (!wp_next_scheduled(self::$stats_clean_name)) {
+            wp_schedule_event(time() + 35, 'daily', self::$stats_clean_name);
+            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$stats_clean_name.' cron job.');
+        }
+    }
+
+    /**
      * Define log rotate cron job.
      *
      * @since 3.0.0
@@ -299,6 +347,8 @@ trait Handling {
         wp_clear_scheduled_hook(self::$netatmo_push_schedule_name);
         wp_clear_scheduled_hook(self::$push_schedule_name);
         wp_clear_scheduled_hook(self::$log_rotate_name);
+        wp_clear_scheduled_hook(self::$cache_flush_name);
+        wp_clear_scheduled_hook(self::$stats_clean_name);
         wp_clear_scheduled_hook(self::$translation_update_name);
     }
 
@@ -318,6 +368,8 @@ trait Handling {
         self::launch_real_station_update_cron();
         self::launch_owm_pollution_update_cron();
         self::launch_log_rotate_cron();
+        self::launch_cache_flush_cron();
+        self::launch_stats_clean_cron();
         self::launch_translation_update_cron();
     }
 

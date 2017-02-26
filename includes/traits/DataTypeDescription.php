@@ -56,9 +56,6 @@ trait Description {
             case 'namain':
                 $result = __('Base station', 'live-weather-station');
                 break;
-            case 'nahc': // Home Coach
-                $result = __('Home coach', 'live-weather-station');
-                break;
             case 'namodule1': // Outdoor module
                 $result = __('Outdoor module', 'live-weather-station');
                 break;
@@ -123,9 +120,6 @@ trait Description {
         switch (strtolower($type)) {
             case 'namain':
                 $result = __('Station', 'live-weather-station');
-                break;
-            case 'nahc':
-                $result = __('Coach', 'live-weather-station');
                 break;
             case 'namodule1': // Outdoor module
                 $result = __('Outdoor', 'live-weather-station');

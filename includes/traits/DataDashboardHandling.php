@@ -176,8 +176,8 @@ trait Handling {
             $updates['measure_value'] = 0;
             if (isset($place['location']) && is_array($place['location']) && count($place['location'])>1) {
                 $updates['measure_value'] = $place['location'][1];
+                $this->update_data_table($updates);
             }
-            $this->update_data_table($updates);
             $updates = array();
             $updates['device_id'] = $device_id;
             $updates['device_name'] = $device_name;
@@ -194,8 +194,8 @@ trait Handling {
             $updates['measure_value'] = 0;
             if (isset($place['location']) && is_array($place['location']) && count($place['location'])>0) {
                 $updates['measure_value'] = $place['location'][0];
+                $this->update_data_table($updates);
             }
-            $this->update_data_table($updates);
             $updates = array();
             $updates['device_id'] = $device_id;
             $updates['device_name'] = $device_name;

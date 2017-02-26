@@ -93,7 +93,7 @@
 </p>
 <p>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('follow_risk'); ?>" name="<?php echo $this->get_field_name('follow_risk'); ?>"<?php checked( $follow_risk ); ?> />
-    <label for="<?php echo $this->get_field_id('follow_risk'); ?>"><?php esc_html_e( 'Hue follows current risk' , 'live-weather-station'); ?></label>
+    <label for="<?php echo $this->get_field_id('follow_risk'); ?>"><?php esc_html_e( 'Color hue follows current risk' , 'live-weather-station'); ?></label>
 </p>
 <p>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_borders'); ?>" name="<?php echo $this->get_field_name('show_borders'); ?>"<?php checked( $show_borders ); ?> />

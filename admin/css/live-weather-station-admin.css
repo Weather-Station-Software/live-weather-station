@@ -81,6 +81,11 @@ select.option-at-100 {
     padding: 0;
 }
 
+#lws-connect-netatmohc .inside {
+    margin: 0;
+    padding: 0;
+}
+
 #lws-connect-owm .inside {
     margin: 0;
     padding: 0;
@@ -148,7 +153,7 @@ select.option-at-100 {
     transform: rotate(315deg);
 }
 
-#span-sync, #netatmo-span-sync, #owm-span-sync, #wug-span-sync {
+#span-sync, #netatmo-span-sync, #netatmohc-span-sync, #owm-span-sync, #wug-span-sync {
     color: #666;
 }
 

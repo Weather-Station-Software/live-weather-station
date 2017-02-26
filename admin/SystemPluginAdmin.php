@@ -52,7 +52,7 @@ class Admin {
 	private $version;
 
     private $settings = array('general', 'services', 'display', 'thresholds', 'system');
-    private $services = array('Netatmo', 'OpenWeatherMap', 'WeatherUnderground');
+    private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground');
     private $service = 'Backend';
 
     private $_station = null;
@@ -788,6 +788,9 @@ class Admin {
                 if ($action == 'changelog') {
                     $view = 'changelog';
                 }
+                if ($action == 'configuration') {
+                    $view = 'configuration';
+                }
                 if ($service == 'station' && ($tab == 'edit' || $tab == 'view') && $action == 'manage') {
                     $view = 'station';
                 }
@@ -1222,6 +1225,14 @@ class Admin {
                         $s = $this->connect_netatmo($login, $password);
                     }
                 }
+                if ($service == 'NetatmoHC') {
+                    if ($login == '' || $password == '') {
+                        $s = __('the login and password can not be empty', 'live-weather-station');
+                    }
+                    else {
+                        $s = $this->connect_netatmohc($login, $password);
+                    }
+                }
                 if ($service == 'OpenWeatherMap') {
                     if ($key == '') {
                         $s = __('the API key can not be empty', 'live-weather-station');
@@ -1258,6 +1269,10 @@ class Admin {
                     $this->disconnect_netatmo();
                     $result = true;
                 }
+                if ($service == 'NetatmoHC') {
+                    $this->disconnect_netatmohc();
+                    $result = true;
+                }
                 if ($service == 'OpenWeatherMap') {
                     $this->disconnect_owm();
                     $result = true;
@@ -1291,7 +1306,7 @@ class Admin {
     }
 
     /**
-     * Add a Netatmo station.
+     * Delete a Netatmo station.
      *
      * @param integer $guid The guid of the station.
      * @since 3.0.0
@@ -1437,7 +1452,6 @@ class Admin {
             Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly connected to service.');
             if (get_option('live_weather_station_auto_manage_netatmo')) {
                 $this->get_netatmo(true);
-                $this->get_netatmohc(true);
             }
         }
         else {
@@ -1455,6 +1469,40 @@ class Admin {
         self::init_netatmo_options();
         Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly disconnected from service.');
         $this->clear_all_netatmo_stations();
+        Logger::notice('Backend', 'Netatmo', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
+    }
+
+    /**
+     * Connect to a Netatmo HC account.
+     *
+     * @param string $login The login for the account.
+     * @param string $password The password for the account.
+     * @return string The error string if an error occured, empty string if none.
+     *
+     * @since 3.1.0
+     */
+    protected function connect_netatmohc($login, $password) {
+        $netatmohc = new Netatmo_HCCollector();
+        if ($netatmohc->authentication($login, $password)) {
+            Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly connected to service.');
+            if (get_option('live_weather_station_auto_manage_netatmo')) {
+                $this->get_netatmohc(true);
+            }
+        }
+        else {
+            Logger::error('Authentication', 'Netatmo', null, null, null, null, null, 'Unable to connect to service.');
+        }
+        return $netatmohc->last_netatmo_error;
+    }
+
+    /**
+     * Disconnect from a Netatmo HC account.
+     *
+     * @since 3.1.0
+     */
+    protected function disconnect_netatmohc() {
+        self::init_netatmohc_options();
+        Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly disconnected from service.');
         $this->clear_all_netatmo_hc_stations();
         Logger::notice('Backend', 'Netatmo', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
     }

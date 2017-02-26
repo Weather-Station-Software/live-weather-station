@@ -26,50 +26,11 @@ trait BaseClient {
     protected $netatmo_client;
     protected $netatmo_datas;
 
-    protected $netatmo_scope = 'read_station read_homecoach';
 
     protected $facility = 'Weather Collector';
     protected $service_name = 'Netatmo';
 
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
-    // these API keys are property of NetAtmo licensed to Pierre Lannoy, you CAN'T use them for your apps.
-    // If you are thinking to develop something, get your API Keys here: https://dev.netatmo.com
-    private $client_id = '561695d4cce37cd35c8b4659';
-    private $client_secret = 'yfavTSFLnq5hzJxgMYBkfZdvaX04wx4WFLtqsChm8RGuv';
-    //////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    /**
-     * Connects to the Netatmo account.
-     *
-     * @since 3.1.0
-     */
-    public function authentication($login, $password) {
-        $config = array();
-        $this->last_netatmo_error = '';
-        $config['client_id'] = $this->client_id;
-        $config['client_secret'] = $this->client_secret;
-        $config['scope'] = $this->netatmo_scope;
-        $this->netatmo_client = new NAWSApiClient($config);
-        $this->netatmo_client->setVariable('username', $login);
-        $this->netatmo_client->setVariable('password', $password);
-        try
-        {
-            $tokens = $this->netatmo_client->getAccessToken();
-            update_option('live_weather_station_netatmo_refresh_token', $tokens['refresh_token']);
-            update_option('live_weather_station_netatmo_access_token', $tokens['access_token']);
-            update_option('live_weather_station_netatmo_connected', 1);
-
-        }
-        catch (\Exception $ex) {
-            $this->last_netatmo_error = __('Wrong credentials. Please, verify your login and password.', 'live-weather-station');
-            update_option('live_weather_station_netatmo_refresh_token', '');
-            update_option('live_weather_station_netatmo_access_token', '');
-            update_option('live_weather_station_netatmo_connected', 0);
-            return false;
-        }
-
-        return true;
-    }
 
     /**
      * Store station's datas.

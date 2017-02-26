@@ -86,6 +86,7 @@ spl_autoload_register(
         case 'WeatherStation\SDK\WeatherUnderground\Plugin\StationUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentWeatherUndergroundStationUpdater.php'; break;
         case 'WeatherStation\SDK\PWSWeather\Plugin\Pusher': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentPWSWeatherPusher.php'; break;
         case 'WeatherStation\SDK\WeatherUnderground\Plugin\Pusher': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentWeatherUndergroundPusher.php'; break;
+        case 'WeatherStation\System\Analytics\Performance': $file = LWS_INCLUDES_DIR.'system/Performance.php'; break;
         case 'WeatherStation\System\Cache\Cache': $file = LWS_INCLUDES_DIR.'system/Cache.php'; break;
         case 'WeatherStation\System\HTTP\Client': $file = LWS_INCLUDES_DIR.'classes/SystemHTTPClient.php'; break;
         case 'WeatherStation\System\Environment\Manager': $file = LWS_INCLUDES_DIR.'system/Environment.php'; break;

@@ -64,7 +64,10 @@ class Watchdog {
         self::define_real_station_update_cron();
         self::define_owm_pollution_update_cron();
         self::define_log_rotate_cron();
+        self::define_cache_flush_cron();
         self::define_watchdog_cron();
+        self::define_stats_clean_cron();
+        self::define_translation_update_cron();
         self::launch();
     }
 

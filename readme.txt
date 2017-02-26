@@ -36,6 +36,7 @@ To date, you can display data with the following controls:
 Weather Station supports:
 
 * the Netatmo station (all modules)
+* the Netatmo *Healthy Home Coach*
 * all stations supported by softwares like Cumulus, Weather Display, WeeWX, etc. (so, yes, stations from Davis, La Crosse, Oregon Scientific, RainWise, etc. are supported)
 * all stations published on Weather Underground (regardless which model it is)
 * all geolocation from OpenWeatherMap

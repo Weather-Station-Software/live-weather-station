@@ -41,6 +41,9 @@ trait Handling {
     private static $live_weather_station_netatmo_refresh_token = '';
     private static $live_weather_station_netatmo_access_token = '';
     private static $live_weather_station_netatmo_connected = false;
+    private static $live_weather_station_netatmohc_refresh_token = '';
+    private static $live_weather_station_netatmohc_access_token = '';
+    private static $live_weather_station_netatmohc_connected = false;
     private static $live_weather_station_owm_apikey = '';
     private static $live_weather_station_owm_plan = 0;
     private static $live_weather_station_wug_apikey = '';
@@ -299,6 +302,9 @@ trait Handling {
         delete_option('live_weather_station_netatmo_refresh_token');
         delete_option('live_weather_station_netatmo_access_token');
         delete_option('live_weather_station_netatmo_connected');
+        delete_option('live_weather_station_netatmohc_refresh_token');
+        delete_option('live_weather_station_netatmohc_access_token');
+        delete_option('live_weather_station_netatmohc_connected');
         delete_option('live_weather_station_owm_apikey');
         delete_option('live_weather_station_owm_plan');
         delete_option('live_weather_station_wug_apikey');
@@ -342,6 +348,18 @@ trait Handling {
         update_option('live_weather_station_netatmo_refresh_token', self::$live_weather_station_netatmo_refresh_token);
         update_option('live_weather_station_netatmo_access_token', self::$live_weather_station_netatmo_access_token);
         update_option('live_weather_station_netatmo_connected', (self::$live_weather_station_netatmo_connected ? 1 : 0));
+    }
+
+
+    /**
+     * Init the NetatmoHC options of the plugin.
+     *
+     * @since 3.1.0
+     */
+    protected static function init_netatmohc_options() {
+        update_option('live_weather_station_netatmohc_refresh_token', self::$live_weather_station_netatmohc_refresh_token);
+        update_option('live_weather_station_netatmohc_access_token', self::$live_weather_station_netatmohc_access_token);
+        update_option('live_weather_station_netatmohc_connected', (self::$live_weather_station_netatmohc_connected ? 1 : 0));
     }
 
     /**
@@ -418,6 +436,7 @@ trait Handling {
      */
     protected static function init_options() {
         self::init_netatmo_options();
+        self::init_netatmohc_options();
         self::init_owm_options();
         self::init_wug_options();
         self::init_system_options();
@@ -585,6 +604,9 @@ trait Handling {
             self::verify_option_string('live_weather_station_netatmo_refresh_token', self::$live_weather_station_netatmo_refresh_token);
             self::verify_option_string('live_weather_station_netatmo_access_token', self::$live_weather_station_netatmo_access_token);
             self::verify_option_boolean('live_weather_station_netatmo_connected', self::$live_weather_station_netatmo_connected);
+            self::verify_option_string('live_weather_station_netatmohc_refresh_token', self::$live_weather_station_netatmohc_refresh_token);
+            self::verify_option_string('live_weather_station_netatmohc_access_token', self::$live_weather_station_netatmohc_access_token);
+            self::verify_option_boolean('live_weather_station_netatmohc_connected', self::$live_weather_station_netatmohc_connected);
         }
         if ($migrate) {
             self::verify_option_string('live_weather_station_owm_apikey', (get_option('live_weather_station_owm_account') ? get_option('live_weather_station_owm_account')[0] : self::$live_weather_station_owm_apikey));

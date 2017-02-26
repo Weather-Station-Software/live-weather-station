@@ -5,6 +5,7 @@ namespace WeatherStation\System\Plugin;
 use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\Options\Handling as Options;
 use WeatherStation\DB\Storage as Storage;
+use WeatherStation\System\Cache\Cache;
 
 /**
  * Fired during plugin deactivation.
@@ -30,6 +31,7 @@ class Deactivator {
 	 * @static
 	 */
 	public static function deactivate() {
+	    Cache::flush_full(false);
 		Watchdog::stop();
         self::delete_options();
 		self::drop_tables();
