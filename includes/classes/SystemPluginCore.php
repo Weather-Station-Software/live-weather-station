@@ -53,7 +53,7 @@ class Core {
 	/**
 	 * Verification of the plugin requirements.
 	 *
-	 * @since    3.0.0
+	 * @since 3.0.0
 	 */
 	private function verify_requirements() {
 	    if (LWS_PHPVERSION_OK && LWS_JSON_LOADED && LWS_CURL_LOADED && LWS_I18N_LOADED) {
@@ -124,6 +124,7 @@ class Core {
         //$this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Pollution', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Fire', 'widget_registering' );
         $this->loader->add_action('wp_ajax_update_lws_welcome_panel', 'WeatherStation\UI\Dashboard\Handling', 'update_lws_welcome_panel_callback' );
+        $this->loader->add_action('shutdown', '\WeatherStation\System\Cache\Cache', 'write_stats' );
     }
 
 	/**

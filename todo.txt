@@ -2,6 +2,7 @@
 *  UPCOMING FEATURES  *
 ***********************
 
+ * 3.x - live_weather_station_overload_hc as setting
  * 3.x - Sun (meridian) transit time
  * 3.x - Purge events log
  * 3.x - Purge caches
@@ -53,6 +54,7 @@
  * 3.x - Realtime as export
  * 3.x - YOWindow.xml as export
  * 3.x - all-sensors.xml as import
+ * 3.x - stickertags as import
  * 4.x - Metar
  * 4.x - NOAA
 

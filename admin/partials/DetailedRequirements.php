@@ -16,41 +16,41 @@ use WeatherStation\System\Help\InlineHelp;
         <div class="inside">
             <strong><?php echo sprintf(__('The PHP configuration of your server doesn\'t meet the minimal requirements needed to run %s. Please, see below to identify which PHP extension must be installed:', 'live-weather-station'), LWS_PLUGIN_NAME);?></strong>
             <br/>
-            <table cellspacing="10">
+            <table cellspacing="10" width="99%">
                 <tbody>
                     <tr>
                         <?php if (LWS_PHPVERSION_OK) { ?>
-                            <td width="20%"/><td><i style="color:limegreen" class="fa fa-lg fa-check-circle"></i></td>
+                            <td width="10%"/><td width="20px"><i style="color:limegreen" class="fa fa-lg fa-check-circle"></i></td>
                             <td><?php echo __('PHP version is greater than or equal to 5.4.', 'live-weather-station'); ?></td>
                         <?php } else { ?>
-                            <td width="20%"/><td><i style="color:red" class="fa fa-lg fa-minus-circle"></i></td>
+                            <td width="10%"/><td width="20px"><i style="color:red" class="fa fa-lg fa-minus-circle"></i></td>
                             <td><?php echo __('PHP version is lower than 5.4.', 'live-weather-station'); ?></td>
                         <?php } ?>
                     </tr>
                     <tr>
                         <?php if (LWS_I18N_LOADED) { ?>
-                            <td width="20%"/><td><i style="color:limegreen" class="fa fa-lg fa-check-circle"></i></td>
+                            <td width="10%"/><td width="20px"><i style="color:limegreen" class="fa fa-lg fa-check-circle"></i></td>
                             <td><?php echo __('Internationalization support is installed.', 'live-weather-station'); ?></td>
                         <?php } else { ?>
-                            <td width="20%"/><td><i style="color:red" class="fa fa-lg fa-minus-circle"></i></td>
+                            <td width="10%"/><td width="20px"><i style="color:red" class="fa fa-lg fa-minus-circle"></i></td>
                             <td><?php echo __('Internationalization support is not installed.', 'live-weather-station'); ?></td>
                         <?php } ?>
                     </tr>
                     <tr>
                         <?php if (LWS_CURL_LOADED) { ?>
-                            <td width="20%"/><td><i style="color:limegreen" class="fa fa-lg fa-check-circle"></i></td>
+                            <td width="10%"/><td width="20px"><i style="color:limegreen" class="fa fa-lg fa-check-circle"></i></td>
                             <td><?php echo __('cURL support is installed.', 'live-weather-station'); ?></td>
                         <?php } else { ?>
-                            <td width="20%"/><td><i style="color:red" class="fa fa-lg fa-minus-circle"></i></td>
+                            <td width="10%"/><td width="20px"><i style="color:red" class="fa fa-lg fa-minus-circle"></i></td>
                             <td><?php echo __('cURL support is not installed.', 'live-weather-station'); ?></td>
                         <?php } ?>
                     </tr>
                     <tr>
                         <?php if (LWS_JSON_LOADED) { ?>
-                            <td width="20%"/><td><i style="color:limegreen" class="fa fa-lg fa-check-circle"></i></td>
+                            <td width="10%"/><td width="20px"><i style="color:limegreen" class="fa fa-lg fa-check-circle"></i></td>
                             <td><?php echo __('JSON support is installed.', 'live-weather-station'); ?></td>
                         <?php } else { ?>
-                            <td width="20%"/><td><i style="color:red" class="fa fa-lg fa-minus-circle"></i></td>
+                            <td width="10%"/><td width="20px"><i style="color:red" class="fa fa-lg fa-minus-circle"></i></td>
                             <td><?php echo __('JSON support is not installed.', 'live-weather-station'); ?></td>
                         <?php } ?>
                     </tr>

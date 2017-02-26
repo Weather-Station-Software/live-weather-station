@@ -19,17 +19,60 @@ trait HCClient {
 
     use BaseClient;
 
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // these API keys are property of NetAtmo licensed to Pierre Lannoy, you CAN'T use them for your apps.
+    // If you are thinking to develop something, get your API Keys here: https://dev.netatmo.com
+    private $client_id = '58b353afe8ede160268b8900';
+    private $client_secret = 'zgl1vdqZc9wvf78x2YgiWj74su92lV7ff';
+    //////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    protected $netatmo_scope = 'read_homecoach';
+
+
+    /**
+     * Connects to the Netatmo account.
+     *
+     * @since 3.1.0
+     */
+    public function authentication($login, $password) {
+        $config = array();
+        $this->last_netatmo_error = '';
+        $config['client_id'] = $this->client_id;
+        $config['client_secret'] = $this->client_secret;
+        $config['scope'] = $this->netatmo_scope;
+        $this->netatmo_client = new NAWSApiClient($config);
+        $this->netatmo_client->setVariable('username', $login);
+        $this->netatmo_client->setVariable('password', $password);
+        try
+        {
+            $tokens = $this->netatmo_client->getAccessToken();
+            update_option('live_weather_station_netatmohc_refresh_token', $tokens['refresh_token']);
+            update_option('live_weather_station_netatmohc_access_token', $tokens['access_token']);
+            update_option('live_weather_station_netatmohc_connected', 1);
+
+        }
+        catch (\Exception $ex) {
+            $this->last_netatmo_error = __('Wrong credentials. Please, verify your login and password.', 'live-weather-station');
+            update_option('live_weather_station_netatmohc_refresh_token', '');
+            update_option('live_weather_station_netatmohc_access_token', '');
+            update_option('live_weather_station_netatmohc_connected', 0);
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Get station's datas.
      *
      * @param boolean $store Optional. Store the data.
      *
      * @return array The netatmo collected datas.
-     * @since 1.0.0
+     * @since 3.0
      */
     public function get_datas($store=true) {
-        $refresh_token = get_option('live_weather_station_netatmo_refresh_token');
-        $access_token = get_option('live_weather_station_netatmo_access_token');
+        $refresh_token = get_option('live_weather_station_netatmohc_refresh_token');
+        $access_token = get_option('live_weather_station_netatmohc_access_token');
         $this->last_netatmo_error = '';
         $this->last_netatmo_warning = '';
         if ($refresh_token != '' && $access_token != '') {
@@ -41,7 +84,7 @@ trait HCClient {
                 $config['refresh_token'] = $refresh_token;
                 $config['access_token'] = $access_token;
                 $this->netatmo_client = new NAWSApiClient($config);
-                $this->netatmo_client->getAccessTokenFromRefreshToken();
+                //$this->netatmo_client->getAccessTokenFromRefreshToken();
 
                 //$store = array();
                 //$store['refresh_token'] = $refresh_token;
@@ -54,9 +97,9 @@ trait HCClient {
                 if ($store) {
                     $this->store_netatmo_datas($this->get_all_netatmo_hc_stations(), true);
                 }
-                update_option('live_weather_station_netatmo_refresh_token', $this->netatmo_client->getRefreshToken());
-                update_option('live_weather_station_netatmo_access_token', $this->netatmo_client->getAccessToken()['access_token']);
-                update_option('live_weather_station_netatmo_connected', 1);
+                update_option('live_weather_station_netatmohc_refresh_token', $this->netatmo_client->getRefreshToken());
+                update_option('live_weather_station_netatmohc_access_token', $this->netatmo_client->getAccessToken()['access_token']);
+                update_option('live_weather_station_netatmohc_connected', 1);
                 if (isset($config)) {
                     if (array_key_exists('access_token', $config)) {
                         if ($config['access_token'] != $this->netatmo_client->getAccessToken()['access_token']) {

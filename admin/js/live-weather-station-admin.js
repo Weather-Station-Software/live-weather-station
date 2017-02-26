@@ -3,6 +3,7 @@ jQuery(document).ready( function($) {
         welcomePanelHide = $('#lws_welcome_panel-hide'),
         updateWelcomePanel;
 
+
     updateWelcomePanel = function(visible) {
         $.post( ajaxurl, {
             action: 'update_lws_welcome_panel',
@@ -220,6 +221,20 @@ jQuery(document).ready( function($) {
             $('.button').removeClass('button-primary').addClass('button-disabled');
             $('.button').click(function() { return false; });
             $('#netatmo-span-sync').show();
+        }
+    });
+
+    $('#netatmohc-connect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#netatmohc-span-sync').show();
+    });
+
+    $('#netatmohc-disconnect').click( function() {
+        if (lws_netatmohc_confirmation) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#netatmohc-span-sync').show();
         }
     });
 

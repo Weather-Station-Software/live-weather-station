@@ -64,6 +64,14 @@ trait Storage {
         return 'live_weather_station_log';
     }
 
+    /**
+     *
+     * @since    3.1.0
+     */
+    protected static function live_weather_station_performance_cache_table() {
+        return 'live_weather_station_performance_cache';
+    }
+
     protected $facility_DM = 'Data Manager';
 
     /**
@@ -295,6 +303,42 @@ trait Storage {
     }
 
     /**
+     * Creates table for the plugin logging system.
+     *
+     * @since    3.1.0
+     */
+    private static function create_live_weather_station_performance_cache_table() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        $table_name = $wpdb->prefix . self::live_weather_station_performance_cache_table();
+        $sql = "CREATE TABLE IF NOT EXISTS " . $table_name;
+        $sql .= " (`timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',";
+        $sql .= " `backend_hit_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `backend_hit_time` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `backend_miss_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `backend_miss_time` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `widget_hit_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `widget_hit_time` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `widget_miss_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `widget_miss_time` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `frontend_hit_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `frontend_hit_time` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `frontend_miss_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `frontend_miss_time` int(11) NOT NULL DEFAULT '0',";
+        /*$sql .= " `extra_hit_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `extra_hit_time` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `extra_miss_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `extra_miss_time` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `file_hit_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `file_hit_time` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `file_miss_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `file_miss_time` int(11) NOT NULL DEFAULT '0',";*/
+        $sql .= " PRIMARY KEY (`timestamp`)";
+        $sql .= ") $charset_collate;";
+        $wpdb->query($sql);
+    }
+
+    /**
      * Creates tables for the plugin.
      *
      * @since 1.0.0
@@ -304,6 +348,7 @@ trait Storage {
         self::create_live_weather_station_stations_table();
         self::create_live_weather_station_owm_stations_table();
         self::create_live_weather_station_infos_table();
+        self::create_live_weather_station_performance_cache_table();
     }
 
     /**

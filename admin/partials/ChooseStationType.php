@@ -21,7 +21,7 @@ else {
     $netatmo_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
 
-if (get_option('live_weather_station_netatmo_connected')) {
+if (get_option('live_weather_station_netatmohc_connected')) {
     $netatmo_hc_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a Netatmo "Healthy Home Coach" device to which you have access to.', 'live-weather-station'));
     $netatmo_hc_l = get_admin_page_url('lws-stations', 'form', 'add', 'NetatmoHC', $dashboard);
     $netatmo_hc_t = '_self';

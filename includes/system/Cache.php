@@ -1,6 +1,8 @@
 <?php
 
 namespace WeatherStation\System\Cache;
+use WeatherStation\System\Logs\Logger;
+use WeatherStation\DB\Storage;
 
 /**
  * The class to manage backend and frontend cache.
@@ -12,16 +14,24 @@ namespace WeatherStation\System\Cache;
  */
 class Cache {
 
+    use Storage;
+
     private $Live_Weather_Station;
     private $version;
+    private $facility = 'Cache Manager';
+    private static $chrono = array();
+    private static $stats = array();
     private static $backend_expiry = 1800;
     private static $frontend_expiry = 120;
     private static $widget_expiry = 120;
+    private static $i18n_expiry = 7200;
 
-    public static $db_stat_log = 'db_stat_log';
-    public static $db_stat_operational = 'db_stat_operational';
-    public static $widget = 'wdgt';
-    public static $frontend = 'frnt';
+    public static $db_stat = 'lws_cache_db_stat';
+    public static $db_stat_log = 'lws_cache_db_stat_log';
+    public static $db_stat_operational = 'lws_cache_db_stat_operational';
+    public static $widget = 'lws_cache_widget';
+    public static $frontend = 'lws_cache_control';
+    public static $i18n = 'lws_i18n';
 
     /**
      * Initialize the class and set its properties.
@@ -30,9 +40,88 @@ class Cache {
      * @param string $version The version of this plugin.
      * @since 3.0.0
      */
-    public function __construct( $Live_Weather_Station, $version ) {
+    public function __construct($Live_Weather_Station, $version) {
         $this->Live_Weather_Station = $Live_Weather_Station;
         $this->version = $version;
+    }
+
+    /**
+     * Flush all the specified transient element.
+     *
+     * @param string $pref Optional. Prefix of transients to delete.
+     * @param bool $expired Optional. Delete only expired transients.
+     * @return integer Count of deleted transients.
+     * @since 3.1.0
+     *
+     */
+    private static function _flush($pref='lws', $expired=true) {
+        global $wpdb;
+        $result = 0;
+        if ($expired) {
+            $delete = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_" . $pref . "%' AND option_value < ".time().";");
+        }
+        else {
+            $delete = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_" . $pref . "%';");
+        }
+        foreach($delete as $transient) {
+            $key = str_replace('_transient_timeout_', '', $transient);
+            if (delete_transient($key)) {
+                $result += 1;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Init a chrono.
+     *
+     * @param string $cache_id The cached element slug.
+     * @since 3.1.0
+     *
+     */
+    private static function _init_chrono($cache_id) {
+        self::$chrono[$cache_id] = microtime(true);
+    }
+
+    /**
+     * Stop a chrono.
+     *
+     * @param string $cache_id The cached element slug.
+     * @param boolean $hit Optional. True if it was in cache, false otherwise.
+     * @since 3.1.0
+     *
+     */
+    private static function _stop_chrono($cache_id, $hit=true) {
+        if (array_key_exists($cache_id, self::$chrono)) {
+            $time = round(1000*(microtime(true) - self::$chrono[$cache_id]), 0);
+            unset(self::$chrono[$cache_id]);
+            if ($time >=0) {
+                $key = 'unknown';
+                if ($hit) {
+                    $pref = 'hit_';
+                }
+                else {
+                    $pref = 'miss_';
+                }
+                if ((strpos($cache_id, self::$i18n)!==false) || (strpos($cache_id, self::$db_stat)!==false)) {
+                    $key = 'backend';
+                }
+                if (strpos($cache_id, self::$widget)!==false) {
+                    $key = 'widget';
+                }
+                if (strpos($cache_id, self::$frontend)!==false) {
+                    $key = 'frontend';
+                }
+                if (!array_key_exists($key, self::$stats)) {
+                    self::$stats[$key]['hit_count'] = 0;
+                    self::$stats[$key]['hit_time'] = 0;
+                    self::$stats[$key]['miss_count'] = 0;
+                    self::$stats[$key]['miss_time'] = 0;
+                }
+                self::$stats[$key][$pref.'count'] += 1;
+                self::$stats[$key][$pref.'time'] += $time;
+            }
+        }
     }
 
     /**
@@ -47,11 +136,15 @@ class Cache {
      *
      */
     public static function get_backend($cache_id) {
+        self::_init_chrono($cache_id);
         if (!(bool)get_option('live_weather_station_backend_cache')) {
             return false;
         }
         else {
-            return get_transient($cache_id);
+            if ($r = get_transient($cache_id)) {
+                self::_stop_chrono($cache_id);
+            }
+            return $r;
         }
     }
 
@@ -72,7 +165,9 @@ class Cache {
             return false;
         }
         else {
-            return set_transient($cache_id, $value, self::$backend_expiry);
+            $r = set_transient($cache_id, $value, self::$backend_expiry);
+            self::_stop_chrono($cache_id, false);
+            return $r;
         }
     }
 
@@ -96,18 +191,13 @@ class Cache {
     /**
      * Flush all the cached element.
      *
-     * @return bool True if successful, false otherwise.
+     * @param bool $expired Optional. Delete only expired transients.
+     * @return integer Count of deleted transients.
      * @since 3.0.0
      *
      */
-    public static function flush_backend() {
-        if (!(bool)get_option('live_weather_station_backend_cache')) {
-            return false;
-        }
-        else {
-            delete_transient(self::$db_stat_log);
-            delete_transient(self::$frontend_expiry);
-        }
+    public static function flush_backend($expired=true) {
+        return self::_flush(self::$db_stat, $expired);
     }
 
     /**
@@ -122,11 +212,15 @@ class Cache {
      *
      */
     public static function get_frontend($cache_id) {
+        self::_init_chrono(self::$frontend.'_'.$cache_id);
         if (!(bool)get_option('live_weather_station_frontend_cache')) {
             return false;
         }
         else {
-            return get_transient(self::$frontend.'_'.$cache_id);
+            if ($r = get_transient(self::$frontend.'_'.$cache_id)) {
+                self::_stop_chrono(self::$frontend.'_'.$cache_id);
+            }
+            return $r;
         }
     }
 
@@ -147,7 +241,9 @@ class Cache {
             return false;
         }
         else {
-            return set_transient(self::$frontend.'_'.$cache_id, $value, self::$frontend_expiry);
+            $r = set_transient(self::$frontend.'_'.$cache_id, $value, self::$frontend_expiry);
+            self::_stop_chrono(self::$frontend.'_'.$cache_id, false);
+            return $r;
         }
     }
 
@@ -169,6 +265,18 @@ class Cache {
     }
 
     /**
+     * Flush all the cached element.
+     *
+     * @param bool $expired Optional. Delete only expired transients.
+     * @return integer Count of deleted transients.
+     * @since 3.1.0
+     *
+     */
+    public static function flush_frontend($expired=true) {
+        return self::_flush(self::$frontend, $expired);
+    }
+
+    /**
      * Get the value of a cached element.
      *
      * If the element does not exist, does not have a value, or has expired,
@@ -180,11 +288,15 @@ class Cache {
      *
      */
     public static function get_widget($cache_id) {
+        self::_init_chrono(self::$widget.'_'.$cache_id);
         if (!(bool)get_option('live_weather_station_widget_cache')) {
             return false;
         }
         else {
-            return get_transient(self::$widget.'_'.$cache_id);
+            if ($r = get_transient(self::$widget.'_'.$cache_id)) {
+                self::_stop_chrono(self::$widget.'_'.$cache_id);
+            }
+            return $r;
         }
     }
 
@@ -205,7 +317,9 @@ class Cache {
             return false;
         }
         else {
-            return set_transient(self::$widget.'_'.$cache_id, $value, self::$widget_expiry);
+            $r = set_transient(self::$widget.'_'.$cache_id, $value, self::$widget_expiry);
+            self::_stop_chrono(self::$widget.'_'.$cache_id, false);
+            return $r;
         }
     }
 
@@ -224,6 +338,79 @@ class Cache {
         else {
             return delete_transient(self::$widget.'_'.$cache_id);
         }
+    }
+
+    /**
+     * Flush all the cached element.
+     *
+     * @param bool $expired Optional. Delete only expired transients.
+     * @return integer Count of deleted transients.
+     * @since 3.1.0
+     *
+     */
+    public static function flush_widget($expired=true) {
+        return self::_flush(self::$widget, $expired);
+    }
+
+    /**
+     * Get the value of a cached element.
+     *
+     * If the element does not exist, does not have a value, or has expired,
+     * then the return value will be false.
+     *
+     * @param string $cache_id The cached element slug. Expected to not be SQL-escaped.
+     * @return mixed Value of element.
+     * @since 3.1.0
+     *
+     */
+    public static function get_i18n($cache_id) {
+        self::_init_chrono(self::$i18n.'_'.$cache_id);
+        if ($r = get_transient(self::$i18n.'_'.$cache_id)) {
+            self::_stop_chrono(self::$i18n.'_'.$cache_id);
+        }
+        return $r;
+    }
+
+    /**
+     * Set/update the value of a cached element.
+     *
+     * You do not need to serialize values. If the value needs to be serialized, then
+     * it will be serialized before it is set.
+     *
+     * @param string $cache_id The cached element slug. Expected to not be SQL-escaped.
+     * @param mixed $value Cached element value, must be serializable if non-scalar. Expected to not be SQL-escaped.
+     * @return bool False if value was not set and true if value was set.
+     * @since 3.1.0
+     *
+     */
+    public static function set_i18n($cache_id, $value) {
+        $r = set_transient(self::$i18n.'_'.$cache_id, $value, self::$i18n_expiry);
+        self::_stop_chrono(self::$i18n.'_'.$cache_id, false);
+        return $r;
+    }
+
+    /**
+     * Delete the cached element.
+     *
+     * @param string $cache_id The cached element slug. Expected to not be SQL-escaped.
+     * @return bool True if successful, false otherwise.
+     * @since 3.1.0
+     *
+     */
+    public static function invalidate_i18n($cache_id) {
+        return delete_transient(self::$i18n.'_'.$cache_id);
+    }
+
+    /**
+     * Flush all the cached element.
+     *
+     * @param bool $expired Optional. Delete only expired transients.
+     * @return integer Count of deleted transients.
+     * @since 3.1.0
+     *
+     */
+    public static function flush_i18n($expired=true) {
+        return self::_flush(self::$i18n, $expired);
     }
 
     /**
@@ -298,5 +485,85 @@ class Cache {
         else {
             return wp_cache_flush();
         }
+    }
+
+    /**
+     * Flush all cached elements.
+     *
+     * @param bool $expired Optional. Delete only expired transients.
+     * @return integer Count of deleted transients.
+     * @since 3.1.0
+     *
+     */
+    public static function flush_full($expired=true) {
+        $result = 0;
+        $result += self::flush_backend($expired);
+        $result += self::flush_frontend($expired);
+        $result += self::flush_widget($expired);
+        if (!$expired) {
+            $result += self::flush_i18n($expired);
+        }
+        return $result;
+    }
+
+    /**
+     * Flush all obsolete cached items.
+     *
+     * @since 3.1.0
+     */
+    public function flush(){
+        $result = self::flush_full();
+        if ($result > 0) {
+            if ($result == 1) {
+                Logger::notice($this->facility,null,null,null,null,null,null,'1 obsolete item flushed.');
+            }
+            if ($result > 1) {
+                Logger::notice($this->facility,null,null,null,null,null,null,$result . ' obsolete items flushed.');
+            }
+        }
+        else {
+            Logger::info($this->facility,null,null,null,null,null,null,'No obsolete item to flush.');
+        }
+    }
+
+    /**
+     * Write cache stats.
+     *
+     * @since 3.1.0
+     */
+    public static function write_stats(){
+        $now = date('Y-m-d H') . ':00:00';
+        global $wpdb;
+        $fields = array ('hit_count', 'hit_time', 'miss_count', 'miss_time');
+        $field_insert = array('timestamp');
+        $value_insert = array("'".$now."'");
+        $value_update = array();
+        foreach (self::$stats as $key => $values) {
+            foreach ($fields as $field) {
+                if (self::$stats[$key][$field] >0) {
+                    $field_insert[] = $key.'_'.$field;
+                    $value_insert[] = self::$stats[$key][$field];
+                    $value_update[] = $key.'_'.$field . '=' . $key.'_'.$field . '+' . self::$stats[$key][$field];
+                }
+            }
+        }
+        $sql = "INSERT INTO " . $wpdb->prefix.self::live_weather_station_performance_cache_table() . " ";
+        $sql .= "(" . implode(',', $field_insert) . ") ";
+        $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
+        $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
+        $wpdb->query($sql);
+    }
+
+    /**
+     * Delete old records.
+     *
+     * @since 3.1.0
+     */
+    public static function rotate() {
+        global $wpdb;
+        $now = date('Y-m-d H:i:s', time() - MONTH_IN_SECONDS);
+        $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_performance_cache_table() . " WHERE ";
+        $sql .= "timestamp<'" . $now . "';";
+        $wpdb->query($sql);
     }
 }

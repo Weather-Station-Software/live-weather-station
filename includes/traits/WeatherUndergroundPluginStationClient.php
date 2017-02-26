@@ -2,6 +2,7 @@
 
 namespace WeatherStation\SDK\WeatherUnderground\Plugin;
 
+use WeatherStation\SDK\WeatherUnderground\Exception;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\SDK\WeatherUnderground\WUGApiClient;
 use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
@@ -120,7 +121,12 @@ trait StationClient {
             }
             Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($observation, true));
             if (array_key_exists('observation_epoch', $observation)) {
-                $timestamp = date('Y-m-d H:i:s', $observation['observation_epoch']);
+                try {
+                    $timestamp = date('Y-m-d H:i:s', $observation['observation_epoch']);
+                }
+                catch (Exception $e) {
+                    $timestamp = date('Y-m-d H:i:s');
+                }
             }
             else {
                 $timestamp = date('Y-m-d H:i:s');

@@ -5,6 +5,7 @@ namespace WeatherStation\System\I18N;
 use WeatherStation\System\Help\InlineHelp;
 use WeatherStation\System\Environment\Manager as EnvManager;
 use WeatherStation\System\Logs\Logger;
+use WeatherStation\System\Cache\Cache;
 
 /**
  * This class add i18n management.
@@ -25,7 +26,7 @@ class Handling {
     private $count_translated;
     private $translation_exists;
     private $last_modified;
-    private $percent_min = 99;
+    private $percent_min = 100;
     private $cpt;
 
     private $service_name = 'I18n Helper';
@@ -36,15 +37,18 @@ class Handling {
      * @since 3.0.0
      */
     public function __construct() {
-        $this->locale = get_user_locale();
+        $this->locale = get_display_locale();
         if ('en_US' === $this->locale) {
-            update_option('live_weather_station_partial_translation', 0);
-            return false;
+            if (is_admin() || is_blog_admin()) {
+                update_option('live_weather_station_partial_translation', 0);
+            }
         }
         else {
             $this->translation_details();
             if (!$this->is_translatable() && EnvManager::is_plugin_in_production_mode()) {
-                update_option('live_weather_station_partial_translation', 0);
+                if (is_admin() || is_blog_admin()) {
+                    update_option('live_weather_station_partial_translation', 0);
+                }
             }
         }
     }
@@ -60,7 +64,7 @@ class Handling {
            return false;
        }
        else {
-           return ($this->percent_translated < $this->percent_min);
+           return (($this->percent_translated < $this->percent_min) && (get_display_locale() == get_locale()));
        }
     }
 
@@ -120,7 +124,7 @@ class Handling {
         if (!$ok) {
             Logger::error($this->service_name, null, null, null, null, null, 1, 'Unable to delete old translation files in /languages.');
         }
-        delete_transient('lws_i18n_last_modified_' . $this->locale);
+        Cache::invalidate_i18n('last_modified_' . $this->locale);
         return $ok;
     }
 
@@ -172,13 +176,13 @@ class Handling {
      */
     public function cron_run() {
         if ($this->last_modified && (bool)get_option('live_weather_station_partial_translation')) {
-            if ($this->last_modified != get_transient('lws_i18n_last_modified_' . $this->locale)) {
+            if ($this->last_modified != Cache::get_i18n('last_modified_' . $this->locale)) {
                 $branch = 'stable';
                 if (!EnvManager::is_plugin_in_production_mode()) {
                     $branch = 'dev';
                 }
                 if ($this->download_mo_file(LWS_LANGUAGES_DIR, $branch)) {
-                    set_transient('lws_i18n_last_modified_' . $this->locale, $this->last_modified);
+                    Cache::set_i18n('last_modified_' . $this->locale, $this->last_modified);
                 }
             }
         }
@@ -232,12 +236,12 @@ class Handling {
      * @since 3.0.0
      */
     private function find_or_initialize_translation_details() {
-        $set = get_transient('lws_i18n_' . $this->locale);
-        $this->count_translated = get_transient('lws_i18n_count');
+        $set = Cache::get_i18n($this->locale);
+        $this->count_translated = Cache::get_i18n('count');
         if (!$set || !$this->count_translated) {
             $set = $this->retrieve_translation_details();
-            set_transient('lws_i18n_' . $this->locale, $set, 2 * HOUR_IN_SECONDS);
-            set_transient('lws_i18n_count', $this->cpt, 2 * HOUR_IN_SECONDS);
+            Cache::set_i18n($this->locale, $set);
+            Cache::set_i18n('count', $this->cpt);
         }
         return $set;
     }

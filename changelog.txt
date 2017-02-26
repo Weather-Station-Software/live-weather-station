@@ -1,5 +1,5 @@
 
-###3.1.0 / February xxth, 2017
+###3.1.0 / March xxth, 2017
 
 * New: a new widget "Indoor Comfort" to display indoor measurements health quality and advices.
 * New: a new widget "Fire Weather" to display fire risk at the station location.
@@ -10,6 +10,7 @@
 * New: twilight for dawn and dusk (civil, nautical and astronomical) are computed and available in textual data.
 * New: ephemeris widget can now display standard, civil, nautical and astronomical daylight times.
 * New: support for the "Healthy Home Coach" from Netatmo.
+* New: a screen (reachable from 'versions' box) display servers informations useful for local file-based stations.
 * Improvement: all widgets and controls can now be cached (settings in 'system' tab).
 * Improvement: outdoor weather and ephemeris widgets can have background images for day, twilight and night.
 * Improvement: outdoor weather and ephemeris widget can have a background color which luminosity follows current light.
@@ -17,12 +18,18 @@
 * Improvement: gases concentrations (for now CO & CO₂) can now be expressed as volume and mass mixing ratio, mass concentration and partial pressure (settings in 'display' tab).
 * Improvement: strong accuracy and speed optimization for weather indexes and ephemeris computing.
 * Improvement: O₃ measurements are now renamed in "O₃ layer" and "ozone layer" to avoid confusion and misinterpretations.
-* Improvement: better coordinates managament for stations based on realtime.txt files.
+* Improvement: better coordinates management for stations based on realtime.txt files.
+* Improvement: source name for file-based stations can now have 240 characters.
+* Improvement: better readability for PHP configuration info panel in requirements warning.
 * Bug fix: with stations based on clientraw.txt files, collected wind speeds and gusts may be wrong.
 * Bug fix: in some conditions, widget in flat design mode doesn't shows the right background color.
 * Bug fix: in outdoor weather summary widget, the "hide obsolete measurements" doesn't work as expected for OpenWeatherMap data.
 * Bug fix: message "Inconsistent data to insert..." in events log just after forcing a synchronization.
+* Bug fix: message "Inconsistent data to insert..." in events log while updating latitude or longitude for some file-based stations.
 * Bug fix: the wrong system send an events while regenerating access token (must be "Authentication").
+* Bug fix: in some conditions, partial translations are not updated (downloaded) once a day.
+* Bug fix: since WordPress 4.7 the partial translation system works erratically when an admin user have not set "site default" as language.
+* Bug fix: PHP warning in log file when Weather Underground return incorrect timestamp.
 
 ###3.0.11 / February 1st, 2017
 

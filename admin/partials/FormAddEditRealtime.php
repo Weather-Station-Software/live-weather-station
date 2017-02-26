@@ -119,7 +119,7 @@ else {
             </tr>
             <tr class="form-field form-required">
                 <th scope="row"><label for="service_id"><?php esc_html_e('Source name', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
-                <td><input required name="service_id" aria-required="true" type="text" id="service_id" value="<?php echo htmlspecialchars($station['service_id']) ?>" maxlength="60" style="width:25em;" /></td>
+                <td><input required name="service_id" aria-required="true" type="text" id="service_id" value="<?php echo htmlspecialchars($station['service_id']) ?>" maxlength="240" style="width:25em;" /></td>
             </tr>
         </table>
         <?php if ($error != 0) { ?>
