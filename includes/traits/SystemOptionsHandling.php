@@ -34,6 +34,7 @@ trait Handling {
     private static $live_weather_station_auto_manage_netatmo = true;
     private static $live_weather_station_overload_hc = false;
     private static $live_weather_station_show_technical = false;
+    private static $live_weather_station_show_analytics = false;
 
     private static $live_weather_station_map_zoom = 16;
     private static $live_weather_station_map_layer = 'X';
@@ -336,6 +337,7 @@ trait Handling {
         delete_option('live_weather_station_auto_manage_netatmo');
         delete_option('live_weather_station_overload_hc');
         delete_option('live_weather_station_show_technical');
+        delete_option('live_weather_station_show_analytics');
         self::delete_thresholds_options();
     }
 
@@ -402,6 +404,7 @@ trait Handling {
         update_option('live_weather_station_auto_manage_netatmo', self::$live_weather_station_auto_manage_netatmo);
         update_option('live_weather_station_overload_hc', self::$live_weather_station_overload_hc);
         update_option('live_weather_station_show_technical', self::$live_weather_station_show_technical);
+        update_option('live_weather_station_show_analytics', self::$live_weather_station_show_analytics);
     }
 
     /**
@@ -592,6 +595,7 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_auto_manage_netatmo', self::$live_weather_station_auto_manage_netatmo);
         self::verify_option_boolean('live_weather_station_overload_hc', self::$live_weather_station_overload_hc);
         self::verify_option_boolean('live_weather_station_show_technical', self::$live_weather_station_show_technical);
+        self::verify_option_boolean('live_weather_station_show_analytics', self::$live_weather_station_show_analytics);
         self::verify_option_boolean('live_weather_station_advanced_mode', self::$live_weather_station_advanced_mode);
         self::verify_option_boolean('live_weather_station_partial_translation', self::$live_weather_station_partial_translation);
         if ($migrate) {

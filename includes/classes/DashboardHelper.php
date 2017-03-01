@@ -4,6 +4,7 @@ namespace WeatherStation\UI\Dashboard;
 
 use WeatherStation\System\Help\InlineHelp as RSS;
 use WeatherStation\System\I18N\Handling as I18N;
+use WeatherStation\System\Analytics\Performance;
 
 /**
  * This class builds elements of the dashboard.
@@ -212,6 +213,11 @@ class Handling {
     public function add_metaboxes() {
         // Left column
         add_meta_box('lws-summary', __('At a Glance', 'live-weather-station'), array($this, 'summary_widget'), 'lws-dashboard', 'normal');
+        if ((bool)get_option('live_weather_station_frontend_cache') ||
+            (bool)get_option('live_weather_station_widget_cache') ||
+            (bool)get_option('live_weather_station_backend_cache')) {
+            add_meta_box('lws-perf-cache', __('Cache performance', 'live-weather-station') . ' - ' . __('24 hours', 'live-weather-station'), array($this, 'perf_cache_widget'), 'lws-dashboard', 'normal');
+        }
         add_meta_box('lws-version', __('Versions', 'live-weather-station'), array($this, 'version_widget'), 'lws-dashboard', 'normal');
         // Right column
         $intl = new I18N();
@@ -248,6 +254,17 @@ class Handling {
      */
     public function summary_widget() {
         self::_summary_widget();
+    }
+
+    /**
+     * Get content of the Cache Performance box.
+     *
+     * @since 3.1.0
+     */
+    public function perf_cache_widget() {
+        $val = Performance::get_cache_values()['agr24'];
+        $show_link = true;
+        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceCache.php');
     }
 
     /**

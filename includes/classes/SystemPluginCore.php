@@ -134,9 +134,9 @@ class Core {
 	 */
 	private function define_public_hooks() {
 		$plugin_public = new Frontend( $this->get_Live_Weather_Station(), $this->get_version() );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
+        $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_scripts', 9);
+        $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_scripts' );
 		$this->loader->add_action( 'wp_ajax_lws_query_lcd_datas', $plugin_public, 'lws_query_lcd_datas_callback' );
 		$this->loader->add_action( 'wp_ajax_nopriv_lws_query_lcd_datas', $plugin_public, 'lws_query_lcd_datas_callback' );
 		$this->loader->add_action( 'wp_ajax_lws_query_justgage_config', $plugin_public, 'lws_query_justgage_config_callback' );
@@ -153,12 +153,13 @@ class Core {
         add_shortcode( 'live-weather-station-lcd', array($plugin_public, 'lcd_shortcodes') );
 		add_shortcode( 'live-weather-station-justgage', array($plugin_public, 'justgage_shortcodes') );
         add_shortcode( 'live-weather-station-steelmeter', array($plugin_public, 'steelmeter_shortcodes') );
+        add_shortcode( 'live-weather-station-admin-analytics', array($plugin_public, 'admin_analytics_shortcodes') );
 	}
 
 	/**
 	 * Checks if an update is needed and if it the case, performs it.
 	 *
-	 * @since    2.0.0
+	 * @since 2.0.0
 	 */
 	private function check_and_perfom_update() {
         $old_version = '-';
