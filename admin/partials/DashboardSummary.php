@@ -20,7 +20,7 @@ if (REQUIREMENTS_OK) {
     }
     $services_str = __('none', 'live-weather-station');
     $services = array();
-    if ((bool)get_option('live_weather_station_netatmo_connected')) {
+    if ((bool)get_option('live_weather_station_netatmo_connected') || (bool)get_option('live_weather_station_netatmohc_connected')) {
         $services[] = 'Netatmo';
     }
     if (get_option('live_weather_station_owm_apikey') != '') {

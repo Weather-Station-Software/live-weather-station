@@ -28,7 +28,7 @@ trait Storage {
      *
      * @since    1.0.0
      */
-    protected static function live_weather_station_datas_table() {
+    public static function live_weather_station_datas_table() {
         return 'live_weather_station_datas';
     }
 
@@ -36,7 +36,7 @@ trait Storage {
      *
      * @since    3.0.0
      */
-    protected static function live_weather_station_stations_table() {
+    public static function live_weather_station_stations_table() {
         return 'live_weather_station_stations';
     }
 
@@ -44,7 +44,7 @@ trait Storage {
      *
      * @since    2.0.0
      */
-    protected static function live_weather_station_owm_stations_table() {
+    public static function live_weather_station_owm_stations_table() {
         return 'live_weather_station_owm_stations';
     }
 
@@ -52,7 +52,7 @@ trait Storage {
      *
      * @since    2.3.0
      */
-    protected static function live_weather_station_infos_table() {
+    public static function live_weather_station_infos_table() {
         return 'live_weather_station_infos';
     }
 
@@ -60,7 +60,7 @@ trait Storage {
      *
      * @since    3.0.0
      */
-    protected static function live_weather_station_log_table() {
+    public static function live_weather_station_log_table() {
         return 'live_weather_station_log';
     }
 
@@ -68,7 +68,7 @@ trait Storage {
      *
      * @since    3.1.0
      */
-    protected static function live_weather_station_performance_cache_table() {
+    public static function live_weather_station_performance_cache_table() {
         return 'live_weather_station_performance_cache';
     }
 

@@ -7,6 +7,7 @@ use WeatherStation\SDK\Realtime\Plugin\StationCollector as RealtimeCollector;
 use WeatherStation\System\Cache\Cache;
 use WeatherStation\UI\Dashboard\Handling as Dashboard;
 use WeatherStation\UI\Services\Handling as Services;
+use WeatherStation\UI\Analytics\Handling as Analytics;
 use WeatherStation\UI\Station\Handling as Station;
 use WeatherStation\System\Help\InlineHelp;
 use WeatherStation\System\Logs\Logger;
@@ -58,6 +59,7 @@ class Admin {
     private $_station = null;
     private $_dashboard = null;
     private $_services = null;
+    private $_analytics = null;
 
     /**
      * Initialize the class and set its properties.
@@ -81,6 +83,7 @@ class Admin {
         wp_enqueue_style('live-weather-station-public.css', LWS_PUBLIC_URL.'css/live-weather-station-public.min.css', array(), $this->version, 'all');
         wp_enqueue_style('font-awesome.css', LWS_PUBLIC_URL.'css/font-awesome.min.css', array(), '4.7.0', 'all');
         wp_enqueue_style('thickbox');
+        wp_enqueue_style('nv.d3.css', LWS_PUBLIC_URL.'css/nv.d3.min.css');
     }
 
     /**
@@ -96,6 +99,13 @@ class Admin {
         wp_enqueue_script('justgage.js', LWS_PUBLIC_URL.'js/justgage.min.js', array('raphael.js'), $this->version, false);
         wp_enqueue_script('tween.js', LWS_PUBLIC_URL.'js/tween.min.js', array(), $this->version, true);
         wp_enqueue_script('steelseries.js', LWS_PUBLIC_URL.'js/steelseries.min.js', array('tween.js'), $this->version, true);
+
+        wp_enqueue_script('d3.v3.js', LWS_PUBLIC_URL.'js/d3.v3.min.js', array('jquery'), $this->version, true );
+        wp_enqueue_script('nv.d3.v3.js', LWS_PUBLIC_URL.'js/nv.d3.v3.min.js', array('d3.v3.js'), $this->version, true );
+
+        //wp_enqueue_script('d3.v3.js','https://d3js.org/d3.v3.min.js', array('jquery'), $this->version);
+        //wp_enqueue_script('nv.d3.v3.js','https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.min.js', array('d3.v3.js'), $this->version);
+
     }
 
     /**
@@ -717,6 +727,11 @@ class Admin {
             $events = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Events log', 'live-weather-station'), __('Events', 'live-weather-station'), $manage_options_cap, 'lws-events', array($this, 'lws_load_admin_page'));
             $settings = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Settings', 'live-weather-station'), __('Settings', 'live-weather-station'), $manage_options_cap, 'lws-settings', array($this, 'lws_load_admin_page'));
             $this->_services = new Services(LWS_PLUGIN_NAME, LWS_VERSION, $settings);
+            if ((bool)get_option('live_weather_station_show_analytics')) {
+                $analytics = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Analytics', 'live-weather-station'), __('Analytics', 'live-weather-station'), $manage_options_cap, 'lws-analytics', array($this, 'lws_load_admin_page'));
+                $this->_analytics = new Analytics(LWS_PLUGIN_NAME, LWS_VERSION, $analytics);
+            }
+
             InlineHelp::set_contextual_help('load-' . $dashboard, 'dashboard');
             InlineHelp::set_contextual_help('load-' . $settings, 'settings');
             InlineHelp::set_contextual_help('load-' . $stations, 'stations');
@@ -987,6 +1002,9 @@ class Admin {
                 break;
             case 'lws-requirements':
                 $view = 'requirements';
+                break;
+            case 'lws-analytics':
+                $view = 'analytics';
                 break;
             default:
                 $view = 'dashboard';

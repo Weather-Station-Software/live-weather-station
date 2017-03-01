@@ -11,6 +11,7 @@ use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Utilities\ColorsManipulation;
 use WeatherStation\DB\Query;
+use WeatherStation\System\Analytics\Performance;
 
 /**
  * Outputing / shortcoding functionalities for Weather Station plugin.
@@ -42,6 +43,80 @@ trait Output {
         'dusk_length_c');
 
 
+    /**
+     * Get admin data analytics.
+     *
+     * @return string $attributes The type of analytics queryed by the shortcode.
+     * @since 3.1.0
+     */
+    public function admin_analytics_shortcodes($attributes) {
+        $result = '';
+        $_attributes = shortcode_atts( array('item' => '', 'metric' => '', 'height' => ''), $attributes );
+        if ($_attributes['item'] == '') {
+            return '';
+        }
+        $fingerprint = uniqid('', true);
+        $uniq = $_attributes['item'].$_attributes['metric'].substr ($fingerprint, count($fingerprint)-6, 80);
+        if ($_attributes['item'] == 'cache') {
+            wp_enqueue_style('nv.d3.css', LWS_PUBLIC_URL.'css/nv.d3.min.css');
+            wp_enqueue_script('d3.v3.js');
+            wp_enqueue_script('nv.d3.v3.js');
+            $perf = Performance::get_cache_values();
+
+            if ($_attributes['metric'] == 'count') {
+                $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
+                $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
+                $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
+                $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . $perf['dat']['count'] . ';' . PHP_EOL;
+                $result .= '    nv.addGraph(function() {' . PHP_EOL;
+                $result .= '      var chart'.$uniq.' = nv.models.stackedAreaChart()' . PHP_EOL;
+                $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
+                $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
+                $result .= '               .clipEdge(true)' . PHP_EOL;
+                $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
+                //$result .= '                 .ticks(10)' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(function(d) { return d3.time.format("%d/%m %H:%M")(new Date(d)) });' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
+                $result .= '                 .axisLabel("' . __('requests per hour', 'live-weather-station') . '");' . PHP_EOL;
+                $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+                $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+                $result .= '      return chart'.$uniq.';' . PHP_EOL;
+                $result .= '    });'.PHP_EOL;
+                $result .= '  });' . PHP_EOL;
+                $result .= '</script>' . PHP_EOL;
+            }
+
+            if ($_attributes['metric'] == 'time') {
+                $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
+                $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
+                $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
+                $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . $perf['dat']['time'] . ';' . PHP_EOL;
+                $result .= '    nv.addGraph(function() {' . PHP_EOL;
+                $result .= '      var chart'.$uniq.' = nv.models.multiBarChart()' . PHP_EOL;
+                $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
+                $result .= '               .y(function(d) {return d[1]});' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
+                //$result .= '                 .ticks(10)' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(function(d) { return d3.time.format("%d/%m %H:%M")(new Date(d)) });' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
+                $result .= '                 .tickFormat(d3.format("d"))' . PHP_EOL;
+                $result .= '                 .axisLabel("' . __('rendering average time (in ms)', 'live-weather-station') . '");' . PHP_EOL;
+                $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+                $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+                $result .= '      return chart'.$uniq.';' . PHP_EOL;
+                $result .= '    });'.PHP_EOL;
+                $result .= '  });' . PHP_EOL;
+                $result .= '</script>' . PHP_EOL;
+            }
+        }
+        return $result;
+
+    }
 
     /**
      * Get value for LCD panel shortcodes.
@@ -91,8 +166,7 @@ trait Output {
      * @return  array  $attributes The value queryed.
      * @since    1.0.0
      */
-    public function lcd_value($attributes)
-    {
+    public function lcd_value($attributes) {
         $fingerprint = md5(json_encode($attributes));
         $response = Cache::get_frontend($fingerprint);
         if ($response) {

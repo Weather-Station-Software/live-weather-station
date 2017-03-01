@@ -22,7 +22,7 @@ class Handling {
      *
      * @param string $Live_Weather_Station The name of this plugin.
      * @param string $version The version of this plugin.
-     * @param string $dashboard The settings page.
+     * @param string $settings The settings page.
      * @since 3.0.0
      */
     public function __construct($Live_Weather_Station, $version, $settings) {
