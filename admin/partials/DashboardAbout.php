@@ -13,6 +13,7 @@ use WeatherStation\System\Help\InlineHelp as Help;
     <ul>
         <li>
             <?php echo sprintf(__( '%s is a free and open source plugin for WordPress. It integrates other free and open source works (as-is or modified) like Weather Icons project by Erik Flowers, EnzoJS and SteelSeries by Gerrit Grunwald, JustGage by Bojan Đuričić, OpenWeatherMap PHP API by Christian Flach, phpcolors by Arlo Carreon, moonrise/moonset calculation from Matt "dxprog" Hackmann and moon phase calculation from Samir Shah.', 'live-weather-station'), '<em>' . LWS_PLUGIN_NAME . '</em>');?>
+            <?php echo sprintf(__( 'Data manipulation and visualization tools included with %s are free and open source too. Notable tools are d3.js from Mike Bostock and nvd3.js from Novus Partners, Inc.', 'live-weather-station'), '<em>' . LWS_PLUGIN_NAME . '</em>');?>
         </li>
         <li>
             <?php echo sprintf(__( 'Is %1$s helpful? I would be pleased that you %2$s.', 'live-weather-station'), '<em>' . LWS_PLUGIN_NAME . '</em>', Help::get(-5, '%s', __('write a review', 'live-weather-station')));?>

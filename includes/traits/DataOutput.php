@@ -74,13 +74,15 @@ trait Output {
                 $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
                 $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
                 $result .= '               .clipEdge(true)' . PHP_EOL;
+                $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","stream":"' . __('Stream', 'live-weather-station') . '","expanded":"' . __('Expanded', 'live-weather-station') . '"})' . PHP_EOL;
+                $result .= '               .controlOptions(["Expanded","Stacked"])' . PHP_EOL;
+                $result .= '               .interpolate("basis")' . PHP_EOL;
                 $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
-                //$result .= '                 .ticks(10)' . PHP_EOL;
                 $result .= '                 .showMaxMin(false)' . PHP_EOL;
                 $result .= '                 .tickFormat(function(d) { return d3.time.format("%d/%m %H:%M")(new Date(d)) });' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
-                $result .= '                 .axisLabel("' . __('requests per hour', 'live-weather-station') . '");' . PHP_EOL;
+                $result .= '                 .axisLabel("' . __('rendering requests (count)', 'live-weather-station') . '");' . PHP_EOL;
                 $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
                 $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
@@ -100,7 +102,6 @@ trait Output {
                 $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
                 $result .= '               .y(function(d) {return d[1]});' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
-                //$result .= '                 .ticks(10)' . PHP_EOL;
                 $result .= '                 .showMaxMin(false)' . PHP_EOL;
                 $result .= '                 .tickFormat(function(d) { return d3.time.format("%d/%m %H:%M")(new Date(d)) });' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;

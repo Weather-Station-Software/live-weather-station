@@ -3,7 +3,7 @@ msgid ""
 msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 "Project-Id-Version: Live Weather Station\n"
-"POT-Creation-Date: 2017-03-01 22:18+0100\n"
+"POT-Creation-Date: 2017-03-04 15:18+0100\n"
 "PO-Revision-Date: 2015-11-07 19:46+0100\n"
 "Last-Translator: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
 "Language-Team: Pierre Lannoy <https://pierre.lannoy.fr/>.\n"
@@ -20,511 +20,526 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPathExcluded-0: *.js\n"
 
-#: admin/SystemPluginAdmin.php:146 admin/SystemPluginAdmin.php:151
-#: admin/SystemPluginAdmin.php:156 admin/SystemPluginAdmin.php:161
+#: admin/SystemPluginAdmin.php:148 admin/SystemPluginAdmin.php:153
+#: admin/SystemPluginAdmin.php:158 admin/SystemPluginAdmin.php:163
 #, php-format
 msgid "You can find help on these settings on %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:146 admin/SystemPluginAdmin.php:151
-#: admin/SystemPluginAdmin.php:156 admin/SystemPluginAdmin.php:161
-#: admin/SystemPluginAdmin.php:166 admin/partials/DetailedRequirements.php:62
+#: admin/SystemPluginAdmin.php:148 admin/SystemPluginAdmin.php:153
+#: admin/SystemPluginAdmin.php:158 admin/SystemPluginAdmin.php:163
+#: admin/SystemPluginAdmin.php:168 admin/partials/DetailedRequirements.php:62
 #: admin/partials/SettingsGeneral.php:58
 #: includes/classes/StationHelper.php:566
 msgid "this page"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:147 includes/system/InlineHelp.php:284
+#: admin/SystemPluginAdmin.php:149 includes/system/InlineHelp.php:284
 #, php-format
 msgid ""
 "In order to work properly, %s has to be connected to some services. You can "
 "manage here these connections."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:152 includes/system/InlineHelp.php:285
+#: admin/SystemPluginAdmin.php:154 includes/system/InlineHelp.php:285
 msgid ""
 "You can set here all the units and display options for controls and widgets."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:157 includes/system/InlineHelp.php:286
+#: admin/SystemPluginAdmin.php:159 includes/system/InlineHelp.php:286
 msgid ""
 "You can set here all the thresholds which define limits and alarms in some "
 "controls (LCD panel, gauges, meters, etc.)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:162 includes/system/InlineHelp.php:287
+#: admin/SystemPluginAdmin.php:164 includes/system/InlineHelp.php:287
 #, php-format
 msgid ""
 "You can set here all the parameters related to the operation of the %s "
 "subsystems."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:166
+#: admin/SystemPluginAdmin.php:168
 #, php-format
 msgid "You can find help on these maintenance operations on %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:167 includes/system/InlineHelp.php:288
+#: admin/SystemPluginAdmin.php:169 includes/system/InlineHelp.php:288
 msgid ""
 "Here, you can make some maintenance operations that are not directly "
 "accessible elsewhere."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:176
+#: admin/SystemPluginAdmin.php:178
 msgid "Cache mechanism"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:180
+#: admin/SystemPluginAdmin.php:182
 msgid "Logging policy"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:182
+#: admin/SystemPluginAdmin.php:184
 msgid "Minimum level of severity that will be recorded in the events log."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:186
+#: admin/SystemPluginAdmin.php:188
 msgid "Maximum number and maximum age of events stored in the events log."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:188
+#: admin/SystemPluginAdmin.php:190
 msgid "Automatic management"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:192
+#: admin/SystemPluginAdmin.php:194
 msgid "Servers time shift"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:194
+#: admin/SystemPluginAdmin.php:196
 msgid ""
 "Maximum allowed servers time shift before warning (useful for Netatmo "
 "accuracy)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:196
+#: admin/SystemPluginAdmin.php:198 admin/SystemPluginAdmin.php:206
 msgid "Stations views"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:198
+#: admin/SystemPluginAdmin.php:200
 msgid ""
 "If you check this, stations views will display detailed technical "
 "information for each module."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:200
+#: admin/SystemPluginAdmin.php:202
 msgid "Links"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:212
-msgid "Temperature unit"
-msgstr ""
-
-#: admin/SystemPluginAdmin.php:214
-msgid "Unit of measurement in which temperatures are expressed."
-msgstr ""
-
-#: admin/SystemPluginAdmin.php:216
-msgid "Pressure unit"
+#: admin/SystemPluginAdmin.php:208
+msgid "Check this only if really love data analytics and visualization."
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:218
-msgid "Unit of measurement in which pressures are expressed."
+msgid "Temperature unit"
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:220
-msgid "Wind speed unit"
+msgid "Unit of measurement in which temperatures are expressed."
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:222
-msgid "Unit of measurement in which wind speeds are expressed."
+msgid "Pressure unit"
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:224
-msgid "Gases"
+msgid "Unit of measurement in which pressures are expressed."
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:226
-msgid "Way to express the concentrations of gases."
+msgid "Wind speed unit"
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:228
-msgid "Distances"
+msgid "Unit of measurement in which wind speeds are expressed."
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:230
-msgid "Units system in which distances are expressed."
+msgid "Gases"
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:232
-msgid "Altitudes"
+msgid "Way to express the concentrations of gases."
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:234
-msgid "Units system in which altitudes are expressed."
+msgid "Distances"
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:236
-msgid "Rain & snow"
+msgid "Units system in which distances are expressed."
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:238
-msgid "Units system in which rain and snow quantities are expressed."
+msgid "Altitudes"
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:240
-msgid "Computed values"
+msgid "Units system in which altitudes are expressed."
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:242
+msgid "Rain & snow"
+msgstr ""
+
+#: admin/SystemPluginAdmin.php:244
+msgid "Units system in which rain and snow quantities are expressed."
+msgstr ""
+
+#: admin/SystemPluginAdmin.php:246
+msgid "Computed values"
+msgstr ""
+
+#: admin/SystemPluginAdmin.php:248
 msgid ""
 "Check this if you want the controls and widgets display the computed values "
 "in addition to the measured data."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:244
+#: admin/SystemPluginAdmin.php:250
 msgid "Wind icon"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:246
+#: admin/SystemPluginAdmin.php:252
 msgid "Semantics of the icon representing the wind direction in widgets."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:248
+#: admin/SystemPluginAdmin.php:254
 msgid "Moon icon set"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:250
+#: admin/SystemPluginAdmin.php:256
 msgid "Type of icons to illustrate moon age and phase in widgets."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:252
+#: admin/SystemPluginAdmin.php:258
 msgid "Gauges boundaries"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:254
+#: admin/SystemPluginAdmin.php:260
 #, php-format
 msgid ""
 "By default, min/max boundaries in controls are fixed. If you check this, %s "
 "will try to adapt it to the amplitude of the measures."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:256
+#: admin/SystemPluginAdmin.php:262
 msgid "Data obsolescence"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:258
+#: admin/SystemPluginAdmin.php:264
 msgid ""
 "Duration beyond which a data is considered stale (and will therefore "
 "neither shown nor used in computations)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:300
+#: admin/SystemPluginAdmin.php:306
 msgid "events"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:306
+#: admin/SystemPluginAdmin.php:312
 #: includes/traits/DataDateTimeConversion.php:271
 msgid "days"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:318 includes/system/InlineHelp.php:525
+#: admin/SystemPluginAdmin.php:324 includes/system/InlineHelp.php:525
 msgid "Netatmo"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:321
+#: admin/SystemPluginAdmin.php:327
 #, php-format
 msgid ""
 "Check this to let %s manage Netatmo stations for you (add, remove, etc.)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:333
+#: admin/SystemPluginAdmin.php:339
 msgid "Cache controls"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:336
+#: admin/SystemPluginAdmin.php:342
 #, php-format
 msgid ""
 "Check this to activate the cache manager of %s for the controls rendering "
 "(gauges, meters, etc.)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:337
+#: admin/SystemPluginAdmin.php:343
 msgid "Cache widgets"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:340
+#: admin/SystemPluginAdmin.php:346
 #, php-format
 msgid ""
 "Check this to activate the cache manager of %s for the widgets rendering."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:341
+#: admin/SystemPluginAdmin.php:347
 msgid "Cache backend features"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:344
+#: admin/SystemPluginAdmin.php:350
 #, php-format
 msgid ""
 "Check this to activate the cache manager of %s for backend rendering (admin "
 "panel, dashboard, station view, etc.)."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:345
+#: admin/SystemPluginAdmin.php:351
 msgid "Do not cache generated text files"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:348
+#: admin/SystemPluginAdmin.php:354
 msgid ""
 "Check this to prevent caching of the generated text files. Required on some "
 "server configurations, particularly when using Varnish."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:359
+#: admin/SystemPluginAdmin.php:365
 #: includes/traits/DataDateTimeConversion.php:284
 msgid "seconds"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:370
+#: admin/SystemPluginAdmin.php:376
 msgid "Open internal links in a new window"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:373
+#: admin/SystemPluginAdmin.php:379
 msgid ""
 "Check this to have all auxiliary internal links (like events, etc.) opened "
 "in a new window."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:374
+#: admin/SystemPluginAdmin.php:380
 msgid "Open external links in a new window"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:377
+#: admin/SystemPluginAdmin.php:383
 msgid ""
 "Check this to have all external links (like help, etc.) opened in a new "
 "window."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:388
+#: admin/SystemPluginAdmin.php:394
 msgid "Display technical information"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:468
+#: admin/SystemPluginAdmin.php:404
+msgid "I love data analytics"
+msgstr ""
+
+#: admin/SystemPluginAdmin.php:484
 msgid "Display it in controls and widgets"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:498
+#: admin/SystemPluginAdmin.php:514
 msgid "Adjusted whenever possible"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:653
+#: admin/SystemPluginAdmin.php:675
 msgid "General settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:654
+#: admin/SystemPluginAdmin.php:676
 msgid "Services settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:655
+#: admin/SystemPluginAdmin.php:677
 msgid "Display settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:656
+#: admin/SystemPluginAdmin.php:678
 msgid "Thresholds settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:657
+#: admin/SystemPluginAdmin.php:679
 msgid "System settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:658
+#: admin/SystemPluginAdmin.php:680
 msgid "Unknown settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:663
+#: admin/SystemPluginAdmin.php:685
 #, php-format
 msgid "%s have been correctly updated."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:669
+#: admin/SystemPluginAdmin.php:689
+#, php-format
+msgid ""
+"In order for the main menu to reflect the updated settings, please <a href="
+"\"%s\">refresh</a> the page"
+msgstr ""
+
+#: admin/SystemPluginAdmin.php:697
 #, php-format
 msgid "%s have not been updated. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:677
+#: admin/SystemPluginAdmin.php:705
 #, php-format
 msgid "%s have been correctly reset to defaults."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:683
+#: admin/SystemPluginAdmin.php:711
 #, php-format
 msgid "%s have not been reset to defaults. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:695
+#: admin/SystemPluginAdmin.php:723
 #, php-format
 msgid "%s has not been updated. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:722 admin/SystemPluginAdmin.php:723
+#: admin/SystemPluginAdmin.php:750 admin/SystemPluginAdmin.php:751
 msgid "Dashboard"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:725 admin/partials/ListTableStations.php:16
+#: admin/SystemPluginAdmin.php:753 admin/partials/ListTableStations.php:16
 msgid "Stations"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:727 admin/SystemPluginAdmin.php:743
+#: admin/SystemPluginAdmin.php:755 admin/SystemPluginAdmin.php:771
 #: admin/partials/DashboardSummary.php:36 admin/partials/ListTableLogs.php:16
 msgid "Events log"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:727 admin/SystemPluginAdmin.php:743
+#: admin/SystemPluginAdmin.php:755 admin/SystemPluginAdmin.php:771
 msgid "Events"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:728 admin/partials/Settings.php:17
+#: admin/SystemPluginAdmin.php:756 admin/partials/Settings.php:17
 #: includes/system/InlineHelp.php:426 includes/system/InlineHelp.php:447
 #: includes/system/InlineHelp.php:480 includes/system/InlineHelp.php:511
 msgid "Settings"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:731 admin/partials/Analytics.php:20
+#: admin/SystemPluginAdmin.php:759 admin/partials/Analytics.php:20
 msgid "Analytics"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:741 admin/SystemPluginAdmin.php:742
+#: admin/SystemPluginAdmin.php:769 admin/SystemPluginAdmin.php:770
 #: admin/partials/Requirements.php:10
 msgid "Requirements"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1061
+#: admin/SystemPluginAdmin.php:1089
 #, php-format
 msgid "%s now runs in simplified mode."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1073
+#: admin/SystemPluginAdmin.php:1101
 #, php-format
 msgid "%s now runs in extended mode."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1084
+#: admin/SystemPluginAdmin.php:1112
 #, php-format
 msgid "%s now displays its data in the metric system."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1095
+#: admin/SystemPluginAdmin.php:1123
 #, php-format
 msgid "%s now displays its data in the imperial system."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1108
+#: admin/SystemPluginAdmin.php:1136
 #, php-format
 msgid "%s no longer uses partial translations."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1121
+#: admin/SystemPluginAdmin.php:1149
 #, php-format
 msgid "%s now uses a partial translation."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1133
+#: admin/SystemPluginAdmin.php:1161
 msgid "Dashboard view has been reset to defaults."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1144
+#: admin/SystemPluginAdmin.php:1172
 msgid "Services view has been reset to defaults."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1155
+#: admin/SystemPluginAdmin.php:1183
 msgid "Stations views have been reset to defaults."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1168
+#: admin/SystemPluginAdmin.php:1196
 msgid "All stations data have been purged."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1186
+#: admin/SystemPluginAdmin.php:1214
 msgid "All stations have been resynchronized."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1237
+#: admin/SystemPluginAdmin.php:1265
 msgid "Unkonwn service."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1240 admin/SystemPluginAdmin.php:1248
+#: admin/SystemPluginAdmin.php:1268 admin/SystemPluginAdmin.php:1276
 msgid "the login and password can not be empty"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1256 admin/SystemPluginAdmin.php:1264
+#: admin/SystemPluginAdmin.php:1284 admin/SystemPluginAdmin.php:1292
 msgid "the API key can not be empty"
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1271
+#: admin/SystemPluginAdmin.php:1299
 #, php-format
 msgid "%s is now connected to %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1277
+#: admin/SystemPluginAdmin.php:1305
 #, php-format
 msgid "Unable to connect %s to %s. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1279
+#: admin/SystemPluginAdmin.php:1307
 #, php-format
 msgid "The error message is \"%s\"."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1303
+#: admin/SystemPluginAdmin.php:1331
 #, php-format
 msgid "%s is now disconnected from %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1309
+#: admin/SystemPluginAdmin.php:1337
 #, php-format
 msgid "Unable to disconnect %s from %s. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1318
+#: admin/SystemPluginAdmin.php:1346
 #, php-format
 msgid "Connection to %s has not been updated. Please try again."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1341
+#: admin/SystemPluginAdmin.php:1369
 #, php-format
 msgid "The station %s has been correctly removed."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1347 admin/SystemPluginAdmin.php:1354
+#: admin/SystemPluginAdmin.php:1375 admin/SystemPluginAdmin.php:1382
 #, php-format
 msgid "Unable to remove the station %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1625 admin/SystemPluginAdmin.php:1754
-#: admin/SystemPluginAdmin.php:1889 admin/SystemPluginAdmin.php:2027
+#: admin/SystemPluginAdmin.php:1653 admin/SystemPluginAdmin.php:1782
+#: admin/SystemPluginAdmin.php:1917 admin/SystemPluginAdmin.php:2055
 #, php-format
 msgid "The station %s has been correctly added."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1637 admin/SystemPluginAdmin.php:1644
-#: admin/SystemPluginAdmin.php:1772 admin/SystemPluginAdmin.php:1789
-#: admin/SystemPluginAdmin.php:1907 admin/SystemPluginAdmin.php:1924
-#: admin/SystemPluginAdmin.php:2045 admin/SystemPluginAdmin.php:2062
-#: admin/SystemPluginAdmin.php:2157 admin/SystemPluginAdmin.php:2164
-#: admin/SystemPluginAdmin.php:2173
+#: admin/SystemPluginAdmin.php:1665 admin/SystemPluginAdmin.php:1672
+#: admin/SystemPluginAdmin.php:1800 admin/SystemPluginAdmin.php:1817
+#: admin/SystemPluginAdmin.php:1935 admin/SystemPluginAdmin.php:1952
+#: admin/SystemPluginAdmin.php:2073 admin/SystemPluginAdmin.php:2090
+#: admin/SystemPluginAdmin.php:2185 admin/SystemPluginAdmin.php:2192
+#: admin/SystemPluginAdmin.php:2201
 #, php-format
 msgid "Unable to add the station %s."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1750 admin/SystemPluginAdmin.php:1885
-#: admin/SystemPluginAdmin.php:2023 admin/SystemPluginAdmin.php:2115
-#: admin/SystemPluginAdmin.php:2148 includes/classes/StationHelper.php:217
+#: admin/SystemPluginAdmin.php:1778 admin/SystemPluginAdmin.php:1913
+#: admin/SystemPluginAdmin.php:2051 admin/SystemPluginAdmin.php:2143
+#: admin/SystemPluginAdmin.php:2176 includes/classes/StationHelper.php:217
 #, php-format
 msgid "The station %s has been correctly updated."
 msgstr ""
 
-#: admin/SystemPluginAdmin.php:1766 admin/SystemPluginAdmin.php:1784
-#: admin/SystemPluginAdmin.php:1901 admin/SystemPluginAdmin.php:1919
-#: admin/SystemPluginAdmin.php:2039 admin/SystemPluginAdmin.php:2057
-#: admin/SystemPluginAdmin.php:2122 admin/SystemPluginAdmin.php:2181
+#: admin/SystemPluginAdmin.php:1794 admin/SystemPluginAdmin.php:1812
+#: admin/SystemPluginAdmin.php:1929 admin/SystemPluginAdmin.php:1947
+#: admin/SystemPluginAdmin.php:2067 admin/SystemPluginAdmin.php:2085
+#: admin/SystemPluginAdmin.php:2150 admin/SystemPluginAdmin.php:2209
 #: includes/classes/StationHelper.php:224
 #: includes/classes/StationHelper.php:231
 #, php-format
@@ -544,11 +559,31 @@ msgstr ""
 msgid "Cache"
 msgstr ""
 
+#: admin/partials/AnalyticsCache.php:12
+msgid "Rendering requests: hourly distribution"
+msgstr ""
+
+#: admin/partials/AnalyticsCache.php:16
+msgid "Rendering average time: hourly distribution"
+msgstr ""
+
+#: admin/partials/AnalyticsCache.php:20
+msgid "Efficiency: hourly distribution"
+msgstr ""
+
+#: admin/partials/AnalyticsCache.php:24
+msgid "Time saving: hourly distribution"
+msgstr ""
+
+#: admin/partials/AnalyticsCache.php:28
+msgid "Efficiency & time saving: correlation"
+msgstr ""
+
 #: admin/partials/Changelog.php:20 admin/partials/Changelog.php:24
 msgid "Sorry, unable to find or read changelog file."
 msgstr ""
 
-#: admin/partials/Changelog.php:31 admin/partials/DashboardVersions.php:23
+#: admin/partials/Changelog.php:31 admin/partials/DashboardVersions.php:29
 msgid "changelog"
 msgstr ""
 
@@ -732,16 +767,24 @@ msgid ""
 "moon phase calculation from Samir Shah."
 msgstr ""
 
-#: admin/partials/DashboardAbout.php:18
+#: admin/partials/DashboardAbout.php:16
+#, php-format
+msgid ""
+"Data manipulation and visualization tools included with %s are free and "
+"open source too. Notable tools are d3.js from Mike Bostock and nvd3.js from "
+"Novus Partners, Inc."
+msgstr ""
+
+#: admin/partials/DashboardAbout.php:19
 #, php-format
 msgid "Is %1$s helpful? I would be pleased that you %2$s."
 msgstr ""
 
-#: admin/partials/DashboardAbout.php:18
+#: admin/partials/DashboardAbout.php:19
 msgid "write a review"
 msgstr ""
 
-#: admin/partials/DashboardAbout.php:21
+#: admin/partials/DashboardAbout.php:22
 #, php-format
 msgid ""
 "Thanks to %1$s for its tools and its reactivity, to %2$s for Netatmo tests "
@@ -862,28 +905,28 @@ msgstr ""
 msgid "%1$s can't run: %2$s"
 msgstr ""
 
-#: admin/partials/DashboardVersions.php:22
-msgid "detail"
+#: admin/partials/DashboardVersions.php:29
+msgid "server configuration details"
 msgstr ""
 
-#: admin/partials/DashboardVersions.php:28 includes/system/Logger.php:392
+#: admin/partials/DashboardVersions.php:35 includes/system/Logger.php:392
 #: includes/system/Logger.php:432
 msgid "Warning"
 msgstr ""
 
-#: admin/partials/DashboardVersions.php:28
+#: admin/partials/DashboardVersions.php:35
 #, php-format
 msgid ""
 "This version of %s is not production-ready. It is a development preview. "
 "Use it at your own risk!"
 msgstr ""
 
-#: admin/partials/DashboardVersions.php:33 includes/system/Logger.php:398
+#: admin/partials/DashboardVersions.php:40 includes/system/Logger.php:398
 #: includes/system/Logger.php:438
 msgid "Information"
 msgstr ""
 
-#: admin/partials/DashboardVersions.php:33
+#: admin/partials/DashboardVersions.php:40
 #, php-format
 msgid ""
 "This version of %s is a release candidate. Although ready for production, "
@@ -1575,8 +1618,8 @@ msgstr ""
 #: admin/partials/ShortcodesJustgage.php:16
 #: admin/partials/ShortcodesLCD.php:15
 #: admin/partials/ShortcodesSteelmeter.php:16
-#: admin/partials/ShortcodesTextual.php:17 includes/traits/DataOutput.php:207
-#: includes/traits/DataOutput.php:232
+#: admin/partials/ShortcodesTextual.php:17 includes/traits/DataOutput.php:208
+#: includes/traits/DataOutput.php:233
 msgid "No data"
 msgstr ""
 
@@ -2310,9 +2353,9 @@ msgid "code"
 msgstr ""
 
 #: includes/classes/ListTableLog.php:57 includes/classes/ListTableLog.php:82
-#: includes/traits/DataOutput.php:1610 includes/traits/DataOutput.php:1615
-#: includes/traits/DataOutput.php:1620 includes/traits/DataOutput.php:1625
-#: includes/traits/DataOutput.php:1630
+#: includes/traits/DataOutput.php:1611 includes/traits/DataOutput.php:1616
+#: includes/traits/DataOutput.php:1621 includes/traits/DataOutput.php:1626
+#: includes/traits/DataOutput.php:1631
 msgid "N/A"
 msgstr ""
 
@@ -3208,7 +3251,7 @@ msgid "Debug information"
 msgstr ""
 
 #: includes/system/Logger.php:404 includes/system/Logger.php:444
-#: includes/traits/DataOutput.php:3141
+#: includes/traits/DataOutput.php:3142
 msgid "Unknown"
 msgstr ""
 
@@ -3244,7 +3287,7 @@ msgstr ""
 #: includes/traits/DBQuery.php:434 includes/traits/DBQuery.php:460
 #: includes/traits/DBQuery.php:488 includes/traits/DBQuery.php:530
 #: includes/traits/DBQuery.php:556 includes/traits/DBQuery.php:588
-#: includes/traits/DataOutput.php:3307 includes/traits/DataOutput.php:3438
+#: includes/traits/DataOutput.php:3308 includes/traits/DataOutput.php:3439
 msgid "Database contains inconsistent datas"
 msgstr ""
 
@@ -3397,8 +3440,8 @@ msgstr ""
 
 #: includes/traits/DataArraysGenerator.php:795
 #: includes/traits/DataArraysGenerator.php:880
-#: includes/traits/DataOutput.php:2867 includes/traits/DataOutput.php:3100
-#: includes/traits/DataOutput.php:3147
+#: includes/traits/DataOutput.php:2868 includes/traits/DataOutput.php:3101
+#: includes/traits/DataOutput.php:3148
 msgid "Medium"
 msgstr ""
 
@@ -4415,24 +4458,36 @@ msgstr ""
 msgid "hour"
 msgstr ""
 
-#: includes/traits/DataOutput.php:83
-msgid "requests per hour"
+#: includes/traits/DataOutput.php:77
+msgid "Stacked"
 msgstr ""
 
-#: includes/traits/DataOutput.php:108
+#: includes/traits/DataOutput.php:77
+msgid "Stream"
+msgstr ""
+
+#: includes/traits/DataOutput.php:77
+msgid "Expanded"
+msgstr ""
+
+#: includes/traits/DataOutput.php:85
+msgid "rendering requests (count)"
+msgstr ""
+
+#: includes/traits/DataOutput.php:109
 msgid "rendering average time (in ms)"
 msgstr ""
 
-#: includes/traits/DataOutput.php:203 includes/traits/DataOutput.php:228
+#: includes/traits/DataOutput.php:204 includes/traits/DataOutput.php:229
 msgid "Error code "
 msgstr ""
 
-#: includes/traits/DataOutput.php:430
+#: includes/traits/DataOutput.php:431
 #: includes/traits/DataTypeDescription.php:125
 msgid "Outdoor"
 msgstr ""
 
-#: includes/traits/DataOutput.php:1260
+#: includes/traits/DataOutput.php:1261
 #: includes/traits/DataTypeDescription.php:128
 #: includes/traits/DataTypeDescription.php:234
 #: includes/traits/DataTypeDescription.php:303
@@ -4444,412 +4499,412 @@ msgstr ""
 msgid "Wind"
 msgstr ""
 
-#: includes/traits/DataOutput.php:1260
+#: includes/traits/DataOutput.php:1261
 #: includes/traits/DataTypeDescription.php:309
 #: includes/traits/DataTypeDescription.php:312
 msgid "Gust"
 msgstr ""
 
-#: includes/traits/DataOutput.php:1465
+#: includes/traits/DataOutput.php:1466
 msgid "Malformed shortcode. Please verify it!"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2371
+#: includes/traits/DataOutput.php:2372
 msgid "hum"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2397
+#: includes/traits/DataOutput.php:2398
 msgid "hlth"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2406 includes/traits/DataOutput.php:2710
+#: includes/traits/DataOutput.php:2407 includes/traits/DataOutput.php:2711
 #: includes/traits/DataTypeDescription.php:174
 msgid "CBi"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2416 includes/traits/DataOutput.php:2498
-#: includes/traits/DataOutput.php:2522 includes/traits/DataOutput.php:2605
+#: includes/traits/DataOutput.php:2417 includes/traits/DataOutput.php:2499
+#: includes/traits/DataOutput.php:2523 includes/traits/DataOutput.php:2606
 msgid "now"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2418 includes/traits/DataOutput.php:2483
+#: includes/traits/DataOutput.php:2419 includes/traits/DataOutput.php:2484
 msgid "/ 3 hr"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2428 includes/traits/DataOutput.php:2507
-#: includes/traits/DataOutput.php:2531
+#: includes/traits/DataOutput.php:2429 includes/traits/DataOutput.php:2508
+#: includes/traits/DataOutput.php:2532
 msgid "/ 1 hr"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2437
+#: includes/traits/DataOutput.php:2438
 msgid "month"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2446
+#: includes/traits/DataOutput.php:2447
 msgid "year"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2455 includes/traits/DataOutput.php:2504
-#: includes/traits/DataOutput.php:2528
+#: includes/traits/DataOutput.php:2456 includes/traits/DataOutput.php:2505
+#: includes/traits/DataOutput.php:2529
 #: public/partials/WidgetFireDisplay.php:160
 #: public/partials/WidgetOutdoorDisplay.php:155
 #: public/partials/WidgetPollutionDisplay.php:155
 msgid "today"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2464
+#: includes/traits/DataOutput.php:2465
 msgid "yda."
 msgstr ""
 
-#: includes/traits/DataOutput.php:2473
+#: includes/traits/DataOutput.php:2474
 msgid "season"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2501 includes/traits/DataOutput.php:2525
+#: includes/traits/DataOutput.php:2502 includes/traits/DataOutput.php:2526
 msgid "gust"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2707
+#: includes/traits/DataOutput.php:2708
 msgid "health"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2713
+#: includes/traits/DataOutput.php:2714
 #: includes/traits/DataTypeDescription.php:168
 msgid "CO₂"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2716
+#: includes/traits/DataOutput.php:2717
 #: includes/traits/DataTypeDescription.php:177
 #: includes/traits/DataTypeDescription.php:183
 msgid "CO"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2719
+#: includes/traits/DataOutput.php:2720
 #: includes/traits/DataTypeDescription.php:180
 #: includes/traits/DataTypeDescription.php:186
 msgid "O₃"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2724
+#: includes/traits/DataOutput.php:2725
 msgid "humidity"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2727
+#: includes/traits/DataOutput.php:2728
 msgid "noise"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2736
+#: includes/traits/DataOutput.php:2737
 msgid "rain"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2739
+#: includes/traits/DataOutput.php:2740
 msgid "snow"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2751
+#: includes/traits/DataOutput.php:2752
 msgid "wind"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2756
+#: includes/traits/DataOutput.php:2757
 msgid "atm pressure"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2759
+#: includes/traits/DataOutput.php:2760
 msgid "dew point"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2762
+#: includes/traits/DataOutput.php:2763
 msgid "frost point"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2765
+#: includes/traits/DataOutput.php:2766
 msgid "heat-index"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2768
+#: includes/traits/DataOutput.php:2769
 msgid "humidex"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2771
+#: includes/traits/DataOutput.php:2772
 msgid "wind chill"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2774
+#: includes/traits/DataOutput.php:2775
 msgid "cloud base"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2777
+#: includes/traits/DataOutput.php:2778
 msgid "cloudiness"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2782
+#: includes/traits/DataOutput.php:2783
 msgid "temperature"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2788
+#: includes/traits/DataOutput.php:2789
 msgid "dawn"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2794
+#: includes/traits/DataOutput.php:2795
 msgid "dusk"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2861 includes/traits/DataOutput.php:3103
-#: includes/traits/DataOutput.php:3150
+#: includes/traits/DataOutput.php:2862 includes/traits/DataOutput.php:3104
+#: includes/traits/DataOutput.php:3151
 msgid "Very low"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2864 includes/traits/DataOutput.php:2927
+#: includes/traits/DataOutput.php:2865 includes/traits/DataOutput.php:2928
 msgid "Low"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2870 includes/traits/DataOutput.php:2921
-#: includes/traits/DataOutput.php:3097 includes/traits/DataOutput.php:3144
+#: includes/traits/DataOutput.php:2871 includes/traits/DataOutput.php:2922
+#: includes/traits/DataOutput.php:3098 includes/traits/DataOutput.php:3145
 msgid "High"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2873 includes/traits/DataOutput.php:3094
+#: includes/traits/DataOutput.php:2874 includes/traits/DataOutput.php:3095
 msgid "Full"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2876
+#: includes/traits/DataOutput.php:2877
 msgid "AC Power"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2879
+#: includes/traits/DataOutput.php:2880
 msgid "Unknown Power State"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2892
+#: includes/traits/DataOutput.php:2893
 msgid "Healthy"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2894
+#: includes/traits/DataOutput.php:2895
 msgid "Fine"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2897
+#: includes/traits/DataOutput.php:2898
 msgid "Fair"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2900
+#: includes/traits/DataOutput.php:2901
 msgid "Poor"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2903
+#: includes/traits/DataOutput.php:2904
 msgid "Unhealthy"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2916
+#: includes/traits/DataOutput.php:2917
 msgid "Extreme"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2918
+#: includes/traits/DataOutput.php:2919
 msgid "Very high"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2924
+#: includes/traits/DataOutput.php:2925
 msgid "Moderate"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2949 includes/traits/DataOutput.php:2982
-#: includes/traits/DataOutput.php:2998
+#: includes/traits/DataOutput.php:2950 includes/traits/DataOutput.php:2983
+#: includes/traits/DataOutput.php:2999
 msgid "N"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2950 includes/traits/DataOutput.php:2983
+#: includes/traits/DataOutput.php:2951 includes/traits/DataOutput.php:2984
 msgid "N-NE"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2951 includes/traits/DataOutput.php:2984
+#: includes/traits/DataOutput.php:2952 includes/traits/DataOutput.php:2985
 msgid "NE"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2952 includes/traits/DataOutput.php:2985
+#: includes/traits/DataOutput.php:2953 includes/traits/DataOutput.php:2986
 msgid "E-NE"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2953 includes/traits/DataOutput.php:2986
+#: includes/traits/DataOutput.php:2954 includes/traits/DataOutput.php:2987
 msgid "E"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2954 includes/traits/DataOutput.php:2987
+#: includes/traits/DataOutput.php:2955 includes/traits/DataOutput.php:2988
 msgid "E-SE"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2955 includes/traits/DataOutput.php:2988
+#: includes/traits/DataOutput.php:2956 includes/traits/DataOutput.php:2989
 msgid "SE"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2956 includes/traits/DataOutput.php:2989
+#: includes/traits/DataOutput.php:2957 includes/traits/DataOutput.php:2990
 msgid "S-SE"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2957 includes/traits/DataOutput.php:2990
+#: includes/traits/DataOutput.php:2958 includes/traits/DataOutput.php:2991
 msgid "S"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2958 includes/traits/DataOutput.php:2991
+#: includes/traits/DataOutput.php:2959 includes/traits/DataOutput.php:2992
 msgid "S-SW"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2959 includes/traits/DataOutput.php:2992
+#: includes/traits/DataOutput.php:2960 includes/traits/DataOutput.php:2993
 msgid "SW"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2960 includes/traits/DataOutput.php:2993
+#: includes/traits/DataOutput.php:2961 includes/traits/DataOutput.php:2994
 msgid "W-SW"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2961 includes/traits/DataOutput.php:2994
+#: includes/traits/DataOutput.php:2962 includes/traits/DataOutput.php:2995
 msgid "W"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2962 includes/traits/DataOutput.php:2995
+#: includes/traits/DataOutput.php:2963 includes/traits/DataOutput.php:2996
 msgid "W-NW"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2963 includes/traits/DataOutput.php:2996
+#: includes/traits/DataOutput.php:2964 includes/traits/DataOutput.php:2997
 msgid "NW"
 msgstr ""
 
-#: includes/traits/DataOutput.php:2964 includes/traits/DataOutput.php:2997
+#: includes/traits/DataOutput.php:2965 includes/traits/DataOutput.php:2998
 msgid "N-NW"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3016 includes/traits/DataOutput.php:3032
+#: includes/traits/DataOutput.php:3017 includes/traits/DataOutput.php:3033
 msgid "North"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3017
+#: includes/traits/DataOutput.php:3018
 msgid "North-Northeast"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3018
+#: includes/traits/DataOutput.php:3019
 msgid "Northeast"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3019
+#: includes/traits/DataOutput.php:3020
 msgid "East-Northeast"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3020
+#: includes/traits/DataOutput.php:3021
 msgid "East"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3021
+#: includes/traits/DataOutput.php:3022
 msgid "East-Southeast"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3022
+#: includes/traits/DataOutput.php:3023
 msgid "Southeast"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3023
+#: includes/traits/DataOutput.php:3024
 msgid "South-Southeast"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3024
+#: includes/traits/DataOutput.php:3025
 msgid "South"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3025
+#: includes/traits/DataOutput.php:3026
 msgid "South-Southwest"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3026
+#: includes/traits/DataOutput.php:3027
 msgid "Southwest"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3027
+#: includes/traits/DataOutput.php:3028
 msgid "West-Southwest"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3028
+#: includes/traits/DataOutput.php:3029
 msgid "West"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3029
+#: includes/traits/DataOutput.php:3030
 msgid "West-Northwest"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3030
+#: includes/traits/DataOutput.php:3031
 msgid "Northwest"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3031
+#: includes/traits/DataOutput.php:3032
 msgid "North-Northwest"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3106
+#: includes/traits/DataOutput.php:3107
 msgid "No RF Signal"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3153
+#: includes/traits/DataOutput.php:3154
 msgid "No WiFi Signal"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3169
+#: includes/traits/DataOutput.php:3170
 msgid "Rising"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3172
+#: includes/traits/DataOutput.php:3173
 msgid "Falling"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3175
+#: includes/traits/DataOutput.php:3176
 msgid "Stable"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3210 includes/traits/DataOutput.php:3218
+#: includes/traits/DataOutput.php:3211 includes/traits/DataOutput.php:3219
 msgid "New Moon"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3211
+#: includes/traits/DataOutput.php:3212
 msgid "Waxing Crescent"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3212
+#: includes/traits/DataOutput.php:3213
 msgid "First Quarter"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3213
+#: includes/traits/DataOutput.php:3214
 msgid "Waxing Gibbous"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3214
+#: includes/traits/DataOutput.php:3215
 msgid "Full Moon"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3215
+#: includes/traits/DataOutput.php:3216
 msgid "Waning Gibbous"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3216
+#: includes/traits/DataOutput.php:3217
 msgid "Third Quarter"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3217
+#: includes/traits/DataOutput.php:3218
 msgid "Waning Crescent"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3304 includes/traits/DataOutput.php:3435
+#: includes/traits/DataOutput.php:3305 includes/traits/DataOutput.php:3436
 msgid "Successful operation"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3516 includes/traits/DataOutput.php:3523
+#: includes/traits/DataOutput.php:3517 includes/traits/DataOutput.php:3524
 msgid "O/DR"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3586
+#: includes/traits/DataOutput.php:3587
 msgid "clouds"
 msgstr ""
 
-#: includes/traits/DataOutput.php:3715
+#: includes/traits/DataOutput.php:3716
 msgid "All data have been filtered: nothing to show"
 msgstr ""
 
-#: includes/traits/DataOutput.php:4097
+#: includes/traits/DataOutput.php:4098
 msgid "rev."
 msgstr ""
 

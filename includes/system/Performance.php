@@ -41,7 +41,7 @@ class Performance {
      */
     public function rotate() {
         Cache::rotate();
-        Logger::notice($this->facility,null,null,null,null,null,null,'Performance statistics data cleaned.');
+        Logger::notice($this->facility,null,null,null,null,null,null,'Performance data cleaned.');
     }
 
     /**
@@ -51,7 +51,7 @@ class Performance {
      */
     public static function get_cache_values() {
         if ($result = Cache::get_backend(Cache::$db_stat_perf_cache)) {
-            //return $result;
+            return $result;
         }
         $fields = array('backend', 'frontend', 'widget');
         $dimensions = array('miss', 'hit');
@@ -69,13 +69,6 @@ class Performance {
         $sum30 = array();
         $agr30 = array();
         $jsonable = array();
-        foreach ($fields as $field) {
-            foreach ($dimensions as $dimension) {
-                foreach ($metrics as $metric) {
-                    $jsonable[$field.'_'.$dimension.'_'.$metric] = array();
-                }
-            }
-        }
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -108,6 +101,12 @@ class Performance {
                 $datetime = new \DateTime($detail['timestamp']);
                 $time = $datetime->getTimestamp().'000';
                 foreach ($fields as $field) {
+
+
+
+
+
+
                     foreach ($dimensions as $dimension) {
                         foreach ($metrics as $metric) {
                             $val = $detail[$field.'_'.$dimension.'_'.$metric];
