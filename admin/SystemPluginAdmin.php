@@ -203,9 +203,9 @@ class Admin {
             array($this, 'lws_system_redirect_links_callback'), 'lws_system', 'lws_system_section',
             array());
         register_setting('lws_system', 'lws_system_redirect_links');
-        add_settings_field('lws_system_show_analytics', __('Stations views', 'live-weather-station'),
+        add_settings_field('lws_system_show_analytics', __('Special', 'live-weather-station'),
             array($this, 'lws_system_show_analytics_callback'), 'lws_system', 'lws_system_section',
-            array(__('Check this only if really love data analytics and visualization.', 'live-weather-station')));
+            array(__('Check this only if you really love data analytics and visualization.', 'live-weather-station')));
         register_setting('lws_system', 'lws_system_show_analytics');
     }
 
