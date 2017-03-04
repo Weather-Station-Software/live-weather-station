@@ -52,6 +52,8 @@ class Admin {
 	private $Live_Weather_Station;
 	private $version;
 
+	private $reload = false;
+
     private $settings = array('general', 'services', 'display', 'thresholds', 'system');
     private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground');
     private $service = 'Backend';
@@ -201,6 +203,10 @@ class Admin {
             array($this, 'lws_system_redirect_links_callback'), 'lws_system', 'lws_system_section',
             array());
         register_setting('lws_system', 'lws_system_redirect_links');
+        add_settings_field('lws_system_show_analytics', __('Stations views', 'live-weather-station'),
+            array($this, 'lws_system_show_analytics_callback'), 'lws_system', 'lws_system_section',
+            array(__('Check this only if really love data analytics and visualization.', 'live-weather-station')));
+        register_setting('lws_system', 'lws_system_show_analytics');
     }
 
     /**
@@ -392,6 +398,16 @@ class Admin {
      * Renders the interface elements for the corresponding field.
      *
      * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.1.0
+     */
+    public function lws_system_show_analytics_callback($args) {
+        echo $this->field_checkbox(__('I love data analytics', 'live-weather-station'), 'lws_system_show_analytics', (bool)get_option('live_weather_station_show_analytics'), $args[0]);
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
      * @since 3.0.0
      */
     public function lws_display_temperature_unit_callback($args) {
@@ -527,6 +543,7 @@ class Admin {
      */
     private function save_options($section) {
         $result = true;
+        $this->reload = false;
         if ($section == 'display') {
             if (array_key_exists('submit', $_POST)) {
                 update_option('live_weather_station_unit_temperature', (integer)$_POST['lws_display_temperature_unit']);
@@ -563,6 +580,7 @@ class Admin {
         }
         if ($section == 'system') {
             $save_auto = get_option('live_weather_station_auto_manage_netatmo');
+            $analytics = get_option('live_weather_station_show_analytics');
             if (array_key_exists('submit', $_POST)) {
                 update_option('live_weather_station_logger_level', (integer)$_POST['lws_system_log_level']);
                 update_option('live_weather_station_logger_rotate', (integer)$_POST['lws_system_log_rotate']);
@@ -576,9 +594,13 @@ class Admin {
                 update_option('live_weather_station_auto_manage_netatmo', (array_key_exists('lws_system_auto_manage_netatmo', $_POST) ? 1 : 0));
                 update_option('live_weather_station_time_shift_threshold', (integer)$_POST['lws_system_time_shift_threshold']);
                 update_option('live_weather_station_show_technical', (array_key_exists('lws_system_show_technical', $_POST) ? 1 : 0));
+                update_option('live_weather_station_show_analytics', (array_key_exists('lws_system_show_analytics', $_POST) ? 1 : 0));
                 if (!$save_auto && get_option('live_weather_station_auto_manage_netatmo')) {
                     $this->get_netatmo(true);
                     $this->get_netatmohc(true);
+                }
+                if ($analytics  != get_option('live_weather_station_show_analytics')) {
+                    $this->reload = true;
                 }
             }
             else {
@@ -662,6 +684,12 @@ class Admin {
                 if ($result = $this->save_options($section)) {
                     $message = __('%s have been correctly updated.', 'live-weather-station');
                     $message = sprintf($message, '<em>' . lcfirst($settings_string) . '</em>');
+                    if ($this->reload) {
+                        $current_url = get_admin_page_url('lws-settings', null, $section);
+                        $submessage = __('In order for the main menu to reflect the updated settings, please <a href="%s">refresh</a> the page', 'live-weather-station');
+                        $message .= '<br/>' . sprintf($submessage, $current_url);
+                        $this->reload = false;
+                    }
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::info($this->service, null, null, null, null, null, 0, 'Settings for '. $section . ' category has been correctly updated by an admin.');
                 }
