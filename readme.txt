@@ -58,7 +58,7 @@ Anyway, I'll be glad to help you if you encounter issues when using this plugin.
 = Donation =
 If you like this plugin or find it useful and want to thank me for the work done, please consider making a donation to [La Quadrature Du Net](https://www.laquadrature.net/en) which is an advocacy group defending the rights and freedoms of citizens on the Internet. By supporting them, you help the daily actions they perform to defend our fundamental freedoms!
 
-> **DISCLAIMER:** *This plugin is developed and maintained by me, [Pierre Lannoy](https://pierre.lannoy.fr "Pierre Lannoy"). This plugin **IS NOT** an official software from [Netatmo](http://www.netatmo.com "Netatmo Homepage"), [OpenWeatherMap](http://openweathermap.org/) or [Weather Underground](https://www.wunderground.com/) and is not endorsed or supported by these companies. Moreover, I am not a partner, employee, affiliate, or licensee of Netatmo, OpenWeatherMap or Weather Underground. I'm just a happy customer/user of their products and a fan of meteorology.*
+> **DISCLAIMER:** *This plugin **IS NOT** an official software from [Netatmo](http://www.netatmo.com "Netatmo Homepage"), [OpenWeatherMap](http://openweathermap.org/) or [Weather Underground](https://www.wunderground.com/) and is not endorsed or supported by these companies.*
 
 
 == Installation ==
@@ -113,15 +113,4 @@ Please, see [full changelog](https://weather.station.software/changelog.php) and
 
 == Screenshots ==
 
-1. A widget displaying weather data. Note that you can customize which data are displayed, colors, design, etc.
-2. A widget displaying extended ephemeris.
-3. A compact widget displaying ephemeris in flat design.
-4. Using collected data shortcodes, to fill TablePress tables with textual values.
-5. A LCD panel to display current temperatures. Note that you can customize which data are displayed, colors, design, etc.
-6. 3 clean gauges to display current temperatures. Note that you can customize which data are displayed, colors, design, etc.
-7. 2 clean gauges on a dark background.
-8. Some types of steel meters.
-9. A view of the plugin dashboard.
-10. Configuration of a shortcode to show a LCD panel.
-11. Configuration of a shortcode to show a clean gauge.
-12. Configuration of a shortcode to show a steel meter.
+To see Weather Station in action, please take a look at the [live demo](https://weather.station.software/en/weather-station-in-action/).
