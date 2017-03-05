@@ -359,7 +359,11 @@ class Manager {
      * @since 3.0.0
      */
     public static function weatherstation_version_text() {
-        return LWS_PLUGIN_NAME . ' ' . LWS_VERSION;
+        $s = LWS_PLUGIN_NAME . ' ' . LWS_VERSION;
+        if (defined('LWS_CODENAME')) {
+            $s .= ' ' . LWS_CODENAME;
+        }
+        return $s;
     }
 
     /**
