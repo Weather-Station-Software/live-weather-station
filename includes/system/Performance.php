@@ -60,7 +60,7 @@ class Performance {
                             'widget' => __('widget', 'live-weather-station'));
         $dimension_names = array('miss' => __('miss', 'live-weather-station'), 'hit' => __('hit', 'live-weather-station'));
         $metrics = array('count', 'time');
-        $aggregates = array('efficiency', 'time_saving', 'correlation');
+        $aggregates = array('efficiency', 'time_saving');
         global $wpdb;
         $sql = "SELECT * FROM " . $wpdb->prefix.Cache::live_weather_station_performance_cache_table() . " ;";
         $cutoff24 = time() - (DAY_IN_SECONDS);
@@ -70,6 +70,16 @@ class Performance {
         $sum30 = array();
         $agr30 = array();
         $jsonable = array();
+        foreach ($fields as $field) {
+            foreach ($aggregates as $aggregate) {
+                $jsonable[$field . '_' . $aggregate] = array();
+            }
+            foreach ($dimensions as $dimension) {
+                foreach ($metrics as $metric) {
+                    $jsonable[$field . '_' . $dimension . '_' . $metric] = array();
+                }
+            }
+        }
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -139,7 +149,7 @@ class Performance {
                     }
                 }
             }
-            foreach ($sum24 as &$s) {
+            /*foreach ($sum24 as &$s) {
                 if ($s == 0) {
                     $s = 1;
                 }
@@ -148,7 +158,7 @@ class Performance {
                 if ($s == 0) {
                     $s = 1;
                 }
-            }
+            }*/
             $jsoned = array();
             $data_r = array();
             foreach ($fields as $field) {
@@ -175,43 +185,91 @@ class Performance {
                 $data[$aggregate] = '[' . implode(',', $data_r[$aggregate]) . ']';
             }
             foreach ($fields as $field) {
-                $agr24[$field.'_success'] = round((100 * $sum24[$field.'_hit_count'] / ($sum24[$field.'_hit_count'] + $sum24[$field.'_miss_count'])), 1);
-                if ($sum24[$field.'_hit_count'] > 0 && $sum24[$field.'_miss_count'] > 0) {
-                    $avr_hit = round($sum24[$field.'_hit_time'] / $sum24[$field.'_hit_count'], 0) ;
-                    if ($avr_hit < 1) {
-                        $avr_hit = 1;
+                if (count($sum24) > 0) {
+                    if (($sum24[$field . '_hit_count'] + $sum24[$field . '_miss_count']) > 0) {
+                        $agr24[$field . '_success'] = round((100 * $sum24[$field . '_hit_count'] / ($sum24[$field . '_hit_count'] + $sum24[$field . '_miss_count'])), 1);
+                        if ($sum24[$field . '_hit_count'] > 0 && $sum24[$field . '_miss_count'] > 0) {
+                            $avr_hit = round($sum24[$field . '_hit_time'] / $sum24[$field . '_hit_count'], 0);
+                            if ($avr_hit < 1) {
+                                $avr_hit = 1;
+                            }
+                            $avr_miss = round($sum24[$field . '_miss_time'] / $sum24[$field . '_miss_count'], 0);
+                            if ($avr_miss < 1) {
+                                $avr_miss = 1;
+                            }
+                            $agr24[$field . '_time_saving'] = $avr_miss - $avr_hit;
+                        } else {
+                            $agr24[$field . '_time_saving'] = 0;
+                        }
+                    } else {
+                        $agr24[$field . '_success'] = 0;
+                        $agr24[$field . '_time_saving'] = 0;
                     }
-                    $avr_miss = round($sum24[$field.'_miss_time'] / $sum24[$field.'_miss_count'], 0) ;
-                    if ($avr_miss < 1) {
-                        $avr_miss = 1;
-                    }
-                    $agr24[$field.'_time_saving'] = $avr_miss - $avr_hit;
+                } else {
+                    $agr24[$field . '_success'] = 0;
+                    $agr24[$field . '_time_saving'] = 0;
                 }
-                else {
-                    $agr24[$field.'_time_saving'] = 0;
-                }
-                $agr30[$field.'_success'] = round((100 * $sum30[$field.'_hit_count'] / ($sum30[$field.'_hit_count'] + $sum30[$field.'_miss_count'])), 1);
-                if ($sum30[$field.'_hit_count'] > 0 && $sum30[$field.'_miss_count'] > 0) {
-                    $avr_hit = round($sum30[$field.'_hit_time'] / $sum30[$field.'_hit_count'], 0) ;
-                    if ($avr_hit < 1) {
-                        $avr_hit = 1;
+                if (count($sum30) > 0) {
+                    if (($sum30[$field . '_hit_count'] + $sum30[$field . '_miss_count']) > 0) {
+                        $agr30[$field . '_success'] = round((100 * $sum30[$field . '_hit_count'] / ($sum30[$field . '_hit_count'] + $sum30[$field . '_miss_count'])), 1);
+                        if ($sum30[$field . '_hit_count'] > 0 && $sum30[$field . '_miss_count'] > 0) {
+                            $avr_hit = round($sum30[$field . '_hit_time'] / $sum30[$field . '_hit_count'], 0);
+                            if ($avr_hit < 1) {
+                                $avr_hit = 1;
+                            }
+                            $avr_miss = round($sum30[$field . '_miss_time'] / $sum30[$field . '_miss_count'], 0);
+                            if ($avr_miss < 1) {
+                                $avr_miss = 1;
+                            }
+                            $agr30[$field . '_time_saving'] = $avr_miss - $avr_hit;
+                        } else {
+                            $agr30[$field . '_time_saving'] = 0;
+                        }
+                    } else {
+                        $agr30[$field . '_success'] = 0;
+                        $agr30[$field . '_time_saving'] = 0;
                     }
-                    $avr_miss = round($sum30[$field.'_miss_time'] / $sum30[$field.'_miss_count'], 0) ;
-                    if ($avr_miss < 1) {
-                        $avr_miss = 1;
-                    }
-                    $agr30[$field.'_time_saving'] = $avr_miss - $avr_hit;
-                }
-                else {
-                    $agr30[$field.'_time_saving'] = 0;
+                } else {
+                    $agr30[$field . '_success'] = 0;
+                    $agr30[$field . '_time_saving'] = 0;
                 }
             }
-            $result = array('sum24' => $sum24, 'agr24' => $agr24, 'sum30' => $sum30, 'agr30' => $agr30, 'dat' => $data);
+            $result = array('agr24' => $agr24, 'agr30' => $agr30, 'dat' => $data);
             Cache::set_backend(Cache::$db_stat_perf_cache, $result);
-            return $result;
         }
         catch(\Exception $ex) {
-            return array() ;
+            foreach ($fields as $field) {
+                foreach ($dimensions as $dimension) {
+                    foreach ($metrics as $metric) {
+                        $agr24[$field . '_' . $dimension . '_' . $metric] = 0;
+                        $agr30[$field . '_' . $dimension . '_' . $metric] = 0;
+                    }
+                }
+                $agr24[$field . '_success'] = 0;
+                $agr24[$field . '_time_saving'] = 0;
+                $agr30[$field . '_success'] = 0;
+                $agr30[$field . '_time_saving'] = 0;
+            }
+            $data_r = array();
+            foreach ($fields as $field) {
+                foreach ($aggregates as $aggregate) {
+                    $data_r[$aggregate][] = '{"key":"' . $field_names[$field] . '", "values":[]}';
+                }
+                foreach ($dimensions as $dimension) {
+                    foreach ($metrics as $metric) {
+                        $data_r[$metric][] = '{"key":"' . $field_names[$field] . ' / ' . $dimension_names[$dimension] . '", "values":[]}';
+                    }
+                }
+            }
+            $data = array();
+            foreach ($metrics as $metric) {
+                $data[$metric] = '[' . implode(',', $data_r[$metric]) . ']';
+            }
+            foreach ($aggregates as $aggregate) {
+                $data[$aggregate] = '[' . implode(',', $data_r[$aggregate]) . ']';
+            }
+            $result = array('agr24' => $agr24, 'agr30' => $agr30, 'dat' => $data);
         }
+        return $result;
     }
 }

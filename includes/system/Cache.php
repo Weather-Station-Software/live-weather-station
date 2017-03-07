@@ -548,11 +548,13 @@ class Cache {
                 }
             }
         }
-        $sql = "INSERT INTO " . $wpdb->prefix.self::live_weather_station_performance_cache_table() . " ";
-        $sql .= "(" . implode(',', $field_insert) . ") ";
-        $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
-        $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
-        $wpdb->query($sql);
+        if (count($value_update) > 0) {
+            $sql = "INSERT INTO " . $wpdb->prefix.self::live_weather_station_performance_cache_table() . " ";
+            $sql .= "(" . implode(',', $field_insert) . ") ";
+            $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
+            $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
+            $wpdb->query($sql);
+        }
     }
 
     /**
