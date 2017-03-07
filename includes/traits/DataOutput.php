@@ -62,7 +62,6 @@ trait Output {
             wp_enqueue_script('d3.v3.js');
             wp_enqueue_script('nv.d3.v3.js');
             $perf = Performance::get_cache_values();
-
             if ($_attributes['metric'] == 'count') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
@@ -82,7 +81,8 @@ trait Output {
                 $result .= '                 .showMaxMin(false)' . PHP_EOL;
                 $result .= '                 .tickFormat(function(d) { return d3.time.format("%d/%m %H:%M")(new Date(d)) });' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
-                $result .= '                 .axisLabel("' . __('rendering requests (count)', 'live-weather-station') . '");' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(d3.format("s"));' . PHP_EOL;
                 $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
                 $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
@@ -90,7 +90,6 @@ trait Output {
                 $result .= '  });' . PHP_EOL;
                 $result .= '</script>' . PHP_EOL;
             }
-
             if ($_attributes['metric'] == 'time') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
@@ -100,13 +99,66 @@ trait Output {
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
                 $result .= '      var chart'.$uniq.' = nv.models.multiBarChart()' . PHP_EOL;
                 $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
-                $result .= '               .y(function(d) {return d[1]});' . PHP_EOL;
+                $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
+                $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","grouped":"' . __('Grouped', 'live-weather-station') . '"});' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
                 $result .= '                 .showMaxMin(false)' . PHP_EOL;
                 $result .= '                 .tickFormat(function(d) { return d3.time.format("%d/%m %H:%M")(new Date(d)) });' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
-                $result .= '                 .tickFormat(d3.format("d"))' . PHP_EOL;
-                $result .= '                 .axisLabel("' . __('rendering average time (in ms)', 'live-weather-station') . '");' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(function(d) { return d + " ms"; });' . PHP_EOL;
+                $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+                $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+                $result .= '      return chart'.$uniq.';' . PHP_EOL;
+                $result .= '    });'.PHP_EOL;
+                $result .= '  });' . PHP_EOL;
+                $result .= '</script>' . PHP_EOL;
+            }
+            if ($_attributes['metric'] == 'efficiency') {
+                $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
+                $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
+                $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
+                $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . $perf['dat']['efficiency'] . ';' . PHP_EOL;
+                $result .= '    nv.addGraph(function() {' . PHP_EOL;
+                $result .= '      var chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
+                $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
+                $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
+                $result .= '               .interpolate("cardinal")' . PHP_EOL;
+                $result .= '               .color(d3.scale.category10().range())' . PHP_EOL;
+                $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(function(d) { return d3.time.format("%d/%m %H:%M")(new Date(d)) });' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(d3.format(",.1%"));' . PHP_EOL;
+                $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+                $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+                $result .= '      return chart'.$uniq.';' . PHP_EOL;
+                $result .= '    });'.PHP_EOL;
+                $result .= '  });' . PHP_EOL;
+                $result .= '</script>' . PHP_EOL;
+            }
+            if ($_attributes['metric'] == 'time_saving') {
+                $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
+                $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
+                $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
+                $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . $perf['dat']['time_saving'] . ';' . PHP_EOL;
+                $result .= '    nv.addGraph(function() {' . PHP_EOL;
+                $result .= '      var chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
+                $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
+                $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
+                $result .= '               .interpolate("cardinal")' . PHP_EOL;
+                $result .= '               .color(d3.scale.category10().range())' . PHP_EOL;
+                $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(function(d) { return d3.time.format("%d/%m %H:%M")(new Date(d)) });' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(function(d) { return d3.time.format("%H:%M:%S")(new Date(1971, 8, 21, 0, 0, d)) });' . PHP_EOL;
                 $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
                 $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;

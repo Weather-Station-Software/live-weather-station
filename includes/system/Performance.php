@@ -60,6 +60,7 @@ class Performance {
                             'widget' => __('widget', 'live-weather-station'));
         $dimension_names = array('miss' => __('miss', 'live-weather-station'), 'hit' => __('hit', 'live-weather-station'));
         $metrics = array('count', 'time');
+        $aggregates = array('efficiency', 'time_saving', 'correlation');
         global $wpdb;
         $sql = "SELECT * FROM " . $wpdb->prefix.Cache::live_weather_station_performance_cache_table() . " ;";
         $cutoff24 = time() - (DAY_IN_SECONDS);
@@ -101,12 +102,26 @@ class Performance {
                 $datetime = new \DateTime($detail['timestamp']);
                 $time = $datetime->getTimestamp().'000';
                 foreach ($fields as $field) {
-
-
-
-
-
-
+                    $eff = -1;
+                    $tim = -1;
+                    if ($detail[$field.'_hit_count'] + $detail[$field.'_miss_count'] > 0) {
+                        $val = $detail[$field.'_hit_count'] / ($detail[$field.'_hit_count'] + $detail[$field.'_miss_count']);
+                        $jsonable[$field.'_efficiency'][] = array($time, $val);
+                        $eff = round($val*100, 0);
+                    }
+                    else {
+                        $jsonable[$field.'_efficiency'][] = array($time, 0);
+                    }
+                    if ($detail[$field.'_hit_count'] > 0 && $detail[$field.'_miss_count'] > 0) {
+                        $avr_hit = $detail[$field.'_hit_time'] / $detail[$field.'_hit_count'];
+                        $avr_miss = $detail[$field.'_miss_time'] / $detail[$field.'_miss_count'];
+                        $val = ($avr_miss - $avr_hit)*$detail[$field.'_hit_count']/1000;
+                        $jsonable[$field.'_time_saving'][] = array($time, $val);
+                        $tim = round($avr_miss - $avr_hit,0)*$detail[$field.'_hit_count'];
+                    }
+                    else {
+                        $jsonable[$field.'_time_saving'][] = array($time, 0);
+                    }
                     foreach ($dimensions as $dimension) {
                         foreach ($metrics as $metric) {
                             $val = $detail[$field.'_'.$dimension.'_'.$metric];
@@ -137,6 +152,12 @@ class Performance {
             $jsoned = array();
             $data_r = array();
             foreach ($fields as $field) {
+                foreach ($aggregates as $aggregate) {
+                    $jsoned[$field . '_' . $aggregate] = json_encode($jsonable[$field . '_' . $aggregate]);
+                    $jsoned[$field . '_' . $aggregate] = str_replace('"', '', $jsoned[$field . '_' . $aggregate]);
+                    $name = $field_names[$field];
+                    $data_r[$aggregate][] = '{"key":"' . $name . '", "values":' . $jsoned[$field . '_' . $aggregate] . '}';
+                }
                 foreach ($dimensions as $dimension) {
                     foreach ($metrics as $metric) {
                         $jsoned[$field.'_'.$dimension.'_'.$metric] = json_encode($jsonable[$field.'_'.$dimension.'_'.$metric]);
@@ -149,6 +170,9 @@ class Performance {
             $data = array();
             foreach ($metrics as $metric) {
                 $data[$metric] = '[' . implode(',', $data_r[$metric]) . ']';
+            }
+            foreach ($aggregates as $aggregate) {
+                $data[$aggregate] = '[' . implode(',', $data_r[$aggregate]) . ']';
             }
             foreach ($fields as $field) {
                 $agr24[$field.'_success'] = round((100 * $sum24[$field.'_hit_count'] / ($sum24[$field.'_hit_count'] + $sum24[$field.'_miss_count'])), 1);

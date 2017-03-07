@@ -1,9 +1,9 @@
 
-###3.1.0 / March xxth, 2017
+###3.1.0 / March 8th, 2017
 
 * New: a new widget "Indoor Comfort" to display indoor measurements health quality and advices.
 * New: a new widget "Fire Weather" to display fire risk at the station location.
-* New: an health index (computed for all indoor modules) is available for all controls (via shortcodes).
+* New: an health index (computed for all indoor modules) is available in all controls.
 * New: the Chandler burning index is computed for all stations and available in all controls.
 * New: dawn and dusk time (civil, nautical and astronomical) are computed and available in textual data.
 * New: day duration (standard, civil, nautical and astronomical) are computed and available in textual data.
