@@ -346,7 +346,7 @@ trait Storage {
     protected static function create_tables() {
         self::create_live_weather_station_datas_table();
         self::create_live_weather_station_stations_table();
-        self::create_live_weather_station_owm_stations_table();
+        //self::create_live_weather_station_owm_stations_table();
         self::create_live_weather_station_infos_table();
         self::create_live_weather_station_performance_cache_table();
     }
@@ -514,6 +514,12 @@ trait Storage {
         $sql = 'DROP TABLE '.$table_name;
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
+        $sql = 'DROP TABLE '.$table_name;
+        $wpdb->query($sql);
+        $table_name = $wpdb->prefix.self::live_weather_station_infos_table();
+        $sql = 'DROP TABLE '.$table_name;
+        $wpdb->query($sql);
+        $table_name = $wpdb->prefix.self::live_weather_station_performance_cache_table();
         $sql = 'DROP TABLE '.$table_name;
         $wpdb->query($sql);
     }
