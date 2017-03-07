@@ -686,7 +686,7 @@ class Admin {
                     $message = sprintf($message, '<em>' . lcfirst($settings_string) . '</em>');
                     if ($this->reload) {
                         $current_url = get_admin_page_url('lws-settings', null, $section);
-                        $submessage = __('In order for the main menu to reflect the updated settings, please <a href="%s">refresh</a> the page', 'live-weather-station');
+                        $submessage = __('In order for the main menu to reflect the updated settings, please <a href="%s">refresh</a> the page', 'live-weather-station').'&hellip;';
                         $message .= '<br/>' . sprintf($submessage, $current_url);
                         $this->reload = false;
                     }
