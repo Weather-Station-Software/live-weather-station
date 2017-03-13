@@ -435,7 +435,7 @@ class Fire extends \WP_Widget {
                         if (array_key_exists('cbi', $module['datas'])) {
                             $datas['cbi'] = array();
                             $datas['cbi']['value'] = $module['datas']['cbi']['value'];
-                            $cbi = 94;//$module['datas']['cbi']['value'];
+                            $cbi = $module['datas']['cbi']['value'];
                             $datas['cbi']['unit'] = $this->get_cbi_text($cbi);
                         } else {
                             $show_cbi = false;

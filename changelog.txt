@@ -1,4 +1,8 @@
 
+###3.1.2 / March 13th, 2017
+
+* Bug fix: in Fire Weather widget, the current risk is wrong.
+
 ###3.1.1 / March 13th, 2017
 
 * Improvement: the time scale for cache analytics offers now better readability.
