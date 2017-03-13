@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: wordpress, widget, weather, shortcode, openweathermap, netatmo, meteo, live, lcd, gauge, ephemeris, forecast, current weather, forecast widget, local weather, weather forecasts, weather widget, conditions, current conditions, weather by city, temperature, wind speed, wind, wind strength, pressure, humidity, CO2, rain, snow, cloudiness, cloud, moon, moon phase, sun, sunrise, sunset, moonrise, moonset, noise, weather station, dew, frost, humidex, heat index, wind chill, weather plugin, wordpress widget, wind gauge, rain gauge, pws, met office, personal weather station, weather underground, wunderground, weather observations website, wow, observation, pollution, CO₂, CO, O3, O₃, ozone, carbon dioxide, carbon monoxide, clientraw, clientraw.txt, realtime, realtime.txt
 Requires at least: 4.0
 Tested up to: 4.7
-Stable tag: 3.1.0
+Stable tag: 3.1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://support.laquadrature.net/
@@ -21,16 +21,11 @@ The use of Weather Station requires no knowledge in programming and does not req
 Just set it, insert (in a page or an article) the provided shortcodes. And it works!
 
 = How does it work? =
-Once you have connected the plugin to your weather stations (via the dashboard of your WordPress site), the data you have access to are collected every 5 or 10 minutes and stored in the database of your WordPress site.
+Once you have connected the plugin to your weather stations (via the dashboard of your WordPress site), the data you have access to is collected regularly and stored in the database of your WordPress site.
 The various controls and viewers now will get their data from this database with the certainty of having fresh and cached data.
-To date, you can display data with the following controls:
 
-* a "classical" configurable widget that displays outdoor weather data
-* an "ephemeris" configurable widget that displays astronomical computed values
-* a highly configurable LCD panel which displays selected weather data
-* a highly configurable clean gauge control which displays the live weather data you have selected
-* textual and numerical values you can insert in articles and pages via configurable shortcodes
-* a hugely configurable steel meter control which displays the live weather data you have selected
+To see all available widgets, controls and viewers, please take a look at the [live demo](https://weather.station.software/en/weather-station-in-action/).
+
 
 = Supported devices & services =
 Weather Station supports:

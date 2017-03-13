@@ -43,6 +43,7 @@
 ***********************
 
  * 3.x - Ability to change text color in clean gauges
+ * 3.x - Change the modal bow for shortcodes
 
 
 

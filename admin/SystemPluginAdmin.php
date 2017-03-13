@@ -1070,7 +1070,7 @@ class Admin {
         $s = $f;
         $f = LWS_ADMIN_DIR.'partials/'.$f.'.php';
         if (file_exists($f)) {
-            //wp_dequeue_script('media-upload');
+            wp_dequeue_script('media-upload');
             include($f);
         }
         else {

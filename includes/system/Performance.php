@@ -125,7 +125,7 @@ class Performance {
                     if ($detail[$field.'_hit_count'] > 0 && $detail[$field.'_miss_count'] > 0) {
                         $avr_hit = $detail[$field.'_hit_time'] / $detail[$field.'_hit_count'];
                         $avr_miss = $detail[$field.'_miss_time'] / $detail[$field.'_miss_count'];
-                        $val = ($avr_miss - $avr_hit)*$detail[$field.'_hit_count']/1000;
+                        $val = ($avr_miss - $avr_hit)*$detail[$field.'_hit_count'];
                         $jsonable[$field.'_time_saving'][] = array($time, $val);
                         $tim = round($avr_miss - $avr_hit,0)*$detail[$field.'_hit_count'];
                     }
@@ -149,16 +149,6 @@ class Performance {
                     }
                 }
             }
-            /*foreach ($sum24 as &$s) {
-                if ($s == 0) {
-                    $s = 1;
-                }
-            }
-            foreach ($sum30 as &$s) {
-                if ($s == 0) {
-                    $s = 1;
-                }
-            }*/
             $jsoned = array();
             $data_r = array();
             foreach ($fields as $field) {
