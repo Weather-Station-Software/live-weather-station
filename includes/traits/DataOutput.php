@@ -158,7 +158,8 @@ trait Output {
                 $result .= '                 .tickFormat(function(d) { return d3.time.format("%d/%m %H:%M")(new Date(d)) });' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
                 $result .= '                 .showMaxMin(false)' . PHP_EOL;
-                $result .= '                 .tickFormat(function(d) { return d3.time.format("%H:%M:%S")(new Date(1971, 8, 21, 0, 0, d)) });' . PHP_EOL;
+                $result .= '                 .tickPadding(-21)' . PHP_EOL;
+                $result .= '                 .tickFormat(function(d) { return d3.time.format("%H:%M:%S:%L")(new Date(1971, 8, 21, 0, 0, 0, d)) });' . PHP_EOL;
                 $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
                 $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;

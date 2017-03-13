@@ -325,14 +325,6 @@ trait Storage {
         $sql .= " `frontend_hit_time` int(11) NOT NULL DEFAULT '0',";
         $sql .= " `frontend_miss_count` int(11) NOT NULL DEFAULT '0',";
         $sql .= " `frontend_miss_time` int(11) NOT NULL DEFAULT '0',";
-        /*$sql .= " `extra_hit_count` int(11) NOT NULL DEFAULT '0',";
-        $sql .= " `extra_hit_time` int(11) NOT NULL DEFAULT '0',";
-        $sql .= " `extra_miss_count` int(11) NOT NULL DEFAULT '0',";
-        $sql .= " `extra_miss_time` int(11) NOT NULL DEFAULT '0',";
-        $sql .= " `file_hit_count` int(11) NOT NULL DEFAULT '0',";
-        $sql .= " `file_hit_time` int(11) NOT NULL DEFAULT '0',";
-        $sql .= " `file_miss_count` int(11) NOT NULL DEFAULT '0',";
-        $sql .= " `file_miss_time` int(11) NOT NULL DEFAULT '0',";*/
         $sql .= " PRIMARY KEY (`timestamp`)";
         $sql .= ") $charset_collate;";
         $wpdb->query($sql);
@@ -346,7 +338,6 @@ trait Storage {
     protected static function create_tables() {
         self::create_live_weather_station_datas_table();
         self::create_live_weather_station_stations_table();
-        //self::create_live_weather_station_owm_stations_table();
         self::create_live_weather_station_infos_table();
         self::create_live_weather_station_performance_cache_table();
     }

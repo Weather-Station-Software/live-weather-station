@@ -26,8 +26,8 @@ class Activator {
 	 *
 	 * Creates table and initializes options.
 	 *
-	 * @since    1.0.0
-     * @access   public
+	 * @since 1.0.0
+     * @access public
      * @static
 	 */
 	public static function activate() {

@@ -18,7 +18,12 @@ if (!is_wp_error($rss)) {
     if (isset($maxitems)) {
         if ($maxitems > 0) {
             $rss_items = $rss->get_items(0, $maxitems);
-            $description = wp_trim_words(wp_strip_all_tags($rss_items[0]->get_description(true)), 35);
+            $description = $rss_items[0]->get_description(true);
+            $pos = strpos($description, '</p>');
+            if ($pos > 0) {
+                $description = str_replace('<p>', '', substr($description, 0, $pos));
+            }
+            $description = wp_trim_words(wp_strip_all_tags($description), 35);
             $id = $rss_items[0]->get_id();
         }
     }

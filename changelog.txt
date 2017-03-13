@@ -1,4 +1,11 @@
 
+###3.1.1 / March 13th, 2017
+
+* Improvement: the time scale for cache analytics offers now better readability.
+* Improvement: the news box of the dashboard has been redesigned to show cleaner items.
+* Bug fix: in Fire Weather widget, the color of the current risk icon is wrong.
+* Bug fix: with some configurations, the window for shortcodes in admin panel has the wrong size.
+
 ###3.1.0 / March 8th, 2017
 
 * New: a new widget "Indoor Comfort" to display indoor measurements health quality and advices.
