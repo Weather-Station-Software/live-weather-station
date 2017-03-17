@@ -72,7 +72,7 @@ function get_display_locale($user_id = 0) {
 //---------------------------------------------------------------------------------------------------
 
 define('LWS_FULL_NAME', 'Weather Station 3');
-define('LWS_VERSION', '3.1.2');
+define('LWS_VERSION', '3.1.3');
 define('LWS_CODENAME', '"Matmatah"');
 define('LWS_OWM_READY', false);
 define('LWS_TXT_READY', false);

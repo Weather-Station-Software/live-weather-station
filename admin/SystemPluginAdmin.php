@@ -321,10 +321,14 @@ class Admin {
      */
     public function lws_system_auto_manage_callback($args) {
         $cbxs = array();
-        $cbxs[] = array('text' => __('Netatmo', 'live-weather-station'),
+        $cbxs[] = array('text' => __('Netatmo provisioning', 'live-weather-station'),
             'id' => 'lws_system_auto_manage_netatmo',
             'checked' => (bool)get_option('live_weather_station_auto_manage_netatmo'),
             'description' => sprintf(__('Check this to let %s manage Netatmo stations for you (add, remove, etc.).', 'live-weather-station'), LWS_PLUGIN_NAME));
+        $cbxs[] = array('text' => __('Plugin updates', 'live-weather-station'),
+            'id' => 'lws_system_auto_update',
+            'checked' => (bool)get_option('live_weather_station_auto_update'),
+            'description' => sprintf(__('Check this to let %s manage its own updates (strongly recommended).', 'live-weather-station'), LWS_PLUGIN_NAME));
         echo $this->field_multi_checkbox($cbxs);
     }
 
@@ -592,6 +596,7 @@ class Admin {
                 update_option('live_weather_station_redirect_internal_links', (array_key_exists('lws_system_redirect_internal_links', $_POST) ? 1 : 0));
                 update_option('live_weather_station_redirect_external_links', (array_key_exists('lws_system_redirect_external_links', $_POST) ? 1 : 0));
                 update_option('live_weather_station_auto_manage_netatmo', (array_key_exists('lws_system_auto_manage_netatmo', $_POST) ? 1 : 0));
+                update_option('live_weather_station_auto_update', (array_key_exists('lws_system_auto_update', $_POST) ? 1 : 0));
                 update_option('live_weather_station_time_shift_threshold', (integer)$_POST['lws_system_time_shift_threshold']);
                 update_option('live_weather_station_show_technical', (array_key_exists('lws_system_show_technical', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_analytics', (array_key_exists('lws_system_show_analytics', $_POST) ? 1 : 0));
