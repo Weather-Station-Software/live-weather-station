@@ -63,3 +63,6 @@
 ***********************
 * FIXES TO DO         *
 ***********************
+
+
+purge cache after updates

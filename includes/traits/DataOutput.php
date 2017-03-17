@@ -75,7 +75,7 @@ trait Output {
                 $result .= '               .clipEdge(true)' . PHP_EOL;
                 $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","stream":"' . __('Stream', 'live-weather-station') . '","expanded":"' . __('Expanded', 'live-weather-station') . '"})' . PHP_EOL;
                 $result .= '               .controlOptions(["Expanded","Stacked"])' . PHP_EOL;
-                $result .= '               .interpolate("basis")' . PHP_EOL;
+                $result .= '               .interpolate("cardinal")' . PHP_EOL;
                 $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
                 $result .= '                 .showMaxMin(false)' . PHP_EOL;

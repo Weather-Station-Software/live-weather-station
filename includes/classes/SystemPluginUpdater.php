@@ -35,6 +35,7 @@ class Updater {
         self::update_tables($oldversion);
         Logger::notice('Updater',null,null,null,null,null,null,'Restarting ' . LWS_PLUGIN_NAME . '.', $oldversion);
         Logger::notice('Updater',null,null,null,null,null,null, LWS_PLUGIN_NAME . ' successfully updated from version ' . $oldversion . ' to version ' . LWS_VERSION . '.');
+        update_option('live_weather_station_last_update', time());
         Watchdog::restart();
     }
 }

@@ -293,6 +293,43 @@ class Manager {
     }
 
     /**
+     * Is the WP update system enabled?
+     *
+     * @since 3.1.3
+     */
+    public static function is_updatable() {
+        $result = true;
+        if (defined('AUTOMATIC_UPDATER_DISABLED')) {
+            $result = !AUTOMATIC_UPDATER_DISABLED;
+        }
+        return $result;
+    }
+
+    /**
+     * Is the plugin auto-update enabled?
+     *
+     * @since 3.1.3
+     */
+    public static function is_autoupdatable() {
+        return (self::is_updatable() && get_option('live_weather_station_auto_update'));
+    }
+
+    /**
+     * Choose if the plugin must be auto-updated or not.
+     * Concerned hook: auto_update_plugin
+     *
+     * @since 3.1.3
+     */
+    public static function lws_auto_update($update, $item) {
+        if (($item->slug == LWS_PLUGIN_SLUG) && self::is_autoupdatable()){
+            return true;
+        }
+        else {
+            return $update;
+        }
+    }
+
+    /**
      * Get the PHP version.
      *
      * @since 3.0.0
