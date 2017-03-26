@@ -23,7 +23,7 @@ if (!is_wp_error($rss)) {
             if ($pos > 0) {
                 $description = str_replace('<p>', '', substr($description, 0, $pos));
             }
-            $description = wp_trim_words(wp_strip_all_tags($description), 35);
+            $description = wp_trim_words(wp_strip_all_tags($description), 33);
             $id = $rss_items[0]->get_id();
         }
     }

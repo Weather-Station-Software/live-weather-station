@@ -47,10 +47,8 @@ class Ephemeris extends \WP_Widget {
             wp_enqueue_script( 'underscore' );
         }
         //if ( is_active_widget( false, false, $this->id_base ) ) {
-        wp_register_style( 'weather-icons.css', LWS_PUBLIC_URL . 'css/weather-icons.min.css', array(), LWS_VERSION );
-        wp_enqueue_style( 'weather-icons.css');
-        wp_register_style( 'weather-icons-wind.css', LWS_PUBLIC_URL . 'css/weather-icons-wind.min.css', array(), LWS_VERSION );
-        wp_enqueue_style( 'weather-icons-wind.css');
+        wp_enqueue_style('weather-icons.css', LWS_PUBLIC_URL . 'css/weather-icons.min.css', array(), LWS_VERSION);
+        wp_enqueue_style('weather-icons-wind.css', LWS_PUBLIC_URL . 'css/weather-icons-wind.min.css', array(), LWS_VERSION);
         //}
     }
 

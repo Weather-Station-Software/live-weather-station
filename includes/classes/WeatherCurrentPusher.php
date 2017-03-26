@@ -7,6 +7,7 @@ use WeatherStation\SDK\OpenWeatherMap\Plugin\Pusher as OWM_Pusher;
 use WeatherStation\SDK\PWSWeather\Plugin\Pusher as PWS_Pusher;
 use WeatherStation\SDK\MetOffice\Plugin\Pusher as WOW_Pusher;
 use WeatherStation\SDK\WeatherUnderground\Plugin\Pusher as WUG_Pusher;
+use WeatherStation\System\Schedules\Watchdog;
 
 /**
  * This class is responsible for all the croned pushes to weather services.
@@ -39,6 +40,7 @@ class Pusher {
      * @since 2.5.0
      */
     public function cron_run(){
+        $cron_id = Watchdog::init_chrono(Watchdog::$push_schedule_name);
         $svc = null;
         try {
             $svc = 'OpenWeatherMap';
@@ -61,5 +63,6 @@ class Pusher {
         catch (\Exception $ex) {
             Logger::critical('Cron Engine', $svc, null, null, null, null, $ex->getCode(), 'Error while pushing weather data: ' . $ex->getMessage());
         }
+        Watchdog::stop_chrono($cron_id);
     }
 }

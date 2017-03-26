@@ -6,6 +6,8 @@ use WeatherStation\System\Help\InlineHelp;
 use WeatherStation\System\Environment\Manager as EnvManager;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\System\Cache\Cache;
+use WeatherStation\System\Schedules\Watchdog;
+
 
 /**
  * This class add i18n management.
@@ -175,6 +177,7 @@ class Handling {
      * @since 3.0.0
      */
     public function cron_run() {
+        $cron_id = Watchdog::init_chrono(Watchdog::$translation_update_name);
         if ($this->last_modified && (bool)get_option('live_weather_station_partial_translation')) {
             if ($this->last_modified != Cache::get_i18n('last_modified_' . $this->locale)) {
                 $branch = 'stable';
@@ -186,6 +189,7 @@ class Handling {
                 }
             }
         }
+        Watchdog::stop_chrono($cron_id);
     }
 
     /**

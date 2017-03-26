@@ -5,6 +5,7 @@ namespace WeatherStation\System\Plugin;
 use WeatherStation\SDK\Clientraw\Plugin\StationCollector as ClientrawCollector;
 use WeatherStation\SDK\Realtime\Plugin\StationCollector as RealtimeCollector;
 use WeatherStation\System\Cache\Cache;
+use WeatherStation\System\Environment\Manager;
 use WeatherStation\UI\Dashboard\Handling as Dashboard;
 use WeatherStation\UI\Services\Handling as Services;
 use WeatherStation\UI\Analytics\Handling as Analytics;
@@ -81,17 +82,20 @@ class Admin {
      * @since    1.0.0
      */
     public function enqueue_styles() {
-        wp_enqueue_style($this->Live_Weather_Station, LWS_ADMIN_URL.'css/live-weather-station-admin.min.css', array(), $this->version, 'all');
-        wp_enqueue_style('live-weather-station-public.css', LWS_PUBLIC_URL.'css/live-weather-station-public.min.css', array(), $this->version, 'all');
-        wp_enqueue_style('font-awesome.css', LWS_PUBLIC_URL.'css/font-awesome.min.css', array(), '4.7.0', 'all');
+        wp_enqueue_style($this->Live_Weather_Station, LWS_ADMIN_URL.'css/live-weather-station-admin.min.css', array(), $this->version);
+        wp_enqueue_style('live-weather-station-public.css', LWS_PUBLIC_URL.'css/live-weather-station-public.min.css', array(), $this->version);
+        wp_enqueue_style('font-awesome.css', LWS_PUBLIC_URL.'css/font-awesome.min.css', array(), $this->version);
+        wp_enqueue_style('weather-icons.css', LWS_PUBLIC_URL . 'css/weather-icons.min.css', array(), $this->version);
+        wp_enqueue_style('weather-icons-wind.css', LWS_PUBLIC_URL . 'css/weather-icons-wind.min.css', array(), $this->version);
         wp_enqueue_style('thickbox');
-        wp_enqueue_style('nv.d3.css', LWS_PUBLIC_URL.'css/nv.d3.min.css');
+        wp_enqueue_style('nv.d3.css', LWS_PUBLIC_URL.'css/nv.d3.min.css', array(), $this->version);
+        wp_enqueue_style('cal-heatmap.css', LWS_PUBLIC_URL.'css/cal-heatmap.min.css', array(), $this->version);
     }
 
     /**
      * Enqueues the javascripts for the admin area.
      *
-     * @since    1.0.0
+     * @since 1.0.0
      */
     public function enqueue_scripts() {
         wp_enqueue_script($this->Live_Weather_Station, LWS_ADMIN_URL.'js/live-weather-station-admin.min.js', array('jquery', 'postbox', 'thickbox'), $this->version, false);
@@ -101,12 +105,10 @@ class Admin {
         wp_enqueue_script('justgage.js', LWS_PUBLIC_URL.'js/justgage.min.js', array('raphael.js'), $this->version, false);
         wp_enqueue_script('tween.js', LWS_PUBLIC_URL.'js/tween.min.js', array(), $this->version, true);
         wp_enqueue_script('steelseries.js', LWS_PUBLIC_URL.'js/steelseries.min.js', array('tween.js'), $this->version, true);
-
         wp_enqueue_script('d3.v3.js', LWS_PUBLIC_URL.'js/d3.v3.min.js', array('jquery'), $this->version, true );
         wp_enqueue_script('nv.d3.v3.js', LWS_PUBLIC_URL.'js/nv.d3.v3.min.js', array('d3.v3.js'), $this->version, true );
-
-        //wp_enqueue_script('d3.v3.js','https://d3js.org/d3.v3.min.js', array('jquery'), $this->version);
-        //wp_enqueue_script('nv.d3.v3.js','https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.5/nv.d3.min.js', array('d3.v3.js'), $this->version);
+        wp_enqueue_script('cal-heatmap.js', LWS_PUBLIC_URL.'js/cal-heatmap.min.js', array('d3.v3.js'), $this->version, true );
+        wp_enqueue_script('colorbrewer.js', LWS_PUBLIC_URL.'js/colorbrewer.min.js', array(), $this->version, true );
 
     }
 
@@ -207,6 +209,10 @@ class Admin {
             array($this, 'lws_system_show_analytics_callback'), 'lws_system', 'lws_system_section',
             array(__('Check this only if you really love data analytics and visualization.', 'live-weather-station')));
         register_setting('lws_system', 'lws_system_show_analytics');
+        add_settings_field('lws_system_analytics_cutoff', __('Performance data cutoff', 'live-weather-station'),
+            array($this, 'lws_system_analytics_cutoff_callback'), 'lws_system', 'lws_system_section',
+            array(__('Maximum age of performance data displayed in statistical reports.', 'live-weather-station')));
+        register_setting('lws_system', 'lws_system_analytics_cutoff');
     }
 
     /**
@@ -320,6 +326,10 @@ class Admin {
      * @since 3.0.0
      */
     public function lws_system_auto_manage_callback($args) {
+        $description = sprintf(__('Check this to let %s manage its own updates (strongly recommended).', 'live-weather-station'), LWS_PLUGIN_NAME);
+        if (!Manager::is_updatable()) {
+            $description .= '<br/>' . __('Note that your WordPress configuration does not allow you to use this option.', 'live-weather-station');
+        }
         $cbxs = array();
         $cbxs[] = array('text' => __('Netatmo provisioning', 'live-weather-station'),
             'id' => 'lws_system_auto_manage_netatmo',
@@ -328,7 +338,8 @@ class Admin {
         $cbxs[] = array('text' => __('Plugin updates', 'live-weather-station'),
             'id' => 'lws_system_auto_update',
             'checked' => (bool)get_option('live_weather_station_auto_update'),
-            'description' => sprintf(__('Check this to let %s manage its own updates (strongly recommended).', 'live-weather-station'), LWS_PLUGIN_NAME));
+            'more' => (Manager::is_updatable()?'':'disabled'),
+            'description' => $description);
         echo $this->field_multi_checkbox($cbxs);
     }
 
@@ -367,6 +378,16 @@ class Admin {
      */
     public function lws_system_time_shift_threshold_callback($args) {
         echo $this->field_input_number(get_option('live_weather_station_time_shift_threshold'), 'lws_system_time_shift_threshold', 0, 300, 1, $args[0], __('seconds', 'live-weather-station'));
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.2.0
+     */
+    public function lws_system_analytics_cutoff_callback($args) {
+        echo $this->field_input_number(get_option('live_weather_station_analytics_cutoff'), 'lws_system_analytics_cutoff', 3, 30, 1, $args[0], __('days', 'live-weather-station'));
     }
 
     /**
@@ -585,6 +606,7 @@ class Admin {
         if ($section == 'system') {
             $save_auto = get_option('live_weather_station_auto_manage_netatmo');
             $analytics = get_option('live_weather_station_show_analytics');
+            $cutoff = get_option('live_weather_station_analytics_cutoff');
             if (array_key_exists('submit', $_POST)) {
                 update_option('live_weather_station_logger_level', (integer)$_POST['lws_system_log_level']);
                 update_option('live_weather_station_logger_rotate', (integer)$_POST['lws_system_log_rotate']);
@@ -600,12 +622,16 @@ class Admin {
                 update_option('live_weather_station_time_shift_threshold', (integer)$_POST['lws_system_time_shift_threshold']);
                 update_option('live_weather_station_show_technical', (array_key_exists('lws_system_show_technical', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_analytics', (array_key_exists('lws_system_show_analytics', $_POST) ? 1 : 0));
+                update_option('live_weather_station_analytics_cutoff', (integer)$_POST['lws_system_analytics_cutoff']);
                 if (!$save_auto && get_option('live_weather_station_auto_manage_netatmo')) {
                     $this->get_netatmo(true);
                     $this->get_netatmohc(true);
                 }
                 if ($analytics  != get_option('live_weather_station_show_analytics')) {
                     $this->reload = true;
+                }
+                if ($cutoff  != get_option('live_weather_station_analytics_cutoff')) {
+                    Cache::flush_performance(false);
                 }
             }
             else {
@@ -1028,8 +1054,11 @@ class Admin {
                     case 'reset-dashboard': $this->reset_dashboard_meta(); break;
                     case 'reset-services': $this->reset_services_meta(); break;
                     case 'reset-stations': $this->reset_stations_meta(); break;
+                    case 'reset-analytics': $this->reset_analytics_meta(); break;
                     case 'purge-data': $this->purge_data(); break;
                     case 'sync-data': $this->sync_data(); break;
+                    case 'reset-cache': $this->reset_cache(); break;
+                    case 'purge-log': $this->reset_log(); break;
                     default: $this->check_options();
                 }
                 break;
@@ -1168,6 +1197,17 @@ class Admin {
     }
 
     /**
+     * Reset dashboard meta for current user.
+     *
+     * @since 3.0.0
+     */
+    private function reset_analytics_meta() {
+        $this->clean_usermeta('lws-analytics');
+        add_settings_error('lws_nonce_success', 200, __('Analytics view has been reset to defaults.', 'live-weather-station'), 'updated');
+        Logger::info($this->service, null, null, null, null, null, 0, 'Analytics view has been reset to defaults.');
+    }
+
+    /**
      * Reset services meta for current user.
      *
      * @since 3.0.0
@@ -1222,6 +1262,26 @@ class Admin {
         else {
             Logger::notice('Updater', null, null, null, null, null, 0, 'All stations have been resynchronized.');
         }
+    }
+
+    /**
+     * Reset cache.
+     *
+     * @since 3.2.0
+     */
+    private function reset_cache() {
+        Cache::reset();
+        add_settings_error('lws_nonce_success', 200, sprintf(__('%s has been reset.', 'live-weather-station'), __('Cache', 'live-weather-station')), 'updated');
+    }
+
+    /**
+     * Reset events log.
+     *
+     * @since 3.2.0
+     */
+    private function reset_log() {
+        Logger::reset();
+        add_settings_error('lws_nonce_success', 200, sprintf(__('%s has been reset.', 'live-weather-station'), __('Events log', 'live-weather-station')), 'updated');
     }
 
     /**

@@ -30,6 +30,8 @@ $show_cache = ((bool)get_option('live_weather_station_frontend_cache') ||
         <?php if ($show_cache) { ?>
             <a href="?page=lws-analytics&tab=cache" class="nav-tab <?php echo $active_tab == 'cache' ? 'nav-tab-active' : ''; ?>"><?php echo __('Cache', 'live-weather-station');?></a>
         <?php } ?>
+        <a href="?page=lws-analytics&tab=event" class="nav-tab <?php echo $active_tab == 'event' ? 'nav-tab-active' : ''; ?>"><?php echo __('Events', 'live-weather-station');?></a>
+        <a href="?page=lws-analytics&tab=task" class="nav-tab <?php echo $active_tab == 'task' ? 'nav-tab-active' : ''; ?>"><?php echo __('Tasks', 'live-weather-station');?></a>
     </h2>
 
     <?php if ($active_tab == 'general') { ?>

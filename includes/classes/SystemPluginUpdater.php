@@ -6,6 +6,7 @@ use WeatherStation\System\Logs\Logger;
 use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\URL\Handling as Url;
 use WeatherStation\DB\Storage as Storage;
+use WeatherStation\System\Cache\Cache;
 
 /**
  * Fired during plugin update.
@@ -37,5 +38,8 @@ class Updater {
         Logger::notice('Updater',null,null,null,null,null,null, LWS_PLUGIN_NAME . ' successfully updated from version ' . $oldversion . ' to version ' . LWS_VERSION . '.');
         update_option('live_weather_station_last_update', time());
         Watchdog::restart();
+        Cache::reset();
+        self::_clean_usermeta('lws-analytics');
+        Logger::notice('Updater', null, null, null, null, null, 0, 'Analytics view has been reset to defaults.');
     }
 }

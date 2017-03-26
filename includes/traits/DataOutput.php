@@ -57,8 +57,208 @@ trait Output {
         }
         $fingerprint = uniqid('', true);
         $uniq = $_attributes['item'].$_attributes['metric'].substr ($fingerprint, count($fingerprint)-6, 80);
+
+        // EVENTS STATISTICS
+        if ($_attributes['item'] == 'event') {
+            wp_enqueue_style('nv.d3.css');
+            wp_enqueue_script('d3.v3.js');
+            $perf = Performance::get_event_values();
+
+            if ($_attributes['metric'] == 'system' || $_attributes['metric'] == 'service' || $_attributes['metric'] == 'device_name') {
+                wp_enqueue_script('nv.d3.v3.js');
+                $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
+                $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
+                $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
+                $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . $perf['dat'][$_attributes['metric']] . ';' . PHP_EOL;
+                $result .= '    var xValues'.$uniq.' = ' . $perf['dat'][$_attributes['metric'].'_values'] . ';' . PHP_EOL;
+                $result .= '    nv.addGraph(function() {' . PHP_EOL;
+                $result .= '      var chart'.$uniq.' = nv.models.multiBarChart()' . PHP_EOL;
+                $result .= '               .reduceXTicks(false)' . PHP_EOL;
+                $result .= '               .useInteractiveGuideline(true)' . PHP_EOL;
+                $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","grouped":"' . __('Grouped', 'live-weather-station') . '"});' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickValues(xValues'.$uniq.')' . PHP_EOL;
+                $result .= '                 .rotateLabels(-30);' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(d3.format("s"));' . PHP_EOL;
+                $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+                $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+                $result .= '      return chart'.$uniq.';' . PHP_EOL;
+                $result .= '    });'.PHP_EOL;
+                $result .= '  });' . PHP_EOL;
+                $result .= '</script>' . PHP_EOL;
+            }
+
+            if ($_attributes['metric'] == 'density' || $_attributes['metric'] == 'criticality') {
+                wp_enqueue_script('cal-heatmap.js');
+                wp_enqueue_style('cal-heatmap.css');
+                if ($_attributes['metric'] == 'density') {
+                    $data = $perf['dat']['density'];
+                    $data_datemin = $perf['dat']['density_datemin'];
+                    $data_densitymax = $perf['dat']['density_max'];
+                }
+                else {
+                    $data = $perf['dat']['criticality'];
+                    $data_datemin = $perf['dat']['criticality_datemin'];
+                    $data_densitymax = $perf['dat']['criticality_max'];
+                }
+                $range = 8;
+                $start_date = 1000 * (time() - (($range - 1) * 86400));
+                $min_date = 1000 * $data_datemin;
+                $step = 6;
+                $iter = round($data_densitymax / $step, 0);
+                $legend = array();
+                for ($i = 1; $i < $step; $i++) {
+                    $legend[] = $i * $iter;
+                }
+                $legend = '[' . implode(',', $legend) . ']';
+                $result = '<div id="previous-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;"><i class="fa fa-caret-left"></i></div>' . PHP_EOL;
+                $result .= '<div id="next-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;"><i class="fa fa-caret-right"></i></div>' . PHP_EOL;
+                $result .= '<div id="' . $uniq . '" ></div>' . PHP_EOL;
+                $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
+                $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+                $result .= '      var chart'.$uniq.'= new CalHeatMap();' . PHP_EOL;
+                $result .= '      var today_date= new Date();' . PHP_EOL;
+                $result .= '      var min_date= new Date(' . $min_date. ');' . PHP_EOL;
+                $result .= '      var start_date= new Date(' . $start_date . ');' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.init({' . PHP_EOL;
+                $result .= '          data: ' . $data . ',' . PHP_EOL;
+                $result .= '          itemSelector: "#'.$uniq.'",' . PHP_EOL;
+                $result .= '          previousSelector: "#previous-'.$uniq.'",' . PHP_EOL;
+                $result .= '          nextSelector: "#next-'.$uniq.'",' . PHP_EOL;
+                $result .= '          range: ' . $range . ',' . PHP_EOL;
+                $result .= '          start: start_date,' . PHP_EOL;
+                $result .= '          maxDate: today_date,' . PHP_EOL;
+                $result .= '          minDate: min_date,' . PHP_EOL;
+                $result .= '          legend: ' . $legend . ',' . PHP_EOL;
+                $result .= '          subDomainDateFormat: "%H:%M-%H:59",' . PHP_EOL;
+
+                $result .= '          domain: "day",' . PHP_EOL;
+                $result .= '          cellSize: 14,' . PHP_EOL;
+                $result .= '          cellRadius: 2,' . PHP_EOL;
+                $result .= '          tooltip: true,' . PHP_EOL;
+                if ($_attributes['metric'] == 'density') {
+                    $result .= '          considerMissingDataAsZero: false,' . PHP_EOL;
+                    $result .= '          legendColors: ["#BBCCDD", "#122448"],' . PHP_EOL;
+                    $result .= '          subDomainTitleFormat: {empty: "' . sprintf(__('%s <br/>No event', 'live-weather-station'), '{date}'). '", filled: "' . sprintf('%s <br/>%s %s', '{date}', '{count}', '{name}'). '"},' . PHP_EOL;
+                    $result .= '          itemName: ["' . mb_strtolower(__('Event', 'live-weather-station')) . '", "' . mb_strtolower(__('Events', 'live-weather-station')) . '"],' . PHP_EOL;
+                    $result .= '          legendTitleFormat: {lower: "' . sprintf(__('Less than %s %s.', 'live-weather-station'), '{min}', '{name}'). '",inner: "' . sprintf(__('Between %s and %s %s.', 'live-weather-station'), '{down}', '{up}', '{name}'). '",upper: "' . sprintf(__('More than %s %s.', 'live-weather-station'), '{max}', '{name}'). '"}' . PHP_EOL;
+                }
+                else {
+                    $result .= '          considerMissingDataAsZero: true,' . PHP_EOL;
+                    $result .= '          legendColors: ["#D2DE76", "#AD001D"],' . PHP_EOL;
+                    $result .= '          subDomainTitleFormat: {empty: "' . sprintf(__('%s <br/>No data', 'live-weather-station'), '{date}'). '", filled: "' . sprintf(__('%s <br/>%s at %s', 'live-weather-station'), '{date}', '{name}', '{count}'). '"},' . PHP_EOL;
+                    $result .= '          itemName: ["' . __('Criticality', 'live-weather-station') . '", "' . __('Criticality', 'live-weather-station') . '"],' . PHP_EOL;
+                    $result .= '          legendTitleFormat: {lower: "' . sprintf(__('%s lower than %s.', 'live-weather-station'), '{name}', '{min}'). '",inner: "' . sprintf(__('%s between %s and %s.', 'live-weather-station'), '{name}', '{down}', '{up}'). '",upper: "' . sprintf(__('%s greater than %s.', 'live-weather-station'), '{name}', '{max}'). '"}' . PHP_EOL;
+                }
+                $result .= '      });' . PHP_EOL;
+                $result .= '  });' . PHP_EOL;
+                $result .= '</script>' . PHP_EOL;
+            }
+        }
+
+        // CRON PERFORMANCE STATISTICS
+        if ($_attributes['item'] == 'task') {
+            wp_enqueue_style('nv.d3.css');
+            wp_enqueue_script('d3.v3.js');
+            wp_enqueue_script('nv.d3.v3.js');
+            $perf = Performance::get_cron_values();
+            if ($_attributes['metric'] == 'count_by_pool') {
+                $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
+                $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
+                $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
+                $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . $perf['dat']['count_by_pool'] . ';' . PHP_EOL;
+                $result .= '    nv.addGraph(function() {' . PHP_EOL;
+                $result .= '      var chart'.$uniq.' = nv.models.stackedAreaChart()' . PHP_EOL;
+                $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
+                $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
+                $result .= '               .clipEdge(true)' . PHP_EOL;
+                $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","stream":"' . __('Stream', 'live-weather-station') . '","expanded":"' . __('Expanded', 'live-weather-station') . '"})' . PHP_EOL;
+                $result .= '               .interpolate("cardinal")' . PHP_EOL;
+                $result .= '               .color(d3.scale.category10().range())' . PHP_EOL;
+                $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(function(d) { return d3.time.format("%d/%m %H:%M")(new Date(d)) });' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(d3.format("s"));' . PHP_EOL;
+                $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+                $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+                $result .= '      return chart'.$uniq.';' . PHP_EOL;
+                $result .= '    });'.PHP_EOL;
+                $result .= '  });' . PHP_EOL;
+                $result .= '</script>' . PHP_EOL;
+            }
+            if ($_attributes['metric'] == 'time_by_pool') {
+                $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
+                $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
+                $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
+                $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . $perf['dat']['time_by_pool'] . ';' . PHP_EOL;
+                $result .= '    nv.addGraph(function() {' . PHP_EOL;
+                $result .= '      var chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
+                $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
+                $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
+                $result .= '               .interpolate("cardinal")' . PHP_EOL;
+                $result .= '               .color(d3.scale.category10().range())' . PHP_EOL;
+                $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(function(d) { return d3.time.format("%d/%m %H:%M")(new Date(d)) });' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(function(d) { return d + " ms"; });' . PHP_EOL;
+                $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+                $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+                $result .= '      return chart'.$uniq.';' . PHP_EOL;
+                $result .= '    });'.PHP_EOL;
+                $result .= '  });' . PHP_EOL;
+                $result .= '</script>' . PHP_EOL;
+            }
+            if ($_attributes['metric'] == 'time_for_system' || $_attributes['metric'] == 'time_for_pull' || $_attributes['metric'] == 'time_for_push') {
+                wp_enqueue_script('colorbrewer.js');
+                $cpt = substr_count($perf['dat'][$_attributes['metric']], '"key"');
+                if ($cpt < 3) {
+                    $cpt = 3;
+                }
+                if ($cpt > 11) {
+                    $cpt = 11;
+                }
+                $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
+                $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
+                $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
+                $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . $perf['dat'][$_attributes['metric']] . ';' . PHP_EOL;
+                $result .= '    nv.addGraph(function() {' . PHP_EOL;
+                $result .= '      var chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
+                $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
+                $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
+                $result .= '               .interpolate("cardinal")' . PHP_EOL;
+                $result .= '               .color(colorbrewer.Set3[' . $cpt . '])' . PHP_EOL;
+                $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(function(d) { return d3.time.format("%d/%m %H:%M")(new Date(d)) });' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(function(d) { return d + " ms"; });' . PHP_EOL;
+                $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+                $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+                $result .= '      return chart'.$uniq.';' . PHP_EOL;
+                $result .= '    });'.PHP_EOL;
+                $result .= '  });' . PHP_EOL;
+                $result .= '</script>' . PHP_EOL;
+            }
+        }
+
+        // CACHE PERFORMANCE STATISTICS
         if ($_attributes['item'] == 'cache') {
-            wp_enqueue_style('nv.d3.css', LWS_PUBLIC_URL.'css/nv.d3.min.css');
+            wp_enqueue_style('nv.d3.css');
             wp_enqueue_script('d3.v3.js');
             wp_enqueue_script('nv.d3.v3.js');
             $perf = Performance::get_cache_values();

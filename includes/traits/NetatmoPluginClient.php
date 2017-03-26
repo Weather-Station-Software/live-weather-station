@@ -6,6 +6,7 @@ use WeatherStation\System\Logs\Logger;
 use WeatherStation\SDK\Netatmo\Clients\NAWSApiClient;
 use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
 use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
+use WeatherStation\System\Schedules\Watchdog;
 
 /**
  * Netatmo client for Weather Station plugin.
@@ -194,6 +195,7 @@ trait Client {
      * @since 3.0.0
      */
     protected function __run($system){
+        $cron_id = Watchdog::init_chrono(Watchdog::$netatmo_update_schedule_name);
         $err = '';
         try {
             $err = 'collecting weather';
@@ -210,5 +212,6 @@ trait Client {
             Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
         }
         $this->synchronize_modules_count();
+        Watchdog::stop_chrono($cron_id);
     }
 }
