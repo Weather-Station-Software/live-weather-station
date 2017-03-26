@@ -3,6 +3,7 @@
 namespace WeatherStation\System\Cache;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\DB\Storage;
+use WeatherStation\System\Schedules\Watchdog;
 
 /**
  * The class to manage backend and frontend cache.
@@ -28,7 +29,10 @@ class Cache {
 
     public static $db_stat = 'lws_cache_db_stat';
     public static $db_stat_log = 'lws_cache_db_stat_log';
+    public static $db_stat_perf = 'lws_cache_db_stat_perf';
     public static $db_stat_perf_cache = 'lws_cache_db_stat_perf_cache';
+    public static $db_stat_perf_cron = 'lws_cache_db_stat_perf_cron';
+    public static $db_stat_perf_event = 'lws_cache_db_stat_perf_event';
     public static $db_stat_operational = 'lws_cache_db_stat_operational';
     public static $widget = 'lws_cache_widget';
     public static $frontend = 'lws_cache_control';
@@ -55,7 +59,8 @@ class Cache {
      * @since 3.1.0
      *
      */
-    private static function _flush($pref='lws', $expired=true) {
+    private static function _flush($pref='lws_', $expired=true) {
+        $cron_id = Watchdog::init_chrono(Watchdog::$cache_flush_name);
         global $wpdb;
         $result = 0;
         if ($expired) {
@@ -70,6 +75,7 @@ class Cache {
                 $result += 1;
             }
         }
+        Watchdog::stop_chrono($cron_id);
         return $result;
     }
 
@@ -199,6 +205,18 @@ class Cache {
      */
     public static function flush_backend($expired=true) {
         return self::_flush(self::$db_stat, $expired);
+    }
+
+    /**
+     * Flush the cached performance element.
+     *
+     * @param bool $expired Optional. Delete only expired transients.
+     * @return integer Count of deleted transients.
+     * @since 3.2.0
+     *
+     */
+    public static function flush_performance($expired=true) {
+        return self::_flush(self::$db_stat_perf, $expired);
     }
 
     /**
@@ -505,6 +523,16 @@ class Cache {
             $result += self::flush_i18n($expired);
         }
         return $result;
+    }
+
+    /**
+     * Reset the plugin cache.
+     *
+     * @since 3.2.0
+     */
+    public static function reset(){
+        self::_flush('lws_', false);
+        Logger::notice('Cache Manager',null,null,null,null,null,null,'Cache has been reset.');
     }
 
     /**

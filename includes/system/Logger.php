@@ -2,6 +2,8 @@
 
 namespace WeatherStation\System\Logs;
 
+use WeatherStation\System\Schedules\Watchdog;
+
 /**
  * This class add log capacity to the plugin.
  *
@@ -16,8 +18,10 @@ class Logger {
 
     public static $severity = array('emergency' => 0, 'alert' => 1, 'critical' => 2,'error' => 3,'warning' => 4,
         'notice' => 5,'info' => 6,'debug' =>7, 'unknown' => 8);
+    public static $ordered_severity = array('debug', 'info', 'notice', 'warning', 'error', 'critical', 'alert', 'emergency');
     private $Live_Weather_Station;
     private $version;
+
 
     /**
      * Initialize the class and set its properties.
@@ -34,7 +38,7 @@ class Logger {
     /**
      * Init table where to log events.
      *
-     * @since    2.8.0
+     * @since 2.8.0
      */
     public static function init() {
         if (!get_option('live_weather_station_logger_installed', false)) {
@@ -45,11 +49,25 @@ class Logger {
     }
 
     /**
+     * Truncate log table.
+     *
+     * @since 3.2.0
+     */
+    public static function reset() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_log_table();
+        $sql = 'TRUNCATE TABLE '.$table_name;
+        $wpdb->query($sql);
+        self::notice('Logger',null,null,null,null,null,null,'Events log has been purged.');
+    }
+
+    /**
      * Delete old logged events.
      *
      * @since 2.8.0
      */
     public function rotate() {
+        $cron_id = Watchdog::init_chrono(Watchdog::$log_rotate_name);
         $count = 0;
         if ($hour_done = $this->purge_table(self::live_weather_station_log_table() , 'timestamp', 24 * get_option('live_weather_station_logger_retention', 14))) {
             $count += $hour_done;
@@ -71,6 +89,7 @@ class Logger {
         else {
             self::info('Logger',null,null,null,null,null,null,'No old records to delete.');
         }
+        Watchdog::stop_chrono($cron_id);
     }
 
     /**
@@ -407,12 +426,52 @@ class Logger {
     }
 
     /**
+     * Get the criticality for a specified level.
+     *
+     * @param $level string Optional. A level of error in ('emergency','alert','critical','error','warning','notice','info','debug').
+     * @return integer The criticality.
+     *
+     * @since 3.2.0
+     */
+    public static function get_criticality($level = 'unknown') {
+        switch ($level) {
+            case 'emergency':
+                $result = 10;
+                break;
+            case 'alert':
+                $result = 5;
+                break;
+            case 'critical':
+                $result = 4;
+                break;
+            case 'error':
+                $result = 3;
+                break;
+            case 'warning':
+                $result = 2;
+                break;
+            case 'notice':
+                $result = 1;
+                break;
+            case 'info':
+                $result = 1;
+                break;
+            case 'debug';
+                $result = 0;
+                break;
+            default:
+                $result = 100;
+        }
+        return $result;
+    }
+
+    /**
      * Get the name for a specified numericallevel.
      *
      * @param $level integer Optional. A level of error in [0..7].
      * @return string The name in plain text.
      *
-     * @since    3.0.0
+     * @since 3.0.0
      */
     public static function get_name_by_id($level = 8) {
         switch ($level) {

@@ -40,7 +40,7 @@ class Frontend {
 	 * @since 1.0.0
 	 */
 	public function enqueue_styles() {
-		wp_enqueue_style($this->Live_Weather_Station, LWS_PUBLIC_URL.'css/live-weather-station-public.min.css', array(), $this->version, 'all' );
+		wp_enqueue_style('live-weather-station-public.css');
 	}
 
 	/**
@@ -60,13 +60,33 @@ class Frontend {
      * @since 1.0.0
      */
     public function register_scripts() {
-        wp_register_script( 'lws-lcd.js', LWS_PUBLIC_URL.'js/lws-lcd.min.js', array('jquery'), $this->version, true );
-        wp_register_script( 'raphael.js', LWS_PUBLIC_URL.'js/raphael.min.js', array('jquery'), $this->version, true );
-        wp_register_script( 'justgage.js', LWS_PUBLIC_URL.'js/justgage.min.js', array('raphael.js'), $this->version, true );
-        wp_register_script( 'tween.js', LWS_PUBLIC_URL.'js/tween.min.js', array(), $this->version, true );
-        wp_register_script( 'steelseries.js', LWS_PUBLIC_URL.'js/steelseries.min.js', array('tween.js'), $this->version, true );
-        wp_register_script( 'd3.v3.js', LWS_PUBLIC_URL.'js/d3.v3.min.js', array('jquery'), $this->version, true );
-        wp_register_script( 'nv.d3.v3.js', LWS_PUBLIC_URL.'js/nv.d3.v3.min.js', array('d3.v3.js'), $this->version, true );
+        wp_register_script('lws-lcd.js', LWS_PUBLIC_URL.'js/lws-lcd.min.js', array('jquery'), $this->version, true );
+        wp_register_script('raphael.js', LWS_PUBLIC_URL.'js/raphael.min.js', array('jquery'), $this->version, true );
+        wp_register_script('justgage.js', LWS_PUBLIC_URL.'js/justgage.min.js', array('raphael.js'), $this->version, true );
+        wp_register_script('tween.js', LWS_PUBLIC_URL.'js/tween.min.js', array(), $this->version, true );
+        wp_register_script('steelseries.js', LWS_PUBLIC_URL.'js/steelseries.min.js', array('tween.js'), $this->version, true );
+        wp_register_script('d3.v3.js', LWS_PUBLIC_URL.'js/d3.v3.min.js', array('jquery'), $this->version, true );
+        wp_register_script('nv.d3.v3.js', LWS_PUBLIC_URL.'js/nv.d3.v3.min.js', array('d3.v3.js'), $this->version, true );
+        wp_register_script('cal-heatmap.js', LWS_PUBLIC_URL.'js/cal-heatmap.min.js', array('d3.v3.js'), $this->version, true );
+        wp_register_script('colorbrewer.js', LWS_PUBLIC_URL.'js/colorbrewer.min.js', array(), $this->version, true );
+    }
+
+    /**
+     * Registers (but don't enqueues) the styles for the public-front side of the site.
+     *
+     * In doing this way, we can enqueue the needed styles only when rendering shortcodes...
+     * /!\ for widgets it is not possible to use registered styles, full enqueueing must be used instead.
+     *
+     * @since 3.2.0
+     */
+    public function register_styles() {
+        wp_register_style('live-weather-station-public.css', LWS_PUBLIC_URL.'css/live-weather-station-public.min.css', array(), $this->version);
+        wp_register_style('font-awesome.css', LWS_PUBLIC_URL.'css/font-awesome.min.css', array(), $this->version);
+        //wp_register_style('thickbox');
+        wp_register_style('nv.d3.css', LWS_PUBLIC_URL.'css/nv.d3.min.css', array(), $this->version);
+        wp_register_style('cal-heatmap.css', LWS_PUBLIC_URL.'css/cal-heatmap.min.css', array(), $this->version);
+        wp_register_style('weather-icons.css', LWS_PUBLIC_URL . 'css/weather-icons.min.css', array(), $this->version);
+        wp_register_style('weather-icons-wind.css', LWS_PUBLIC_URL . 'css/weather-icons-wind.min.css', array(), $this->version);
     }
 
 	/**

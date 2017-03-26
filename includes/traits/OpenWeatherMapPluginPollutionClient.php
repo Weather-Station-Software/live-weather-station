@@ -4,6 +4,7 @@ namespace WeatherStation\SDK\OpenWeatherMap\Plugin;
 
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\SDK\OpenWeatherMap\OWMApiClient;
+use WeatherStation\System\Schedules\Watchdog;
 
 /**
  * OpenWeatherMap pollution client for Weather Station plugin.
@@ -233,6 +234,7 @@ trait PollutionClient {
      * @since 3.0.0
      */
     protected function __run($system){
+        $cron_id = Watchdog::init_chrono(Watchdog::$owm_update_pollution_schedule_name);
         try {
             $this->get_datas();
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting pollution data.');
@@ -241,5 +243,6 @@ trait PollutionClient {
             Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while collecting pollution data: ' . $ex->getMessage());
         }
         $this->synchronize_modules_count();
+        Watchdog::stop_chrono($cron_id);
     }
 }

@@ -11,6 +11,7 @@ use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Co
 use WeatherStation\Data\DateTime\Conversion;
 use WeatherStation\Data\Type\Description;
 use WeatherStation\Data\Unit\Conversion as Units;
+use WeatherStation\System\Schedules\Watchdog;
 
 
 /**
@@ -396,6 +397,7 @@ trait StationClient {
      * @since 3.0.0
      */
     protected function __run($system){
+        $cron_id = Watchdog::init_chrono(Watchdog::$real_update_station_schedule_name);
         $err = '';
         try {
             $err = 'collecting weather from Realtime file';
@@ -412,5 +414,6 @@ trait StationClient {
             Logger::critical($system, null, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
         }
         $this->synchronize_modules_count();
+        Watchdog::stop_chrono($cron_id);
     }
 }

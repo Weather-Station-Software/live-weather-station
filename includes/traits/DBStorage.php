@@ -24,6 +24,8 @@ define('LWS_TXT_SID', 7);
 
 trait Storage {
 
+    protected $facility_DM = 'Data Manager';
+
     /**
      *
      * @since    1.0.0
@@ -66,13 +68,19 @@ trait Storage {
 
     /**
      *
-     * @since    3.1.0
+     * @since 3.1.0
      */
     public static function live_weather_station_performance_cache_table() {
         return 'live_weather_station_performance_cache';
     }
 
-    protected $facility_DM = 'Data Manager';
+    /**
+     *
+     * @since 3.2.0
+     */
+    public static function live_weather_station_performance_cron_table() {
+        return 'live_weather_station_performance_cron';
+    }
 
     /**
      * Performs a safe add column.
@@ -277,7 +285,7 @@ trait Storage {
     /**
      * Creates table for the plugin logging system.
      *
-     * @since    3.0.0
+     * @since 3.0.0
      */
     private static function create_live_weather_station_log_table() {
         global $wpdb;
@@ -303,9 +311,9 @@ trait Storage {
     }
 
     /**
-     * Creates table for the plugin logging system.
+     * Creates table for the cache performance analytics.
      *
-     * @since    3.1.0
+     * @since 3.1.0
      */
     private static function create_live_weather_station_performance_cache_table() {
         global $wpdb;
@@ -331,6 +339,25 @@ trait Storage {
     }
 
     /**
+     * Creates table for the cron performance analytics.
+     *
+     * @since 3.2.0
+     */
+    private static function create_live_weather_station_performance_cron_table() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        $table_name = $wpdb->prefix . self::live_weather_station_performance_cron_table();
+        $sql = "CREATE TABLE IF NOT EXISTS " . $table_name;
+        $sql .= " (`timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',";
+        $sql .= " `cron` varchar(30) NOT NULL DEFAULT 'N/A',";
+        $sql .= " `count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `time` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " UNIQUE KEY perf (timestamp, cron)";
+        $sql .= ") $charset_collate;";
+        $wpdb->query($sql);
+    }
+
+    /**
      * Creates tables for the plugin.
      *
      * @since 1.0.0
@@ -340,6 +367,7 @@ trait Storage {
         self::create_live_weather_station_stations_table();
         self::create_live_weather_station_infos_table();
         self::create_live_weather_station_performance_cache_table();
+        self::create_live_weather_station_performance_cron_table();
     }
 
     /**
@@ -511,6 +539,9 @@ trait Storage {
         $sql = 'DROP TABLE '.$table_name;
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_performance_cache_table();
+        $sql = 'DROP TABLE '.$table_name;
+        $wpdb->query($sql);
+        $table_name = $wpdb->prefix.self::live_weather_station_performance_cron_table();
         $sql = 'DROP TABLE '.$table_name;
         $wpdb->query($sql);
     }
@@ -806,6 +837,17 @@ trait Storage {
      * @since 3.0.0
      */
     protected function clean_usermeta($key) {
+        return self::_clean_usermeta($key);
+    }
+
+    /**
+     * Delete some usermeta values.
+     *
+     * @param string $key The end of meta_key field.
+     * @return int|false The number of rows deleted, or false on error.
+     * @since 3.0.0
+     */
+    protected static function _clean_usermeta($key) {
         global $wpdb;
         $table_name = $wpdb->prefix . 'usermeta';
         $sql = "DELETE FROM " . $table_name . " WHERE meta_key LIKE \"%\_" . $key . "%\" AND user_id=" . get_current_user_id() . ";";

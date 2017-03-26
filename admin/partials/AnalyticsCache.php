@@ -24,8 +24,3 @@
     <h2><?php echo __('Time saving: hourly distribution', 'live-weather-station'); ?></h2>
     <?php echo do_shortcode('[live-weather-station-admin-analytics item="cache" metric="time_saving"]'); ?>
 </div>
-
-
-
-
-

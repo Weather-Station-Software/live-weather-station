@@ -124,7 +124,7 @@ class Core {
         //$this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Pollution', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Fire', 'widget_registering' );
         $this->loader->add_action('wp_ajax_update_lws_welcome_panel', 'WeatherStation\UI\Dashboard\Handling', 'update_lws_welcome_panel_callback' );
-        $this->loader->add_action('shutdown', '\WeatherStation\System\Cache\Cache', 'write_stats' );
+        $this->loader->add_action('shutdown', '\WeatherStation\System\Analytics\Performance', 'store' );
         $this->loader->add_action('auto_update_plugin', '\WeatherStation\System\Environment\Manager', 'lws_auto_update', 10, 2 );
     }
 
@@ -135,9 +135,10 @@ class Core {
 	 */
 	private function define_public_hooks() {
 		$plugin_public = new Frontend( $this->get_Live_Weather_Station(), $this->get_version() );
-        $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_scripts', 9);
-        $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
-		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
+        $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_scripts', 1);
+        $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_styles', 1);
+        $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
+		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
 		$this->loader->add_action( 'wp_ajax_lws_query_lcd_datas', $plugin_public, 'lws_query_lcd_datas_callback' );
 		$this->loader->add_action( 'wp_ajax_nopriv_lws_query_lcd_datas', $plugin_public, 'lws_query_lcd_datas_callback' );
 		$this->loader->add_action( 'wp_ajax_lws_query_justgage_config', $plugin_public, 'lws_query_justgage_config_callback' );

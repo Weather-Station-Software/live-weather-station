@@ -100,11 +100,14 @@ class Handling {
             (bool)get_option('live_weather_station_widget_cache') ||
             (bool)get_option('live_weather_station_backend_cache')) {
             add_meta_box('lws-perf-cache24', __('Cache performance', 'live-weather-station') . ' - ' . __('24 hours', 'live-weather-station'), array($this, 'perf_cache_widget_24'), 'lws-analytics', 'normal');
-            add_meta_box('lws-perf-cache30', __('Cache performance', 'live-weather-station') . ' - ' . __('30 days', 'live-weather-station'), array($this, 'perf_cache_widget_30'), 'lws-analytics', 'normal');
+            add_meta_box('lws-perf-cron24', __('Tasks', 'live-weather-station') . ' - ' . __('24 hours', 'live-weather-station'), array($this, 'perf_cron_widget_24'), 'lws-analytics', 'normal');
+            add_meta_box('lws-perf-event24', __('Events', 'live-weather-station') . ' - ' . __('24 hours', 'live-weather-station'), array($this, 'perf_event_widget_24'), 'lws-analytics', 'normal');
+
         }
         // Right column
-        //add_meta_box('lws-connect-owm', 'OpenWeatherMap', array($this, 'owm_box'), 'lws-analytics', 'side');
-        //add_meta_box('lws-connect-wug', 'Weather Underground', array($this, 'wug_box'), 'lws-analytics', 'side');
+        add_meta_box('lws-perf-cache30', __('Cache performance', 'live-weather-station') . ' - ' . __('30 days', 'live-weather-station'), array($this, 'perf_cache_widget_30'), 'lws-analytics', 'side');
+        add_meta_box('lws-perf-cron30', __('Tasks', 'live-weather-station') . ' - ' . __('30 days', 'live-weather-station'), array($this, 'perf_cron_widget_30'), 'lws-analytics', 'side');
+        add_meta_box('lws-perf-event30', __('Events', 'live-weather-station') . ' - ' . __('30 days', 'live-weather-station'), array($this, 'perf_event_widget_30'), 'lws-analytics', 'side');
     }
 
     /**
@@ -127,5 +130,49 @@ class Handling {
         $val = Performance::get_cache_values()['agr30'];
         $show_link = false;
         include(LWS_ADMIN_DIR.'partials/DashboardPerformanceCache.php');
+    }
+
+    /**
+     * Get content of the Cron Performance box.
+     *
+     * @since 3.1.0
+     */
+    public function perf_cron_widget_24() {
+        $val = Performance::get_cron_values()['agr24'];
+        $show_link = false;
+        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceCron.php');
+    }
+
+    /**
+     * Get content of the Cron Performance box.
+     *
+     * @since 3.1.0
+     */
+    public function perf_cron_widget_30() {
+        $val = Performance::get_cron_values()['agr30'];
+        $show_link = false;
+        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceCron.php');
+    }
+
+    /**
+     * Get content of the events performance box.
+     *
+     * @since 3.2.0
+     */
+    public function perf_event_widget_24() {
+        $val = Performance::get_event_values()['agr24'];
+        $show_link = false;
+        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceEvent.php');
+    }
+
+    /**
+     * Get content of the events performance box.
+     *
+     * @since 3.2.0
+     */
+    public function perf_event_widget_30() {
+        $val = Performance::get_event_values()['agr30'];
+        $show_link = false;
+        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceEvent.php');
     }
 }

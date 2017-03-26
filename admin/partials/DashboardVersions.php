@@ -47,6 +47,12 @@ $autoupdate .= '.';
         <?php } else {?>
             <li><i class="fa fa-lg fa-fw fa-circle-o-notch" style="color:#DF0101"></i>&nbsp;&nbsp;<?php echo $autoupdate; ?></li>
         <?php } ?>
+        <?php if ($dev) { ?>
+            <li><i style="color:#ff4444" class="fa fa-lg fa-fw fa-exclamation-triangle"></i>&nbsp;&nbsp;<strong><?php echo __('Warning', 'live-weather-station'); ?></strong> &mdash; <?php echo sprintf(__('This version of %s is not production-ready. It is a development preview. Use it at your own risk!', 'live-weather-station'), LWS_PLUGIN_NAME); ?></li>
+        <?php } ?>
+        <?php if ($rc) { ?>
+            <li><i style="color:#999" class="fa fa-lg fa-fw fa-exclamation-circle"></i>&nbsp;&nbsp;<strong><?php echo __('Information', 'live-weather-station'); ?></strong> &mdash; <?php echo sprintf(__('This version of %s is a release candidate. Although ready for production, this version is not officially supported in production environments.', 'live-weather-station'), LWS_PLUGIN_NAME); ?></li>
+        <?php } ?>
     </ul>
 </div>
 
@@ -54,13 +60,3 @@ $autoupdate .= '.';
     <i style="color:#999" class="fa fa-lg fa-fw fa-info"></i>&nbsp;&nbsp;<a href="<?php echo get_admin_page_url('lws-dashboard', 'changelog'); ?>"><?php echo ucfirst(__('changelog', 'live-weather-station')); ?></a>, <a href="<?php echo get_admin_page_url('lws-dashboard', 'configuration'); ?>"><?php echo __('server configuration details', 'live-weather-station'); ?>.</a>
 </div>
 
-<?php if ($dev) { ?>
-<div class="activity-block" style="padding-bottom: 0px">
-    <i style="color:#ff4444" class="fa fa-lg fa-fw fa-exclamation-triangle"></i>&nbsp;&nbsp;<strong><?php echo __('Warning', 'live-weather-station'); ?></strong> &mdash; <?php echo sprintf(__('This version of %s is not production-ready. It is a development preview. Use it at your own risk!', 'live-weather-station'), LWS_PLUGIN_NAME); ?>
-</div>
-<?php } ?>
-<?php if ($rc) { ?>
-    <div class="activity-block" style="padding-bottom: 0px">
-        <i style="color:#999" class="fa fa-lg fa-fw fa-exclamation-circle"></i>&nbsp;&nbsp;<strong><?php echo __('Information', 'live-weather-station'); ?></strong> &mdash; <?php echo sprintf(__('This version of %s is a release candidate. Although ready for production, this version is not officially supported in production environments.', 'live-weather-station'), LWS_PLUGIN_NAME); ?>
-    </div>
-<?php } ?>

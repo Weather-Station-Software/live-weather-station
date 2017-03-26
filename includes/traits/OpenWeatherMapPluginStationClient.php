@@ -6,6 +6,7 @@ use WeatherStation\System\Logs\Logger;
 use WeatherStation\SDK\OpenWeatherMap\OWMApiClient;
 use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
 use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
+use WeatherStation\System\Schedules\Watchdog;
 
 /**
  * OpenWeatherMap station client for Weather Station plugin.
@@ -199,7 +200,7 @@ trait StationClient {
      * @since 3.0.0
      */
     protected function __run($system){
-        //Logger::dev('running');
+        $cron_id = Watchdog::init_chrono(Watchdog::$owm_update_station_schedule_name);
         $err = '';
         try {
             $err = 'collecting weather';
@@ -216,5 +217,6 @@ trait StationClient {
             Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
         }
         $this->synchronize_modules_count();
+        Watchdog::stop_chrono($cron_id);
     }
 }

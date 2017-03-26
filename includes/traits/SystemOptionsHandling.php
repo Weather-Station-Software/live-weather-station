@@ -22,6 +22,7 @@ trait Handling {
     private static $live_weather_station_logger_level = 5 ;
     private static $live_weather_station_logger_rotate = 10000 ;
     private static $live_weather_station_logger_retention = 14 ;
+    private static $live_weather_station_analytics_cutoff = 7 ;
 
     private static $live_weather_station_advanced_mode = false;
     private static $live_weather_station_txt_cache_bypass = false;
@@ -340,6 +341,7 @@ trait Handling {
         delete_option('live_weather_station_overload_hc');
         delete_option('live_weather_station_show_technical');
         delete_option('live_weather_station_show_analytics');
+        delete_option('live_weather_station_analytics_cutoff');
         delete_option('live_weather_station_auto_update');
         self::delete_thresholds_options();
     }
@@ -408,6 +410,7 @@ trait Handling {
         update_option('live_weather_station_overload_hc', self::$live_weather_station_overload_hc);
         update_option('live_weather_station_show_technical', self::$live_weather_station_show_technical);
         update_option('live_weather_station_show_analytics', self::$live_weather_station_show_analytics);
+        update_option('live_weather_station_analytics_cutoff', self::$live_weather_station_analytics_cutoff);
         update_option('live_weather_station_auto_update', self::$live_weather_station_auto_update);
     }
 
@@ -600,6 +603,7 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_overload_hc', self::$live_weather_station_overload_hc);
         self::verify_option_boolean('live_weather_station_show_technical', self::$live_weather_station_show_technical);
         self::verify_option_boolean('live_weather_station_show_analytics', self::$live_weather_station_show_analytics);
+        self::verify_option_integer('live_weather_station_analytics_cutoff', self::$live_weather_station_analytics_cutoff);
         self::$live_weather_station_auto_update = EnvManager::is_updatable();
         self::verify_option_boolean('live_weather_station_auto_update', self::$live_weather_station_auto_update);
         self::verify_option_boolean('live_weather_station_advanced_mode', self::$live_weather_station_advanced_mode);

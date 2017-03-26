@@ -98,7 +98,7 @@ trait Handling {
             if ($html != '') {
                 $html .= '<br />';
             }
-            $html .= '<fieldset><label><input name="' . $arg['id'] . '" type="checkbox" value="1"' . ($arg['checked'] ? ' checked="checked"' : '') . '/>' . $arg['text'] . '</label></fieldset>';
+            $html .= '<fieldset><label><input ' . (isset($arg['more'])?$arg['more'].' ':'') . 'name="' . $arg['id'] . '" type="checkbox" value="1"' . ($arg['checked'] ? ' checked="checked"' : '') . '/>' . $arg['text'] . '</label></fieldset>';
             if ($arg['description'] != '') {
                 $html .= '<p class="description">' . $arg['description'] . '</p>';
             }

@@ -218,6 +218,7 @@ class Handling {
             (bool)get_option('live_weather_station_backend_cache')) {
             add_meta_box('lws-perf-cache', __('Cache performance', 'live-weather-station') . ' - ' . __('24 hours', 'live-weather-station'), array($this, 'perf_cache_widget'), 'lws-dashboard', 'normal');
         }
+        add_meta_box('lws-perf-event24', __('Events', 'live-weather-station') . ' - ' . __('24 hours', 'live-weather-station'), array($this, 'perf_event_widget_24'), 'lws-dashboard', 'normal');
         add_meta_box('lws-version', __('Versions', 'live-weather-station'), array($this, 'version_widget'), 'lws-dashboard', 'normal');
         // Right column
         $intl = new I18N();
@@ -265,6 +266,17 @@ class Handling {
         $val = Performance::get_cache_values()['agr24'];
         $show_link = true;
         include(LWS_ADMIN_DIR.'partials/DashboardPerformanceCache.php');
+    }
+
+    /**
+     * Get content of the events performance box.
+     *
+     * @since 3.2.0
+     */
+    public function perf_event_widget_24() {
+        $val = Performance::get_event_values()['agr24'];
+        $show_link = true;
+        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceEvent.php');
     }
 
     /**

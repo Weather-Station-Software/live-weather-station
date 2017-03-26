@@ -24,24 +24,166 @@ use WeatherStation\System\I18N\Handling as i18n;
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
+
 trait Handling {
 
-    protected static $watchdog_name = 'lws_watchdog';
-    protected static $translation_update_name = 'lws_translation_update';
-    protected static $netatmo_update_schedule_name = 'lws_netatmo_update';
-    protected static $netatmo_hc_update_schedule_name = 'lws_netatmo_hc_update';
-    protected static $owm_update_schedule_name = 'lws_owm_update';
-    protected static $owm_update_current_schedule_name = 'lws_owm_current_update';
-    protected static $owm_update_station_schedule_name = 'lws_owm_station_update';
-    protected static $wug_update_station_schedule_name = 'lws_wug_station_update';
-    protected static $raw_update_station_schedule_name = 'lws_raw_station_update';
-    protected static $real_update_station_schedule_name = 'lws_real_station_update';
-    protected static $owm_update_pollution_schedule_name = 'lws_owm_pollution_update';
-    protected static $netatmo_push_schedule_name = 'lws_netatmo_push';
-    protected static $push_schedule_name = 'lws_current_push';
-    protected static $log_rotate_name = 'lws_log_rotate';
-    protected static $cache_flush_name = 'lws_cache_flush';
-    protected static $stats_clean_name = 'lws_stats_clean';
+
+    // WARNING: CRON NAMES MUST NOT HAVE MORE THAN 30 CAR...
+
+    // SYSTEM
+    public static $watchdog_name = 'lws_watchdog';
+    public static $translation_update_name = 'lws_translation_update';
+    public static $log_rotate_name = 'lws_log_rotate';
+    public static $cache_flush_name = 'lws_cache_flush';
+    public static $stats_clean_name = 'lws_stats_clean';
+    public static $cron_system = array('lws_watchdog', 'lws_translation_update', 'lws_log_rotate', 'lws_cache_flush', 
+                                        'lws_stats_clean');
+
+    // PULL
+    public static $netatmo_update_schedule_name = 'lws_netatmo_update';
+    public static $netatmo_hc_update_schedule_name = 'lws_netatmo_hc_update';
+    public static $owm_update_current_schedule_name = 'lws_owm_current_update';
+    public static $owm_update_station_schedule_name = 'lws_owm_station_update';
+    public static $wug_update_station_schedule_name = 'lws_wug_station_update';
+    public static $raw_update_station_schedule_name = 'lws_raw_station_update';
+    public static $real_update_station_schedule_name = 'lws_real_station_update';
+    public static $txt_update_station_schedule_name = 'lws_txt_station_update';
+    public static $owm_update_pollution_schedule_name = 'lws_owm_pollution_update';
+    public static $cron_pull = array('lws_netatmo_update', 'lws_netatmo_hc_update', 'lws_owm_current_update', 
+                                    'lws_owm_station_update', 'lws_wug_station_update', 'lws_raw_station_update',
+                                    'lws_real_station_update', 'lws_txt_station_update', 'lws_owm_pollution_update');
+
+    // PUSH
+    public static $push_schedule_name = 'lws_current_push';
+    public static $cron_push = array('lws_current_push');
+
+    // OLD
+    public static $netatmo_push_schedule_name = 'lws_netatmo_push';
+    public static $owm_update_schedule_name = 'lws_owm_update';
+
+
+    /**
+     * Get cron pool id.
+     *
+     * @param string $cron_id The cron task identifier.
+     * @return string The cron pool id.
+     *
+     * @since 3.2.0
+     */
+    public static function get_cron_pool($cron_id) {
+        $fields = array('system', 'push', 'pull');
+        $field_defs = array('system' => self::$cron_system, 'push' => self::$cron_push, 'pull' => self::$cron_pull);
+        foreach ($fields as $field) {
+            foreach ($field_defs[$field] as $def) {
+                if ($def == $cron_id) {
+                    return $field;
+                }
+            }
+        }
+        return 'unknow';
+    }
+
+    /**
+     * Get pool name.
+     *
+     * @param string $pool The pool.
+     * @return string The pool name.
+     *
+     * @since 3.2.0
+     */
+    public static function get_pool_name($pool) {
+        switch ($pool) {
+            case 'system' :
+                return __('system', 'live-weather-station');
+                break;
+            case 'push' :
+                return __('sharing', 'live-weather-station');
+                break;
+            case 'pull' :
+                return __('collection', 'live-weather-station');
+                break;
+            default :
+                return __('generic', 'live-weather-station');
+        }
+    }
+
+    /**
+     * Get cron pool name.
+     *
+     * @param string $cron_id The cron task identifier.
+     * @return string The cron pool name.
+     *
+     * @since 3.2.0
+     */
+    public static function get_cron_pool_name($cron_id) {
+        $field_names = array('system' => __('system', 'live-weather-station'),
+            'push' => __('sharing', 'live-weather-station'),
+            'pull' => __('collection', 'live-weather-station'),
+            'unknow' => __('generic', 'live-weather-station'));
+        return $field_names[self::get_cron_pool($cron_id)];
+    }
+
+    /**
+     * Get cron name.
+     *
+     * @param string $cron_id The cron.
+     * @return string The cron name.
+     *
+     * @since 3.2.0
+     */
+    public static function get_cron_name($cron_id) {
+        switch ($cron_id) {
+            case 'lws_watchdog':
+                return __('Watchdog', 'live-weather-station');
+                break;
+            case 'lws_translation_update':
+                return __('Partial translations updates', 'live-weather-station');
+                break;
+            case 'lws_log_rotate':
+                return __('Events log rotation', 'live-weather-station');
+                break;
+            case 'lws_cache_flush':
+                return __('Cache flushing', 'live-weather-station');
+                break;
+            case 'lws_stats_clean':
+                return __('Statistics cleaning', 'live-weather-station');
+                break;
+            case 'lws_netatmo_update':
+                return __('Netatmo WS', 'live-weather-station');
+                break;
+            case 'lws_netatmo_hc_update':
+                return __('Netatmo HHC', 'live-weather-station');
+                break;
+            case 'lws_owm_current_update':
+                return __('OpenWeatherMap current', 'live-weather-station');
+                break;
+            case 'lws_owm_station_update':
+                return __('OpenWeatherMap WS', 'live-weather-station');
+                break;
+            case 'lws_wug_station_update':
+                return __('Weather Underground WS', 'live-weather-station');
+                break;
+            case 'lws_raw_station_update':
+                return __('Clientraw WS', 'live-weather-station');
+                break;
+            case 'lws_real_station_update':
+                return __('Realtime WS', 'live-weather-station');
+                break;
+            case 'lws_txt_station_update':
+                return __('Stickertags WS', 'live-weather-station');
+                break;
+            case 'lws_owm_pollution_update':
+                return __('OpenWeatherMap pollution', 'live-weather-station');
+                break;
+            case 'lws_current_push':
+                return __('Generic sharing (PWS, WUG, WOW)', 'live-weather-station');
+                break;
+            default :
+                return __('unknown', 'live-weather-station');
+        }
+    }
+
+
 
     /**
      * Define Netatmo Updater cron job.

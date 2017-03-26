@@ -1,4 +1,18 @@
 
+###3.2.0 / April XXXXth, 2017
+
+* New: a dashboard box displays statistics on events counts.
+* New: it's now possible to reset cache from 'maintenance' tab of 'settings' screen.
+* New: it's now possible to purge events log from 'maintenance' tab of 'settings' screen.
+* New: tasks execution and events analytics - for those who love data analytics.
+* Improvement: better cache management after plugin update.
+* Improvement: adjustment of some elements in "version" box in dashboard.
+* Improvement: you could now set a limit for data age in analytics reports.
+* Improvement: if your WordPress configuration is set to prohibit automatic updates, you can no longer set the corresponding option.
+* Improvement: better readability for "Weather Station News" box in dashboard.
+* Improvement: it's now possible to reset analytics view.
+* Bug fix: in very rare circumstances, it's not possible to move boxes in dashboard and station view.
+
 ###3.1.3 / March 17th, 2017
 
 * Improvement: it's now possible to force plugin automatic update thanks to WordPress updates system (enabled by default).
@@ -12,7 +26,7 @@
 ###3.1.1 / March 13th, 2017
 
 * Improvement: the time scale for cache analytics offers now better readability.
-* Improvement: the news box of the dashboard has been redesigned to show cleaner items.
+* Improvement: the "News" box of the dashboard has been redesigned to show cleaner items.
 * Bug fix: in Fire Weather widget, the color of the current risk icon is wrong.
 * Bug fix: with some configurations, the window for shortcodes in admin panel has the wrong size.
 
