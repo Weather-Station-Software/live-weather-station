@@ -14,7 +14,7 @@
         <?php echo do_shortcode('[live-weather-station-admin-analytics item="event" metric="density"]'); ?>
     </div>
     <div style="display: inline-block;padding:20px;">
-        <h2><?php echo __('Events: criticality', 'live-weather-station'); ?></h2>
+        <h2><?php echo __('Events: relative criticality', 'live-weather-station'); ?></h2>
         <?php echo do_shortcode('[live-weather-station-admin-analytics item="event" metric="criticality"]'); ?>
     </div>
 </div>

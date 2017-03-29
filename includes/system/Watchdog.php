@@ -61,7 +61,7 @@ class Watchdog {
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_30_minutes_interval'));
         self::define_netatmo_update_cron();
         self::define_netatmo_hc_update_cron();
-        self::define_push_cron();
+        self::define_current_push_cron();
         self::define_owm_current_update_cron();
         self::define_owm_station_update_cron();
         self::define_wug_station_update_cron();
@@ -79,7 +79,7 @@ class Watchdog {
     /**
      * Delete schedules and stop the watchdog.
      *
-     * @since    2.7.0
+     * @since 2.7.0
      */
     public static function stop() {
         self::delete_schedules();
@@ -90,7 +90,7 @@ class Watchdog {
     /**
      * Restart the watchdog.
      *
-     * @since    2.7.0
+     * @since 2.7.0
      */
     public static function restart() {
         self::stop();

@@ -9,6 +9,8 @@
  * @since 3.0.0
  */
 
+use WeatherStation\System\Logs\Logger;
+
 spl_autoload_register(
 /**
  * @param $class
@@ -114,6 +116,7 @@ spl_autoload_register(
         case 'WeatherStation\UI\ListTable\Base': $file = LWS_INCLUDES_DIR.'classes/ListTable.php'; break;
         case 'WeatherStation\UI\ListTable\Log': $file = LWS_INCLUDES_DIR.'classes/ListTableLog.php'; break;
         case 'WeatherStation\UI\ListTable\Stations': $file = LWS_INCLUDES_DIR.'classes/ListTableStations.php'; break;
+        case 'WeatherStation\UI\ListTable\Tasks': $file = LWS_INCLUDES_DIR.'classes/ListTableTasks.php'; break;
         case 'WeatherStation\UI\Mapping\Handling': $file = LWS_INCLUDES_DIR.'traits/MappingHandling.php'; break;
         case 'WeatherStation\UI\Mapping\Helper': $file = LWS_INCLUDES_DIR.'classes/MappingHelper.php'; break;
         case 'WeatherStation\UI\Services\Handling': $file = LWS_INCLUDES_DIR.'classes/ServicesHelper.php'; break;
@@ -136,5 +139,8 @@ spl_autoload_register(
     }
     if (file_exists($file)) {
         require_once $file;
+    }
+    elseif (strpos($class, 'eatherStation') > 0) {
+        Logger::emergency('Core', null, null, null, null, null, 1, 'Unable to load ' . $class . ' class from ' . $file);
     }
 });

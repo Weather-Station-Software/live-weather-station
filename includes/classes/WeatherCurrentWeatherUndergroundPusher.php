@@ -3,6 +3,7 @@
 namespace WeatherStation\SDK\WeatherUnderground\Plugin;
 
 use WeatherStation\SDK\Generic\Plugin\Weather\Current\Pusher as Abstract_Pusher;
+use WeatherStation\System\Logs\Logger;
 
 /**
  * Class to push data to Weather Underground.
@@ -81,8 +82,9 @@ class Pusher extends Abstract_Pusher {
         $result = $device;
         $result['ID'] = $station['wug_user'];
         $result['PASSWORD'] = $station['wug_password'];
-        $result['softwaretype'] = LWS_PLUGIN_SIGNATURE;
+        $result['softwaretype'] = 'd';LWS_PLUGIN_SIGNATURE;
         $result['action'] = 'updateraw';
+        Logger::dev(print_r($result, true));
         return $result;
     }
 

@@ -6,14 +6,12 @@
  * @since 3.0.0
  */
 
-use WeatherStation\System\Help\InlineHelp;
-
 $cache_warning = sprintf(__('The %s events log will be purged. Is it really what you want?', 'live-weather-station'), LWS_PLUGIN_NAME);
 
 ?>
 
 <p>&nbsp;</p>
-<p><?php echo sprintf(__('You can restore layouts and boxes positions to their defaults for dashboard of %s, the "services" tab of its settings page and for stations views.', 'live-weather-station'), LWS_PLUGIN_NAME);?><br/><em><?php echo __('To do it, just click on the corresponding button:', 'live-weather-station'); ?></em></p>
+<p><?php echo sprintf(__('You can restore layouts and boxes positions to their defaults for the views used by %s.', 'live-weather-station'), LWS_PLUGIN_NAME);?><br/><em><?php echo __('To do it, just click on the corresponding button:', 'live-weather-station'); ?></em></p>
 <p><a class="button button-primary" href="<?php echo esc_url(get_admin_page_url('lws-settings', 'reset-dashboard', 'maintenance')); ?>"><?php echo __('Reset Dashboard View', 'live-weather-station');?></a> &nbsp;&nbsp;&nbsp;
     <a class="button button-primary" href="<?php echo esc_url(get_admin_page_url('lws-settings', 'reset-services', 'maintenance')); ?>"><?php echo __('Reset Services View', 'live-weather-station');?></a> &nbsp;&nbsp;&nbsp;
     <a class="button button-primary" href="<?php echo esc_url(get_admin_page_url('lws-settings', 'reset-stations', 'maintenance')); ?>"><?php echo __('Reset Stations Views', 'live-weather-station');?></a> &nbsp;&nbsp;&nbsp;
