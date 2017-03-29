@@ -25,12 +25,15 @@ $buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; '
             <a href="?page=lws-settings&tab=thresholds" class="nav-tab <?php echo $active_tab == 'thresholds' ? 'nav-tab-active' : ''; ?>"><?php echo __('Thresholds', 'live-weather-station');?></a>
             <a href="?page=lws-settings&tab=system" class="nav-tab <?php echo $active_tab == 'system' ? 'nav-tab-active' : ''; ?>"><?php echo __('System', 'live-weather-station');?></a>
             <a href="?page=lws-settings&tab=maintenance" class="nav-tab <?php echo $active_tab == 'maintenance' ? 'nav-tab-active' : ''; ?>"><?php echo __('Maintenance', 'live-weather-station');?></a>
+            <?php if ((bool)get_option('live_weather_station_show_tasks')) { ?>
+                <a href="?page=lws-settings&tab=tasks" class="nav-tab <?php echo $active_tab == 'tasks' ? 'nav-tab-active' : ''; ?>"><?php echo __('Scheduled tasks', 'live-weather-station');?></a>
+            <?php } ?>
         <?php } ?>
     </h2>
 
     <form action="<?php echo esc_url(get_admin_page_url('lws-settings', null, $active_tab)); ?>" method="POST">
         <?php do_settings_sections('lws_'.$active_tab); ?>
-        <?php if ($active_tab != 'general' && $active_tab != 'services' && $active_tab != 'maintenance') { ?>
+        <?php if ($active_tab != 'general' && $active_tab != 'services' && $active_tab != 'maintenance' && $active_tab != 'tasks') { ?>
             <?php settings_fields($active_tab);?>
             <?php echo $buttons;?>
         <?php } ?>
@@ -43,6 +46,9 @@ $buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; '
     <?php } ?>
     <?php if ($active_tab == 'maintenance') { ?>
         <?php include(LWS_ADMIN_DIR.'partials/SettingsMaintenance.php'); ?>
+    <?php } ?>
+    <?php if ($active_tab == 'tasks') { ?>
+        <?php include(LWS_ADMIN_DIR.'partials/SettingsTasks.php'); ?>
     <?php } ?>
 
 </div>

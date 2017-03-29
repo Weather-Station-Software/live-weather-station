@@ -14,13 +14,10 @@
  * 3.x - Solar measurements
  * 3.x - Soil & leaf measurements
  * 3.x - Visibility
- * 3.x - Timestamps analytics in dashboard
- * 3.x - Events analytics in dashboard
  * 4.x - 4 hours forecasting
  * 4.x - 5 days forecasting
  * 4.x - Buttons and config windows in TinyMCE
  * 4.x - Quota Manager
- * 4.x - Cron Manager
 
 
 
@@ -63,3 +60,4 @@
 ***********************
 
 better log of "Access token expired"
+cron manager doc

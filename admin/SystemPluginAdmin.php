@@ -6,6 +6,8 @@ use WeatherStation\SDK\Clientraw\Plugin\StationCollector as ClientrawCollector;
 use WeatherStation\SDK\Realtime\Plugin\StationCollector as RealtimeCollector;
 use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Environment\Manager;
+use WeatherStation\System\Schedules\Handling as Schedule;
+use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\UI\Dashboard\Handling as Dashboard;
 use WeatherStation\UI\Services\Handling as Services;
 use WeatherStation\UI\Analytics\Handling as Analytics;
@@ -43,7 +45,7 @@ use WeatherStation\SDK\Realtime\Plugin\StationInitiator as Realtime_Station_Init
  */
 class Admin {
 
-    use Options, Arrays, FormsRenderer {
+    use Schedule, Options, Arrays, FormsRenderer {
         FormsRenderer::get_service_name insteadof Arrays;
         FormsRenderer::get_module_type insteadof Arrays;
         FormsRenderer::get_fake_module_name insteadof Arrays;
@@ -124,6 +126,7 @@ class Admin {
         add_settings_section('lws_thresholds_section', null, array($this, 'thresholds_section_callback'), 'lws_thresholds');
         add_settings_section('lws_system_section', null, array($this, 'system_section_callback'), 'lws_system');
         add_settings_section('lws_maintenance_section', null, array($this, 'maintenance_section_callback'), 'lws_maintenance');
+        add_settings_section('lws_tasks_section', null, array($this, 'tasks_section_callback'), 'lws_tasks');
         $this->init_system_settings();
         $this->init_display_settings();
         $this->init_thresholds_settings();
@@ -171,6 +174,11 @@ class Admin {
         echo '<p>' . __('Here, you can make some maintenance operations that are not directly accessible elsewhere.', 'live-weather-station') . ' ' . $h . '</p>';
     }
 
+    public function tasks_section_callback() {
+        $h = '';//InlineHelp::get(15, __('You can find help on these maintenance operations on %s.', 'live-weather-station'), __('this page', 'live-weather-station'));
+        echo '<p>' . __('Here, you can view all scheduled tasks, force their execution or reschedule them.', 'live-weather-station') . ' ' . $h . '</p>';
+    }
+
     /**
      * Initializes system fields.
      *
@@ -205,10 +213,10 @@ class Admin {
             array($this, 'lws_system_redirect_links_callback'), 'lws_system', 'lws_system_section',
             array());
         register_setting('lws_system', 'lws_system_redirect_links');
-        add_settings_field('lws_system_show_analytics', __('Special', 'live-weather-station'),
-            array($this, 'lws_system_show_analytics_callback'), 'lws_system', 'lws_system_section',
-            array(__('Check this only if you really love data analytics and visualization.', 'live-weather-station')));
-        register_setting('lws_system', 'lws_system_show_analytics');
+        add_settings_field('lws_system_special', __('Special', 'live-weather-station'),
+            array($this, 'lws_system_special_callback'), 'lws_system', 'lws_system_section',
+            array());
+        register_setting('lws_system', 'lws_system_special');
         add_settings_field('lws_system_analytics_cutoff', __('Performance data cutoff', 'live-weather-station'),
             array($this, 'lws_system_analytics_cutoff_callback'), 'lws_system', 'lws_system_section',
             array(__('Maximum age of performance data displayed in statistical reports.', 'live-weather-station')));
@@ -374,6 +382,25 @@ class Admin {
      * Renders the interface elements for the corresponding field.
      *
      * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.2.0
+     */
+    public function lws_system_special_callback($args) {
+        $cbxs = array();
+        $cbxs[] = array('text' => __('I love data analytics', 'live-weather-station'),
+            'id' => 'lws_system_show_analytics',
+            'checked' => (bool)get_option('live_weather_station_show_analytics'),
+            'description' => sprintf(__('Check this only if you really love data analytics and visualization.', 'live-weather-station'), LWS_PLUGIN_NAME));
+        $cbxs[] = array('text' => __('I want to be a time sorcerer', 'live-weather-station'),
+            'id' => 'lws_system_show_tasks',
+            'checked' => (bool)get_option('live_weather_station_show_tasks'),
+            'description' => sprintf(__('Check this to get access to the scheduled tasks tab.', 'live-weather-station'), LWS_PLUGIN_NAME));
+        echo $this->field_multi_checkbox($cbxs);
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
      * @since 3.0.0
      */
     public function lws_system_time_shift_threshold_callback($args) {
@@ -417,16 +444,6 @@ class Admin {
      */
     public function lws_system_show_technical_callback($args) {
         echo $this->field_checkbox(__('Display technical information', 'live-weather-station'), 'lws_system_show_technical', (bool)get_option('live_weather_station_show_technical'), $args[0]);
-    }
-
-    /**
-     * Renders the interface elements for the corresponding field.
-     *
-     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
-     * @since 3.1.0
-     */
-    public function lws_system_show_analytics_callback($args) {
-        echo $this->field_checkbox(__('I love data analytics', 'live-weather-station'), 'lws_system_show_analytics', (bool)get_option('live_weather_station_show_analytics'), $args[0]);
     }
 
     /**
@@ -622,6 +639,7 @@ class Admin {
                 update_option('live_weather_station_time_shift_threshold', (integer)$_POST['lws_system_time_shift_threshold']);
                 update_option('live_weather_station_show_technical', (array_key_exists('lws_system_show_technical', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_analytics', (array_key_exists('lws_system_show_analytics', $_POST) ? 1 : 0));
+                update_option('live_weather_station_show_tasks', (array_key_exists('lws_system_show_tasks', $_POST) ? 1 : 0));
                 update_option('live_weather_station_analytics_cutoff', (integer)$_POST['lws_system_analytics_cutoff']);
                 if (!$save_auto && get_option('live_weather_station_auto_manage_netatmo')) {
                     $this->get_netatmo(true);
@@ -1059,6 +1077,9 @@ class Admin {
                     case 'sync-data': $this->sync_data(); break;
                     case 'reset-cache': $this->reset_cache(); break;
                     case 'purge-log': $this->reset_log(); break;
+                    case 'cron-force': $this->cron_reschedule(true); break;
+                    case 'cron-reschedule': $this->cron_reschedule(); break;
+                    case 'relaunch-watchdog': $this->relaunch_watchdog(); break;
                     default: $this->check_options();
                 }
                 break;
@@ -1280,8 +1301,61 @@ class Admin {
      * @since 3.2.0
      */
     private function reset_log() {
+        Cache::flush_backend(false);
         Logger::reset();
         add_settings_error('lws_nonce_success', 200, sprintf(__('%s has been reset.', 'live-weather-station'), __('Events log', 'live-weather-station')), 'updated');
+    }
+
+    /**
+     * Force a immediate execution of e scheduled task.
+     *
+     * @param boolean $exec Optional. Force execution of the task after reschedule.
+     *
+     * @since 3.2.0
+     */
+    private function cron_reschedule($exec=false) {
+        $done = false;
+        $hook = '';
+        $op = 'reschedule';
+        if ($exec) {
+            $op = 'reschedule & execute';
+        }
+        if (array_key_exists('hook', $_GET)) {
+            $hook = $_GET['hook'];
+        }
+        $name = self::get_cron_name($hook);
+        if (self::is_legitimate_cron($hook)) {
+           if ($exec) {
+               $done = self::force_and_reschedule_cron($hook, 'Backend');
+           }
+           else {
+               $done = self::reschedule_cron($hook, 'Backend');
+           }
+
+        }
+        if ($done) {
+            if ($op == 'reschedule') {
+                add_settings_error('lws_nonce_success', 200, sprintf(__('The task %s has been rescheduled.', 'live-weather-station'), '<em>'.$name.'</em>'), 'updated');
+            }
+            else {
+                add_settings_error('lws_nonce_success', 200, sprintf(__('The task %s has been executed.', 'live-weather-station'), '<em>'.$name.'</em>'), 'updated');
+            }
+            Logger::info('Backend', null, null, null, null, null, null, sprintf('The operation "%s" has been done for the task named "%s".', $op, $name));
+        }
+        else {
+            add_settings_error('lws_nonce_error', 200, __('This action is not allowed.', 'live-weather-station'), 'error');
+            Logger::error('Security', null, null, null, null, null, null, sprintf('An attempt to force an out-of-scope scheduled task was done. The request was not satisfied by %s for security reason. The name of the hook was "%s". The request was "%s".', LWS_PLUGIN_NAME, $hook, $op));
+        }
+    }
+
+    /**
+     * Relaunch the watchdog.
+     *
+     * @since 3.2.0
+     */
+    private function relaunch_watchdog() {
+        Watchdog::restart();
+        add_settings_error('lws_nonce_success', 200, __('The watchdog was successfully restarted.', 'live-weather-station').'<br/>'.__('Please wait a few minutes for all the tasks to be rescheduled.', 'live-weather-station'), 'updated');
     }
 
     /**

@@ -27,6 +27,8 @@ use WeatherStation\System\I18N\Handling as i18n;
 
 trait Handling {
 
+    public static $pools = array('system', 'push', 'pull');
+
 
     // WARNING: CRON NAMES MUST NOT HAVE MORE THAN 30 CAR...
 
@@ -63,6 +65,88 @@ trait Handling {
 
 
     /**
+     * Force a cron execution now.
+     *
+     * @param string $cron_id The cron task identifier.
+     * @return boolean True if the cron has been executed, false otherwise.
+     *
+     * @since 3.2.0
+     */
+    private static function force_cron($cron_id) {
+        $result = false;
+        if (self::is_legitimate_cron($cron_id)) {
+            do_action($cron_id);
+            $result = true;
+        }
+        return $result;
+    }
+
+    /**
+     * Reschedule a cron.
+     *
+     * @param string $cron_id The cron task identifier.
+     * @param string $system Optional. The system which have initiated the operation.
+     * @param boolean $beforeforce optional. Will the cron be forced just after?
+     * @return boolean True if the cron has been rescheduled, false otherwise.
+     *
+     * @since 3.2.0
+     */
+    public static function reschedule_cron($cron_id, $system='Core', $beforeforce=false) {
+        $result = false;
+        if (self::is_legitimate_cron($cron_id)) {
+            $cron = str_replace('lws_', '', $cron_id);
+            $launcher = 'launch_' . $cron . '_cron';
+            $scheduled = wp_get_schedules()[wp_get_schedule($cron_id)]['interval'];
+            if (method_exists(__CLASS__, $launcher)) {
+                if ($d = wp_next_scheduled($cron_id)) {
+                    wp_clear_scheduled_hook($cron_id);
+                }
+                $now = time();
+                if (($d > $now) && !$beforeforce){
+                    $dts = $d - $now;
+                }
+                else {
+                    $dts = 0;
+                }
+                if ($dts < $scheduled) {
+                    $dts += $scheduled;
+                }
+                call_user_func(array(__CLASS__, $launcher), $dts, $system);
+                $result = true;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Force a cron execution now.
+     *
+     * @param string $cron_id The cron task identifier.
+     * @param string $system Optional. The system which have initiated the operation.
+     * @return boolean True if the cron has been executed, false otherwise.
+     *
+     * @since 3.2.0
+     */
+    public static function force_and_reschedule_cron($cron_id, $system='Core') {
+        if (self::reschedule_cron($cron_id, $system, true)) {
+            return self::force_cron($cron_id);
+        }
+        return false;
+    }
+
+    /**
+     * Get cron pool id.
+     *
+     * @param string $cron_id The cron task identifier.
+     * @return boolean True if the cron is a Weather Station hook, false otherwise.
+     *
+     * @since 3.2.0
+     */
+    public static function is_legitimate_cron($cron_id) {
+        return (in_array(self::get_cron_pool($cron_id), self::$pools));
+    }
+
+    /**
      * Get cron pool id.
      *
      * @param string $cron_id The cron task identifier.
@@ -71,9 +155,8 @@ trait Handling {
      * @since 3.2.0
      */
     public static function get_cron_pool($cron_id) {
-        $fields = array('system', 'push', 'pull');
         $field_defs = array('system' => self::$cron_system, 'push' => self::$cron_push, 'pull' => self::$cron_pull);
-        foreach ($fields as $field) {
+        foreach (self::$pools as $field) {
             foreach ($field_defs[$field] as $def) {
                 if ($def == $cron_id) {
                     return $field;
@@ -198,12 +281,15 @@ trait Handling {
     /**
      * Launch the Netatmo Updater cron job if needed.
      *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
      * @since 2.7.0
      */
-    protected static function launch_netatmo_update_cron() {
+    protected static function launch_netatmo_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$netatmo_update_schedule_name)) {
-            wp_schedule_event(time() + 10, 'five_minutes', self::$netatmo_update_schedule_name);
-            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$netatmo_update_schedule_name.' cron job.');
+            wp_schedule_event(time() + $timeshift, 'five_minutes', self::$netatmo_update_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$netatmo_update_schedule_name).'" cron job.');
         }
     }
 
@@ -220,12 +306,15 @@ trait Handling {
     /**
      * Launch the Netatmo HC Updater cron job if needed.
      *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
      * @since 3.1.0
      */
-    protected static function launch_netatmo_hc_update_cron() {
+    protected static function launch_netatmo_hc_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$netatmo_hc_update_schedule_name)) {
-            wp_schedule_event(time() + 30, 'five_minutes', self::$netatmo_hc_update_schedule_name);
-            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$netatmo_hc_update_schedule_name.' cron job.');
+            wp_schedule_event(time() + $timeshift, 'five_minutes', self::$netatmo_hc_update_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$netatmo_hc_update_schedule_name).'" cron job.');
         }
     }
 
@@ -242,12 +331,15 @@ trait Handling {
     /**
      * Launch the Clientraw Updater cron job if needed.
      *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
      * @since 3.0.0
      */
-    protected static function launch_raw_station_update_cron() {
+    protected static function launch_raw_station_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$raw_update_station_schedule_name)) {
-            wp_schedule_event(time() + 100, 'five_minutes', self::$raw_update_station_schedule_name);
-            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$raw_update_station_schedule_name.' cron job.');
+            wp_schedule_event(time() + $timeshift, 'five_minutes', self::$raw_update_station_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$raw_update_station_schedule_name).'" cron job.');
         }
     }
 
@@ -264,12 +356,15 @@ trait Handling {
     /**
      * Launch the Realtime Updater cron job if needed.
      *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
      * @since 3.0.0
      */
-    protected static function launch_real_station_update_cron() {
+    protected static function launch_real_station_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$real_update_station_schedule_name)) {
-            wp_schedule_event(time() + 190, 'five_minutes', self::$real_update_station_schedule_name);
-            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$real_update_station_schedule_name.' cron job.');
+            wp_schedule_event(time() + $timeshift, 'five_minutes', self::$real_update_station_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$real_update_station_schedule_name).'" cron job.');
         }
     }
 
@@ -278,7 +373,7 @@ trait Handling {
      *
      * @since 3.0.0
      */
-    protected static function define_push_cron() {
+    protected static function define_current_push_cron() {
         $plugin_push_cron = new Pusher(LWS_PLUGIN_NAME, LWS_VERSION);
         add_action(self::$push_schedule_name, array($plugin_push_cron, 'cron_run'));
     }
@@ -286,12 +381,15 @@ trait Handling {
     /**
      * Launch the Pusher cron job if needed.
      *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
      * @since 3.0.0
      */
-    protected static function launch_push_cron() {
+    protected static function launch_current_push_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$push_schedule_name)) {
-            wp_schedule_event(time() + 10, 'ten_minutes', self::$push_schedule_name);
-            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$push_schedule_name.' cron job.');
+            wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$push_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$push_schedule_name).'" cron job.');
         }
     }
 
@@ -308,12 +406,15 @@ trait Handling {
     /**
      * Launch the OWM Current Updater cron job if needed.
      *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
      * @since    2.7.0
      */
-    protected static function launch_owm_current_update_cron() {
+    protected static function launch_owm_current_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$owm_update_current_schedule_name)) {
-            wp_schedule_event(time() + 30, 'fifteen_minutes', self::$owm_update_current_schedule_name);
-            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$owm_update_current_schedule_name.' cron job.');
+            wp_schedule_event(time() + $timeshift, 'fifteen_minutes', self::$owm_update_current_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$owm_update_current_schedule_name).'" cron job.');
         }
     }
 
@@ -330,12 +431,15 @@ trait Handling {
     /**
      * Launch the OWM Station Updater cron job if needed.
      *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
      * @since 3.0.0
      */
-    protected static function launch_owm_station_update_cron() {
+    protected static function launch_owm_station_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$owm_update_station_schedule_name)) {
-            wp_schedule_event(time() + 70, 'ten_minutes', self::$owm_update_station_schedule_name);
-            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$owm_update_station_schedule_name.' cron job.');
+            wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$owm_update_station_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$owm_update_station_schedule_name).'" cron job.');
         }
     }
 
@@ -352,12 +456,15 @@ trait Handling {
     /**
      * Launch the WUG Station Updater cron job if needed.
      *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
      * @since 3.0.0
      */
-    protected static function launch_wug_station_update_cron() {
+    protected static function launch_wug_station_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$wug_update_station_schedule_name)) {
-            wp_schedule_event(time() + 130, 'ten_minutes', self::$wug_update_station_schedule_name);
-            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$wug_update_station_schedule_name.' cron job.');
+            wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$wug_update_station_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$wug_update_station_schedule_name).'" cron job.');
         }
     }
 
@@ -374,12 +481,15 @@ trait Handling {
     /**
      * Launch the OWM Pollution Updater cron job if needed.
      *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
      * @since    2.7.0
      */
-    protected static function launch_owm_pollution_update_cron() {
+    protected static function launch_owm_pollution_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$owm_update_pollution_schedule_name)) {
-            wp_schedule_event(time() + 60, 'thirty_minutes', self::$owm_update_pollution_schedule_name);
-            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$owm_update_pollution_schedule_name.' cron job.');
+            wp_schedule_event(time() + $timeshift, 'thirty_minutes', self::$owm_update_pollution_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$owm_update_pollution_schedule_name).'" cron job.');
         }
     }
 
@@ -396,12 +506,15 @@ trait Handling {
     /**
      * Launch the log rotate cron job if needed.
      *
-     * @since    2.8.0
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
+     * @since 2.8.0
      */
-    protected static function launch_log_rotate_cron() {
+    protected static function launch_log_rotate_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$log_rotate_name)) {
-            wp_schedule_event(time() + 5, 'daily', self::$log_rotate_name);
-            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$log_rotate_name.' cron job.');
+            wp_schedule_event(time() + $timeshift, 'daily', self::$log_rotate_name);
+            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$log_rotate_name).'" cron job.');
         }
     }
 
@@ -418,12 +531,15 @@ trait Handling {
     /**
      * Launch the cache flushing cron job if needed.
      *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
      * @since 3.1.0
      */
-    protected static function launch_cache_flush_cron() {
+    protected static function launch_cache_flush_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$cache_flush_name)) {
-            wp_schedule_event(time() + 65, 'twicedaily', self::$cache_flush_name);
-            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$cache_flush_name.' cron job.');
+            wp_schedule_event(time() + $timeshift, 'twicedaily', self::$cache_flush_name);
+            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$cache_flush_name).'" cron job.');
         }
     }
 
@@ -440,12 +556,15 @@ trait Handling {
     /**
      * Launch the stats cleaning cron job if needed.
      *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
      * @since 3.1.0
      */
-    protected static function launch_stats_clean_cron() {
+    protected static function launch_stats_clean_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$stats_clean_name)) {
-            wp_schedule_event(time() + 35, 'daily', self::$stats_clean_name);
-            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$stats_clean_name.' cron job.');
+            wp_schedule_event(time() + $timeshift, 'daily', self::$stats_clean_name);
+            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$stats_clean_name).'" cron job.');
         }
     }
 
@@ -462,12 +581,15 @@ trait Handling {
     /**
      * Launch the log rotate cron job if needed.
      *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
      * @since    2.8.0
      */
-    protected static function launch_translation_update_cron() {
+    protected static function launch_translation_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$translation_update_name)) {
-            wp_schedule_event(time() + 15, 'daily', self::$translation_update_name);
-            Logger::info('Watchdog',null,null,null,null,null,null,'Recycling '.self::$translation_update_name.' cron job.');
+            wp_schedule_event(time() + $timeshift, 'daily', self::$translation_update_name);
+            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$translation_update_name).'" cron job.');
         }
     }
 
@@ -500,19 +622,19 @@ trait Handling {
      * @since    2.0.0
      */
     protected static function init_schedules() {
-        self::launch_netatmo_update_cron();
-        self::launch_netatmo_hc_update_cron();
-        self::launch_push_cron();
-        self::launch_owm_current_update_cron();
-        self::launch_owm_station_update_cron();
-        self::launch_wug_station_update_cron();
-        self::launch_raw_station_update_cron();
-        self::launch_real_station_update_cron();
-        self::launch_owm_pollution_update_cron();
-        self::launch_log_rotate_cron();
-        self::launch_cache_flush_cron();
-        self::launch_stats_clean_cron();
-        self::launch_translation_update_cron();
+        self::launch_netatmo_update_cron(random_int(1,180));
+        self::launch_netatmo_hc_update_cron(random_int(1,180));
+        self::launch_current_push_cron(random_int(1,180));
+        self::launch_owm_current_update_cron(random_int(1,180));
+        self::launch_owm_station_update_cron(random_int(1,180));
+        self::launch_wug_station_update_cron(random_int(1,180));
+        self::launch_raw_station_update_cron(random_int(1,180));
+        self::launch_real_station_update_cron(random_int(1,180));
+        self::launch_owm_pollution_update_cron(random_int(1,180));
+        self::launch_log_rotate_cron(random_int(1,180));
+        self::launch_cache_flush_cron(random_int(1,180));
+        self::launch_stats_clean_cron(random_int(1,180));
+        self::launch_translation_update_cron(random_int(1,180));
     }
 
     /**

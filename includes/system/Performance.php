@@ -287,6 +287,7 @@ class Performance {
         $sum24 = array();
         $sum30 = array();
         $values = array();
+        $raw = array();
         $jsonable = array();
         $jsoned = array();
         try {
@@ -314,6 +315,13 @@ class Performance {
                     } else {
                         $sum30[$pool]['time'] = $time;
                         $sum30[$pool]['count'] = $count;
+                    }
+                    if (array_key_exists($cron, $raw)) {
+                        $raw[$cron]['time'] += $time;
+                        $raw[$cron]['count'] += $count;
+                    } else {
+                        $raw[$cron]['time'] = $time;
+                        $raw[$cron]['count'] = $count;
                     }
                 }
                 if (strtotime($detail['timestamp']) > $cutoff) {
@@ -406,7 +414,7 @@ class Performance {
             foreach ($fields as $field) {
                 $data['time_for_'.$field] = '[' . implode(',', $data_r['by_cron'][$field]) . ']';
             }
-            $result = array('agr24' => $sum24, 'agr30' => $sum30, 'dat' => $data);
+            $result = array('agr24' => $sum24, 'agr30' => $sum30, 'raw' => $raw, 'dat' => $data);
             Cache::set_backend(Cache::$db_stat_perf_cron, $result);
         }
         catch(\Exception $ex) {
@@ -542,6 +550,12 @@ class Performance {
                     $tmp_criticality = 0;
                 }
                 $tmp_criticality += $detail['cpt'] * Logger::get_criticality($detail['level']);
+            }
+            if ($tmp_criticality > 0) {
+                $criticality[] = $ts.':'.$tmp_criticality;
+                if ($tmp_criticality > $criticality_max) {
+                    $criticality_max = $tmp_criticality;
+                }
             }
         }
         catch(\Exception $ex) {

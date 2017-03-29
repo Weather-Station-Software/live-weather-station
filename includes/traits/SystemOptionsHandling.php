@@ -37,6 +37,7 @@ trait Handling {
     private static $live_weather_station_overload_hc = false;
     private static $live_weather_station_show_technical = false;
     private static $live_weather_station_show_analytics = false;
+    private static $live_weather_station_show_tasks = false;
     private static $live_weather_station_auto_update = true;
 
     private static $live_weather_station_map_zoom = 16;
@@ -341,6 +342,7 @@ trait Handling {
         delete_option('live_weather_station_overload_hc');
         delete_option('live_weather_station_show_technical');
         delete_option('live_weather_station_show_analytics');
+        delete_option('live_weather_station_show_tasks');
         delete_option('live_weather_station_analytics_cutoff');
         delete_option('live_weather_station_auto_update');
         self::delete_thresholds_options();
@@ -410,6 +412,7 @@ trait Handling {
         update_option('live_weather_station_overload_hc', self::$live_weather_station_overload_hc);
         update_option('live_weather_station_show_technical', self::$live_weather_station_show_technical);
         update_option('live_weather_station_show_analytics', self::$live_weather_station_show_analytics);
+        update_option('live_weather_station_show_tasks', self::$live_weather_station_show_tasks);
         update_option('live_weather_station_analytics_cutoff', self::$live_weather_station_analytics_cutoff);
         update_option('live_weather_station_auto_update', self::$live_weather_station_auto_update);
     }
@@ -603,6 +606,7 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_overload_hc', self::$live_weather_station_overload_hc);
         self::verify_option_boolean('live_weather_station_show_technical', self::$live_weather_station_show_technical);
         self::verify_option_boolean('live_weather_station_show_analytics', self::$live_weather_station_show_analytics);
+        self::verify_option_boolean('live_weather_station_show_tasks', self::$live_weather_station_show_tasks);
         self::verify_option_integer('live_weather_station_analytics_cutoff', self::$live_weather_station_analytics_cutoff);
         self::$live_weather_station_auto_update = EnvManager::is_updatable();
         self::verify_option_boolean('live_weather_station_auto_update', self::$live_weather_station_auto_update);
