@@ -38,7 +38,7 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
             </table>
         <?php } else {?>
             <div style="margin-bottom: 10px;">
-                <span><i style="color:#999" class="fa fa-lg fa-fw fa-external-link" aria-hidden="true"></i>&nbsp;<?php echo $shared; ?></span>
+                <span><i style="color:#999" class="fa fa-lg fa-fw fa-share-alt" aria-hidden="true"></i>&nbsp;<?php echo $shared; ?></span>
             </div>
         <?php } ?>
     </div>

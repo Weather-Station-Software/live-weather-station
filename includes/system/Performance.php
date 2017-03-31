@@ -375,6 +375,10 @@ class Performance {
             }
             foreach ($values as $ts=>$serie) {
                 foreach ($fields as $field) {
+                    if (!array_key_exists($field, $serie['pools'])) {
+                        $serie['pools'][$field]['count'] = 0;
+                        $serie['pools'][$field]['time'] = 0;
+                    }
                     if ($serie['pools'][$field]['count'] > 0) {
                         $avr = round($serie['pools'][$field]['time']/$serie['pools'][$field]['count'], 0);
                     }

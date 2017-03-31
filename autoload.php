@@ -45,7 +45,7 @@ spl_autoload_register(
         case 'WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer': $file = LWS_INCLUDES_DIR.'classes/EphemerisComputer.php'; break;
         case 'WeatherStation\SDK\Generic\Plugin\Health\Client': $file = LWS_INCLUDES_DIR.'traits/HealthClient.php'; break;
         case 'WeatherStation\SDK\Generic\Plugin\Health\Computer': $file = LWS_INCLUDES_DIR.'classes/HealthComputer.php'; break;
-        case 'WeatherStation\SDK\Generic\Plugin\Pusher': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentPusher.php'; break;
+        //case 'WeatherStation\SDK\Generic\Plugin\Pusher': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentPusher.php'; break;
         case 'WeatherStation\SDK\Generic\Plugin\Weather\Current\Pusher': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentAbstractPusher.php'; break;
         case 'WeatherStation\SDK\Generic\Plugin\Weather\Index\Client': $file = LWS_INCLUDES_DIR.'traits/WeatherIndexClient.php'; break;
         case 'WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer': $file = LWS_INCLUDES_DIR.'classes/WeatherIndexComputer.php'; break;

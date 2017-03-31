@@ -67,7 +67,7 @@ trait Output {
             if ($_attributes['metric'] == 'system' || $_attributes['metric'] == 'service' || $_attributes['metric'] == 'device_name') {
                 wp_enqueue_script('nv.d3.v3.js');
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
-                $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
+                $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg style="overflow:visible;"></svg></div>' . PHP_EOL;
                 $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . $perf['dat'][$_attributes['metric']] . ';' . PHP_EOL;
@@ -238,7 +238,7 @@ trait Output {
                 $result .= '      var chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
                 $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
                 $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
-                $result .= '               .interpolate("cardinal")' . PHP_EOL;
+                $result .= '               .interpolate("linear")' . PHP_EOL;
                 $result .= '               .color(colorbrewer.Set3[' . $cpt . '])' . PHP_EOL;
                 $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;

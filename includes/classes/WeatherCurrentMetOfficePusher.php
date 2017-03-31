@@ -3,6 +3,8 @@
 namespace WeatherStation\SDK\MetOffice\Plugin;
 
 use WeatherStation\SDK\Generic\Plugin\Weather\Current\Pusher as Abstract_Pusher;
+use WeatherStation\System\Schedules\Watchdog;
+use WeatherStation\System\Logs\Logger;
 
 /**
  * Class to push data to WOW Met Office.
@@ -130,5 +132,23 @@ class Pusher extends Abstract_Pusher {
         if ($response['code'] != 200) {
             throw new \Exception($response['message'], $response['code']);
         }
+    }
+
+    /**
+     * Do the main job.
+     *
+     * @since 3.2.0
+     */
+    public function cron_run(){
+        $cron_id = Watchdog::init_chrono(Watchdog::$wow_push_schedule_name);
+        $svc = 'Met Office';
+        try {
+            $this->push_data();
+            Logger::info('Cron Engine', $svc, null, null, null, null, 0, 'Job done: pushing weather data.');
+        }
+        catch (\Exception $ex) {
+            Logger::error('Cron Engine', $svc, null, null, null, null, $ex->getCode(), 'Error while pushing weather data: ' . $ex->getMessage());
+        }
+        Watchdog::stop_chrono($cron_id);
     }
 }
