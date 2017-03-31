@@ -5,7 +5,10 @@ namespace WeatherStation\System\Schedules;
 use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Analytics\Performance;
 use WeatherStation\System\Logs\Logger;
-use WeatherStation\SDK\Generic\Plugin\Pusher as Pusher;
+use WeatherStation\SDK\MetOffice\Plugin\Pusher as Wow_Pusher;
+use WeatherStation\SDK\OpenWeatherMap\Plugin\Pusher as Owm_Pusher;
+use WeatherStation\SDK\PWSWeather\Plugin\Pusher as Pws_Pusher;
+use WeatherStation\SDK\WeatherUnderground\Plugin\Pusher as Wug_Pusher;
 use WeatherStation\SDK\Netatmo\Plugin\Updater as Netatmo_Updater;
 use WeatherStation\SDK\Netatmo\Plugin\HCUpdater as Netatmo_HCUpdater;
 use WeatherStation\SDK\Clientraw\Plugin\StationUpdater as Clientraw_Updater;
@@ -56,12 +59,17 @@ trait Handling {
                                     'lws_real_station_update', 'lws_txt_station_update', 'lws_owm_pollution_update');
 
     // PUSH
-    public static $push_schedule_name = 'lws_current_push';
-    public static $cron_push = array('lws_current_push');
+    public static $wow_push_schedule_name = 'lws_wow_current_push';
+    public static $owm_push_schedule_name = 'lws_owm_current_push';
+    public static $pws_push_schedule_name = 'lws_pws_current_push';
+    public static $wug_push_schedule_name = 'lws_wug_current_push';
+    public static $cron_push = array('lws_wow_current_push', 'lws_owm_current_push', 'lws_pws_current_push', 'lws_wug_current_push');
 
     // OLD
     public static $netatmo_push_schedule_name = 'lws_netatmo_push';
     public static $owm_update_schedule_name = 'lws_owm_update';
+    public static $push_schedule_name = 'lws_current_push';
+    public static $cron_old = array('lws_netatmo_push', 'lws_owm_update', 'lws_current_push');
 
 
     /**
@@ -82,23 +90,35 @@ trait Handling {
     }
 
     /**
-     * Reschedule a cron.
+     * Schedule or reschedule a cron.
      *
      * @param string $cron_id The cron task identifier.
      * @param string $system Optional. The system which have initiated the operation.
-     * @param boolean $beforeforce optional. Will the cron be forced just after?
+     * @param boolean $beforeforce Optional. Will the cron be forced just after?
+     * @param boolean $random Optional. Is the time shift random?
      * @return boolean True if the cron has been rescheduled, false otherwise.
      *
      * @since 3.2.0
      */
-    public static function reschedule_cron($cron_id, $system='Core', $beforeforce=false) {
+    public static function reschedule_cron($cron_id, $system='Core', $beforeforce=false, $random=false) {
         $result = false;
         if (self::is_legitimate_cron($cron_id)) {
             $cron = str_replace('lws_', '', $cron_id);
             $launcher = 'launch_' . $cron . '_cron';
-            $scheduled = wp_get_schedules()[wp_get_schedule($cron_id)]['interval'];
-            if (method_exists(__CLASS__, $launcher)) {
-                if ($d = wp_next_scheduled($cron_id)) {
+            try {
+                $schedules = wp_get_schedules();
+                if (wp_get_schedule($cron_id) && array_key_exists(wp_get_schedule($cron_id), $schedules)) {
+                    $scheduled = $schedules[wp_get_schedule($cron_id)]['interval'];
+                }
+                else {
+                    $scheduled = 0;
+                }
+            }
+            catch (\Exception $e){
+                $scheduled = 0;
+            }
+            if (method_exists(get_called_class(), $launcher)) {
+                if (($d = wp_next_scheduled($cron_id)) && ($system != 'Watchdog')) {
                     wp_clear_scheduled_hook($cron_id);
                 }
                 $now = time();
@@ -111,11 +131,76 @@ trait Handling {
                 if ($dts < $scheduled) {
                     $dts += $scheduled;
                 }
-                call_user_func(array(__CLASS__, $launcher), $dts, $system);
+                if ($random) {
+                    $dts = random_int(1,180);
+                }
+                call_user_func(array(get_called_class(), $launcher), $dts, $system);
                 $result = true;
             }
         }
+        else {
+            Logger::alert('Core', null, null, null, null, null, null, 'Trying to (re)schedule an unknown task: '.$cron_id);
+        }
         return $result;
+    }
+
+    /**
+     * Define a cron.
+     *
+     * @param string $cron_id The cron task identifier.
+     * @return boolean True if the cron has been rescheduled, false otherwise.
+     *
+     * @since 3.2.0
+     */
+    protected static function define_cron($cron_id) {
+        $result = false;
+        if (self::is_legitimate_cron($cron_id)) {
+            $cron = str_replace('lws_', '', $cron_id);
+            $definer = 'define_' . $cron . '_cron';
+            if (method_exists(get_called_class(), $definer)) {
+                call_user_func(array(get_called_class(), $definer));
+                $result = true;
+            }
+        }
+        else {
+            Logger::alert('Core', null, null, null, null, null, null, 'Trying to define an unknown task: '.$cron_id);
+        }
+        return $result;
+    }
+
+    /**
+     * Delete schedules.
+     *
+     * @since 3.2.0
+     */
+    protected static function define_schedules() {
+        foreach (array_merge(self::$cron_system, self::$cron_pull, self::$cron_push) as $cron) {
+            self::define_cron($cron);
+        }
+    }
+
+    /**
+     * Delete schedules.
+     *
+     * @since 1.0.0
+     */
+    protected static function delete_schedules() {
+        foreach (array_merge(self::$cron_system, self::$cron_pull, self::$cron_push, self::$cron_old) as $cron) {
+            wp_clear_scheduled_hook($cron);
+        }
+    }
+
+    /**
+     * Init schedules.
+     *
+     * @since 2.0.0
+     */
+    protected static function init_schedules() {
+        foreach (array_merge(self::$cron_system, self::$cron_pull, self::$cron_push) as $cron) {
+            if ($cron != self::$watchdog_name) {
+                self::reschedule_cron($cron, 'Watchdog', false, true);
+            }
+        }
     }
 
     /**
@@ -232,41 +317,48 @@ trait Handling {
                 return __('Statistics cleaning', 'live-weather-station');
                 break;
             case 'lws_netatmo_update':
-                return __('Netatmo WS', 'live-weather-station');
+                return __('Netatmo - Weather station', 'live-weather-station');
                 break;
             case 'lws_netatmo_hc_update':
-                return __('Netatmo HHC', 'live-weather-station');
+                return __('Netatmo - Healthy Home Coach', 'live-weather-station');
                 break;
             case 'lws_owm_current_update':
-                return __('OpenWeatherMap current', 'live-weather-station');
+                return __('OpenWeatherMap - Current observations', 'live-weather-station');
                 break;
             case 'lws_owm_station_update':
-                return __('OpenWeatherMap WS', 'live-weather-station');
+                return __('OpenWeatherMap - Weather station', 'live-weather-station');
                 break;
             case 'lws_wug_station_update':
-                return __('Weather Underground WS', 'live-weather-station');
+                return __('Weather Underground - Weather station', 'live-weather-station');
                 break;
             case 'lws_raw_station_update':
-                return __('Clientraw WS', 'live-weather-station');
+                return __('Clientraw - Weather station', 'live-weather-station');
                 break;
             case 'lws_real_station_update':
-                return __('Realtime WS', 'live-weather-station');
+                return __('Realtime - Weather station', 'live-weather-station');
                 break;
             case 'lws_txt_station_update':
-                return __('Stickertags WS', 'live-weather-station');
+                return __('Stickertags - Weather station', 'live-weather-station');
                 break;
             case 'lws_owm_pollution_update':
-                return __('OpenWeatherMap pollution', 'live-weather-station');
+                return __('OpenWeatherMap - Pollution', 'live-weather-station');
                 break;
-            case 'lws_current_push':
-                return __('Generic sharing (PWS, WUG, WOW)', 'live-weather-station');
+            case 'lws_wow_current_push':
+                return __('Met Office - Outdoor data', 'live-weather-station');
+                break;
+            case 'lws_owm_current_push':
+                return __('OpenWeatherMap - Outdoor data', 'live-weather-station');
+                break;
+            case 'lws_pws_current_push':
+                return __('PWS Weather - Outdoor data', 'live-weather-station');
+                break;
+            case 'lws_wug_current_push':
+                return __('Weather Underground - Outdoor data', 'live-weather-station');
                 break;
             default :
                 return __('unknown', 'live-weather-station');
         }
     }
-
-
 
     /**
      * Define Netatmo Updater cron job.
@@ -289,7 +381,7 @@ trait Handling {
     protected static function launch_netatmo_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$netatmo_update_schedule_name)) {
             wp_schedule_event(time() + $timeshift, 'five_minutes', self::$netatmo_update_schedule_name);
-            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$netatmo_update_schedule_name).'" cron job.');
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$netatmo_update_schedule_name).'" (re)scheduled.');
         }
     }
 
@@ -314,7 +406,7 @@ trait Handling {
     protected static function launch_netatmo_hc_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$netatmo_hc_update_schedule_name)) {
             wp_schedule_event(time() + $timeshift, 'five_minutes', self::$netatmo_hc_update_schedule_name);
-            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$netatmo_hc_update_schedule_name).'" cron job.');
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$netatmo_hc_update_schedule_name).'" (re)scheduled.');
         }
     }
 
@@ -339,7 +431,7 @@ trait Handling {
     protected static function launch_raw_station_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$raw_update_station_schedule_name)) {
             wp_schedule_event(time() + $timeshift, 'five_minutes', self::$raw_update_station_schedule_name);
-            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$raw_update_station_schedule_name).'" cron job.');
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$raw_update_station_schedule_name).'" (re)scheduled.');
         }
     }
 
@@ -364,32 +456,7 @@ trait Handling {
     protected static function launch_real_station_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$real_update_station_schedule_name)) {
             wp_schedule_event(time() + $timeshift, 'five_minutes', self::$real_update_station_schedule_name);
-            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$real_update_station_schedule_name).'" cron job.');
-        }
-    }
-
-    /**
-     * Define Pusher cron job.
-     *
-     * @since 3.0.0
-     */
-    protected static function define_current_push_cron() {
-        $plugin_push_cron = new Pusher(LWS_PLUGIN_NAME, LWS_VERSION);
-        add_action(self::$push_schedule_name, array($plugin_push_cron, 'cron_run'));
-    }
-
-    /**
-     * Launch the Pusher cron job if needed.
-     *
-     * @param integer $timeshift Optional. The first start for the cron from now on.
-     * @param string $system Optional. The system which have initiated the launch.
-     *
-     * @since 3.0.0
-     */
-    protected static function launch_current_push_cron($timeshift=0, $system='Watchdog') {
-        if (!wp_next_scheduled(self::$push_schedule_name)) {
-            wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$push_schedule_name);
-            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$push_schedule_name).'" cron job.');
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$real_update_station_schedule_name).'" (re)scheduled.');
         }
     }
 
@@ -414,7 +481,7 @@ trait Handling {
     protected static function launch_owm_current_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$owm_update_current_schedule_name)) {
             wp_schedule_event(time() + $timeshift, 'fifteen_minutes', self::$owm_update_current_schedule_name);
-            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$owm_update_current_schedule_name).'" cron job.');
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$owm_update_current_schedule_name).'" (re)scheduled.');
         }
     }
 
@@ -439,7 +506,7 @@ trait Handling {
     protected static function launch_owm_station_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$owm_update_station_schedule_name)) {
             wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$owm_update_station_schedule_name);
-            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$owm_update_station_schedule_name).'" cron job.');
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$owm_update_station_schedule_name).'" (re)scheduled.');
         }
     }
 
@@ -464,7 +531,7 @@ trait Handling {
     protected static function launch_wug_station_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$wug_update_station_schedule_name)) {
             wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$wug_update_station_schedule_name);
-            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$wug_update_station_schedule_name).'" cron job.');
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$wug_update_station_schedule_name).'" (re)scheduled.');
         }
     }
 
@@ -489,7 +556,7 @@ trait Handling {
     protected static function launch_owm_pollution_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$owm_update_pollution_schedule_name)) {
             wp_schedule_event(time() + $timeshift, 'thirty_minutes', self::$owm_update_pollution_schedule_name);
-            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$owm_update_pollution_schedule_name).'" cron job.');
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$owm_update_pollution_schedule_name).'" (re)scheduled.');
         }
     }
 
@@ -514,7 +581,7 @@ trait Handling {
     protected static function launch_log_rotate_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$log_rotate_name)) {
             wp_schedule_event(time() + $timeshift, 'daily', self::$log_rotate_name);
-            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$log_rotate_name).'" cron job.');
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$log_rotate_name).'" (re)scheduled.');
         }
     }
 
@@ -539,7 +606,7 @@ trait Handling {
     protected static function launch_cache_flush_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$cache_flush_name)) {
             wp_schedule_event(time() + $timeshift, 'twicedaily', self::$cache_flush_name);
-            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$cache_flush_name).'" cron job.');
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$cache_flush_name).'" (re)scheduled.');
         }
     }
 
@@ -564,7 +631,7 @@ trait Handling {
     protected static function launch_stats_clean_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$stats_clean_name)) {
             wp_schedule_event(time() + $timeshift, 'daily', self::$stats_clean_name);
-            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$stats_clean_name).'" cron job.');
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$stats_clean_name).'" (re)scheduled.');
         }
     }
 
@@ -589,62 +656,108 @@ trait Handling {
     protected static function launch_translation_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$translation_update_name)) {
             wp_schedule_event(time() + $timeshift, 'daily', self::$translation_update_name);
-            Logger::info($system,null,null,null,null,null,null,'Recycling "'.self::get_cron_name(self::$translation_update_name).'" cron job.');
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$translation_update_name).'" (re)scheduled.');
         }
     }
 
     /**
-     * Delete schedules.
+     * Define WOW Pusher cron job.
      *
-     * @since    1.0.0
+     * @since 3.2.0
      */
-    protected static function delete_schedules() {
-        wp_clear_scheduled_hook(self::$netatmo_update_schedule_name);
-        wp_clear_scheduled_hook(self::$netatmo_hc_update_schedule_name);
-        wp_clear_scheduled_hook(self::$owm_update_schedule_name);
-        wp_clear_scheduled_hook(self::$owm_update_current_schedule_name);
-        wp_clear_scheduled_hook(self::$owm_update_station_schedule_name);
-        wp_clear_scheduled_hook(self::$wug_update_station_schedule_name);
-        wp_clear_scheduled_hook(self::$raw_update_station_schedule_name);
-        wp_clear_scheduled_hook(self::$real_update_station_schedule_name);
-        wp_clear_scheduled_hook(self::$owm_update_pollution_schedule_name);
-        wp_clear_scheduled_hook(self::$netatmo_push_schedule_name);
-        wp_clear_scheduled_hook(self::$push_schedule_name);
-        wp_clear_scheduled_hook(self::$log_rotate_name);
-        wp_clear_scheduled_hook(self::$cache_flush_name);
-        wp_clear_scheduled_hook(self::$stats_clean_name);
-        wp_clear_scheduled_hook(self::$translation_update_name);
+    protected static function define_wow_current_push_cron() {
+        $plugin_wow_push_cron = new Wow_Pusher(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$wow_push_schedule_name, array($plugin_wow_push_cron, 'cron_run'));
     }
 
     /**
-     * Init schedules.
+     * Launch the WOW Pusher cron job if needed.
      *
-     * @since    2.0.0
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
+     * @since 3.2.0
      */
-    protected static function init_schedules() {
-        self::launch_netatmo_update_cron(random_int(1,180));
-        self::launch_netatmo_hc_update_cron(random_int(1,180));
-        self::launch_current_push_cron(random_int(1,180));
-        self::launch_owm_current_update_cron(random_int(1,180));
-        self::launch_owm_station_update_cron(random_int(1,180));
-        self::launch_wug_station_update_cron(random_int(1,180));
-        self::launch_raw_station_update_cron(random_int(1,180));
-        self::launch_real_station_update_cron(random_int(1,180));
-        self::launch_owm_pollution_update_cron(random_int(1,180));
-        self::launch_log_rotate_cron(random_int(1,180));
-        self::launch_cache_flush_cron(random_int(1,180));
-        self::launch_stats_clean_cron(random_int(1,180));
-        self::launch_translation_update_cron(random_int(1,180));
+    protected static function launch_wow_current_push_cron($timeshift=0, $system='Watchdog') {
+        if (!wp_next_scheduled(self::$wow_push_schedule_name)) {
+            wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$wow_push_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$wow_push_schedule_name).'" (re)scheduled.');
+        }
     }
 
     /**
-     * Re-init schedules.
+     * Define OWM Pusher cron job.
      *
-     * @since    2.0.0
+     * @since 3.2.0
      */
-    protected static function reinit_schedules() {
-        self::delete_schedules();
-        self::init_schedules();
+    protected static function define_owm_current_push_cron() {
+        $plugin_owm_push_cron = new Owm_Pusher(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$owm_push_schedule_name, array($plugin_owm_push_cron, 'cron_run'));
+    }
+
+    /**
+     * Launch the OWM Pusher cron job if needed.
+     *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
+     * @since 3.2.0
+     */
+    protected static function launch_owm_current_push_cron($timeshift=0, $system='Watchdog') {
+        if (!wp_next_scheduled(self::$owm_push_schedule_name)) {
+            wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$owm_push_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$owm_push_schedule_name).'" (re)scheduled.');
+        }
+    }
+
+    /**
+     * Define PWS Pusher cron job.
+     *
+     * @since 3.2.0
+     */
+    protected static function define_pws_current_push_cron() {
+        $plugin_pws_push_cron = new Pws_Pusher(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$pws_push_schedule_name, array($plugin_pws_push_cron, 'cron_run'));
+    }
+
+    /**
+     * Launch the PWS Pusher cron job if needed.
+     *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
+     * @since 3.2.0
+     */
+    protected static function launch_pws_current_push_cron($timeshift=0, $system='Watchdog') {
+        if (!wp_next_scheduled(self::$pws_push_schedule_name)) {
+            wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$pws_push_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$pws_push_schedule_name).'" (re)scheduled.');
+        }
+    }
+
+    /**
+     * Define WUG Pusher cron job.
+     *
+     * @since 3.2.0
+     */
+    protected static function define_wug_current_push_cron() {
+        $plugin_wug_push_cron = new Wug_Pusher(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$wug_push_schedule_name, array($plugin_wug_push_cron, 'cron_run'));
+    }
+
+    /**
+     * Launch the WUG Pusher cron job if needed.
+     *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
+     * @since 3.2.0
+     */
+    protected static function launch_wug_current_push_cron($timeshift=0, $system='Watchdog') {
+        if (!wp_next_scheduled(self::$wug_push_schedule_name)) {
+            wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$wug_push_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$wug_push_schedule_name).'" (re)scheduled.');
+        }
     }
 
     /**

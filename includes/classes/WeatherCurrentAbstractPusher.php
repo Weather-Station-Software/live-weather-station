@@ -118,65 +118,6 @@ abstract class Pusher {
     /**
      * Post station's datas to service.
      *
-     * @param   array   $data       Collected Netatmo datas.
-     * @param   array   $stations   Optional. Test specificaly these stations.
-     * @return  string  Error string if any.
-     * @since    2.5.0
-     */
-    public function post_data($data, $stations = array()) {
-        if (empty($stations)) {
-            $test = false;
-            $stations = $this->get_stations_informations();
-        }
-        else {
-            $test = true;
-        }
-        $devices = $this->get_pushed_data($data);
-        foreach ($stations as $station) {
-            if (!$this->ready_for_push($station) && !$test) {
-                continue;
-            }
-            if (array_key_exists($station['station_id'], $devices)) {
-                $device = $devices[$station['station_id']];
-                $sid = $station['station_id'];
-                $sname = $station['station_name'];
-                if (!empty($device)) {
-                    $values = $this->complete_pushed_data($device, $station);
-                    $auth = $this->get_userpwd($station);
-                    try {
-                        $args = array();
-                        if ($auth != '') {
-                            $args['headers'] = array ('Authorization' => 'Basic ' . base64_encode($auth));
-                        }
-                        $args['body'] = $values;
-                        $content = wp_remote_post($this->get_post_url(), $args);
-                        Logger::debug($this->facility, $this->get_service_name(), $sid, $sname, null, null, 999, 'Raw data: ' . print_r($content,true));
-                        if (is_wp_error($content)) {
-                            throw new \Exception($content->get_error_message());
-                        }
-                        $this->process_result($content, $station);
-                        if ($test) {
-                            Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, null, 'Service connectivity test: OK.');
-                            return '';
-                        }
-                    }
-                    catch (\Exception $ex) {
-                        if ($test) {
-                            Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, $ex->getCode(), 'Service connectivity test: KO / ' . $ex->getMessage());
-                            return $ex->getMessage();
-                        }
-                        else {
-                            Logger::error($this->facility, $this->get_service_name(), $sid, $sname, null, null, $ex->getCode(), $ex->getMessage());
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Post station's datas to service.
-     *
      * @param array $stations Optional. Test specificaly these stations.
      * @return string Error string if any.
      * @since 3.0.0
@@ -208,7 +149,7 @@ abstract class Pusher {
                 if (is_wp_error($content)) {
                     throw new \Exception($content->get_error_message());
                 }
-                $this->process_result($content, $station);
+                $this->_process_result($content, $station);
                 if ($test) {
                     Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, null, 'Service connectivity test: OK.');
                     return '';

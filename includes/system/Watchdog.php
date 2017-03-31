@@ -59,20 +59,7 @@ class Watchdog {
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_12_minutes_interval'));
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_15_minutes_interval'));
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_30_minutes_interval'));
-        self::define_netatmo_update_cron();
-        self::define_netatmo_hc_update_cron();
-        self::define_current_push_cron();
-        self::define_owm_current_update_cron();
-        self::define_owm_station_update_cron();
-        self::define_wug_station_update_cron();
-        self::define_raw_station_update_cron();
-        self::define_real_station_update_cron();
-        self::define_owm_pollution_update_cron();
-        self::define_log_rotate_cron();
-        self::define_cache_flush_cron();
-        self::define_watchdog_cron();
-        self::define_stats_clean_cron();
-        self::define_translation_update_cron();
+        self::define_schedules();
         self::launch();
     }
 
@@ -83,7 +70,6 @@ class Watchdog {
      */
     public static function stop() {
         self::delete_schedules();
-        wp_clear_scheduled_hook(self::$watchdog_name);
         Logger::notice('Watchdog',null,null,null,null,null,null,'Service stopped.');
     }
 

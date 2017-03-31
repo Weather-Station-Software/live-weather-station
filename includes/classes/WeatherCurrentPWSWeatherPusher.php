@@ -3,6 +3,8 @@
 namespace WeatherStation\SDK\PWSWeather\Plugin;
 
 use WeatherStation\SDK\Generic\Plugin\Weather\Current\Pusher as Abstract_Pusher;
+use WeatherStation\System\Schedules\Watchdog;
+use WeatherStation\System\Logs\Logger;
 
 /**
  * Class to push data to PWS Weather.
@@ -128,5 +130,23 @@ class Pusher extends Abstract_Pusher {
         if (strpos(strtolower($body), 'error:') > 0) {
             throw new \Exception(substr(trim(substr($body, 6 + strpos(strtolower($body), '<body>'), 255)), 7, 255));
         }
+    }
+
+    /**
+     * Do the main job.
+     *
+     * @since 3.2.0
+     */
+    public function cron_run(){
+        $cron_id = Watchdog::init_chrono(Watchdog::$pws_push_schedule_name);
+        $svc = 'PWS Weather';
+        try {
+            $this->push_data();
+            Logger::info('Cron Engine', $svc, null, null, null, null, 0, 'Job done: pushing weather data.');
+        }
+        catch (\Exception $ex) {
+            Logger::error('Cron Engine', $svc, null, null, null, null, $ex->getCode(), 'Error while pushing weather data: ' . $ex->getMessage());
+        }
+        Watchdog::stop_chrono($cron_id);
     }
 }

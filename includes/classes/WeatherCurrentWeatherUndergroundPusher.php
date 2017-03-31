@@ -3,6 +3,7 @@
 namespace WeatherStation\SDK\WeatherUnderground\Plugin;
 
 use WeatherStation\SDK\Generic\Plugin\Weather\Current\Pusher as Abstract_Pusher;
+use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\Logs\Logger;
 
 /**
@@ -34,9 +35,6 @@ class Pusher extends Abstract_Pusher {
      */
     protected function process_data($data) {
         $result = array();
-        if (array_key_exists('timestamp', $data)) {
-            $result['dateutc'] = $data['timestamp'];
-        }
         if (array_key_exists('pressure', $data)) {
             $result['baromin'] = $this->get_pressure($data['pressure'], 1);
         }
@@ -67,6 +65,9 @@ class Pusher extends Abstract_Pusher {
         if (array_key_exists('dew_point', $data)) {
             $result['dewptf'] = $this->get_temperature($data['dew_point'], 1);
         }
+        if (array_key_exists('timestamp', $data)) {
+            $result['dateutc'] = $data['timestamp'];
+        }
         return $result;
     }
 
@@ -81,10 +82,9 @@ class Pusher extends Abstract_Pusher {
     protected function complete_pushed_data($device, $station) {
         $result = $device;
         $result['ID'] = $station['wug_user'];
-        $result['PASSWORD'] = $station['wug_password'];
-        $result['softwaretype'] = 'd';LWS_PLUGIN_SIGNATURE;
+        $result['PASSWORD'] = ($station['wug_password']);
+        $result['softwaretype'] = (LWS_PLUGIN_SIGNATURE);
         $result['action'] = 'updateraw';
-        Logger::dev(print_r($result, true));
         return $result;
     }
 
@@ -106,7 +106,7 @@ class Pusher extends Abstract_Pusher {
      * @since   2.6.0
      */
     protected function get_post_url() {
-        return 'http://weatherstation.wunderground.com/weatherstation/updateweatherstation.php';
+        return 'https://weatherstation.wunderground.com/weatherstation/updateweatherstation.php';
     }
 
     /**
@@ -133,5 +133,23 @@ class Pusher extends Abstract_Pusher {
         if (strpos(strtolower($body), 'success') === false) {
             throw new \Exception($body);
         }
+    }
+
+    /**
+     * Do the main job.
+     *
+     * @since 3.2.0
+     */
+    public function cron_run(){
+        $cron_id = Watchdog::init_chrono(Watchdog::$wug_push_schedule_name);
+        $svc = 'Weather Underground';
+        try {
+            $this->push_data();
+            Logger::info('Cron Engine', $svc, null, null, null, null, 0, 'Job done: pushing weather data.');
+        }
+        catch (\Exception $ex) {
+            Logger::error('Cron Engine', $svc, null, null, null, null, $ex->getCode(), 'Error while pushing weather data: ' . $ex->getMessage());
+        }
+        Watchdog::stop_chrono($cron_id);
     }
 }

@@ -32,14 +32,15 @@ class Updater {
      */
     public static function update($oldversion) {
         Logger::notice('Updater',null,null,null,null,null,null,'Starting ' . LWS_PLUGIN_NAME . ' update.', $oldversion);
+        Watchdog::stop();
         self::create_tables();
         self::update_tables($oldversion);
         Logger::notice('Updater',null,null,null,null,null,null,'Restarting ' . LWS_PLUGIN_NAME . '.', $oldversion);
         Logger::notice('Updater',null,null,null,null,null,null, LWS_PLUGIN_NAME . ' successfully updated from version ' . $oldversion . ' to version ' . LWS_VERSION . '.');
         update_option('live_weather_station_last_update', time());
-        Watchdog::restart();
         Cache::reset();
         self::_clean_usermeta('lws-analytics');
         Logger::notice('Updater', null, null, null, null, null, 0, 'Analytics view has been reset to defaults.');
+        Watchdog::start();
     }
 }

@@ -262,25 +262,32 @@ class Handling {
             $branch = '/dev';
         }
         $api_url = 'https://translate.wordpress.org/api/projects/wp-plugins/' . LWS_PLUGIN_SLUG . $branch;
-        $resp = wp_remote_get($api_url);
-        $body = wp_remote_retrieve_body($resp);
-        unset($resp);
-        if ($body) {
-            $body = json_decode($body);
-            $this->cpt = 0;
-            foreach ($body->translation_sets as $set) {
-                if ($set->percent_translated >= $this->percent_min) {
-                    $this->cpt += 1;
-                }
-                if (!property_exists($set,'wp_locale')) {
-                    continue;
-                }
-                if ($this->locale == $set->wp_locale) {
-                    return $set;
+        try {
+            $resp = wp_remote_get($api_url);
+            $body = wp_remote_retrieve_body($resp);
+            unset($resp);
+            if ($body) {
+                $body = json_decode($body);
+                $this->cpt = 0;
+                if (isset($body)) {
+                    foreach ($body->translation_sets as $set) {
+                        if ($set->percent_translated >= $this->percent_min) {
+                            $this->cpt += 1;
+                        }
+                        if (!property_exists($set, 'wp_locale')) {
+                            continue;
+                        }
+                        if ($this->locale == $set->wp_locale) {
+                            return $set;
+                        }
+                    }
                 }
             }
+            return null;
         }
-        return null;
+        catch (\Exception $e) {
+            return null;
+        }
     }
 
     /**

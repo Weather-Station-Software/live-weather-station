@@ -61,7 +61,7 @@ class Pusher {
             Logger::info('Cron Engine', $svc, null, null, null, null, 0, 'Job done: pushing weather data.');
         }
         catch (\Exception $ex) {
-            Logger::critical('Cron Engine', $svc, null, null, null, null, $ex->getCode(), 'Error while pushing weather data: ' . $ex->getMessage());
+            Logger::error('Cron Engine', $svc, null, null, null, null, $ex->getCode(), 'Error while pushing weather data: ' . $ex->getMessage());
         }
         Watchdog::stop_chrono($cron_id);
     }
