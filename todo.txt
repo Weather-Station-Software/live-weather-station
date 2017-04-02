@@ -59,5 +59,4 @@
 * FIXES TO DO         *
 ***********************
 
-better log of "Access token expired"
 cron manager doc

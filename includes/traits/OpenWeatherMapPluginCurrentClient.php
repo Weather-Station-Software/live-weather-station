@@ -170,6 +170,8 @@ trait CurrentClient {
         $stations = $this->get_located_operational_stations_list();
         $owm = new OWMApiClient();
         foreach ($stations as $key => $station) {
+            $device_id = $key;
+            $device_name = $station['device_name'];
             try {
                 $raw_data = $owm->getRawWeatherData(array('lat' => $station['loc_latitude'], 'lon' => $station['loc_longitude']), 'metric', 'en', get_option('live_weather_station_owm_apikey'), 'json');
                 $values = $this->get_owm_datas_array($raw_data, $station, $key);
@@ -180,18 +182,10 @@ trait CurrentClient {
                 $place['timezone'] = $station['loc_timezone'];
                 $place['location'] = array($station['loc_longitude'], $station['loc_latitude']);
                 $values['place'] = $place;
+                Logger::notice($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Current observations data retrieved.');
             }
             catch(\Exception $ex)
             {
-                if (isset($station['device_id']) && isset($station['device_name'])) {
-                    $device_id = $station['device_id'];
-                    $device_name = $station['device_name'];
-                }
-                else {
-                    $device_id = null;
-                    $device_name = null;
-                }
-
                 if (strpos($ex->getMessage(), 'Invalid API key') > -1) {
                     Logger::critical('Authentication', $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your OpenWeatherMap API key.');
                     return array();

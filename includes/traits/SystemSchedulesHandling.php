@@ -326,7 +326,7 @@ trait Handling {
                 return __('OpenWeatherMap - Current observations', 'live-weather-station');
                 break;
             case 'lws_owm_station_update':
-                return __('OpenWeatherMap - Weather station', 'live-weather-station');
+                return __('OpenWeatherMap - Virtual station', 'live-weather-station');
                 break;
             case 'lws_wug_station_update':
                 return __('Weather Underground - Weather station', 'live-weather-station');

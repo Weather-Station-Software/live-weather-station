@@ -85,12 +85,6 @@ trait HCClient {
                 $config['refresh_token'] = $refresh_token;
                 $config['access_token'] = $access_token;
                 $this->netatmo_client = new NAWSApiClient($config);
-                //$this->netatmo_client->getAccessTokenFromRefreshToken();
-
-                //$store = array();
-                //$store['refresh_token'] = $refresh_token;
-                //$store['access_token'] = $access_token;
-                //$this->netatmo_client->setTokensFromStore($store);
             }
             try {
                 $this->netatmo_datas = $this->netatmo_client->getHCData();
@@ -113,6 +107,7 @@ trait HCClient {
                         }
                     }
                 }
+                Logger::notice($this->facility, $this->service_name, null, null, null, null, 0, 'Data retrieved for Healthy Home Coaches.');
             }
             catch (\Exception $ex) {
                 switch ($ex->getCode()) {
@@ -125,7 +120,7 @@ trait HCClient {
                     case 5:
                     case 22:
                         $this->last_netatmo_error = __('Application deactivated. Please contact support.', 'live-weather-station');
-                        Logger::emergency($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Application deactivated. Please contact support.');
+                        Logger::alert($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Application deactivated. Please contact support.');
                         break;
                     case 20:
                         $this->last_netatmo_error = __('Too many users with this IP.', 'live-weather-station');
