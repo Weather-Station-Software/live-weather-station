@@ -67,32 +67,33 @@ class Stations extends Base {
 
     protected function column_title($item){
         switch ($item['station_type']) {
-            case 0:
+            case LWS_NETATMO_SID :
+            case LWS_NETATMOHC_SID :
                 if (!(bool)get_option('live_weather_station_auto_manage_netatmo')) {
                     $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 }
                 break;
-            case 1:
+            case LWS_LOC_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=Location&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
-            case 2:
+            case LWS_OWM_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=OpenWeatherMap&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
-            case 3:
+            case LWS_WUG_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=WeatherUnderground&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
-            case 4:
+            case LWS_RAW_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=clientraw&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
-            case 5:
+            case LWS_REAL_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=realtime&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
-            case 6:
+            case LWS_TXT_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=stickertags&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
@@ -328,18 +329,6 @@ class Stations extends Base {
                 include(LWS_ADMIN_DIR.'partials/ShortcodesJustgage.php');
                 include(LWS_ADMIN_DIR.'partials/ShortcodesLCD.php');
                 include(LWS_ADMIN_DIR.'partials/ShortcodesSteelmeter.php');
-                /*if (isset($js_array_textual[$guid][2])) {
-                    include(LWS_ADMIN_DIR.'partials/ShortcodesTextual.php');
-                }
-                if (isset($js_array_justgage[$guid][2])) {
-                    include(LWS_ADMIN_DIR.'partials/ShortcodesJustgage.php');
-                }
-                if (isset($js_array_lcd[$guid][2])) {
-                    include(LWS_ADMIN_DIR.'partials/ShortcodesLCD.php');
-                }
-                if (isset($js_array_steelmeter[$guid][2])) {
-                    include(LWS_ADMIN_DIR.'partials/ShortcodesSteelmeter.php');
-                }*/
             }
         }
     }

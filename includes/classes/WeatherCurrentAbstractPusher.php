@@ -18,7 +18,7 @@ abstract class Pusher {
 
     use Query, Unit_Conversion;
 
-    public $facility = 'Pusher';
+    public $facility = 'Weather Pusher';
 
     /**
      * Get the service Name.
@@ -145,7 +145,6 @@ abstract class Pusher {
                 }
                 $args['body'] = $values;
                 $content = wp_remote_post($this->get_post_url(), $args);
-                Logger::debug($this->facility, $this->get_service_name(), $sid, $sname, null, null, 999, 'Raw data: ' . print_r($content,true));
                 if (is_wp_error($content)) {
                     throw new \Exception($content->get_error_message());
                 }
@@ -155,7 +154,7 @@ abstract class Pusher {
                     return '';
                 }
                 else {
-                    Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, null, 'Data pushed.');
+                    Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, null, 'Outdoor data pushed.');
                     return '';
                 }
             }

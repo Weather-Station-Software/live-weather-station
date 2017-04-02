@@ -317,21 +317,16 @@ trait StationClient {
         $this->synchronize_wug_station();
         $stations = $this->get_all_wug_id_stations();
         $wug = new WUGApiClient();
-        foreach ($stations as $station) {
+        foreach ($stations as $st => $station) {
+            $device_id = $st;
+            $device_name = $station['station_name'];
             try {
                 $raw_data = $wug->getRawStationData($station['service_id'], $key);
                 $this->format_and_store($raw_data, $station);
+                Logger::notice($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Data retrieved.');
             }
             catch(\Exception $ex)
             {
-                if (isset($station['device_id']) && isset($station['device_name'])) {
-                    $device_id = $station['device_id'];
-                    $device_name = $station['device_name'];
-                }
-                else {
-                    $device_id = null;
-                    $device_name = null;
-                }
                 if (strpos($ex->getMessage(), 'this key does not exist') !== false) {
                     Logger::critical('Authentication', $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your Weather Underground API key.');
                     return array();

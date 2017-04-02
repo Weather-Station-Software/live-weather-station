@@ -184,7 +184,7 @@ trait Client {
         foreach ($result as $data) {
             $this->get_dashboard($data['device_id'], $data['device_name'], $data['_id'], $data['module_name'],
                 $data['type'], $data['data_type'], $data['dashboard_data'], $data['place']);
-            Logger::debug($this->facility, $this->service_name, $data['device_id'], $data['device_name'], $data['_id'], $data['module_name'], 0, 'Success while computing ephemeris.');
+            Logger::info($this->facility, $this->service_name, $data['device_id'], $data['device_name'], $data['_id'], $data['module_name'], 0, 'Ephemeris data computed.');
         }
         return $result;
     }

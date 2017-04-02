@@ -28,6 +28,7 @@ trait StationClient {
     use Id_Manipulation, Conversion, Description, Units, Dashboard_Manipulation;
 
     protected $facility = 'Weather Collector';
+    protected $service = 'File Handler - Clientraw';
 
     /**
      * Format and store data.
@@ -114,7 +115,7 @@ trait StationClient {
         }
         $this->update_data_table($updates);
         $this->update_table(self::live_weather_station_stations_table(), $station);
-        Logger::debug($this->facility, null, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
 
         // NAModule1
@@ -151,7 +152,7 @@ trait StationClient {
         $updates['measure_type'] = 'humidity_max';
         $updates['measure_value'] = $weather[163];
         $this->update_data_table($updates);
-        Logger::debug($this->facility, null, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
         // NAModule2
         $type = 'NAModule2';
@@ -180,7 +181,7 @@ trait StationClient {
         $updates['measure_type'] = 'guststrength';
         $updates['measure_value'] = $this->get_reverse_wind_speed($weather[133], 4);
         $this->update_data_table($updates);
-        Logger::debug($this->facility, null, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
         // NAModule3
         $type = 'NAModule3';
@@ -213,7 +214,7 @@ trait StationClient {
         $updates['measure_type'] = 'rain_yesterday_aggregated';
         $updates['measure_value'] = $weather[19];
         $this->update_data_table($updates);
-        Logger::debug($this->facility, null, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
         // NAModule4
         $type = 'NAModule4';
@@ -248,7 +249,7 @@ trait StationClient {
             $updates['measure_value'] = $idx;
             $this->update_data_table($updates);
         }
-        Logger::debug($this->facility, null, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         $tmp = array(16, 20, 21, 22,  23,  24,  25, 120, 121);
         $hum = array(17, 26, 27, 28, 122, 123, 124, 125, 126);
         $max = $weather[18];
@@ -284,7 +285,7 @@ trait StationClient {
                     $updates['measure_value'] = $idx;
                     $this->update_data_table($updates);
                 }
-                Logger::debug($this->facility, null, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+                Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
             }
         }
 
@@ -318,7 +319,7 @@ trait StationClient {
         $weather = false;
         try {
             $weather = explode(' ', $raw_data);
-            Logger::debug($this->facility, null, null, null, null, null, null, print_r($weather, true));
+            Logger::debug($this->facility, $this->service, null, null, null, null, null, print_r($weather, true));
             if (count($weather) < 167) {
                 return false;
             }
@@ -372,11 +373,12 @@ trait StationClient {
         $collector = new FileClient($connection_type);
         try {
             $result = $collector->getRawStationData($resource);
+            Logger::notice($this->facility, $this->service, $device_id, $device_name, null, null, 0, 'Data retrieved.');
         }
         catch(\Exception $ex)
         {
             $result = $ex->getMessage();
-            Logger::warning($this->facility, null, $device_id, $device_name, null, null, $ex->getCode(), $ex->getMessage());
+            Logger::warning($this->facility, $this->service, $device_id, $device_name, null, null, $ex->getCode(), $ex->getMessage());
         }
         return $result;
     }
@@ -410,7 +412,7 @@ trait StationClient {
         $this->synchronize_station();
         $stations = $this->get_all_clientraw_id_stations();
         foreach ($stations as $station) {
-            $raw_data = $this->get_data($station['connection_type'], $station['service_id']);
+            $raw_data = $this->get_data($station['connection_type'], $station['service_id'], $station['station_id'], $station['station_name']);
             $this->format_and_store($raw_data, $station);
         }
     }
@@ -433,10 +435,10 @@ trait StationClient {
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
             $ephemeris->compute(LWS_RAW_SID);
-            Logger::info($system, null, null, null, null, null, 0, 'Job done: collecting from clientraw file and computing weather and ephemeris data.');
+            Logger::info($system, $this->service, null, null, null, null, 0, 'Job done: collecting from clientraw file and computing weather and ephemeris data.');
         }
         catch (\Exception $ex) {
-            Logger::critical($system, null, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+            Logger::critical($system, $this->service, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
         }
         $this->synchronize_modules_count();
         Watchdog::stop_chrono($cron_id);
