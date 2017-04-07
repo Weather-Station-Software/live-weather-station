@@ -7,6 +7,7 @@ use WeatherStation\SDK\OpenWeatherMap\OWMApiClient;
 use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
 use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
 use WeatherStation\System\Schedules\Watchdog;
+use WeatherStation\System\Quota\Quota;
 
 /**
  * OpenWeatherMap station client for Weather Station plugin.
@@ -149,10 +150,18 @@ trait StationClient {
         Logger::dev(print_r($stations, true));
 
         $owm = new OWMApiClient();
-        foreach ($stations as $key => $station) {
+        foreach ($stations as $st => $station) {
+            $device_id = $st;
+            $device_name = $station['station_name'];
             try {
-                $raw_data = $owm->getRawStationData(29584, 'metric', 'en', get_option('live_weather_station_owm_apikey'), 'json');
-                Logger::dev(print_r($raw_data, true));
+                if (Quota::verify($this->service_name, 'GET')) {
+                    $raw_data = $owm->getRawStationData(29584, 'metric', 'en', get_option('live_weather_station_owm_apikey'), 'json');
+                    Logger::notice($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Weather stations data retrieved.');
+                }
+                else {
+                    Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');
+                }
+
                 /*$values = $this->get_owm_datas_array($raw_data, $station, $key);
                 $place = array();
                 $place['country'] = $station['loc_country'];
@@ -164,15 +173,6 @@ trait StationClient {
             }
             catch(\Exception $ex)
             {
-                if (isset($station['device_id']) && isset($station['device_name'])) {
-                    $device_id = $station['device_id'];
-                    $device_name = $station['device_name'];
-                }
-                else {
-                    $device_id = null;
-                    $device_name = null;
-                }
-
                 if (strpos($ex->getMessage(), 'Invalid API key') > -1) {
                     Logger::critical('Authentication', $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your OpenWeatherMap API key.');
                     return array();

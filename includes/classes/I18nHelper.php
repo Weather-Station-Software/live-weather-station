@@ -7,6 +7,7 @@ use WeatherStation\System\Environment\Manager as EnvManager;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Schedules\Watchdog;
+use WeatherStation\System\Quota\Quota;
 
 
 /**
@@ -263,6 +264,7 @@ class Handling {
         }
         $api_url = 'https://translate.wordpress.org/api/projects/wp-plugins/' . LWS_PLUGIN_SLUG . $branch;
         try {
+            Quota::verify('WordPress.org', 'GET');
             $resp = wp_remote_get($api_url);
             $body = wp_remote_retrieve_body($resp);
             unset($resp);

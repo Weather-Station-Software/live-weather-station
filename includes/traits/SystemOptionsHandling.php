@@ -24,6 +24,9 @@ trait Handling {
     private static $live_weather_station_logger_retention = 14 ;
     private static $live_weather_station_analytics_cutoff = 7 ;
 
+    private static $live_weather_station_quota_mode = 2 ;
+    private static $live_weather_station_force_frontend_styling = true;
+
     private static $live_weather_station_advanced_mode = false;
     private static $live_weather_station_txt_cache_bypass = false;
     private static $live_weather_station_backend_cache = true;
@@ -345,6 +348,8 @@ trait Handling {
         delete_option('live_weather_station_show_tasks');
         delete_option('live_weather_station_analytics_cutoff');
         delete_option('live_weather_station_auto_update');
+        delete_option('live_weather_station_quota_mode');
+        delete_option('live_weather_station_force_frontend_styling');
         self::delete_thresholds_options();
     }
 
@@ -415,6 +420,8 @@ trait Handling {
         update_option('live_weather_station_show_tasks', self::$live_weather_station_show_tasks);
         update_option('live_weather_station_analytics_cutoff', self::$live_weather_station_analytics_cutoff);
         update_option('live_weather_station_auto_update', self::$live_weather_station_auto_update);
+        update_option('live_weather_station_quota_mode', self::$live_weather_station_quota_mode);
+        update_option('live_weather_station_force_frontend_styling', self::$live_weather_station_force_frontend_styling);
     }
 
     /**
@@ -612,6 +619,8 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_auto_update', self::$live_weather_station_auto_update);
         self::verify_option_boolean('live_weather_station_advanced_mode', self::$live_weather_station_advanced_mode);
         self::verify_option_boolean('live_weather_station_partial_translation', self::$live_weather_station_partial_translation);
+        self::verify_option_integer('live_weather_station_quota_mode', self::$live_weather_station_quota_mode);
+        self::verify_option_boolean('live_weather_station_force_frontend_styling', self::$live_weather_station_force_frontend_styling);
         if ($migrate) {
             self::verify_option_string('live_weather_station_netatmo_refresh_token', (get_option('live_weather_station_netatmo_account') ? get_option('live_weather_station_netatmo_account')[0] : self::$live_weather_station_netatmo_refresh_token));
             self::verify_option_string('live_weather_station_netatmo_access_token', (get_option('live_weather_station_netatmo_account') ? get_option('live_weather_station_netatmo_account')[1] : self::$live_weather_station_netatmo_access_token));

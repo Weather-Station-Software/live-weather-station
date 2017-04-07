@@ -5,7 +5,7 @@ namespace WeatherStation\SDK\WeatherUnderground\Plugin;
 use WeatherStation\SDK\WeatherUnderground\WUGApiClient;
 use WeatherStation\Data\Dashboard\Handling as Dashboard_Manipulation;
 use WeatherStation\Data\ID\Handling as Id_Manipulation;
-
+use WeatherStation\System\Quota\Quota;
 use WeatherStation\Data\Type\Description;
 
 /**
@@ -21,6 +21,7 @@ trait BaseClient {
     use Dashboard_Manipulation, Id_Manipulation, Description;
 
     protected $service_name = 'Weather Underground';
+    protected static $service = 'Weather Underground';
     public $last_wug_error;
 
     /**
@@ -36,6 +37,7 @@ trait BaseClient {
         $wug = new WUGApiClient();
         $this->last_wug_error = '';
         try {
+            Quota::verify($this->service_name, 'GET');
             $raw_data = $wug->getRawStationData('INORDPAS92', $key);
             $weather = json_decode($raw_data, true);
             if (!is_array($weather)) {

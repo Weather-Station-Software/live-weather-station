@@ -3,6 +3,7 @@
 ***********************
 
  * 3.x - live_weather_station_overload_hc as setting
+ * 3.x - live_weather_station_force_frontend_styling as setting
  * 3.x - Sun (meridian) transit time
  * 3.x - Querying icons texts via shortcodes
  * 3.x - Forest fire weather index computing
@@ -60,3 +61,5 @@
 ***********************
 
 cron manager doc
+contextual help in dashboard
+api quota doc

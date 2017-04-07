@@ -2,6 +2,7 @@
 
 namespace WeatherStation\System\Analytics;
 use WeatherStation\System\Cache\Cache;
+use WeatherStation\System\Quota\Quota;
 use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\DB\Storage;
@@ -45,6 +46,7 @@ class Performance {
         $cron_id = Watchdog::init_chrono(Watchdog::$stats_clean_name);
         Cache::rotate();
         Watchdog::rotate();
+        Quota::rotate();
         Logger::notice($this->facility,null,null,null,null,null,null,'Performance data cleaned.');
         Watchdog::stop_chrono($cron_id);
     }
@@ -57,6 +59,7 @@ class Performance {
     public static function store() {
         Cache::write_stats();
         Watchdog::write_stats();
+        Quota::write_stats();
     }
 
     /**
@@ -502,7 +505,7 @@ class Performance {
             foreach (Logger::$ordered_severity as $severity) {
                 foreach ($field_list as $element) {
                     $pre_jsonable[$field][$severity][$element] = 0;
-                    $pre_jsonable[$field.'_values'][] = '"' . $element . '"';
+                    //$pre_jsonable[$field.'_values'][] = '"' . $element . '"';
                 }
             }
         }
@@ -575,9 +578,9 @@ class Performance {
             }
         }
         foreach ($pre_jsonable as $key=>$field) {
-            if (strpos($key, '_values')) {
+            /*if (strpos($key, '_values')) {
                 continue;
-            }
+            }*/
             foreach ($field as $level=>$serie) {
                 foreach ($serie as $element => $cpt) {
                     $jsonable[$key][$level][] = array('x' => '$' . $element . '$', 'y' => $pre_jsonable[$key][$level][$element]);
@@ -591,9 +594,9 @@ class Performance {
             }
             $data[$key] = '[' . implode(',', $data_r[$key]) . ']';
         }
-        foreach ($fields as $field) {
+        /*foreach ($fields as $field) {
             $data[$field.'_values'] = '[' . implode(',', $pre_jsonable[$field.'_values']) . ']';
-        }
+        }*/
         $data['density'] = '{' . implode(',', $density) . '}';
         $data['density_max'] = $density_max;
         $data['density_datemin'] = $density_datemin;
@@ -602,6 +605,450 @@ class Performance {
         $data['criticality_datemin'] = $criticality_datemin;
         $result = array('agr24' => $sum[24], 'agr30' => $sum[30], 'dat' => $data);
         Cache::set_backend(Cache::$db_stat_perf_event, $result);
+        return $result;
+    }
+
+    /**
+     * Get all stats values for quotas.
+     *
+     * @since 3.2.0
+     */
+    public static function get_quota_values() {
+        if ($result = Cache::get_backend(Cache::$db_stat_perf_quota)) {
+            return $result;
+        }
+        global $wpdb;
+        $verbs = array('post', 'get', 'put', 'patch', 'delete');
+        $idx = array('sum', 'max');
+        $sum = array();
+        $data = array();
+
+        // General values
+        $service24 = array();
+        $sql = "SELECT DISTINCT(service) FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . ' ORDER BY service ASC';
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            foreach ($query_a as $val) {
+                $detail = (array)$val;
+                $service24[] = $detail['service'];
+
+            }
+        } catch (\Exception $ex) {
+            $service24 = array();
+        }
+        $data['service24'] = $service24;
+
+        $service30 = array();
+        $sql = "SELECT DISTINCT(service) FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . ' ORDER BY service ASC';
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            foreach ($query_a as $val) {
+                $detail = (array)$val;
+                $service30[] = $detail['service'];
+
+            }
+        } catch (\Exception $ex) {
+            $service30 = array();
+        }
+        $data['service30'] = $service30;
+        
+        // 24H dashboard
+        $sum[24] = array();
+        $fields = array();
+        foreach ($idx as $id) {
+            foreach ($verbs as $verb) {
+                $fields[] = $id . '(`' . $verb . '`) as ' . $id . '_' . $verb;
+            }
+        }
+        $select = "service, " . implode(', ', $fields);
+        $cutoff = date('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
+        $where = "timestamp>='" . $cutoff . "'";
+        $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ";
+        $sql .= $where . " GROUP BY service;";
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            foreach ($query_a as $val) {
+                $detail = (array)$val;
+                foreach ($verbs as $verb) {
+                    $sum[24][$detail['service']][$verb]['has_quota'] = false;
+                    $q = Quota::get_count_quota($detail['service'], $verb);
+                    if ($q > 0) {
+                        $v = 100 * $detail['sum_'.$verb] / $q;
+                        $sum[24][$detail['service']][$verb]['has_quota'] = true;
+                    }
+                    else {
+                        $v = 0;
+                    }
+                    $sum[24][$detail['service']][$verb]['count'] = round($v, 1);
+                    $q = Quota::get_rate_quota($detail['service'], $verb);
+                    if ($q > 0) {
+                        $rate = $detail['max_'.$verb] / 10;
+                        if ($detail['max_'.$verb] % 10 > 0) {
+                            $rate += 1;
+                        }
+                        $v = 100 * $rate / $q;
+                        $sum[24][$detail['service']][$verb]['has_quota'] = true;
+                    }
+                    else {
+                        $v = 0;
+                    }
+                    $sum[24][$detail['service']][$verb]['rate'] = round($v, 1);
+                }
+            }
+        } catch (\Exception $ex) {
+            $sum[24] = array();
+        }
+
+        // 30D dashboard
+        $sum[30] = array();
+        $fields = array();
+        foreach ($verbs as $verb) {
+            $fields[] = 'avg(100*(if (`' . $verb . '_q`=0,0,`' . $verb . '`/`'. $verb . '_q`))) as avg_' . $verb ;
+            $fields[] = '(if (`' . $verb . '_q`=0,0,1)) as avg_' . $verb .'_has_quota';
+            $fields[] = 'max(100*(if (`' . $verb . '_rate_q`=0,0,`' . $verb . '_rate`/`'. $verb . '_rate_q`))) as max_' . $verb . '_rate' ;
+            $fields[] = '(if (`' . $verb . '_rate_q`=0,0,1)) as max_' . $verb . '_rate_has_quota' ;
+        }
+        $select = "service, " . implode(', ', $fields);
+        $cutoff = date('Y-m-d',time() - (31*DAY_IN_SECONDS)) . ' 00:00:00';
+        $today = date('Y-m-d') . ' 00:00:00';
+        $where = "timestamp>='" . $cutoff . "' AND timestamp<'" . $today . "'";
+        $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ";
+        $sql .= $where . " GROUP BY service;";
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            foreach ($query_a as $val) {
+                $detail = (array)$val;
+                foreach ($verbs as $verb) {
+                    $has_quota = false;
+                    $sum[30][$detail['service']][$verb]['count'] = round($detail['avg_' . $verb], 1);
+                    $sum[30][$detail['service']][$verb]['rate'] = round($detail['max_' . $verb . '_rate'], 1);
+                    if ($detail['avg_' . $verb . '_has_quota'] == 1) {
+                        $has_quota = true;
+                    }
+                    if ($detail['max_' . $verb . '_rate_has_quota'] == 1) {
+                        $has_quota = true;
+                    }
+                    $sum[30][$detail['service']][$verb]['has_quota'] = $has_quota;
+                }
+            }
+        } catch (\Exception $ex) {
+            $sum[30] = array();
+        }
+
+        // 24H verbs breakdown
+        $sql = "SELECT COUNT(DISTINCT timestamp) as cpt FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table();
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $query_t = (array)$query_a[0];
+            $cpt = ($query_t['cpt']-1)/144;
+        } catch (\Exception $ex) {
+            $cpt = 1;
+        }
+        if ($cpt == 0) {
+            $cpt = 1;
+        }
+        $fields = array();
+        $values = array();
+        foreach ($verbs as $verb) {
+            $fields[] = '(sum(`' . $verb . '`)) as cpt_' . $verb;
+            foreach ($service24 as $service) {
+                $values[$verb][$service] = 0;
+            }
+        }
+        $select = "service, " . implode(', ', $fields);
+        $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " GROUP BY service;";
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            foreach ($query_a as $val) {
+                $detail = (array)$val;
+                foreach ($verbs as $verb) {
+                    $values[$verb][$detail['service']] = $detail['cpt_'.$verb]/$cpt;
+                }
+            }
+        } catch (\Exception $ex) {
+            //
+        }
+        $data_r = array();
+        foreach ($verbs as $verb) {
+            $jsonable = array();
+            foreach ($service24 as $service) {
+                $s = json_encode(array('x' => '$' . $service . '$', 'y' => round($values[$verb][$service], 0)));
+                $s = str_replace('"', '', $s);
+                $s = str_replace('$', '"', $s);
+                $jsonable[] = $s;
+            }
+            $s = '[' . implode(',', $jsonable) . ']';
+            $data_r[] = '{"key":"' . strtoupper($verb) . '", "values":' . $s . '}';
+        }
+        $data['count']['service_short'] = '[' . implode(',', $data_r) . ']';
+        
+        // 24H CALLS & RATES
+        $values = array();
+        $cutoff = date('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
+        $where = "timestamp>='" . $cutoff . "'";
+        $sql = "SELECT DISTINCT(timestamp) FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ". $where ;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            foreach ($query_a as $val) {
+                $detail = (array)$val;
+                $datetime = new \DateTime($detail['timestamp']);
+                $time = $datetime->getTimestamp() . '000';
+                foreach ($service24 as $service) {
+                    foreach ($verbs as $verb) {
+                        $values['call'][$service][$verb][$time] = 0;
+                        $values['call'][$service][$verb.'_q'][$time] = 0;
+                        $values['rate'][$service][$verb][$time] = 0;
+                        $values['rate'][$service][$verb.'_q'][$time] = 0;
+                    }
+                }
+            }
+        }
+        catch (\Exception $ex) {
+            //
+        }
+        $sql = "SELECT * FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ". $where ;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            foreach ($query_a as $val) {
+                $detail = (array)$val;
+                $datetime = new \DateTime($detail['timestamp']);
+                $time = $datetime->getTimestamp() . '000';
+                foreach ($verbs as $verb) {
+                    $values['call'][$detail['service']][$verb][$time] = $detail[$verb];
+                    $values['call'][$detail['service']][$verb.'_q'][$time] = Quota::get_count_quota($detail['service'], $verb);
+                    $rate = (integer)($detail[$verb] / 10);
+                    if ($detail[$verb] % 10 > 0) {
+                        $rate += 1;
+                    }
+                    $values['rate'][$detail['service']][$verb][$time] = $rate;
+                    $values['rate'][$detail['service']][$verb.'_q'][$time] = Quota::get_rate_quota($detail['service'], $verb);
+                }
+            }
+        }
+        catch (\Exception $ex) {
+            //
+        }
+        foreach ($service24 as $service) {
+            $data_r = array();
+            foreach ($verbs as $verb) {
+                $jsonable = array();
+                foreach ($values['call'][$service][$verb] as $t => $v) {
+                    $s = json_encode(array($t, $v));
+                    $s = str_replace('"', '', $s);
+                    $jsonable[] = $s;
+                }
+                $s = '[' . implode(',', $jsonable) . ']';
+                $data_r[] = '{"key":"' . strtoupper($verb) . '", "values":' . $s . '}';
+            }
+            $data['call_short'][$service] = '[' . implode(',', $data_r) . ']';
+        }
+        foreach ($service24 as $service) {
+            $data_r = array();
+            foreach ($verbs as $verb) {
+                $jsonable = array();
+                foreach ($values['rate'][$service][$verb] as $t => $v) {
+                    $s = json_encode(array($t, $v));
+                    $s = str_replace('"', '', $s);
+                    $jsonable[] = $s;
+                }
+                $s = '[' . implode(',', $jsonable) . ']';
+                $data_r[] = '{"key":"' . strtoupper($verb) . '", "values":' . $s . '}';
+            }
+            $data['rate_short'][$service] = '[' . implode(',', $data_r) . ']';
+        }
+
+        // 30H CALLS & RATES
+        $values = array();
+        $cutoff = date('Y-m-d',time()). ' 00:00:00';
+        $where = "timestamp<'" . $cutoff . "'";
+        $sql = "SELECT DISTINCT(timestamp) FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            foreach ($query_a as $val) {
+                $detail = (array)$val;
+                $datetime = new \DateTime($detail['timestamp']);
+                $time = $datetime->getTimestamp() . '000';
+                foreach ($service30 as $service) {
+                    foreach ($verbs as $verb) {
+                        $values['call'][$service][$verb][$time] = 0;
+                        $values['call'][$service][$verb.'_q'][$time] = Quota::get_count_quota($service, $verb);
+                        $values['rate'][$service][$verb][$time] = 0;
+                        $values['rate'][$service][$verb.'_q'][$time] = Quota::get_rate_quota($service, $verb);
+                    }
+                }
+            }
+        }
+        catch (\Exception $ex) {
+            //
+        }
+        $cutoff = date('Y-m-d',time()). ' 00:00:00';
+        $where = "timestamp<'" . $cutoff . "'";
+        $sql = "SELECT * FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            foreach ($query_a as $val) {
+                $detail = (array)$val;
+                $datetime = new \DateTime($detail['timestamp']);
+                $time = $datetime->getTimestamp() . '000';
+                foreach ($verbs as $verb) {
+                    $values['call'][$detail['service']][$verb][$time] = $detail[$verb];
+                    $values['call'][$detail['service']][$verb.'_q'][$time] = $detail[$verb.'_q'];
+                    $values['rate'][$detail['service']][$verb][$time] = $detail[$verb.'_rate'];
+                    $values['rate'][$detail['service']][$verb.'_q'][$time] = $detail[$verb.'_rate_q'];
+                }
+            }
+        }
+        catch (\Exception $ex) {
+            //
+        }
+        foreach ($service30 as $service) {
+            $data_r = array();
+            foreach ($verbs as $verb) {
+                $jsonable = array();
+                $jsonable['values'] = array();
+                $jsonable['quotas'] = array();
+                $hidden_values = true;
+                $hidden_quotas = true;
+                foreach ($values['call'][$service][$verb] as $t => $v) {
+                    $s = json_encode(array($t, $values['call'][$service][$verb][$t]));
+                    $s = str_replace('"', '', $s);
+                    $jsonable['values'][] = $s;
+                    $s = json_encode(array($t, $values['call'][$service][$verb.'_q'][$t]));
+                    $s = str_replace('"', '', $s);
+                    $jsonable['quotas'][] = $s;
+                    if ($hidden_values) {
+                        if ($values['call'][$service][$verb][$t] > 0) {
+                            $hidden_values = false;
+                        }
+                    }
+                    if ($hidden_quotas) {
+                        if ($values['call'][$service][$verb.'_q'][$t] > 0) {
+                            $hidden_quotas = false;
+                        }
+                    }
+                }
+                $class_value = '';
+                if ($hidden_values) {
+                    $class_value = ', "classed":"hidden-line"';
+                }
+                $class_quota = ', "classed":"dashed-line"';
+                if ($hidden_quotas) {
+                    $class_quota = ', "classed":"hidden-line"';
+                }
+                $s = '[' . implode(',', $jsonable['values']) . ']';
+                $data_r[] = '{"key":"' . strtoupper($verb) . '"' . $class_value . ', "values":' . $s . '}';
+                $s = '[' . implode(',', $jsonable['quotas']) . ']';
+                $data_r[] = '{"key":"' . strtoupper($verb) . ' - quotas"' . $class_quota . ', "strokeWidth":3, "values":' . $s . '}';
+            }
+            $data['call_long'][$service] = '[' . implode(',', $data_r) . ']';
+        }
+
+        foreach ($service30 as $service) {
+            $data_r = array();
+            foreach ($verbs as $verb) {
+                $jsonable = array();
+                $jsonable['values'] = array();
+                $jsonable['quotas'] = array();
+                $hidden_values = true;
+                $hidden_quotas = true;
+                foreach ($values['rate'][$service][$verb] as $t => $v) {
+                    $s = json_encode(array($t, $values['rate'][$service][$verb][$t]));
+                    $s = str_replace('"', '', $s);
+                    $jsonable['values'][] = $s;
+                    $s = json_encode(array($t, $values['rate'][$service][$verb.'_q'][$t]));
+                    $s = str_replace('"', '', $s);
+                    $jsonable['quotas'][] = $s;
+                    if ($hidden_values) {
+                        if ($values['rate'][$service][$verb][$t] > 0) {
+                            $hidden_values = false;
+                        }
+                    }
+                    if ($hidden_quotas) {
+                        if ($values['rate'][$service][$verb.'_q'][$t] > 0) {
+                            $hidden_quotas = false;
+                        }
+                    }
+                }
+                $class_value = '';
+                if ($hidden_values) {
+                    $class_value = ', "classed":"hidden-line"';
+                }
+                $class_quota = ', "classed":"dashed-line"';
+                if ($hidden_quotas) {
+                    $class_quota = ', "classed":"hidden-line"';
+                }
+                $s = '[' . implode(',', $jsonable['values']) . ']';
+                $data_r[] = '{"key":"' . strtoupper($verb) . '"' . $class_value . ', "values":' . $s . '}';
+                $s = '[' . implode(',', $jsonable['quotas']) . ']';
+                $data_r[] = '{"key":"' . strtoupper($verb) . ' - quotas"' . $class_quota . ', "strokeWidth":3, "values":' . $s . '}';
+            }
+            $data['rate_long'][$service] = '[' . implode(',', $data_r) . ']';
+        }
+
+
+        // 30D verbs breakdown
+        $sql = "SELECT COUNT(DISTINCT timestamp) as cpt FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table();
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $query_t = (array)$query_a[0];
+            $cpt = $query_t['cpt'];
+        } catch (\Exception $ex) {
+            $cpt = 1;
+        }
+        if ($cpt == 0) {
+            $cpt = 1;
+        }
+        $fields = array();
+        $values = array();
+        foreach ($verbs as $verb) {
+            $fields[] = '(sum(`' . $verb . '`)) as cpt_' . $verb;
+            foreach ($service30 as $service) {
+                $values[$verb][$service] = 0;
+            }
+        }
+        $cutoff = date('Y-m-d',time()). ' 00:00:00';
+        $where = "timestamp<'" . $cutoff . "'";
+        $select = "service, " . implode(', ', $fields);
+        $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where . " GROUP BY service;";
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            foreach ($query_a as $val) {
+                $detail = (array)$val;
+                foreach ($verbs as $verb) {
+                    $values[$verb][$detail['service']] = $detail['cpt_'.$verb]/$cpt;
+                }
+            }
+        } catch (\Exception $ex) {
+            //
+        }
+        $data_r = array();
+        foreach ($verbs as $verb) {
+            $jsonable = array();
+            foreach ($service30 as $service) {
+                $s = json_encode(array('x' => '$' . $service . '$', 'y' => round($values[$verb][$service], 0)));
+                $s = str_replace('"', '', $s);
+                $s = str_replace('$', '"', $s);
+                $jsonable[] = $s;
+            }
+            $s = '[' . implode(',', $jsonable) . ']';
+            $data_r[] = '{"key":"' . strtoupper($verb) . '", "values":' . $s . '}';
+        }
+        $data['count']['service_long'] = '[' . implode(',', $data_r) . ']';
+
+        $result = array('agr24' => $sum[24], 'agr30' => $sum[30], 'dat' => $data);
+        Cache::set_backend(Cache::$db_stat_perf_quota, $result);
         return $result;
     }
 }

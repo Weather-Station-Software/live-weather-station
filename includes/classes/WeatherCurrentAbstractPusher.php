@@ -5,6 +5,7 @@ namespace WeatherStation\SDK\Generic\Plugin\Weather\Current;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\Unit\Conversion as Unit_Conversion;
 use WeatherStation\DB\Query as Query;
+use WeatherStation\System\Quota\Quota;
 
 /**
  * Abstract class to push data to weather services.
@@ -144,19 +145,25 @@ abstract class Pusher {
                     $args['headers'] = array ('Authorization' => 'Basic ' . base64_encode($auth));
                 }
                 $args['body'] = $values;
-                $content = wp_remote_post($this->get_post_url(), $args);
-                if (is_wp_error($content)) {
-                    throw new \Exception($content->get_error_message());
-                }
-                $this->_process_result($content, $station);
-                if ($test) {
-                    Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, null, 'Service connectivity test: OK.');
-                    return '';
+                if (Quota::verify($this->get_service_name(), 'POST')) {
+                    $content = wp_remote_post($this->get_post_url(), $args);
+                    if (is_wp_error($content)) {
+                        throw new \Exception($content->get_error_message());
+                    }
+                    $this->_process_result($content, $station);
+                    if ($test) {
+                        Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, null, 'Service connectivity test: OK.');
+                        return '';
+                    }
+                    else {
+                        Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, null, 'Outdoor data pushed.');
+                        return '';
+                    }
                 }
                 else {
-                    Logger::notice($this->facility, $this->get_service_name(), $sid, $sname, null, null, null, 'Outdoor data pushed.');
-                    return '';
+                    Logger::warning($this->facility, $this->get_service_name(), null, null, null, null, 0, 'Quota manager has forbidden to post data.');
                 }
+
             }
             catch (\Exception $ex) {
                 if ($test) {

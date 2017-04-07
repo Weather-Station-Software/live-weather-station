@@ -30,7 +30,7 @@ foreach ($fields as $field) {
     $color1 = 154 - round($quality/1.4, 0);
     $color2 = 154 + $quality;
     $values[$field]['clr'] = 'rgb('.$color1.', '.$color1.', '.$color2.')';
-    $values[$field]['txt'] = ucfirst($val[$field]['name']);//.'Q='.$quality);
+    $values[$field]['txt'] = ucfirst($val[$field]['name']);
     $values[$field]['txt'] .= ' - ' .  sprintf(__('tasks executed %s times in an average time of %s ms.', 'live-weather-station'), $val[$field]['count'], $val[$field]['avr_time']);
 }
 

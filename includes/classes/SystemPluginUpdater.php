@@ -22,15 +22,22 @@ class Updater {
 
     use Storage, Url;
 
+    private static $transient_name = 'lws_updating_now' ;
+    private static $transient_expiry = 600 ;
+
     /**
      * Updates the plugin.
      *
      * Creates table if needed and updates existing ones. Activates post update too.
      *
      * @param string $oldversion Version id before migration.
-     * @since    2.0.0
+     * @since 2.0.0
      */
     public static function update($oldversion) {
+        if (get_transient(self::$transient_name)) {
+            return;
+        }
+        set_transient(self::$transient_name, 1, self::$transient_expiry);
         Logger::notice('Updater',null,null,null,null,null,null,'Starting ' . LWS_PLUGIN_NAME . ' update.', $oldversion);
         Watchdog::stop();
         self::create_tables();
@@ -42,5 +49,6 @@ class Updater {
         self::_clean_usermeta('lws-analytics');
         Logger::notice('Updater', null, null, null, null, null, 0, 'Analytics view has been reset to defaults.');
         Watchdog::start();
+        delete_transient(self::$transient_name);
     }
 }

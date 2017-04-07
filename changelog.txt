@@ -1,10 +1,11 @@
 
 ###3.2.0 / April XXXXth, 2017
 
+* New: a dashboard box displays API usage.
 * New: a dashboard box displays statistics on events counts.
 * New: it's now possible to reset cache from 'maintenance' tab of 'settings' screen.
 * New: it's now possible to purge events log from 'maintenance' tab of 'settings' screen.
-* New: tasks execution and events analytics - for those who love data analytics.
+* New: tasks execution, events and api usage analytics - for those who love data analytics.
 * New: scheduled tasks manager - for those who dream to be a time sorcerer.
 * Improvement: better cache management after plugin update.
 * Improvement: adjustment of some elements in "version" box in dashboard.
