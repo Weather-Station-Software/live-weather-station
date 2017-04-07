@@ -8,6 +8,7 @@ use WeatherStation\SDK\WeatherUnderground\WUGApiClient;
 use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
 use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
 use WeatherStation\System\Schedules\Watchdog;
+use WeatherStation\System\Quota\Quota;
 
 
 /**
@@ -39,6 +40,7 @@ trait StationClient {
         else {
             $wug = new WUGApiClient();
             try {
+                Quota::verify(self::$service, 'GET');
                 $raw_data = $wug->getRawStationData($id, $key);
                 $weather = json_decode($raw_data, true);
                 if (is_array($weather)) {
@@ -321,9 +323,14 @@ trait StationClient {
             $device_id = $st;
             $device_name = $station['station_name'];
             try {
-                $raw_data = $wug->getRawStationData($station['service_id'], $key);
-                $this->format_and_store($raw_data, $station);
-                Logger::notice($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Data retrieved.');
+                if (Quota::verify($this->service_name, 'GET')) {
+                    $raw_data = $wug->getRawStationData($station['service_id'], $key);
+                    $this->format_and_store($raw_data, $station);
+                    Logger::notice($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Weather stations data retrieved.');
+                }
+                else {
+                    Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');
+                }
             }
             catch(\Exception $ex)
             {

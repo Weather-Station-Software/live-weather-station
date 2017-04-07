@@ -7,6 +7,7 @@ use WeatherStation\SDK\OpenWeatherMap\OWMApiClient;
 use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
 use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
 use WeatherStation\System\Schedules\Watchdog;
+use WeatherStation\System\Quota\Quota;
 
 /**
  * OpenWeatherMap current weather client for Weather Station plugin.
@@ -35,6 +36,7 @@ trait CurrentClient {
     public static function get_coordinates_via_owm($city, $country) {
         $result = array() ;
         $owm = new OWMApiClient();
+        Quota::verify(self::$service, 'GET');
         $weather = $owm->getRawWeatherData($city.','.$country, 'metric', 'en', get_option('live_weather_station_owm_apikey'), 'json');
         $weather = json_decode($weather, true);
         if (is_array($weather)) {
@@ -173,16 +175,23 @@ trait CurrentClient {
             $device_id = $key;
             $device_name = $station['device_name'];
             try {
-                $raw_data = $owm->getRawWeatherData(array('lat' => $station['loc_latitude'], 'lon' => $station['loc_longitude']), 'metric', 'en', get_option('live_weather_station_owm_apikey'), 'json');
-                $values = $this->get_owm_datas_array($raw_data, $station, $key);
-                $place = array();
-                $place['country'] = $station['loc_country'];
-                $place['city'] = $station['loc_city'];
-                $place['altitude'] = $station['loc_altitude'];
-                $place['timezone'] = $station['loc_timezone'];
-                $place['location'] = array($station['loc_longitude'], $station['loc_latitude']);
-                $values['place'] = $place;
-                Logger::notice($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Current observations data retrieved.');
+                if (Quota::verify($this->service_name, 'GET')) {
+                    $raw_data = $owm->getRawWeatherData(array('lat' => $station['loc_latitude'], 'lon' => $station['loc_longitude']), 'metric', 'en', get_option('live_weather_station_owm_apikey'), 'json');
+                    $values = $this->get_owm_datas_array($raw_data, $station, $key);
+                    $place = array();
+                    $place['country'] = $station['loc_country'];
+                    $place['city'] = $station['loc_city'];
+                    $place['altitude'] = $station['loc_altitude'];
+                    $place['timezone'] = $station['loc_timezone'];
+                    $place['location'] = array($station['loc_longitude'], $station['loc_latitude']);
+                    $values['place'] = $place;
+                    Logger::notice($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Current observations data retrieved.');
+                }
+                else {
+                    Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');
+                    $this->owm_datas = array ();
+                    return array ();
+                }
             }
             catch(\Exception $ex)
             {

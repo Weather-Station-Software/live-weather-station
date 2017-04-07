@@ -2,6 +2,7 @@
 
 namespace WeatherStation\System\Environment;
 use WeatherStation\SDK\Generic\Exception;
+use WeatherStation\System\Quota\Quota;
 
 /**
  * The class to manage and detect environment.
@@ -195,6 +196,7 @@ class Manager {
             return $result;
         }
         try {
+            Quota::verify('ip-API', 'GET');
             $result = @unserialize(file_get_contents('http://ip-api.com/php/'.self::server_ip()));
         }
         catch (Exception $e) {

@@ -33,6 +33,7 @@ class Cache {
     public static $db_stat_perf_cache = 'lws_cache_db_stat_perf_cache';
     public static $db_stat_perf_cron = 'lws_cache_db_stat_perf_cron';
     public static $db_stat_perf_event = 'lws_cache_db_stat_perf_event';
+    public static $db_stat_perf_quota = 'lws_cache_db_stat_perf_quota';
     public static $db_stat_operational = 'lws_cache_db_stat_operational';
     public static $widget = 'lws_cache_widget';
     public static $frontend = 'lws_cache_control';

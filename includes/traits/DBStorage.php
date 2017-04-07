@@ -83,6 +83,22 @@ trait Storage {
     }
 
     /**
+     *
+     * @since 3.2.0
+     */
+    public static function live_weather_station_quota_day_table() {
+        return 'live_weather_station_quota_day';
+    }
+
+    /**
+     *
+     * @since 3.2.0
+     */
+    public static function live_weather_station_quota_year_table() {
+        return 'live_weather_station_quota_year';
+    }
+
+    /**
      * Performs a safe add column.
      *
      * @since    2.5.0
@@ -358,6 +374,65 @@ trait Storage {
     }
 
     /**
+     * Creates daily table for the quota performance analytics and quota manager.
+     *
+     * @since 3.2.0
+     */
+    private static function create_live_weather_station_quota_day_table() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        $table_name = $wpdb->prefix . self::live_weather_station_quota_day_table();
+        $sql = "CREATE TABLE IF NOT EXISTS " . $table_name;
+        $sql .= " (`timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',";
+        $sql .= " `service` varchar(30) NOT NULL DEFAULT 'N/A',";
+        $sql .= " `post` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `get` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `put` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `patch` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `delete` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " UNIQUE KEY perf (timestamp, service)";
+        $sql .= ") $charset_collate;";
+        $wpdb->query($sql);
+    }
+
+    /**
+     * Creates yearly table for the quota performance analytics and quota manager.
+     *
+     * @since 3.2.0
+     */
+    private static function create_live_weather_station_quota_year_table() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        $table_name = $wpdb->prefix . self::live_weather_station_quota_year_table();
+        $sql = "CREATE TABLE IF NOT EXISTS " . $table_name;
+        $sql .= " (`timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',";
+        $sql .= " `service` varchar(30) NOT NULL DEFAULT 'N/A',";
+        $sql .= " `post` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `post_rate` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `post_q` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `post_rate_q` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `get` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `get_rate` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `get_q` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `get_rate_q` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `put` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `put_rate` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `put_q` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `put_rate_q` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `patch` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `patch_rate` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `patch_q` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `patch_rate_q` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `delete` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `delete_rate` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `delete_q` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `delete_rate_q` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " UNIQUE KEY perf (timestamp, service)";
+        $sql .= ") $charset_collate;";
+        $wpdb->query($sql);
+    }
+
+    /**
      * Creates tables for the plugin.
      *
      * @since 1.0.0
@@ -368,6 +443,8 @@ trait Storage {
         self::create_live_weather_station_infos_table();
         self::create_live_weather_station_performance_cache_table();
         self::create_live_weather_station_performance_cron_table();
+        self::create_live_weather_station_quota_day_table();
+        self::create_live_weather_station_quota_year_table();
     }
 
     /**
@@ -542,6 +619,12 @@ trait Storage {
         $sql = 'DROP TABLE '.$table_name;
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_performance_cron_table();
+        $sql = 'DROP TABLE '.$table_name;
+        $wpdb->query($sql);
+        $table_name = $wpdb->prefix.self::live_weather_station_quota_day_table();
+        $sql = 'DROP TABLE '.$table_name;
+        $wpdb->query($sql);
+        $table_name = $wpdb->prefix.self::live_weather_station_quota_year_table();
         $sql = 'DROP TABLE '.$table_name;
         $wpdb->query($sql);
     }

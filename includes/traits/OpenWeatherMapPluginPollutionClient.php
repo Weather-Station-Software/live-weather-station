@@ -5,6 +5,7 @@ namespace WeatherStation\SDK\OpenWeatherMap\Plugin;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\SDK\OpenWeatherMap\OWMApiClient;
 use WeatherStation\System\Schedules\Watchdog;
+use WeatherStation\System\Quota\Quota;
 
 /**
  * OpenWeatherMap pollution client for Weather Station plugin.
@@ -51,6 +52,7 @@ trait PollutionClient {
     private function get_pollution_data($st, $lat, $long, $index, $round=0) {
         try {
             $url = $this->api_url . '/' . $index . '/' . round($lat, $round) . ',' . round($long, $round) . '/current.json?appid=' . get_option('live_weather_station_owm_apikey');
+            // warning : don't verify quota here
             $content = wp_remote_get($url);
             if (is_wp_error($content)) {
                 throw new \Exception($content->get_error_message());
@@ -172,38 +174,46 @@ trait PollutionClient {
             $st['dashboard_data'] = array();
             $values = array();
             try {
-                foreach ($this->indexes as $index) {
-                    $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index, 2), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
-                    if (empty($values)) {
-                        $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index, 1), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
-                    }
-                    if (empty($values)) {
-                        $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
-                    }
-                    if (!empty($values)) {
-                        foreach ($values as $k => $v) {
-                            $st['dashboard_data'][$k] = $v;
+                if (Quota::verify($this->service_name, 'GET')) {
+                    foreach ($this->indexes as $index) {
+                        $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index, 2), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
+                        if (empty($values)) {
+                            Quota::verify($this->service_name, 'GET');
+                            $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index, 1), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
                         }
-                        $st['data_type'][] = $index;
-                        if (array_key_exists($index.'_distance',$values )) {
-                            $st['data_type'][] = $index.'_distance';
+                        if (empty($values)) {
+                            Quota::verify($this->service_name, 'GET');
+                            $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
+                        }
+                        if (!empty($values)) {
+                            foreach ($values as $k => $v) {
+                                $st['dashboard_data'][$k] = $v;
+                            }
+                            $st['data_type'][] = $index;
+                            if (array_key_exists($index . '_distance', $values)) {
+                                $st['data_type'][] = $index . '_distance';
+                            }
                         }
                     }
-                }
-                $place = array();
-                $place['country'] = $station['loc_country'];
-                $place['city'] = $station['loc_city'];
-                $place['altitude'] = $station['loc_altitude'];
-                $place['timezone'] = $station['loc_timezone'];
-                $place['location'] = array($station['loc_longitude'], $station['loc_latitude']);
-                $st['place'] = $place;
-                if (!empty($st['dashboard_data'])) {
-                    $st['dashboard_data']['time_utc'] = time();
-                    $this->owm_datas[] = $st;
-                    Logger::notice($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], 0, 'Pollution data retrieved.');
+                    $place = array();
+                    $place['country'] = $station['loc_country'];
+                    $place['city'] = $station['loc_city'];
+                    $place['altitude'] = $station['loc_altitude'];
+                    $place['timezone'] = $station['loc_timezone'];
+                    $place['location'] = array($station['loc_longitude'], $station['loc_latitude']);
+                    $st['place'] = $place;
+                    if (!empty($st['dashboard_data'])) {
+                        $st['dashboard_data']['time_utc'] = time();
+                        $this->owm_datas[] = $st;
+                        Logger::notice($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], 0, 'Pollution data retrieved.');
+                    } else {
+                        Logger::notice($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], 0, 'Pollution data are empty or irrelevant.');
+                    }
                 }
                 else {
-                    Logger::notice($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], 0, 'Pollution data are empty or irrelevant.');
+                    Logger::warning($this->facility, $this->service_name, $st['device_id'], $st['device_name'], null, null, 0, 'Quota manager has forbidden to retrieve data.');
+                    $this->owm_datas = array ();
+                    return array ();
                 }
             }
             catch(\Exception $ex)

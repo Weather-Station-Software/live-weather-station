@@ -6,6 +6,7 @@ use WeatherStation\System\Logs\Logger;
 use WeatherStation\SDK\Netatmo\Clients\NAWSApiClient;
 use WeatherStation\Data\Dashboard\Handling as Dashboard_Manipulation;
 
+
 /**
  * Netatmo client for Weather Station plugin.
  *

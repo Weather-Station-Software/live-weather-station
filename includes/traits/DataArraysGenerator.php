@@ -1409,6 +1409,21 @@ trait Generator {
     }
 
     /**
+     * Get the available quota management modes.
+     *
+     * @return array An array containing the quota management modes.
+     * @since 3.2.0
+     */
+    protected function get_quota_js_array() {
+        $result = array();
+        $result[] = array(0, __('Always perform queries', 'live-weather-station'));
+        $result[] = array(1, __('Warn but perform queries anyway', 'live-weather-station'));
+        $result[] = array(2, __('Drop queries just before exceeding the quota', 'live-weather-station'));
+        $result[] = array(3, __('Distribute queries in the remaining time', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
      * Get the available log levels.
      *
      * @return array An array containing the available log levels.

@@ -5,6 +5,7 @@ namespace WeatherStation\SDK\OpenWeatherMap\Plugin;
 use WeatherStation\SDK\OpenWeatherMap\OWMApiClient;
 use WeatherStation\Data\Dashboard\Handling as Dashboard_Manipulation;
 use WeatherStation\Data\ID\Handling as Id_Manipulation;
+use WeatherStation\System\Quota\Quota;
 
 /**
  * OpenWeatherMap base client for Weather Station plugin.
@@ -19,6 +20,7 @@ trait BaseClient {
     use Dashboard_Manipulation, Id_Manipulation;
 
     protected $service_name = 'OpenWeatherMap';
+    protected static $service = 'OpenWeatherMap';
     public $last_owm_error;
 
     /**
@@ -34,6 +36,7 @@ trait BaseClient {
         $owm = new OWMApiClient();
         $this->last_owm_error = '';
         try {
+            Quota::verify($this->service_name, 'GET');
             $raw_data = $owm->getRawWeatherData(6455259, 'metric', 'en', $key, 'json');
             $weather = json_decode($raw_data, true);
             if (!is_array($weather)) {

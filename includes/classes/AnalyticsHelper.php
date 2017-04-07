@@ -96,18 +96,55 @@ class Handling {
      */
     public function add_metaboxes() {
         // Left column
+        if ((bool)get_option('live_weather_station_netatmo_connected') ||
+            (bool)get_option('live_weather_station_netatmohc_connected') ||
+            get_option('live_weather_station_owm_apikey') != '' ||
+            get_option('live_weather_station_wug_apikey') != '') {
+            add_meta_box('lws-perf-quota_24', __('Quota usage', 'live-weather-station') . ' - ' . __('24 hours', 'live-weather-station'), array($this, 'perf_quota_widget_24'), 'lws-analytics', 'normal');
+        }
         if ((bool)get_option('live_weather_station_frontend_cache') ||
             (bool)get_option('live_weather_station_widget_cache') ||
             (bool)get_option('live_weather_station_backend_cache')) {
             add_meta_box('lws-perf-cache24', __('Cache performance', 'live-weather-station') . ' - ' . __('24 hours', 'live-weather-station'), array($this, 'perf_cache_widget_24'), 'lws-analytics', 'normal');
-            add_meta_box('lws-perf-cron24', __('Tasks', 'live-weather-station') . ' - ' . __('24 hours', 'live-weather-station'), array($this, 'perf_cron_widget_24'), 'lws-analytics', 'normal');
-            add_meta_box('lws-perf-event24', __('Events', 'live-weather-station') . ' - ' . __('24 hours', 'live-weather-station'), array($this, 'perf_event_widget_24'), 'lws-analytics', 'normal');
-
         }
+        add_meta_box('lws-perf-cron24', __('Tasks', 'live-weather-station') . ' - ' . __('24 hours', 'live-weather-station'), array($this, 'perf_cron_widget_24'), 'lws-analytics', 'normal');
+        add_meta_box('lws-perf-event24', __('Events', 'live-weather-station') . ' - ' . __('24 hours', 'live-weather-station'), array($this, 'perf_event_widget_24'), 'lws-analytics', 'normal');
         // Right column
-        add_meta_box('lws-perf-cache30', __('Cache performance', 'live-weather-station') . ' - ' . __('30 days', 'live-weather-station'), array($this, 'perf_cache_widget_30'), 'lws-analytics', 'side');
+        if ((bool)get_option('live_weather_station_netatmo_connected') ||
+            (bool)get_option('live_weather_station_netatmohc_connected') ||
+            get_option('live_weather_station_owm_apikey') != '' ||
+            get_option('live_weather_station_wug_apikey') != '') {
+            add_meta_box('lws-perf-quota_30', __('Quota usage', 'live-weather-station') . ' - ' . __('30 days', 'live-weather-station'), array($this, 'perf_quota_widget_30'), 'lws-analytics', 'side');
+        }
+        if ((bool)get_option('live_weather_station_frontend_cache') ||
+            (bool)get_option('live_weather_station_widget_cache') ||
+            (bool)get_option('live_weather_station_backend_cache')) {
+            add_meta_box('lws-perf-cache30', __('Cache performance', 'live-weather-station') . ' - ' . __('30 days', 'live-weather-station'), array($this, 'perf_cache_widget_30'), 'lws-analytics', 'side');
+        }
         add_meta_box('lws-perf-cron30', __('Tasks', 'live-weather-station') . ' - ' . __('30 days', 'live-weather-station'), array($this, 'perf_cron_widget_30'), 'lws-analytics', 'side');
         add_meta_box('lws-perf-event30', __('Events', 'live-weather-station') . ' - ' . __('30 days', 'live-weather-station'), array($this, 'perf_event_widget_30'), 'lws-analytics', 'side');
+    }
+
+    /**
+     * Get content of the Quota Usage box.
+     *
+     * @since 3.2.0
+     */
+    public function perf_quota_widget_24() {
+        $val = Performance::get_quota_values()['agr24'];
+        $show_link = false;
+        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceQuota.php');
+    }
+
+    /**
+     * Get content of the Quota Usage box.
+     *
+     * @since 3.2.0
+     */
+    public function perf_quota_widget_30() {
+        $val = Performance::get_quota_values()['agr30'];
+        $show_link = false;
+        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceQuota.php');
     }
 
     /**

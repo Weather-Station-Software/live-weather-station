@@ -189,6 +189,10 @@ class Admin {
             array($this, 'lws_system_cache_manage_callback'), 'lws_system', 'lws_system_section',
             array());
         register_setting('lws_system', 'lws_system_cache_manage');
+        add_settings_field('lws_system_quota', __('API quota policy', 'live-weather-station'),
+            array($this, 'lws_system_quota_callback'), 'lws_system', 'lws_system_section',
+            array(__('Operation performed when the API usage exceeds quotas allowed by the services.', 'live-weather-station')));
+        register_setting('lws_system', 'lws_system_quota');
         add_settings_field('lws_system_log_level', __('Logging policy', 'live-weather-station'),
             array($this, 'lws_system_log_level_callback'), 'lws_system', 'lws_system_section',
             array(__('Minimum level of severity that will be recorded in the events log.', 'live-weather-station')));
@@ -292,6 +296,16 @@ class Admin {
                 array($threshold));
             register_setting('lws_thresholds', 'lws_thresholds_' . $threshold);
         }
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.2.0
+     */
+    public function lws_system_quota_callback($args) {
+        echo $this->field_select($this->get_quota_js_array(), get_option('live_weather_station_quota_mode'), 'lws_system_quota', $args[0]);
     }
 
     /**
@@ -641,6 +655,7 @@ class Admin {
                 update_option('live_weather_station_show_analytics', (array_key_exists('lws_system_show_analytics', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_tasks', (array_key_exists('lws_system_show_tasks', $_POST) ? 1 : 0));
                 update_option('live_weather_station_analytics_cutoff', (integer)$_POST['lws_system_analytics_cutoff']);
+                update_option('live_weather_station_quota_mode', (integer)$_POST['lws_system_quota']);
                 if (!$save_auto && get_option('live_weather_station_auto_manage_netatmo')) {
                     $this->get_netatmo(true);
                     $this->get_netatmohc(true);

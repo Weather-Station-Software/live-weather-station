@@ -7,6 +7,7 @@ use WeatherStation\SDK\Netatmo\Clients\NAWSApiClient;
 use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
 use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
 use WeatherStation\System\Schedules\Watchdog;
+use WeatherStation\System\Quota\Quota;
 
 /**
  * Netatmo client for Weather Station plugin.
@@ -46,6 +47,7 @@ trait Client {
         $this->netatmo_client->setVariable('password', $password);
         try
         {
+            Quota::verify($this->service_name, 'GET');
             $tokens = $this->netatmo_client->getAccessToken();
             update_option('live_weather_station_netatmo_refresh_token', $tokens['refresh_token']);
             update_option('live_weather_station_netatmo_access_token', $tokens['access_token']);
@@ -87,27 +89,33 @@ trait Client {
                 $this->netatmo_client = new NAWSApiClient($config);
             }
             try {
-                $this->netatmo_datas = $this->netatmo_client->getData();
-                $this->normalize_netatmo_datas();
-                if ($store) {
-                    $this->store_netatmo_datas($this->get_all_netatmo_stations());
-                }
-                update_option('live_weather_station_netatmo_refresh_token', $this->netatmo_client->getRefreshToken());
-                update_option('live_weather_station_netatmo_access_token', $this->netatmo_client->getAccessToken()['access_token']);
-                update_option('live_weather_station_netatmo_connected', 1);
-                if (isset($config)) {
-                    if (array_key_exists('access_token', $config)) {
-                        if ($config['access_token'] != $this->netatmo_client->getAccessToken()['access_token']) {
-                            Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Access token has been regenerated for following scope: '.$this->netatmo_client->getVariable('scope'));
+                if (Quota::verify($this->service_name, 'GET')) {
+                    $this->netatmo_datas = $this->netatmo_client->getData();
+                    $this->normalize_netatmo_datas();
+                    if ($store) {
+                        $this->store_netatmo_datas($this->get_all_netatmo_stations());
+                    }
+                    update_option('live_weather_station_netatmo_refresh_token', $this->netatmo_client->getRefreshToken());
+                    update_option('live_weather_station_netatmo_access_token', $this->netatmo_client->getAccessToken()['access_token']);
+                    update_option('live_weather_station_netatmo_connected', 1);
+                    if (isset($config)) {
+                        if (array_key_exists('access_token', $config)) {
+                            if ($config['access_token'] != $this->netatmo_client->getAccessToken()['access_token']) {
+                                Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Access token has been regenerated for following scope: '.$this->netatmo_client->getVariable('scope'));
+                            }
+                        }
+                        if (array_key_exists('refresh_token', $config)) {
+                            if ($config['refresh_token'] != $this->netatmo_client->getRefreshToken()) {
+                                Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Refresh token has been updated for following scope: '.$this->netatmo_client->getVariable('scope'));
+                            }
                         }
                     }
-                    if (array_key_exists('refresh_token', $config)) {
-                        if ($config['refresh_token'] != $this->netatmo_client->getRefreshToken()) {
-                            Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Refresh token has been updated for following scope: '.$this->netatmo_client->getVariable('scope'));
-                        }
-                    }
+                    Logger::notice($this->facility, $this->service_name, null, null, null, null, 0, 'Personal weather stations data retrieved.');
                 }
-                Logger::notice($this->facility, $this->service_name, null, null, null, null, 0, 'Data retrieved for Personal Weather Stations.');
+                else {
+                    Logger::warning($this->facility, $this->service_name, null, null, null, null, 0, 'Quota manager has forbidden to retrieve data.');
+                    return array ();
+                }
             }
             catch (\Exception $ex) {
                 switch ($ex->getCode()) {

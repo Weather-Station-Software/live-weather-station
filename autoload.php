@@ -105,6 +105,7 @@ spl_autoload_register(
         case 'WeatherStation\System\Plugin\I18n': $file = LWS_INCLUDES_DIR.'classes/SystemPluginI18n.php'; break;
         case 'WeatherStation\System\Plugin\Loader': $file = LWS_INCLUDES_DIR.'classes/SystemPluginLoader.php'; break;
         case 'WeatherStation\System\Plugin\Updater': $file = LWS_INCLUDES_DIR.'classes/SystemPluginUpdater.php'; break;
+        case 'WeatherStation\System\Quota\Quota': $file = LWS_INCLUDES_DIR.'system/Quota.php'; break;
         case 'WeatherStation\System\Schedules\Watchdog': $file = LWS_INCLUDES_DIR.'system/Watchdog.php'; break;
         case 'WeatherStation\System\Schedules\Handling': $file = LWS_INCLUDES_DIR.'traits/SystemSchedulesHandling.php'; break;
         case 'WeatherStation\System\URL\Client': $file = LWS_INCLUDES_DIR.'classes/SystemURLClient.php'; break;

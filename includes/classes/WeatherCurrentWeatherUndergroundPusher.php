@@ -36,6 +36,7 @@ class Pusher extends Abstract_Pusher {
     protected function process_data($data) {
         $result = array();
         if (array_key_exists('pressure', $data)) {
+            $result['barom'] = $this->get_pressure($data['pressure'], 0);
             $result['baromin'] = $this->get_pressure($data['pressure'], 1);
         }
         if (array_key_exists('temperature', $data)) {
@@ -142,13 +143,12 @@ class Pusher extends Abstract_Pusher {
      */
     public function cron_run(){
         $cron_id = Watchdog::init_chrono(Watchdog::$wug_push_schedule_name);
-        $svc = 'Weather Underground';
         try {
             $this->push_data();
-            Logger::info('Cron Engine', $svc, null, null, null, null, 0, 'Job done: pushing weather data.');
+            Logger::info('Cron Engine', $this->get_service_name(), null, null, null, null, 0, 'Job done: pushing weather data.');
         }
         catch (\Exception $ex) {
-            Logger::error('Cron Engine', $svc, null, null, null, null, $ex->getCode(), 'Error while pushing weather data: ' . $ex->getMessage());
+            Logger::error('Cron Engine', $this->get_service_name(), null, null, null, null, $ex->getCode(), 'Error while pushing weather data: ' . $ex->getMessage());
         }
         Watchdog::stop_chrono($cron_id);
     }

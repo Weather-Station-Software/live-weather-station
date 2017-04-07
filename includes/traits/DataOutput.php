@@ -58,10 +58,128 @@ trait Output {
         $fingerprint = uniqid('', true);
         $uniq = $_attributes['item'].$_attributes['metric'].substr ($fingerprint, count($fingerprint)-6, 80);
 
+        // QUOTA STATISTICS
+        if ($_attributes['item'] == 'quota') {
+            wp_enqueue_style('nv.d3.css');
+            wp_enqueue_script('d3.v3.js');
+            wp_enqueue_script('nv.d3.v3.js');
+            $perf = Performance::get_quota_values();
+
+            if ($_attributes['metric'] == 'service_short' || $_attributes['metric'] == 'service_long') {
+                wp_enqueue_script('nv.d3.v3.js');
+                $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
+                $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg style="overflow:visible;"></svg></div>' . PHP_EOL;
+                $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
+                $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . $perf['dat']['count'][$_attributes['metric']] . ';' . PHP_EOL;
+                $result .= '    nv.addGraph(function() {' . PHP_EOL;
+                $result .= '      var chart'.$uniq.' = nv.models.multiBarChart()' . PHP_EOL;
+                $result .= '               .reduceXTicks(false)' . PHP_EOL;
+                $result .= '               .color(d3.scale.category10().range())' . PHP_EOL;
+                $result .= '               .useInteractiveGuideline(true)' . PHP_EOL;
+                $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","grouped":"' . __('Grouped', 'live-weather-station') . '"});' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .rotateLabels(-30);' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(d3.format("s"));' . PHP_EOL;
+                $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+                $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+                $result .= '      return chart'.$uniq.';' . PHP_EOL;
+                $result .= '    });'.PHP_EOL;
+                $result .= '  });' . PHP_EOL;
+                $result .= '</script>' . PHP_EOL;
+            }
+
+            if ($_attributes['metric'] == 'call_short' || $_attributes['metric'] == 'call_long' || $_attributes['metric'] == 'rate_short' || $_attributes['metric'] == 'rate_long') {
+                if ((bool)get_option('live_weather_station_force_frontend_styling')) {
+                    wp_enqueue_style('buttons');
+                }
+                switch ($_attributes['metric']) {
+                    case 'call_short':
+                        $services = $perf['dat']['service24'];
+                        $interpolate = 'linear';
+                        $time_format = '%d/%m %H:%M';
+                        $color = true;
+                        break;
+                    case 'rate_short':
+                        $services = $perf['dat']['service24'];
+                        $interpolate = 'step-after';
+                        $time_format = '%d/%m %H:%M';
+                        $color = true;
+                        break;
+                    case 'call_long':
+                        $services = $perf['dat']['service30'];
+                        $interpolate = 'linear';
+                        $time_format = '%d/%m';
+                        $color = false;
+                        break;
+                    case 'rate_long':
+                        $services = $perf['dat']['service30'];
+                        $interpolate = 'step-after';
+                        $time_format = '%d/%m';
+                        $color = false;
+                        break;
+                }
+                $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
+                $result .= '<style type="text/css">.dashed-line {stroke-dasharray:5,5;}.hidden-line {display:none;}</style>' . PHP_EOL;
+                $result .= '<div id="selectors-'.$uniq.'" class="wp-core-ui">' . PHP_EOL;
+                foreach ($services as $service) {
+                    $s = str_replace(' ', '', strtolower($service));
+                    $s = str_replace('.', '', $s);
+                    $s = str_replace('-', '', $s);
+                    $result .= '<div id="selector-'.$s.'-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;">' . $service . '</div>' . PHP_EOL;
+                }
+                $result .= '<div>' . PHP_EOL;
+                $result .= '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
+                $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
+                $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+                foreach ($services as $service) {
+                    $s = str_replace(' ', '', strtolower($service));
+                    $s = str_replace('.', '', $s);
+                    $s = str_replace('-', '', $s);
+                    $result .= '    var data_'.$s.'_'.$uniq.' =' . $perf['dat'][$_attributes['metric']][$service] . ';' . PHP_EOL;
+                }
+                $result .= '      var chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
+                $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
+                $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
+                $result .= '               .interpolate("' . $interpolate . '")' . PHP_EOL;
+                if ($color) {
+                    $result .= '               .color(d3.scale.category10().range())' . PHP_EOL;
+                }
+                $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(function(d) { return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .tickFormat(d3.format("s"));' . PHP_EOL;
+                $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+                foreach ($services as $service) {
+                    $s = str_replace(' ', '', strtolower($service));
+                    $s = str_replace('.', '', $s);
+                    $s = str_replace('-', '', $s);
+                    $result .= '    $("#selector-'.$s.'-'.$uniq.'").click(function() {' . PHP_EOL;
+                    $result .= '      $("#selectors-'.$uniq.' > div").removeClass("button-disabled");' . PHP_EOL;
+                    $result .= '      $("#selector-'.$s.'-'.$uniq.'").addClass("button-disabled");' . PHP_EOL;
+                    $result .= '      d3.select("#'.$uniq.' svg").datum(data_'.$s.'_'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+                    $result .= '    });' . PHP_EOL;
+                }
+                $s = str_replace(' ', '', strtolower($services[0]));
+                $s = str_replace('.', '', $s);
+                $s = str_replace('-', '', $s);
+                $result .= '    $("#selector-'.$s.'-'.$uniq.'").click();' . PHP_EOL;
+                $result .= '  });' . PHP_EOL;
+                $result .= '</script>' . PHP_EOL;
+            }
+        }
+
         // EVENTS STATISTICS
         if ($_attributes['item'] == 'event') {
             wp_enqueue_style('nv.d3.css');
             wp_enqueue_script('d3.v3.js');
+            wp_enqueue_script('nv.d3.v3.js');
             $perf = Performance::get_event_values();
 
             if ($_attributes['metric'] == 'system' || $_attributes['metric'] == 'service' || $_attributes['metric'] == 'device_name') {
@@ -71,7 +189,7 @@ trait Output {
                 $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . $perf['dat'][$_attributes['metric']] . ';' . PHP_EOL;
-                $result .= '    var xValues'.$uniq.' = ' . $perf['dat'][$_attributes['metric'].'_values'] . ';' . PHP_EOL;
+                //$result .= '    var xValues'.$uniq.' = ' . $perf['dat'][$_attributes['metric'].'_values'] . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
                 $result .= '      var chart'.$uniq.' = nv.models.multiBarChart()' . PHP_EOL;
                 $result .= '               .reduceXTicks(false)' . PHP_EOL;
@@ -79,7 +197,7 @@ trait Output {
                 $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","grouped":"' . __('Grouped', 'live-weather-station') . '"});' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
                 $result .= '                 .showMaxMin(false)' . PHP_EOL;
-                $result .= '                 .tickValues(xValues'.$uniq.')' . PHP_EOL;
+                //$result .= '                 .tickValues(xValues'.$uniq.')' . PHP_EOL;
                 $result .= '                 .rotateLabels(-30);' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
                 $result .= '                 .showMaxMin(false)' . PHP_EOL;
@@ -95,6 +213,9 @@ trait Output {
             if ($_attributes['metric'] == 'density' || $_attributes['metric'] == 'criticality') {
                 wp_enqueue_script('cal-heatmap.js');
                 wp_enqueue_style('cal-heatmap.css');
+                if ((bool)get_option('live_weather_station_force_frontend_styling')) {
+                    wp_enqueue_style('buttons');
+                }
                 if ($_attributes['metric'] == 'density') {
                     $data = $perf['dat']['density'];
                     $data_datemin = $perf['dat']['density_datemin'];
@@ -115,8 +236,10 @@ trait Output {
                     $legend[] = $i * $iter;
                 }
                 $legend = '[' . implode(',', $legend) . ']';
-                $result = '<div id="previous-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;"><i class="fa fa-caret-left"></i></div>' . PHP_EOL;
-                $result .= '<div id="next-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;"><i class="fa fa-caret-right"></i></div>' . PHP_EOL;
+                $result = '<div id="selectors-'.$uniq.'" class="wp-core-ui">' . PHP_EOL;
+                $result .= '  <div id="previous-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;"><i class="fa fa-caret-left"></i></div>' . PHP_EOL;
+                $result .= '  <div id="next-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;"><i class="fa fa-caret-right"></i></div>' . PHP_EOL;
+                $result .= '</div>' . PHP_EOL;
                 $result .= '<div id="' . $uniq . '" ></div>' . PHP_EOL;
                 $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
@@ -135,7 +258,6 @@ trait Output {
                 $result .= '          minDate: min_date,' . PHP_EOL;
                 $result .= '          legend: ' . $legend . ',' . PHP_EOL;
                 $result .= '          subDomainDateFormat: "%H:%M-%H:59",' . PHP_EOL;
-
                 $result .= '          domain: "day",' . PHP_EOL;
                 $result .= '          cellSize: 14,' . PHP_EOL;
                 $result .= '          cellRadius: 2,' . PHP_EOL;

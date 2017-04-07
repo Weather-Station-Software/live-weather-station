@@ -213,6 +213,12 @@ class Handling {
     public function add_metaboxes() {
         // Left column
         add_meta_box('lws-summary', __('At a Glance', 'live-weather-station'), array($this, 'summary_widget'), 'lws-dashboard', 'normal');
+        if ((bool)get_option('live_weather_station_netatmo_connected') ||
+            (bool)get_option('live_weather_station_netatmohc_connected') ||
+            get_option('live_weather_station_owm_apikey') != '' ||
+            get_option('live_weather_station_wug_apikey') != '') {
+            add_meta_box('lws-perf-quota', __('Quota usage', 'live-weather-station') . ' - ' . __('24 hours', 'live-weather-station'), array($this, 'perf_quota_widget'), 'lws-dashboard', 'normal');
+        }
         if ((bool)get_option('live_weather_station_frontend_cache') ||
             (bool)get_option('live_weather_station_widget_cache') ||
             (bool)get_option('live_weather_station_backend_cache')) {
@@ -255,6 +261,17 @@ class Handling {
      */
     public function summary_widget() {
         self::_summary_widget();
+    }
+
+    /**
+     * Get content of the Quota Usage box.
+     *
+     * @since 3.2.0
+     */
+    public function perf_quota_widget() {
+        $val = Performance::get_quota_values()['agr24'];
+        $show_link = true;
+        include(LWS_ADMIN_DIR.'partials/DashboardPerformanceQuota.php');
     }
 
     /**

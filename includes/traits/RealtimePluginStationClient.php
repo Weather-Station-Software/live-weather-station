@@ -298,6 +298,10 @@ trait StationClient {
      */
     public function explode_data($raw_data) {
         $weather = false;
+
+
+
+        $separators = array(' ', '|');
         try {
             $weather = explode(' ', $raw_data);
             if (count($weather) < 58) {
@@ -308,6 +312,11 @@ trait StationClient {
                     return false;
                 }
             }
+
+
+
+
+
         }
         catch(\Exception $ex)
         {
