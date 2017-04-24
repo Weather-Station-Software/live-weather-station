@@ -436,13 +436,13 @@ class Logger {
     public static function get_criticality($level = 'unknown') {
         switch ($level) {
             case 'emergency':
-                $result = 10;
+                $result = 13;
                 break;
             case 'alert':
-                $result = 5;
+                $result = 8;
                 break;
             case 'critical':
-                $result = 4;
+                $result = 5;
                 break;
             case 'error':
                 $result = 3;
@@ -451,10 +451,10 @@ class Logger {
                 $result = 2;
                 break;
             case 'notice':
-                $result = 1;
+                $result = 0.01;
                 break;
             case 'info':
-                $result = 1;
+                $result = 0.01;
                 break;
             case 'debug';
                 $result = 0;
@@ -462,7 +462,7 @@ class Logger {
             default:
                 $result = 100;
         }
-        return $result;
+        return $result*2;
     }
 
     /**

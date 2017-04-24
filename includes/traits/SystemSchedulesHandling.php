@@ -326,7 +326,7 @@ trait Handling {
                 return __('OpenWeatherMap - Current observations', 'live-weather-station');
                 break;
             case 'lws_owm_station_update':
-                return __('OpenWeatherMap - Virtual station', 'live-weather-station');
+                return __('OpenWeatherMap - Weather station', 'live-weather-station');
                 break;
             case 'lws_wug_station_update':
                 return __('Weather Underground - Weather station', 'live-weather-station');
@@ -490,10 +490,10 @@ trait Handling {
      *
      * @since 3.0.0
      */
-    protected static function define_owm_station_update_cron() {
+    /*protected static function define_owm_station_update_cron() {
         $plugin_owm_station_cron = new Owm_Station_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
         add_action(self::$owm_update_station_schedule_name, array($plugin_owm_station_cron, 'cron_run'));
-    }
+    }*/
 
     /**
      * Launch the OWM Station Updater cron job if needed.
@@ -503,12 +503,12 @@ trait Handling {
      *
      * @since 3.0.0
      */
-    protected static function launch_owm_station_update_cron($timeshift=0, $system='Watchdog') {
+    /*protected static function launch_owm_station_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$owm_update_station_schedule_name)) {
             wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$owm_update_station_schedule_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$owm_update_station_schedule_name).'" (re)scheduled.');
         }
-    }
+    }*/
 
     /**
      * Define WUG Station Updater cron job.
@@ -690,10 +690,10 @@ trait Handling {
      *
      * @since 3.2.0
      */
-    protected static function define_owm_current_push_cron() {
+    /*protected static function define_owm_current_push_cron() {
         $plugin_owm_push_cron = new Owm_Pusher(LWS_PLUGIN_NAME, LWS_VERSION);
         add_action(self::$owm_push_schedule_name, array($plugin_owm_push_cron, 'cron_run'));
-    }
+    }*/
 
     /**
      * Launch the OWM Pusher cron job if needed.
@@ -703,12 +703,12 @@ trait Handling {
      *
      * @since 3.2.0
      */
-    protected static function launch_owm_current_push_cron($timeshift=0, $system='Watchdog') {
+    /*protected static function launch_owm_current_push_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$owm_push_schedule_name)) {
             wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$owm_push_schedule_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$owm_push_schedule_name).'" (re)scheduled.');
         }
-    }
+    }*/
 
     /**
      * Define PWS Pusher cron job.

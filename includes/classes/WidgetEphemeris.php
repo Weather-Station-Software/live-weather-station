@@ -46,10 +46,6 @@ class Ephemeris extends \WP_Widget {
             wp_enqueue_script( 'wp-color-picker' );
             wp_enqueue_script( 'underscore' );
         }
-        //if ( is_active_widget( false, false, $this->id_base ) ) {
-        wp_enqueue_style('weather-icons.css', LWS_PUBLIC_URL . 'css/weather-icons.min.css', array(), LWS_VERSION);
-        wp_enqueue_style('weather-icons-wind.css', LWS_PUBLIC_URL . 'css/weather-icons-wind.min.css', array(), LWS_VERSION);
-        //}
     }
 
     /**
@@ -250,6 +246,8 @@ class Ephemeris extends \WP_Widget {
      * @since    2.0.0
      */
     public function widget($args, $instance) {
+        wp_enqueue_style('weather-icons.css', LWS_PUBLIC_URL . 'css/weather-icons.min.css', array(), LWS_VERSION);
+        wp_enqueue_style('weather-icons-wind.css', LWS_PUBLIC_URL . 'css/weather-icons-wind.min.css', array(), LWS_VERSION);
         $instance = $this->_get_instance($instance);
         $title = $instance['title'];
         $subtitle = $instance['subtitle'];

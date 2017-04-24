@@ -1,6 +1,7 @@
 
-###3.2.0 / April XXXXth, 2017
+###3.2.0 / May 2nd, 2017
 
+* New: a full-featured quota manager allows you to not exceed API usage for all services (Netatmo, Weather Underground, etc.).
 * New: a dashboard box displays API usage.
 * New: a dashboard box displays statistics on events counts.
 * New: it's now possible to reset cache from 'maintenance' tab of 'settings' screen.
@@ -17,7 +18,9 @@
 * Improvement: it's now possible to reset analytics view.
 * Improvement: "Pusher" subsystem have been renamed to "Weather Pusher".
 * Improvement: consistency of events types between all collectors subsystems have been greatly improved.
+* Improvement: contextual help updated in the dashboard.
 * Improvement: changes in the `readme.txt` to comply with new WordPress guidelines.
+* Bug fix: the css for widget is always outputed on frontend even if there's no widget on the page.
 * Bug fix: in very rare circumstances, it's not possible to move boxes in dashboard and station view.
 * Bug fix: the events log view doesn't shows contextual help when it is filtered.
 * Bug fix: unable to share data on Weather Underground site since they have updated their servers.
