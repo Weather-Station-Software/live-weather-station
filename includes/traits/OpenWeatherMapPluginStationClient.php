@@ -147,12 +147,12 @@ trait StationClient {
         $this->synchronize_owm_true_station();
         $this->owm_datas = array ();
         $stations = $this->get_operational_stations_list();
-        Logger::dev(print_r($stations, true));
+        //Logger::dev(print_r($stations, true));
 
         $owm = new OWMApiClient();
         foreach ($stations as $st => $station) {
-            $device_id = $st;
-            $device_name = $station['station_name'];
+            $device_id = $station['device_id'];
+            $device_name = $station['device_name'];
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
                     $raw_data = $owm->getRawStationData(29584, 'metric', 'en', get_option('live_weather_station_owm_apikey'), 'json');
@@ -203,7 +203,7 @@ trait StationClient {
         $cron_id = Watchdog::init_chrono(Watchdog::$owm_update_station_schedule_name);
         $err = '';
         try {
-            $err = 'collecting weather';
+            /*$err = 'collecting weather';
             $this->get_datas();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
@@ -212,6 +212,7 @@ trait StationClient {
             $ephemeris = new Ephemeris_Computer();
             $ephemeris->compute(LWS_LOC_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
+            */
         }
         catch (\Exception $ex) {
             Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());

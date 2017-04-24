@@ -75,9 +75,10 @@ class Tasks extends Base {
         if ($item['avr'] >= 0) {
             $result = $item['avr'] . '&nbsp;' . __('ms', 'live-weather-station');
         }
-        elseif ($item['count'] == 0) {
+        if (!$item['frequency'] || $item['count'] == 0) {
             $result = '-';
         }
+
         return $result;
     }
 

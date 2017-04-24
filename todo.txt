@@ -10,6 +10,7 @@
  * 3.x - Wet bulb
  * 3.x - Air density
  * 3.x - Aridity index computing
+ * 3.x - Equilibrium moisture content
  * 3.x - Pushing data to twitter / slack / fb / ...
  * 3.x - Extra heat indexes
  * 3.x - Solar measurements
@@ -52,6 +53,7 @@
  * 3.x - YOWindow.xml as export
  * 3.x - all-sensors.xml as import
  * 3.x - stickertags as import
+ * 3.x - weatherlink as import
  * 4.x - Metar
  * 4.x - NOAA
 
@@ -60,6 +62,7 @@
 * FIXES TO DO         *
 ***********************
 
-cron manager doc
-contextual help in dashboard
-api quota doc
+cron manager documentation
+api quota documentation
+
+french translation : laisser tomber =/= abandonner

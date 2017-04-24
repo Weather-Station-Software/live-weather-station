@@ -547,6 +547,7 @@ class Performance {
                     $criticality_datemin = $ts;
                 }
                 if ($ts != $tmp_date) {
+                    $tmp_criticality = round($tmp_criticality, 0);
                     if ($tmp_criticality > 0) {
                         $criticality[] = $ts.':'.$tmp_criticality;
                         if ($tmp_criticality > $criticality_max) {
@@ -558,6 +559,7 @@ class Performance {
                 }
                 $tmp_criticality += $detail['cpt'] * Logger::get_criticality($detail['level']);
             }
+            $tmp_criticality = round($tmp_criticality, 0);
             if ($tmp_criticality > 0) {
                 $criticality[] = $ts.':'.$tmp_criticality;
                 if ($tmp_criticality > $criticality_max) {
@@ -578,9 +580,6 @@ class Performance {
             }
         }
         foreach ($pre_jsonable as $key=>$field) {
-            /*if (strpos($key, '_values')) {
-                continue;
-            }*/
             foreach ($field as $level=>$serie) {
                 foreach ($serie as $element => $cpt) {
                     $jsonable[$key][$level][] = array('x' => '$' . $element . '$', 'y' => $pre_jsonable[$key][$level][$element]);
@@ -594,9 +593,6 @@ class Performance {
             }
             $data[$key] = '[' . implode(',', $data_r[$key]) . ']';
         }
-        /*foreach ($fields as $field) {
-            $data[$field.'_values'] = '[' . implode(',', $pre_jsonable[$field.'_values']) . ']';
-        }*/
         $data['density'] = '{' . implode(',', $density) . '}';
         $data['density_max'] = $density_max;
         $data['density_datemin'] = $density_datemin;

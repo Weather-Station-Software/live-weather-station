@@ -243,16 +243,20 @@ class InlineHelp {
                 'content' => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p>');
 
             $s1 = sprintf(__('The boxes on your %s Dashboard screen are:', 'live-weather-station'), LWS_PLUGIN_NAME);
-            $s2 = '<strong>' . __('At a Glance', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Displays a summary of %s operations. Note that a similar box is displayed in your main WordPress Dashboard.', 'live-weather-station'), LWS_PLUGIN_NAME);
-            $s3 = '<strong>' . __('Versions', 'live-weather-station') . '</strong> &mdash; ' . __('Displays important versions numbers.', 'live-weather-station');
-            $s4 = '<strong>' . __('Translation', 'live-weather-station') . '</strong> &mdash; ' . __('If displayed, shows translations status.', 'live-weather-station');
-            $s5 = '<strong>' . __('About', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Displays information about %s and contributors.', 'live-weather-station'), LWS_PLUGIN_NAME);
-            $s6 = '<strong>' . __('Licenses', 'live-weather-station') . '</strong> &mdash; ' . __('Displays important information about the licenses under which are published some weather data.', 'live-weather-station');
-            $s7 = '<strong>' . __('Welcome', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Shows links for some of the most common tasks when getting started or using %s.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s2 = '<strong>' . __('Welcome', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Shows links for some of the most common tasks when getting started or using %s.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s3 = '<strong>' . __('At a Glance', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Displays a summary of %s operations. Note that a similar box is displayed in your main WordPress Dashboard.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s4 = '<strong>' . __('Quota usage', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Displays quota usage and peak rates for main services.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s5 = '<strong>' . __('Cache performance', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('If cache is activated, displays efficiency (hit rate) and time saved.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s6 = '<strong>' . __('Events', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Displays counts of occured events.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s7 = '<strong>' . __('Versions', 'live-weather-station') . '</strong> &mdash; ' . __('Displays important versions numbers.', 'live-weather-station');
+            $s8 = '<strong>' . sprintf(__('%s News', 'live-weather-station'), LWS_PLUGIN_NAME) . '</strong> &mdash; ' . sprintf(__('Shows news from %s blog.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s9 = '<strong>' . __('Translation', 'live-weather-station') . '</strong> &mdash; ' . __('If displayed, shows translations status.', 'live-weather-station');
+            $s10= '<strong>' . __('About', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Displays information about %s and contributors.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s11= '<strong>' . __('Licenses', 'live-weather-station') . '</strong> &mdash; ' . __('Displays important information about the licenses under which are published some weather data.', 'live-weather-station');
             $tabs[] = array(
                 'title' => __('Content', 'live-weather-station'),
                 'id' => 'lws-contextual-dashboard-content',
-                'content' => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p><p>' . $s5 . '</p><p>' . $s6 . '</p><p>' . $s7 . '</p>');
+                'content' => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p><p>' . $s5 . '</p><p>' . $s6 . '</p><p>' . $s7 . '</p><p>' . $s8 . '</p><p>' . $s9 . '</p><p>' . $s10 . '</p><p>' . $s11 . '</p>');
 
             foreach ($tabs as $tab) {
                 $screen->add_help_tab($tab);

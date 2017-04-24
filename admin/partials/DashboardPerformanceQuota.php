@@ -8,7 +8,7 @@
 $values = array();
 foreach ($val as $k => $v) {
     if ($v['get']['has_quota']) {
-        $values[$k]['txt'] = sprintf(__('%s: %s used, rate peak at %s of the maximal capacity.', 'live-weather-station'), $k, $v['get']['count'].'%', $v['get']['rate'].'%');
+        $values[$k]['txt'] = sprintf(__('%s: %s used, peak rate at %s of the maximal capacity.', 'live-weather-station'), $k, $v['get']['count'].'%', $v['get']['rate'].'%');
         $q = round(($v['get']['count']*7 +  $v['get']['rate']*3)/10, 0);
         $quality = 100 - $q;
         if ($quality > 100) {

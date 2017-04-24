@@ -22,13 +22,14 @@ class Cache {
     private $facility = 'Cache Manager';
     private static $chrono = array();
     private static $stats = array();
-    private static $backend_expiry = 900;
-    private static $frontend_expiry = 120;
-    private static $widget_expiry = 120;
-    private static $i18n_expiry = 7200;
+    public static $backend_expiry = 900;   //15 minutes
+    public static $frontend_expiry = 120;  // 2 minutes
+    public static $widget_expiry = 120;    // 2 minutes
+    public static $i18n_expiry = 7200;     // 2 hours
 
     public static $db_stat = 'lws_cache_db_stat';
     public static $db_stat_log = 'lws_cache_db_stat_log';
+    public static $db_stat_quota = 'lws_cache_db_stat_quota';
     public static $db_stat_perf = 'lws_cache_db_stat_perf';
     public static $db_stat_perf_cache = 'lws_cache_db_stat_perf_cache';
     public static $db_stat_perf_cron = 'lws_cache_db_stat_perf_cron';

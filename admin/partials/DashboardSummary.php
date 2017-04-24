@@ -49,6 +49,13 @@ else {
     $req_url = '<a href="' . LWS_ADMIN_PHP_URL . '?page=lws-requirements" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>' . lcfirst(__('see why', 'live-weather-station')) . '</a>';
     $run_str = sprintf(__('%1$s can\'t run: %2$s', 'live-weather-station'), LWS_PLUGIN_NAME, $req_url) . '&hellip;';
 }
+$quota = get_transient('live_weather_station_quota_alert');
+if ($quota > 0) {
+    $quota_str = __('API usage has exceeded quotas!', 'live-weather-station');
+    if ($quota == 1) {
+        $quota_str = __('API usage will soon exceed quotas!', 'live-weather-station');
+    }
+}
 
 ?>
 <?php if (REQUIREMENTS_OK) { ?>
@@ -56,6 +63,13 @@ else {
         <ul>
             <li><?php echo $data_str; ?></li>
             <li><?php echo $services_str; ?></li>
+        </ul>
+    </div>
+<?php } ?>
+<?php if (get_option('live_weather_station_quota_mode') == 1 && $quota > 0) { ?>
+    <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
+        <ul>
+            <li><i style="color:#FF4444;" class="fa fa-lg fa-fw fa-warning"></i>&nbsp;&nbsp;<?php echo $quota_str; ?></li>
         </ul>
     </div>
 <?php } ?>
