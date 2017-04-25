@@ -64,5 +64,3 @@
 
 cron manager documentation
 api quota documentation
-
-french translation : laisser tomber =/= abandonner
