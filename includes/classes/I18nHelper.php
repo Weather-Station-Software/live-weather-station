@@ -67,7 +67,7 @@ class Handling {
            return false;
        }
        else {
-           return (($this->percent_translated < $this->percent_min) && (get_display_locale() == get_locale()));
+           return (((EnvManager::is_plugin_in_production_mode() && $this->percent_translated < $this->percent_min) || !EnvManager::is_plugin_in_production_mode()) && (get_display_locale() == get_locale()));
        }
     }
 
@@ -218,6 +218,8 @@ class Handling {
         }
         $help = InlineHelp::get(12, '%s', __('see details', 'live-weather-station'));
         if (!EnvManager::is_plugin_in_production_mode()) {
+            $s = __('%2$s is using a partial translation in %1$s.', 'live-weather-station');
+            $message = $s . ' ' . __('This translation is currently %3$d%% complete. We need your help to make it complete and to fix any errors. Please %4$s on how you can help to complete this translation!', 'live-weather-station');
             $help = InlineHelp::get(-10, '%s', __('see here', 'live-weather-station'));
         }
         return sprintf($message, $locale, LWS_FULL_NAME, $this->percent_translated, $help, $this->count_translated);
