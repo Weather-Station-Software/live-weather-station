@@ -915,21 +915,23 @@ class Performance {
                 $jsonable['quotas'] = array();
                 $hidden_values = true;
                 $hidden_quotas = true;
-                foreach ($values['call'][$service][$verb] as $t => $v) {
-                    $s = json_encode(array($t, $values['call'][$service][$verb][$t]));
-                    $s = str_replace('"', '', $s);
-                    $jsonable['values'][] = $s;
-                    $s = json_encode(array($t, $values['call'][$service][$verb.'_q'][$t]));
-                    $s = str_replace('"', '', $s);
-                    $jsonable['quotas'][] = $s;
-                    if ($hidden_values) {
-                        if ($values['call'][$service][$verb][$t] > 0) {
-                            $hidden_values = false;
+                if (isset($values['rate'][$service][$verb]) && is_array($values['rate'][$service][$verb])) {
+                    foreach ($values['call'][$service][$verb] as $t => $v) {
+                        $s = json_encode(array($t, $values['call'][$service][$verb][$t]));
+                        $s = str_replace('"', '', $s);
+                        $jsonable['values'][] = $s;
+                        $s = json_encode(array($t, $values['call'][$service][$verb . '_q'][$t]));
+                        $s = str_replace('"', '', $s);
+                        $jsonable['quotas'][] = $s;
+                        if ($hidden_values) {
+                            if ($values['call'][$service][$verb][$t] > 0) {
+                                $hidden_values = false;
+                            }
                         }
-                    }
-                    if ($hidden_quotas) {
-                        if ($values['call'][$service][$verb.'_q'][$t] > 0) {
-                            $hidden_quotas = false;
+                        if ($hidden_quotas) {
+                            if ($values['call'][$service][$verb . '_q'][$t] > 0) {
+                                $hidden_quotas = false;
+                            }
                         }
                     }
                 }
@@ -957,21 +959,23 @@ class Performance {
                 $jsonable['quotas'] = array();
                 $hidden_values = true;
                 $hidden_quotas = true;
-                foreach ($values['rate'][$service][$verb] as $t => $v) {
-                    $s = json_encode(array($t, $values['rate'][$service][$verb][$t]));
-                    $s = str_replace('"', '', $s);
-                    $jsonable['values'][] = $s;
-                    $s = json_encode(array($t, $values['rate'][$service][$verb.'_q'][$t]));
-                    $s = str_replace('"', '', $s);
-                    $jsonable['quotas'][] = $s;
-                    if ($hidden_values) {
-                        if ($values['rate'][$service][$verb][$t] > 0) {
-                            $hidden_values = false;
+                if (isset($values['rate'][$service][$verb]) && is_array($values['rate'][$service][$verb])) {
+                    foreach ($values['rate'][$service][$verb] as $t => $v) {
+                        $s = json_encode(array($t, $values['rate'][$service][$verb][$t]));
+                        $s = str_replace('"', '', $s);
+                        $jsonable['values'][] = $s;
+                        $s = json_encode(array($t, $values['rate'][$service][$verb . '_q'][$t]));
+                        $s = str_replace('"', '', $s);
+                        $jsonable['quotas'][] = $s;
+                        if ($hidden_values) {
+                            if ($values['rate'][$service][$verb][$t] > 0) {
+                                $hidden_values = false;
+                            }
                         }
-                    }
-                    if ($hidden_quotas) {
-                        if ($values['rate'][$service][$verb.'_q'][$t] > 0) {
-                            $hidden_quotas = false;
+                        if ($hidden_quotas) {
+                            if ($values['rate'][$service][$verb . '_q'][$t] > 0) {
+                                $hidden_quotas = false;
+                            }
                         }
                     }
                 }
