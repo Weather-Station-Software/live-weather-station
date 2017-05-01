@@ -1,5 +1,9 @@
 
-###3.2.1 / May 2nd, 2017
+###3.2.2 / May 2nd, 2017
+
+* Bug fix: silent SQL syntax error on MySQL > v5.6 despite 3.2.1 bug fix.
+
+###3.2.1 / May 1st, 2017
 
 * Bug fix: silent SQL syntax error on MySQL > v5.6.
 

@@ -362,12 +362,12 @@ class Quota {
             $value_insert[] = "'".$now."'";
             $value_insert[] = "'".$key."'";
             foreach ($values as $k => $v) {
-                $field_insert[] = $k;
+                $field_insert[] = '`'.$k.'`';
                 $value_insert[] = $v;
                 $value_update[] = '`'.$k.'`=`'.$k.'`+'.$v;
             }
             $sql = "INSERT INTO " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " ";
-            $sql .= "(" . implode(',', '`'.$field_insert.'`') . ") ";
+            $sql .= "(" . implode(',', $field_insert) . ") ";
             $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
             $wpdb->query($sql);
