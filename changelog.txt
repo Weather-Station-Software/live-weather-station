@@ -1,5 +1,9 @@
 
-###3.2.0 / May 2nd, 2017
+###3.2.1 / May 2nd, 2017
+
+* Bug fix: silent SQL syntax error on MySQL > v5.6.
+
+###3.2.0 / May 1st, 2017
 
 * New: a full-featured quota manager allows you to not exceed API usage for all services (Netatmo, Weather Underground, etc.).
 * New: a dashboard box displays API usage.
