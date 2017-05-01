@@ -485,47 +485,48 @@ class Handling {
             $station_guid = $station['guid'];
             $station_name = $station['station_name'];
             $station_id = $station['station_id'];
+            $guids = array($station_guid);
+
+            include(LWS_ADMIN_DIR.'partials/StationShortcodes.php');
+
+            $js_array_textual = $this->get_all_stations_array(true, false, false, true, false, $guids);
+            $js_array_icon = $this->get_all_stations_array(true, false, false, true, false, $guids);
+            $js_array_lcd = $this->get_all_stations_array(false, true, true, false, false, $guids);
+            $js_array_justgage = $this->get_all_stations_array(false, false, true, true, true, $guids);
+            $js_array_steelmeter = $this->get_all_stations_array(false, false, true, true, false, $guids);
+
+            $js_array_justgage_design = $this->get_justgage_design_js_array();
+            $js_array_justgage_color = $this->get_justgage_color_js_array();
+            $js_array_justgage_pointer = $this->get_justgage_pointer_js_array();
+            $js_array_justgage_title = $this->get_justgage_title_js_array();
+            $js_array_justgage_unit = $this->get_justgage_unit_js_array();
+            $js_array_justgage_size = $this->get_size_js_array(true);
+            $js_array_justgage_background = $this->get_justgage_background_js_array();
+
+            $js_array_lcd_design = $this->get_lcd_design_js_array();
+            $js_array_lcd_size = $this->get_size_js_array();
+            $js_array_lcd_speed = $this->get_lcd_speed_js_array();
+
+            $js_array_steelmeter_design = $this->get_steelmeter_design_js_array();
+            $js_array_steelmeter_frame = $this->get_steelmeter_frame_js_array();
+            $js_array_steelmeter_background = $this->get_steelmeter_background_js_array();
+            $js_array_steelmeter_orientation = $this->get_steelmeter_orientation_js_array();
+            $js_array_steelmeter_glass = $this->get_steelmeter_glass_js_array();
+            $js_array_steelmeter_pointer_type = $this->get_steelmeter_pointer_type_js_array();
+            $js_array_steelmeter_pointer_color = $this->get_steelmeter_pointer_color_js_array();
+            $js_array_steelmeter_knob = $this->get_steelmeter_knob_js_array();
+            $js_array_steelmeter_lcd_color = $this->get_steelmeter_lcd_design_js_array();
+            $js_array_steelmeter_led_color = $this->get_steelmeter_led_color_js_array();
+            $js_array_steelmeter_minmax = $this->get_steelmeter_minmax_js_array();
+            $js_array_steelmeter_index_color = $this->get_steelmeter_index_color_js_array();
+            $js_array_steelmeter_index_style = $this->get_steelmeter_index_style_js_array();
+            $js_array_steelmeter_size = $this->get_size_js_array(false, true, false);
+
+            include(LWS_ADMIN_DIR.'partials/ShortcodesTextual.php');
+            include(LWS_ADMIN_DIR.'partials/ShortcodesJustgage.php');
+            include(LWS_ADMIN_DIR.'partials/ShortcodesLCD.php');
+            include(LWS_ADMIN_DIR.'partials/ShortcodesSteelmeter.php');
         }
-
-        include(LWS_ADMIN_DIR.'partials/StationShortcodes.php');
-
-        $js_array_textual = $this->get_all_stations_array(true, false, false, true);
-        $js_array_icon = $this->get_all_stations_array(true, false, false, true);
-        $js_array_lcd = $this->get_all_stations_array(false, true, true);
-        $js_array_justgage = $this->get_all_stations_array(false, false, true, true, true);
-        $js_array_steelmeter = $this->get_all_stations_array(false, false, true, true, false);
-
-        $js_array_justgage_design = $this->get_justgage_design_js_array();
-        $js_array_justgage_color = $this->get_justgage_color_js_array();
-        $js_array_justgage_pointer = $this->get_justgage_pointer_js_array();
-        $js_array_justgage_title = $this->get_justgage_title_js_array();
-        $js_array_justgage_unit = $this->get_justgage_unit_js_array();
-        $js_array_justgage_size = $this->get_size_js_array(true);
-        $js_array_justgage_background = $this->get_justgage_background_js_array();
-
-        $js_array_lcd_design = $this->get_lcd_design_js_array();
-        $js_array_lcd_size = $this->get_size_js_array();
-        $js_array_lcd_speed = $this->get_lcd_speed_js_array();
-
-        $js_array_steelmeter_design = $this->get_steelmeter_design_js_array();
-        $js_array_steelmeter_frame = $this->get_steelmeter_frame_js_array();
-        $js_array_steelmeter_background = $this->get_steelmeter_background_js_array();
-        $js_array_steelmeter_orientation = $this->get_steelmeter_orientation_js_array();
-        $js_array_steelmeter_glass = $this->get_steelmeter_glass_js_array();
-        $js_array_steelmeter_pointer_type = $this->get_steelmeter_pointer_type_js_array();
-        $js_array_steelmeter_pointer_color = $this->get_steelmeter_pointer_color_js_array();
-        $js_array_steelmeter_knob = $this->get_steelmeter_knob_js_array();
-        $js_array_steelmeter_lcd_color = $this->get_steelmeter_lcd_design_js_array();
-        $js_array_steelmeter_led_color = $this->get_steelmeter_led_color_js_array();
-        $js_array_steelmeter_minmax = $this->get_steelmeter_minmax_js_array();
-        $js_array_steelmeter_index_color = $this->get_steelmeter_index_color_js_array();
-        $js_array_steelmeter_index_style = $this->get_steelmeter_index_style_js_array();
-        $js_array_steelmeter_size = $this->get_size_js_array(false, true, false);
-
-        include(LWS_ADMIN_DIR.'partials/ShortcodesTextual.php');
-        include(LWS_ADMIN_DIR.'partials/ShortcodesJustgage.php');
-        include(LWS_ADMIN_DIR.'partials/ShortcodesLCD.php');
-        include(LWS_ADMIN_DIR.'partials/ShortcodesSteelmeter.php');
     }
 
     /**

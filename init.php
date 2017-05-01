@@ -72,10 +72,11 @@ function get_display_locale($user_id = 0) {
 //---------------------------------------------------------------------------------------------------
 
 define('LWS_FULL_NAME', 'Weather Station 3');
-define('LWS_VERSION', '3.2.0-rc2');
+define('LWS_VERSION', '3.2.0');
 define('LWS_CODENAME', '"Merzhin"');
 define('LWS_OWM_READY', false);
 define('LWS_TXT_READY', false);
+define('LWS_WFW_READY', false);
 
 //---------------------------------------------------------------------------------------------------
 
