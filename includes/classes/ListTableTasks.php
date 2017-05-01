@@ -21,7 +21,7 @@ class Tasks extends Base {
 
     private $schedules_description = array();
     private $schedules_performance = array();
-    private $ts_none = 9999999999999;
+    private $ts_none = 999999999999;
 
     public function __construct(){
         parent::__construct(array('singular' => 'scheduled task', 'plural' => 'scheduled tasks', 'ajax' => true));

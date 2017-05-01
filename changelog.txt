@@ -1,4 +1,9 @@
 
+###3.2.3 / May 2nd, 2017
+
+* Bug fix: there's a missing php file in the distribution done by WordPress.org (ListTableTasks.php).
+* Bug fix: PHP Warning when compiling quota performance data for the first time.
+
 ###3.2.2 / May 2nd, 2017
 
 * Bug fix: silent SQL syntax error on MySQL > v5.6 despite 3.2.1 bug fix.
