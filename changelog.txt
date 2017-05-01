@@ -14,13 +14,14 @@
 * Improvement: totally rewritten push cron engine for optimization and stability.
 * Improvement: if your WordPress configuration is set to prohibit automatic updates, you can no longer set the corresponding option for Weather Station.
 * Improvement: better readability for "Weather Station News" box in dashboard.
-* Improvement: watchdog now takes care of plugin auto-update process.
+* Improvement: speed optimization for stations list and stations views.
+* Improvement: watchdog now takes care of plugin auto-update process - especially with PHP 7.
 * Improvement: it's now possible to reset analytics view.
 * Improvement: "Pusher" subsystem have been renamed to "Weather Pusher".
 * Improvement: consistency of events types between all collectors subsystems have been greatly improved.
 * Improvement: contextual help updated in the dashboard.
 * Improvement: changes in the `readme.txt` to comply with new WordPress guidelines.
-* Bug fix: the css for widget is always outputed on frontend even if there's no widget on the page.
+* Bug fix: the css for widget is always outputed on frontend even if there's no widget on the page (special thanks to Schatzalp).
 * Bug fix: in very rare circumstances, it's not possible to move boxes in dashboard and station view.
 * Bug fix: the events log view doesn't shows contextual help when it is filtered.
 * Bug fix: unable to share data on Weather Underground site since they have updated their servers.

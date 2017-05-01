@@ -26,6 +26,7 @@ class Stations extends Base {
 
     private $limit = 5;
     private $filters = array();
+    private $active_guid = array();
 
     public function __construct(){
         global $status, $page;
@@ -190,6 +191,7 @@ class Stations extends Base {
         if (($item['comp_bas'] + $item['comp_ext'] + $item['comp_int'] + $item['comp_xtd'] + $item['comp_vrt']) == 0) {
             return '';
         }
+        $this->active_guid[] = $item['guid'];
         $s = '<a href="#" id="textual-datas-link-' . $item['guid'] . '">' . ucfirst(__('textual datas', 'live-weather-station')) . '</a>, ';
         $s .= '<a href="#" id="lcd-datas-link-' . $item['guid'] . '">' . __('LCD display', 'live-weather-station') . '</a>, ';
         $s .= '<a href="#" id="justgage-datas-link-' . $item['guid'] . '">' . __('clean gauge', 'live-weather-station') . '</a>, ';
@@ -257,6 +259,7 @@ class Stations extends Base {
         $total_items = count($data);
         $data = array_slice($data,(($current_page-1)*$this->limit),$this->limit);
         $this->items = $data;
+        $this->active_guid = array();
         $this->set_pagination_args(array('total_items' => $total_items, 'per_page' => $this->limit, 'total_pages' => ceil($total_items/$this->limit)));
     }
 
@@ -284,11 +287,11 @@ class Stations extends Base {
         }
         if ($which == 'bottom'){
             include(LWS_ADMIN_DIR.'partials/ListTableStationsBottom.php');
-            $js_array_textual = $this->get_all_stations_array(true, false, false, true);
-            $js_array_icon = $this->get_all_stations_array(true, false, false, true);
-            $js_array_lcd = $this->get_all_stations_array(false, true, true);
-            $js_array_justgage = $this->get_all_stations_array(false, false, true, true, true);
-            $js_array_steelmeter = $this->get_all_stations_array(false, false, true, true, false);
+            $js_array_textual = $this->get_all_stations_array(true, false, false, true, false, $this->active_guid);
+            $js_array_icon = $this->get_all_stations_array(true, false, false, true, false, $this->active_guid);
+            $js_array_lcd = $this->get_all_stations_array(false, true, true, false, false, $this->active_guid);
+            $js_array_justgage = $this->get_all_stations_array(false, false, true, true, true, $this->active_guid);
+            $js_array_steelmeter = $this->get_all_stations_array(false, false, true, true, false, $this->active_guid);
 
             $js_array_justgage_design = $this->get_justgage_design_js_array();
             $js_array_justgage_color = $this->get_justgage_color_js_array();
@@ -325,10 +328,12 @@ class Stations extends Base {
                 if (isset($station[1])) {
                     $station_id = $station[1];
                 }
-                include(LWS_ADMIN_DIR.'partials/ShortcodesTextual.php');
-                include(LWS_ADMIN_DIR.'partials/ShortcodesJustgage.php');
-                include(LWS_ADMIN_DIR.'partials/ShortcodesLCD.php');
-                include(LWS_ADMIN_DIR.'partials/ShortcodesSteelmeter.php');
+                if (in_array($guid, $this->active_guid)) {
+                    include(LWS_ADMIN_DIR.'partials/ShortcodesTextual.php');
+                    include(LWS_ADMIN_DIR.'partials/ShortcodesJustgage.php');
+                    include(LWS_ADMIN_DIR.'partials/ShortcodesLCD.php');
+                    include(LWS_ADMIN_DIR.'partials/ShortcodesSteelmeter.php');
+                }
             }
         }
     }

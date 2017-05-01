@@ -726,7 +726,7 @@ trait Generator {
             }
             if ($aggregated  && ($netatmo || $wug || $raw || $real)) {
                 $ref = array();
-                $ref['device_id'] = $data['station']['station_id'];//'aggregated';
+                $ref['device_id'] = $data['station']['station_id'];
                 $ref['device_name'] = $data['station']['station_name'];
                 $ref['module_id'] = 'aggregated';
                 $ref['module_type'] = 'aggregated';
@@ -766,15 +766,22 @@ trait Generator {
      * @param boolean $reduced Optional. The array is reduced. i.e. contains only modules and measures.
      * @param boolean $computed Optional. The array must contain computed data types.
      * @param boolean $mono Optional. The array must contain min/max.
+     * @param array $guids Optional. An array of guids to get. Get data for all guids if not provided.
      * @return array An array containing the available station's datas ready to convert to a JS array.
      * @since 3.0.0
      */
-    protected function get_all_stations_array($full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false) {
+    protected function get_all_stations_array($full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $guids=array()) {
         $result = array();
         $stations = $this->get_stations_table_list();
         if (count($stations) > 0) {
             foreach ($stations as $station) {
-                if (($station['comp_bas'] + $station['comp_ext'] + $station['comp_int'] + $station['comp_xtd'] + $station['comp_vrt']) > 0) {
+                if (!empty($guids)) {
+                    $todo = in_array($station['guid'], $guids);
+                }
+                else {
+                    $todo = true;
+                }
+                if ($todo && ($station['comp_bas'] + $station['comp_ext'] + $station['comp_int'] + $station['comp_xtd'] + $station['comp_vrt']) > 0) {
                     $result[$station['guid']] = $this->get_station_array($station['guid'], $full, $aggregated, $reduced, $computed, $mono);
                 }
             }
