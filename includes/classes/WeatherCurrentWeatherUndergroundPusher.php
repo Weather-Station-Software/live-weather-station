@@ -39,6 +39,9 @@ class Pusher extends Abstract_Pusher {
             $result['barom'] = $this->get_pressure($data['pressure'], 0);
             $result['baromin'] = $this->get_pressure($data['pressure'], 1);
         }
+        else {
+            $result['barom'] = 0;
+        }
         if (array_key_exists('temperature', $data)) {
             $result['tempf'] = $this->get_temperature($data['temperature'], 1);
         }
@@ -66,9 +69,10 @@ class Pusher extends Abstract_Pusher {
         if (array_key_exists('dew_point', $data)) {
             $result['dewptf'] = $this->get_temperature($data['dew_point'], 1);
         }
-        if (array_key_exists('timestamp', $data)) {
+        $result['dateutc'] = date('Y-m-d H:i:s', time()-60);
+        /*if (array_key_exists('timestamp', $data)) {
             $result['dateutc'] = $data['timestamp'];
-        }
+        }*/
         return $result;
     }
 

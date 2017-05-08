@@ -1,4 +1,10 @@
 
+###3.2.4 / May 9th, 2017
+
+* Improvement: number of data posts to Weather underground are now 10 times per hour.
+* Improvement: frequency for sharing data with Met Office are now aligned on WOW recommendation (20 minutes).
+* Bug fix: events log indicates "Too Many Requests" when pushing data to Met Office, when sharing is activated with PWS and Weather Underground too.
+
 ###3.2.3 / May 2nd, 2017
 
 * Bug fix: there's a missing php file in the distribution done by WordPress.org (ListTableTasks.php).

@@ -63,4 +63,3 @@
 ***********************
 
 cron manager documentation
-api quota documentation

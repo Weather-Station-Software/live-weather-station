@@ -35,9 +35,10 @@ class Pusher extends Abstract_Pusher {
      */
     protected function process_data($data) {
         $result = array();
-        if (array_key_exists('timestamp', $data)) {
+        $result['dateutc'] = date('Y-m-d H:i:s', time()-60);
+        /*if (array_key_exists('timestamp', $data)) {
             $result['dateutc'] = $data['timestamp'];
-        }
+        }*/
         if (array_key_exists('pressure', $data)) {
             $result['baromin'] = $this->get_pressure($data['pressure'], 1);
         }

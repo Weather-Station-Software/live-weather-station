@@ -299,7 +299,7 @@ class Quota {
             case 'WOW Met Office':
                 switch ($verb) {
                     case 'POST' :
-                        $quota = 1;
+                        $quota = 0.07;
                         break;
                 }
                 break;
