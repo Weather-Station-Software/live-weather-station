@@ -54,10 +54,12 @@ class Watchdog {
     public static function start() {
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_03_minutes_interval'));
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_05_minutes_interval'));
+        add_filter('cron_schedules', array(get_called_class(), 'add_cron_06_minutes_interval'));
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_10_minutes_interval'));
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_11_minutes_interval'));
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_12_minutes_interval'));
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_15_minutes_interval'));
+        add_filter('cron_schedules', array(get_called_class(), 'add_cron_20_minutes_interval'));
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_30_minutes_interval'));
         self::define_schedules();
         self::launch();

@@ -680,7 +680,7 @@ trait Handling {
      */
     protected static function launch_wow_current_push_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$wow_push_schedule_name)) {
-            wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$wow_push_schedule_name);
+            wp_schedule_event(time() + $timeshift, 'twenty_minutes', self::$wow_push_schedule_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$wow_push_schedule_name).'" (re)scheduled.');
         }
     }
@@ -755,7 +755,7 @@ trait Handling {
      */
     protected static function launch_wug_current_push_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$wug_push_schedule_name)) {
-            wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$wug_push_schedule_name);
+            wp_schedule_event(time() + $timeshift, 'six_minutes', self::$wug_push_schedule_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$wug_push_schedule_name).'" (re)scheduled.');
         }
     }
@@ -782,6 +782,19 @@ trait Handling {
         $schedules['five_minutes'] = array(
             'interval' => 300,
             'display'  => __( 'Every five minutes', 'live-weather-station' ),
+        );
+        return $schedules;
+    }
+
+    /**
+     * Add a new 6 minutes interval capacity to the WP cron feature.
+     *
+     * @since 3.2.4
+     */
+    public static function add_cron_06_minutes_interval($schedules) {
+        $schedules['six_minutes'] = array(
+            'interval' => 360,
+            'display'  => __( 'Every six minutes', 'live-weather-station' ),
         );
         return $schedules;
     }
@@ -834,6 +847,19 @@ trait Handling {
         $schedules['fifteen_minutes'] = array(
             'interval' => 900,
             'display'  => __( 'Every fifteen minutes', 'live-weather-station' ),
+        );
+        return $schedules;
+    }
+
+    /**
+     * Add a new 20 minutes interval capacity to the WP cron feature.
+     *
+     * @since 3.2.4
+     */
+    public static function add_cron_20_minutes_interval($schedules) {
+        $schedules['twenty_minutes'] = array(
+            'interval' => 1200,
+            'display'  => __( 'Every twenty minutes', 'live-weather-station' ),
         );
         return $schedules;
     }
