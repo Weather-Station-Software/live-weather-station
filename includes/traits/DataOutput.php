@@ -122,6 +122,9 @@ trait Output {
                         $color = false;
                         break;
                 }
+                if (count($services) == 0) {
+                    return '<h4 style="padding:20px;"><span>'. __('No data', 'live-weather-station' ) . '</span></h4>';
+                }
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result .= '<style type="text/css">.dashed-line {stroke-dasharray:5,5;}.hidden-line {display:none;}</style>' . PHP_EOL;
                 $result .= '<div id="selectors-'.$uniq.'" class="wp-core-ui">' . PHP_EOL;
