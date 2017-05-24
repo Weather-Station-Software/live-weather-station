@@ -13,6 +13,90 @@ namespace WeatherStation\SDK\Generic\Plugin\Common;
 trait Utilities {
     
     
+
+
+    /**
+     * Computes the saturation absolute humidity.
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $p Pressure in pascal.
+     * @return float The computed saturation absolute humidity (in g/m^3).
+     * @since 3.3.0
+     */
+    protected function compute_saturation_absolute_humidity($t, $p) {
+        return round(18.01528 * 1000 * $p / (8.3144621 * ($t+273.15)), 3);
+    }
+
+    /**
+     * Computes the absolute humidity.
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $p Pressure in pascal.
+     * @param integer $h Humidity in percent.
+     * @return float The computed absolute humidity (in g/m^3).
+     * @since 3.3.0
+     */
+    protected function compute_absolute_humidity($t, $p, $h) {
+        return round(18.01528 * 1000 * $p * ($h / 100) / (8.3144621 * ($t+273.15)), 3);
+    }
+
+    /**
+     * Computes the equilibrium moisture content.
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $h Humidity in percent.
+     * @return float The computed equilibrium moisture content.
+     * @since 3.3.0
+     */
+    protected function compute_emc($t, $h) {
+        /*$t = 1.8 * $t + 32;
+        $h = $h / 100;
+        $w = ;
+        $k = ;
+        $k1 = ;
+        $k2 = ;*/
+        return 0;//round((0.2831 * pow ($h, 0.2735) * $t) + (0.0003018 * pow($h, 2)) + (0.01289 * $h) - 4.0962, 1);
+    }
+
+    /**
+     * Computes the saturation vapor pressure.
+     *
+     * @param integer $t Temperature in celcius.
+     * @return float The computed saturation vapor pressure (in Pascal).
+     * @since 3.3.0
+     */
+    protected function compute_saturation_vapor_pressure($t) {
+        return round(611.213 * exp((17.5043 * $t) / (241.2 + $t)), 0);
+    }
+
+    /**
+     * Computes the air density.
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $p Pressure in pascal.
+     * @param integer $h Humidity in percent.
+     * @return float The computed air density (in kg/m^3).
+     * @since 3.3.0
+     */
+    protected function compute_air_density($t, $p, $h) {
+        $Ps = $this->compute_saturation_vapor_pressure($t) / $p;
+        $Rh = 287.06 / (1 - (($h / 100 ) * $Ps * (1 - (287.06 / 461))));
+        return round($p / ($Rh * ($t+273.15)), 4);
+        //round((1 / (287.06 * ($t+273.15))) * ($p - (230.616 * $h * exp((17.5043 * $t) / (241.2 + $t)))), 4);
+    }
+
+    /**
+     * Computes the wet bulb temperature.
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $h Humidity in percent.
+     * @return float The computed wet bulb temperature.
+     * @since 3.3.0
+     */
+    protected function compute_wet_bulb($t, $h) {
+        return round((0.2831 * pow ($h, 0.2735) * $t) + (0.0003018 * pow($h, 2)) + (0.01289 * $h) - 4.0962, 1);
+    }
+
     /**
      * Computes the Chandler Burning index.
      *

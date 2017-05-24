@@ -42,6 +42,10 @@ trait Handling {
     private static $live_weather_station_show_analytics = false;
     private static $live_weather_station_show_tasks = false;
     private static $live_weather_station_auto_update = true;
+    private static $live_weather_station_cron_speed = 0;
+    private static $live_weather_station_show_update = true;
+
+
 
     private static $live_weather_station_map_zoom = 16;
     private static $live_weather_station_map_layer = 'X';
@@ -61,6 +65,7 @@ trait Handling {
     private static $live_weather_station_unit_wind_strength = 0;
     private static $live_weather_station_unit_altitude = 0;     
     private static $live_weather_station_unit_distance = 0;
+    private static $live_weather_station_unit_density = 0;
     private static $live_weather_station_unit_rain_snow = 0;
     private static $live_weather_station_unit_gas = 0;
     private static $live_weather_station_measure_only = 0;
@@ -322,6 +327,7 @@ trait Handling {
         delete_option('live_weather_station_unit_wind_strength');
         delete_option('live_weather_station_unit_altitude');
         delete_option('live_weather_station_unit_distance');
+        delete_option('live_weather_station_unit_density');
         delete_option('live_weather_station_unit_rain_snow');
         delete_option('live_weather_station_unit_gas');
         delete_option('live_weather_station_measure_only');
@@ -350,6 +356,8 @@ trait Handling {
         delete_option('live_weather_station_auto_update');
         delete_option('live_weather_station_quota_mode');
         delete_option('live_weather_station_force_frontend_styling');
+        delete_option('live_weather_station_cron_speed');
+        delete_option('live_weather_station_show_update');
         self::delete_thresholds_options();
     }
 
@@ -422,6 +430,7 @@ trait Handling {
         update_option('live_weather_station_auto_update', self::$live_weather_station_auto_update);
         update_option('live_weather_station_quota_mode', self::$live_weather_station_quota_mode);
         update_option('live_weather_station_force_frontend_styling', self::$live_weather_station_force_frontend_styling);
+        update_option('live_weather_station_cron_speed', self::$live_weather_station_cron_speed);
     }
 
     /**
@@ -468,9 +477,11 @@ trait Handling {
         update_option('live_weather_station_unit_wind_strength', self::$live_weather_station_unit_wind_strength);
         update_option('live_weather_station_unit_altitude', self::$live_weather_station_unit_altitude);
         update_option('live_weather_station_unit_distance', self::$live_weather_station_unit_distance);
+        update_option('live_weather_station_unit_density', self::$live_weather_station_unit_density);
         update_option('live_weather_station_unit_rain_snow', self::$live_weather_station_unit_rain_snow);
         update_option('live_weather_station_advanced_mode', (self::$live_weather_station_advanced_mode ? 1 : 0));
         update_option('live_weather_station_partial_translation', (self::$live_weather_station_partial_translation ? 1 : 0));
+        update_option('live_weather_station_show_update', self::$live_weather_station_show_update);
     }
 
     /**
@@ -486,6 +497,7 @@ trait Handling {
         update_option('live_weather_station_unit_wind_strength', self::$live_weather_station_unit_wind_strength);
         update_option('live_weather_station_unit_altitude', self::$live_weather_station_unit_altitude);
         update_option('live_weather_station_unit_distance', self::$live_weather_station_unit_distance);
+        update_option('live_weather_station_unit_density', self::$live_weather_station_unit_density);
         update_option('live_weather_station_unit_rain_snow', self::$live_weather_station_unit_rain_snow);
         self::init_display_options();
         if (!$restrict) {
@@ -506,6 +518,7 @@ trait Handling {
         update_option('live_weather_station_unit_wind_strength', 1);
         update_option('live_weather_station_unit_altitude', 1);
         update_option('live_weather_station_unit_distance', 1);
+        update_option('live_weather_station_unit_density', 1);
         update_option('live_weather_station_unit_rain_snow', 1);
         self::init_display_options();
         if (!$restrict) {
@@ -606,6 +619,7 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_redirect_internal_links', self::$live_weather_station_redirect_internal_links);
         self::verify_option_boolean('live_weather_station_redirect_external_links', self::$live_weather_station_redirect_external_links);
         self::verify_option_integer('live_weather_station_time_shift_threshold', self::$live_weather_station_time_shift_threshold);
+        self::verify_option_integer('live_weather_station_cron_speed', self::$live_weather_station_cron_speed);
         self::verify_option_thresholds();
         self::verify_option_integer('live_weather_station_map_zoom', self::$live_weather_station_map_zoom);
         self::verify_option_string('live_weather_station_map_layer', self::$live_weather_station_map_layer);
@@ -619,6 +633,7 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_auto_update', self::$live_weather_station_auto_update);
         self::verify_option_boolean('live_weather_station_advanced_mode', self::$live_weather_station_advanced_mode);
         self::verify_option_boolean('live_weather_station_partial_translation', self::$live_weather_station_partial_translation);
+        self::verify_option_boolean('live_weather_station_show_update', self::$live_weather_station_show_update);
         self::verify_option_integer('live_weather_station_quota_mode', self::$live_weather_station_quota_mode);
         self::verify_option_boolean('live_weather_station_force_frontend_styling', self::$live_weather_station_force_frontend_styling);
         if ($migrate) {
@@ -670,6 +685,7 @@ trait Handling {
             self::verify_option_integer('live_weather_station_unit_wind_strength', self::$live_weather_station_unit_wind_strength);
             self::verify_option_integer('live_weather_station_unit_altitude', self::$live_weather_station_unit_altitude);
             self::verify_option_integer('live_weather_station_unit_distance', self::$live_weather_station_unit_distance);
+            self::verify_option_integer('live_weather_station_unit_density', self::$live_weather_station_unit_density);
             self::verify_option_integer('live_weather_station_unit_rain_snow', self::$live_weather_station_unit_rain_snow);
             self::verify_option_integer('live_weather_station_unit_gas', self::$live_weather_station_unit_gas);
             self::verify_option_integer('live_weather_station_measure_only', self::$live_weather_station_measure_only);

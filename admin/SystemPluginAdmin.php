@@ -19,6 +19,7 @@ use WeatherStation\Data\Arrays\Generator as Arrays;
 use WeatherStation\UI\Forms\Handling as FormsRenderer;
 use WeatherStation\UI\SVG\Handling as SVG;
 use WeatherStation\System\I18N\Handling as Intl;
+use WeatherStation\System\Subscription\Handling as Subscription;
 use WeatherStation\SDK\Netatmo\Plugin\Collector as Netatmo_Collector;
 use WeatherStation\SDK\Netatmo\Plugin\Initiator as Netatmo_Initiator;
 use WeatherStation\SDK\Netatmo\Plugin\HCCollector as Netatmo_HCCollector;
@@ -130,7 +131,29 @@ class Admin {
         $this->init_system_settings();
         $this->init_display_settings();
         $this->init_thresholds_settings();
+    }
 
+    /**
+     * Show a notice after update.
+     *
+     * @since 3.3.0
+     */
+    public function admin_notice_update_done() {
+        $s = sprintf(__('%s as been updated.', 'live-weather-station'), LWS_PLUGIN_NAME) ;
+        $s .= ' '. sprintf(__('Your site now uses version %s.', 'live-weather-station'), LWS_VERSION) ;
+        $n = wp_nonce_field( 'lws-whatsnew-nonce', 'lwswhatsnewnonce', false );
+        print('<div id="whatsnew" class="notice notice-info is-dismissible">' . $n . '<p>' . $s . ' ' . InlineHelp::whats_new() . '</p></div>');
+    }
+
+    /**
+     * Ajax handler for updating whether to display the what's new notice.
+     *
+     * @since 3.3.0
+     */
+    public static function hide_lws_whatsnew_callback() {
+        check_ajax_referer('lws-whatsnew-nonce', 'lwswhatsnewnonce');
+        update_option('live_weather_station_show_update', 0);
+        wp_die(1);
     }
 
     /**
@@ -201,10 +224,18 @@ class Admin {
             array($this, 'lws_system_log_retention_callback'), 'lws_system', 'lws_system_section',
             array(__('Maximum number and maximum age of events stored in the events log.', 'live-weather-station')));
         register_setting('lws_system', 'lws_system_log_retention');
+        add_settings_field('lws_system_cron_speed', __('Task scheduler activity', 'live-weather-station'),
+            array($this, 'lws_system_cron_speed_callback'), 'lws_system', 'lws_system_section',
+            array(sprintf(__('Speed of the task scheduler. Selecting "%s" requires you to have configured an efficient cron.', 'live-weather-station') . InlineHelp::article(0), $this->get_cron_speed_array()[1][1])));
+        register_setting('lws_system', 'lws_system_cron_speed');
         add_settings_field('lws_system_auto_manage', __('Automatic management', 'live-weather-station'),
             array($this, 'lws_system_auto_manage_callback'), 'lws_system', 'lws_system_section',
             array());
         register_setting('lws_system', 'lws_system_auto_manage');
+        add_settings_field('lws_system_overload_hc', __('Health index', 'live-weather-station'),
+            array($this, 'lws_system_overload_hc_callback'), 'lws_system', 'lws_system_section',
+            array(sprintf(__('If you check this, %s will override the Healthy Home Coach health index with its own computed value.', 'live-weather-station'), LWS_PLUGIN_NAME)));
+        register_setting('lws_system', 'lws_system_overload_hc');
         add_settings_field('lws_system_time_shift_threshold', __('Servers time shift', 'live-weather-station'),
             array($this, 'lws_system_time_shift_threshold_callback'), 'lws_system', 'lws_system_section',
             array(__('Maximum allowed servers time shift before warning (useful for Netatmo accuracy).', 'live-weather-station')));
@@ -257,6 +288,10 @@ class Admin {
             array($this, 'lws_display_altitude_unit_callback'), 'lws_display', 'lws_display_section',
             array(__('Units system in which altitudes are expressed.', 'live-weather-station')));
         register_setting('lws_display', 'lws_display_altitude_unit');
+        add_settings_field('lws_display_density_unit', __('Densities', 'live-weather-station'),
+            array($this, 'lws_display_density_unit_callback'), 'lws_display', 'lws_display_section',
+            array(__('Units system in which densities are expressed.', 'live-weather-station')));
+        register_setting('lws_display', 'lws_display_altitude_unit');
         add_settings_field('lws_display_rain_snow_unit', __('Rain & snow', 'live-weather-station'),
             array($this, 'lws_display_rain_snow_unit_callback'), 'lws_display', 'lws_display_section',
             array(__('Units system in which rain and snow quantities are expressed.', 'live-weather-station')));
@@ -265,14 +300,6 @@ class Admin {
             array($this, 'lws_display_viewing_options_callback'), 'lws_display', 'lws_display_section',
             array(__('Check this if you want the controls and widgets display the computed values in addition to the measured data.', 'live-weather-station')));
         register_setting('lws_display', 'lws_display_viewing_options');
-        add_settings_field('lws_display_windsemantics', __('Wind icon', 'live-weather-station'),
-            array($this, 'lws_display_windsemantics_callback'), 'lws_display', 'lws_display_section',
-            array(__('Semantics of the icon representing the wind direction in widgets.', 'live-weather-station')));
-        register_setting('lws_display', 'lws_display_windsemantics');
-        add_settings_field('lws_display_moonicons', __('Moon icon set', 'live-weather-station'),
-            array($this, 'lws_display_moonicons_callback'), 'lws_display', 'lws_display_section',
-            array(__('Type of icons to illustrate moon age and phase in widgets.', 'live-weather-station')));
-        register_setting('lws_display', 'lws_display_moonicons');
         add_settings_field('lws_display_minmax', __('Gauges boundaries', 'live-weather-station'),
             array($this, 'lws_display_minmax_callback'), 'lws_display', 'lws_display_section',
             array(sprintf(__('By default, min/max boundaries in controls are fixed. If you check this, %s will try to adapt it to the amplitude of the measures.', 'live-weather-station'), LWS_PLUGIN_NAME)));
@@ -281,6 +308,18 @@ class Admin {
             array($this, 'lws_display_obsolescence_callback'), 'lws_display', 'lws_display_section',
             array(__('Duration beyond which a data is considered stale (and will therefore neither shown nor used in computations).', 'live-weather-station')));
         register_setting('lws_display', 'lws_display_obsolescence');
+        add_settings_field('lws_display_windsemantics', __('Wind icon', 'live-weather-station'),
+            array($this, 'lws_display_windsemantics_callback'), 'lws_display', 'lws_display_section',
+            array(__('Semantics of the icon representing the wind direction in widgets.', 'live-weather-station')));
+        register_setting('lws_display', 'lws_display_windsemantics');
+        add_settings_field('lws_display_moonicons', __('Moon icon set', 'live-weather-station'),
+            array($this, 'lws_display_moonicons_callback'), 'lws_display', 'lws_display_section',
+            array(__('Type of icons to illustrate moon age and phase in widgets.', 'live-weather-station')));
+        register_setting('lws_display', 'lws_display_moonicons');
+        add_settings_field('lws_system_frontend_style', __('Interface style', 'live-weather-station'),
+            array($this, 'lws_system_frontend_style_callback'), 'lws_display', 'lws_display_section',
+            array());
+        register_setting('lws_display', 'lws_system_frontend_style');
     }
 
     /**
@@ -307,6 +346,7 @@ class Admin {
     public function lws_system_quota_callback($args) {
         echo $this->field_select($this->get_quota_js_array(), get_option('live_weather_station_quota_mode'), 'lws_system_quota', $args[0]);
     }
+
 
     /**
      * Renders the interface elements for the corresponding field.
@@ -345,6 +385,26 @@ class Admin {
      * Renders the interface elements for the corresponding field.
      *
      * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.3.0
+     */
+    public function lws_system_cron_speed_callback($args) {
+        echo $this->field_select($this->get_cron_speed_array(), get_option('live_weather_station_cron_speed'), 'lws_system_cron_speed', $args[0]);
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.0.0
+     */
+    public function lws_system_overload_hc_callback($args) {
+        echo $this->field_checkbox(__('Override Healthy Home Coach values', 'live-weather-station'), 'lws_system_overload_hc', (bool)get_option('live_weather_station_overload_hc'), $args[0]);
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
      * @since 3.0.0
      */
     public function lws_system_auto_manage_callback($args) {
@@ -361,7 +421,7 @@ class Admin {
             'id' => 'lws_system_auto_update',
             'checked' => (bool)get_option('live_weather_station_auto_update'),
             'more' => (Manager::is_updatable()?'':'disabled'),
-            'description' => $description);
+            'description' => $description . InlineHelp::article(1));
         echo $this->field_multi_checkbox($cbxs);
     }
 
@@ -526,6 +586,16 @@ class Admin {
      * @param array $args An array of arguments which first element is the description to be displayed next to the control.
      * @since 3.0.0
      */
+    public function lws_display_density_unit_callback($args) {
+        echo $this->field_radio($this->get_density_unit_name_array(), get_option('live_weather_station_unit_density'), 'lws_display_density_unit', $args[0]);
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.0.0
+     */
     public function lws_display_rain_snow_unit_callback($args) {
         echo $this->field_radio($this->get_altitude_unit_name_array(), get_option('live_weather_station_unit_rain_snow'), 'lws_display_rain_snow_unit', $args[0]);
     }
@@ -538,6 +608,26 @@ class Admin {
      */
     public function lws_display_viewing_options_callback($args) {
         echo $this->field_checkbox(__('Display it in controls and widgets', 'live-weather-station'), 'lws_display_viewing_options', !(bool)get_option('live_weather_station_measure_only'), $args[0]);
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.0.0
+     */
+    public function lws_display_minmax_callback($args) {
+        echo $this->field_checkbox(__('Adjusted whenever possible', 'live-weather-station'), 'lws_display_minmax', (bool)get_option('live_weather_station_min_max_mode'), $args[0]);
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.0.0
+     */
+    public function lws_display_obsolescence_callback($args) {
+        echo $this->field_select($this->get_obsolescence_array(), get_option('live_weather_station_obsolescence'), 'lws_display_obsolescence', $args[0]);
     }
 
     /**
@@ -564,20 +654,15 @@ class Admin {
      * Renders the interface elements for the corresponding field.
      *
      * @param array $args An array of arguments which first element is the description to be displayed next to the control.
-     * @since 3.0.0
+     * @since 3.3.0
      */
-    public function lws_display_minmax_callback($args) {
-        echo $this->field_checkbox(__('Adjusted whenever possible', 'live-weather-station'), 'lws_display_minmax', (bool)get_option('live_weather_station_min_max_mode'), $args[0]);
-    }
-
-    /**
-     * Renders the interface elements for the corresponding field.
-     *
-     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
-     * @since 3.0.0
-     */
-    public function lws_display_obsolescence_callback($args) {
-        echo $this->field_select($this->get_obsolescence_array(), get_option('live_weather_station_obsolescence'), 'lws_display_obsolescence', $args[0]);
+    public function lws_system_frontend_style_callback($args) {
+        $cbxs = array();
+        $cbxs[] = array('text' => __('Force standard buttons', 'live-weather-station'),
+            'id' => 'lws_display_force_frontend_styling',
+            'checked' => (bool)get_option('live_weather_station_force_frontend_styling'),
+            'description' => __('Check this to apply the standard WordPress style on buttons. Uncheck to let the current theme style them.', 'live-weather-station'));
+        echo $this->field_multi_checkbox($cbxs);
     }
 
     /**
@@ -607,6 +692,7 @@ class Admin {
                 update_option('live_weather_station_unit_wind_strength', (integer)$_POST['lws_display_wind_strength_unit']);
                 update_option('live_weather_station_unit_gas', (integer)$_POST['lws_display_gas_unit']);
                 update_option('live_weather_station_unit_distance', (integer)$_POST['lws_display_distance_unit']);
+                update_option('live_weather_station_unit_density', (integer)$_POST['lws_display_density_unit']);
                 update_option('live_weather_station_unit_altitude', (integer)$_POST['lws_display_altitude_unit']);
                 update_option('live_weather_station_unit_rain_snow', (integer)$_POST['lws_display_rain_snow_unit']);
                 update_option('live_weather_station_measure_only', (!array_key_exists('lws_display_viewing_options', $_POST) ? 1 : 0));
@@ -614,6 +700,7 @@ class Admin {
                 update_option('live_weather_station_moon_icons', (integer)$_POST['lws_display_moonicons']);
                 update_option('live_weather_station_min_max_mode', (array_key_exists('lws_display_minmax', $_POST) ? 1 : 0));
                 update_option('live_weather_station_obsolescence', (integer)$_POST['lws_display_obsolescence']);
+                update_option('live_weather_station_force_frontend_styling', (array_key_exists('lws_display_force_frontend_styling', $_POST) ? 1 : 0));
             }
             else {
                 $result = false;
@@ -638,6 +725,8 @@ class Admin {
             $save_auto = get_option('live_weather_station_auto_manage_netatmo');
             $analytics = get_option('live_weather_station_show_analytics');
             $cutoff = get_option('live_weather_station_analytics_cutoff');
+            $cron = get_option('live_weather_station_cron_speed');
+            $override = get_option('live_weather_station_overload_hc');
             if (array_key_exists('submit', $_POST)) {
                 update_option('live_weather_station_logger_level', (integer)$_POST['lws_system_log_level']);
                 update_option('live_weather_station_logger_rotate', (integer)$_POST['lws_system_log_rotate']);
@@ -654,17 +743,25 @@ class Admin {
                 update_option('live_weather_station_show_technical', (array_key_exists('lws_system_show_technical', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_analytics', (array_key_exists('lws_system_show_analytics', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_tasks', (array_key_exists('lws_system_show_tasks', $_POST) ? 1 : 0));
+                update_option('live_weather_station_overload_hc', (array_key_exists('lws_system_overload_hc', $_POST) ? 1 : 0));
                 update_option('live_weather_station_analytics_cutoff', (integer)$_POST['lws_system_analytics_cutoff']);
                 update_option('live_weather_station_quota_mode', (integer)$_POST['lws_system_quota']);
+                update_option('live_weather_station_cron_speed', (integer)$_POST['lws_system_cron_speed']);
                 if (!$save_auto && get_option('live_weather_station_auto_manage_netatmo')) {
                     $this->get_netatmo(true);
                     $this->get_netatmohc(true);
                 }
-                if ($analytics  != get_option('live_weather_station_show_analytics')) {
+                if ($analytics != get_option('live_weather_station_show_analytics')) {
                     $this->reload = true;
                 }
-                if ($cutoff  != get_option('live_weather_station_analytics_cutoff')) {
+                if ($cutoff != get_option('live_weather_station_analytics_cutoff')) {
                     Cache::flush_performance(false);
+                }
+                if ($override != get_option('live_weather_station_overload_hc')) {
+                    $this->get_netatmohc();
+                }
+                if ($cron != get_option('live_weather_station_cron_speed')) {
+                    $this->relaunch_watchdog();
                 }
             }
             else {
@@ -823,7 +920,6 @@ class Admin {
                 $analytics = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Analytics', 'live-weather-station'), __('Analytics', 'live-weather-station'), $manage_options_cap, 'lws-analytics', array($this, 'lws_load_admin_page'));
                 $this->_analytics = new Analytics(LWS_PLUGIN_NAME, LWS_VERSION, $analytics);
             }
-
             InlineHelp::set_contextual_help('load-' . $dashboard, 'dashboard');
             InlineHelp::set_contextual_help('load-' . $settings, 'settings');
             InlineHelp::set_contextual_help('load-' . $stations, 'stations');
@@ -861,6 +957,7 @@ class Admin {
         if (!($id = filter_input(INPUT_GET, 'id'))) {
             $id = filter_input(INPUT_POST, 'id');
         }
+        $email = filter_input(INPUT_POST, 'email');
         $args = array();
 
         switch ($page) {
@@ -1071,6 +1168,11 @@ class Admin {
                 if ($service == 'station' && $tab == 'delete' && $action == 'do') {
                     if (array_key_exists('delete-station', $_POST)) {
                         $this->delete_station($id);
+                    }
+                }
+                if ($action == 'subscribe') {
+                    if (array_key_exists('subscribe-submit', $_POST)) {
+                        $this->subscribe_email($email);
                     }
                 }
                 break;
@@ -1502,6 +1604,34 @@ class Admin {
             add_settings_error('lws_nonce_error', 403, $message, 'error');
             Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
             Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to securely update connection to '. $service . ' service.');
+        }
+    }
+
+    /**
+     * Subscribe to the newsletter.
+     *
+     * @param string $email The email to subscribe.
+     * @since 3.0.0
+     */
+    protected function subscribe_email($email) {
+        if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'subscribe')) {
+            $subscribed = new Subscription($email);
+            if ($subscribed->is_done()) {
+                $message = __('An email has been sent to %s to confirm subscription to %s news.', 'live-weather-station');
+                $message = sprintf($message, '<em>' . $email . '</em>', LWS_PLUGIN_NAME);
+                add_settings_error('lws_nonce_success', 200, $message, 'updated');
+            }
+            else {
+                $message = __('Unable to subscribe the email %s to %s news.', 'live-weather-station');
+                $message = sprintf($message, '<em>' . $email . '</em>', LWS_PLUGIN_NAME);
+                add_settings_error('lws_nonce_error', 500, $message, 'error');
+            }
+        }
+        else {
+            $message = __('Unable to subscribe the email %s to %s news.', 'live-weather-station');
+            $message = sprintf($message, '<em>' . $email . '</em>', LWS_PLUGIN_NAME);
+            add_settings_error('lws_nonce_error', 403, $message, 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
         }
     }
 

@@ -12,6 +12,7 @@ use WeatherStation\System\Logs\Logger;
 use WeatherStation\Utilities\ColorsManipulation;
 use WeatherStation\DB\Query;
 use WeatherStation\System\Analytics\Performance;
+use WeatherStation\Utilities\Markdown;
 
 /**
  * Outputing / shortcoding functionalities for Weather Station plugin.
@@ -35,13 +36,42 @@ trait Output {
         'wind_chill', 'cloud_ceiling', 'temperature_trend', 'pressure_trend', 'sunrise', 'sunset', 'moonrise',
         'moonset', 'moon_illumination', 'moon_diameter', 'sun_diameter', 'moon_distance', 'sun_distance', 'moon_phase',
         'moon_age', 'o3_distance', 'co_distance', 'humidity_min', 'humidity_max', 'pressure_min', 'pressure_max',
-        'day_length', 'health_idx', 'cbi');
+        'day_length', 'health_idx', 'cbi', 'pressure_ref', 'wet_bulb', 'air_density', 'vapor_pressure');
     private $not_showable_measurements = array('battery', 'firmware', 'signal', 'loc_timezone', 'loc_altitude',
         'loc_latitude', 'loc_longitude', 'last_seen', 'last_refresh', 'first_setup', 'last_upgrade', 'last_setup',
         'sunrise_c','sunrise_n','sunrise_a', 'sunset_c','sunset_n', 'sunset_a', 'day_length_c', 'day_length_n',
         'day_length_a', 'dawn_length_a','dawn_length_n', 'dawn_length_c', 'dusk_length_a', 'dusk_length_n',
         'dusk_length_c');
 
+
+    /**
+     * Get the changelog.
+     *
+     * @return string $attributes The type of analytics queryed by the shortcode.
+     * @since 3.3.0
+     */
+    public function admin_changelog_shortcodes($attributes) {
+        $changelog = LWS_PLUGIN_DIR . 'changelog.txt';
+        if (file_exists($changelog)) {
+            try {
+                $s = file_get_contents($changelog);
+                $Markdown = new Markdown();
+                $result = $Markdown->text($s);
+            }
+            catch (\Exception $e) {
+                $result = __('Sorry, unable to find or read changelog file.', 'live-weather-station');
+            }
+        }
+        else {
+            $result = __('Sorry, unable to find or read changelog file.', 'live-weather-station');
+        }
+        $_attributes = shortcode_atts( array('title' => ''), $attributes );
+        $title = $_attributes['title'];
+        if ($title != '') {
+            $result = str_replace('h3>', $title.'>', $result);
+        }
+        return $result;
+    }
 
     /**
      * Get admin data analytics.
@@ -2165,6 +2195,8 @@ trait Output {
             case 'pressure':
             case 'pressure_min':
             case 'pressure_max':
+            case 'pressure_ref':
+            case 'vapor_pressure':
                 $ref = get_option('live_weather_station_unit_pressure') ;
                 $result = $this->get_pressure($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_pressure_unit($ref) : '');
@@ -2177,9 +2209,15 @@ trait Output {
             case 'temperature_ref':
             case 'dew_point':
             case 'frost_point':
+            case 'wet_bulb':
                 $ref = get_option('live_weather_station_unit_temperature') ;
                 $result = $this->get_temperature($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_temperature_unit($ref) : '');
+                break;
+            case 'air_density':
+                $ref = get_option('live_weather_station_unit_temperature') ;
+                $result = $this->get_density($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_density_unit($ref) : '');
                 break;
             case 'heat_index':
             case 'humidex':
@@ -2398,7 +2436,11 @@ trait Output {
             case 'noise':
                 $result = '<i %1$s class="fa fa-fw %2$s fa-volume-down" aria-hidden="true"></i>';
                 break;
+            case 'air_density':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-adjust" aria-hidden="true"></i>';
+                break;
             case 'pressure':
+            case 'pressure_ref':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-barometer" aria-hidden="true"></i>';
                 break;
             case 'pressure_trend':
@@ -2410,10 +2452,14 @@ trait Output {
             case 'pressure_min':
                 $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-long-arrow-down"></i></span>';
                 break;
+            case 'vapor_pressure':
+                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-ellipsis-v"></i></span>';
+                break;
             case 'temperature':
             case 'tempint':
             case 'tempext':
             case 'temperature_ref':
+            case 'wet_bulb':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer" aria-hidden="true"></i>';
                 break;
             case 'temperature_trend':
@@ -2775,6 +2821,15 @@ trait Output {
                 $result['long'] = $this->get_health_index_unit_full($ref) ;
                 $result['comp'] = __('hlth', 'live-weather-station') ;
                 break;
+            case 'air_density':
+                $ref = 0;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_density_unit($ref) ;
+                $result['long'] = $this->get_density_unit_full($ref) ;
+                $result['comp'] = __('air', 'live-weather-station') ;
+                break;
             case 'cbi':
                 $ref = 0;
                 if ($force_ref != 0) {
@@ -2915,6 +2970,8 @@ trait Output {
             case 'pressure':
             case 'pressure_min':
             case 'pressure_max':
+            case 'pressure_ref':
+            case 'vapor_pressure':
                 $ref = get_option('live_weather_station_unit_pressure') ;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
@@ -2931,6 +2988,7 @@ trait Output {
             case 'dew_point':
             case 'frost_point':
             case 'wind_chill':
+            case 'wet_bulb':
                 $ref = get_option('live_weather_station_unit_temperature') ;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
@@ -3010,6 +3068,7 @@ trait Output {
                 $result = get_option('live_weather_station_unit_rain_snow') ;
                 break;
             case 'temperature':
+            case 'wet_bulb':
             case 'tempint':
             case 'tempext':
             case 'temperature_min':
@@ -3026,11 +3085,21 @@ trait Output {
             case 'pressure':
             case 'pressure_min':
             case 'pressure_max':
+            case 'pressure_ref':
+            case 'vapor_pressure':
                 if (get_option('live_weather_station_unit_pressure') == 1) {
                     $result = 2 ;
                 }
                 else {
                     $result = 1 ;
+                }
+                break;
+            case 'air_density':
+                if (get_option('live_weather_station_unit_density') == 1) {
+                    $result = 5 ;
+                }
+                else {
+                    $result = 4 ;
                 }
                 break;
             /*case 'co':
@@ -3132,10 +3201,17 @@ trait Output {
             case 'pressure':
             case 'pressure_min':
             case 'pressure_max':
+            case 'pressure_ref':
                 $result = __('atm pressure', 'live-weather-station') ;
+                break;
+            case 'vapor_pressure':
+                $result = __('pressure', 'live-weather-station') ;
                 break;
             case 'dew_point':
                 $result = __('dew point', 'live-weather-station') ;
+                break;
+            case 'air_density':
+                $result = __('air', 'live-weather-station') ;
                 break;
             case 'frost_point':
                 $result = __('frost point', 'live-weather-station') ;
@@ -3158,6 +3234,7 @@ trait Output {
             case 'temperature':
             case 'temperature_min':
             case 'temperature_max':
+            case 'wet_bulb':
                 $result = __('temperature', 'live-weather-station') ;
                 break;
             case 'dawn':
@@ -3764,6 +3841,9 @@ trait Output {
             case 'heat_index':
             case 'cloud_ceiling':
             case 'cbi':
+            case 'vapor_pressure':
+            case 'wet_bulb':
+            case 'air_density':
                 $result = $computed && $outdoor;
                 break;
             case 'o3':
@@ -4352,6 +4432,7 @@ trait Output {
             case 'wind_chill':
             case 'humidex':
             case 'heat_index':
+            case 'wet_bulb':
                 if (strtolower($module_type)=='namodule4' || strtolower($module_type)=='namain') {
                     $t = 'tempint';
                 }
@@ -4371,6 +4452,8 @@ trait Output {
                 break;
             case 'pressure_min':
             case 'pressure_max':
+            case 'pressure_ref':
+            case 'vapor_pressure':
                 $t = 'pressure';
                 break;
             case 'rain_yesterday_aggregated':

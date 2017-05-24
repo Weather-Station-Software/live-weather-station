@@ -12,6 +12,42 @@ namespace WeatherStation\Data\Unit;
  */
 trait Description {
     /**
+     * Get available density units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.3.0
+     */
+    protected function get_density_unit($id = 0) {
+        switch ($id) {
+            case 1:
+                $result =  __( 'lb/f³' , 'live-weather-station');
+                break;
+            default:
+                $result = __( 'kg/m³' , 'live-weather-station');
+        }
+        return $result;
+    }
+
+    /**
+     * Get available density units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.3.0
+     */
+    protected function get_density_unit_full($id = 0) {
+        switch ($id) {
+            case 1:
+                $result =  __( 'pound per cubic foot' , 'live-weather-station');
+                break;
+            default:
+                $result = __( 'kilogram per cubic meter' , 'live-weather-station');
+        }
+        return $result;
+    }
+
+    /**
      * Get available humidity units.
      *
      * @param   integer $id     Optional. The unit id.
@@ -881,6 +917,24 @@ trait Description {
     }
 
     /**
+     * Get available density units names.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit name in plain text.
+     * @since 3.3.0
+     */
+    protected function get_density_unit_name( $id = 0 ) {
+        switch ($id) {
+            case 1:
+                $result = __( 'Imperial system' , 'live-weather-station');
+                break;
+            default:
+                $result = __( 'Metric system' , 'live-weather-station');
+        }
+        return $result;
+    }
+
+    /**
      * Get available distance units names.
      *
      * @param   integer $id     Optional. The unit id.
@@ -983,6 +1037,20 @@ trait Description {
         $result = array();
         for ($i = 0; $i <= 1; $i++) {
             $result[] = array($i, $this->get_altitude_unit_name($i));
+        }
+        return $result;
+    }
+
+    /**
+     * Get density unit names.
+     *
+     * @return array An array containing the available density units names.
+     * @since 3.3.0
+     */
+    protected function get_density_unit_name_array() {
+        $result = array();
+        for ($i = 0; $i <= 1; $i++) {
+            $result[] = array($i, $this->get_density_unit_name($i));
         }
         return $result;
     }

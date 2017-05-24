@@ -5,6 +5,9 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.1.0
  */
+
+use WeatherStation\System\Help\InlineHelp;
+
 ?>
 <p>
     <label for="<?php echo $this->get_field_id('module'); ?>"><?php esc_html_e('Module to display', 'live-weather-station'); ?></label>
@@ -16,7 +19,7 @@
 </p>
 <p>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_current'); ?>" name="<?php echo $this->get_field_name('show_current'); ?>"<?php checked( $show_current ); ?> />
-    <label for="<?php echo $this->get_field_id('show_current'); ?>"><?php esc_html_e( 'Display comfort summary (if available)' , 'live-weather-station'); ?></label>
+    <label for="<?php echo $this->get_field_id('show_current'); ?>"><?php esc_html_e( 'Display comfort summary (if available)' , 'live-weather-station'); echo InlineHelp::article(7)?></label>
     <br/>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_temperature'); ?>" name="<?php echo $this->get_field_name('show_temperature'); ?>"<?php checked( $show_temperature ); ?> />
     <label for="<?php echo $this->get_field_id('show_temperature'); ?>"><?php esc_html_e( 'Display temperatures (if available)' , 'live-weather-station'); ?></label>

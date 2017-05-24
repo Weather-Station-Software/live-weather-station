@@ -5,6 +5,9 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 2.0.0
  */
+
+use WeatherStation\System\Help\InlineHelp;
+
 ?>
 <p>
     <label for="<?php echo $this->get_field_id( 'station' ); ?>"><?php esc_html_e( 'Station to display' , 'live-weather-station'); ?></label>
@@ -23,7 +26,7 @@
     </select>
 </p>
 <p>
-    <label for="<?php echo $this->get_field_id( 'mode' ); ?>"><?php esc_html_e( 'Ephemeris mode' , 'live-weather-station'); ?></label>
+    <label for="<?php echo $this->get_field_id( 'mode' ); ?>"><?php esc_html_e( 'Ephemeris mode' , 'live-weather-station'); echo InlineHelp::article(8)?></label>
     <select class="widefat" id="<?php echo $this->get_field_id( 'mode' ); ?>" name="<?php echo $this->get_field_name( 'mode' ); ?>">
         <option value="0"<?php if ($mode ==0) {echo'selected="selected"';}?>><?php esc_html_e( 'Standard' , 'live-weather-station'); ?></option>;
         <option value="1"<?php if ($mode ==1) {echo'selected="selected"';}?>><?php esc_html_e( 'Civil' , 'live-weather-station'); ?></option>;

@@ -1596,4 +1596,17 @@ trait Generator {
         $result[] = array(5, __('File server (FTPS)', 'live-weather-station'));
         return $result;
     }
+
+    /**
+     * Get cron activity types.
+     *
+     * @return array An array containing the available cron activity types.
+     * @since 3.3.0
+     */
+    public function get_cron_speed_array() {
+        $result = array();
+        $result[] = array(0, __('Standard', 'live-weather-station'));
+        $result[] = array(1, __('Fast', 'live-weather-station'));
+        return $result;
+    }
 }

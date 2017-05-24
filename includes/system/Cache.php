@@ -23,8 +23,8 @@ class Cache {
     private static $chrono = array();
     private static $stats = array();
     public static $backend_expiry = 900;   //15 minutes
-    public static $frontend_expiry = 120;  // 2 minutes
-    public static $widget_expiry = 120;    // 2 minutes
+    public static $frontend_expiry = 119;  // 2 minutes - 1 second
+    public static $widget_expiry = 119;    // 2 minutes - 1 second
     public static $i18n_expiry = 7200;     // 2 hours
 
     public static $db_stat = 'lws_cache_db_stat';

@@ -277,7 +277,7 @@ trait Query {
      * Filter stations list by type.
      *
      * @param array $values The values to filter
-     * @param mixed $station_type Optional. The station type to query..
+     * @param mixed $station_type Optional. The station type to query.
      * @return array An array containing the filtered values.
      * @since 3.1.0
      */
@@ -366,7 +366,7 @@ trait Query {
     private function get_reference_values($station_type=false) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
-        $sql = "SELECT device_id, device_name, module_type, measure_timestamp, measure_type, measure_value FROM ".$table_name." WHERE (module_type='NAMain' OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NACurrent') AND (measure_type='temperature' OR measure_type='humidity' OR measure_type='windstrength' OR measure_type LIKE 'loc_%')" ;
+        $sql = "SELECT device_id, device_name, module_type, measure_timestamp, measure_type, measure_value FROM ".$table_name." WHERE (module_type='NAMain' OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NACurrent') AND (measure_type='temperature' OR measure_type='humidity' OR measure_type='windstrength' OR measure_type='pressure' OR measure_type LIKE 'loc_%')" ;
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -401,6 +401,9 @@ trait Query {
                             break;
                         }
                         if ($measure_type == 'windstrength' && $module_type == 'NAModule2' && ($diff < $this->delta_time)) {
+                            break;
+                        }
+                        if ($measure_type == 'pressure' && $module_type == 'NAMain' && ($diff < $this->delta_time)) {
                             break;
                         }
                     }

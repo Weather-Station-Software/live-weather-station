@@ -3,10 +3,12 @@
 namespace WeatherStation\System\Plugin;
 
 use WeatherStation\System\Logs\Logger;
+use WeatherStation\System\Quota\Quota;
 use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\URL\Handling as Url;
 use WeatherStation\DB\Storage as Storage;
 use WeatherStation\System\Cache\Cache;
+use WeatherStation\System\Environment\Manager;
 
 /**
  * Fired during plugin update.
@@ -50,5 +52,8 @@ class Updater {
         Logger::notice('Updater', null, null, null, null, null, 0, 'Analytics view has been reset to defaults.');
         Watchdog::start();
         delete_transient(self::$transient_name);
+        if (Manager::is_updated($oldversion)) {
+            update_option('live_weather_station_show_update', 1);
+        }
     }
 }

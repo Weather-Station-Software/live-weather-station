@@ -1,6 +1,6 @@
 === Weather Station ===
 Contributors: PierreLannoy
-Tags: weather, forecast, openweathermap, netatmo, weather underground
+Tags: weather, forecast, openweathermap, netatmo, weather underground, wunderground
 Requires at least: 4.0
 Tested up to: 4.8
 Stable tag: 3.2.5

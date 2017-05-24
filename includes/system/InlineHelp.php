@@ -5,6 +5,8 @@ namespace WeatherStation\System\Help;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\UI\SVG\Handling as SVG;
 use WeatherStation\DB\Query;
+use WeatherStation\System\Environment\Manager;
+use WeatherStation\System\I18N\Handling as Intl;
 
 /**
  * This class add inline help links to the plugin.
@@ -79,6 +81,31 @@ class InlineHelp {
     }
 
     /**
+     * Get the what's new string.
+     *
+     * @return string The complete icon string, ready to print.
+     *
+     * @since 3.3.0
+     */
+    public static function whats_new() {
+        $lang = Intl::get_language_id();
+        $target = '';
+        if ((bool)get_option('live_weather_station_redirect_external_links')) {
+            $target = ' target="_blank" ';
+        }
+        $url = LWS_WATSNEW_EN;
+        if ($lang == 'fr') {
+            $url = LWS_WATSNEW_FR;
+        }
+        if (Manager::is_plugin_in_production_mode()) {
+            return '<a href="' . $url . '"' . $target . '>' . __('See what\'s new', 'live-weather-station') . '&hellip;</a>';
+        }
+        else {
+            return '';
+        }
+    }
+
+    /**
      * Get string for this help number.
      *
      * @param integer $number The help number.
@@ -91,15 +118,7 @@ class InlineHelp {
     public static function get($number, $message='%s', $anchor='') {
         $result = '';
         $path = '';
-        $lang = 'en';
-        $extra_language = array ('fr');
-        $l = strtolower(get_display_locale());
-        foreach ($extra_language as $extra) {
-            if (strpos($l, $extra) === 0) {
-                $lang = $extra;
-                break;
-            }
-        }
+        $lang = Intl::get_language_id();
         $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
             $target = ' target="_blank" ';
@@ -186,6 +205,72 @@ class InlineHelp {
             $result = sprintf($message, '<a href="https://wordpress.org/support/topic/howto-translate-this-plugin-in-your-own-language/"' . $target . '>' . $anchor . '</a>');
         }
         return $result;
+    }
+
+    /**
+     * Get icon for this article number.
+     *
+     * @param integer $number The article number.
+     * @return string The complete icon string, ready to print.
+     *
+     * @since 3.3.0
+     */
+    public static function article($number) {
+        $lang = Intl::get_language_id();
+        $target = '';
+        if ((bool)get_option('live_weather_station_redirect_external_links')) {
+            $target = ' target="_blank" ';
+        }
+        $url = '';
+        switch ($number) {
+            case 0 :
+                $url = 'https://weather.station.software/en/how-to-get-up-to-date-weather-data/';
+                if ($lang == 'fr') {
+                    $url = 'https://weather.station.software/fr/comment-sassurer-de-la-fraicheur-des-donnees-meteo/';
+                }
+                break;
+            case 1 :
+                $url = 'https://weather.station.software/en/how-to-update/';
+                if ($lang == 'fr') {
+                    $url = 'https://weather.station.software/fr/comment-mettre-jour/';
+                }
+                break;
+            case 2 :
+                $url = 'https://weather.station.software/en/find-nearest-weather-station/';
+                if ($lang == 'fr') {
+                    $url = 'https://weather.station.software/fr/trouvez-la-station-meteorologique-la-plus-proche/';
+                }
+                break;
+            case 3 :
+                $url = 'https://weather.station.software/en/what-are-dew-and-frost-points/';
+                if ($lang == 'fr') {
+                    $url = 'https://weather.station.software/fr/que-sont-les-points-de-rosee-et-de-givre/';
+                }
+                break;
+            case 4 :
+                $url = 'https://weather.station.software/en/heat-index-humidex/';
+                if ($lang == 'fr') {
+                    $url = 'https://weather.station.software/fr/heat-index-et-humidex/';
+                }
+                break;
+            case 5 :
+                $url = 'https://weather.station.software/en/wind-chill/';
+                if ($lang == 'fr') {
+                    $url = 'https://weather.station.software/fr/refroidissement-eolien/';
+                }
+                break;
+            // todo 6 : cloud ceiling
+            // todo 7 : health index + description + aggravating factor
+            case 8 :
+                $url = 'https://weather.station.software/en/dawn-dusk-story-angles/';
+                if ($lang == 'fr') {
+                    $url = 'https://weather.station.software/fr/aube-crepuscule/';
+                }
+                break;
+            // todo 9 : CBI + others
+            default: return '';
+        }
+        return '&nbsp;<a href="'. $url . '"' . $target . '><i class="fa fa-question-circle" aria-hidden="true"></i></a>';
     }
 
     /**

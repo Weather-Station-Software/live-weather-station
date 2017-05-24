@@ -6,6 +6,8 @@
  * @since 3.0.0
  */
 
+use WeatherStation\System\Help\InlineHelp;
+
 $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
 $edit = ($station['guid'] != 0);
 
@@ -47,7 +49,7 @@ $edit = ($station['guid'] != 0);
             </tr>
             <tr class="form-field form-required">
                 <th scope="row"><label for="service_id"><?php esc_html_e('Station ID', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
-                <td><input required <?php echo ($edit ? 'disabled="disabled" ' : ''); ?>name="service_id" type="text" id="service_id" value="<?php echo htmlspecialchars($station['service_id']) ?>" maxlength="20" style="width:25em;" /></td>
+                <td><input required <?php echo ($edit ? 'disabled="disabled" ' : ''); ?>name="service_id" type="text" id="service_id" value="<?php echo htmlspecialchars($station['service_id']) ?>" maxlength="20" style="width:25em;" /><?php echo InlineHelp::article(2)?></td>
             </tr>
         </table>
         <?php if ($station['guid'] == 0) { ?>

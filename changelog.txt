@@ -1,4 +1,17 @@
 
+###3.3.0 / August xxxxxx, 2017
+
+* New: the task scheduler have a new mode to allow a higher frequency of weather collect and share (settings in 'system' tab).
+* New: it's now possible to subscribe to Weather Station news right from the dashboard.
+* Improvement: an admin notification informs you when Weather Station have been updated.
+* Improvement: widgets now hide the header blank zone when there's no title or information to display (thanks to Lisa Yoon for the suggestion).
+* Improvement: it's now possible to override the Healthy Home Coach internal health index with a computed value (comparable with indoor modules).
+* Improvement: the 'display' tab of 'settings' screen has been reorganized for better readability.
+* Improvement: inline help is now visible in widget and main settings (question mark in a circle).
+* Improvement: new setting to choose units (metric/imperial) for densities.
+* Improvement: some interface style settings have appeared in the 'display' tab of 'settings' screen.
+* Bug fix: in some cases, the dashboard columns may be blank after adding a station from the welcome panel.
+
 ###3.2.5 / May 17th, 2017
 
 * Improvement: compatibility with WordPress 4.8

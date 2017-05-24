@@ -324,4 +324,25 @@ class Handling {
             $this->last_modified = false;
         }
     }
+
+    /**
+     * Get the language id.
+     *
+     * @return string The id of the language.
+     *
+     * @since 3.3.0
+     */
+    public static function get_language_id()
+    {
+        $lang = 'en';
+        $extra_language = array('fr');
+        $l = strtolower(get_display_locale());
+        foreach ($extra_language as $extra) {
+            if (strpos($l, $extra) === 0) {
+                $lang = $extra;
+                break;
+            }
+        }
+        return $lang;
+    }
 }

@@ -5,6 +5,9 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
+
+use WeatherStation\System\Help\InlineHelp;
+
 ?>
 <p>
     <label for="<?php echo $this->get_field_id( 'station' ); ?>"><?php esc_html_e( 'Station to display' , 'live-weather-station'); ?></label>
@@ -40,22 +43,22 @@
     <label for="<?php echo $this->get_field_id('show_cloud_cover'); ?>"><?php esc_html_e( 'Display cloud cover (if available)' , 'live-weather-station'); ?></label>
     <br/>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_cloud_ceiling'); ?>" name="<?php echo $this->get_field_name('show_cloud_ceiling'); ?>"<?php checked( $show_cloud_ceiling ); ?> />
-    <label for="<?php echo $this->get_field_id('show_cloud_ceiling'); ?>"><?php esc_html_e( 'Display cloud base altitude (if available)' , 'live-weather-station'); ?></label>
+    <label for="<?php echo $this->get_field_id('show_cloud_ceiling'); ?>"><?php esc_html_e( 'Display cloud base altitude (if available)' , 'live-weather-station'); echo InlineHelp::article(6)?></label>
     <br/>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_dew'); ?>" name="<?php echo $this->get_field_name('show_dew'); ?>"<?php checked( $show_dew ); ?> />
-    <label for="<?php echo $this->get_field_id('show_dew'); ?>"><?php esc_html_e( 'Display dew point (if available)' , 'live-weather-station'); ?></label>
+    <label for="<?php echo $this->get_field_id('show_dew'); ?>"><?php esc_html_e( 'Display dew point (if available)' , 'live-weather-station'); echo InlineHelp::article(3)?></label>
     <br/>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_frost'); ?>" name="<?php echo $this->get_field_name('show_frost'); ?>"<?php checked( $show_frost ); ?> />
-    <label for="<?php echo $this->get_field_id('show_frost'); ?>"><?php esc_html_e( 'Display frost point (if available)' , 'live-weather-station'); ?></label>
+    <label for="<?php echo $this->get_field_id('show_frost'); ?>"><?php esc_html_e( 'Display frost point (if available)' , 'live-weather-station'); echo InlineHelp::article(3)?></label>
     <br/>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_heat'); ?>" name="<?php echo $this->get_field_name('show_heat'); ?>"<?php checked( $show_heat ); ?> />
-    <label for="<?php echo $this->get_field_id('show_heat'); ?>"><?php esc_html_e( 'Display heat index (if available)' , 'live-weather-station'); ?></label>
+    <label for="<?php echo $this->get_field_id('show_heat'); ?>"><?php esc_html_e( 'Display heat index (if available)' , 'live-weather-station'); echo InlineHelp::article(4)?></label>
     <br/>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_humidex'); ?>" name="<?php echo $this->get_field_name('show_humidex'); ?>"<?php checked( $show_humidex ); ?> />
-    <label for="<?php echo $this->get_field_id('show_humidex'); ?>"><?php esc_html_e( 'Display humidex (if available)' , 'live-weather-station'); ?></label>
+    <label for="<?php echo $this->get_field_id('show_humidex'); ?>"><?php esc_html_e( 'Display humidex (if available)' , 'live-weather-station'); echo InlineHelp::article(4)?></label>
     <br/>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_windchill'); ?>" name="<?php echo $this->get_field_name('show_windchill'); ?>"<?php checked( $show_windchill ); ?> />
-    <label for="<?php echo $this->get_field_id('show_windchill'); ?>"><?php esc_html_e( 'Display wind chill (if available)' , 'live-weather-station'); ?></label>
+    <label for="<?php echo $this->get_field_id('show_windchill'); ?>"><?php esc_html_e( 'Display wind chill (if available)' , 'live-weather-station'); echo InlineHelp::article(5)?></label>
     <br/>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('hide_obsolete'); ?>" name="<?php echo $this->get_field_name('hide_obsolete'); ?>"<?php checked( $hide_obsolete ); ?> />
     <label for="<?php echo $this->get_field_id('hide_obsolete'); ?>"><?php esc_html_e( 'Hide obsolete measurements' , 'live-weather-station'); ?></label>
