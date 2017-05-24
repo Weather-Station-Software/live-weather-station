@@ -28,6 +28,13 @@ jQuery(document).ready( function($) {
         updateWelcomePanel( this.checked ? 1 : 0 );
     });
 
+    $('#whatsnew').on('click', '.notice-dismiss', function(event){
+        $.post( ajaxurl, {
+            action: 'hide_lws_whatsnew',
+            lwswhatsnewnonce: $('#lwswhatsnewnonce').val()
+        });
+    });
+
     $('#link-sync').click( function() {
         $('.button-primary').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });

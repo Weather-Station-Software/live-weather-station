@@ -6,26 +6,6 @@
  * @since 3.0.7
  */
 
-use WeatherStation\Utilities\Markdown;
-
-$changelog = LWS_PLUGIN_DIR . 'changelog.txt';
-
-if (file_exists($changelog)) {
-    try {
-        $s = file_get_contents($changelog);
-        $Markdown = new Markdown();
-        $changelog_text = $Markdown->text($s);
-    }
-    catch (Exception $e) {
-        $changelog_text = __('Sorry, unable to find or read changelog file.', 'live-weather-station');
-    }
-}
-else {
-    $changelog_text = __('Sorry, unable to find or read changelog file.', 'live-weather-station');
-}
-
-
-
 ?>
 <div class="wrap">
     <h2><?php echo ucfirst(__('changelog', 'live-weather-station')); ?></h2>
@@ -36,6 +16,6 @@ else {
                 padding-left: 40px !important;
             }
         </style>
-        <?php echo $changelog_text ?>
+        <?php echo do_shortcode('[live-weather-station-changelog]'); ?>
     </div>
 </div>

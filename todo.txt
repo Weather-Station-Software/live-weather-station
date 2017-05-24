@@ -2,15 +2,27 @@
 *  UPCOMING FEATURES  *
 ***********************
 
- * 3.x - live_weather_station_overload_hc as setting
- * 3.x - live_weather_station_force_frontend_styling as setting
+ * 3.x - Saturation vapor pressure & air density
+ * 3.x - Wet bulb
+
+
+ * 3.x - Saturation absolute humidity ==> need param (g/m^3)
+ * 3.x - Absolute humidity ==> need param (g/m^3)
+
+
+_
+
+ * 3.x - Equilibrium moisture content
+
+ * 3.x - Mass ratio
+ * 3.x - Saturation mass ratio
+ * 3.x - Equivalent temperature
+ * 3.x - Potential temperature
+
  * 3.x - Sun (meridian) transit time
  * 3.x - Querying icons texts via shortcodes
  * 3.x - Forest fire weather index computing
- * 3.x - Wet bulb
- * 3.x - Air density
  * 3.x - Aridity index computing
- * 3.x - Equilibrium moisture content
  * 3.x - Pushing data to twitter / slack / fb / ...
  * 3.x - Extra heat indexes
  * 3.x - Solar measurements
@@ -19,7 +31,6 @@
  * 4.x - 4 hours forecasting
  * 4.x - 5 days forecasting
  * 4.x - Buttons and config windows in TinyMCE
- * 4.x - Quota Manager
 
 
 
@@ -27,6 +38,8 @@
 *  UPCOMING CONTROLS  *
 ***********************
 
+ * 3.x - Solar widget
+ * 3.x - Thunderstorm widget
  * 4.x - Icons dashboard
  * 4.x - Pollution widget
  * 5.x - Marine widget
@@ -40,7 +53,7 @@
 ***********************
 
  * 3.x - Ability to change text color in clean gauges
- * 3.x - Change the modal bow for shortcodes
+ * 3.x - Change the modal box for shortcodes
 
 
 
@@ -63,3 +76,4 @@
 ***********************
 
 cron manager documentation
+link to blog (help on index, etc.)

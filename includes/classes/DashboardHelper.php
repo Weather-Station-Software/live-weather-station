@@ -38,11 +38,9 @@ class Handling {
         if (!($this->action = filter_input(INPUT_GET, 'action'))) {
             $this->action = filter_input(INPUT_POST, 'action');
         }
-        if (!isset($this->action)) {
-            add_action('load-' . $dashboard, array($this, 'dashboard_add_options'));
-        }
+        add_action('load-' . $dashboard, array($this, 'dashboard_add_options'));
         add_action('admin_footer-' . $dashboard, array($this, 'dashboard_add_footer'));
-        if (!isset($this->action)) {
+        if (!isset($this->action) || (isset($this->action) && ($this->action != 'configuration' && $this->action != 'changelog'))) {
             add_filter('screen_settings', array($this, 'append_screen_settings'), 10, 2);
         }
     }
@@ -232,6 +230,7 @@ class Handling {
             add_meta_box('lws-translation', __('Translation', 'live-weather-station'), array($this, 'translation_widget'), 'lws-dashboard', 'side', 'high', array('message' => $intl->get_message()));
         }
         add_meta_box('lws-news', sprintf(__('%s News', 'live-weather-station'), LWS_PLUGIN_NAME), array($this, 'news_widget'), 'lws-dashboard', 'side');
+        add_meta_box('lws-signup', sprintf(__('Subscribe', 'live-weather-station'), LWS_PLUGIN_NAME), array($this, 'signup_widget'), 'lws-dashboard', 'side');
         add_meta_box('lws-about', __('About', 'live-weather-station'), array($this, 'about_widget'), 'lws-dashboard', 'side');
         add_meta_box('lws-licenses', __('Licenses', 'live-weather-station'), array($this, 'licenses_widget'), 'lws-dashboard', 'side');
     }
@@ -313,6 +312,15 @@ class Handling {
     public function news_widget() {
         $url = RSS::get(-4);
         include(LWS_ADMIN_DIR.'partials/DashboardNews.php');
+    }
+
+    /**
+     * Get content of the news box.
+     *
+     * @since 3.0.0
+     */
+    public function signup_widget() {
+        include(LWS_ADMIN_DIR.'partials/DashboardSignup.php');
     }
 
     /**

@@ -126,6 +126,10 @@ class Core {
         $this->loader->add_action('wp_ajax_update_lws_welcome_panel', 'WeatherStation\UI\Dashboard\Handling', 'update_lws_welcome_panel_callback' );
         $this->loader->add_action('shutdown', '\WeatherStation\System\Analytics\Performance', 'store' );
         $this->loader->add_action('auto_update_plugin', '\WeatherStation\System\Environment\Manager', 'lws_auto_update', 10, 2 );
+        if (((bool)get_option('live_weather_station_show_update', 1))) {
+            $this->loader->add_action('admin_notices', $plugin_admin, 'admin_notice_update_done');
+            $this->loader->add_action('wp_ajax_hide_lws_whatsnew', $plugin_admin, 'hide_lws_whatsnew_callback' );
+        }
     }
 
 	/**
@@ -156,6 +160,7 @@ class Core {
 		add_shortcode( 'live-weather-station-justgage', array($plugin_public, 'justgage_shortcodes') );
         add_shortcode( 'live-weather-station-steelmeter', array($plugin_public, 'steelmeter_shortcodes') );
         add_shortcode( 'live-weather-station-admin-analytics', array($plugin_public, 'admin_analytics_shortcodes') );
+        add_shortcode( 'live-weather-station-changelog', array($plugin_public, 'admin_changelog_shortcodes') );
 	}
 
 	/**

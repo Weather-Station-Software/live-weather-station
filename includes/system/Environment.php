@@ -3,6 +3,7 @@
 namespace WeatherStation\System\Environment;
 use WeatherStation\SDK\Generic\Exception;
 use WeatherStation\System\Quota\Quota;
+use WeatherStation\System\Logs\Logger;
 
 /**
  * The class to manage and detect environment.
@@ -292,6 +293,76 @@ class Manager {
      */
     public static function is_plugin_in_production_mode() {
         return (!self::is_plugin_in_dev_mode() && !self::is_plugin_in_rc_mode());
+    }
+
+    /**
+     * Get the major version number.
+     *
+     * @param string $version Optional. The full version string.
+     * @return string The major version number.
+     * @since 3.3.0
+     */
+    private static function major_version($version = LWS_VERSION) {
+        try {
+            $result = substr($version, 0, strpos($version, '.'));
+        } catch (\Exception $ex) {
+            $result = 'x';
+        }
+        return $result;
+    }
+
+    /**
+     * Get the major version number.
+     *
+     * @param string $version Optional. The full version string.
+     * @return string The major version number.
+     * @since 3.3.0
+     */
+    private static function minor_version($version = LWS_VERSION) {
+        try {
+            $result = substr($version, strpos($version, '.') + 1, 1000);
+            $result = substr($result, 0, strpos($result, '.'));
+        } catch (\Exception $ex) {
+            $result = 'x';
+        }
+        return $result;
+    }
+
+    /**
+     * Get the major version number.
+     *
+     * @param string $version Optional. The full version string.
+     * @return string The major version number.
+     * @since 3.3.0
+     */
+    private static function patch_version($version = LWS_VERSION) {
+        try {
+            $result = substr($version, strpos($version, '.') + 1, 1000);
+            $result = substr($result, strpos($result, '.') + 1, 1000);
+            if (strpos($result, '-') > 0) {
+                $result = substr($result, 0, strpos($result, '-') );
+            }
+        } catch (\Exception $ex) {
+            $result = 'x';
+        }
+        return $result;
+    }
+
+    /**
+     * Is the plugin be updated?
+     *
+     * @param string $old Previous version.
+     * @return boolean True if it is updated (not just patched), false otherwise.
+     * @since 3.3.0
+     */
+    public static function is_updated($old) {
+        if (self::is_plugin_in_production_mode()) {
+            $result = ((self::major_version() != self::major_version($old)) || (self::minor_version() != self::minor_version($old)));
+        }
+        else {
+            $result = ($old != LWS_VERSION);
+        }
+        return $result;
     }
 
     /**

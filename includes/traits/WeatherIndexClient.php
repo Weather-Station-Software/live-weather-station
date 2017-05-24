@@ -38,6 +38,7 @@ trait Client {
             $temperature_ref = $this->value_unknown;
             $humidity_ref = $this->value_unknown;
             $wind_ref = $this->value_unknown;
+            $pressure_ref = $this->value_unknown;
             if (array_key_exists('temperature', $data)) {
                 $temperature_ref = $data['temperature'];
             }
@@ -46,6 +47,9 @@ trait Client {
             }
             if (array_key_exists('windstrength', $data)) {
                 $wind_ref = $data['windstrength'];
+            }
+            if (array_key_exists('pressure', $data)) {
+                $pressure_ref = $data['pressure'];
             }
             $place = array();
             $place['country'] = $data['loc_country'];
@@ -73,6 +77,7 @@ trait Client {
                 $heat_index = $this->compute_heat_index($temperature_ref, $humidity_ref);
                 $humidex = $this->compute_humidex($temperature_ref, $dew_point);
                 $cloud_ceiling = $this->compute_cloud_ceiling($temperature_ref, $dew_point);
+                $wet_bulb = $this->compute_wet_bulb($temperature_ref, $humidity_ref);
                 if (!in_array('temperature_ref', $nm['data_type'])) {
                     $nm['data_type'][] = 'temperature_ref';
                 }
@@ -83,6 +88,7 @@ trait Client {
                 $nm['data_type'][] = 'heat_index';
                 $nm['data_type'][] = 'humidex';
                 $nm['data_type'][] = 'cloud_ceiling';
+                $nm['data_type'][] = 'wet_bulb';
                 $nm['dashboard_data']['time_utc'] = time();
                 $nm['dashboard_data']['temperature_ref'] = $temperature_ref;
                 $nm['dashboard_data']['humidity_ref'] = $humidity_ref;
@@ -90,8 +96,35 @@ trait Client {
                 $nm['dashboard_data']['frost_point'] = $frost_point;
                 $nm['dashboard_data']['heat_index'] = $heat_index;
                 $nm['dashboard_data']['humidex'] = $humidex;
-                $nm['dashboard_data']['cloud_ceiling'] =  $cloud_ceiling;
-                $nm['dashboard_data']['cbi'] =  $cbi;
+                $nm['dashboard_data']['cloud_ceiling'] = $cloud_ceiling;
+                $nm['dashboard_data']['cbi'] = $cbi;
+                $nm['dashboard_data']['wet_bulb'] = $wet_bulb;
+            }
+            if ( ($temperature_ref != $this->value_unknown) &&
+                ($humidity_ref != $this->value_unknown) &&
+                ($pressure_ref != $this->value_unknown)) {
+                if (!in_array('temperature_ref', $nm['data_type'])) {
+                    $nm['data_type'][] = 'temperature_ref';
+                }
+                if (!in_array('humidity_ref', $nm['data_type'])) {
+                    $nm['data_type'][] = 'humidity_ref';
+                }
+                $nm['data_type'][] = 'pressure_ref';
+                $nm['data_type'][] = 'air_density';
+                $nm['dashboard_data']['time_utc'] = time();
+                $nm['dashboard_data']['temperature_ref'] = $temperature_ref;
+                $nm['dashboard_data']['humidity_ref'] = $humidity_ref;
+                $nm['dashboard_data']['pressure_ref'] = $pressure_ref;
+                $nm['dashboard_data']['air_density'] = $this->compute_air_density($temperature_ref, 100 * $pressure_ref, $humidity_ref);
+            }
+            if ($temperature_ref != $this->value_unknown) {
+                if (!in_array('temperature_ref', $nm['data_type'])) {
+                    $nm['data_type'][] = 'temperature_ref';
+                }
+                $nm['data_type'][] = 'vapor_pressure';
+                $nm['dashboard_data']['time_utc'] = time();
+                $nm['dashboard_data']['temperature_ref'] = $temperature_ref;
+                $nm['dashboard_data']['vapor_pressure'] = round($this->compute_saturation_vapor_pressure($temperature_ref)/100, 1);
             }
             if ( ($temperature_ref != $this->value_unknown) &&
                 ($wind_ref != $this->value_unknown) ) {

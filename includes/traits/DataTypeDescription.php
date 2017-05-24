@@ -206,8 +206,14 @@ trait Description {
             case 'noise':
                 $result = ($abbr ? __('Noise', 'live-weather-station') : __('Noise level', 'live-weather-station'));
                 break;
+            case 'air_density':
+                $result = ($abbr ? __('Air density', 'live-weather-station') : __('Air density', 'live-weather-station'));
+                break;
             case 'pressure':
                 $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Atmospheric pressure', 'live-weather-station'));
+                break;
+            case 'vapor_pressure':
+                $result = ($abbr ? __('Vapor pressure', 'live-weather-station') : __('Saturation vapor pressure', 'live-weather-station'));
                 break;
             case 'pressure_min':
                 $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Lowest atmospheric pressure of the day', 'live-weather-station'));
@@ -217,6 +223,9 @@ trait Description {
                 break;
             case 'pressure_trend':
                 $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Pressure trend', 'live-weather-station'));
+                break;
+            case 'wet_bulb':
+                $result = ($abbr ? __('Wet bulb', 'live-weather-station') : __('Wet bulb temperature', 'live-weather-station'));
                 break;
             case 'temperature':
                 $result = ($abbr ? __('Temperature', 'live-weather-station') : __('Temperature', 'live-weather-station'));
@@ -229,6 +238,9 @@ trait Description {
                 break;
             case 'temperature_ref':
                 $result = ($abbr ? __('Temperature', 'live-weather-station') : __('Reference temperature', 'live-weather-station'));
+                break;
+            case 'pressure_ref':
+                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Reference pressure', 'live-weather-station'));
                 break;
             case 'wind_ref':
                 $result = ($abbr ? __('Wind', 'live-weather-station') : __('Reference wind strength', 'live-weather-station'));

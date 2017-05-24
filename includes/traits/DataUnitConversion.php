@@ -489,6 +489,29 @@ trait Conversion {
     }
 
     /**
+     * Get the density expressed in specific unit.
+     *
+     * @param mixed $value The value of the temperature.
+     * @param integer $id Optional. The unit id.
+     * @return string The density expressed in specific unit.
+     * @since 3.0.0
+     */
+    protected function get_density($value, $id = 0)
+    {
+        $result = $value;
+        $format = '%.4F';
+        $prec = 4;
+        switch ($id) {
+            case 1:
+                $format = '%.5F';
+                $prec = 5;
+                $result = $result / 16.01846;
+                break;
+        }
+        return sprintf($format, round($result, $prec));
+    }
+
+    /**
      * Get the temperature expressed in specific unit.
      *
      * @param   mixed   $value  The value of the temperature.

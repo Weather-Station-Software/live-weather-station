@@ -16,22 +16,24 @@
                 </div>
                 <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
-            <!-- STATION NAME -->
-            <div class="lws-widget-row-<?php echo $id ?>">
-                <div class="lws-widget-column-<?php echo $id ?>">
-                    <?php if ( $show_title ):?>
-                        <div class="lws-widget-title-<?php echo $id ?>"><?php echo $title; ?></div>
-                    <?php endif;?>
-                    <?php if ( $subtitle == 1 ):?>
-                        <div class="lws-widget-subtitle-<?php echo $id ?>"><?php echo $timestamp; ?></div>
-                    <?php endif;?>
-                    <?php if ( $show_status ):?>
-                        <div class="lws-widget-subtitle-<?php echo $id ?>"><?php echo $status; ?></div>
-                    <?php endif;?>
+            <?php if ($show_title || $show_status || $subtitle != 0):?>
+                <!-- STATION NAME -->
+                <div class="lws-widget-row-<?php echo $id ?>">
+                    <div class="lws-widget-column-<?php echo $id ?>">
+                        <?php if ( $show_title ):?>
+                            <div class="lws-widget-title-<?php echo $id ?>"><?php echo $title; ?></div>
+                        <?php endif;?>
+                        <?php if ( $subtitle == 1 ):?>
+                            <div class="lws-widget-subtitle-<?php echo $id ?>"><?php echo $timestamp; ?></div>
+                        <?php endif;?>
+                        <?php if ( $show_status ):?>
+                            <div class="lws-widget-subtitle-<?php echo $id ?>"><?php echo $status; ?></div>
+                        <?php endif;?>
+                    </div>
                 </div>
-            </div>
-            <?php if ($show_co2):?>
                 <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+            <?php endif;?>
+            <?php if ($show_co2):?>
                 <!-- CO2 -->
                 <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Carbon monoxide', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column-<?php echo $id ?>">
@@ -44,9 +46,9 @@
                         </div>
                     </div>
                 </div>
+                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
             <?php if ($show_temperature && $temp_multipart):?>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
                 <!-- TEMPERATURE -->
                 <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Temperature', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column-<?php echo $id ?>">
@@ -67,9 +69,9 @@
                         </div>
                     </div>
                 </div>
+                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
             <?php if ($show_temperature && !$temp_multipart):?>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
                 <!-- TEMPERATURE -->
                 <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Temperature', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column-<?php echo $id ?>">
@@ -82,9 +84,9 @@
                         </div>
                     </div>
                 </div>
+                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
             <?php if ($show_humidity):?>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
                 <!-- HUMIDITY -->
                 <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Humidity', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column-<?php echo $id ?>">
@@ -97,9 +99,9 @@
                         </div>
                     </div>
                 </div>
+                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
             <?php if ($show_noise):?>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
                 <!-- NOISE -->
                 <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Noise level', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column-<?php echo $id ?>">

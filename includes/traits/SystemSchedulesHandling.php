@@ -429,8 +429,14 @@ trait Handling {
      * @since 3.0.0
      */
     protected static function launch_raw_station_update_cron($timeshift=0, $system='Watchdog') {
+        if (get_option('live_weather_station_cron_speed', 0) == 0) {
+            $rec = 'five_minutes';
+        }
+        else {
+            $rec = 'two_minutes';
+        }
         if (!wp_next_scheduled(self::$raw_update_station_schedule_name)) {
-            wp_schedule_event(time() + $timeshift, 'five_minutes', self::$raw_update_station_schedule_name);
+            wp_schedule_event(time() + $timeshift, $rec, self::$raw_update_station_schedule_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$raw_update_station_schedule_name).'" (re)scheduled.');
         }
     }
@@ -454,8 +460,14 @@ trait Handling {
      * @since 3.0.0
      */
     protected static function launch_real_station_update_cron($timeshift=0, $system='Watchdog') {
+        if (get_option('live_weather_station_cron_speed', 0) == 0) {
+            $rec = 'five_minutes';
+        }
+        else {
+            $rec = 'two_minutes';
+        }
         if (!wp_next_scheduled(self::$real_update_station_schedule_name)) {
-            wp_schedule_event(time() + $timeshift, 'five_minutes', self::$real_update_station_schedule_name);
+            wp_schedule_event(time() + $timeshift, $rec, self::$real_update_station_schedule_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$real_update_station_schedule_name).'" (re)scheduled.');
         }
     }
@@ -754,10 +766,29 @@ trait Handling {
      * @since 3.2.0
      */
     protected static function launch_wug_current_push_cron($timeshift=0, $system='Watchdog') {
+        if (get_option('live_weather_station_cron_speed', 0) == 0) {
+            $rec = 'six_minutes';
+        }
+        else {
+            $rec = 'two_minutes';
+        }
         if (!wp_next_scheduled(self::$wug_push_schedule_name)) {
-            wp_schedule_event(time() + $timeshift, 'six_minutes', self::$wug_push_schedule_name);
+            wp_schedule_event(time() + $timeshift, $rec, self::$wug_push_schedule_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$wug_push_schedule_name).'" (re)scheduled.');
         }
+    }
+
+    /**
+     * Add a new 3 minutes interval capacity to the WP cron feature.
+     *
+     * @since 3.3.0
+     */
+    public static function add_cron_02_minutes_interval($schedules) {
+        $schedules['two_minutes'] = array(
+            'interval' => 120,
+            'display'  => __( 'Every two minutes', 'live-weather-station' ),
+        );
+        return $schedules;
     }
 
     /**
@@ -808,32 +839,6 @@ trait Handling {
         $schedules['ten_minutes'] = array(
             'interval' => 600,
             'display'  => __( 'Every ten minutes', 'live-weather-station' ),
-        );
-        return $schedules;
-    }
-
-    /**
-     * Add a new 11 minutes interval capacity to the WP cron feature.
-     *
-     * @since 3.0.0
-     */
-    public static function add_cron_11_minutes_interval($schedules) {
-        $schedules['eleven_minutes'] = array(
-            'interval' => 660,
-            'display'  => __( 'Every eleven minutes', 'live-weather-station' ),
-        );
-        return $schedules;
-    }
-
-    /**
-     * Add a new 11 minutes interval capacity to the WP cron feature.
-     *
-     * @since 3.0.0
-     */
-    public static function add_cron_12_minutes_interval($schedules) {
-        $schedules['twelve_minutes'] = array(
-            'interval' => 720,
-            'display'  => __( 'Every twelve minutes', 'live-weather-station' ),
         );
         return $schedules;
     }

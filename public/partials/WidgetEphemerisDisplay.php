@@ -9,32 +9,34 @@
 <div class="lws-widget-container-<?php echo $id ?>">
     <div class="lws-widget-outer-ephemeris-<?php echo $id ?>">
         <div class="lws-widget-ephemeris-<?php echo $id ?> noTypo">
-        <!-- STATION NAME -->
-        <div class="lws-widget-row-<?php echo $id ?>">
-            <div class="lws-widget-column-<?php echo $id ?>">
-                <?php if ( $show_title ):?>
-                    <div class="lws-widget-title-<?php echo $id ?>"><?php echo $title; ?></div>
-                <?php endif;?>
-                <?php if ( $subtitle == 1 ):?>
-                    <div class="lws-widget-subtitle-<?php echo $id ?>"><?php echo $timestamp; ?></div>
-                <?php endif;?>
-                <?php if ( $subtitle == 2 && $location != '' ):?>
-                    <div class="lws-widget-subtitle-<?php echo $id ?>"><?php echo $location; ?></div>
-                <?php endif;?>
-                <?php if ( $mode == 1 ):?>
-                    <div class="lws-widget-subtitle-<?php echo $id ?>"><?php _e('Civil Daylight Times', 'live-weather-station') ?></div>
-                <?php endif;?>
-                <?php if ( $mode == 2 ):?>
-                    <div class="lws-widget-subtitle-<?php echo $id ?>"><?php _e('Nautical Daylight Times', 'live-weather-station') ?></div>
-                <?php endif;?>
-                <?php if ( $mode == 3 ):?>
-                    <div class="lws-widget-subtitle-<?php echo $id ?>"><?php _e('Astronomical Daylight Times', 'live-weather-station') ?></div>
-                <?php endif;?>
+        <?php if ($show_title || $subtitle != 0 || $mode != 0):?>
+            <!-- STATION NAME -->
+            <div class="lws-widget-row-<?php echo $id ?>">
+                <div class="lws-widget-column-<?php echo $id ?>">
+                    <?php if ( $show_title ):?>
+                        <div class="lws-widget-title-<?php echo $id ?>"><?php echo $title; ?></div>
+                    <?php endif;?>
+                    <?php if ( $subtitle == 1 ):?>
+                        <div class="lws-widget-subtitle-<?php echo $id ?>"><?php echo $timestamp; ?></div>
+                    <?php endif;?>
+                    <?php if ( $subtitle == 2 && $location != '' ):?>
+                        <div class="lws-widget-subtitle-<?php echo $id ?>"><?php echo $location; ?></div>
+                    <?php endif;?>
+                    <?php if ( $mode == 1 ):?>
+                        <div class="lws-widget-subtitle-<?php echo $id ?>"><?php _e('Civil Daylight Times', 'live-weather-station') ?></div>
+                    <?php endif;?>
+                    <?php if ( $mode == 2 ):?>
+                        <div class="lws-widget-subtitle-<?php echo $id ?>"><?php _e('Nautical Daylight Times', 'live-weather-station') ?></div>
+                    <?php endif;?>
+                    <?php if ( $mode == 3 ):?>
+                        <div class="lws-widget-subtitle-<?php echo $id ?>"><?php _e('Astronomical Daylight Times', 'live-weather-station') ?></div>
+                    <?php endif;?>
+                </div>
             </div>
-        </div>
+            <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+        <?php endif;?>
         <?php if ( $format == 0 ):?>
             <?php if ($show_sun):?>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
                 <!-- SUNRISE / SUNSET -->
                 <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Sunrise & sunset', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column-<?php echo $id ?>">
@@ -55,9 +57,9 @@
                         </div>
                     </div>
                 </div>
+                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
             <?php if ($show_moon && $show_moonphase):?>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
                 <!-- MOONRISE / MOONSET -->
                 <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.__('Moon', 'live-weather-station').': '.$datas['moon_phase']['name'].'"' : ''); ?>>
                     <div class="lws-widget-column-<?php echo $id ?>">
@@ -78,12 +80,12 @@
                         </div>
                     </div>
                 </div>
+                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
         <?php endif;?>
 
         <?php if ( $format == 1 || $format == 2):?>
             <?php if ($show_sun):?>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
                 <!-- SUNRISE -->
                 <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Sunrise', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column-<?php echo $id ?>">
@@ -111,7 +113,6 @@
                 </div>
             <?php endif;?>
             <?php if ($show_sundetails && $format == 2):?>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
                 <!-- SUN DETAILS -->
                 <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Sun distance and angular size', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column-<?php echo $id ?>">
@@ -132,9 +133,9 @@
                         </div>
                     </div>
                 </div>
+                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
             <?php if ($show_moonphase):?>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
                 <!-- MOONRISE / MOONSET -->
                 <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Moon illumination, phase & age', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column-<?php echo $id ?>">
@@ -155,9 +156,9 @@
                         </div>
                     </div>
                 </div>
+                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
             <?php if ($show_moon):?>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
                 <!-- MOONSET -->
                 <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Moonset', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column-<?php echo $id ?>">
@@ -183,9 +184,9 @@
                         </div>
                     </div>
                 </div>
+                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
             <?php if ($show_moondetails && $show_moonphase && $format == 2):?>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
                 <!-- SUN DETAILS -->
                 <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Moon distance and angular size', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column-<?php echo $id ?>">
