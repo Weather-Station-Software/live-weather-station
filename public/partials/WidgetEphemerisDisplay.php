@@ -111,6 +111,7 @@
                         </div>
                     </div>
                 </div>
+                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
             <?php if ($show_sundetails && $format == 2):?>
                 <!-- SUN DETAILS -->

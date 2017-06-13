@@ -304,7 +304,7 @@ trait Query {
     /**
      * Get stations list with latitude and longitude set.
      *
-     * @param mixed $station_type Optional. The station type to query..
+     * @param mixed $station_type Optional. The station type to query.
      * @return array An array containing the located stations.
      * @since 2.0.0
      */

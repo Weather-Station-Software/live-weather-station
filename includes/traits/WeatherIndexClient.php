@@ -71,13 +71,10 @@ trait Client {
             $nm['dashboard_data'] = array();
             if ( ($temperature_ref != $this->value_unknown) &&
                 ($humidity_ref != $this->value_unknown) ) {
-                $cbi = $this->compute_cbi($temperature_ref, $humidity_ref);
                 $dew_point = $this->compute_dew_point($temperature_ref, $humidity_ref);
                 $frost_point = $this->compute_frost_point($temperature_ref, $dew_point);
-                $heat_index = $this->compute_heat_index($temperature_ref, $humidity_ref);
                 $humidex = $this->compute_humidex($temperature_ref, $dew_point);
                 $cloud_ceiling = $this->compute_cloud_ceiling($temperature_ref, $dew_point);
-                $wet_bulb = $this->compute_wet_bulb($temperature_ref, $humidity_ref);
                 if (!in_array('temperature_ref', $nm['data_type'])) {
                     $nm['data_type'][] = 'temperature_ref';
                 }
@@ -89,16 +86,20 @@ trait Client {
                 $nm['data_type'][] = 'humidex';
                 $nm['data_type'][] = 'cloud_ceiling';
                 $nm['data_type'][] = 'wet_bulb';
+                $nm['data_type'][] = 'partial_vapor_pressure';
+                $nm['data_type'][] = 'wood_emc';
                 $nm['dashboard_data']['time_utc'] = time();
                 $nm['dashboard_data']['temperature_ref'] = $temperature_ref;
                 $nm['dashboard_data']['humidity_ref'] = $humidity_ref;
                 $nm['dashboard_data']['dew_point'] = $dew_point;
                 $nm['dashboard_data']['frost_point'] = $frost_point;
-                $nm['dashboard_data']['heat_index'] = $heat_index;
+                $nm['dashboard_data']['heat_index'] = $this->compute_heat_index($temperature_ref, $humidity_ref);
                 $nm['dashboard_data']['humidex'] = $humidex;
                 $nm['dashboard_data']['cloud_ceiling'] = $cloud_ceiling;
-                $nm['dashboard_data']['cbi'] = $cbi;
-                $nm['dashboard_data']['wet_bulb'] = $wet_bulb;
+                $nm['dashboard_data']['cbi'] = $this->compute_cbi($temperature_ref, $humidity_ref);
+                $nm['dashboard_data']['wet_bulb'] = $this->compute_wet_bulb($temperature_ref, $humidity_ref);
+                $nm['dashboard_data']['partial_vapor_pressure'] = $this->compute_partial_vapor_pressure($temperature_ref, $humidity_ref);
+                $nm['dashboard_data']['wood_emc'] = $this->compute_emc($temperature_ref, $humidity_ref);
             }
             if ( ($temperature_ref != $this->value_unknown) &&
                 ($humidity_ref != $this->value_unknown) &&
@@ -111,20 +112,43 @@ trait Client {
                 }
                 $nm['data_type'][] = 'pressure_ref';
                 $nm['data_type'][] = 'air_density';
+                $nm['data_type'][] = 'partial_absolute_humidity';
+                $nm['data_type'][] = 'specific_enthalpy';
                 $nm['dashboard_data']['time_utc'] = time();
                 $nm['dashboard_data']['temperature_ref'] = $temperature_ref;
                 $nm['dashboard_data']['humidity_ref'] = $humidity_ref;
                 $nm['dashboard_data']['pressure_ref'] = $pressure_ref;
                 $nm['dashboard_data']['air_density'] = $this->compute_air_density($temperature_ref, 100 * $pressure_ref, $humidity_ref);
+                $nm['dashboard_data']['partial_absolute_humidity'] = $this->compute_partial_absolute_humidity($temperature_ref, 100 * $pressure_ref, $humidity_ref);
+                $nm['dashboard_data']['specific_enthalpy'] = $this->compute_specific_enthalpy($temperature_ref, 100 * $pressure_ref, $humidity_ref);
+            }
+
+            if ( ($temperature_ref != $this->value_unknown) &&
+                ($pressure_ref != $this->value_unknown)) {
+                if (!in_array('temperature_ref', $nm['data_type'])) {
+                    $nm['data_type'][] = 'temperature_ref';
+                }
+                $nm['data_type'][] = 'pressure_ref';
+                $nm['data_type'][] = 'saturation_absolute_humidity';
+                $nm['data_type'][] = 'potential_temperature';
+                $nm['data_type'][] = 'equivalent_temperature';
+                $nm['data_type'][] = 'equivalent_potential_temperature';
+                $nm['dashboard_data']['time_utc'] = time();
+                $nm['dashboard_data']['temperature_ref'] = $temperature_ref;
+                $nm['dashboard_data']['pressure_ref'] = $pressure_ref;
+                $nm['dashboard_data']['saturation_absolute_humidity'] = $this->compute_saturation_absolute_humidity($temperature_ref, 100 * $pressure_ref);
+                $nm['dashboard_data']['potential_temperature'] = $this->compute_potential_temperature($temperature_ref, 100 * $pressure_ref);
+                $nm['dashboard_data']['equivalent_temperature'] = $this->compute_equivalent_temperature($temperature_ref, 100 * $pressure_ref);
+                $nm['dashboard_data']['equivalent_potential_temperature'] = $this->compute_equivalent_potential_temperature($temperature_ref, 100 * $pressure_ref);
             }
             if ($temperature_ref != $this->value_unknown) {
                 if (!in_array('temperature_ref', $nm['data_type'])) {
                     $nm['data_type'][] = 'temperature_ref';
                 }
-                $nm['data_type'][] = 'vapor_pressure';
+                $nm['data_type'][] = 'saturation_vapor_pressure';
                 $nm['dashboard_data']['time_utc'] = time();
                 $nm['dashboard_data']['temperature_ref'] = $temperature_ref;
-                $nm['dashboard_data']['vapor_pressure'] = round($this->compute_saturation_vapor_pressure($temperature_ref)/100, 1);
+                $nm['dashboard_data']['saturation_vapor_pressure'] = $this->compute_saturation_vapor_pressure($temperature_ref);
             }
             if ( ($temperature_ref != $this->value_unknown) &&
                 ($wind_ref != $this->value_unknown) ) {

@@ -1,16 +1,29 @@
 
 ###3.3.0 / August xxxxxx, 2017
 
-* New: the task scheduler have a new mode to allow a higher frequency of weather collect and share (settings in 'system' tab).
+* New: the task scheduler have a new mode to allow a higher frequency of weather collection and sharing (settings in 'system' tab).
 * New: it's now possible to subscribe to Weather Station news right from the dashboard.
+* New: psychrometric temperatures (wet bulb, equivalent, potential and equivalent potential) computed and available in textual, clean gauge and steel meter controls.
+* New: psychrometric partial and saturation vapor pressures computed and available in textual, clean gauge and steel meter controls.
+* New: psychrometric absolute humidity (partial or saturation) computed and available in textual, clean gauge and steel meter controls.
+* New: air density, equilibrium moisture content and specific enthalpy computed and available in textual, clean gauge and steel meter controls.
+* Improvement: ephemeris widget and textual shortcodes now take care of locations where there's no day or no night (on 24h).
 * Improvement: an admin notification informs you when Weather Station have been updated.
 * Improvement: widgets now hide the header blank zone when there's no title or information to display (thanks to Lisa Yoon for the suggestion).
 * Improvement: it's now possible to override the Healthy Home Coach internal health index with a computed value (comparable with indoor modules).
 * Improvement: the 'display' tab of 'settings' screen has been reorganized for better readability.
 * Improvement: inline help is now visible in widget and main settings (question mark in a circle).
-* Improvement: new setting to choose units (metric/imperial) for densities.
+* Improvement: icons for day, dawn and dusk lengths and durations are now consistent.
+* Improvement: new setting to choose units (metric/imperial) for psychrometric values.
 * Improvement: some interface style settings have appeared in the 'display' tab of 'settings' screen.
+* Improvement: in textual shortcodes, difference is now made between Unix timestamps and UTC timestamps.
+* Improvement: distances now have a rounding precision commensurate with their values.
 * Bug fix: in some cases, the dashboard columns may be blank after adding a station from the welcome panel.
+* Bug fix: it's impossible to save negative threshold values for the Chandler Burning index, in Chrome, Safari and Firefox.
+* Bug fix: carbon monoxide thresholds are wrongly converted from/to some system units.
+* Bug fix: temperatures have not the same decimal precision in all displays.
+* Bug fix: textual shortcodes doesn't display correctly formatted last refresh times.
+* Bug fix: the formatting of length (of day, dawn & dusk) in ephemeris module is wrong in some cases.
 
 ###3.2.5 / May 17th, 2017
 

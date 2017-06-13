@@ -36,12 +36,18 @@ trait Output {
         'wind_chill', 'cloud_ceiling', 'temperature_trend', 'pressure_trend', 'sunrise', 'sunset', 'moonrise',
         'moonset', 'moon_illumination', 'moon_diameter', 'sun_diameter', 'moon_distance', 'sun_distance', 'moon_phase',
         'moon_age', 'o3_distance', 'co_distance', 'humidity_min', 'humidity_max', 'pressure_min', 'pressure_max',
-        'day_length', 'health_idx', 'cbi', 'pressure_ref', 'wet_bulb', 'air_density', 'vapor_pressure');
+        'day_length', 'health_idx', 'cbi', 'pressure_ref', 'wet_bulb', 'air_density', 'wood_emc',
+        'equivalent_temperature','potential_temperature','specific_enthalpy',
+        'partial_vapor_pressure','partial_absolute_humidity');
     private $not_showable_measurements = array('battery', 'firmware', 'signal', 'loc_timezone', 'loc_altitude',
         'loc_latitude', 'loc_longitude', 'last_seen', 'last_refresh', 'first_setup', 'last_upgrade', 'last_setup',
         'sunrise_c','sunrise_n','sunrise_a', 'sunset_c','sunset_n', 'sunset_a', 'day_length_c', 'day_length_n',
         'day_length_a', 'dawn_length_a','dawn_length_n', 'dawn_length_c', 'dusk_length_a', 'dusk_length_n',
-        'dusk_length_c');
+        'dusk_length_c','saturation_vapor_pressure','saturation_absolute_humidity','equivalent_potential_temperature');
+
+
+
+
 
 
     /**
@@ -2091,6 +2097,10 @@ trait Output {
      */
     protected function output_value($value, $type, $unit=false , $textual=false, $module_type='NAMain', $tz='') {
         $result = $value;
+        $not = __('N/A', 'live-weather-station');
+        if ($value == $not) {
+            return $not;
+        }
         switch (strtolower($type)) {
             case 'battery':
                 $result = $this->get_battery_percentage($value, $module_type);
@@ -2196,7 +2206,6 @@ trait Output {
             case 'pressure_min':
             case 'pressure_max':
             case 'pressure_ref':
-            case 'vapor_pressure':
                 $ref = get_option('live_weather_station_unit_pressure') ;
                 $result = $this->get_pressure($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_pressure_unit($ref) : '');
@@ -2209,15 +2218,9 @@ trait Output {
             case 'temperature_ref':
             case 'dew_point':
             case 'frost_point':
-            case 'wet_bulb':
                 $ref = get_option('live_weather_station_unit_temperature') ;
                 $result = $this->get_temperature($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_temperature_unit($ref) : '');
-                break;
-            case 'air_density':
-                $ref = get_option('live_weather_station_unit_temperature') ;
-                $result = $this->get_density($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_density_unit($ref) : '');
                 break;
             case 'heat_index':
             case 'humidex':
@@ -2237,7 +2240,6 @@ trait Output {
                 break;
             case 'temperature_trend':
             case 'pressure_trend':
-                $result = $value;
                 if ($textual) {
                     $result = $this->get_trend_text($value);
                 }
@@ -2250,12 +2252,16 @@ trait Output {
             case 'sunset_c':
             case 'sunset_n':
             case 'sunset_a':
-                $result = $value;
-                if ($unit) {
-                    $result = $this->get_rise_set_short_from_utc($value, $tz);
+                if ($value == -1) {
+                    $result = $not;
                 }
-                if ($textual) {
-                    $result = $this->get_rise_set_long_from_utc($value, $tz);
+                else {
+                    if ($unit) {
+                        $result = $this->get_rise_set_short_from_utc($value, $tz);
+                    }
+                    if ($textual) {
+                        $result = $this->get_rise_set_long_from_utc($value, $tz);
+                    }
                 }
                 break;
             case 'dawn_length_c':
@@ -2264,31 +2270,38 @@ trait Output {
             case 'dusk_length_c':
             case 'dusk_length_n':
             case 'dusk_length_a':
-                $result = $value;
-                if ($unit) {
-                    $result = $this->get_dusk_dawn($value);
-                    $result .= ($unit ? $this->unit_espace.$this->get_dusk_dawn_unit() : '');
+                if ($value == -1) {
+                    $result = $not;
                 }
-                if ($textual) {
-                    $result = $this->get_age_hours_from_seconds($value);
+                else {
+                    if ($unit) {
+                        $result = $this->get_dusk_dawn($value);
+                        $result .= ($unit ? $this->unit_espace . $this->get_dusk_dawn_unit() : '');
+                    }
+                    if ($textual) {
+                        $result = $this->get_age_hours_from_seconds($value);
+                    }
                 }
                 break;
             case 'day_length':
             case 'day_length_c':
             case 'day_length_n':
             case 'day_length_a':
-                $result = $value;
-                if ($unit) {
-                    $result = $this->get_day_length($value);
-                    $result .= ($unit ? $this->unit_espace.$this->get_day_length_unit() : '');
+                if ($value == -1) {
+                    $result = $not;
                 }
-                if ($textual) {
-                $result = $this->get_age_hours_from_seconds($value);
-            }
+                else {
+                    if ($unit) {
+                        $result = $this->get_day_length($value);
+                        $result .= ($unit ? $this->unit_espace . $this->get_day_length_unit() : '');
+                    }
+                    if ($textual) {
+                        $result = $this->get_age_hours_from_seconds($value);
+                    }
+                }
                 break;
             case 'moonrise':
             case 'moonset':
-                $result = $value;
                 if ($unit) {
                     $result = $this->get_rise_set_short_from_utc($value, $tz, true);
                 }
@@ -2312,13 +2325,11 @@ trait Output {
                 $result .= ($unit ? $this->unit_espace.$this->get_distance_unit($ref) : '');
                 break;
             case 'moon_phase':
-                $result = $value;
                 if ($unit || $textual) {
                     $result = $this->get_moon_phase_text($value);
                 }
                 break;
             case 'moon_age':
-                $result = $value;
                 if ($unit || $textual) {
                     $result = $this->get_age_from_days($value);
                 }
@@ -2331,7 +2342,6 @@ trait Output {
                 break;
             case 'loc_timezone':
             case 'timezone':
-                $result = $value;
                 if ($unit || $textual) {
                     $result = $this->output_timezone($value);
                 }
@@ -2342,6 +2352,48 @@ trait Output {
             case 'last_setup':
             case 'last_upgrade':
                 $result = self::get_date_from_mysql_utc($value, $tz) . ', ' . self::get_time_from_mysql_utc($value, $tz);
+                break;
+            // PSYCHROMETRY
+            case 'wet_bulb':
+                $ref = get_option('live_weather_station_unit_temperature') ;
+                $result = $this->get_temperature($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_temperature_unit($ref) : '');
+                break;
+            case 'air_density':
+                $ref = get_option('live_weather_station_unit_psychrometry') ;
+                $result = $this->get_density($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_density_unit($ref) : '');
+                break;
+            case 'wood_emc':
+            case 'emc':
+                $result = $this->get_emc($value);
+                $result .= ($unit ? $this->unit_espace.$this->get_emc_unit() : '');
+                break;
+            case 'equivalent_temperature':
+            case 'potential_temperature':
+            case 'equivalent_potential_temperature':
+                $ref = get_option('live_weather_station_unit_psychrometry') ;
+                $result = $this->get_temperature($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_temperature_unit($ref) : '');
+                break;
+            case 'specific_enthalpy':
+                $ref = get_option('live_weather_station_unit_psychrometry') ;
+                $result = $this->get_enthalpy($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_enthalpy_unit($ref) : '');
+                break;
+            case 'partial_vapor_pressure':
+            case 'saturation_vapor_pressure':
+            case 'vapor_pressure':
+                $ref = get_option('live_weather_station_unit_psychrometry') ;
+                $result = $this->get_precise_pressure($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_precise_pressure_unit($ref) : '');
+                break;
+            case 'absolute_humidity':
+            case 'partial_absolute_humidity':
+            case 'saturation_absolute_humidity':
+                $ref = get_option('live_weather_station_unit_psychrometry') ;
+                $result = $this->get_absolute_humidity($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_absolute_humidity_unit($ref) : '');
                 break;
             }
         return $result;
@@ -2360,7 +2412,6 @@ trait Output {
      * @since 3.0.0
      */
     protected function output_iconic_value($value, $type, $module_type='NAMain', $show_value=false, $style='', $extra='') {
-        $result = $value;
         switch (strtolower($type)) {
             case 'battery':
                 $level = $this->get_battery_level($value, $module_type);
@@ -2436,9 +2487,6 @@ trait Output {
             case 'noise':
                 $result = '<i %1$s class="fa fa-fw %2$s fa-volume-down" aria-hidden="true"></i>';
                 break;
-            case 'air_density':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-adjust" aria-hidden="true"></i>';
-                break;
             case 'pressure':
             case 'pressure_ref':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-barometer" aria-hidden="true"></i>';
@@ -2452,14 +2500,10 @@ trait Output {
             case 'pressure_min':
                 $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-long-arrow-down"></i></span>';
                 break;
-            case 'vapor_pressure':
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-ellipsis-v"></i></span>';
-                break;
             case 'temperature':
             case 'tempint':
             case 'tempext':
             case 'temperature_ref':
-            case 'wet_bulb':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer" aria-hidden="true"></i>';
                 break;
             case 'temperature_trend':
@@ -2637,6 +2681,61 @@ trait Output {
             case 'sun_diameter':
             case 'sun_distance':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-day-sunny" aria-hidden="true"></i>';
+                break;
+            case 'sunrise_c':
+            case 'sunrise_n':
+            case 'sunrise_a':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-sunrise" aria-hidden="true"></i>';
+                break;
+            case 'sunset_c':
+            case 'sunset_n':
+            case 'sunset_a':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-sunset" aria-hidden="true"></i>';
+                break;
+            case 'day_length':
+            case 'day_length_c':
+            case 'day_length_n':
+            case 'day_length_a':
+                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-day-sunny"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+                break;
+            case 'dawn_length_a':
+            case 'dawn_length_n':
+            case 'dawn_length_c':
+                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-sunrise"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+                break;
+            case 'dusk_length_a':
+            case 'dusk_length_n':
+            case 'dusk_length_c':
+                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-sunset"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+                break;
+            // PSYCHROMETRIC
+            case 'air_density':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-adjust" aria-hidden="true"></i>';
+                break;
+            case 'wet_bulb':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer" aria-hidden="true"></i>';
+                break;
+            case 'wood_emc':
+            case 'emc':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-tree" aria-hidden="true"></i>';
+                break;
+            case 'specific_enthalpy':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-refresh-alt" aria-hidden="true"></i>';
+                break;
+            case 'equivalent_temperature':
+            case 'potential_temperature':
+            case 'equivalent_potential_temperature':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer-exterior" aria-hidden="true"></i>';
+                break;
+            case 'partial_vapor_pressure':
+            case 'saturation_vapor_pressure':
+            case 'vapor_pressure':
+                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-ellipsis-v"></i></span>';
+                break;
+            case 'partial_absolute_humidity':
+            case 'saturation_absolute_humidity':
+            case 'absolute_humidity':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-raindrop" aria-hidden="true"></i>';
                 break;
             default:
                 $result = '<i %s class="fa fa-fw %s fa-sun-o" aria-hidden="true"></i>';
@@ -2821,15 +2920,6 @@ trait Output {
                 $result['long'] = $this->get_health_index_unit_full($ref) ;
                 $result['comp'] = __('hlth', 'live-weather-station') ;
                 break;
-            case 'air_density':
-                $ref = 0;
-                if ($force_ref != 0) {
-                    $ref = $force_ref;
-                }
-                $result['unit'] = $this->get_density_unit($ref) ;
-                $result['long'] = $this->get_density_unit_full($ref) ;
-                $result['comp'] = __('air', 'live-weather-station') ;
-                break;
             case 'cbi':
                 $ref = 0;
                 if ($force_ref != 0) {
@@ -2971,7 +3061,6 @@ trait Output {
             case 'pressure_min':
             case 'pressure_max':
             case 'pressure_ref':
-            case 'vapor_pressure':
                 $ref = get_option('live_weather_station_unit_pressure') ;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
@@ -2988,7 +3077,6 @@ trait Output {
             case 'dew_point':
             case 'frost_point':
             case 'wind_chill':
-            case 'wet_bulb':
                 $ref = get_option('live_weather_station_unit_temperature') ;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
@@ -3038,6 +3126,80 @@ trait Output {
                 $result['unit'] = $this->get_distance_unit($ref);
                 $result['long'] = $this->get_distance_unit_full($ref);
                 break;
+            // PSYCHROMETRY
+            case 'wet_bulb':
+            case 'equivalent_temperature':
+            case 'potential_temperature':
+            case 'equivalent_potential_temperature':
+                $ref = get_option('live_weather_station_unit_psychrometry') ;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_temperature_unit($ref);
+                $result['long'] = $this->get_temperature_unit_full($ref);
+                break;
+            case 'air_density':
+                $ref = get_option('live_weather_station_unit_psychrometry') ;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_density_unit($ref) ;
+                $result['long'] = $this->get_density_unit_full($ref) ;
+                //$result['comp'] = __('air', 'live-weather-station') ;
+                break;
+            case 'wood_emc':
+            case 'emc':
+                $ref = get_option('live_weather_station_unit_psychrometry') ;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_emc_unit($ref) ;
+                $result['long'] = $this->get_emc_unit_full($ref) ;
+                break;
+            case 'specific_enthalpy':
+                $ref = get_option('live_weather_station_unit_psychrometry') ;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_enthalpy_unit($ref) ;
+                $result['long'] = $this->get_enthalpy_unit_full($ref) ;
+                break;
+            case 'partial_vapor_pressure':
+            case 'vapor_pressure':
+                $ref = get_option('live_weather_station_unit_psychrometry') ;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_precise_pressure_unit($ref) ;
+                $result['long'] = $this->get_precise_pressure_unit_full($ref) ;
+                break;
+            case 'saturation_vapor_pressure':
+                $ref = get_option('live_weather_station_unit_psychrometry') ;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_precise_pressure_unit($ref) ;
+                $result['long'] = $this->get_precise_pressure_unit_full($ref) ;
+                $result['comp'] = __('sat.', 'live-weather-station') ;
+                break;
+            case 'partial_absolute_humidity':
+            case 'absolute_humidity':
+                $ref = get_option('live_weather_station_unit_psychrometry') ;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_absolute_humidity_unit($ref) ;
+                $result['long'] = $this->get_absolute_humidity_unit_full($ref) ;
+                break;
+            case 'saturation_absolute_humidity':
+                $ref = get_option('live_weather_station_unit_psychrometry') ;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_absolute_humidity_unit($ref) ;
+                $result['long'] = $this->get_absolute_humidity_unit_full($ref) ;
+                $result['comp'] = __('sat.', 'live-weather-station') ;
+                break;
         }
         if ($result['comp'] != __('now', 'live-weather-station')) {
             $result['full'] = $result['unit'].' '.$result['comp'];   
@@ -3068,7 +3230,6 @@ trait Output {
                 $result = get_option('live_weather_station_unit_rain_snow') ;
                 break;
             case 'temperature':
-            case 'wet_bulb':
             case 'tempint':
             case 'tempext':
             case 'temperature_min':
@@ -3080,26 +3241,23 @@ trait Output {
             case 'humidex':
             case 'heat_index':
             case 'cbi':
+            case 'wet_bulb':
+            case 'equivalent_temperature':
+            case 'potential_temperature':
+            case 'equivalent_potential_temperature':
+            case 'wood_emc':
+            case 'emc':
                 $result = 1 ;
                 break;
             case 'pressure':
             case 'pressure_min':
             case 'pressure_max':
             case 'pressure_ref':
-            case 'vapor_pressure':
                 if (get_option('live_weather_station_unit_pressure') == 1) {
                     $result = 2 ;
                 }
                 else {
                     $result = 1 ;
-                }
-                break;
-            case 'air_density':
-                if (get_option('live_weather_station_unit_density') == 1) {
-                    $result = 5 ;
-                }
-                else {
-                    $result = 4 ;
                 }
                 break;
             /*case 'co':
@@ -3120,6 +3278,34 @@ trait Output {
                     if ($value < 5) {
                         $result = 1;
                     }
+                }
+                break;
+            case 'air_density':
+                if (get_option('live_weather_station_unit_psychrometry') == 1) {
+                    $result = 5 ;
+                }
+                else {
+                    $result = 4 ;
+                }
+                break;
+            case 'specific_enthalpy':
+                $result = 2 ;
+                break;
+            case 'partial_vapor_pressure':
+            case 'saturation_vapor_pressure':
+            case 'vapor_pressure':
+                if (get_option('live_weather_station_unit_psychrometry') == 1) {
+                    $result = 2 ;
+                }
+                break;
+            case 'partial_absolute_humidity':
+            case 'saturation_absolute_humidity':
+            case 'absolute_humidity':
+                if (get_option('live_weather_station_unit_psychrometry') == 1) {
+                    $result = 1 ;
+                }
+                else {
+                    $result = 2 ;
                 }
                 break;
         }
@@ -3169,6 +3355,9 @@ trait Output {
             case 'humidity':
             case 'humidity_min':
             case 'humidity_max':
+            case 'partial_absolute_humidity':
+            case 'saturation_absolute_humidity':
+            case 'absolute_humidity':
                 $result = __('humidity', 'live-weather-station') ;
                 break;
             case 'noise':
@@ -3204,9 +3393,6 @@ trait Output {
             case 'pressure_ref':
                 $result = __('atm pressure', 'live-weather-station') ;
                 break;
-            case 'vapor_pressure':
-                $result = __('pressure', 'live-weather-station') ;
-                break;
             case 'dew_point':
                 $result = __('dew point', 'live-weather-station') ;
                 break;
@@ -3235,6 +3421,9 @@ trait Output {
             case 'temperature_min':
             case 'temperature_max':
             case 'wet_bulb':
+            case 'equivalent_temperature':
+            case 'potential_temperature':
+            case 'equivalent_potential_temperature':
                 $result = __('temperature', 'live-weather-station') ;
                 break;
             case 'dawn':
@@ -3248,6 +3437,18 @@ trait Output {
             case 'dusk_n':
             case 'dusk_a':
                 $result = __('dusk', 'live-weather-station') ;
+                break;
+            case 'wood_emc':
+            case 'emc':
+                $result = __('EMC', 'live-weather-station') ;
+                break;
+            case 'specific_enthalpy':
+                $result = __('enthalpy', 'live-weather-station') ;
+                break;
+            case 'partial_vapor_pressure':
+            case 'saturation_vapor_pressure':
+            case 'vapor_pressure':
+                $result = __('vapor', 'live-weather-station') ;
                 break;
         }
         return $result;
@@ -3841,9 +4042,20 @@ trait Output {
             case 'heat_index':
             case 'cloud_ceiling':
             case 'cbi':
-            case 'vapor_pressure':
             case 'wet_bulb':
             case 'air_density':
+            case 'equivalent_temperature':
+            case 'potential_temperature':
+            case 'equivalent_potential_temperature':
+            case 'wood_emc':
+            case 'emc':
+            case 'specific_enthalpy':
+            case 'partial_vapor_pressure':
+            case 'saturation_vapor_pressure':
+            case 'vapor_pressure':
+            case 'partial_absolute_humidity':
+            case 'saturation_absolute_humidity':
+            case 'absolute_humidity':
                 $result = $computed && $outdoor;
                 break;
             case 'o3':
@@ -4433,6 +4645,9 @@ trait Output {
             case 'humidex':
             case 'heat_index':
             case 'wet_bulb':
+            case 'equivalent_temperature':
+            case 'potential_temperature':
+            case 'equivalent_potential_temperature':
                 if (strtolower($module_type)=='namodule4' || strtolower($module_type)=='namain') {
                     $t = 'tempint';
                 }
@@ -4453,7 +4668,6 @@ trait Output {
             case 'pressure_min':
             case 'pressure_max':
             case 'pressure_ref':
-            case 'vapor_pressure':
                 $t = 'pressure';
                 break;
             case 'rain_yesterday_aggregated':
@@ -4474,6 +4688,20 @@ trait Output {
             case 'windstrength_hour_max':
             case 'windstrength_day_max':
                 $t = 'windstrength';
+                break;
+            case 'wood_emc':
+            case 'emc':
+                $t = 'emc';
+                break;
+            case 'vapor_pressure':
+            case 'partial_vapor_pressure':
+            case 'saturation_vapor_pressure':
+                $t = 'vapor_pressure';
+                break;
+            case 'absolute_humidity':
+            case 'partial_absolute_humidity':
+            case 'saturation_absolute_humidity':
+                $t = 'absolute_humidity';
                 break;
             default:
                 $t = $type;
@@ -4592,11 +4820,11 @@ trait Output {
                     $module['signal_txt'] = $this->get_signal_level_text($module['signal'], $module['module_type']);
                     $module['signal_icn'] = $this->output_iconic_value($module['signal'], 'signal', $module['module_type'], false, 'style="color:#999"', 'fa-lg');
                 }
-                if ((!$full && in_array($data['measure_type'], $this->showable_measurements)) ||
+                if ((/*!$full && */in_array($data['measure_type'], $this->showable_measurements)) ||
                     ($full && in_array($data['measure_type'], array_merge($this->showable_measurements, $this->not_showable_measurements)))) {
                     $val = array();
                     /*
-                     * @fixme how the hell windgauge have temperature max/min attributes?
+                     * @fixme how the hell Netatmo windgauge have temperature max/min attributes?
                      */
                     if ((strpos($data['measure_type'], 'perature') > 0) && ($data['module_type'] == 'NAModule2')) {
                         continue;

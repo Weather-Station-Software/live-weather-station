@@ -288,14 +288,14 @@ class Admin {
             array($this, 'lws_display_altitude_unit_callback'), 'lws_display', 'lws_display_section',
             array(__('Units system in which altitudes are expressed.', 'live-weather-station')));
         register_setting('lws_display', 'lws_display_altitude_unit');
-        add_settings_field('lws_display_density_unit', __('Densities', 'live-weather-station'),
-            array($this, 'lws_display_density_unit_callback'), 'lws_display', 'lws_display_section',
-            array(__('Units system in which densities are expressed.', 'live-weather-station')));
-        register_setting('lws_display', 'lws_display_altitude_unit');
         add_settings_field('lws_display_rain_snow_unit', __('Rain & snow', 'live-weather-station'),
             array($this, 'lws_display_rain_snow_unit_callback'), 'lws_display', 'lws_display_section',
             array(__('Units system in which rain and snow quantities are expressed.', 'live-weather-station')));
         register_setting('lws_display', 'lws_display_rain_snow_unit');
+        add_settings_field('lws_display_density_other', __('Psychrometry', 'live-weather-station'),
+            array($this, 'lws_display_density_other_callback'), 'lws_display', 'lws_display_section',
+            array(__('Units system in which density, energy, etc. are expressed.', 'live-weather-station')));
+        register_setting('lws_display', 'lws_display_density_other');
         add_settings_field('lws_display_viewing_options', __('Computed values', 'live-weather-station'),
             array($this, 'lws_display_viewing_options_callback'), 'lws_display', 'lws_display_section',
             array(__('Check this if you want the controls and widgets display the computed values in addition to the measured data.', 'live-weather-station')));
@@ -367,17 +367,17 @@ class Admin {
     public function lws_system_log_retention_callback($args) {
         $nmbrs = array();
         $nmbrs[] = array('value' => get_option('live_weather_station_logger_rotate'),
-            'id' => 'lws_system_log_rotate',
-            'min' => 1000,
-            'max' => 100000,
-            'step' => 1000,
-            'unit' => __('events', 'live-weather-station'));
+                        'id' => 'lws_system_log_rotate',
+                        'min' => 1000,
+                        'max' => 100000,
+                        'step' => 1000,
+                        'unit' => __('events', 'live-weather-station'));
         $nmbrs[] = array('value' => get_option('live_weather_station_logger_retention'),
-            'id' => 'lws_system_log_retention',
-            'min' => 2,
-            'max' => 400,
-            'step' => 1,
-            'unit' => __('days', 'live-weather-station'));
+                        'id' => 'lws_system_log_retention',
+                        'min' => 2,
+                        'max' => 400,
+                        'step' => 1,
+                        'unit' => __('days', 'live-weather-station'));
         echo $this->field_double_input_number($nmbrs, $args[0]);
     }
 
@@ -467,7 +467,7 @@ class Admin {
         $cbxs[] = array('text' => __('I want to be a time sorcerer', 'live-weather-station'),
             'id' => 'lws_system_show_tasks',
             'checked' => (bool)get_option('live_weather_station_show_tasks'),
-            'description' => sprintf(__('Check this to get access to the scheduled tasks tab.', 'live-weather-station'), LWS_PLUGIN_NAME));
+            'description' => sprintf(__('Check this to get access to the scheduled tasks tab.', 'live-weather-station'), LWS_PLUGIN_NAME). InlineHelp::article(10));
         echo $this->field_multi_checkbox($cbxs);
     }
 
@@ -586,8 +586,8 @@ class Admin {
      * @param array $args An array of arguments which first element is the description to be displayed next to the control.
      * @since 3.0.0
      */
-    public function lws_display_density_unit_callback($args) {
-        echo $this->field_radio($this->get_density_unit_name_array(), get_option('live_weather_station_unit_density'), 'lws_display_density_unit', $args[0]);
+    public function lws_display_density_other_callback($args) {
+        echo $this->field_radio($this->get_density_unit_name_array(), get_option('live_weather_station_unit_psychrometry'), 'lws_display_density_other', $args[0]);
     }
 
     /**
@@ -692,7 +692,7 @@ class Admin {
                 update_option('live_weather_station_unit_wind_strength', (integer)$_POST['lws_display_wind_strength_unit']);
                 update_option('live_weather_station_unit_gas', (integer)$_POST['lws_display_gas_unit']);
                 update_option('live_weather_station_unit_distance', (integer)$_POST['lws_display_distance_unit']);
-                update_option('live_weather_station_unit_density', (integer)$_POST['lws_display_density_unit']);
+                update_option('live_weather_station_unit_psychrometry', (integer)$_POST['lws_display_density_other']);
                 update_option('live_weather_station_unit_altitude', (integer)$_POST['lws_display_altitude_unit']);
                 update_option('live_weather_station_unit_rain_snow', (integer)$_POST['lws_display_rain_snow_unit']);
                 update_option('live_weather_station_measure_only', (!array_key_exists('lws_display_viewing_options', $_POST) ? 1 : 0));
@@ -844,7 +844,7 @@ class Admin {
             if ($action == 'update') {
                 if ($result = $this->save_options($section)) {
                     $message = __('%s have been correctly updated.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . lcfirst($settings_string) . '</em>');
+                    $message = sprintf($message, '<em>' . ucfirst($settings_string) . '</em>');
                     if ($this->reload) {
                         $current_url = get_admin_page_url('lws-settings', null, $section);
                         $submessage = __('In order for the main menu to reflect the updated settings, please <a href="%s">refresh</a> the page', 'live-weather-station').'&hellip;';
@@ -856,7 +856,7 @@ class Admin {
                 }
                 else {
                     $message = __('%s have not been updated. Please try again.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . lcfirst($settings_string) . '</em>');
+                    $message = sprintf($message, '<em>' . ucfirst($settings_string) . '</em>');
                     add_settings_error('lws_nonce_error', 200, $message, 'error');
                     Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to correctly update settings for '. $section . ' category.');
                 }
@@ -864,13 +864,13 @@ class Admin {
             if ($action == 'reset') {
                 if ($result = $this->reset_to_defaults($section)) {
                     $message = __('%s have been correctly reset to defaults.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . lcfirst($settings_string) . '</em>');
+                    $message = sprintf($message, '<em>' . ucfirst($settings_string) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::info($this->service, null, null, null, null, null, 0, 'Settings for '. $section . ' category has been correctly reset to defaults by an admin.');
                 }
                 else {
                     $message = __('%s have not been reset to defaults. Please try again.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . lcfirst($settings_string) . '</em>');
+                    $message = sprintf($message, '<em>' . ucfirst($settings_string) . '</em>');
                     add_settings_error('lws_nonce_error', 200, $message, 'error');
                     Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to correctly reset to defaults settings for '. $section . ' category.');
                 }

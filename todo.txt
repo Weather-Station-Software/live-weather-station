@@ -2,22 +2,24 @@
 *  UPCOMING FEATURES  *
 ***********************
 
- * 3.x - Saturation vapor pressure & air density
+ * 3.x - Partial vapor pressure
+ * 3.x - Saturation vapor pressure (SVP)
+ * 3.x - Partial absolute humidity (Vapor mixing ratio)
+ * 3.x - Saturation absolute humidity (Saturation vapor mixing ratio)
+ * 3.x - Specific enthalpy
+ * 3.x - Air density
+ * 3.x - Equilibrium moisture content
  * 3.x - Wet bulb
+ * 3.x - Equivalent temperature
+ * 3.x - Potential temperature
+ * 3.x - Equivalent potential temperature
 
 
- * 3.x - Saturation absolute humidity ==> need param (g/m^3)
- * 3.x - Absolute humidity ==> need param (g/m^3)
+
+
 
 
 _
-
- * 3.x - Equilibrium moisture content
-
- * 3.x - Mass ratio
- * 3.x - Saturation mass ratio
- * 3.x - Equivalent temperature
- * 3.x - Potential temperature
 
  * 3.x - Sun (meridian) transit time
  * 3.x - Querying icons texts via shortcodes
@@ -28,6 +30,7 @@ _
  * 3.x - Solar measurements
  * 3.x - Soil & leaf measurements
  * 3.x - Visibility
+ * 4.x - Agricultural indexes (EMC for grains)
  * 4.x - 4 hours forecasting
  * 4.x - 5 days forecasting
  * 4.x - Buttons and config windows in TinyMCE
@@ -75,5 +78,18 @@ _
 * FIXES TO DO         *
 ***********************
 
-cron manager documentation
-link to blog (help on index, etc.)
+
+
+
+
+ * partial_vapor_pressure - Partial vapor pressure
+ * saturation_vapor_pressure - Saturation vapor pressure (SVP)
+ * partial_absolute_humidity - Partial absolute humidity (Vapor mixing ratio)
+ * saturation_absolute_humidity - Saturation absolute humidity (Saturation vapor mixing ratio)
+ * specific_enthalpy - Specific enthalpy
+ * air_density - Air density
+ * wood_emc - Equilibrium moisture content
+ * wet_bulb - Wet bulb
+ * equivalent_temperature - Equivalent temperature
+ * potential_temperature - Potential temperature
+ * equivalent_potential_temperature - Equivalent potential temperature

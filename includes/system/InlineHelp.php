@@ -268,7 +268,15 @@ class InlineHelp {
                 }
                 break;
             // todo 9 : CBI + others
-            default: return '';
+            case 10 :
+                $url = 'https://weather.station.software/en/scheduled-task-interface/';
+                if ($lang == 'fr') {
+                    $url = 'https://weather.station.software/fr/utiliser-linterface-des-taches-planifiees/';
+                }
+                break;
+            // todo 11 : analytics
+            default:
+                return '';
         }
         return '&nbsp;<a href="'. $url . '"' . $target . '><i class="fa fa-question-circle" aria-hidden="true"></i></a>';
     }

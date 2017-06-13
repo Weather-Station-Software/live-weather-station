@@ -38,6 +38,9 @@ trait Conversion {
      * @access   protected
      */
     public static function get_date_from_utc($ts, $tz='', $format='-') {
+        if ($ts == -1) {
+            return __('N/A', 'live-weather-station');
+        }
         if ($format == '-') {
             $format = get_option('date_format');
         }
@@ -85,6 +88,9 @@ trait Conversion {
      * @since 1.0.0
      */
     public static function get_time_from_utc($ts, $tz='', $format='-') {
+        if ($ts == -1) {
+            return __('N/A', 'live-weather-station');
+        }
         if ($format == '-') {
             $format = get_option('time_format');
         }
@@ -131,6 +137,9 @@ trait Conversion {
      * @access   protected
      */
     public static function get_time_diff_from_utc($from) {
+        if ($from == -1) {
+            return __('N/A', 'live-weather-station');
+        }
         if ($from < time()) {
             return sprintf( __('%s ago', 'live-weather-station'), human_time_diff($from));
         }
@@ -283,13 +292,12 @@ trait Conversion {
         $intervals = array(
             array(60, __('second', 'live-weather-station'), __('seconds', 'live-weather-station')),
             array(60, __('minute', 'live-weather-station'), __('minutes', 'live-weather-station')),
-            array(100000, __('hour', 'live-weather-station'), __('hours', 'live-weather-station')),
+            array(100000, __('hour', 'live-weather-station'), __('hours', 'live-weather-station'))
         );
         $value = array();
-        $cage = 1;
         foreach ($intervals as $interval) {
             $val = $age % $interval[0];
-            $cage = $cage * $interval[0];
+            $age = round(($age-$val)/$interval[0], 0);
             if ($val > 0) {
                 if ($val == 1) {
                     $value[] = $val . ' ' . $interval[1];
@@ -298,7 +306,6 @@ trait Conversion {
                     $value[] = $val . ' ' . $interval[2];
                 }
             }
-            $age = round($age/$cage, 0);
         }
         return implode(', ', array_reverse($value));
     }
@@ -313,6 +320,9 @@ trait Conversion {
      * @since 3.1.0
      */
     public function is_it_night($sunrise_a, $sunset_a, $time=null) {
+        if ($sunrise_a == -1 || $sunset_a == -1) {
+            return false;
+        }
         if (is_null($time)) {
             $time = time();
         }
@@ -336,6 +346,9 @@ trait Conversion {
      * @since 3.1.0
      */
     public function is_it_dawn($sunrise, $sunrise_a, $sunset_a, $time=null) {
+        if ($sunrise_a == -1 || $sunset_a == -1 || $sunrise == -1) {
+            return false;
+        }
         if (is_null($time)) {
             $time = time();
         }
@@ -356,6 +369,9 @@ trait Conversion {
      * @since 3.1.0
      */
     public function is_it_dusk($sunset, $sunrise_a, $sunset_a, $time=null) {
+        if ($sunrise_a == -1 || $sunset_a == -1 || $sunset == -1) {
+            return false;
+        }
         if (is_null($time)) {
             $time = time();
         }
@@ -375,6 +391,9 @@ trait Conversion {
      * @since 3.1.0
      */
     public function dawn_percentage($sunrise, $sunrise_a, $time=null) {
+        if ($sunrise_a == -1 || $sunrise == -1) {
+            return 0;
+        }
         if (is_null($time)) {
             $time = time();
         }
@@ -392,6 +411,9 @@ trait Conversion {
      * @since 3.1.0
      */
     public function dusk_percentage($sunset, $sunset_a, $time=null) {
+        if ($sunset == -1 || $sunset_a == -1) {
+            return 0;
+        }
         if (is_null($time)) {
             $time = time();
         }

@@ -206,14 +206,8 @@ trait Description {
             case 'noise':
                 $result = ($abbr ? __('Noise', 'live-weather-station') : __('Noise level', 'live-weather-station'));
                 break;
-            case 'air_density':
-                $result = ($abbr ? __('Air density', 'live-weather-station') : __('Air density', 'live-weather-station'));
-                break;
             case 'pressure':
                 $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Atmospheric pressure', 'live-weather-station'));
-                break;
-            case 'vapor_pressure':
-                $result = ($abbr ? __('Vapor pressure', 'live-weather-station') : __('Saturation vapor pressure', 'live-weather-station'));
                 break;
             case 'pressure_min':
                 $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Lowest atmospheric pressure of the day', 'live-weather-station'));
@@ -223,9 +217,6 @@ trait Description {
                 break;
             case 'pressure_trend':
                 $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Pressure trend', 'live-weather-station'));
-                break;
-            case 'wet_bulb':
-                $result = ($abbr ? __('Wet bulb', 'live-weather-station') : __('Wet bulb temperature', 'live-weather-station'));
                 break;
             case 'temperature':
                 $result = ($abbr ? __('Temperature', 'live-weather-station') : __('Temperature', 'live-weather-station'));
@@ -456,6 +447,47 @@ trait Description {
                 break;
             case 'last_upgrade':
                 $result = ($abbr ? __('Upgrade', 'live-weather-station') : __('Last firmware upgrade', 'live-weather-station'));
+                break;
+            // PSYCHROMETRY
+            case 'air_density':
+                $result = ($abbr ? __('Air density', 'live-weather-station') : __('Air density', 'live-weather-station'));
+                break;
+            case 'wet_bulb':
+                $result = ($abbr ? __('Wet bulb', 'live-weather-station') : __('Wet bulb temperature', 'live-weather-station'));
+                break;
+            case 'saturation_vapor_pressure':
+                $result = ($abbr ? __('sVP', 'live-weather-station') : __('Saturation vapor pressure', 'live-weather-station'));
+                break;
+            case 'partial_vapor_pressure':
+                $result = ($abbr ? __('pVP', 'live-weather-station') : __('Partial vapor pressure', 'live-weather-station'));
+                break;
+            case 'vapor_pressure':
+                $result = ($abbr ? __('VP', 'live-weather-station') : __('Vapor pressure', 'live-weather-station'));
+                break;
+            case 'saturation_absolute_humidity':
+                $result = ($abbr ? __('Sat. abs. humidity', 'live-weather-station') : __('Saturation absolute humidity', 'live-weather-station'));
+                break;
+            case 'partial_absolute_humidity':
+                $result = ($abbr ? __('Part. abs. humidity', 'live-weather-station') : __('Partial absolute humidity', 'live-weather-station'));
+                break;
+            case 'absolute_humidity':
+                $result = ($abbr ? __('Abs. humidity', 'live-weather-station') : __('Absolute humidity', 'live-weather-station'));
+                break;
+            case 'specific_enthalpy':
+                $result = ($abbr ? __('Enthalpy', 'live-weather-station') : __('Specific enthalpy', 'live-weather-station'));
+                break;
+            case 'wood_emc':
+            case 'emc':
+                $result = ($abbr ? __('EMC', 'live-weather-station') : __('Equilibrium moisture content', 'live-weather-station'));
+                break;
+            case 'equivalent_temperature':
+                $result = ($abbr ? __('Eq. temperature', 'live-weather-station') : __('Equivalent temperature', 'live-weather-station'));
+                break;
+            case 'potential_temperature':
+                $result = ($abbr ? __('Pot. temperature', 'live-weather-station') : __('Potential temperature', 'live-weather-station'));
+                break;
+            case 'equivalent_potential_temperature':
+                $result = ($abbr ? __('Eq. pot. temperature', 'live-weather-station') : __('Equivalent potential temperature', 'live-weather-station'));
                 break;
             default:
                 $result = ($abbr ? '?' : __('Unknown measurement', 'live-weather-station'));

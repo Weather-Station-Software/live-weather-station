@@ -61,6 +61,20 @@ trait Conversion {
     }
 
     /**
+     * Get the volume mixing ratio from mass mixing ratio.
+     *
+     * @param float $mmr The mass mixing ratio value.
+     * @param float $density The density/air of the converted gas.
+     * @return float The volume mixing ratio value.
+     * @since 3.3.0
+     */
+    protected function convert_from_mmr_to_vmr($mmr, $density)
+    {
+        $result = $mmr * $density;
+        return $result;
+    }
+
+    /**
      * Get the mass concentration from volume mixing ratio.
      *
      * @param float $vmr The volume mixing ratio value.
@@ -76,6 +90,21 @@ trait Conversion {
     }
 
     /**
+     * Get the volume mixing ratio from mass concentration.
+     *
+     * @param float $mc The mass concentration value.
+     * @param float $molecular_mass The molecular mass of the converted gas.
+     * @param float $molar_volume Optional. The molar volume of the air.
+     * @return float The volume mixing ratio value.
+     * @since 3.3.0
+     */
+    protected function convert_from_mass_concentration_to_vmr($mc, $molecular_mass, $molar_volume=24.45 )
+    {
+        $result = ($mc * $molar_volume) / $molecular_mass ;
+        return $result;
+    }
+
+    /**
      * Get the partial pressure from volume mixing ratio.
      *
      * @param float $vmr The volume mixing ratio value.
@@ -86,6 +115,20 @@ trait Conversion {
     protected function convert_from_vmr_to_partial_pressure($vmr, $pressure=100000.0)
     {
         $result = $vmr * $pressure / 1000000;
+        return $result;
+    }
+
+    /**
+     * Get the volume mixing ratio from partial pressure.
+     *
+     * @param float $p The partial pressure value.
+     * @param float $pressure Optional. The total gas pressure (in Pa).
+     * @return float The volume mixing ratio value.
+     * @since 3.3.0
+     */
+    protected function convert_from_partial_pressure_to_vmr($p, $pressure=100000.0)
+    {
+        $result = $p * 1000000 / $pressure;
         return $result;
     }
 
@@ -119,6 +162,32 @@ trait Conversion {
     }
 
     /**
+     * Get the co2 expressed in standard unit.
+     *
+     * @param mixed $value The value of the co2.
+     * @param integer $id Optional. The unit id.
+     * @return string The co2 expressed in standard unit.
+     * @since 3.3.0
+     */
+    protected function get_reverse_co2($value, $id=0)
+    {
+        switch ($id) {
+            case 1:
+                $result = $this->convert_from_mmr_to_vmr($value, 1.53);
+                break;
+            case 2:
+                $result = $this->convert_from_mass_concentration_to_vmr($value, 44.01);
+                break;
+            case 3:
+                $result = $this->convert_from_partial_pressure_to_vmr($value, 101325);
+                break;
+            default:
+                $result = $value;
+        }
+        return round($result);
+    }
+
+    /**
      * Get the CO expressed in specific unit.
      *
      * @param mixed $value The value of the CO.
@@ -141,11 +210,34 @@ trait Conversion {
                 break;
             case 3:
                 $result = $this->convert_from_vmr_to_partial_pressure($value);
-                //$format = '%.1F';
-                //$prec = 1;
                 break;
         }
         return sprintf($format, round($result, $prec));
+    }
+
+    /**
+     * Get the CO expressed in standard unit.
+     *
+     * @param mixed $value The value of the CO.
+     * @param integer $id Optional. The unit id.
+     * @return string The CO expressed in standard unit.
+     * @since 3.3.0
+     */
+    protected function get_reverse_co($value, $id=0)
+    {
+        $result = $value;
+        switch ($id) {
+            case 1:
+                $result = $this->convert_from_mmr_to_vmr($value, 0.97);
+                break;
+            case 2:
+                $result = $this->convert_from_mass_concentration_to_vmr($value, 28.01);
+                break;
+            case 3:
+                $result = $this->convert_from_partial_pressure_to_vmr($value);
+                break;
+        }
+        return $result / 1000;
     }
 
     /**
@@ -171,11 +263,34 @@ trait Conversion {
                 break;
             case 3:
                 $result = $this->convert_from_vmr_to_partial_pressure($value);
-                //$format = '%.1F';
-                //$prec = 1;
                 break;
         }
         return sprintf($format, round($result, $prec));
+    }
+
+    /**
+     * Get the SO2 expressed in standard unit.
+     *
+     * @param mixed $value The value of the SO2.
+     * @param integer $id Optional. The unit id.
+     * @return string The SO2 expressed in standard unit.
+     * @since 3.3.0
+     */
+    protected function get_reverse_so2($value, $id=0)
+    {
+        $result = $value;
+        switch ($id) {
+            case 1:
+                $result = $this->convert_from_mmr_to_vmr($value, 2.22);
+                break;
+            case 2:
+                $result = $this->convert_from_mass_concentration_to_vmr($value, 64.06);
+                break;
+            case 3:
+                $result = $this->convert_from_partial_pressure_to_vmr($value);
+                break;
+        }
+        return $result / 1000;
     }
 
     /**
@@ -201,20 +316,42 @@ trait Conversion {
                 break;
             case 3:
                 $result = $this->convert_from_vmr_to_partial_pressure($value);
-                //$format = '%.1F';
-                //$prec = 1;
                 break;
         }
         return sprintf($format, round($result, $prec));
     }
 
     /**
+     * Get the NO2 expressed in standard unit.
+     *
+     * @param mixed $value The value of the NO2.
+     * @param integer $id Optional. The unit id.
+     * @return string The NO2 expressed in standard unit.
+     * @since 3.3.0
+     */
+    protected function get_reverse_no2($value, $id=0)
+    {
+        $result = $value;
+        switch ($id) {
+            case 1:
+                $result = $this->convert_from_mmr_to_vmr($value, 1.88);
+                break;
+            case 2:
+                $result = $this->convert_from_mass_concentration_to_vmr($value, 46.01);
+                break;
+            case 3:
+                $result = $this->convert_from_partial_pressure_to_vmr($value);
+                break;
+        }
+        return $result / 1000;
+    }
+
+    /**
      * Get the o3 expressed in its unique unit.
      *
-     * @param   mixed   $value  The value of the co2.
-     * @return  string  The o3 expressed in its unique unit.
-     * @since    2.7.0
-     * @access   protected
+     * @param mixed $value  The value of the co2.
+     * @return string The o3 expressed in its unique unit.
+     * @since 2.7.0
      */
     protected function get_o3($value)
     {
@@ -247,6 +384,18 @@ trait Conversion {
     {
         $result = $value;
         return sprintf('%d', round($result, 0));
+    }
+
+    /**
+     * Get the emc expressed in its unique unit.
+     *
+     * @param mixed $value The value of the emc.
+     * @return string The emc expressed in its unique unit.
+     * @since 3.3.0
+     */
+    protected function get_emc($value){
+        $result = $value;
+        return sprintf('%.1F', round($result, 1));
     }
 
     /**
@@ -512,6 +661,67 @@ trait Conversion {
     }
 
     /**
+     * Get the density expressed in standard unit.
+     *
+     * @param mixed $value The value of the temperature.
+     * @param integer $id Optional. The unit id.
+     * @return string The density expressed in standard unit.
+     * @since 3.3.0
+     */
+    protected function get_reverse_density($value, $id = 0)
+    {
+        $result = $value;
+        switch ($id) {
+            case 1:
+                $result = $value * 16.01846;
+                break;
+        }
+        return sprintf('%.4F', round($result, 4));
+    }
+
+    /**
+     * Get the enthalpy expressed in specific unit.
+     *
+     * @param mixed $value The value of the enthalpy.
+     * @param integer $id Optional. The unit id.
+     * @return string The enthalpy expressed in specific unit.
+     * @since 3.0.0
+     */
+    protected function get_enthalpy($value, $id = 0)
+    {
+        $result = $value / 1000;
+        $format = '%.2F';
+        $prec = 2;
+        switch ($id) {
+            case 1:
+                $format = '%.2F';
+                $prec = 2;
+                $result = $result / 2.326;
+                break;
+        }
+        return sprintf($format, round($result, $prec));
+    }
+
+    /**
+     * Get the enthalpy expressed in standard unit.
+     *
+     * @param mixed $value The value of the enthalpy.
+     * @param integer $id Optional. The unit id.
+     * @return string The enthalpy expressed in standard unit.
+     * @since 3.3.0
+     */
+    protected function get_reverse_enthalpy($value, $id = 0)
+    {
+        $result = $value;
+        switch ($id) {
+            case 1:
+                $result = $result * 2.326;
+                break;
+        }
+        return sprintf('%.2F', round($result * 1000, 2));
+    }
+
+    /**
      * Get the temperature expressed in specific unit.
      *
      * @param   mixed   $value  The value of the temperature.
@@ -559,7 +769,7 @@ trait Conversion {
     /**
      * Get the pressure expressed in specific unit.
      *
-     * @param   mixed   $value  The value of the pressure.
+     * @param   mixed   $value  The value of the pressure (in hPa).
      * @param   integer $id     Optional. The unit id.
      * @return  string  The pressure expressed in specific unit.
      * @since    1.0.0
@@ -588,12 +798,106 @@ trait Conversion {
     }
 
     /**
+     * Get the pressure expressed in specific unit.
+     *
+     * @param mixed $value The value of the pressure (in Pa).
+     * @param integer $id Optional. The unit id.
+     * @return string The pressure expressed in specific unit.
+     * @since 3.3.0
+     */
+    protected function get_precise_pressure($value, $id = 0)
+    {
+        $result = $value;
+        $format = '%d';
+        $prec = 0;
+        switch ($id) {
+            case 1:  // P(inHg) = P(Pa) / 3386.39
+                $result = $result / 3386.39;
+                $format = '%.2F';
+                $prec = 2;
+                break;
+            case 2:  // P(mmHg) = PhPa) / 133.322368
+                $result = $result / 133.322368;
+                break;
+            case 3:
+                $format = '%.1F';
+                $prec = 1;
+                break;
+        }
+        return sprintf($format, round($result, $prec));
+    }
+
+    /**
      * Get the pressure expressed in standard unit.
      *
      * @param mixed $value The value of the pressure.
      * @param integer $id The unit id.
-     * @return  string  The pressure expressed in standard unit.
-     * @since    3.0.0
+     * @return string The pressure expressed in standard unit.
+     * @since 3.3.0
+     */
+    protected function get_reverse_precise_pressure($value, $id)
+    {
+        $result = $value;
+        switch ($id) {
+            case 1:  // P(hPa) = P(inHg) * 33.8639
+                $result = $result * 3386.39;
+                break;
+            case 2:  // P(hPa) = P(mmHg) * 1.33322368
+                $result = $result * 133.322368;
+                break;
+        }
+        return sprintf('%.1F', round($result, 1));
+    }
+
+    /**
+     * Get the absolute humidity expressed in specific unit.
+     *
+     * @param mixed $value The value of the absolute humidity (in kg/kg).
+     * @param integer $id Optional. The unit id.
+     * @return string The absolute humidity expressed in specific unit.
+     * @since 3.3.0
+     */
+    protected function get_absolute_humidity($value, $id = 0)
+    {
+        $result = $value * 1000;
+        $format = '%.2F';
+        $prec = 2;
+        switch ($id) {
+            case 1:
+                $result = $result / 0.1429;
+                $format = '%.1F';
+                $prec = 1;
+                break;
+        }
+        return sprintf($format, round($result, $prec));
+    }
+
+    /**
+     * Get the absolute humidity expressed in standard unit.
+     *
+     * @param mixed $value The value of the absolute humidity (in kg/kg).
+     * @param integer $id Optional. The unit id.
+     * @return string The absolute humidity expressed in standard unit.
+     * @since 3.3.0
+     */
+    protected function get_reverse_absolute_humidity($value, $id = 0)
+    {
+        $result = $value;
+        switch ($id) {
+            case 1:
+                $result = $result * 0.1429;
+                break;
+        }
+        return $result / 1000;
+    }
+
+    /**
+     * Get the pressure expressed in standard unit.
+     *
+     * @param mixed $value The value of the pressure.
+     * @param integer $id The unit id.
+     * @return string The pressure expressed in standard unit.
+     * @since 3.0.0
      */
     protected function get_reverse_pressure($value, $id)
     {
@@ -1018,7 +1322,12 @@ trait Conversion {
                 $result = $result / 1.609;
                 break;
         }
-        return sprintf('%.1F', round($result, 1));
+        if ($result < 10) {
+            return sprintf('%.1F', round($result, 1));
+        }
+        else {
+            return round($result);
+        }
     }
 
     /**
@@ -1066,15 +1375,15 @@ trait Conversion {
             case 'cloudiness':
                 $result = $this->get_cloudiness($value);
                 break;
-            /*case 'co2':
-                $result = $this->get_reverse_co2($value);
+            case 'co2':
+                $result = $this->get_reverse_co2($value, get_option('live_weather_station_unit_gas'));
                 break;
             case 'o3':
                 $result = $this->get_reverse_o3($value);
                 break;
             case 'co':
-                $result = $this->get_reverse_co($value, get_option('live_weather_station_unit_co'));
-                break;*/
+                $result = $this->get_reverse_co($value, get_option('live_weather_station_unit_gas'));
+                break;
             case 'noise':
                 $result = $this->get_reverse_noise($value);
                 break;
@@ -1104,6 +1413,18 @@ trait Conversion {
             case 'windstrength_hour_max':
             case 'wind_ref':
                 $result = $this->get_reverse_wind_speed($value, get_option('live_weather_station_unit_wind_strength'));
+                break;
+            case 'air_density':
+                $result = $this->get_reverse_density($value, get_option('live_weather_station_unit_psychrometry'));
+                break;
+            case 'specific_enthalpy':
+                $result = $this->get_reverse_enthalpy($value, get_option('live_weather_station_unit_psychrometry'));
+                break;
+            case 'vapor_pressure':
+                $result = $this->get_reverse_precise_pressure($value, get_option('live_weather_station_unit_psychrometry'));
+                break;
+            case 'absolute_humidity':
+                $result = $this->get_reverse_absolute_humidity($value, get_option('live_weather_station_unit_psychrometry'));
                 break;
         }
         return $result;

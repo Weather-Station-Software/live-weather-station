@@ -11,51 +11,19 @@ namespace WeatherStation\SDK\Generic\Plugin\Common;
  * @since 3.1.0
  */
 trait Utilities {
-    
-    
 
 
     /**
-     * Computes the saturation absolute humidity.
-     *
-     * @param integer $t Temperature in celcius.
-     * @param integer $p Pressure in pascal.
-     * @return float The computed saturation absolute humidity (in g/m^3).
-     * @since 3.3.0
-     */
-    protected function compute_saturation_absolute_humidity($t, $p) {
-        return round(18.01528 * 1000 * $p / (8.3144621 * ($t+273.15)), 3);
-    }
-
-    /**
-     * Computes the absolute humidity.
-     *
-     * @param integer $t Temperature in celcius.
-     * @param integer $p Pressure in pascal.
-     * @param integer $h Humidity in percent.
-     * @return float The computed absolute humidity (in g/m^3).
-     * @since 3.3.0
-     */
-    protected function compute_absolute_humidity($t, $p, $h) {
-        return round(18.01528 * 1000 * $p * ($h / 100) / (8.3144621 * ($t+273.15)), 3);
-    }
-
-    /**
-     * Computes the equilibrium moisture content.
+     * Computes the vapor pressure.
      *
      * @param integer $t Temperature in celcius.
      * @param integer $h Humidity in percent.
-     * @return float The computed equilibrium moisture content.
+     * @return float The computed partial vapor pressure (in Pascal).
      * @since 3.3.0
      */
-    protected function compute_emc($t, $h) {
-        /*$t = 1.8 * $t + 32;
-        $h = $h / 100;
-        $w = ;
-        $k = ;
-        $k1 = ;
-        $k2 = ;*/
-        return 0;//round((0.2831 * pow ($h, 0.2735) * $t) + (0.0003018 * pow($h, 2)) + (0.01289 * $h) - 4.0962, 1);
+    protected function compute_partial_vapor_pressure($t, $h) {
+        $p = $this->compute_saturation_vapor_pressure($t);
+        return round($h * $p / 100, 0);
     }
 
     /**
@@ -66,7 +34,54 @@ trait Utilities {
      * @since 3.3.0
      */
     protected function compute_saturation_vapor_pressure($t) {
-        return round(611.213 * exp((17.5043 * $t) / (241.2 + $t)), 0);
+        if ($t < 0) {
+            $result = pow(10, 2.7877 + ((9.756 * $t) / (272.7 + $t)));
+        }
+        else {
+            $result = pow(10, 2.7877 + ((7.625 * $t) / (241.6 + $t)));
+        }
+        return round($result);
+    }
+
+    /**
+     * Computes the absolute humidity.
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $p Pressure in pascal.
+     * @param integer $h Humidity in percent.
+     * @return float The computed absolute humidity (in kg/kg).
+     * @since 3.3.0
+     */
+    protected function compute_partial_absolute_humidity($t, $p, $h) {
+        $pvap = $this->compute_partial_vapor_pressure($t, $h);
+        return round(0.622 * $pvap / ($p - $pvap), 5);
+    }
+
+    /**
+     * Computes the saturation absolute humidity.
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $p Pressure in pascal.
+     * @return float The computed saturation absolute humidity (in kg/kg).
+     * @since 3.3.0
+     */
+    protected function compute_saturation_absolute_humidity($t, $p) {
+        $pvap = $this->compute_saturation_vapor_pressure($t);
+        return round(0.622 * $pvap / ($p - $pvap), 5);
+    }
+
+    /**
+     * Computes the specific enthalpy.
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $p Pressure in pascal.
+     * @param integer $h Humidity in percent.
+     * @return float The computed specific enthalpy (in J/kg).
+     * @since 3.3.0
+     */
+    protected function compute_specific_enthalpy($t, $p, $h) {
+        $x = $this->compute_partial_absolute_humidity($t, $p, $h);
+        return round(((1.006 * $t) + ($x * (2501 + (1.83 * $t)))) * 1000);
     }
 
     /**
@@ -81,8 +96,29 @@ trait Utilities {
     protected function compute_air_density($t, $p, $h) {
         $Ps = $this->compute_saturation_vapor_pressure($t) / $p;
         $Rh = 287.06 / (1 - (($h / 100 ) * $Ps * (1 - (287.06 / 461))));
-        return round($p / ($Rh * ($t+273.15)), 4);
-        //round((1 / (287.06 * ($t+273.15))) * ($p - (230.616 * $h * exp((17.5043 * $t) / (241.2 + $t)))), 4);
+        return round($p / ($Rh * ($t+273.15)), 5);
+    }
+
+    /**
+     * Computes the equilibrium moisture content (for wood).
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $h Humidity in percent.
+     * @return float The computed equilibrium moisture content.
+     * @since 3.3.0
+     */
+    protected function compute_emc($t, $h) {
+        $t = 1.8 * $t + 32;
+        $h = $h / 100;
+        $W = 330 + (0.452 * $t) + (0.00415 * pow($t, 2));
+        $k = 0.791 + (4.63 * pow (10, -4) * $t) - (8.44 * pow (10, -7) * pow($t, 2));
+        $k1 = 6.34 + (7.75 * pow (10, -4) * $t) - (9.35 * pow (10, -5) * pow($t, 2));
+        $k2 = 1.09 + (2.84 * pow (10, -4) * $t) - (9.04 * pow (10, -5) * pow($t, 2));
+        $a = $k * $h;
+        $b = 1 - $a;
+        $c = ($k1 * $k * $h) + (2 * $k1 * $k2 * pow($k2, 2) * pow($h, 2));
+        $d = 1 + ($k1 * $k * $h) + ($k1 * $k2 * pow($k2, 2) * pow($h, 2));
+        return round((1800 / $W) * (($a / $b) + ($c / $d)), 1);
     }
 
     /**
@@ -90,11 +126,51 @@ trait Utilities {
      *
      * @param integer $t Temperature in celcius.
      * @param integer $h Humidity in percent.
-     * @return float The computed wet bulb temperature.
+     * @return float The computed wet bulb temperature (in celcius).
      * @since 3.3.0
      */
     protected function compute_wet_bulb($t, $h) {
         return round((0.2831 * pow ($h, 0.2735) * $t) + (0.0003018 * pow($h, 2)) + (0.01289 * $h) - 4.0962, 1);
+    }
+
+    /**
+     * Computes the potential temperature.
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $p Pressure in pascal.
+     * @return float The computed potential temperature (in celcius).
+     * @since 3.3.0
+     */
+    protected function compute_potential_temperature($t, $p) {
+        return round( $t * pow((100000 / $p), 0.286), 1);
+    }
+
+    /**
+     * Computes the equivalent temperature.
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $p Pressure in pascal.
+     * @return float The computed equivalent temperature (in celcius).
+     * @since 3.3.0
+     */
+    protected function compute_equivalent_temperature($t, $p) {
+        $r = $this->compute_saturation_absolute_humidity($t, $p);
+        $lc = 2264.76 / 1004;
+        return round( $t + ($lc * $r), 1);
+    }
+
+    /**
+     * Computes the equivalent potential temperature.
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $p Pressure in pascal.
+     * @return float The computed equivalent potential temperature (in celcius).
+     * @since 3.3.0
+     */
+    protected function compute_equivalent_potential_temperature($t, $p) {
+        $te = $this->compute_equivalent_temperature($t, $p);
+        $tp = $this->compute_potential_temperature($t, $p);
+        return round( $te * $tp / $t, 1);
     }
 
     /**

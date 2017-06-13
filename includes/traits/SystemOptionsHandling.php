@@ -65,7 +65,7 @@ trait Handling {
     private static $live_weather_station_unit_wind_strength = 0;
     private static $live_weather_station_unit_altitude = 0;     
     private static $live_weather_station_unit_distance = 0;
-    private static $live_weather_station_unit_density = 0;
+    private static $live_weather_station_unit_psychrometry = 0;
     private static $live_weather_station_unit_rain_snow = 0;
     private static $live_weather_station_unit_gas = 0;
     private static $live_weather_station_measure_only = 0;
@@ -252,7 +252,7 @@ trait Handling {
                                                 'max_boundary' => 1000),
             'co' => array (                     'min_value' => 0.1,
                                                 'max_value' => 0.2,
-                                                'min_alarm' => 0,
+                                                'min_alarm' => 0.11,
                                                 'max_alarm' => 0.18,
                                                 'min_boundary' => 0,
                                                 'max_boundary' => 0.5),
@@ -272,8 +272,38 @@ trait Handling {
                                                 'max_value' => 120,
                                                 'min_alarm' => -20,
                                                 'max_alarm' => 75,
+                                                'min_boundary' => -30,
+                                                'max_boundary' => 160),
+            'emc' => array (                    'min_value' => 0,
+                                                'max_value' => 30,
+                                                'min_alarm' => 5,
+                                                'max_alarm' => 20,
                                                 'min_boundary' => 0,
-                                                'max_boundary' => 100),
+                                                'max_boundary' => 30),
+            'air_density' => array (            'min_value' => 1,
+                                                'max_value' => 2,
+                                                'min_alarm' => 1.2,
+                                                'max_alarm' => 1.8,
+                                                'min_boundary' => 1,
+                                                'max_boundary' => 2),
+            'specific_enthalpy' => array (      'min_value' => 5000,
+                                                'max_value' => 100000,
+                                                'min_alarm' => 5000,
+                                                'max_alarm' => 100000,
+                                                'min_boundary' => 5000,
+                                                'max_boundary' => 100000),
+            'vapor_pressure' => array (         'min_value' => 500,
+                                                'max_value' => 10000,
+                                                'min_alarm' => 500,
+                                                'max_alarm' => 10000,
+                                                'min_boundary' => 500,
+                                                'max_boundary' => 10000),
+            'absolute_humidity' => array (      'min_value' => 0.005,
+                                                'max_value' => 0.05,
+                                                'min_alarm' => 0.005,
+                                                'max_alarm' => 0.05,
+                                                'min_boundary' => 0.005,
+                                                'max_boundary' => 0.05),
         );
     }
 
@@ -327,7 +357,7 @@ trait Handling {
         delete_option('live_weather_station_unit_wind_strength');
         delete_option('live_weather_station_unit_altitude');
         delete_option('live_weather_station_unit_distance');
-        delete_option('live_weather_station_unit_density');
+        delete_option('live_weather_station_unit_psychrometry');
         delete_option('live_weather_station_unit_rain_snow');
         delete_option('live_weather_station_unit_gas');
         delete_option('live_weather_station_measure_only');
@@ -477,7 +507,7 @@ trait Handling {
         update_option('live_weather_station_unit_wind_strength', self::$live_weather_station_unit_wind_strength);
         update_option('live_weather_station_unit_altitude', self::$live_weather_station_unit_altitude);
         update_option('live_weather_station_unit_distance', self::$live_weather_station_unit_distance);
-        update_option('live_weather_station_unit_density', self::$live_weather_station_unit_density);
+        update_option('live_weather_station_unit_psychrometry', self::$live_weather_station_unit_psychrometry);
         update_option('live_weather_station_unit_rain_snow', self::$live_weather_station_unit_rain_snow);
         update_option('live_weather_station_advanced_mode', (self::$live_weather_station_advanced_mode ? 1 : 0));
         update_option('live_weather_station_partial_translation', (self::$live_weather_station_partial_translation ? 1 : 0));
@@ -497,7 +527,7 @@ trait Handling {
         update_option('live_weather_station_unit_wind_strength', self::$live_weather_station_unit_wind_strength);
         update_option('live_weather_station_unit_altitude', self::$live_weather_station_unit_altitude);
         update_option('live_weather_station_unit_distance', self::$live_weather_station_unit_distance);
-        update_option('live_weather_station_unit_density', self::$live_weather_station_unit_density);
+        update_option('live_weather_station_unit_psychrometry', self::$live_weather_station_unit_psychrometry);
         update_option('live_weather_station_unit_rain_snow', self::$live_weather_station_unit_rain_snow);
         self::init_display_options();
         if (!$restrict) {
@@ -518,7 +548,7 @@ trait Handling {
         update_option('live_weather_station_unit_wind_strength', 1);
         update_option('live_weather_station_unit_altitude', 1);
         update_option('live_weather_station_unit_distance', 1);
-        update_option('live_weather_station_unit_density', 1);
+        update_option('live_weather_station_unit_psychrometry', 1);
         update_option('live_weather_station_unit_rain_snow', 1);
         self::init_display_options();
         if (!$restrict) {
@@ -685,7 +715,7 @@ trait Handling {
             self::verify_option_integer('live_weather_station_unit_wind_strength', self::$live_weather_station_unit_wind_strength);
             self::verify_option_integer('live_weather_station_unit_altitude', self::$live_weather_station_unit_altitude);
             self::verify_option_integer('live_weather_station_unit_distance', self::$live_weather_station_unit_distance);
-            self::verify_option_integer('live_weather_station_unit_density', self::$live_weather_station_unit_density);
+            self::verify_option_integer('live_weather_station_unit_psychrometry', self::$live_weather_station_unit_psychrometry);
             self::verify_option_integer('live_weather_station_unit_rain_snow', self::$live_weather_station_unit_rain_snow);
             self::verify_option_integer('live_weather_station_unit_gas', self::$live_weather_station_unit_gas);
             self::verify_option_integer('live_weather_station_measure_only', self::$live_weather_station_measure_only);

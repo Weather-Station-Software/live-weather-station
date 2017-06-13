@@ -30,6 +30,78 @@ trait Description {
     }
 
     /**
+     * Get available enthalpy units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.3.0
+     */
+    protected function get_enthalpy_unit($id = 0) {
+        switch ($id) {
+            case 1:
+                $result =  __( 'btu/lb' , 'live-weather-station');
+                break;
+            default:
+                $result = __( 'kJ/kg' , 'live-weather-station');
+        }
+        return $result;
+    }
+
+    /**
+     * Get available enthalpy units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.3.0
+     */
+    protected function get_enthalpy_unit_full($id = 0) {
+        switch ($id) {
+            case 1:
+                $result =  __( 'british thermal unit per pound' , 'live-weather-station');
+                break;
+            default:
+                $result = __( 'kilojoule per kilogram' , 'live-weather-station');
+        }
+        return $result;
+    }
+
+    /**
+     * Get available enthalpy units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.3.0
+     */
+    protected function get_absolute_humidity_unit($id = 0) {
+        switch ($id) {
+            case 1:
+                $result =  __( 'grain/lb' , 'live-weather-station');
+                break;
+            default:
+                $result = __( 'g/kg' , 'live-weather-station');
+        }
+        return $result;
+    }
+
+    /**
+     * Get available enthalpy full units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.3.0
+     */
+    protected function get_absolute_humidity_unit_full($id = 0) {
+        switch ($id) {
+            case 1:
+                $result =  __( 'grain of water vapor per pound of dry air' , 'live-weather-station');
+                break;
+            default:
+                $result = __( 'gram of water vapor per kilogram of dry air' , 'live-weather-station');
+        }
+        return $result;
+    }
+
+    /**
      * Get available density units.
      *
      * @param integer $id Optional. The unit id.
@@ -60,6 +132,17 @@ trait Description {
     }
 
     /**
+     * Get available emc units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.3.0
+     */
+    protected function get_emc_unit($id = 0) {
+        return __('%' , 'live-weather-station');
+    }
+
+    /**
      * Get available humidity full units.
      *
      * @param   integer $id     Optional. The unit id.
@@ -68,6 +151,17 @@ trait Description {
      * @access   protected
      */
     protected function get_humidity_unit_full( $id = 0 ) {
+        return __( 'percent' , 'live-weather-station');
+    }
+
+    /**
+     * Get available emc full units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.3.0
+     */
+    protected function get_emc_unit_full( $id = 0 ) {
         return __( 'percent' , 'live-weather-station');
     }
 
@@ -665,6 +759,48 @@ trait Description {
     }
 
     /**
+     * Get available pressure units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.3.0
+     */
+    protected function get_precise_pressure_unit($id = 0) {
+        switch ($id) {
+            case 1:
+                $result = __( 'inHg' , 'live-weather-station');
+                break;
+            case 2:
+                $result = __( 'mmHg' , 'live-weather-station');
+                break;
+            default:
+                $result = __( 'Pa' , 'live-weather-station');
+        }
+        return $result;
+    }
+
+    /**
+     * Get available pressure full units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.3.0
+     */
+    protected function get_precise_pressure_unit_full($id = 0) {
+        switch ($id) {
+            case 1:
+                $result = __( 'inch of mercury' , 'live-weather-station');
+                break;
+            case 2:
+                $result = __( 'millimeter of mercury' , 'live-weather-station');
+                break;
+            default:
+                $result = __( 'pascal' , 'live-weather-station');
+        }
+        return $result;
+    }
+
+    /**
      * Get available pressure full units.
      *
      * @param   integer $id     Optional. The unit id.
@@ -694,10 +830,13 @@ trait Description {
      * @since    1.0.0
      * @access   protected
      */
-    protected function get_temperature_unit( $id = 0 ) {
+    protected function get_temperature_unit($id = 0) {
         switch ($id) {
             case 1:
                 $result = __( '°F' , 'live-weather-station');
+                break;
+            case 2:
+                $result = __( 'K' , 'live-weather-station');
                 break;
             default:
                 $result = __( '°C' , 'live-weather-station');
@@ -717,6 +856,9 @@ trait Description {
         switch ($id) {
             case 1:
                 $result = __( 'fahrenheit degree' , 'live-weather-station');
+                break;
+            case 2:
+                $result = __( 'kelvin' , 'live-weather-station');
                 break;
             default:
                 $result = __( 'celcius degree' , 'live-weather-station');
