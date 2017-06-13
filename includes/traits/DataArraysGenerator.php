@@ -107,6 +107,23 @@ trait Generator {
     }
 
     /**
+     * Get times formats for javascript.
+     *
+     * @param   array   $sample An array containing sample data.
+     * @return  array   An array containing the available times formats.
+     * @since    1.0.0
+     * @access   private
+     */
+    private function get_std_time_format($sample) {
+        $result = array();
+        $result[0] = array (__('Unix timestamp', 'live-weather-station'), 'raw', $sample[0]);
+        $result[1] = array (__('Formated local date', 'live-weather-station'), 'local-date', $sample[1]);
+        $result[2] = array (__('Formated local time', 'live-weather-station'), 'local-time', $sample[2]);
+        $result[3] = array (__('Elapsed or remaining approximative time', 'live-weather-station'), 'local-diff', $sample[3]);
+        return $result;
+    }
+
+    /**
      * Get measure types formats for javascript.
      *
      * @param   array   $sample An array containing sample data.
@@ -342,8 +359,9 @@ trait Generator {
             case 'sunset_a':
             case 'moonrise':
             case 'moonset':
-                $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_time_format(array($mvalue, $this->get_date_from_utc($mvalue, $ref['loc_timezone']), $this->get_time_from_utc($mvalue, $ref['loc_timezone']), $this->get_time_diff_from_utc($mvalue))));
+                $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_std_time_format(array($mvalue, $this->get_date_from_utc($mvalue, $ref['loc_timezone']), $this->get_time_from_utc($mvalue, $ref['loc_timezone']), $this->get_time_diff_from_utc($mvalue))));
                 break;
+            case 'last_refresh':
             case 'last_seen':
             case 'first_setup':
             case 'last_upgrade':
@@ -608,6 +626,17 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('wind_chill'), 'wind_chill', ($reduced ? array() : $this->get_measure_array($ref, $data, 'wind_chill')));
                     $result[] = array($this->get_measurement_type('cloud_ceiling'), 'cloud_ceiling', ($reduced ? array() : $this->get_measure_array($ref, $data, 'cloud_ceiling')));
                     $result[] = array($this->get_measurement_type('cbi'), 'cbi', ($reduced ? array() : $this->get_measure_array($ref, $data, 'cbi')));
+                    $result[] = array($this->get_measurement_type('air_density'), 'air_density', ($reduced ? array() : $this->get_measure_array($ref, $data, 'air_density')));
+                    $result[] = array($this->get_measurement_type('wet_bulb'), 'wet_bulb', ($reduced ? array() : $this->get_measure_array($ref, $data, 'wet_bulb')));
+                    $result[] = array($this->get_measurement_type('wood_emc'), 'wood_emc', ($reduced ? array() : $this->get_measure_array($ref, $data, 'wood_emc')));
+                    $result[] = array($this->get_measurement_type('specific_enthalpy'), 'specific_enthalpy', ($reduced ? array() : $this->get_measure_array($ref, $data, 'specific_enthalpy')));
+                    $result[] = array($this->get_measurement_type('equivalent_temperature'), 'equivalent_temperature', ($reduced ? array() : $this->get_measure_array($ref, $data, 'equivalent_temperature')));
+                    $result[] = array($this->get_measurement_type('potential_temperature'), 'potential_temperature', ($reduced ? array() : $this->get_measure_array($ref, $data, 'potential_temperature')));
+                    $result[] = array($this->get_measurement_type('equivalent_potential_temperature'), 'equivalent_potential_temperature', ($reduced ? array() : $this->get_measure_array($ref, $data, 'equivalent_potential_temperature')));
+                    $result[] = array($this->get_measurement_type('partial_vapor_pressure'), 'partial_vapor_pressure', ($reduced ? array() : $this->get_measure_array($ref, $data, 'partial_vapor_pressure')));
+                    $result[] = array($this->get_measurement_type('saturation_vapor_pressure'), 'saturation_vapor_pressure', ($reduced ? array() : $this->get_measure_array($ref, $data, 'saturation_vapor_pressure')));
+                    $result[] = array($this->get_measurement_type('partial_absolute_humidity'), 'partial_absolute_humidity', ($reduced ? array() : $this->get_measure_array($ref, $data, 'partial_absolute_humidity')));
+                    $result[] = array($this->get_measurement_type('saturation_absolute_humidity'), 'saturation_absolute_humidity', ($reduced ? array() : $this->get_measure_array($ref, $data, 'saturation_absolute_humidity')));
                 }
                 break;
             case 'nacurrent': // Virtual module for current values from OpenWeatherMap.org

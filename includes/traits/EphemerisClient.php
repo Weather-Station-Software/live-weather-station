@@ -59,8 +59,8 @@ trait Client {
             $dashboard = array() ;
             $dashboard['time_utc'] = time();
             // sunrise & sunset
-            $time_rise = time();
-            $time_set = time();
+            $time_rise = time()-36000;
+            $time_set = time()-36000;
             $datetime = new \DateTime();
             $datetime->setTimestamp(time());
             $datetime->setTimezone(new \DateTimeZone($tz));
@@ -90,23 +90,61 @@ trait Client {
             $dashboard['sunrise_c'] = date_sunrise($time_rise, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 96);
             $dashboard['sunrise_n'] = date_sunrise($time_rise, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 102);
             $dashboard['sunrise_a'] = date_sunrise($time_rise, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 108);
-            $dashboard['sunset'] = date_sunset($time_set, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+            $dashboard['sunset'] = date_sunset($time_set,  SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
             $dashboard['sunset_c'] = date_sunset($time_set, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 96);
             $dashboard['sunset_n'] = date_sunset($time_set, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 102);
             $dashboard['sunset_a'] = date_sunset($time_set, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 108);
             // lengths of day
-            $dashboard['day_length'] = $dashboard['sunset'] - $dashboard['sunrise'];
-            $dashboard['day_length_c'] = $dashboard['sunset_c'] - $dashboard['sunrise_c'];
-            $dashboard['day_length_n'] = $dashboard['sunset_n'] - $dashboard['sunrise_n'];
-            $dashboard['day_length_a'] = $dashboard['sunset_a'] - $dashboard['sunrise_a'];
+            if ($dashboard['sunset'] && $dashboard['sunrise']) {
+                $dashboard['day_length'] = $dashboard['sunset'] - $dashboard['sunrise'];
+            }
+            else {
+                $dashboard['day_length'] = -1;
+            }
+            if ($dashboard['sunset_c'] && $dashboard['sunrise_c']) {
+                $dashboard['day_length_c'] = $dashboard['sunset_c'] - $dashboard['sunrise_c'];
+            }
+            else {
+                $dashboard['day_length_c'] = -1;
+            }
+            if ($dashboard['sunset_n'] && $dashboard['sunrise_n']) {
+                $dashboard['day_length_n'] = $dashboard['sunset_n'] - $dashboard['sunrise_n'];
+            }
+            else {
+                $dashboard['day_length_n'] = -1;
+            }
+            if ($dashboard['sunset_a'] && $dashboard['sunrise_a']) {
+                $dashboard['day_length_a'] = $dashboard['sunset_a'] - $dashboard['sunrise_a'];
+            }
+            else {
+                $dashboard['day_length_a'] = -1;
+            }
             // lengths of dawn
-            $dashboard['dawn_length_a'] = $dashboard['sunrise_n'] - $dashboard['sunrise_a'];
-            $dashboard['dawn_length_n'] = $dashboard['sunrise_c'] - $dashboard['sunrise_n'];
-            $dashboard['dawn_length_c'] = $dashboard['sunrise'] - $dashboard['sunrise_c'];
+            $dashboard['dawn_length_a'] = -1;
+            $dashboard['dawn_length_n'] = -1;
+            $dashboard['dawn_length_c'] = -1;
+            if ($dashboard['sunrise_n'] && $dashboard['sunrise_a']) {
+                $dashboard['dawn_length_a'] = $dashboard['sunrise_n'] - $dashboard['sunrise_a'];
+            }
+            if ($dashboard['sunrise_c'] && $dashboard['sunrise_n']) {
+                $dashboard['dawn_length_n'] = $dashboard['sunrise_c'] - $dashboard['sunrise_n'];
+            }
+            if ($dashboard['sunrise'] && $dashboard['sunrise_c']) {
+                $dashboard['dawn_length_c'] = $dashboard['sunrise'] - $dashboard['sunrise_c'];
+            }
             // lengths of dusk
-            $dashboard['dusk_length_a'] = $dashboard['sunset_a'] - $dashboard['sunset_n'];
-            $dashboard['dusk_length_n'] = $dashboard['sunset_n'] - $dashboard['sunset_c'];
-            $dashboard['dusk_length_c'] = $dashboard['sunset_c'] - $dashboard['sunset'];
+            $dashboard['dusk_length_a'] = -1;
+            $dashboard['dusk_length_n'] = -1;
+            $dashboard['dusk_length_c'] =-1;
+            if ($dashboard['sunset_a'] && $dashboard['sunset_n']) {
+                $dashboard['dusk_length_a'] = $dashboard['sunset_a'] - $dashboard['sunset_n'];
+            }
+            if ($dashboard['sunset_n'] && $dashboard['sunset_c']) {
+                $dashboard['dusk_length_n'] = $dashboard['sunset_n'] - $dashboard['sunset_c'];
+            }
+            if ($dashboard['sunset_c'] && $dashboard['sunset']) {
+                $dashboard['dusk_length_c'] = $dashboard['sunset_c'] - $dashboard['sunset'];
+            }
             try {
                 $datetime = new \DateTime(date('Y-m-d H:i:s',time()), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
@@ -170,6 +208,15 @@ trait Client {
                 $dashboard['moon_diameter'] = -9999;
                 $dashboard['sun_distance'] = -9999;
                 $dashboard['sun_diameter'] = -9999;
+            }
+            $prefs = array('sunrise', 'sunset');
+            $posts = array('', 'c', 'n', 'a');
+            foreach ($prefs as $pref) {
+                foreach ($posts as $post) {
+                    if (!$dashboard[$pref . '_' . $post]) {
+                        $dashboard[$pref . '_' . $post] = -1;
+                    }
+                }
             }
             $nm['dashboard_data'] = $dashboard;
             $nm['data_type'] = array('sunrise','sunrise_c','sunrise_n','sunrise_a', 'sunset','sunset_c','sunset_n',
