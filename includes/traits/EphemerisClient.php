@@ -212,8 +212,11 @@ trait Client {
             $prefs = array('sunrise', 'sunset');
             $posts = array('', 'c', 'n', 'a');
             foreach ($prefs as $pref) {
+                if (!isset($dashboard[$pref])) {
+                    $dashboard[$pref] = -1;
+                }
                 foreach ($posts as $post) {
-                    if (!$dashboard[$pref . '_' . $post]) {
+                    if (!isset($dashboard[$pref . '_' . $post]) && $post != '') {
                         $dashboard[$pref . '_' . $post] = -1;
                     }
                 }

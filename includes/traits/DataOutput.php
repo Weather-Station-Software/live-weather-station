@@ -37,8 +37,10 @@ trait Output {
         'moonset', 'moon_illumination', 'moon_diameter', 'sun_diameter', 'moon_distance', 'sun_distance', 'moon_phase',
         'moon_age', 'o3_distance', 'co_distance', 'humidity_min', 'humidity_max', 'pressure_min', 'pressure_max',
         'day_length', 'health_idx', 'cbi', 'pressure_ref', 'wet_bulb', 'air_density', 'wood_emc',
-        'equivalent_temperature','potential_temperature','specific_enthalpy',
-        'partial_vapor_pressure','partial_absolute_humidity');
+        'equivalent_temperature', 'potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
+        'partial_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 'soil_temperature', 'leaf_wetness',
+        'moisture_content', 'moisture_tension', 'evapotranspiration', 'strike_count', 'strike_instant',
+        'strike_distance', 'strike_bearing');
     private $not_showable_measurements = array('battery', 'firmware', 'signal', 'loc_timezone', 'loc_altitude',
         'loc_latitude', 'loc_longitude', 'last_seen', 'last_refresh', 'first_setup', 'last_upgrade', 'last_setup',
         'sunrise_c','sunrise_n','sunrise_a', 'sunset_c','sunset_n', 'sunset_a', 'day_length_c', 'day_length_n',
@@ -601,6 +603,10 @@ trait Output {
         }
         elseif (strtolower($module_id) == 'aggregated') {
             $raw_datas = $this->get_all_datas($device_id, true);
+        }
+        elseif (strtolower($module_id) == 'psychrometric') {
+            $raw_datas = $this->get_computed_datas($device_id, true);
+            $measure_type = 'psychrometric';
         }
         else {
             $raw_datas = $this->get_module_datas($module_id, (OWM_Base_Collector::is_owm_pollution_module($module_id) ? false : true));
@@ -2395,6 +2401,54 @@ trait Output {
                 $result = $this->get_absolute_humidity($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_absolute_humidity_unit($ref) : '');
                 break;
+
+            // SOLAR
+            case 'irradiance':
+                $result = $this->get_irradiance($value);
+                $result .= ($unit ? $this->unit_espace.$this->get_irradiance_unit() : '');
+                break;
+            case 'uv_index':
+                $result = $value;
+                break;
+            case 'illuminance':
+                $result = $this->get_illuminance($value);
+                $result .= ($unit ? $this->unit_espace.$this->get_illuminance_unit() : '');
+                break;
+            // SOIL
+            case 'soil_temperature':
+                $ref = get_option('live_weather_station_unit_temperature') ;
+                $result = $this->get_temperature($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_temperature_unit($ref) : '');
+                break;
+            case 'leaf_wetness':
+            case 'moisture_content':
+                $result = $this->get_humidity($value);
+                $result .= ($unit ? $this->unit_espace.$this->get_humidity_unit() : '');
+                break;
+            case 'moisture_tension':
+                $ref = get_option('live_weather_station_unit_pressure') ;
+                $result = $this->get_pressure($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_pressure_unit($ref) : '');
+                break;
+            case 'evapotranspiration':
+                $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
+                $result = $this->get_rain($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_rain_unit($ref) : '');
+                break;
+            // THUNDERSTORM
+            case 'strike_count':
+            case 'strike_instant':
+                $result = $value;
+                break;
+            case 'strike_distance':
+                $ref = get_option('live_weather_station_unit_distance');
+                $result = $this->get_distance_from_meters($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_distance_unit($ref) : '');
+                break;
+            case 'strike_bearing':
+                $result = $this->get_wind_angle($value);
+                $result .= ($unit ? $this->unit_espace.$this->get_wind_angle_unit() : '');
+                break;
             }
         return $result;
     }
@@ -2736,6 +2790,49 @@ trait Output {
             case 'saturation_absolute_humidity':
             case 'absolute_humidity':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-raindrop" aria-hidden="true"></i>';
+                break;
+            // SOLAR
+            case 'irradiance':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-arrow-down" aria-hidden="true"></i>';
+                break;
+            case 'uv_index':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-horizon-alt" aria-hidden="true"></i>';
+                break;
+            case 'illuminance':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-fa-long-arrow-down fa-rotate-30" aria-hidden="true"></i>';
+                break;
+            // SOIL
+            case 'soil_temperature':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer" aria-hidden="true"></i>';
+                break;
+            case 'leaf_wetness':
+                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="fa fa-envira"></i><i %1$s class="wi wi-degrees"></i></span>';
+                break;
+            case 'moisture_content':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-humidity" aria-hidden="true"></i>';
+                break;
+            case 'moisture_tension':
+                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="wi wi-degrees"></i></span>';
+                break;
+            case 'evapotranspiration':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-flood" aria-hidden="true"></i>';
+                break;
+            // THUNDERSTORM
+            case 'strike_count':
+            case 'strike_instant':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-lightning" aria-hidden="true"></i>';
+                break;
+            case 'strike_distance':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-crosshairs" aria-hidden="true"></i>';
+                break;
+            case 'strike_bearing':
+                if ($show_value) {
+                    $s = 'towards-' . $value . '-deg';
+                    $result = '<i %1$s class="wi wi-fw %2$s wi-wind ' . $s . '" aria-hidden="true"></i>';
+                }
+                else {
+                    $result = '<i %1$s class="wi wi-fw %2$s wi-wind towards-0-deg" aria-hidden="true"></i>';
+                }
                 break;
             default:
                 $result = '<i %s class="fa fa-fw %s fa-sun-o" aria-hidden="true"></i>';
@@ -3200,6 +3297,104 @@ trait Output {
                 $result['long'] = $this->get_absolute_humidity_unit_full($ref) ;
                 $result['comp'] = __('sat.', 'live-weather-station') ;
                 break;
+            // SOLAR
+            case 'irradiance':
+                $ref = 0;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_irradiance_unit($ref) ;
+                $result['long'] = $this->get_irradiance_unit_full($ref) ;
+                break;
+            case 'illuminance':
+                $ref = 0;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_illuminance_unit($ref) ;
+                $result['long'] = $this->get_illuminance_unit_full($ref) ;
+                break;
+            case 'uv_index':
+                $result['comp'] = __('UV', 'live-weather-station') ;
+                break;
+            // SOIL
+            case 'soil_temperature':
+                $ref = get_option('live_weather_station_unit_temperature') ;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_temperature_unit($ref) ;
+                $result['long'] = $this->get_temperature_unit_full($ref) ;
+                break;
+            case 'leaf_wetness':
+                $ref = 0;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_humidity_unit($ref) ;
+                $result['long'] = $this->get_humidity_unit_full($ref) ;
+                $result['comp'] = __('wet', 'live-weather-station') ;
+                break;
+            case 'moisture_content':
+                $ref = 0;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_humidity_unit($ref) ;
+                $result['long'] = $this->get_humidity_unit_full($ref) ;
+                $result['comp'] = __('moist', 'live-weather-station') ;
+                break;
+            case 'moisture_tension':
+                $ref = get_option('live_weather_station_unit_pressure') ;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_pressure_unit($ref) ;
+                $result['long'] = $this->get_pressure_unit_full($ref) ;
+                $result['comp'] = __('moist', 'live-weather-station') ;
+                break;
+            case 'evapotranspiration':
+                $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_rain_unit($ref) ;
+                $result['long'] = $this->get_rain_unit_full($ref) ;
+                $result['comp'] = __('evap', 'live-weather-station') ;
+                break;
+            // THUNDERSTORM
+            case 'strike_instant':
+                $ref = get_option('live_weather_station_unit_distance');
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['comp'] = __('now', 'live-weather-station') ;
+                break;
+            case 'strike_count':
+                $ref = get_option('live_weather_station_unit_distance');
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['comp'] = __('total', 'live-weather-station') ;
+                break;
+            case 'strike_distance':
+                $ref = get_option('live_weather_station_unit_distance');
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_distance_unit($ref);
+                $result['long'] = $this->get_distance_unit_full($ref);
+                $result['comp'] = __('last', 'live-weather-station') ;
+                break;
+            case 'strike_bearing':
+                $ref = 0;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_wind_angle_unit($ref);
+                $result['long'] = $this->get_wind_angle_unit_full($ref);
+                $result['comp'] = __('last', 'live-weather-station') ;
+                break;
         }
         if ($result['comp'] != __('now', 'live-weather-station')) {
             $result['full'] = $result['unit'].' '.$result['comp'];   
@@ -3213,10 +3408,10 @@ trait Output {
     /**
      * How decimals to display for this type of value.
      *
-     * @param   string  $type   The type of the value.
-     * @param   integer $value  Optional. The decimal value.
-     * @return  integer   The number of decimals to show.
-     * @since    2.1.0
+     * @param string $type The type of the value.
+     * @param integer $value  Optional. The decimal value.
+     * @return integer The number of decimals to show.
+     * @since 2.1.0
      */
     protected function decimal_for_output($type, $value=0) {
         $result = 0;
@@ -3424,6 +3619,7 @@ trait Output {
             case 'equivalent_temperature':
             case 'potential_temperature':
             case 'equivalent_potential_temperature':
+            case 'soil_temperature':
                 $result = __('temperature', 'live-weather-station') ;
                 break;
             case 'dawn':
@@ -3450,6 +3646,33 @@ trait Output {
             case 'vapor_pressure':
                 $result = __('vapor', 'live-weather-station') ;
                 break;
+            case 'irradiance':
+                $result = __('irradiance', 'live-weather-station') ;
+                break;
+            case 'illuminance':
+                $result = __('illuminance', 'live-weather-station') ;
+                break;
+            case 'leaf_wetness':
+                $result = __('wetness', 'live-weather-station') ;
+                break;
+            case 'moisture_content':
+            case 'moisture_tension':
+                $result = __('moisture', 'live-weather-station') ;
+                break;
+            case 'evapotranspiration':
+                $result = __('ET', 'live-weather-station') ;
+                break;
+            case 'strike_distance':
+                $result = __('distance', 'live-weather-station') ;
+                break;
+            case 'strike_bearing':
+                $result = __('bearing', 'live-weather-station') ;
+                break;
+            case 'strike_count':
+            case 'strike_instant':
+                $result = __('strike', 'live-weather-station') ;
+                break;
+
         }
         return $result;
     }
@@ -4000,15 +4223,16 @@ trait Output {
     /**
      * Says if value must be shown.
      *
-     * @param   $measure_type               string  The type of value.
-     * @param   $aggregated                  boolean  Display is in aggregated mode.
-     * @param   $outdoor                    boolean  Display is in outdoor mode.
-     * @param   $computed                   boolean  Display is in computed mode.
-     * @param   $pollution                   boolean  Display is in pollution mode.
-     * @return  boolean     True if the value must be shown, false otherwise.
-     * @since    2.0.0
+     * @param $measure_type string The type of value.
+     * @param $aggregated boolean Display is in aggregated mode.
+     * @param $outdoor boolean Display is in outdoor mode.
+     * @param $computed boolean Display is in computed mode.
+     * @param $pollution boolean Display is in pollution mode.
+     * @param $psychrometry boolean Display is in psychrometry mode.
+     * @return boolean True if the value must be shown, false otherwise.
+     * @since 2.0.0
      */
-    private function is_value_ok ($measure_type, $aggregated, $outdoor, $computed, $pollution) {
+    private function is_value_ok ($measure_type, $aggregated, $outdoor, $computed, $pollution, $psychrometry) {
         $result = false;
         switch ($measure_type) {
             case 'co2':
@@ -4033,7 +4257,18 @@ trait Output {
             case 'guststrength':
             case 'windstrength_hour_max':
             case 'windstrength_day_max':
-            //case 'gustangle':
+            case 'irradiance':
+            case 'uv_index':
+            case 'illuminance':
+            case 'soil_temperature':
+            case 'leaf_wetness':
+            case 'moisture_content':
+            case 'moisture_tension':
+            case 'evapotranspiration':
+            case 'strike_count':
+            case 'strike_instant':
+            case 'strike_distance':
+            case 'strike_bearing':
                 $result = $aggregated || $outdoor;
                 break;
             case 'dew_point':
@@ -4042,8 +4277,12 @@ trait Output {
             case 'heat_index':
             case 'cloud_ceiling':
             case 'cbi':
+                $result = $computed && $outdoor;
+                break;
             case 'wet_bulb':
             case 'air_density':
+                $result = ($computed && $outdoor) || $psychrometry;
+                break;
             case 'equivalent_temperature':
             case 'potential_temperature':
             case 'equivalent_potential_temperature':
@@ -4056,7 +4295,7 @@ trait Output {
             case 'partial_absolute_humidity':
             case 'saturation_absolute_humidity':
             case 'absolute_humidity':
-                $result = $computed && $outdoor;
+                $result = $psychrometry;
                 break;
             case 'o3':
             case 'co':
@@ -4094,6 +4333,7 @@ trait Output {
         $aggregated = ($measure_type == 'aggregated');
         $outdoor = ($measure_type == 'outdoor');
         $pollution = ($measure_type == 'pollution');
+        $psychrometry = ($measure_type == 'psychrometric');
         $dew_point = 0;
         $has_dew_point = false;
         $temp_ref = 0;
@@ -4189,6 +4429,9 @@ trait Output {
                 elseif ($pollution || ($data['measure_type'] == 'o3') || ($data['measure_type'] == 'co')) {
                     $measure['title'] = iconv('UTF-8','ASCII//TRANSLIT',$this->get_measurement_type($data['measure_type']));
                 }
+                elseif ($psychrometry) {
+                    $measure['title'] = iconv('UTF-8','ASCII//TRANSLIT',$this->get_measurement_type($data['measure_type']));
+                }
                 else {
                     if ($data['module_name'][0] == '[') {
                         $measure['title'] = iconv('UTF-8','ASCII//TRANSLIT',__('O/DR', 'live-weather-station') . ':' .$this->output_abbreviation($data['measure_type']));
@@ -4212,7 +4455,7 @@ trait Output {
                 else {
                     $measure['signal'] = $this->get_signal_lcd_level_text(-1, 'none');
                 }
-                if (($data['measure_type'] == $measure_type) || (($data['measure_type'] != $measure_type) && $this->is_value_ok($data['measure_type'], $aggregated, $outdoor, $computed, $pollution))) {
+                if (($data['measure_type'] == $measure_type) || (($data['measure_type'] != $measure_type) && $this->is_value_ok($data['measure_type'], $aggregated, $outdoor, $computed, $pollution, $psychrometry))) {
                     switch (strtolower($data['measure_type'])) {
                         case 'co2':
                         case 'o3':
@@ -4377,6 +4620,44 @@ trait Output {
                                 $response[] = $measure;
                             }
                             break;
+                        case 'irradiance':
+                        case 'uv_index':
+                        case 'illuminance':
+                        case 'strike_count':
+                        case 'strike_instant':
+                        case 'strike_distance':
+                        case 'strike_bearing':
+                        if (($data['measure_type'] == $measure_type) || $aggregated || $outdoor) {
+                            $response[] = $measure;
+                        }
+                        case 'soil_temperature':
+                        case 'leaf_wetness':
+                        case 'moisture_content':
+                        case 'moisture_tension':
+                        case 'evapotranspiration':
+                            if (($data['measure_type'] == $measure_type) || $aggregated) {
+                                $response[] = $measure;
+                            }
+                            break;
+                        case 'wet_bulb':
+                        case 'air_density':
+                        case 'wood_emc':
+                        case 'emc':
+                        case 'equivalent_temperature':
+                        case 'potential_temperature':
+                        case 'equivalent_potential_temperature':
+                        case 'specific_enthalpy':
+                        case 'partial_vapor_pressure':
+                        case 'saturation_vapor_pressure':
+                        case 'vapor_pressure':
+                        case 'absolute_humidity':
+                        case 'partial_absolute_humidity':
+                        case 'saturation_absolute_humidity':
+                            if ($psychrometry) {
+                                $response[] = $measure;
+                            }
+                            break;
+
                     }
                 }
             }
@@ -4820,7 +5101,7 @@ trait Output {
                     $module['signal_txt'] = $this->get_signal_level_text($module['signal'], $module['module_type']);
                     $module['signal_icn'] = $this->output_iconic_value($module['signal'], 'signal', $module['module_type'], false, 'style="color:#999"', 'fa-lg');
                 }
-                if ((/*!$full && */in_array($data['measure_type'], $this->showable_measurements)) ||
+                if ((!$full && in_array($data['measure_type'], $this->showable_measurements)) ||
                     ($full && in_array($data['measure_type'], array_merge($this->showable_measurements, $this->not_showable_measurements)))) {
                     $val = array();
                     /*

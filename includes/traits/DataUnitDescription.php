@@ -691,6 +691,50 @@ trait Description {
     }
 
     /**
+     * Get available irradiance units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.3.0
+     */
+    protected function get_irradiance_unit( $id = 0 ) {
+        return __( 'W/m²' , 'live-weather-station');
+    }
+
+    /**
+     * Get available irradiance full units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.3.0
+     */
+    protected function get_irradiance_unit_full( $id = 0 ) {
+        return __( 'watt per square meter' , 'live-weather-station');
+    }
+
+    /**
+     * Get available illuminance units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.3.0
+     */
+    protected function get_illuminance_unit( $id = 0 ) {
+        return __( 'kLux' , 'live-weather-station');
+    }
+
+    /**
+     * Get available illuminance full units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.3.0
+     */
+    protected function get_illuminance_unit_full( $id = 0 ) {
+        return __( 'kilolux' , 'live-weather-station');
+    }
+
+    /**
      * Get available dusk an dawn twilight units.
      *
      * @param integer $id Optional. The unit id.

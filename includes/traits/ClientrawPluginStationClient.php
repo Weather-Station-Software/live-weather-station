@@ -256,6 +256,139 @@ trait StationClient {
         if ($max > 9) {
             $max = 9;
         }
+
+        // NAModule5
+        $type = 'NAModule5';
+        $updates['device_id'] = $station['station_id'];
+        $updates['device_name'] = $station['station_name'];
+        $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 5);
+        $updates['module_type'] = $type;
+        $updates['module_name'] = $this->get_fake_module_name($type);
+        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_type'] = 'last_refresh';
+        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $this->update_data_table($updates);
+        $updates['measure_type'] = 'last_seen';
+        $updates['measure_value'] = $timestamp;
+        $updates['measure_timestamp'] = $timestamp;
+        $this->update_data_table($updates);
+        $updates['measure_timestamp'] = $timestamp;
+        $updates['measure_type'] = 'uv_index';
+        if (is_numeric($weather[79])) {
+            $updates['measure_value'] = $weather[79];
+        }
+        else {
+            $updates['measure_value'] = 0;
+        }
+        $this->update_data_table($updates);
+        $updates['measure_timestamp'] = $timestamp;
+        $updates['measure_type'] = 'irradiance';
+        if (is_numeric($weather[127])) {
+            $updates['measure_value'] = $weather[127];
+        }
+        else {
+            $updates['measure_value'] = 0;
+        }
+        $this->update_data_table($updates);
+        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+
+        // NAModule6
+        $type = 'NAModule6';
+        $updates['device_id'] = $station['station_id'];
+        $updates['device_name'] = $station['station_name'];
+        $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 6);
+        $updates['module_type'] = $type;
+        $updates['module_name'] = $this->get_fake_module_name($type);
+        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_type'] = 'last_refresh';
+        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $this->update_data_table($updates);
+        $updates['measure_type'] = 'last_seen';
+        $updates['measure_value'] = $timestamp;
+        $updates['measure_timestamp'] = $timestamp;
+        $this->update_data_table($updates);
+        $updates['measure_timestamp'] = $timestamp;
+        $updates['measure_type'] = 'soil_temperature';
+        if (is_numeric($weather[14])) {
+            $updates['measure_value'] = $weather[14];
+        }
+        else {
+            $updates['measure_value'] = 0;
+        }
+        $this->update_data_table($updates);
+        $updates['measure_timestamp'] = $timestamp;
+        $updates['measure_type'] = 'leaf_wetness';
+        if (is_numeric($weather[156])) {
+            $updates['measure_value'] = $weather[156];
+        }
+        else {
+            $updates['measure_value'] = 0;
+        }
+        $this->update_data_table($updates);
+        $updates['measure_timestamp'] = $timestamp;
+        $updates['measure_type'] = 'moisture_tension';
+        if (is_numeric($weather[157])) {
+            $updates['measure_value'] = $weather[157] * 10;
+        }
+        else {
+            $updates['measure_value'] = 0;
+        }
+        $this->update_data_table($updates);
+        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+
+        // NAModule7
+        $type = 'NAModule7';
+        $updates['device_id'] = $station['station_id'];
+        $updates['device_name'] = $station['station_name'];
+        $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 7);
+        $updates['module_type'] = $type;
+        $updates['module_name'] = $this->get_fake_module_name($type);
+        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_type'] = 'last_refresh';
+        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $this->update_data_table($updates);
+        $updates['measure_type'] = 'last_seen';
+        $updates['measure_value'] = $timestamp;
+        $updates['measure_timestamp'] = $timestamp;
+        $this->update_data_table($updates);
+        $updates['measure_timestamp'] = $timestamp;
+        $updates['measure_type'] = 'strike_count';
+        if (is_numeric($weather[33])) {
+            $updates['measure_value'] = $weather[33];
+        }
+        else {
+            $updates['measure_value'] = 0;
+        }
+        $this->update_data_table($updates);
+        $updates['measure_timestamp'] = $timestamp;
+        $updates['measure_type'] = 'strike_instant';
+        if (is_numeric($weather[114])) {
+            $updates['measure_value'] = $weather[114];
+        }
+        else {
+            $updates['measure_value'] = 0;
+        }
+        $this->update_data_table($updates);
+        $updates['measure_timestamp'] = $timestamp;
+        $updates['measure_type'] = 'strike_distance';
+        if (is_numeric($weather[118])) {
+            $updates['measure_value'] = $weather[118] * 1000;
+        }
+        else {
+            $updates['measure_value'] = 0;
+        }
+        $this->update_data_table($updates);
+        $updates['measure_timestamp'] = $timestamp;
+        $updates['measure_type'] = 'strike_bearing';
+        if (is_numeric($weather[119])) {
+            $updates['measure_value'] = $weather[119];
+        }
+        else {
+            $updates['measure_value'] = 0;
+        }
+        $this->update_data_table($updates);
+        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+
         // NAModule9 - max 9 extra modules
         $type = 'NAModule9';
         $updates['device_id'] = $station['station_id'];
@@ -288,24 +421,6 @@ trait StationClient {
                 Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
             }
         }
-
-        /*
-
-        14	Soil: Temperature	Celsius (Optional)	0.0
-        156	Leaf: Wetness (0-15)	Number (Optional)	0.0
-        157	Soil: Moisture (0-200 centibars)	Number (Optional)	255.0
-
-        33	Lightning: Strikes - in Total	Number	0
-        114	Lightning: Strikes - in last Min	Number	0
-        118	Lightning: Last Strike - Distance (Nexstorm)	Number	0
-        119	Lightning: Last Strike - Bearing (Nexstorm)	Compass	0
-
-        34	Solar: Current reading (0% - 100%)	Number	24
-        79	UV: Current reading (0-16 index)	Number (Optional)	0.0			/UV index
-        127	Solar: VP Solar W/sqM (0 - 1800 W/sqM)	Number	56.0   				/Irradiance
-
-         */
-
     }
 
     /**

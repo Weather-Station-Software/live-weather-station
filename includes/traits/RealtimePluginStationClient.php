@@ -43,7 +43,7 @@ trait StationClient {
             throw new \Exception('Bad file format.');
         }
         Logger::debug($this->facility, $this->service, null, null, null, null, null, print_r($weather, true));
-        $locat_ts = gmmktime($weather[1][0].$weather[1][1], $weather[1][3].$weather[1][4], $weather[1][6].$weather[1][7], $weather[0][3].$weather[0][4], $weather[0][0].$weather[0][1], '20'.$weather[0][6].$weather[0][7]);
+        $locat_ts = gmmktime($weather[1][0].$weather[1][1], $weather[1][3].$weather[1][4], $weather[1][6].$weather[1][7], $weather[0][3].$weather[0][4], $weather[0][0].$weather[0][1], '20'.$weather[0][strlen($weather[0])-2].$weather[0][strlen($weather[0])-1]);
         $timestamp = date('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $station['loc_timezone']));
         $wind_unit = 0;
         switch (strtolower($weather[13])) {
@@ -278,29 +278,78 @@ trait StationClient {
         }
         Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
-        /*
 
-        44	13	    UV Index
-        45	0.2	    evapotranspiration today
-        46	14	    solar radiation W/m2
-        57	420.1	Current theoretical max solar radiation
+        // NAModule5
+        $type = 'NAModule5';
+        $updates['device_id'] = $station['station_id'];
+        $updates['device_name'] = $station['station_name'];
+        $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 5);
+        $updates['module_type'] = $type;
+        $updates['module_name'] = $this->get_fake_module_name($type);
+        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_type'] = 'last_refresh';
+        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $this->update_data_table($updates);
+        $updates['measure_type'] = 'last_seen';
+        $updates['measure_value'] = $timestamp;
+        $updates['measure_timestamp'] = $timestamp;
+        $this->update_data_table($updates);
+        $updates['measure_timestamp'] = $timestamp;
+        $updates['measure_type'] = 'uv_index';
+        if (is_numeric($weather[44])) {
+            $updates['measure_value'] = $weather[44];
+        }
+        else {
+            $updates['measure_value'] = 0;
+        }
+        $this->update_data_table($updates);
+        $updates['measure_timestamp'] = $timestamp;
+        $updates['measure_type'] = 'irradiance';
+        if (is_numeric($weather[46])) {
+            $updates['measure_value'] = $weather[46];
+        }
+        else {
+            $updates['measure_value'] = 0;
+        }
+        $this->update_data_table($updates);
+        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
-         */
-
+        // NAModule6
+        $type = 'NAModule6';
+        $updates['device_id'] = $station['station_id'];
+        $updates['device_name'] = $station['station_name'];
+        $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 6);
+        $updates['module_type'] = $type;
+        $updates['module_name'] = $this->get_fake_module_name($type);
+        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_type'] = 'last_refresh';
+        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $this->update_data_table($updates);
+        $updates['measure_type'] = 'last_seen';
+        $updates['measure_value'] = $timestamp;
+        $updates['measure_timestamp'] = $timestamp;
+        $this->update_data_table($updates);
+        $updates['measure_timestamp'] = $timestamp;
+        $updates['measure_type'] = 'evapotranspiration';
+        if (is_numeric($weather[45])) {
+            $updates['measure_value'] = $weather[45];
+        }
+        else {
+            $updates['measure_value'] = 0;
+        }
+        $this->update_data_table($updates);
+        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
     }
 
     /**
      * Explode raw data.
      *
-     * @param array $raw_data Raw data to explode.
+     * @param string $raw_data Raw data to explode.
      * @return array|boolean Exploded data array if all is ok, false otherwise.
      * @since 3.0.0
      */
     public function explode_data($raw_data) {
         $weather = false;
-
-
-
         $separators = array(' ', '|');
         try {
             $weather = explode(' ', $raw_data);
@@ -312,11 +361,6 @@ trait StationClient {
                     return false;
                 }
             }
-
-
-
-
-
         }
         catch(\Exception $ex)
         {

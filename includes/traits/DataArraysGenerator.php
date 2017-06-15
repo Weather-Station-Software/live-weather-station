@@ -326,8 +326,8 @@ trait Generator {
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_trend_format(array($mvalue, $this->output_value($mvalue, $mtype, false, true, $ref['module_type']))));
                 break;
             case 'aggregated':
-            /*    $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_aggregated_value_format(array($mvalue, $this->output_value($mvalue, $mtype))));
-                break;*/
+                /*    $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_aggregated_value_format(array($mvalue, $this->output_value($mvalue, $mtype))));
+                    break;*/
             case 'outdoor':
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_aggregated_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']))));
                 break;
@@ -347,6 +347,7 @@ trait Generator {
             case 'windangle_max':
             case 'windangle_day_max':
             case 'windangle_hour_max':
+            case 'strike_bearing':
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_wind_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']), $this->output_value($mvalue, $mtype, true, false, $ref['module_type']), $this->get_angle_text($mvalue), $this->get_angle_full_text($mvalue))));
                 break;
             case 'sunrise':
@@ -393,6 +394,8 @@ trait Generator {
         $wug = OWM_Base_Collector::is_wug_station($ref['device_id']);
         $raw = OWM_Base_Collector::is_raw_station($ref['device_id']);
         $real = OWM_Base_Collector::is_real_station($ref['device_id']);
+        $txt = OWM_Base_Collector::is_txt_station($ref['device_id']);
+        $wflw = OWM_Base_Collector::is_wflw_station($ref['device_id']);
         switch (strtolower($ref['module_type'])) {
             case 'namain':
                 if ($aggregated) {
@@ -482,6 +485,34 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('temperature_trend'), 'temperature_trend', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature_trend')));
                 }
                 break;
+            case 'namodule2': // Wind gauge
+                if ($aggregated) {
+                    $result[] = array($this->get_measurement_type('aggregated'), 'aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'aggregated')));
+                }
+                if ($full && $netatmo) {
+                    $result[] = array($this->get_measurement_type('battery'), 'battery', ($reduced ? array() : $this->get_measure_array($ref, $data, 'battery')));
+                    $result[] = array($this->get_measurement_type('firmware'), 'firmware', ($reduced ? array() : $this->get_measure_array($ref, $data, 'firmware')));
+                    $result[] = array($this->get_measurement_type('signal'), 'signal', ($reduced ? array() : $this->get_measure_array($ref, $data, 'signal')));
+                    $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
+                    $result[] = array($this->get_measurement_type('last_setup'), 'last_setup', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_setup')));
+                }
+                if ($full && ($wug || $real || $raw)) {
+                    $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
+                }
+                if ($full) {
+                    $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
+                }
+                $result[] = array($this->get_measurement_type('windangle'), 'windangle', ($reduced ? array() : $this->get_measure_array($ref, $data, 'windangle')));
+                $result[] = array($this->get_measurement_type('windstrength'), 'windstrength', ($reduced ? array() : $this->get_measure_array($ref, $data, 'windstrength')));
+                $result[] = array($this->get_measurement_type('gustangle'), 'gustangle', ($reduced ? array() : $this->get_measure_array($ref, $data, 'gustangle')));
+                $result[] = array($this->get_measurement_type('guststrength'), 'guststrength', ($reduced ? array() : $this->get_measure_array($ref, $data, 'guststrength')));
+                if ($netatmo) {
+                    $result[] = array($this->get_measurement_type('windangle_hour_max'), 'windangle_hour_max', ($reduced ? array() : $this->get_measure_array($ref, $data, 'windangle_hour_max')));
+                    $result[] = array($this->get_measurement_type('windstrength_hour_max'), 'windstrength_hour_max', ($reduced ? array() : $this->get_measure_array($ref, $data, 'windstrength_hour_max')));
+                    $result[] = array($this->get_measurement_type('windangle_day_max'), 'windangle_day_max', ($reduced ? array() : $this->get_measure_array($ref, $data, 'windangle_day_max')));
+                    $result[] = array($this->get_measurement_type('windstrength_day_max'), 'windstrength_day_max', ($reduced ? array() : $this->get_measure_array($ref, $data, 'windstrength_day_max')));
+                }
+                break;
             case 'namodule3': // Rain gauge
                 if ($aggregated) {
                     $result[] = array($this->get_measurement_type('aggregated'), 'aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'aggregated')));
@@ -517,34 +548,6 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('rain_year_aggregated', false, $ref['module_type']), 'rain_year_aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'rain_year_aggregated')));
                 }
                 break;
-            case 'namodule2': // Wind gauge
-                if ($aggregated) {
-                    $result[] = array($this->get_measurement_type('aggregated'), 'aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'aggregated')));
-                }
-                if ($full && $netatmo) {
-                    $result[] = array($this->get_measurement_type('battery'), 'battery', ($reduced ? array() : $this->get_measure_array($ref, $data, 'battery')));
-                    $result[] = array($this->get_measurement_type('firmware'), 'firmware', ($reduced ? array() : $this->get_measure_array($ref, $data, 'firmware')));
-                    $result[] = array($this->get_measurement_type('signal'), 'signal', ($reduced ? array() : $this->get_measure_array($ref, $data, 'signal')));
-                    $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
-                    $result[] = array($this->get_measurement_type('last_setup'), 'last_setup', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_setup')));
-                }
-                if ($full && ($wug || $real || $raw)) {
-                    $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
-                }
-                if ($full) {
-                    $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
-                }
-                $result[] = array($this->get_measurement_type('windangle'), 'windangle', ($reduced ? array() : $this->get_measure_array($ref, $data, 'windangle')));
-                $result[] = array($this->get_measurement_type('windstrength'), 'windstrength', ($reduced ? array() : $this->get_measure_array($ref, $data, 'windstrength')));
-                $result[] = array($this->get_measurement_type('gustangle'), 'gustangle', ($reduced ? array() : $this->get_measure_array($ref, $data, 'gustangle')));
-                $result[] = array($this->get_measurement_type('guststrength'), 'guststrength', ($reduced ? array() : $this->get_measure_array($ref, $data, 'guststrength')));
-                if ($netatmo) {
-                    $result[] = array($this->get_measurement_type('windangle_hour_max'), 'windangle_hour_max', ($reduced ? array() : $this->get_measure_array($ref, $data, 'windangle_hour_max')));
-                    $result[] = array($this->get_measurement_type('windstrength_hour_max'), 'windstrength_hour_max', ($reduced ? array() : $this->get_measure_array($ref, $data, 'windstrength_hour_max')));
-                    $result[] = array($this->get_measurement_type('windangle_day_max'), 'windangle_day_max', ($reduced ? array() : $this->get_measure_array($ref, $data, 'windangle_day_max')));
-                    $result[] = array($this->get_measurement_type('windstrength_day_max'), 'windstrength_day_max', ($reduced ? array() : $this->get_measure_array($ref, $data, 'windstrength_day_max')));
-                }
-                break;
             case 'namodule4': // Additional indoor module
                 if ($aggregated) {
                     $result[] = array($this->get_measurement_type('aggregated'), 'aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'aggregated')));
@@ -576,6 +579,58 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('temperature_trend'), 'temperature_trend', ($reduced ? array() : $this->get_measure_array($ref, $data, 'temperature_trend')));
                 }
                 break;
+            case 'namodule5': // Solar module
+                if ($aggregated) {
+                    $result[] = array($this->get_measurement_type('aggregated'), 'aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'aggregated')));
+                }
+                if ($full) {
+                    $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
+                    $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
+                }
+                $result[] = array($this->get_measurement_type('uv_index'), 'uv_index', ($reduced ? array() : $this->get_measure_array($ref, $data, 'uv_index')));
+                $result[] = array($this->get_measurement_type('irradiance'), 'irradiance', ($reduced ? array() : $this->get_measure_array($ref, $data, 'irradiance')));
+                if ($wflw) {
+                    $result[] = array($this->get_measurement_type('illuminance'), 'illuminance', ($reduced ? array() : $this->get_measure_array($ref, $data, 'illuminance')));
+                }
+                break;
+            case 'namodule6': // Soil module
+                if ($aggregated) {
+                    $result[] = array($this->get_measurement_type('aggregated'), 'aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'aggregated')));
+                }
+                if ($full) {
+                    $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
+                    $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
+                }
+                if ($raw) {
+                    $result[] = array($this->get_measurement_type('soil_temperature'), 'soil_temperature', ($reduced ? array() : $this->get_measure_array($ref, $data, 'soil_temperature')));
+                    $result[] = array($this->get_measurement_type('leaf_wetness'), 'leaf_wetness', ($reduced ? array() : $this->get_measure_array($ref, $data, 'leaf_wetness')));
+                    $result[] = array($this->get_measurement_type('moisture_tension'), 'moisture_tension', ($reduced ? array() : $this->get_measure_array($ref, $data, 'moisture_tension')));
+                }
+                if ($real) {
+                    $result[] = array($this->get_measurement_type('evapotranspiration'), 'evapotranspiration', ($reduced ? array() : $this->get_measure_array($ref, $data, 'evapotranspiration')));
+                }
+                break;
+            case 'namodule7': // Soil module
+                if ($aggregated) {
+                    $result[] = array($this->get_measurement_type('aggregated'), 'aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'aggregated')));
+                }
+                if ($full) {
+                    $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
+                    $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
+                }
+                if ($raw) {
+                    $result[] = array($this->get_measurement_type('strike_count'), 'strike_count', ($reduced ? array() : $this->get_measure_array($ref, $data, 'strike_count')));
+                    $result[] = array($this->get_measurement_type('strike_instant'), 'strike_instant', ($reduced ? array() : $this->get_measure_array($ref, $data, 'strike_instant')));
+                    $result[] = array($this->get_measurement_type('strike_distance'), 'strike_distance', ($reduced ? array() : $this->get_measure_array($ref, $data, 'strike_distance')));
+                    $result[] = array($this->get_measurement_type('strike_bearing'), 'strike_bearing', ($reduced ? array() : $this->get_measure_array($ref, $data, 'strike_bearing')));
+                }
+                if ($wflw) {
+                    $result[] = array($this->get_measurement_type('strike_count'), 'strike_count', ($reduced ? array() : $this->get_measure_array($ref, $data, 'strike_count')));
+                    //$result[] = array($this->get_measurement_type('strike_instant'), 'strike_instant', ($reduced ? array() : $this->get_measure_array($ref, $data, 'strike_instant')));
+                    $result[] = array($this->get_measurement_type('strike_distance'), 'strike_distance', ($reduced ? array() : $this->get_measure_array($ref, $data, 'strike_distance')));
+                    //$result[] = array($this->get_measurement_type('strike_bearing'), 'strike_bearing', ($reduced ? array() : $this->get_measure_array($ref, $data, 'strike_bearing')));
+                }
+                break;
 
             case 'namodule9': // Additional indoor module
                 if ($aggregated) {
@@ -591,6 +646,7 @@ trait Generator {
                 if ($aggregated) {
                     $result[] = array($this->get_measurement_type('aggregated'), 'aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'aggregated')));
                     $result[] = array($this->get_measurement_type('outdoor'), 'outdoor', ($reduced ? array() : $this->get_measure_array($ref, $data, 'outdoor')));
+                    $result[] = array($this->get_measurement_type('psychrometric'), 'psychrometric', ($reduced ? array() : $this->get_measure_array($ref, $data, 'psychrometric')));
                 }
                 if ($full) {
                     $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));

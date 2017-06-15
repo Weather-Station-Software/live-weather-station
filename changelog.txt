@@ -1,12 +1,15 @@
 
 ###3.3.0 / August xxxxxx, 2017
 
+* New: "solar" module with irradiance, UV index and illuminance measurements (for stations supporting it) available in all controls.
+* New: "thunderstorm" module with lightning strikes count, distance and bearing measurements (for stations supporting it) available in all controls.
+* New: "soil" module with temperature, leaf wetness, evapotranspiration and moisture content/tension measurements (for stations supporting it) available in all controls.
 * New: the task scheduler have a new mode to allow a higher frequency of weather collection and sharing (settings in 'system' tab).
 * New: it's now possible to subscribe to Weather Station news right from the dashboard.
-* New: psychrometric temperatures (wet bulb, equivalent, potential and equivalent potential) computed and available in textual, clean gauge and steel meter controls.
-* New: psychrometric partial and saturation vapor pressures computed and available in textual, clean gauge and steel meter controls.
-* New: psychrometric absolute humidity (partial or saturation) computed and available in textual, clean gauge and steel meter controls.
-* New: air density, equilibrium moisture content and specific enthalpy computed and available in textual, clean gauge and steel meter controls.
+* New: psychrometric temperatures (wet bulb, equivalent, potential and equivalent potential) computed and available in all controls.
+* New: psychrometric partial and saturation vapor pressures computed and available in all controls.
+* New: psychrometric absolute humidity (partial or saturation) computed and available in all controls.
+* New: air density, equilibrium moisture content and specific enthalpy computed and available in all controls.
 * Improvement: ephemeris widget and textual shortcodes now take care of locations where there's no day or no night (on 24h).
 * Improvement: an admin notification informs you when Weather Station have been updated.
 * Improvement: widgets now hide the header blank zone when there's no title or information to display (thanks to Lisa Yoon for the suggestion).
@@ -18,6 +21,7 @@
 * Improvement: some interface style settings have appeared in the 'display' tab of 'settings' screen.
 * Improvement: in textual shortcodes, difference is now made between Unix timestamps and UTC timestamps.
 * Improvement: distances now have a rounding precision commensurate with their values.
+* Improvement: the file handler now supports double date format in realtime.txt files.
 * Bug fix: in some cases, the dashboard columns may be blank after adding a station from the welcome panel.
 * Bug fix: it's impossible to save negative threshold values for the Chandler Burning index, in Chrome, Safari and Firefox.
 * Bug fix: carbon monoxide thresholds are wrongly converted from/to some system units.
