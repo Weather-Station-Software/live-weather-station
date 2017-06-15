@@ -23,6 +23,7 @@ trait Description {
     protected function get_service_name($type) {
         switch ($type) {
             case 0:
+            case 6:
                 $result = 'Netatmo';
                 break;
             case 1:
@@ -34,8 +35,11 @@ trait Description {
                 break;
             case 4:
             case 5:
-            case 6:
+            case 7:
                 $result = 'File Handler';
+                break;
+            case 8:
+                $result = 'WeatherFlow';
                 break;
             default:
                 $result = null;
@@ -67,6 +71,15 @@ trait Description {
                 break;
             case 'namodule4': // Additional indoor module
                 $result = __('Indoor module', 'live-weather-station');
+                break;
+            case 'namodule5': // Solar module
+                $result = __('Solar module', 'live-weather-station');
+                break;
+            case 'namodule6': // Soil module
+                $result = __('Soil module', 'live-weather-station');
+                break;
+            case 'namodule7': // Thunderstorm module
+                $result = __('Thunderstorm module', 'live-weather-station');
                 break;
 
 
@@ -132,6 +145,15 @@ trait Description {
                 break;
             case 'namodule4': // Indoor module
                 $result = __('Indoor', 'live-weather-station');
+                break;
+            case 'namodule5': // Solar module
+                $result = __('Solar', 'live-weather-station');
+                break;
+            case 'namodule6': // Soil module
+                $result = __('Soil', 'live-weather-station');
+                break;
+            case 'namodule7': // Thunderstorm module
+                $result = __('Thunderstorm', 'live-weather-station');
                 break;
 
             case 'namodule9': // Extra module
@@ -349,6 +371,9 @@ trait Description {
             case 'aggregated':
                 $result = ($abbr ? __('all', 'live-weather-station') : __('[all measures]', 'live-weather-station'));
                 break;
+            case 'psychrometric':
+                $result = ($abbr ? __('psychrometric', 'live-weather-station') : __('[psychrometric values]', 'live-weather-station'));
+                break;
             case 'outdoor':
                 $result = ($abbr ? __('outdoor', 'live-weather-station') : __('[outdoor measures]', 'live-weather-station'));
                 break;
@@ -489,6 +514,50 @@ trait Description {
             case 'equivalent_potential_temperature':
                 $result = ($abbr ? __('Eq. pot. temperature', 'live-weather-station') : __('Equivalent potential temperature', 'live-weather-station'));
                 break;
+            // SOLAR
+            case 'irradiance':
+                $result = ($abbr ? __('Irradiance', 'live-weather-station') : __('Solar irradiance', 'live-weather-station'));
+                break;
+            case 'uv_index':
+                $result = ($abbr ? __('UV', 'live-weather-station') : __('UV index', 'live-weather-station'));
+                break;
+            case 'illuminance':
+                $result = ($abbr ? __('Illuminance', 'live-weather-station') : __('Solar illuminance', 'live-weather-station'));
+                break;
+            // SOIL
+            case 'soil_temperature':
+                $result = ($abbr ? __('Temperature', 'live-weather-station') : __('Soil temperature', 'live-weather-station'));
+                break;
+            case 'leaf_wetness':
+                $result = ($abbr ? __('Wetness', 'live-weather-station') : __('Leaf wetness', 'live-weather-station'));
+                break;
+            case 'moisture_content':
+                $result = ($abbr ? __('Moisture', 'live-weather-station') : __('Soil moisture content', 'live-weather-station'));
+                break;
+            case 'moisture_tension':
+                $result = ($abbr ? __('Moisture', 'live-weather-station') : __('Soil moisture tension', 'live-weather-station'));
+                break;
+            case 'evapotranspiration':
+                $result = ($abbr ? __('ET', 'live-weather-station') : __('Evapotranspiration', 'live-weather-station'));
+                break;
+            // THUNDERSTORM
+            case 'strike_count':
+                $result = ($abbr ? __('Strikes tot.', 'live-weather-station') : __('Strikes count', 'live-weather-station'));
+                break;
+            case 'strike_instant':
+                $result = ($abbr ? __('Strikes', 'live-weather-station') : __('Strikes count in last minute', 'live-weather-station'));
+                break;
+            case 'strike_distance':
+                $result = ($abbr ? __('Strike dist.', 'live-weather-station') : __('Strike distance', 'live-weather-station'));
+                break;
+            case 'strike_bearing':
+                $result = ($abbr ? __('Strike bear.', 'live-weather-station') : __('Strike bearing', 'live-weather-station'));
+                break;
+
+            /*"lightning_strike_last_epoch": 1495652340,
+              "lightning_strike_last_distance": 22,  strike_distance
+              "lightning_strike_count_last_3hr": 0,    strike_count */
+
             default:
                 $result = ($abbr ? '?' : __('Unknown measurement', 'live-weather-station'));
         }

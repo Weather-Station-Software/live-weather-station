@@ -21,6 +21,7 @@ define('LWS_RAW_SID', 4);
 define('LWS_REAL_SID', 5);
 define('LWS_NETATMOHC_SID', 6);
 define('LWS_TXT_SID', 7);
+define('LWS_WFLW_SID', 8);
 
 trait Storage {
 

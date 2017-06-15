@@ -611,6 +611,45 @@ trait Conversion {
     }
 
     /**
+     * Get the irradiance expressed in its unique unit.
+     *
+     * @param mixed $value The value of the irradiance.
+     * @return string The irradiance expressed in its unique unit.
+     * @since 3.3.0
+     */
+    protected function get_irradiance($value)
+    {
+        $result = $value;
+        return sprintf('%d', round($result, 0));
+    }
+
+    /**
+     * Get the illuminance expressed in its unique unit.
+     *
+     * @param mixed $value The value of the illuminance.
+     * @return string The illuminance expressed in its unique unit.
+     * @since 3.3.0
+     */
+    protected function get_illuminance($value)
+    {
+        $result = $value / 1000;
+        return sprintf('%d', round($result, 0));
+    }
+
+    /**
+     * Get the illuminance expressed in standard unit.
+     *
+     * @param mixed $value The value of the illuminance.
+     * @return string The illuminance expressed in standard unit.
+     * @since 3.3.0
+     */
+    protected function get_reverse_illuminance($value)
+    {
+        $result = $value * 1000;
+        return sprintf('%d', round($result, 0));
+    }
+
+    /**
      * Get the wind angle expressed in its unique unit.
      *
      * @param   mixed   $value  The value of the wind angle.
@@ -1331,6 +1370,25 @@ trait Conversion {
     }
 
     /**
+     * Get the distance expressed in standard unit.
+     *
+     * @param mixed $value The value of the distance.
+     * @param integer $id Optional. The unit id.
+     * @return string The distance expressed in standard unit.
+     * @since 3.3.0
+     */
+    protected function get_reverse_distance_from_meters($value, $id = 0)
+    {
+        $result = $value * 1000;
+        switch ($id) {
+            case 1:  // D(mi) = D(km) / 1.609
+                $result = $result * 1.609;
+                break;
+        }
+        return round($result);
+    }
+
+    /**
      * Get the standard value of a value expressed in user's unit.
      *
      * @param mixed $value The value to output.
@@ -1345,6 +1403,7 @@ trait Conversion {
             case 'pressure':
             case 'pressure_min':
             case 'pressure_max':
+            case 'moisture_tension':
                 $result = $this->get_reverse_pressure($value, get_option('live_weather_station_unit_pressure'));
                 break;
             case 'humidity':
@@ -1353,6 +1412,8 @@ trait Conversion {
             case 'humint':
             case 'humext':
             case 'humidity_ref':
+            case 'leaf_wetness':
+            case 'moisture_content':
                 $result = $this->get_reverse_humidity($value);
                 break;
             case 'temperature':
@@ -1366,6 +1427,7 @@ trait Conversion {
             case 'heat_index':
             case 'humidex':
             case 'wind_chill':
+            case 'soil_temperature':
                 $result = $this->get_reverse_temperature($value, get_option('live_weather_station_unit_temperature'));
                 break;
             case 'loc_altitude':
@@ -1394,6 +1456,7 @@ trait Conversion {
             case 'rain_month_aggregated':
             case 'rain_season_aggregated':
             case 'rain_year_aggregated':
+            case 'evapotranspiration':
                 $result = $this->get_reverse_rain($value, get_option('live_weather_station_unit_rain_snow'));
                 break;
             case 'snow':
@@ -1404,6 +1467,7 @@ trait Conversion {
             case 'windangle_max':
             case 'windangle_day_max':
             case 'windangle_hour_max':
+            case 'strike_bearing':
                 $result = $this->get_reverse_wind_angle($value);
                 break;
             case 'windstrength':
@@ -1425,6 +1489,12 @@ trait Conversion {
                 break;
             case 'absolute_humidity':
                 $result = $this->get_reverse_absolute_humidity($value, get_option('live_weather_station_unit_psychrometry'));
+                break;
+            case 'illuminance':
+                $result = $this->get_reverse_illuminance($value);
+                break;
+            case 'strike_distance':
+                $result = $this->get_reverse_distance_from_meters($value);
                 break;
         }
         return $result;

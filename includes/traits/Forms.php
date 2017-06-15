@@ -192,13 +192,15 @@ trait Handling {
         $unit = $this->output_unit($type, ($type == 'rain' ? 'namodule3' : 'NAMain'))['unit'];
         $unitlong = $this->output_unit($type, ($type == 'rain' ? 'namodule3' : 'NAMain'))['long'];
         $typetxt = strtolower($this->get_measurement_type($type, false, ($type == 'rain' ? 'namodule3' : 'NAMain')));
-        if ($type == 'humidex' || $type == 'heat_index' || $type == 'cbi') {
+        $txt_value = sprintf(__('Limits for %s, values expressed in %s.', 'live-weather-station'), $typetxt, $unitlong);
+        $txt_alarm = sprintf(__('Alarms for %s, values expressed in %s.', 'live-weather-station'), $typetxt, $unitlong);
+        if ($type == 'humidex' || $type == 'heat_index' || $type == 'cbi' || $type == 'uv_index') {
             $txt_value = sprintf(__('Limits for %s, dimensionless index.', 'live-weather-station'), $typetxt, $unitlong);
             $txt_alarm = sprintf(__('Alarms for %s, dimensionless index.', 'live-weather-station'), $typetxt, $unitlong);
         }
-        else {
-            $txt_value = sprintf(__('Limits for %s, values expressed in %s.', 'live-weather-station'), $typetxt, $unitlong);
-            $txt_alarm = sprintf(__('Alarms for %s, values expressed in %s.', 'live-weather-station'), $typetxt, $unitlong);
+        if ($type == 'strike_count' || $type == 'strike_instant') {
+            $txt_value = sprintf(__('Limits for %s.', 'live-weather-station'), $typetxt);
+            $txt_alarm = sprintf(__('Alarms for %s.', 'live-weather-station'), $typetxt);
         }
         $html .= __('low:', 'live-weather-station') . ' <input name="' . $id . 'min_value" type="number" step="' . $step . '" min="' . $min_boundary . '" max="' . $max_boundary . '" id="' . $id . 'min_value" value="' . $min_value . '" />';
         $html .= '&nbsp;<label for="' . $id . 'min_value">' . $unit . '</label> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ';

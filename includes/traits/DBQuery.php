@@ -477,7 +477,7 @@ trait Query {
     protected function get_outdoor_datas($device_id, $obsolescence_filtering=false, $strict_filtering=false) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
-        $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAMain' OR module_type='NAEphemer' OR module_type='NAComputed' OR module_type='NAPollution' " . ($strict_filtering ? "" : "OR module_type='NACurrent' ") . "OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NAModule3') ORDER BY module_id ASC" ;
+        $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAMain' OR module_type='NAEphemer' OR module_type='NAComputed' OR module_type='NAPollution' " . ($strict_filtering ? "" : "OR module_type='NACurrent' ") . "OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NAModule3' OR module_type='NAModule5' OR module_type='NAModule6' OR module_type='NAModule7') ORDER BY module_id ASC" ;
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -535,6 +535,32 @@ trait Query {
     }
 
     /**
+     * Get computed datas.
+     *
+     * @param string $device_id The device ID.
+     * @param boolean $obsolescence_filtering Don't return obsolete data.
+     * @return array An array containing the pollution datas.
+     * @since 3.3.0
+     */
+    protected function get_computed_datas($device_id, $obsolescence_filtering=false) {
+        global $wpdb;
+        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAComputed')" ;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $result = array();
+            foreach ($query_a as $val) {
+                $result[] = (array)$val;
+            }
+            return ($obsolescence_filtering ? $this->obsolescence_filtering($result) : $result);
+        }
+        catch(\Exception $ex) {
+            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
+        }
+    }
+
+    /**
      * Get ephemeris datas.
      *
      * @param   string  $device_id  The device ID.
@@ -571,7 +597,7 @@ trait Query {
     protected function get_all_datas($device_id, $obsolescence_filtering=false) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
-        $order = " ORDER BY CASE module_type WHEN 'NAMain' THEN 1 WHEN 'NAModule1' THEN 2 WHEN 'NAModule2' THEN 3 WHEN 'NAModule3' THEN 4 WHEN 'NAComputed' THEN 5 WHEN 'NAModule4' THEN 6 WHEN 'NAEphemer' THEN 7 WHEN 'NACurrent' THEN 8 ELSE 10 END";
+        $order = " ORDER BY CASE module_type WHEN 'NAMain' THEN 1 WHEN 'NAModule1' THEN 2 WHEN 'NAModule2' THEN 3 WHEN 'NAModule3' THEN 4 WHEN 'NAModule5' THEN 5 WHEN 'NAModule7' THEN 6 WHEN 'NAModule6' THEN 7 WHEN 'NAComputed' THEN 8 WHEN 'NAModule4' THEN 9 WHEN 'NAEphemer' THEN 10 WHEN 'NACurrent' THEN 11 ELSE 12 END";
         $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $device_id . "'" . $order ;
         try {
             $cache_id = 'get_all_datas_'.$device_id;
