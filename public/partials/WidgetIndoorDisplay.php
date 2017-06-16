@@ -14,7 +14,9 @@
                 <div class="lws-widget-header-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Health index', 'live-weather-station').'"' : ''); ?>>
                     <i class="fa fa-leaf health-idx-<?php echo $id ?>"></i>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if (($show_title || $show_status || $subtitle != 0) || $show_co2 || $show_noise || $show_humidity || $show_temperature):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_title || $show_status || $subtitle != 0):?>
                 <!-- STATION NAME -->
@@ -31,7 +33,9 @@
                         <?php endif;?>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if ($show_co2 || $show_noise || $show_humidity || $show_temperature):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_co2):?>
                 <!-- CO2 -->
@@ -46,7 +50,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if ($show_noise || $show_humidity || $show_temperature):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_temperature && $temp_multipart):?>
                 <!-- TEMPERATURE -->
@@ -69,7 +75,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if ($show_noise || $show_humidity):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_temperature && !$temp_multipart):?>
                 <!-- TEMPERATURE -->
@@ -84,7 +92,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if ($show_noise || $show_humidity):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_humidity):?>
                 <!-- HUMIDITY -->
@@ -99,7 +109,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if ($show_noise):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_noise):?>
                 <!-- NOISE -->
