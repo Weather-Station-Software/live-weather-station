@@ -3,7 +3,7 @@
  * @package Admin\Partials
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
- * @since 3.1.0
+ * @since 3.3.0
  */
 
 use WeatherStation\System\Help\InlineHelp;
@@ -18,23 +18,35 @@ use WeatherStation\System\Help\InlineHelp;
     </select>
 </p>
 <p>
-    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_current'); ?>" name="<?php echo $this->get_field_name('show_current'); ?>"<?php checked( $show_current ); ?> />
-    <label for="<?php echo $this->get_field_id('show_current'); ?>"><?php esc_html_e( 'Display current fire risks (if available)' , 'live-weather-station'); echo InlineHelp::article(9)?></label>
-    <br/>
-    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_cbi'); ?>" name="<?php echo $this->get_field_name('show_cbi'); ?>"<?php checked( $show_cbi ); ?> />
-    <label for="<?php echo $this->get_field_id('show_cbi'); ?>"><?php esc_html_e( 'Display Chandler burning index (if available)' , 'live-weather-station'); echo InlineHelp::article(9)?></label>
-    <br/>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_temperature'); ?>" name="<?php echo $this->get_field_name('show_temperature'); ?>"<?php checked( $show_temperature ); ?> />
-    <label for="<?php echo $this->get_field_id('show_temperature'); ?>"><?php esc_html_e( 'Display temperatures (if available)' , 'live-weather-station'); ?></label>
+    <label for="<?php echo $this->get_field_id('show_temperature'); ?>"><?php esc_html_e( 'Display temperatures (if available)' , 'live-weather-station'); echo InlineHelp::article(13)?></label>
+    <br/>
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_wet_bulb'); ?>" name="<?php echo $this->get_field_name('show_wet_bulb'); ?>"<?php checked( $show_wet_bulb ); ?> />
+    <label for="<?php echo $this->get_field_id('show_wet_bulb'); ?>"><?php esc_html_e( 'Display wet bulb temperature (if available)' , 'live-weather-station'); echo InlineHelp::article(13)?></label>
+    <br/>
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_pressure'); ?>" name="<?php echo $this->get_field_name('show_pressure'); ?>"<?php checked( $show_pressure ); ?> />
+    <label for="<?php echo $this->get_field_id('show_pressure'); ?>"><?php esc_html_e( 'Display atmospheric pressure (if available)' , 'live-weather-station'); echo InlineHelp::article(16)?></label>
     <br/>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_humidity'); ?>" name="<?php echo $this->get_field_name('show_humidity'); ?>"<?php checked( $show_humidity ); ?> />
-    <label for="<?php echo $this->get_field_id('show_humidity'); ?>"><?php esc_html_e( 'Display humidity (if available)' , 'live-weather-station'); echo InlineHelp::article(12)?></label>
+    <label for="<?php echo $this->get_field_id('show_humidity'); ?>"><?php esc_html_e( 'Display relative humidity (if available)' , 'live-weather-station'); echo InlineHelp::article(12)?></label>
     <br/>
-    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_rain'); ?>" name="<?php echo $this->get_field_name('show_rain'); ?>"<?php checked( $show_rain ); ?> />
-    <label for="<?php echo $this->get_field_id('show_rain'); ?>"><?php esc_html_e( 'Display rainfall (if available)' , 'live-weather-station'); ?></label>
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_absolute_humidity'); ?>" name="<?php echo $this->get_field_name('show_absolute_humidity'); ?>"<?php checked( $show_absolute_humidity ); ?> />
+    <label for="<?php echo $this->get_field_id('show_absolute_humidity'); ?>"><?php esc_html_e( 'Display absolute humidity (if available)' , 'live-weather-station'); echo InlineHelp::article(12)?></label>
     <br/>
-    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_wind'); ?>" name="<?php echo $this->get_field_name('show_wind'); ?>"<?php checked( $show_wind ); ?> />
-    <label for="<?php echo $this->get_field_id('show_wind'); ?>"><?php esc_html_e( 'Display wind (if available)' , 'live-weather-station'); ?></label>
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_dew'); ?>" name="<?php echo $this->get_field_name('show_dew'); ?>"<?php checked( $show_dew ); ?> />
+    <label for="<?php echo $this->get_field_id('show_dew'); ?>"><?php esc_html_e( 'Display dew point (if available)' , 'live-weather-station'); echo InlineHelp::article(3)?></label>
+    <br/>
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_vapor_pressure'); ?>" name="<?php echo $this->get_field_name('show_vapor_pressure'); ?>"<?php checked( $show_vapor_pressure ); ?> />
+    <label for="<?php echo $this->get_field_id('show_vapor_pressure'); ?>"><?php esc_html_e( 'Display vapor pressures (if available)' , 'live-weather-station'); echo InlineHelp::article(14)?></label>
+    <br/>
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_air_density'); ?>" name="<?php echo $this->get_field_name('show_air_density'); ?>"<?php checked( $show_air_density ); ?> />
+    <label for="<?php echo $this->get_field_id('show_air_density'); ?>"><?php esc_html_e( 'Display air density (if available)' , 'live-weather-station'); echo InlineHelp::article(14)?></label>
+    <br/>
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_enthalpy'); ?>" name="<?php echo $this->get_field_name('show_enthalpy'); ?>"<?php checked( $show_enthalpy ); ?> />
+    <label for="<?php echo $this->get_field_id('show_enthalpy'); ?>"><?php esc_html_e( 'Display specific enthalpy (if available)' , 'live-weather-station'); echo InlineHelp::article(14)?></label>
+    <br/>
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_emc'); ?>" name="<?php echo $this->get_field_name('show_emc'); ?>"<?php checked( $show_emc ); ?> />
+    <label for="<?php echo $this->get_field_id('show_emc'); ?>"><?php esc_html_e( 'Display equilibrium moisture content (if available)' , 'live-weather-station'); echo InlineHelp::article(15)?></label>
     <br/>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('hide_obsolete'); ?>" name="<?php echo $this->get_field_name('hide_obsolete'); ?>"<?php checked( $hide_obsolete ); ?> />
     <label for="<?php echo $this->get_field_id('hide_obsolete'); ?>"><?php esc_html_e( 'Hide obsolete measurements' , 'live-weather-station'); ?></label>
@@ -71,32 +83,28 @@ use WeatherStation\System\Help\InlineHelp;
     <?php } ?>
 </select>
 <p>
-    <label for="<?php echo $this->get_field_id('low_url'); ?>"><?php esc_html_e( 'Image URL for low risk' , 'live-weather-station'); ?></label><br/>
-    <input type="text" class="widefat" id="<?php echo $this->get_field_id('low_url'); ?>" name="<?php echo $this->get_field_name('low_url'); ?>" value="<?php echo $low_url; ?>" />
+    <label for="<?php echo $this->get_field_id('day_url'); ?>"><?php esc_html_e( 'Image URL for day' , 'live-weather-station'); ?></label><br/>
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('day_url'); ?>" name="<?php echo $this->get_field_name('day_url'); ?>" value="<?php echo $day_url; ?>" />
 </p>
 <p>
-    <label for="<?php echo $this->get_field_id('moderate_url'); ?>"><?php esc_html_e( 'Image URL for moderate risk' , 'live-weather-station'); ?></label><br/>
-    <input type="text" class="widefat" id="<?php echo $this->get_field_id('moderate_url'); ?>" name="<?php echo $this->get_field_name('moderate_url'); ?>" value="<?php echo $moderate_url; ?>" />
+    <label for="<?php echo $this->get_field_id('night_url'); ?>"><?php esc_html_e( 'Image URL for night' , 'live-weather-station'); ?></label><br/>
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('night_url'); ?>" name="<?php echo $this->get_field_name('night_url'); ?>" value="<?php echo $night_url; ?>" />
 </p>
 <p>
-    <label for="<?php echo $this->get_field_id('high_url'); ?>"><?php esc_html_e( 'Image URL for high risk' , 'live-weather-station'); ?></label><br/>
-    <input type="text" class="widefat" id="<?php echo $this->get_field_id('high_url'); ?>" name="<?php echo $this->get_field_name('high_url'); ?>" value="<?php echo $high_url; ?>" />
+    <label for="<?php echo $this->get_field_id('dawn_url'); ?>"><?php esc_html_e( 'Image URL for dawn' , 'live-weather-station'); ?></label><br/>
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('dawn_url'); ?>" name="<?php echo $this->get_field_name('dawn_url'); ?>" value="<?php echo $dawn_url; ?>" />
 </p>
 <p>
-    <label for="<?php echo $this->get_field_id('very_high_url'); ?>"><?php esc_html_e( 'Image URL for very high risk' , 'live-weather-station'); ?></label><br/>
-    <input type="text" class="widefat" id="<?php echo $this->get_field_id('very_high_url'); ?>" name="<?php echo $this->get_field_name('very_high_url'); ?>" value="<?php echo $very_high_url; ?>" />
-</p>
-<p>
-    <label for="<?php echo $this->get_field_id('extreme_url'); ?>"><?php esc_html_e( 'Image URL for extreme risk' , 'live-weather-station'); ?></label><br/>
-    <input type="text" class="widefat" id="<?php echo $this->get_field_id('extreme_url'); ?>" name="<?php echo $this->get_field_name('extreme_url'); ?>" value="<?php echo $extreme_url; ?>" />
+    <label for="<?php echo $this->get_field_id('dusk_url'); ?>"><?php esc_html_e( 'Image URL for dusk' , 'live-weather-station'); ?></label><br/>
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('dusk_url'); ?>" name="<?php echo $this->get_field_name('dusk_url'); ?>" value="<?php echo $dusk_url; ?>" />
 </p>
 <p>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('fixed_background'); ?>" name="<?php echo $this->get_field_name('fixed_background'); ?>"<?php checked( $fixed_background ); ?> />
     <label for="<?php echo $this->get_field_id('fixed_background'); ?>"><?php esc_html_e( 'Fixed background' , 'live-weather-station'); ?></label>
 </p>
 <p>
-    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('follow_risk'); ?>" name="<?php echo $this->get_field_name('follow_risk'); ?>"<?php checked( $follow_risk ); ?> />
-    <label for="<?php echo $this->get_field_id('follow_risk'); ?>"><?php esc_html_e( 'Color hue follows current risk' , 'live-weather-station'); ?></label>
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('follow_light'); ?>" name="<?php echo $this->get_field_name('follow_light'); ?>"<?php checked( $follow_light ); ?> />
+    <label for="<?php echo $this->get_field_id('follow_light'); ?>"><?php esc_html_e( 'Luminosity follows current light' , 'live-weather-station'); ?></label>
 </p>
 <p>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_borders'); ?>" name="<?php echo $this->get_field_name('show_borders'); ?>"<?php checked( $show_borders ); ?> />

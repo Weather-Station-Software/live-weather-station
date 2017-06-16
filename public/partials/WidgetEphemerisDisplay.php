@@ -33,9 +33,11 @@
                     <?php endif;?>
                 </div>
             </div>
-            <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+            <?php if (((($format == 0) && ($show_sun || ($show_moon && $show_moonphase))) || (($format == 1 || $format == 2) && ($show_sun || ($show_sundetails && $format == 2) || $show_moonphase || $show_moon || ($show_moondetails && $show_moonphase && $format == 2))))):?>
+                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+            <?php endif;?>
         <?php endif;?>
-        <?php if ( $format == 0 ):?>
+        <?php if ($format == 0):?>
             <?php if ($show_sun):?>
                 <!-- SUNRISE / SUNSET -->
                 <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Sunrise & sunset', 'live-weather-station').'"' : ''); ?>>
@@ -57,7 +59,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if (($show_moon && $show_moonphase) || (($format == 1 || $format == 2) && ($show_sun || ($show_sundetails && $format == 2) || $show_moonphase || $show_moon || ($show_moondetails && $show_moonphase && $format == 2)))):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_moon && $show_moonphase):?>
                 <!-- MOONRISE / MOONSET -->
@@ -80,7 +84,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if (($format == 1 || $format == 2) && ($show_sun || ($show_sundetails && $format == 2) || $show_moonphase || $show_moon || ($show_moondetails && $show_moonphase && $format == 2))):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
         <?php endif;?>
 
@@ -111,7 +117,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if (($show_sundetails && $format == 2) || $show_moonphase || $show_moon || ($show_moondetails && $show_moonphase && $format == 2)):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_sundetails && $format == 2):?>
                 <!-- SUN DETAILS -->
@@ -134,7 +142,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if ($show_moonphase || $show_moon || ($show_moondetails && $show_moonphase && $format == 2)):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_moonphase):?>
                 <!-- MOONRISE / MOONSET -->
@@ -157,7 +167,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if ($show_moon || ($show_moondetails && $show_moonphase && $format == 2)):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_moon):?>
                 <!-- MOONSET -->
@@ -185,7 +197,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if (($show_moondetails && $show_moonphase && $format == 2)):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_moondetails && $show_moonphase && $format == 2):?>
                 <!-- SUN DETAILS -->

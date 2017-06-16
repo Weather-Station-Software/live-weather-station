@@ -275,6 +275,12 @@ class InlineHelp {
                 }
                 break;
             // todo 11 : analytics
+            // todo 12 : humidity relative or absolute
+            // todo 13 : temperatures + wet bulb
+            // todo 14 : vapor pressure, density, enthalpy
+            // todo 15 : emc
+            // todo 16 : athmospheric pressure
+
             default:
                 return '';
         }

@@ -14,7 +14,9 @@
                 <div class="lws-widget-header-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Current fire weather risk', 'live-weather-station').'"' : ''); ?>>
                     <i class="wi wi-fire cbi-<?php echo $id ?>"></i>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if (($show_title || $subtitle != 0) || $show_rain || $show_wind || $show_cbi || $show_humidity || $show_temperature):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_title || $subtitle != 0):?>
                 <!-- STATION NAME -->
@@ -31,7 +33,9 @@
                         <?php endif;?>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if ($show_rain || $show_wind || $show_cbi || $show_humidity || $show_temperature):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_temperature && $temp_multipart):?>
                 <!-- TEMPERATURE -->
@@ -54,7 +58,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if ($show_rain || $show_wind || $show_cbi || $show_humidity):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_temperature && !$temp_multipart):?>
                 <!-- TEMPERATURE -->
@@ -69,7 +75,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if ($show_rain || $show_wind || $show_cbi || $show_humidity):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_humidity):?>
                 <!-- HUMIDITY -->
@@ -84,7 +92,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if ($show_rain || $show_wind || $show_cbi):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_cbi):?>
                 <!-- CHANDLER BURNING INDEX -->
@@ -104,7 +114,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if ($show_rain || $show_wind):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_wind && $wind_multipart):?>
                 <!-- WIND -->
@@ -126,7 +138,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if ($show_rain):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_wind && !$wind_multipart):?>
                 <!-- WIND -->
@@ -141,7 +155,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php if ($show_rain):?>
+                    <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+                <?php endif;?>
             <?php endif;?>
             <?php if ($show_rain && $rain_multipart):?>
                 <!-- RAIN -->
@@ -163,7 +179,6 @@
                         </div>
                     </div>
                 </div>
-                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
             <?php if ($show_rain && !$rain_multipart):?>
                 <!-- RAIN -->
