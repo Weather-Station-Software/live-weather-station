@@ -3848,10 +3848,9 @@ trait Output {
     /**
      * Get an angle in readable text (i.e. N-NW, S, ...).
      *
-     * @param   integer   $value    The value of the angle.
-     * @return  string  The wind angle in readable text.
-     * @since    1.1.0
-     * @access   protected
+     * @param integer $value The value of the angle.
+     * @return string The wind angle in readable text.
+     * @since 1.1.0
      */
     protected function get_angle_text($value) {
         while ($value < 0) {

@@ -267,7 +267,10 @@ class Handling {
         $api_url = 'https://translate.wordpress.org/api/projects/wp-plugins/' . LWS_PLUGIN_SLUG . $branch;
         try {
             Quota::verify('WordPress.org', 'GET');
-            $resp = wp_remote_get($api_url);
+            $args = array();
+            $args['user-agent'] = LWS_PLUGIN_AGENT;
+            $args['timeout'] = get_option('live_weather_station_system_http_timeout');
+            $resp = wp_remote_get($api_url, $args);
             $body = wp_remote_retrieve_body($resp);
             unset($resp);
             if ($body) {

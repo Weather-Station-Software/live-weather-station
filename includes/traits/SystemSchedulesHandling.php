@@ -13,6 +13,7 @@ use WeatherStation\SDK\Netatmo\Plugin\Updater as Netatmo_Updater;
 use WeatherStation\SDK\Netatmo\Plugin\HCUpdater as Netatmo_HCUpdater;
 use WeatherStation\SDK\Clientraw\Plugin\StationUpdater as Clientraw_Updater;
 use WeatherStation\SDK\Realtime\Plugin\StationUpdater as Realtime_Updater;
+use WeatherStation\SDK\Stickertags\Plugin\StationUpdater as Stickertags_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\CurrentUpdater as Owm_Current_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\StationUpdater as Owm_Station_Updater;
 use WeatherStation\SDK\WeatherUnderground\Plugin\StationUpdater as Wug_Station_Updater;
@@ -469,6 +470,37 @@ trait Handling {
         if (!wp_next_scheduled(self::$real_update_station_schedule_name)) {
             wp_schedule_event(time() + $timeshift, $rec, self::$real_update_station_schedule_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$real_update_station_schedule_name).'" (re)scheduled.');
+        }
+    }
+
+    /**
+     * Define Stickertags Updater cron job.
+     *
+     * @since 3.3.0
+     */
+    protected static function define_txt_station_update_cron() {
+        $plugin_txt_update_cron = new Stickertags_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$txt_update_station_schedule_name, array($plugin_txt_update_cron, 'cron_run'));
+    }
+
+    /**
+     * Launch the Stickertags Updater cron job if needed.
+     *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
+     * @since 3.3.0
+     */
+    protected static function launch_txt_station_update_cron($timeshift=0, $system='Watchdog') {
+        if (get_option('live_weather_station_cron_speed', 0) == 0) {
+            $rec = 'five_minutes';
+        }
+        else {
+            $rec = 'two_minutes';
+        }
+        if (!wp_next_scheduled(self::$txt_update_station_schedule_name)) {
+            wp_schedule_event(time() + $timeshift, $rec, self::$txt_update_station_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$txt_update_station_schedule_name).'" (re)scheduled.');
         }
     }
 

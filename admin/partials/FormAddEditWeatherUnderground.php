@@ -10,6 +10,9 @@ use WeatherStation\System\Help\InlineHelp;
 
 $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
 $edit = ($station['guid'] != 0);
+if (!isset($station['station_model'])) {
+    $station['station_model'] = __('N/A', 'live-weather-station');
+}
 
 
 ?>

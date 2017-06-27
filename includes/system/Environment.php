@@ -198,18 +198,52 @@ class Manager {
         }
         try {
             Quota::verify('ip-API', 'GET');
-            $result = @unserialize(file_get_contents('http://ip-api.com/php/'.self::server_ip()));
+            $query = 'http://ip-api.com/json/'.self::server_ip();
+            $args = array();
+            $args['user-agent'] = LWS_PLUGIN_AGENT;
+            $args['timeout'] = get_option('live_weather_station_system_http_timeout');
+            $content = wp_remote_get($query, $args);
+            if (is_wp_error($content)) {
+                Logger::error('API / SDK','ip-API',null,null,null,null,$content->get_error_code(),$content->get_error_message() );
+                return false;
+            }
+            $error = false;
+            $code = 0;
+            $message = 'Unknown error.';
+            if (array_key_exists('response', $content)) {
+                $response = $content['response'];
+            }
+            else {
+                $response = array();
+            }
+            if (array_key_exists('code', $response)) {
+                $code = $response['code'];
+                if ($code != '200') {
+                    $error = true;
+                    if (array_key_exists('message', $response)) {
+                        $message = $response['message'];
+                    }
+                }
+            }
+            else {
+                $error = true;
+            }
+            if ($error) {
+                Logger::error('API / SDK','ip-API',null,null,null,null,$code,$message);
+                return false;
+            }
+            if (!array_key_exists('body', $content)) {
+                Logger::error('API / SDK','ip-API',null,null,null,null,null,'The server sent an empty response.');
+                return false;
+            }
+            $result = json_decode($content['body'], true);
         }
         catch (Exception $e) {
+            Logger::error('API / SDK','ip-API',null,null,null,null,$e->getCode(),$e->getMessage() );
             return false;
         }
-        if( $result && $result['status'] == 'success' ) {
-            set_transient('lws_server_location', $result, HOUR_IN_SECONDS);
-            return $result;
-        }
-        else {
-            return false;
-        }
+        set_transient('lws_server_location', $result, HOUR_IN_SECONDS);
+        return $result;
     }
 
     /**

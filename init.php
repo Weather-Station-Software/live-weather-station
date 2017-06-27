@@ -71,7 +71,7 @@ function get_display_locale($user_id = 0) {
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.3.0-dev3');
+define('LWS_VERSION', '3.3.0-dev5');
 define('LWS_CODENAME', '"Kat Onoma"');
 define('LWS_WATSNEW_EN', 'https://weather.station.software/en/weather-station-3-2-merzhin/');
 define('LWS_WATSNEW_FR', 'https://weather.station.software/fr/weather-station-32-merzhin/');
@@ -80,7 +80,6 @@ define('LWS_WATSNEW_FR', 'https://weather.station.software/fr/weather-station-32
 
 define('LWS_FULL_NAME', 'Weather Station 3');
 define('LWS_OWM_READY', false);
-define('LWS_TXT_READY', false);
 define('LWS_WFW_READY', false);
 define('LWS_MINIMUM_WP_VERSION', '4.0');
 define('LWS_PLUGIN_ID', 'live-weather-station');
@@ -104,7 +103,6 @@ define('LWS_CURL_LOADED', EnvManager::is_curl_loaded());
 define('LWS_JSON_LOADED', EnvManager::is_json_loaded());
 define('LWS_PHPVERSION_OK', EnvManager::is_php_version_ok());
 define('LWS_PLUGIN_AGENT', LWS_FULL_NAME . ' (' . EnvManager::wordpress_version_id() . '; ' . EnvManager::weatherstation_version_id() . '; +https://weather.station.software)');
-//define('LWS_PLUGIN_AGENT', 'Mozilla/5.0 (Windows NT 5.1; rv:15.0) Gecko/20100101 Firefox/15.0.1');
 
 
 /**

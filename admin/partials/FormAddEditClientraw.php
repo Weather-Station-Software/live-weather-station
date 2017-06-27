@@ -14,6 +14,10 @@ if ($error_message == '') {
 else {
     $errmsg = __('Unable to use this source for a station:', 'live-weather-station' ) . ' ' . lcfirst($error_message);
 }
+if (!isset($station['station_model'])) {
+    $station['station_model'] = __('N/A', 'live-weather-station');
+}
+
 
 ?>
 

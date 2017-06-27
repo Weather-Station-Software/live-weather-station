@@ -183,6 +183,48 @@ jQuery(document).ready( function($) {
         }
     });
 
+    $('#add-edit-txt').click( function() {
+        var form_data=$('#add-edit-txt-form').serializeArray();
+        var error_free=true;
+        for (var input in form_data){
+            if (form_data[input]['name'] == 'station_name') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'loc_city') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'loc_altitude') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'service_id') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'loc_latitude') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'loc_longitude') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+        }
+        if (error_free) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#span-sync').show();
+        }
+    });
+
     $('#partial-translation').click( function() {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });

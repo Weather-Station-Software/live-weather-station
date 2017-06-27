@@ -95,6 +95,8 @@ class Handling {
         try {
             $args = array();
             $args['body'] = array( 'EMAIL' => $email);
+            $args['user-agent'] = LWS_PLUGIN_AGENT;
+            $args['timeout'] = get_option('live_weather_station_system_http_timeout');
             if (Quota::verify($this->service, 'POST')) {
                 $content = wp_remote_post($url, $args);
                 if (is_wp_error($content)) {
