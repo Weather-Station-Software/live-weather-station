@@ -1097,7 +1097,7 @@ trait Query {
     }
 
     /**
-     * Get an Realtime station.
+     * Get a Realtime station.
      *
      * @param integer $guid Optional. The station guid.
      * @return array An array containing the station details.
@@ -1114,6 +1114,53 @@ trait Query {
             $nothing['guid'] = 0;
             $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
             $nothing['station_type'] = LWS_REAL_SID;
+            $nothing['station_name'] = '';
+            $nothing['loc_city'] = '';
+            $nothing['loc_country_code'] = $ccs;
+            $nothing['loc_timezone'] = '';
+            $nothing['loc_latitude'] = '';
+            $nothing['loc_longitude'] = '';
+            $nothing['loc_altitude'] = '';
+            $nothing['connection_type'] = 1;
+            $nothing['service_id'] = '';
+            return $nothing;
+        }
+        else {
+            global $wpdb;
+            $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            $sql = "SELECT * FROM " . $table_name . " WHERE guid='" . $guid . "'";
+            try {
+                $query = (array)$wpdb->get_results($sql);
+                $query_a = (array)$query;
+                $result = array();
+                foreach ($query_a as $val) {
+                    $result[] = (array)$val;
+                }
+                return $result[0];
+            } catch (\Exception $ex) {
+                return array();
+            }
+        }
+    }
+
+    /**
+     * Get a Stickertags station.
+     *
+     * @param integer $guid Optional. The station guid.
+     * @return array An array containing the station details.
+     * @since 3.3.0
+     */
+    protected function get_txt_station($guid=0) {
+        if ($guid == 0) {
+            $ccs = '';
+            $cc = explode ('_', get_display_locale());
+            if (count($cc) > 1) {
+                $ccs = strtoupper($cc[1][0].$cc[1][1]);
+            }
+            $nothing = array();
+            $nothing['guid'] = 0;
+            $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
+            $nothing['station_type'] = LWS_TXT_SID;
             $nothing['station_name'] = '';
             $nothing['loc_city'] = '';
             $nothing['loc_country_code'] = $ccs;
@@ -1411,6 +1458,25 @@ trait Query {
      */
     protected function clear_all_realtime_id_stations() {
         $this->clear_all_stations_by_type(LWS_REAL_SID);
+    }
+
+    /**
+     * Get a list of all stickertags (by Id) stations.
+     *
+     * @return array An array containing the details of all stations.
+     * @since 3.0.0
+     */
+    protected function get_all_stickertags_id_stations() {
+        return $this->get_all_stations_by_type(LWS_TXT_SID);
+    }
+
+    /**
+     * Delete all stickertags (by Id) stations.
+     *
+     * @since 3.0.0
+     */
+    protected function clear_all_stickertags_id_stations() {
+        $this->clear_all_stations_by_type(LWS_TXT_SID);
     }
 
     /**

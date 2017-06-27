@@ -44,8 +44,9 @@ trait Handling {
     private static $live_weather_station_auto_update = true;
     private static $live_weather_station_cron_speed = 0;
     private static $live_weather_station_show_update = true;
-
-
+    private static $live_weather_station_collection_http_timeout = 45;
+    private static $live_weather_station_sharing_http_timeout = 45;
+    private static $live_weather_station_system_http_timeout = 20;
 
     private static $live_weather_station_map_zoom = 16;
     private static $live_weather_station_map_layer = 'X';
@@ -460,6 +461,9 @@ trait Handling {
         delete_option('live_weather_station_force_frontend_styling');
         delete_option('live_weather_station_cron_speed');
         delete_option('live_weather_station_show_update');
+        delete_option('live_weather_station_collection_http_timeout');
+        delete_option('live_weather_station_sharing_http_timeout');
+        delete_option('live_weather_station_system_http_timeout');
         self::delete_thresholds_options();
     }
 
@@ -533,6 +537,9 @@ trait Handling {
         update_option('live_weather_station_quota_mode', self::$live_weather_station_quota_mode);
         update_option('live_weather_station_force_frontend_styling', self::$live_weather_station_force_frontend_styling);
         update_option('live_weather_station_cron_speed', self::$live_weather_station_cron_speed);
+        update_option('live_weather_station_collection_http_timeout', self::$live_weather_station_collection_http_timeout);
+        update_option('live_weather_station_sharing_http_timeout', self::$live_weather_station_sharing_http_timeout);
+        update_option('live_weather_station_system_http_timeout', self::$live_weather_station_system_http_timeout);
     }
 
     /**
@@ -722,6 +729,9 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_redirect_external_links', self::$live_weather_station_redirect_external_links);
         self::verify_option_integer('live_weather_station_time_shift_threshold', self::$live_weather_station_time_shift_threshold);
         self::verify_option_integer('live_weather_station_cron_speed', self::$live_weather_station_cron_speed);
+        self::verify_option_integer('live_weather_station_collection_http_timeout', self::$live_weather_station_collection_http_timeout);
+        self::verify_option_integer('live_weather_station_sharing_http_timeout', self::$live_weather_station_sharing_http_timeout);
+        self::verify_option_integer('live_weather_station_system_http_timeout', self::$live_weather_station_system_http_timeout);
         self::verify_option_thresholds();
         self::verify_option_integer('live_weather_station_map_zoom', self::$live_weather_station_map_zoom);
         self::verify_option_string('live_weather_station_map_layer', self::$live_weather_station_map_layer);

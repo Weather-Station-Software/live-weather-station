@@ -78,6 +78,10 @@ spl_autoload_register(
         case 'WeatherStation\SDK\Realtime\Plugin\StationCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentRealtimeStationCollector.php'; break;
         case 'WeatherStation\SDK\Realtime\Plugin\StationInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentRealtimeStationInitiator.php'; break;
         case 'WeatherStation\SDK\Realtime\Plugin\StationUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentRealtimeStationUpdater.php'; break;
+        case 'WeatherStation\SDK\Stickertags\Plugin\StationClient': $file = LWS_INCLUDES_DIR.'traits/StickertagsPluginStationClient.php'; break;
+        case 'WeatherStation\SDK\Stickertags\Plugin\StationCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentStickertagsStationCollector.php'; break;
+        case 'WeatherStation\SDK\Stickertags\Plugin\StationInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentStickertagsStationInitiator.php'; break;
+        case 'WeatherStation\SDK\Stickertags\Plugin\StationUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentStickertagsStationUpdater.php'; break;
         case 'WeatherStation\SDK\WeatherUnderground\WUGApiClient': $file = LWS_INCLUDES_DIR.'libraries/wug/autoload.php'; break;
         case 'WeatherStation\SDK\WeatherUnderground\Plugin\BaseClient': $file = LWS_INCLUDES_DIR.'traits/WeatherUndergroundPluginBaseClient.php'; break;
         case 'WeatherStation\SDK\WeatherUnderground\Plugin\BaseCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherBaseWeatherUndergroundCollector.php'; break;

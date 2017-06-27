@@ -102,7 +102,7 @@ trait Handling {
      * @since 3.3.0
      */
     public static function get_unique_txt_id($guid) {
-        $st = self::$realtime_id.str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
+        $st = self::$txt_id.str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower($result);
     }
@@ -115,7 +115,7 @@ trait Handling {
      * @since 3.3.0
      */
     public static function get_unique_wflw_id($guid) {
-        $st = self::$realtime_id.str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
+        $st = self::$wflw_id.str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower($result);
     }

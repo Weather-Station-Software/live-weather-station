@@ -22,21 +22,21 @@ if (!isset($station['station_model'])) {
 
 <div class="wrap">
     <?php if ($station['guid'] == 0) { ?>
-        <h1><?php _e('Add a station via <em>realtime</em> file', 'live-weather-station');?></h1>
+        <h1><?php _e('Add a station via <em>stickertags</em> file', 'live-weather-station');?></h1>
     <?php } ?>
     <?php if ($station['guid'] != 0) { ?>
-        <h1><?php _e('Edit a station via <em>realtime</em> file', 'live-weather-station');?></h1>
+        <h1><?php _e('Edit a station via <em>stickertags</em> file', 'live-weather-station');?></h1>
     <?php } ?>
-    <form method="post" name="add-edit-real-form" id="add-edit-real-form" action="<?php echo esc_url(get_admin_page_url($url)); ?>">
+    <form method="post" name="add-edit-txt-form" id="add-edit-txt-form" action="<?php echo esc_url(get_admin_page_url($url)); ?>">
         <input name="station_id" type="hidden" value="<?php echo $station['station_id']; ?>" />
         <input name="guid" type="hidden" value="<?php echo $station['guid']; ?>" />
-        <input name="service" type="hidden" value="Realtime" />
+        <input name="service" type="hidden" value="Stickertags" />
         <input name="tab" type="hidden" value="add-edit" />
         <input name="action" type="hidden" value="do" />
         <?php if ($dashboard) { ?>
             <input name="dashboard" type="hidden" value="1" />
         <?php } ?>
-        <?php wp_nonce_field('add-edit-real'); ?>
+        <?php wp_nonce_field('add-edit-txt'); ?>
         <table class="form-table">
             <tr class="form-field form-required">
                 <th scope="row"><label for="station_name"><?php esc_html_e('Station name', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
@@ -129,7 +129,7 @@ if (!isset($station['station_model'])) {
             <p style="color:red;"><?php echo $errmsg;?></p>
         <?php } ?>
         <?php if ($station['guid'] == 0) { ?>
-            <p class="submit"><input type="submit" name="add-edit-real" id="add-edit-real" class="button button-primary" value="<?php esc_html_e( 'Add This Station', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;
+            <p class="submit"><input type="submit" name="add-edit-txt" id="add-edit-txt" class="button button-primary" value="<?php esc_html_e( 'Add This Station', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;
                 <?php if ($dashboard) { ?>
                     <a href="<?php echo esc_url(get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } else { ?>
@@ -138,7 +138,7 @@ if (!isset($station['station_model'])) {
                 <span id="span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo $message;?>&hellip;</strong></span></p>
         <?php } ?>
         <?php if ($station['guid'] != 0) { ?>
-            <p class="submit"><input type="submit" name="add-edit-real" id="add-edit-real" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;
+            <p class="submit"><input type="submit" name="add-edit-txt" id="add-edit-txt" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;
                 <?php if ($dashboard) { ?>
                     <a href="<?php echo esc_url(get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } else { ?>

@@ -139,16 +139,24 @@ trait Handling {
      * @return string The HTML string ready to print.
      * @since 3.0.0
      */
-    protected function field_double_input_number($args, $description=null) {
-        $html = '<input name="' . $args[0]['id'] . '" type="number" step="' . $args[0]['step'] . '" min="' . $args[0]['min'] . '" max="' . $args[0]['max'] . '"id="' . $args[0]['id'] . '" value="' . $args[0]['value'] . '" />';
-        if (isset($args[0]['unit'])) {
-            $html .= '&nbsp;<label for="' . $args[0]['id'] . '">' . $args[0]['unit'] . '</label>';
+    protected function field_multi_horizontal_input_number($args, $description=null) {
+        $res = array();
+        foreach ($args as $arg) {
+            $html = '';
+            if (array_key_exists('label', $arg)) {
+                if (isset($arg['label'])) {
+                    $html .= '<label for="' . $arg['id'] . '">' . $arg['label'] . '</label>:&nbsp;';
+                }
+            }
+            $html .= '<input name="' . $arg['id'] . '" type="number" step="' . $arg['step'] . '" min="' . $arg['min'] . '" max="' . $arg['max'] . '"id="' . $arg['id'] . '" value="' . $arg['value'] . '" />';
+            if (array_key_exists('unit', $arg)) {
+                if (isset($arg['unit'])) {
+                    $html .= '&nbsp;<label for="' . $arg['id'] . '">' . $arg['unit'] . '</label>';
+                }
+            }
+            $res[] = $html;
         }
-        $html .= ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ';
-        $html .= '<input name="' . $args[1]['id'] . '" type="number" step="' . $args[1]['step'] . '" min="' . $args[1]['min'] . '" max="' . $args[1]['max'] . '"id="' . $args[1]['id'] . '" value="' . $args[1]['value'] . '" />';
-        if (isset($args[1]['unit'])) {
-            $html .= '&nbsp;<label for="' . $args[1]['id'] . '">' . $args[1]['unit'] . '</label>';
-        }
+        $html = implode(' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ', $res);
         if (isset($description)) {
             $html .= '<p class="description">' . $description . '</p>';
         }

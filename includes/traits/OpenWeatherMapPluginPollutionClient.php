@@ -53,6 +53,9 @@ trait PollutionClient {
         try {
             $url = $this->api_url . '/' . $index . '/' . round($lat, $round) . ',' . round($long, $round) . '/current.json?appid=' . get_option('live_weather_station_owm_apikey');
             // warning : don't verify quota here
+            $args = array();
+            $args['user-agent'] = LWS_PLUGIN_AGENT;
+            $args['timeout'] = get_option('live_weather_station_collection_http_timeout');
             $content = wp_remote_get($url);
             if (is_wp_error($content)) {
                 throw new \Exception($content->get_error_message());

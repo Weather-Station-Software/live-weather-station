@@ -4,6 +4,7 @@ namespace WeatherStation\System\Plugin;
 
 use WeatherStation\SDK\Clientraw\Plugin\StationCollector as ClientrawCollector;
 use WeatherStation\SDK\Realtime\Plugin\StationCollector as RealtimeCollector;
+use WeatherStation\SDK\Stickertags\Plugin\StationCollector as StickertagsCollector;
 use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Environment\Manager;
 use WeatherStation\System\Schedules\Handling as Schedule;
@@ -33,6 +34,7 @@ use WeatherStation\SDK\OpenWeatherMap\Plugin\PollutionInitiator as OpenWeatherMa
 use WeatherStation\SDK\WeatherUnderground\Plugin\StationInitiator as WeatherUnderground_Station_Initiator;
 use WeatherStation\SDK\Clientraw\Plugin\StationInitiator as Clientraw_Station_Initiator;
 use WeatherStation\SDK\Realtime\Plugin\StationInitiator as Realtime_Station_Initiator;
+use WeatherStation\SDK\Stickertags\Plugin\StationInitiator as Stickertags_Station_Initiator;
 
 
 
@@ -139,7 +141,7 @@ class Admin {
      * @since 3.3.0
      */
     public function admin_notice_update_done() {
-        $s = sprintf(__('%s as been updated.', 'live-weather-station'), LWS_PLUGIN_NAME) ;
+        $s = sprintf(__('%s has been updated.', 'live-weather-station'), LWS_PLUGIN_NAME) ;
         $s .= ' '. sprintf(__('Your site now uses version %s.', 'live-weather-station'), LWS_VERSION) ;
         $n = wp_nonce_field( 'lws-whatsnew-nonce', 'lwswhatsnewnonce', false );
         print('<div id="whatsnew" class="notice notice-info is-dismissible">' . $n . '<p>' . $s . ' ' . InlineHelp::whats_new() . '</p></div>');
@@ -248,6 +250,10 @@ class Admin {
             array($this, 'lws_system_redirect_links_callback'), 'lws_system', 'lws_system_section',
             array());
         register_setting('lws_system', 'lws_system_redirect_links');
+        add_settings_field('lws_system_timeout_manage', __('HTTP timeout', 'live-weather-station'),
+            array($this, 'lws_system_timeout_manage_callback'), 'lws_system', 'lws_system_section',
+            array(__('Maximum time to wait for a server response.', 'live-weather-station')));
+        register_setting('lws_system', 'lws_system_cache_manage');
         add_settings_field('lws_system_special', __('Special', 'live-weather-station'),
             array($this, 'lws_system_special_callback'), 'lws_system', 'lws_system_section',
             array());
@@ -378,7 +384,7 @@ class Admin {
                         'max' => 400,
                         'step' => 1,
                         'unit' => __('days', 'live-weather-station'));
-        echo $this->field_double_input_number($nmbrs, $args[0]);
+        echo $this->field_multi_horizontal_input_number($nmbrs, $args[0]);
     }
 
     /**
@@ -450,6 +456,38 @@ class Admin {
             'checked' => (bool)get_option('live_weather_station_txt_cache_bypass'),
             'description' => __('Check this to prevent caching of the generated text files. Required on some server configurations, particularly when using Varnish.', 'live-weather-station'));
         echo $this->field_multi_checkbox($cbxs);
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.3.0
+     */
+    public function lws_system_timeout_manage_callback($args) {
+        $nmbrs = array();
+        $nmbrs[] = array('value' => get_option('live_weather_station_collection_http_timeout'),
+            'id' => 'lws_collection_http_timeout',
+            'label' => ucfirst(sprintf(__('%s pool', 'live-weather-station'), self::get_pool_name('pull'))),
+            'min' => 1,
+            'max' => 90,
+            'step' => 1,
+            'unit' => __('seconds', 'live-weather-station'));
+        $nmbrs[] = array('value' => get_option('live_weather_station_sharing_http_timeout'),
+            'id' => 'lws_sharing_http_timeout',
+            'label' => ucfirst(sprintf(__('%s pool', 'live-weather-station'), self::get_pool_name('push'))),
+            'min' => 1,
+            'max' => 90,
+            'step' => 1,
+            'unit' => __('seconds', 'live-weather-station'));
+        $nmbrs[] = array('value' => get_option('live_weather_station_system_http_timeout'),
+            'id' => 'lws_system_http_timeout',
+            'label' => ucfirst(sprintf(__('%s pool', 'live-weather-station'), self::get_pool_name('system'))),
+            'min' => 1,
+            'max' => 60,
+            'step' => 1,
+            'unit' => __('seconds', 'live-weather-station'));
+        echo $this->field_multi_horizontal_input_number($nmbrs, $args[0]);
     }
 
     /**
@@ -747,6 +785,9 @@ class Admin {
                 update_option('live_weather_station_analytics_cutoff', (integer)$_POST['lws_system_analytics_cutoff']);
                 update_option('live_weather_station_quota_mode', (integer)$_POST['lws_system_quota']);
                 update_option('live_weather_station_cron_speed', (integer)$_POST['lws_system_cron_speed']);
+                update_option('live_weather_station_collection_http_timeout', (integer)$_POST['lws_collection_http_timeout']);
+                update_option('live_weather_station_sharing_http_timeout', (integer)$_POST['lws_sharing_http_timeout']);
+                update_option('live_weather_station_system_http_timeout', (integer)$_POST['lws_system_http_timeout']);
                 if (!$save_auto && get_option('live_weather_station_auto_manage_netatmo')) {
                     $this->get_netatmo(true);
                     $this->get_netatmohc(true);
@@ -1043,6 +1084,21 @@ class Admin {
                             $error_message = '';
                             $args = compact('station', 'countries', 'timezones', 'error', 'error_message', 'servertypes', 'models', 'dashboard');
                             break;
+                        case 'stickertags':
+                            if ($id) {
+                                $station = $this->get_station_informations_by_guid($id);
+                            }
+                            else {
+                                $station = $this->get_txt_station();
+                            }
+                            $countries = $this->get_country_names();
+                            $timezones = $this->get_timezones_js_array();
+                            $servertypes = $this->get_server_type_array();
+                            $models = $this->get_models_array();
+                            $error = 0;
+                            $error_message = '';
+                            $args = compact('station', 'countries', 'timezones', 'error', 'error_message', 'servertypes', 'models', 'dashboard');
+                            break;
                         case 'station':
                             $station = $this->get_station_informations_by_guid($id);
                             $station['txt_location'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
@@ -1151,6 +1207,33 @@ class Admin {
                                 }
                                 else {
                                     $view = 'form-add-edit-realtime' ;
+                                    $args = compact('station', 'countries', 'timezones', 'error', 'error_message', 'servertypes', 'models', 'dashboard');
+                                }
+                            }
+                            break;
+                        case 'stickertags':
+                            if (array_key_exists('add-edit-txt', $_POST)) {
+                                $station = $this->add_txt();
+                                $error = 0;
+                                $countries = $this->get_country_names();
+                                $timezones = $this->get_timezones_js_array();
+                                $servertypes = $this->get_server_type_array();
+                                $models = $this->get_models_array();
+                                if (array_key_exists('error', $station)) {
+                                    $error = $station['error'];
+                                    unset($station['error']);
+                                }
+                                if (array_key_exists('message', $station)) {
+                                    $error_message = $station['message'];
+                                    unset($station['message']);
+                                }
+                                if ($error == 0) {
+                                    if ($dashboard) {
+                                        $view = 'dashboard' ;
+                                    }
+                                }
+                                else {
+                                    $view = 'form-add-edit-stickertags' ;
                                     $args = compact('station', 'countries', 'timezones', 'error', 'error_message', 'servertypes', 'models', 'dashboard');
                                 }
                             }
@@ -1692,6 +1775,8 @@ class Admin {
         $n->run();
         $n = new Realtime_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
         $n->run();
+        $n = new Stickertags_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run();
         $this->get_current_and_pollution();
     }
 
@@ -1749,6 +1834,17 @@ class Admin {
      */
     private function get_real() {
         $n = new Realtime_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run();
+        $this->get_current_and_pollution();
+    }
+
+    /**
+     * First getting of data for Stickertags station.
+     *
+     * @since 3.3.0
+     */
+    private function get_txt() {
+        $n = new Stickertags_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
         $n->run();
         $this->get_current_and_pollution();
     }
@@ -2165,12 +2261,6 @@ class Admin {
             if (array_key_exists('loc_altitude', $_POST)) {
                 $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
             }
-            /*if (array_key_exists('loc_latitude', $_POST)) {
-                $station['loc_latitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_latitude']));
-            }
-            if (array_key_exists('loc_longitude', $_POST)) {
-                $station['loc_longitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_longitude']));
-            }*/
             $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
             $collector = new ClientrawCollector();
             if ($message = $collector->test($station['connection_type'], $station['service_id'])) {
@@ -2343,6 +2433,144 @@ class Admin {
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
                     $this->get_real();
+                    $st = $this->get_station_informations_by_guid($guid);
+                    $this->modify_table(self::live_weather_station_log_table(), 'device_id', $station_id, $st['station_id']);
+                }
+                else {
+                    if ($update) {
+                        $message = $message = __('Unable to update the station %s.', 'live-weather-station');
+                        $log = 'Unable to update this station.';
+                        $station_id = $station['station_id'];
+                        $station_name = $station['station_name'];
+                    }
+                    else {
+                        $message = $message = __('Unable to add the station %s.', 'live-weather-station');
+                        $log = 'Unable to add this station.';
+                        $station_id = null;
+                        $station_name = null;
+                    }
+                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    add_settings_error('lws_nonce_error', 403, $message, 'error');
+                    Logger::error($this->service, null, $station_id, $station_name, null, null, null, $log);
+                }
+            }
+            else {
+                if ($update) {
+                    $message = $message = __('Unable to update the station %s.', 'live-weather-station');
+                    $station_id = $station['station_id'];
+                    $station_name = $station['station_name'];
+                }
+                else {
+                    $message = $message = __('Unable to add the station %s.', 'live-weather-station');
+                    $station_id = null;
+                    $station_name = null;
+                }
+                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                add_settings_error('lws_nonce_error', 403, $message, 'error');
+                Logger::critical('Security', null, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
+                Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It had not been possible to securely add or update this station.');
+            }
+        }
+        else {
+            $result['error'] = $error;
+        }
+        if (!array_key_exists('guid', $station)) {
+            $station['guid'] = 0;
+        }
+        $station['error'] = $error;
+        $station['message'] = $message;
+        return $station;
+    }
+
+    /**
+     * Add a Stickertags station.
+     *
+     * @since 3.3.0
+     */
+    public function add_txt() {
+        $station = array();
+        $error = 0;
+        $message = '';
+        if (array_key_exists('guid', $_POST) &&
+            array_key_exists('station_id', $_POST) &&
+            array_key_exists('station_name', $_POST) &&
+            array_key_exists('loc_city', $_POST) &&
+            array_key_exists('loc_country_code', $_POST) &&
+            array_key_exists('loc_tz', $_POST) &&
+            array_key_exists('connection_type', $_POST) &&
+            array_key_exists('service_id', $_POST) &&
+            array_key_exists('station_model', $_POST) &&
+            array_key_exists('loc_latitude', $_POST) &&
+            array_key_exists('loc_longitude', $_POST) &&
+            array_key_exists('loc_altitude', $_POST)) {
+            $station['station_type'] = LWS_TXT_SID;
+            if (array_key_exists('guid', $_POST)) {
+                $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+            }
+            if (array_key_exists('station_id', $_POST)) {
+                $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
+            }
+            if (array_key_exists('station_name', $_POST)) {
+                $station['station_name'] = stripslashes(htmlspecialchars_decode($_POST['station_name']));
+            }
+            if (array_key_exists('loc_city', $_POST)) {
+                $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+            }
+            if (array_key_exists('loc_country_code', $_POST)) {
+                $station['loc_country_code'] = $_POST['loc_country_code'];
+            }
+            if (array_key_exists('loc_tz', $_POST)) {
+                $station['loc_timezone'] = $_POST['loc_tz'];
+            }
+            if (array_key_exists('connection_type', $_POST)) {
+                $station['connection_type'] = $_POST['connection_type'];
+            }
+            if (array_key_exists('service_id', $_POST)) {
+                $station['service_id'] = $_POST['service_id'];
+            }
+            if (array_key_exists('loc_altitude', $_POST)) {
+                $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
+            }
+            if (array_key_exists('loc_latitude', $_POST)) {
+                $station['loc_latitude'] = sprintf("%.7F", (float)stripslashes(htmlspecialchars_decode($_POST['loc_latitude'])));
+            }
+            if (array_key_exists('loc_longitude', $_POST)) {
+                $station['loc_longitude'] = sprintf("%.7F", (float)stripslashes(htmlspecialchars_decode($_POST['loc_longitude'])));
+            }
+            $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
+            $collector = new StickertagsCollector();
+            if ($message = $collector->test($station['connection_type'], $station['service_id'])) {
+                $error = 1;
+            }
+        }
+        else {
+            $error = 3;
+        }
+        if ($error == 0) {
+            $update = true;
+            if (array_key_exists('guid', $station)) {
+                if ($station['guid'] == 0) {
+                    unset($station['guid']);
+                    $update = false;
+                }
+            }
+            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-txt')) {
+                if ($guid = $this->update_stations_table($station, true)) {
+                    $st = $this->get_station_informations_by_guid($guid);
+                    $station_id = $st['station_id'];
+                    $station_name = $st['station_name'];
+                    if ($update) {
+                        $message = __('The station %s has been correctly updated.', 'live-weather-station');
+                        $log = 'Station updated.';
+                    }
+                    else {
+                        $message = __('The station %s has been correctly added.', 'live-weather-station');
+                        $log = 'Station added.';
+                    }
+                    $message = sprintf($message, '<em>' . $station_name . '</em>');
+                    add_settings_error('lws_nonce_success', 200, $message, 'updated');
+                    Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
+                    $this->get_txt();
                     $st = $this->get_station_informations_by_guid($guid);
                     $this->modify_table(self::live_weather_station_log_table(), 'device_id', $station_id, $st['station_id']);
                 }

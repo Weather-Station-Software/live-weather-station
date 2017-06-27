@@ -224,7 +224,17 @@ class NAApiClient
     public function makeRequest($path, $method = 'GET', $params = array())
     {
         $ch = curl_init();
-        $opts = self::$CURL_OPTS;
+        //$opts = self::$CURL_OPTS;
+        $opts = array(
+            CURLOPT_CONNECTTIMEOUT => get_option('live_weather_station_collection_http_timeout'),
+            CURLOPT_RETURNTRANSFER => TRUE,
+            CURLOPT_HEADER         => TRUE,
+            CURLOPT_TIMEOUT        => get_option('live_weather_station_collection_http_timeout'),
+            CURLOPT_USERAGENT      => LWS_PLUGIN_AGENT,
+            CURLOPT_SSL_VERIFYPEER => TRUE,
+            CURLOPT_HTTPHEADER     => array("Accept: application/json"),
+        );
+
         if ($params)
         {
             if(isset($params['access_token']))

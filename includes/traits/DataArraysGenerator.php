@@ -433,10 +433,10 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('pressure'), 'pressure', ($reduced ? array() : $this->get_measure_array($ref, $data, 'pressure')));
                     $result[] = array($this->get_measurement_type('health_idx'), 'health_idx', ($reduced ? array() : $this->get_measure_array($ref, $data, 'health_idx')));
                 }
-                if ($wug || $real || $raw) {
+                if ($wug || $real || $raw || $txt) {
                     $result[] = array($this->get_measurement_type('pressure'), 'pressure', ($reduced ? array() : $this->get_measure_array($ref, $data, 'pressure')));
                 }
-                if ($full && ($netatmo || $real || $raw)) {
+                if ($full && ($netatmo || $real || $raw || $txt)) {
                     $result[] = array($this->get_measurement_type('pressure_trend'), 'pressure_trend', ($reduced ? array() : $this->get_measure_array($ref, $data, 'pressure_trend')));
                 }
                 if (($full || $mono) && ($real || $raw)) {
@@ -465,7 +465,7 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                     $result[] = array($this->get_measurement_type('last_setup'), 'last_setup', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_setup')));
                 }
-                if ($full && ($wug || $real || $raw)) {
+                if ($full && ($wug || $real || $raw || $txt)) {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                 }
                 if ($full) {
@@ -496,7 +496,7 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                     $result[] = array($this->get_measurement_type('last_setup'), 'last_setup', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_setup')));
                 }
-                if ($full && ($wug || $real || $raw)) {
+                if ($full && ($wug || $real || $raw || $txt)) {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                 }
                 if ($full) {
@@ -524,7 +524,7 @@ trait Generator {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                     $result[] = array($this->get_measurement_type('last_setup'), 'last_setup', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_setup')));
                 }
-                if ($full && ($wug || $real || $raw)) {
+                if ($full && ($wug || $real || $raw || $txt)) {
                     $result[] = array($this->get_measurement_type('last_seen'), 'last_seen', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_seen')));
                 }
                 if ($full) {
@@ -797,6 +797,7 @@ trait Generator {
             $wug = OWM_Base_Collector::is_wug_station($data['station']['station_id']);
             $raw = OWM_Base_Collector::is_raw_station($data['station']['station_id']);
             $real = OWM_Base_Collector::is_real_station($data['station']['station_id']);
+            $txt = OWM_Base_Collector::is_txt_station($data['station']['station_id']);
             $mainbase = array();
             if (count($data['module']) > 0) {
                 foreach ($data['module'] as $module) {
@@ -809,7 +810,7 @@ trait Generator {
                 Logger::debug('Backend', null, $data['station']['station_id'], $data['station']['station_name'], null, null, null, 'Unable to find a main base for this station.');
                 return array();
             }
-            if ($aggregated  && ($netatmo || $wug || $raw || $real)) {
+            if ($aggregated  && ($netatmo || $wug || $raw || $real || $txt)) {
                 $ref = array();
                 $ref['device_id'] = $data['station']['station_id'];
                 $ref['device_name'] = $data['station']['station_name'];

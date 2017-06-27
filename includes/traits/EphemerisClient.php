@@ -215,9 +215,23 @@ trait Client {
                 if (!isset($dashboard[$pref])) {
                     $dashboard[$pref] = -1;
                 }
+                else {
+                    if (!($dashboard[$pref])) {
+                        $dashboard[$pref] = -1;
+                    }
+                }
                 foreach ($posts as $post) {
-                    if (!isset($dashboard[$pref . '_' . $post]) && $post != '') {
-                        $dashboard[$pref . '_' . $post] = -1;
+                    if (!isset($dashboard[$pref . '_' . $post])) {
+                        if ($post != '') {
+                            $dashboard[$pref . '_' . $post] = -1;
+                        }
+                    }
+                    else {
+                        if (!$dashboard[$pref . '_' . $post]) {
+                            if ($post != '') {
+                                $dashboard[$pref . '_' . $post] = -1;
+                            }
+                        }
                     }
                 }
             }

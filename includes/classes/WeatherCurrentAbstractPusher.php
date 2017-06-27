@@ -145,6 +145,8 @@ abstract class Pusher {
                     $args['headers'] = array ('Authorization' => 'Basic ' . base64_encode($auth));
                 }
                 $args['body'] = $values;
+                $args['timeout'] = get_option('live_weather_station_sharing_http_timeout');
+                $args['user-agent'] = LWS_PLUGIN_AGENT;
                 if (Quota::verify($this->get_service_name(), 'POST')) {
                     $content = wp_remote_post($this->get_post_url(), $args);
                     if (is_wp_error($content)) {

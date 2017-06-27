@@ -652,10 +652,9 @@ trait Conversion {
     /**
      * Get the wind angle expressed in its unique unit.
      *
-     * @param   mixed   $value  The value of the wind angle.
-     * @return  string  The wind angle expressed in its unique unit.
-     * @since    1.0.0
-     * @access   protected
+     * @param mixed $value The value of the wind angle.
+     * @return string The wind angle expressed in its unique unit.
+     * @since 1.0.0
      */
     protected function get_wind_angle($value)
     {
@@ -670,13 +669,45 @@ trait Conversion {
      * @return string The wind angle expressed in standard unit.
      * @since 3.0.0
      */
-    protected function get_reverse_wind_angle($value)
-    {
+    protected function get_reverse_wind_angle($value) {
         $result = $value;
         return sprintf('%d', round($result, 0));
     }
 
     /**
+     * Get an angle in degree from readable text (i.e. NNW, S, ...).
+     *
+     * @param string $value The readable text of the angle.
+     * @return integer The wind angle in degree.
+     * @since 3.3.0
+     */
+    protected function get_reverse_wind_angle_text($value) {
+        $dir = array();
+        $dir['N'] = 0;
+        $dir['NNE'] = 22.5 * 1;
+        $dir['NE'] = 22.5 * 2;
+        $dir['ENE'] = 22.5 * 3;
+        $dir['E'] = 22.5 * 4;
+        $dir['ESE'] = 22.5 * 5;
+        $dir['SE'] = 22.5 * 6;
+        $dir['SSE'] = 22.5 * 7;
+        $dir['S'] = 22.5 * 8;
+        $dir['SSW'] = 22.5 * 9;
+        $dir['SW'] = 22.5 * 10;
+        $dir['WSW'] = 22.5 * 11;
+        $dir['W'] = 22.5 * 12;
+        $dir['WNW'] = 22.5 * 13;
+        $dir['NW'] = 22.5 * 14;
+        $dir['NNW'] = 22.5 * 15;
+        if (array_key_exists($value, $dir)) {
+            return $dir[$value];
+        }
+        else {
+            return 0;
+        }
+    }
+
+/**
      * Get the density expressed in specific unit.
      *
      * @param mixed $value The value of the temperature.

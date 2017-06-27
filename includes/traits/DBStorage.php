@@ -914,6 +914,20 @@ trait Storage {
     }
 
     /**
+     * Delete some stickertags stations.
+     *
+     * @param array $values The values NOT to delete from the table
+     * @return int|false The number of rows deleted, or false on error.
+     * @since 3.0.0
+     */
+    protected function clean_stickertags_from_table($values) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zx:%' AND device_id NOT IN ( '" . implode($values, "', '") . "' )";
+        return $wpdb->query($sql);
+    }
+
+    /**
      * Delete some usermeta values.
      *
      * @param string $key The end of meta_key field.
