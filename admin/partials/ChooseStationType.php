@@ -77,6 +77,10 @@ $txt_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a station expo
 $txt_l = get_admin_page_url('lws-stations', 'form', 'add-edit', 'stickertags', $dashboard);
 $txt_t = '_self';
 
+$wflw_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a public WeatherFlow station.', 'live-weather-station'));
+$wflw_l = get_admin_page_url('lws-stations', 'form', 'add-edit', 'weatherflow', $dashboard);
+$wflw_t = '_self';
+
 ?>
 
 <div id="normal-sortables" class="meta-box-sortables ui-sortable" style="overflow: hidden;">
@@ -92,6 +96,7 @@ $txt_t = '_self';
                 </style>
                 <div style="flex:auto;padding:14px;"><img id="netatmo" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_netatmo_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="netatmohc" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_netatmo_hc_color_logo());?>" /></div>
+                <div style="flex:auto;padding:14px;"><img id="weatherflow" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_weatherflow_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="loc" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_loc_color_logo());?>" /></div>
                 <?php if (LWS_OWM_READY) { ?>
                     <div style="flex:auto;padding:14px;"><img id="owm" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_owm_color_logo());?>" /></div>
@@ -123,6 +128,12 @@ $txt_t = '_self';
             });
             $("#netatmohc").click(function() {
                 window.open('<?php echo $netatmo_hc_l; ?>', '<?php echo $netatmo_hc_t; ?>');
+            });
+            $("#weatherflow").mouseover(function() {
+                $("#tip-text").html("<?php echo $wflw_s; ?>");
+            });
+            $("#weatherflow").click(function() {
+                window.open('<?php echo $wflw_l; ?>', '<?php echo $wflw_t; ?>');
             });
             $("#loc").mouseover(function() {
                 $("#tip-text").html("<?php echo $loc_s; ?>");

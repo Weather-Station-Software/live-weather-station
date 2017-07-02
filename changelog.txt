@@ -1,6 +1,7 @@
 
 ###3.3.0 / September xxxxxx, 2017
 
+* New: Weather Station is now compatible with the Smart Weather Station from WeatherFlow (Air & Sky modules).
 * New: Weather Station is now compatible with stations based on stickertags file (WeatherLink, WsWin32, MeteoBridge, etc.).
 * New: a new widget "Psychrometry" to display psychrometric values (see below).
 * New: "solar" module with irradiance, UV index and illuminance measurements (for stations supporting it) available in all controls.
@@ -33,6 +34,7 @@
 * Bug fix: the formatting of length (of day, dawn & dusk) in ephemeris module is wrong in some cases.
 * Bug fix: the icons for dew point and frost point are not correctly aligned in "outdoor weather summary" widget.
 * Bug fix: adding a file-based station throws, in some cases, a notice in the PHP log file.
+* Bug fix: removing a Weather Underground station may produce an inconsistent warning message.
 
 ###3.2.5 / May 17th, 2017
 

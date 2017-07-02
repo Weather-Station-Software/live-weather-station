@@ -553,11 +553,6 @@ trait Description {
             case 'strike_bearing':
                 $result = ($abbr ? __('Strike bear.', 'live-weather-station') : __('Strike bearing', 'live-weather-station'));
                 break;
-
-            /*"lightning_strike_last_epoch": 1495652340,
-              "lightning_strike_last_distance": 22,  strike_distance
-              "lightning_strike_count_last_3hr": 0,    strike_count */
-
             default:
                 $result = ($abbr ? '?' : __('Unknown measurement', 'live-weather-station'));
         }
