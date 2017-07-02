@@ -14,6 +14,7 @@ use WeatherStation\SDK\Netatmo\Plugin\HCUpdater as Netatmo_HCUpdater;
 use WeatherStation\SDK\Clientraw\Plugin\StationUpdater as Clientraw_Updater;
 use WeatherStation\SDK\Realtime\Plugin\StationUpdater as Realtime_Updater;
 use WeatherStation\SDK\Stickertags\Plugin\StationUpdater as Stickertags_Updater;
+use WeatherStation\SDK\WeatherFlow\Plugin\StationUpdater as WFLW_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\CurrentUpdater as Owm_Current_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\StationUpdater as Owm_Station_Updater;
 use WeatherStation\SDK\WeatherUnderground\Plugin\StationUpdater as Wug_Station_Updater;
@@ -51,13 +52,15 @@ trait Handling {
     public static $owm_update_current_schedule_name = 'lws_owm_current_update';
     public static $owm_update_station_schedule_name = 'lws_owm_station_update';
     public static $wug_update_station_schedule_name = 'lws_wug_station_update';
+    public static $wflw_update_station_schedule_name = 'lws_wflw_station_update';
     public static $raw_update_station_schedule_name = 'lws_raw_station_update';
     public static $real_update_station_schedule_name = 'lws_real_station_update';
     public static $txt_update_station_schedule_name = 'lws_txt_station_update';
     public static $owm_update_pollution_schedule_name = 'lws_owm_pollution_update';
     public static $cron_pull = array('lws_netatmo_update', 'lws_netatmo_hc_update', 'lws_owm_current_update', 
                                     'lws_owm_station_update', 'lws_wug_station_update', 'lws_raw_station_update',
-                                    'lws_real_station_update', 'lws_txt_station_update', 'lws_owm_pollution_update');
+                                    'lws_real_station_update', 'lws_txt_station_update', 'lws_owm_pollution_update',
+                                    'lws_wflw_station_update');
 
     // PUSH
     public static $wow_push_schedule_name = 'lws_wow_current_push';
@@ -332,6 +335,9 @@ trait Handling {
             case 'lws_wug_station_update':
                 return __('Weather Underground - Weather station', 'live-weather-station');
                 break;
+            case 'lws_wflw_station_update':
+                return __('WeatherFlow - Weather station', 'live-weather-station');
+                break;
             case 'lws_raw_station_update':
                 return __('Clientraw - Weather station', 'live-weather-station');
                 break;
@@ -505,9 +511,40 @@ trait Handling {
     }
 
     /**
+     * Define WeatherFlow Updater cron job.
+     *
+     * @since 3.3.0
+     */
+    protected static function define_wflw_station_update_cron() {
+        $plugin_wflw_update_cron = new WFLW_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$wflw_update_station_schedule_name, array($plugin_wflw_update_cron, 'cron_run'));
+    }
+
+    /**
+     * Launch the WeatherFlow Updater cron job if needed.
+     *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
+     * @since 3.3.0
+     */
+    protected static function launch_wflw_station_update_cron($timeshift=0, $system='Watchdog') {
+        if (get_option('live_weather_station_cron_speed', 0) == 0) {
+            $rec = 'five_minutes';
+        }
+        else {
+            $rec = 'two_minutes';
+        }
+        if (!wp_next_scheduled(self::$wflw_update_station_schedule_name)) {
+            wp_schedule_event(time() + $timeshift, $rec, self::$wflw_update_station_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$wflw_update_station_schedule_name).'" (re)scheduled.');
+        }
+    }
+
+    /**
      * Define OWM Current Updater cron job.
      *
-     * @since    2.7.0
+     * @since 2.7.0
      */
     protected static function define_owm_current_update_cron() {
         $plugin_owm_current_cron = new Owm_Current_Updater(LWS_PLUGIN_NAME, LWS_VERSION);

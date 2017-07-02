@@ -741,8 +741,9 @@ trait Storage {
         if (array_key_exists('guid', $value)) {
             $this->update_table(self::live_weather_station_stations_table(), $value);
             $result = $value['guid'];
-            $cache_id = 'get_station'.$value['guid'];
-            Cache::invalidate_query($cache_id);
+            //$cache_id = 'get_station'.$value['guid'];
+            //Cache::invalidate_query($cache_id);
+            Cache::flush_query();
         }
         else {
             Logger::error($this->facility_DM, null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to get guid for this record: ' . print_r($value, true));
@@ -882,6 +883,20 @@ trait Storage {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
         $sql = "DELETE FROM ".$table_name." WHERE device_id like 'xz:%' AND device_id NOT IN ( '" . implode($values, "', '") . "' )";
+        return $wpdb->query($sql);
+    }
+
+    /**
+     * Delete some weatherflow stations.
+     *
+     * @param array $values The values NOT to delete from the table
+     * @return int|false The number of rows deleted, or false on error.
+     * @since 3.0.0
+     */
+    protected function clean_wflw_from_table($values) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zy:%' AND device_id NOT IN ( '" . implode($values, "', '") . "' )";
         return $wpdb->query($sql);
     }
 

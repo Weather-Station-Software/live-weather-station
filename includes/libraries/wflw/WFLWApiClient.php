@@ -1,35 +1,35 @@
 <?php
 
-namespace WeatherStation\SDK\WeatherUnderground;
+namespace WeatherStation\SDK\WeatherFlow;
 
-use WeatherStation\SDK\WeatherUnderground\AbstractCache;
-use WeatherStation\SDK\WeatherUnderground\Exception as WUGException;
-use WeatherStation\SDK\WeatherUnderground\Fetcher\CurlFetcher;
-use WeatherStation\SDK\WeatherUnderground\Fetcher\FetcherInterface;
-use WeatherStation\SDK\WeatherUnderground\Fetcher\FileGetContentsFetcher;
+use WeatherStation\SDK\WeatherFlow\AbstractCache;
+use WeatherStation\SDK\WeatherFlow\Exception as WFLWException;
+use WeatherStation\SDK\WeatherFlow\Fetcher\CurlFetcher;
+use WeatherStation\SDK\WeatherFlow\Fetcher\FetcherInterface;
+use WeatherStation\SDK\WeatherFlow\Fetcher\FileGetContentsFetcher;
 
 use WeatherStation\System\Logs\Logger;
 
 /**
- * WeatherUnderground client implementation.
+ * WeatherFlow client implementation.
  *
  * @package Includes\Libraries
  * @author Originally written by Christian Flach <https://github.com/cmfcmf>.
  * @author Modified by Pierre Lannoy <https://pierre.lannoy.fr/>.
- * @since 3.0.0
+ * @since 3.3.0
  * @license MIT
  */
-class WUGApiClient
+class WFLWApiClient
 {
 
     /**
      * @var string $mainnUrl The api url to fetch data from.
      */
-    private $mainnUrl = "http://api.wunderground.com/api/{key}/{features}/{settings}/q/{query}.{format}";
+    private $mainnUrl = "https://swd.weatherflow.com/swd/rest/{command}/{params}";
 
     
     /**
-     * @var \WeatherStation\SDK\WeatherUnderground\AbstractCache|bool $cacheClass The cache class.
+     * @var \WeatherStation\SDK\WeatherFlow\AbstractCache|bool $cacheClass The cache class.
      */
     private $cacheClass = false;
 
@@ -44,16 +44,16 @@ class WUGApiClient
     private $fetcher;
 
     /**
-     * Constructs the WeatherUnderground object.
+     * Constructs the WeatherFlow object.
      *
-     * @param null|FetcherInterface $fetcher    The interface to fetch the data from WeatherUnderground. Defaults to
+     * @param null|FetcherInterface $fetcher    The interface to fetch the data from WeatherFlow. Defaults to
      *                                          CurlFetcher() if cURL is available. Otherwise defaults to
      *                                          FileGetContentsFetcher() using 'file_get_contents()'.
      * @param bool|string           $cacheClass If set to false, caching is disabled. Otherwise this must be a class
      *                                          extending AbstractCache. Defaults to false.
      * @param int                   $seconds    How long weather data shall be cached. Default 10 minutes.
      *
-     * @throws \Exception If $cache is neither false nor a valid callable extending wug\WeatherUnderground\Util\Cache.
+     * @throws \Exception If $cache is neither false nor a valid callable extending wflw\WeatherFlow\Util\Cache.
      * @api
      */
     public function __construct($fetcher = null, $cacheClass = false, $seconds = 600)
@@ -78,42 +78,52 @@ class WUGApiClient
     /**
      * Build the url to fetch weather data from.
      *
-     * @param string $key The API key.
-     * @param string $features The features to call.
-     * @param array $settings The settings of the query.
-     * @param string $query The query itself.
-     * @param string $format The format of the data fetched. Possible values are 'xml' or 'json' (default).
+     * @param string $command The features to execute.
+     * @param array $params The parameters to add.
      *
      * @return string The url, ready to fetch.
-     * @since 3.0.0
+     * @since 3.3.0
      *
      */
-    private function buildUrl($key, $features, $settings, $query, $format = 'json') {
+    private function buildUrl($command, $params = array()) {
         $result = $this->mainnUrl;
-        $result = str_replace('{key}', $key, $result);
-        $result = str_replace('{features}', $features, $result);
-        $result = str_replace('{settings}', implode('/', $settings), $result);
-        $result = str_replace('{query}', $query, $result);
-        $result = str_replace('{format}', $format, $result);
+        $result = str_replace('{command}', $command, $result);
+        if (count($params) > 0) {
+            $result = str_replace('{params}', '?' . implode('&', $params), $result);
+        }
+        else {
+            $result = str_replace('{params}', '', $result);
+        }
         return $result;
     }
 
     /**
-     * Get the string returned by WeatherUnderground for a specific station.
+     * Get the string returned by WeatherFlow for a specific public station.
      *
      * @param string $id The station id to get weather information for.
      * @param string $key The API key.
-     * @param string $lang The language to use for descriptions, default is 'en'.
-     * @param string $format The format of the data fetched. Possible values are 'xml' or 'json' (default).
      *
      * @return bool|string Returns false on failure and the fetched data in the format you specified on success.
-     * @since 3.0.0
+     * @since 3.3.0
      */
-    public function getRawStationData($id, $key, $lang = 'en', $format = 'json') {
-        $features = 'conditions';
-        $settings = array ('lang:' . strtoupper($lang), 'pws:1', 'bestfct:0');
-        $query = 'pws:' . $id;
-        $url = $this->buildUrl($key, $features, $settings, $query, $format);
+    public function getRawPublicStationData($id, $key) {
+        $command = 'observations/station/' . $id;
+        $url = $this->buildUrl($command, array('api_key='.$key));
+        return $this->cacheOrFetchResult($url);
+    }
+
+    /**
+     * Get the string returned by WeatherFlow for a specific private station.
+     *
+     * @param string $id The station id to get weather information for.
+     * @param string $key The API key.
+     *
+     * @return bool|string Returns false on failure and the fetched data in the format you specified on success.
+     * @since 3.3.0
+     */
+    public function getRawPrivateStationData($id, $key) {
+        $command = 'observations/station/' . $id;
+        $url = $this->buildUrl($command, array('token='.$key));
         return $this->cacheOrFetchResult($url);
     }
 

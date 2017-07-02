@@ -320,7 +320,7 @@ trait StationClient {
         $stations = $this->get_all_wug_id_stations();
         $wug = new WUGApiClient();
         foreach ($stations as $st => $station) {
-            $device_id = $st;
+            $device_id = $station['station_id'];
             $device_name = $station['station_name'];
             try {
                 if (Quota::verify($this->service_name, 'GET')) {

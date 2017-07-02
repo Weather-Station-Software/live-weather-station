@@ -128,7 +128,7 @@ class Handling {
     }
 
     /**
-     * Returns a base64 svg resource for the owm icon.
+     * Returns a base64 svg resource for the Netatmo icon.
      *
      * @param string $color Optional. Color of the icon.
      * @return string The svg resource as a base64.
@@ -178,6 +178,43 @@ class Handling {
      */
     public static function get_base64_netatmo_hc_color_logo() {
         return self::get_base64_netatmo_icon('#d497a8');
+    }
+
+    /**
+     * Returns a base64 svg resource for the Weatherflow icon.
+     *
+     * @param string $color Optional. Color of the icon.
+     * @return string The svg resource as a base64.
+     * @since 3.3.0
+     */
+    public static function get_base64_weatherflow_icon($color='#000') {
+        $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 900 900">';
+        $source .= '<g transform="translate(-1580,1450) scale(2.6,-2.6)">';
+        $source .= '<path style="fill:' . $color . '" d="m 819.754,424 c -17.16,0.602 -27.164,-8.562 -29.469,-17.453 -2.308,-8.895 4.774,-5.598 4.774,-5.598 24.531,9.879 27.332,-13.34 27.332,-13.34 C 828.316,335.75 703.352,278.453 703.352,278.453 v -0.656 c 36.222,2.633 98.949,25.68 128.75,49.887 27.39,22.25 35.234,46.257 28.156,68.324 -5.938,18.496 -21.735,27.324 -40.504,27.992"/>';
+        $source .= '<path style="fill:' . $color . '" d="m 841.629,456.566 c -5.707,17.782 -20.899,26.278 -38.941,26.914 -16.504,0.583 -26.122,-8.234 -28.34,-16.781 -2.219,-8.551 4.593,-5.386 4.593,-5.386 23.586,9.503 26.274,-12.825 26.274,-12.825 5.703,-49.863 -114.453,-104.953 -114.453,-104.953 v -0.633 c 34.824,2.532 95.144,24.696 123.797,47.969 26.336,21.387 33.875,44.481 27.07,65.695"/>';
+        $source .= '</g>';
+        $source .= '</svg>';
+        return 'data:image/svg+xml;base64,' . base64_encode($source);
+    }
+
+    /**
+     * Returns a base64 svg resource for the monochrome Weatherflow logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.3.0
+     */
+    public static function get_base64_weatherflow_grey_logo() {
+        return self::get_base64_weatherflow_icon('#666666');
+    }
+
+    /**
+     * Returns a base64 svg resource for the colored Weatherflow logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.3.0
+     */
+    public static function get_base64_weatherflow_color_logo() {
+        return self::get_base64_weatherflow_icon('#1476D6');
     }
 
     /**
