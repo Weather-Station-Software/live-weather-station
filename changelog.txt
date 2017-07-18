@@ -1,9 +1,11 @@
 
-###3.3.0 / September xxxxxx, 2017
+###3.3.0 / September 5th, 2017
 
 * New: Weather Station is now compatible with the Smart Weather Station from WeatherFlow (Air & Sky modules).
 * New: Weather Station is now compatible with stations based on stickertags file (WeatherLink, WsWin32, MeteoBridge, etc.).
-* New: a new widget "Psychrometry" to display psychrometric values (see below).
+* New: a new "Solar" widget to display irradiance, illuminance and UV index.
+* New: a new "Thunderstorm" widget to display strike counts, bearing and distance.
+* New: a new "Psychrometry" widget to display psychrometric values (see below).
 * New: "solar" module with irradiance, UV index and illuminance measurements (for stations supporting it) available in all controls.
 * New: "thunderstorm" module with lighting strikes count, distance and bearing measurements (for stations supporting it) available in all controls.
 * New: "soil" module with temperature, leaf wetness, evapotranspiration and moisture content/tension measurements (for stations supporting it) available in all controls.
@@ -13,9 +15,12 @@
 * New: psychrometric partial and saturation vapor pressures computed and available in all controls.
 * New: psychrometric absolute humidity (partial or saturation) computed and available in all controls.
 * New: air density, equilibrium moisture content and specific enthalpy computed and available in all controls.
+* New: ability to publish outdoor data of personal stations as YoWindow XML format (to be used in YoWindow desktop application / screensaver).
+* New: file-based stations are now publishable via stickertags format.
 * Improvement: ephemeris widget and textual shortcodes now take care of locations where there's no day or no night (on 24h).
 * Improvement: an admin notification informs you when Weather Station have been updated.
 * Improvement: widgets now hide the header blank zone when there's no title or information to display (thanks to Lisa Yoon for the suggestion).
+* Improvement: UV index and strikes summary are now available in the "outdoor weather summary" widget.
 * Improvement: it's now possible to override the Healthy Home Coach internal health index with a computed value (comparable with indoor modules).
 * Improvement: the 'display' tab of 'settings' screen has been reorganized for better readability.
 * Improvement: inline help is now visible in widget and main settings (question mark in a circle).
@@ -26,6 +31,7 @@
 * Improvement: distances now have a rounding precision commensurate with their values.
 * Improvement: the file handler now supports double date format in realtime.txt files.
 * Improvement: new option in 'system' tab of 'settings' screen to set the HTTP timeout (helps to get rid of temporary timeout errors with Weather Underground or OpenWeatherMap).
+* Improvement: better detection of environment while needed for support/help procedures.
 * Bug fix: in some cases, the dashboard columns may be blank after adding a station from the welcome panel.
 * Bug fix: it's impossible to save negative threshold values for the Chandler Burning index, in Chrome, Safari and Firefox.
 * Bug fix: carbon monoxide thresholds are wrongly converted from/to some system units.

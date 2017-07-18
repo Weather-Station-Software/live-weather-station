@@ -2799,7 +2799,7 @@ trait Output {
                 $result = '<i %1$s class="wi wi-fw %2$s wi-horizon-alt" aria-hidden="true"></i>';
                 break;
             case 'illuminance':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-fa-long-arrow-down fa-rotate-30" aria-hidden="true"></i>';
+                $result = '<i %1$s class="fa fa-fw %2$s fa-long-arrow-down fa-rotate-30" aria-hidden="true"></i>';
                 break;
             // SOIL
             case 'soil_temperature':
@@ -4061,8 +4061,7 @@ trait Output {
      *
      * @param   integer $value  The value of the trend.
      * @return  string   The trend level in standard readable text.
-     * @since    3.0.0
-     * @access   protected
+     * @since 3.0.0
      */
     protected function get_standard_trend_text($value) {
         switch (strtolower($value)) {
@@ -4074,6 +4073,27 @@ trait Output {
                 break;
             default:
                 $result = 'Steady';
+        }
+        return $result;
+    }
+
+    /**
+     * Get the trend in numeral text.
+     *
+     * @param integer $value The value of the trend.
+     * @return string The trend level in standard readable text.
+     * @since 3.3.0
+     */
+    protected function get_numeral_trend_text($value) {
+        switch (strtolower($value)) {
+            case 'up':
+                $result = '+0.6';
+                break;
+            case 'down':
+                $result = '-0.6';
+                break;
+            default:
+                $result = '0';
         }
         return $result;
     }
@@ -4175,6 +4195,12 @@ trait Output {
             case 'indoor':
                 $datas = $this->get_indoor_datas($id, $obsolescence_filtering);
                 break;
+            case 'thunderstorm':
+                $datas = $this->get_thunderstorm_datas($id, $obsolescence_filtering);
+                break;
+            case 'solar':
+                $datas = $this->get_solar_datas($id, $obsolescence_filtering);
+                break;
             default:
                 $datas = $this->get_outdoor_datas($id, $obsolescence_filtering);
         }
@@ -4206,6 +4232,7 @@ trait Output {
                 $ssub['value'] = $this->output_value($data['measure_value'], $data['measure_type'], false, false, $data['module_type']);
                 $ssub['unit'] = $this->output_unit($data['measure_type'], $data['module_type']);
                 $sub_ts = strtotime ($data['measure_timestamp']);
+                $ssub['timestamp'] = $sub_ts;
                 if ($sub_ts>$ts) {$ts=$sub_ts;}
                 $sub['datas'][$data['measure_type']] = $ssub;
             }
@@ -4792,6 +4819,210 @@ trait Output {
         }
         $values[17] = 'C|km/h|hPa|mm';
         return implode(',', $values);
+    }
+
+    /**
+     * Format the selected datas for YoWindow usage.
+     *
+     * @param array $datas An array containing the selected datas.
+     * @return string The formated datas, ready to be outputed as YoWindow.xml file.
+     * @since 3.3.0
+     *
+     */
+    protected function format_yowindow_data($datas) {
+        $tr = 0;
+        $hr = 0;
+        $dr = 0;
+        $temp = null;
+        $temp_like = null;
+        $humidity = null;
+        $pressure = null;
+        $pressure_trend = null;
+        $wind_angle = null;
+        $wind_gust = null;
+        $wind_strength = null;
+        $uv_index = null;
+        $irradiance = null;
+        $illuminance = null;
+        $rain = null;
+        $rain_day_aggregated = null;
+        $strike = false;
+        if (count($datas) > 0) {
+            foreach ($datas as $data) {
+                switch ($data['measure_type']) {
+                    case 'temperature_ref':
+                        $tr = $data['measure_value'];
+                        break;
+                    case 'humidity_ref':
+                        $hr = $data['measure_value'];
+                        break;
+                    case 'dew_point':
+                        $dr = $data['measure_value'];
+                        break;
+                }
+            }
+            foreach ($datas as $data) {
+                switch ($data['measure_type']) {
+                    case 'temperature':
+                        if (strtolower($data['module_type']) == 'namodule1') {
+                            $temp = sprintf('%.1F', round($data['measure_value'], 1));
+                        }
+                        break;
+                    case 'heat_index':
+                        if (strtolower($data['module_type']) == 'nacomputed') {
+                            if ($this->is_valid_heat_index($tr, $hr, $dr)) {
+                                $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
+                            }
+                        }
+                        break;
+                    case 'humidex':
+                        if (strtolower($data['module_type']) == 'nacomputed') {
+                            if ($this->is_valid_humidex($tr, $hr, $dr)) {
+                                $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
+                            }
+                        }
+                        break;
+                    case 'wind_chill':
+                        if (strtolower($data['module_type']) == 'nacomputed') {
+                            if ($this->is_valid_wind_chill($tr, $data['measure_value'])) {
+                                $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
+                            }
+                        }
+                        break;
+                    case 'humidity':
+                        if (strtolower($data['module_type']) == 'namodule1') {
+                            $humidity = sprintf('%.1F', round($data['measure_value'], 1));
+                        }
+                        break;
+                    case 'pressure':
+                        if (strtolower($data['module_type']) == 'namain') {
+                            $pressure = sprintf('%.1F', round($data['measure_value'], 1));
+                        }
+                        break;
+                    case 'pressure_trend':
+                        if (strtolower($data['module_type']) == 'namain') {
+                            $pressure_trend = $this->get_numeral_trend_text($data['measure_value']);
+                        }
+                        break;
+                    case 'uv_index':
+                        if (strtolower($data['module_type']) == 'namodule5') {
+                            $uv_index = sprintf('%.1F', round($data['measure_value'], 1));
+                        }
+                        break;
+                    case 'irradiance':
+                        if (strtolower($data['module_type']) == 'namodule5') {
+                            $irradiance = sprintf('%d', round($data['measure_value'],0));
+                        }
+                        break;
+                    case 'illuminance':
+                        if (strtolower($data['module_type']) == 'namodule5') {
+                            $illuminance = sprintf('%d', round($data['measure_value'] / 1000,0));
+                        }
+                        break;
+                    case 'windstrength':
+                        if (strtolower($data['module_type']) == 'namodule2') {
+                            $wind_strength = sprintf('%.1F', round($data['measure_value'], 1));
+                        }
+                        break;
+                    case 'guststrength':
+                        if (strtolower($data['module_type']) == 'namodule2') {
+                            $wind_gust = sprintf('%.1F', round($data['measure_value'], 1));
+                        }
+                        break;
+                    case 'windangle':
+                        if (strtolower($data['module_type']) == 'namodule2') {
+                            $wind_angle = sprintf('%d', round($data['measure_value'],0));
+                        }
+                        break;
+                    case 'rain':
+                        if (strtolower($data['module_type']) == 'namodule3') {
+                            $rain = sprintf('%d', round($data['measure_value'],0));
+                        }
+                        break;
+                    case 'rain_day_aggregated':
+                        if (strtolower($data['module_type']) == 'namodule3') {
+                            $rain_day_aggregated = sprintf('%.1F', round($data['measure_value'], 1));
+                        }
+                        break;
+                    case 'strike_instant':
+                        if (strtolower($data['module_type']) == 'namodule7') {
+                            if ($data['measure_value'] > 0) {
+                                $strike = true;
+                            }
+                        }
+                        break;
+                }
+
+            }
+        }
+        $result = '<?xml version="1.0" encoding="UTF-8"?>' . PHP_EOL;
+        $result .= '<!-- Generated by ' . LWS_FULL_NAME . ' - https://weather.station.software -->' . PHP_EOL;
+        $result .= '<response>' . PHP_EOL;
+        $result .= ' <current_weather>' . PHP_EOL;
+        if (isset($temp)) {
+            $result .= '  <temperature>' . PHP_EOL;
+            $result .= '   <current value="' . $temp . '" unit="c"/>' . PHP_EOL;
+            if (isset($temp_like)) {
+                $result .= '   <feels_like value="' . $temp_like . '" unit="c"/>' . PHP_EOL;
+            }
+            $result .= '  </temperature>' . PHP_EOL;
+        }
+        if (isset($humidity)) {
+            $result .= '   <humidity value="' . $humidity . '"/>' . PHP_EOL;
+        }
+        if (isset($pressure)) {
+            $s = '';
+            if (isset($pressure_trend)) {
+                $s = ' trend="' . $pressure_trend . '"';
+            }
+            $result .= '   <pressure value="' . $pressure . '"' . $s . ' unit="hPa"/>' . PHP_EOL;
+        }
+        if (isset($uv_index)) {
+            $result .= '   <uv value="' . $uv_index . '"/>' . PHP_EOL;
+        }
+        if (isset($irradiance)) {
+            $s = '';
+            if (isset($illuminance)) {
+                $s = ' radiation="' . $illuminance . '"';
+            }
+            $result .= '   <solar energy="' . $irradiance . '"' . $s .'/>' . PHP_EOL;
+        }
+        if (isset($wind_angle) || isset($wind_strength) || isset($wind_gust)) {
+            $result .= '  <wind>' . PHP_EOL;
+            if (isset($wind_angle)) {
+                $result .= '   <direction value="' . $wind_angle . '"/>' . PHP_EOL;
+            }
+            if (isset($wind_strength)) {
+                $result .= '   <speed value="' . $wind_strength . '" unit="km/h"/>' . PHP_EOL;
+            }
+            if (isset($wind_gust)) {
+                $result .= '   <gusts value="' . $wind_gust . '" unit="km/h"/>' . PHP_EOL;
+            }
+            $result .= '  </wind>' . PHP_EOL;
+        }
+        if (isset($rain) || isset($rain_day_aggregated)) {
+            $result .= '  <sky>' . PHP_EOL;
+            $result .= '   <precipitation>' . PHP_EOL;
+            $result .= '    <rain>' . PHP_EOL;
+            if (isset($rain)) {
+                $result .= '      <rate value="' . $rain . '" unit="mm/h"/>' . PHP_EOL;
+            }
+            if (isset($rain_day_aggregated)) {
+                $result .= '      <daily_total value="' . $rain_day_aggregated . '" unit="mm"/>' . PHP_EOL;
+            }
+            $result .= '    </rain>' . PHP_EOL;
+            $result .= '   </precipitation>' . PHP_EOL;
+            $result .= '  </sky>' . PHP_EOL;
+        }
+        if ($strike) {
+            $result .= '  <thunderstorm value="yes"/>' . PHP_EOL;
+        }
+        //$result .= '  <auto_update>' . PHP_EOL;
+        //$result .= '   <interval value="300" />' . PHP_EOL;
+        //$result .= '  </auto_update>' . PHP_EOL;
+        $result .= ' </current_weather>' . PHP_EOL;
+        $result .= '</response>' . PHP_EOL;
+        return $result;
     }
 
     /**

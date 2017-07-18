@@ -213,7 +213,7 @@
             <?php endif;?>
             <?php if ($show_emc):?>
                 <!-- EMC -->
-                <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Humidex', 'live-weather-station').'"' : ''); ?>>
+                <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Equilibrium moisture content', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column-<?php echo $id ?>">
                         <i class="fa wi-x26-<?php echo $id ?> fa-tree" style="font-size:20px;"></i>
                     </div>

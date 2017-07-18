@@ -124,6 +124,8 @@ class Core {
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Indoor', 'widget_registering' );
         //$this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Pollution', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Fire', 'widget_registering' );
+        $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Thunderstorm', 'widget_registering' );
+        $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Solar', 'widget_registering' );
         $this->loader->add_action('wp_ajax_update_lws_welcome_panel', 'WeatherStation\UI\Dashboard\Handling', 'update_lws_welcome_panel_callback' );
         $this->loader->add_action('shutdown', '\WeatherStation\System\Analytics\Performance', 'store' );
         $this->loader->add_action('auto_update_plugin', '\WeatherStation\System\Environment\Manager', 'lws_auto_update', 10, 2 );

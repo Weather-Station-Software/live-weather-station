@@ -49,7 +49,7 @@ class Watchdog {
     /**
      * Init and start the watchdog.
      *
-     * @since    2.7.0
+     * @since 2.7.0
      */
     public static function start() {
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_02_minutes_interval'));

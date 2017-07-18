@@ -81,8 +81,6 @@ trait Description {
             case 'namodule7': // Thunderstorm module
                 $result = __('Thunderstorm module', 'live-weather-station');
                 break;
-
-
             case 'namodule9': // Additional module
                 $result = __('Extra module', 'live-weather-station');
                 break;

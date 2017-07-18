@@ -14,7 +14,7 @@
             <div class="lws-widget-header-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Current weather conditions', 'live-weather-station').'"' : ''); ?>>
                 <i class="wi wi-owm<?php echo $datas['day']['value']; ?>-<?php echo $datas['weather']['value']; ?>"></i>
             </div>
-            <?php if (($show_title || $subtitle != 0) || $show_temperature || $show_pressure || $show_humidity || $show_wind || $show_rain || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
+            <?php if (($show_title || $subtitle != 0) || $show_temperature || $show_pressure || $show_humidity || $show_uv || $show_wind || $show_rain || $show_strike || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
                 <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
         <?php endif;?>
@@ -33,7 +33,7 @@
                     <?php endif;?>
                 </div>
             </div>
-            <?php if ($show_temperature || $show_pressure || $show_humidity || $show_wind || $show_rain || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
+            <?php if ($show_temperature || $show_pressure || $show_humidity || $show_uv || $show_wind || $show_rain || $show_strike || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
                 <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
         <?php endif;?>
@@ -58,7 +58,7 @@
                     </div>
                 </div>
             </div>
-            <?php if ($show_pressure || $show_humidity || $show_wind || $show_rain || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
+            <?php if ($show_pressure || $show_humidity || $show_uv || $show_wind || $show_rain || $show_strike || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
                 <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
         <?php endif;?>
@@ -75,7 +75,7 @@
                     </div>
                 </div>
             </div>
-            <?php if ($show_pressure || $show_humidity || $show_wind || $show_rain || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
+            <?php if ($show_pressure || $show_humidity || $show_uv || $show_wind || $show_rain || $show_strike || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
                 <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
         <?php endif;?>
@@ -92,7 +92,7 @@
                     </div>
                 </div>
             </div>
-            <?php if ($show_humidity || $show_wind || $show_rain || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
+            <?php if ($show_humidity || $show_uv || $show_wind || $show_rain || $show_strike || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
                 <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
         <?php endif;?>
@@ -109,7 +109,24 @@
                     </div>
                 </div>
             </div>
-            <?php if ($show_wind || $show_rain || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
+            <?php if ($show_uv || $show_wind || $show_rain || $show_strike || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
+                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+            <?php endif;?>
+        <?php endif;?>
+        <?php if ($show_uv):?>
+            <!-- UV -->
+            <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('UV', 'live-weather-station').'"' : ''); ?>>
+                <div class="lws-widget-column-<?php echo $id ?>">
+                    <i class="wi wi-x26-<?php echo $id ?> wi-horizon-alt"></i>
+                </div>
+                <div class="lws-widget-column-<?php echo $id ?>">
+                    <div class="lws-widget-column-<?php echo $id ?>">
+                        <div class="lws-widget-med-value-<?php echo $id ?>"><?php echo $datas['uv_index']['value']; ?></div>
+                        <div class="lws-widget-med-unit-<?php echo $id ?>"><?php echo $datas['uv_index']['unit']; ?></div>
+                    </div>
+                </div>
+            </div>
+            <?php if ($show_wind || $show_rain || $show_strike || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
                 <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
         <?php endif;?>
@@ -133,7 +150,7 @@
                     </div>
                 </div>
             </div>
-            <?php if ($show_rain || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
+            <?php if ($show_rain || $show_strike || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
                 <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
         <?php endif;?>
@@ -150,7 +167,7 @@
                     </div>
                 </div>
             </div>
-            <?php if ($show_rain || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
+            <?php if ($show_rain || $show_strike || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
                 <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
         <?php endif;?>
@@ -174,7 +191,7 @@
                     </div>
                 </div>
             </div>
-            <?php if ($show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
+            <?php if ($show_strike || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
                 <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
         <?php endif;?>
@@ -191,10 +208,36 @@
                     </div>
                 </div>
             </div>
-            <?php if ($show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
+            <?php if ($show_strike || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
                 <div class="lws-widget-bevel-<?php echo $id ?>"></div>
             <?php endif;?>
         <?php endif;?>
+
+        <?php if ($show_strike):?>
+            <!-- WIND -->
+            <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Thunderstorm', 'live-weather-station').'"' : ''); ?>>
+                <div class="lws-widget-column-<?php echo $id ?>">
+                    <div class="lws-widget-big-value-<?php echo $id ?>"><?php echo $datas['strike']['value']; ?></div>
+                    <div class="lws-widget-big-unit-<?php echo $id ?>"><?php echo $datas['strike']['unit']; ?></div>
+                </div>
+                <div class="lws-widget-column-<?php echo $id ?>">
+                    <i class="wi wi-x32-<?php echo $id ?> wi-lightning"></i>
+                </div>
+                <div class="lws-widget-column-<?php echo $id ?>">
+                    <div class="lws-widget-small-row-<?php echo $id ?>">
+                        <div class="lws-widget-small-value-up-<?php echo $id ?>"><?php echo $datas['strike_distance']['value']; ?></div>
+                        <div class="lws-widget-small-unit-up-<?php echo $id ?>"><?php echo $datas['strike_distance']['unit']; ?></div>
+                    </div>
+                    <div class="lws-widget-small-row-<?php echo $id ?>">
+                        <div class="lws-widget-small-value-down-<?php echo $id ?>"><?php echo $datas['strike_distance']['ts']; ?></div>
+                    </div>
+                </div>
+            </div>
+            <?php if ( $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_heat || $show_frost || $show_dew):?>
+                <div class="lws-widget-bevel-<?php echo $id ?>"></div>
+            <?php endif;?>
+        <?php endif;?>
+
         <?php if ($show_snow):?>
             <!-- RAIN -->
             <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Snowfall', 'live-weather-station').'"' : ''); ?>>

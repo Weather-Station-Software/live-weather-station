@@ -33,7 +33,7 @@ require_once(__DIR__ . '/init.php');
  * The code that runs during plugin activation.
  * This action is documented in includes/SystemPluginActivator.php
  *
- * @since    1.0.0
+ * @since 1.0.0
  */
 function activate_Live_Weather_Station() {
     Activator::activate();
@@ -43,7 +43,7 @@ function activate_Live_Weather_Station() {
  * The code that runs during plugin deactivation.
  * This action is documented in includes/SystemPluginDeactivator.php
  *
- * @since    1.0.0
+ * @since 1.0.0
  */
 function deactivate_Live_Weather_Station() {
 	Deactivator::deactivate();
