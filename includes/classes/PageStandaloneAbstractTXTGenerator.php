@@ -16,11 +16,13 @@ abstract class TXTGenerator {
 
     use Output;
 
+    protected $content_type = 'Content-type: text/plain; charset=utf-8';
+
     /**
      * Send headers.
      *
-     * @param   mixed   $filename     The filename to generate as attachement.
-     * @since   3.0.0
+     * @param mixed $filename The filename to generate as attachement.
+     * @since 3.0.0
      */
     private function send_header($filename=false) {
         if ((bool)get_option('live_weather_station_txt_cache_bypass')) {
@@ -32,7 +34,7 @@ abstract class TXTGenerator {
             header('Expires: '. $tsstring);
             header('ETag: "{' . $etag . '}"');
         }
-        header('Content-type: text/plain; charset=utf-8');
+        header($this->content_type);
         if ($filename) {
             header('Content-Disposition: attachment; filename="' . $filename . '"');
         }
@@ -67,8 +69,9 @@ abstract class TXTGenerator {
      * @since 3.0.0
      */
     public function send($params, $subformat='standard', $filename=false) {
+        $d = $this->get_data($params, $subformat);
         $this->send_header($filename);
-        $this->send_content($this->get_data($params, $subformat));
+        $this->send_content($d);
     }
 
 }

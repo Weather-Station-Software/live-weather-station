@@ -484,7 +484,11 @@ class Manager {
      */
     public static function wordpress_version_text() {
         global $wp_version;
-        return 'WordPress ' . $wp_version;
+        $s = '';
+        if (is_multisite()) {
+            $s = 'MU ';
+        }
+        return 'WordPress ' . $s . $wp_version;
     }
 
     /**

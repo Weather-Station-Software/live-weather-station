@@ -32,9 +32,9 @@ abstract class Framework {
     /**
      * Get the back path.
      *
-     * @param   string  $path      The current path.
-     * @return  string      The back path.
-     * @since    3.0.0
+     * @param string $path The current path.
+     * @return string The back path.
+     * @since 3.0.0
      */
     private function back_path($path) {
         if (strlen($path) > 0) {
@@ -49,8 +49,8 @@ abstract class Framework {
     /**
      * Try to include /wp-load.php.
      *
-     * @return  boolean     True if wp-load.php is loaded, false otherwise.
-     * @since    3.0.0
+     * @return boolean True if wp-load.php is loaded, false otherwise.
+     * @since 3.0.0
      */
     private function load_wp() {
         $path = dirname(__FILE__);
@@ -69,10 +69,13 @@ abstract class Framework {
     /**
      * Load query string elements properties.
      *
-     * @since    3.0.0
+     * @since 3.0.0
      */
     protected function load($available) {
-        $args = add_query_arg(null, null);
+        $args = preg_replace('/no_cache=([A-F0-9])+/', '', add_query_arg(null, null));
+        if (strpos($args, '?') == strlen($args)-1) {
+            $args = substr($args, 0, strlen($args)-1);
+        }
         if (strpos($args, '?') > 0) {
             $args = substr($args, strpos($args, '?') + 1, 2500);
         }
@@ -101,19 +104,20 @@ abstract class Framework {
             }
         }
         if ($this->type == 'unknown' || !$filled) {
-            foreach ($available['type'] as $type) {
+            foreach ($available['type'] as $fulltype) {
+                $type = strtolower(substr($fulltype, 0, strpos($fulltype, '.')));
                 if (strpos($args, '/'.$type.'/') !== false) {
                     $this->type = $type;
                     break;
                 }
-                if (strpos($args, $type.'.txt') !== false) {
+                if (strpos($args, $fulltype) !== false) {
                     $this->type = $type;
                     $s = $args;
                     while (strpos($s, '/') !== false) {
                         $s = substr($s, strpos($s, '/') + 1, 2500);
                     }
-                    if (strpos($s, '_'.$type.'.txt') !== false) {
-                        $s = substr($s, 0, strpos($s, '_'.$type.'.txt'));
+                    if (strpos($s, '_'.$fulltype) !== false) {
+                        $s = substr($s, 0, strpos($s, '_'.$fulltype));
                     }
                     if ($s != '') {
                         $this->subformat = strtolower($s);
@@ -134,8 +138,8 @@ abstract class Framework {
     /**
      * Try to initialize this standalone page in the wordpress context.
      *
-     * @return  boolean     True if context loading is done, false otherwise.
-     * @since    3.0.0
+     * @return boolean True if context loading is done, false otherwise.
+     * @since 3.0.0
      */
     private function init() {
         $result = $this->load_wp();
@@ -145,7 +149,7 @@ abstract class Framework {
     /**
      * Run the logic of the standalone page.
      *
-     * @since    3.0.0
+     * @since 3.0.0
      */
     public function run() {
         if($this->init()) {
@@ -168,24 +172,24 @@ abstract class Framework {
     /**
      * Get available args.
      *
-     * @since    3.0.0
+     * @since 3.0.0
      */
     abstract protected function available_args();
 
     /**
      * Use the generator to render the file.
      *
-     * @since    3.0.0
+     * @since 3.0.0
      */
     abstract protected function generate();
 
     /**
      * Renders error in output.
      *
-     * @param   integer     $code           Optional. An error code.
-     * @param   string      $message        Optional. An error message.
-     * @param   string      $header         Optional. An additional header.
-     * @since    3.0.0
+     * @param integer $code Optional. An error code.
+     * @param string $message Optional. An error message.
+     * @param string $header Optional. An additional header.
+     * @since 3.0.0
      */
     protected function error($code = 501, $message = '', $header = '') {
         http_response_code($code);

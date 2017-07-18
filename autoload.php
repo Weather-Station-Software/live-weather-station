@@ -30,6 +30,7 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Page\Standalone\Framework': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneFramework.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Generator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneGenerator.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Stickertags': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneStickertagsGenerator.php'; break;
+        case 'WeatherStation\Engine\Page\Standalone\Yowindow': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneYowindowGenerator.php'; break;
         case 'WeatherStation\DB\Query': $file = LWS_INCLUDES_DIR.'traits/DBQuery.php'; break;
         case 'WeatherStation\DB\Stats': $file = LWS_INCLUDES_DIR.'classes/DatabaseStats.php'; break;
         case 'WeatherStation\DB\Storage': $file = LWS_INCLUDES_DIR.'traits/DBStorage.php'; break;
@@ -139,6 +140,8 @@ spl_autoload_register(
         case 'WeatherStation\UI\Widget\Pollution': $file = LWS_INCLUDES_DIR.'classes/WidgetPollution.php'; break;
         case 'WeatherStation\UI\Widget\Indoor': $file = LWS_INCLUDES_DIR.'classes/WidgetIndoor.php'; break;
         case 'WeatherStation\UI\Widget\Psychrometry': $file = LWS_INCLUDES_DIR.'classes/WidgetPsychrometry.php'; break;
+        case 'WeatherStation\UI\Widget\Solar': $file = LWS_INCLUDES_DIR.'classes/WidgetSolar.php'; break;
+        case 'WeatherStation\UI\Widget\Thunderstorm': $file = LWS_INCLUDES_DIR.'classes/WidgetThunderstorm.php'; break;
         case 'WeatherStation\Utilities\ColorsManipulation': $file = LWS_INCLUDES_DIR.'libraries/misc/ColorsManipulation.php'; break;
         case 'WeatherStation\Utilities\Markdown': $file = LWS_INCLUDES_DIR.'libraries/misc/Markdown.php'; break;
         case 'WeatherStation\Utilities\Settings': $file = LWS_INCLUDES_DIR.'classes/SettingsHelper.php'; break;

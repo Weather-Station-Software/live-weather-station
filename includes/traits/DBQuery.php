@@ -221,6 +221,54 @@ trait Query {
     }
 
     /**
+     * Get thunderstorm stations list.
+     *
+     * @return array An array containing the available stations.
+     * @since 3.3.0
+     */
+    protected function get_operational_thunderstorm_stations_list() {
+        global $wpdb;
+        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name . " WHERE module_type='NAModule7'";
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $result = array();
+            foreach ($query_a as $val) {
+                $result[] = (array)$val;
+            }
+            return $result;
+        }
+        catch(\Exception $ex) {
+            return array('device_name' => __(LWS_PLUGIN_NAME, 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
+        }
+    }
+
+    /**
+     * Get solar stations list.
+     *
+     * @return array An array containing the available stations.
+     * @since 3.3.0
+     */
+    protected function get_operational_solar_stations_list() {
+        global $wpdb;
+        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name . " WHERE module_type='NAModule5'";
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $result = array();
+            foreach ($query_a as $val) {
+                $result[] = (array)$val;
+            }
+            return $result;
+        }
+        catch(\Exception $ex) {
+            return array('device_name' => __(LWS_PLUGIN_NAME, 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
+        }
+    }
+
+    /**
      * Get modules array.
      *
      * @return array An array containing modules by stations.
@@ -478,6 +526,58 @@ trait Query {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
         $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAMain' OR module_type='NAEphemer' OR module_type='NAComputed' OR module_type='NAPollution' " . ($strict_filtering ? "" : "OR module_type='NACurrent' ") . "OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NAModule3' OR module_type='NAModule5' OR module_type='NAModule6' OR module_type='NAModule7') ORDER BY module_id ASC" ;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $result = array();
+            foreach ($query_a as $val) {
+                $result[] = (array)$val;
+            }
+            return ($obsolescence_filtering ? $this->obsolescence_filtering($result) : $result);
+        }
+        catch(\Exception $ex) {
+            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
+        }
+    }
+
+    /**
+     * Get thunderstorm data.
+     *
+     * @param string $device_id The device ID.
+     * @param boolean $obsolescence_filtering Don't return obsolete data.
+     * @return array An array containing the outdoor data.
+     * @since 3.3.0
+     */
+    protected function get_thunderstorm_datas($device_id, $obsolescence_filtering=false) {
+        global $wpdb;
+        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAMain' OR module_type='NAEphemer' OR module_type='NAModule7') ORDER BY module_id ASC" ;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $result = array();
+            foreach ($query_a as $val) {
+                $result[] = (array)$val;
+            }
+            return ($obsolescence_filtering ? $this->obsolescence_filtering($result) : $result);
+        }
+        catch(\Exception $ex) {
+            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
+        }
+    }
+
+    /**
+     * Get solar data.
+     *
+     * @param string $device_id The device ID.
+     * @param boolean $obsolescence_filtering Don't return obsolete data.
+     * @return array An array containing the outdoor data.
+     * @since 3.3.0
+     */
+    protected function get_solar_datas($device_id, $obsolescence_filtering=false) {
+        global $wpdb;
+        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAMain' OR module_type='NAEphemer' OR module_type='NACurrent' OR module_type='NAModule5') ORDER BY module_id ASC" ;
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;

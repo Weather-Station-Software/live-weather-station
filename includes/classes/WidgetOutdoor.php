@@ -21,9 +21,7 @@ class Outdoor extends \WP_Widget {
     /**
      * Register the widget.
      *
-     * @since    1.0.0
-     * @access   public
-     * @static
+     * @since 1.0.0
      */
     public static function widget_registering() {
         register_widget('\WeatherStation\UI\Widget\Outdoor');
@@ -32,8 +30,7 @@ class Outdoor extends \WP_Widget {
     /**
      * Initialize the widget.
      *
-     * @since    1.0.0
-     * @access   public
+     * @since 1.0.0
      */
     public function __construct() {
         load_plugin_textdomain( 'live-weather-station' );
@@ -85,6 +82,8 @@ class Outdoor extends \WP_Widget {
                 'show_location' => false,
                 'show_cloud_ceiling' => false,
                 'show_cloud_cover' => false,
+                'show_strike' => false,
+                'show_uv' => false,
                 'follow_light' => false,
                 'fixed_background' => false,
                 'day_url' => '',
@@ -110,6 +109,8 @@ class Outdoor extends \WP_Widget {
         $result['show_location'] = !empty($result['show_location']) ? 1 : 0;
         $result['show_cloud_ceiling'] = !empty($result['show_cloud_ceiling']) ? 1 : 0;
         $result['show_cloud_cover'] = !empty($result['show_cloud_cover']) ? 1 : 0;
+        $result['show_strike'] = !empty($result['show_strike']) ? 1 : 0;
+        $result['show_uv'] = !empty($result['show_uv']) ? 1 : 0;
         $result['flat_design'] = !empty($result['flat_design']) ? 1 : 0;
         $result['follow_light'] = !empty($result['follow_light']) ? 1 : 0;
         $result['fixed_background'] = !empty($result['fixed_background']) ? 1 : 0;
@@ -151,6 +152,8 @@ class Outdoor extends \WP_Widget {
         $show_location = (bool)$instance['show_location'] ;
         $show_cloud_ceiling = (bool)$instance['show_cloud_ceiling'] ;
         $show_cloud_cover = (bool)$instance['show_cloud_cover'] ;
+        $show_strike = (bool)$instance['show_strike'] ;
+        $show_uv = (bool)$instance['show_uv'] ;
         $flat_design = (bool)$instance['flat_design'] ;
         $follow_light = (bool)$instance['follow_light'] ;
         $fixed_background = (bool)$instance['fixed_background'] ;
@@ -291,6 +294,8 @@ class Outdoor extends \WP_Widget {
         $instance['show_location'] = !empty($new_instance['show_location']) ? 1 : 0;
         $instance['show_cloud_ceiling'] = !empty($new_instance['show_cloud_ceiling']) ? 1 : 0;
         $instance['show_cloud_cover'] = !empty($new_instance['show_cloud_cover']) ? 1 : 0;
+        $instance['show_strike'] = !empty($new_instance['show_strike']) ? 1 : 0;
+        $instance['show_uv'] = !empty($new_instance['show_uv']) ? 1 : 0;
         $instance['flat_design'] = !empty($new_instance['flat_design']) ? 1 : 0;
         $instance['follow_light'] = !empty($new_instance['follow_light']) ? 1 : 0;
         $instance['fixed_background'] = !empty($new_instance['fixed_background']) ? 1 : 0;
@@ -334,6 +339,8 @@ class Outdoor extends \WP_Widget {
         $show_location = (bool)$instance['show_location'] ;
         $show_cloud_ceiling = (bool)$instance['show_cloud_ceiling'] ;
         $show_cloud_cover = (bool)$instance['show_cloud_cover'] ;
+        $show_strike = (bool)$instance['show_strike'] ;
+        $show_uv = (bool)$instance['show_uv'] ;
         $flat = (bool)$instance['flat_design'] ;
         $follow_light = (bool)$instance['follow_light'] ;
         $fixed_background = (bool)$instance['fixed_background'] ;
@@ -362,6 +369,8 @@ class Outdoor extends \WP_Widget {
         $NAModule1 = false;
         $NAModule2 = false;
         $NAModule3 = false;
+        $NAModule5 = false;
+        $NAModule7 = false;
         $NACurrent = false;
         $NAComputed = false;
         $modules = $this->get_widget_data($instance['station'], 'outdoor', $hide_obsolete);
@@ -473,6 +482,57 @@ class Outdoor extends \WP_Widget {
                         }
                         else {
                             $show_wind = false;
+                        }
+                        break;
+                    case 'NAModule5': // Solar
+                        if (array_key_exists('uv_index', $module['datas'])) {
+                            $NAModule5 = true;
+                            $datas['uv_index'] = array();
+                            $datas['uv_index']['value'] = $module['datas']['uv_index']['value'];
+                            $datas['uv_index']['unit'] = __('UV', 'live-weather-station');
+                        }
+                        else {
+                            $show_uv = false;
+                        }
+                        break;
+                    case 'NAModule7': // Thunderstorm
+                        if (array_key_exists('strike_count', $module['datas'])) {
+                            $NAModule7 = true;
+                            $datas['strike'] = array();
+                            $datas['strike']['value'] = $module['datas']['strike_count']['value'];
+                            $datas['strike']['unit'] = $module['datas']['strike_count']['unit']['unit'];
+                        }
+                        elseif (array_key_exists('strike_instant', $module['datas'])) {
+                            $NAModule7 = true;
+                            $datas['strike'] = array();
+                            $datas['strike']['value'] = $module['datas']['strike_instant']['value'];
+                            $datas['strike']['unit'] = $module['datas']['strike_instant']['unit']['unit'];
+                        }
+                        else {
+                            $show_strike = false;
+                        }
+                        if (array_key_exists('strike_bearing', $module['datas'])) {
+                            $bearing = $this->get_angle_text($module['datas']['strike_bearing']['raw_value']) . ', ';
+                        }
+                        else {
+                            $bearing = '';
+                        }
+                        if (array_key_exists('strike_distance', $module['datas'])) {
+                            $datas['strike_distance'] = array();
+                            $datas['strike_distance']['value'] = $bearing . $module['datas']['strike_distance']['value'];
+                            $datas['strike_distance']['unit'] = $module['datas']['strike_distance']['unit']['unit'];
+                            if (time() - $module['datas']['strike_distance']['timestamp'] < 3 * HOUR_IN_SECONDS) {
+                                $datas['strike_distance']['ts'] = self::get_time_from_utc($module['datas']['strike_distance']['timestamp'], $tz);
+                            }
+                            else {
+                                $datas['strike_distance']['ts'] = '';
+                            }
+                        }
+                        else {
+                            $datas['strike_distance'] = array();
+                            $datas['strike_distance']['value'] = '';
+                            $datas['strike_distance']['unit'] = '';
+                            $datas['strike_distance']['ts'] = '';
                         }
                         break;
                     case 'NACurrent': // Current weather -> OpenWeatherMap
@@ -634,6 +694,12 @@ class Outdoor extends \WP_Widget {
         }
         if (!$NAModule3) {
             $show_rain = false ;
+        }
+        if (!$NAModule5) {
+            $show_uv = false ;
+        }
+        if (!$NAModule7) {
+            $show_strike = false ;
         }
         if (!$NACurrent) {
             $show_current = false ;

@@ -37,8 +37,9 @@ class Handling {
     private $station_id;
     private $station_name;
     private $service = 'Backend';
-    private $publishable = array(LWS_NETATMO_SID, LWS_LOC_SID, LWS_OWM_SID, LWS_WUG_SID);
-    private $sharable = array(LWS_NETATMO_SID, LWS_RAW_SID, LWS_REAL_SID);
+    private $publishable = array(LWS_NETATMO_SID, LWS_LOC_SID, LWS_OWM_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WUG_SID, LWS_WFLW_SID);
+    private $sharable = array(LWS_NETATMO_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WFLW_SID);
+    private $publishing_proto = array('txt', 'raw', 'real', 'yow');
 
     /**
      * Initialize the class and set its properties.
@@ -102,10 +103,12 @@ class Handling {
                     if (($guid != 0) && ($guid == $this->station_id)) {
                         $station = $this->get_station_informations_by_guid($guid);
                         if (array_key_exists('submit-publish', $_POST)) {
-                            if (array_key_exists('txt_sync', $_POST)) {
-                                $station['txt_sync'] = 1;
-                            } else {
-                                $station['txt_sync'] = 0;
+                            foreach ($this->publishing_proto as $proto) {
+                                if (array_key_exists($proto . '_sync', $_POST)) {
+                                    $station[$proto . '_sync'] = 1;
+                                } else {
+                                    $station[$proto . '_sync'] = 0;
+                                }
                             }
                             $save = true;
                         }

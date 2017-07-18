@@ -1,7 +1,7 @@
 === Weather Station ===
 Contributors: PierreLannoy
-Tags: weather, forecast, openweathermap, netatmo, weather underground, wunderground
-Requires at least: 4.0
+Tags: weather, openweathermap, netatmo, weatherflow, wunderground
+Requires at least: 4.3
 Tested up to: 4.8
 Stable tag: 3.2.5
 License: GPLv2 or later
@@ -32,6 +32,7 @@ Weather Station supports:
 
 * the Netatmo station (all modules)
 * the Netatmo *Healthy Home Coach*
+* the WeatherFlow station (Sky & Air modules)
 * all stations supported by softwares like Cumulus, Weather Display, WeeWX, etc. (so, yes, stations from Davis, La Crosse, Oregon Scientific, RainWise, etc. are supported)
 * all stations published on Weather Underground (regardless which model it is)
 * all geolocation from OpenWeatherMap
@@ -53,7 +54,7 @@ Anyway, I'll be glad to help you if you encounter issues when using this plugin.
 = Donation =
 If you like this plugin or find it useful and want to thank me for the work done, please consider making a donation to [La Quadrature Du Net](https://www.laquadrature.net/en) which is an advocacy group defending the rights and freedoms of citizens on the Internet. By supporting them, you help the daily actions they perform to defend our fundamental freedoms!
 
-> **DISCLAIMER:** *This plugin **IS NOT** an official software from [Netatmo](http://www.netatmo.com "Netatmo Homepage"), [OpenWeatherMap](http://openweathermap.org/) or [Weather Underground](https://www.wunderground.com/) and is not endorsed or supported by these companies.*
+> **DISCLAIMER:** *This plugin **IS NOT** an official software from [Netatmo](http://www.netatmo.com "Netatmo Homepage"), [WeatherFlow](http://weatherflow.com/ "WeatherFlow Homepage"), [OpenWeatherMap](http://openweathermap.org/) or [Weather Underground](https://www.wunderground.com/) and is not endorsed or supported by these companies.*
 
 
 == Installation ==

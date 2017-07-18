@@ -4,6 +4,7 @@ namespace WeatherStation\Engine\Page\Standalone;
 
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\System\Logs\LoggableException;
+
 require_once(dirname(__FILE__) . '/PageStandaloneFramework.php');
 
 /**
@@ -19,11 +20,11 @@ class Generator extends Framework {
     /**
      * Get available args.
      *
-     * @since    3.0.0
+     * @since 3.0.0
      */
     protected function available_args() {
         $result = array();
-        $result['type'] = ['stickertags'];
+        $result['type'] = ['stickertags.txt', 'YoWindow.xml'];
         $result['fields'] = ['station'];
         $result['variables']['station'] = '@/([A-Z0-9]{2}:[A-F0-9]{2}:[A-F0-9]{2}:[A-F0-9]{2}:[A-F0-9]{2}:[A-F0-9]{2})/@i';
         return $result;
@@ -32,7 +33,7 @@ class Generator extends Framework {
     /**
      * Use the right generator to render the file.
      *
-     * @since    3.0.0
+     * @since 3.0.0
      */
     protected function generate() {
         try {
