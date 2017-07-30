@@ -71,7 +71,7 @@ function get_display_locale($user_id = 0) {
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.3.0-rc1');
+define('LWS_VERSION', '3.3.0-rc2');
 define('LWS_CODENAME', '"Kat Onoma"');
 define('LWS_WATSNEW_EN', 'https://weather.station.software/en/weather-station-3-2-merzhin/');
 define('LWS_WATSNEW_FR', 'https://weather.station.software/fr/weather-station-32-merzhin/');
@@ -80,7 +80,7 @@ define('LWS_WATSNEW_FR', 'https://weather.station.software/fr/weather-station-32
 
 define('LWS_FULL_NAME', 'Weather Station 3');
 define('LWS_OWM_READY', false);
-define('LWS_MINIMUM_WP_VERSION', '4.7');
+define('LWS_MINIMUM_WP_VERSION', '4.0');
 define('LWS_PLUGIN_ID', 'live-weather-station');
 define('LWS_PLUGIN_SLUG', 'live-weather-station');
 define('LWS_PLUGIN_TEXT_DOMAIN', 'live-weather-station');

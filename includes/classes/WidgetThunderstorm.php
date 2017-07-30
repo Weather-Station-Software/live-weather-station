@@ -330,7 +330,7 @@ class Thunderstorm extends \WP_Widget {
                             $NAModule7 = true;
                             $datas['strikecount'] = array();
                             $datas['strikecount']['value'] = $module['datas']['strike_count']['value'];
-                            $datas['strikecount']['unit'] = __('/ 3hr', 'live-weather-station');
+                            $datas['strikecount']['unit'] = __('/ 3 hr', 'live-weather-station');
                         }
                         elseif (array_key_exists('strike_instant', $module['datas'])) {
                             $NAModule7 = true;

@@ -1,7 +1,7 @@
 === Weather Station ===
 Contributors: PierreLannoy
 Tags: weather, openweathermap, netatmo, weatherflow, wunderground
-Requires at least: 4.3
+Requires at least: 4.0
 Tested up to: 4.8
 Stable tag: 3.2.5
 License: GPLv2 or later

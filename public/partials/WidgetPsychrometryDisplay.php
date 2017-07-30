@@ -55,7 +55,7 @@
             <?php endif;?>
             <?php if ($show_wet_bulb):?>
                 <!-- WET BULB -->
-                <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Wet-bulb temperature', 'live-weather-station').'"' : ''); ?>>
+                <div class="lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Wet bulb temperature', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-big-value-<?php echo $id ?>"><?php echo $datas['wet_bulb']['value']; ?></div>
                         <div class="lws-widget-big-unit-<?php echo $id ?>"><?php echo $datas['wet_bulb']['unit']; ?></div>

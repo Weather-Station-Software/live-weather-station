@@ -59,6 +59,10 @@ trait Output {
      * @since 3.3.0
      */
     public function admin_changelog_shortcodes($attributes) {
+        $_attributes = shortcode_atts( array('style' => 'markdown', 'title' => 'h3', 'list' => 'bullet'), $attributes );
+        $style = $_attributes['style'];
+        $title = $_attributes['title'];
+        $list = $_attributes['list'];
         $changelog = LWS_PLUGIN_DIR . 'changelog.txt';
         if (file_exists($changelog)) {
             try {
@@ -73,11 +77,29 @@ trait Output {
         else {
             $result = __('Sorry, unable to find or read changelog file.', 'live-weather-station');
         }
-        $_attributes = shortcode_atts( array('title' => ''), $attributes );
-        $title = $_attributes['title'];
-        if ($title != '') {
-            $result = str_replace('h3>', $title.'>', $result);
+
+        if ($list == 'icon') {
+            $result = str_replace('<ul>', '', $result);
+            $result = str_replace('</ul>', '', $result);
+            $result = str_replace('<li>', '', $result);
+            $result = str_replace('</li>', '<br/>', $result);
+            $result = str_replace('New: ', '<i class="fa fa-fw fa-plus-square-o" aria-hidden="true">&nbsp;</i>', $result);
+            $result = str_replace('New language: ', '<i class="fa fa-fw fa-language" aria-hidden="true">&nbsp;</i>new translation: ', $result);
+            $result = str_replace('Improvement: ', '<i class="fa fa-fw fa-check-square-o" aria-hidden="true">&nbsp;</i>', $result);
+            $result = str_replace('Bug fix: ', '<i class="fa fa-fw fa-bug" aria-hidden="true">&nbsp;</i>fixed: ', $result);
         }
+
+        if ($style == 'divi_accordion') {
+            $result = str_replace('<h1>',  '</p>' . PHP_EOL .'</div>' . PHP_EOL . '</div>' . PHP_EOL . '<div class="et_pb_module et_pb_toggle et_pb_toggle_close">' . PHP_EOL . '<h1 class="et_pb_toggle_title">', $result);
+            $result = str_replace('</h1>',  '</h1>' . PHP_EOL . '<div class="et_pb_toggle_content clearfix"><p>', $result);
+            $result = substr($result, 78, 100000);
+            $result = '<div class="et_pb_module et_pb_toggle et_pb_toggle_open">' . PHP_EOL . $result;
+            $result = '<div class="et_pb_module et_pb_accordion">' . PHP_EOL . $result;
+            $result .= '</p></div></div></div>';
+        }
+
+        $result = str_replace('<h1', '<'.$title, $result);
+        $result = str_replace('</h1', '</'.$title, $result);
         return $result;
     }
 
