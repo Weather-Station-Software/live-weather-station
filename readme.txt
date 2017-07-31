@@ -34,10 +34,11 @@ Weather Station supports:
 * the Netatmo *Healthy Home Coach*
 * the WeatherFlow station (Sky & Air modules)
 * all stations supported by softwares like Cumulus, Weather Display, WeeWX, etc. (so, yes, stations from Davis, La Crosse, Oregon Scientific, RainWise, etc. are supported)
+* all stations supported by softwares like WeatherLink, WsWin32, MeteoBridge (with stickertags export) 
 * all stations published on Weather Underground (regardless which model it is)
 * all geolocation from OpenWeatherMap
 
-If you want, Weather Station can send outdoor data, at a 10 minutes frequency, to the following services:
+If you want, Weather Station can send outdoor data to the following services:
 
 * [Met Office](http://wow.metoffice.gov.uk/) weather observations website
 * [PWS Weather](http://www.pwsweather.com/)
@@ -101,11 +102,11 @@ You can report bugs and suggest ideas via the [support section](https://wordpres
 
 == Changelog ==
 
-See [full changelog](https://weather.station.software/changelog.php).
+See [full changelog](https://weather.station.software/en/handbook/changelog/).
 
 == Upgrade Notice ==
 
-Please, see [full changelog](https://weather.station.software/changelog.php) and [requirements](https://weather.station.software/en/handbook/requirements/).
+Please, see [full changelog](https://weather.station.software/en/handbook/changelog/) and [requirements](https://weather.station.software/en/handbook/requirements/).
 
 == Screenshots ==
 
