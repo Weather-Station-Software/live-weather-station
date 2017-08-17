@@ -2,7 +2,9 @@
 *  UPCOMING FEATURES  *
 ***********************
 
+ * 3.x - Services availability (as analytics tab)
  * 3.x - Wind state
+ * 3.x - Stations map
  * 3.x - Sun (meridian) transit time
  * 3.x - Querying icons texts via shortcodes
  * 3.x - Forest fire weather index computing

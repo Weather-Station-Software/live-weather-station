@@ -108,6 +108,9 @@ trait PublicClient {
         Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($weather, true));
         if (!empty($weather) && array_key_exists('obs', $weather) && is_array($weather['obs'])) {
             $observation = $weather['obs'][0];
+            if (is_null($observation)) {
+                $observation = array();
+            }
             if (array_key_exists('public_name', $weather)) {
                 $station['station_name'] = $weather['public_name'];
             }
