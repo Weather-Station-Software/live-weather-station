@@ -4742,9 +4742,13 @@ trait Output {
         else {
             foreach ($datas as $data) {
                 switch ($data['measure_type']) {
+                    case 'last_seen':
+                        if ($data['module_type'] == 'NAMain') {
+                            $ts = strtotime($data['measure_value']);
+                        }
+                        break;
                     case 'loc_timezone':
                         $tz = $data['measure_value'];
-                        $ts = strtotime($data['measure_timestamp']);
                         break;
                     case 'temperature_ref':
                         $tr = $data['measure_value'];
@@ -4757,9 +4761,9 @@ trait Output {
                         break;
                 }
             }
-            if ((time() - $ts > 240) && (time() - $ts < 900)) {
-                $ts = time() - 240;
-            }
+            //if ((time() - $ts > 240) && (time() - $ts < 900)) {
+                //$ts = time() - 240;
+            //}
             $values[0] = $this->get_time_from_utc($ts, $tz, 'H:i');
             $values[1] = $this->get_date_from_utc($ts, $tz, 'd/m/Y');
             foreach ($datas as $data) {

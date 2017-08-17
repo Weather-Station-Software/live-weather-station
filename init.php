@@ -71,10 +71,10 @@ function get_display_locale($user_id = 0) {
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.3.0-rc3');
+define('LWS_VERSION', '3.3.0-rc4');
 define('LWS_CODENAME', '"Kat Onoma"');
-define('LWS_WATSNEW_EN', 'https://weather.station.software/en/weather-station-3-2-merzhin/');
-define('LWS_WATSNEW_FR', 'https://weather.station.software/fr/weather-station-32-merzhin/');
+define('LWS_WATSNEW_EN', 'https://weather.station.software/en/weather-station-3-3-kat-onoma/');
+define('LWS_WATSNEW_FR', 'https://weather.station.software/fr/weather-station-3-3-kat-onoma/');
 
 //---------------------------------------------------------------------------------------------------
 

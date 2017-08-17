@@ -40,6 +40,7 @@
 * Bug fix: the formatting of length (of day, dawn & dusk) in ephemeris module is wrong in some cases.
 * Bug fix: the icons for dew point and frost point are not correctly aligned in *Outdoor Weather Summary* widget.
 * Bug fix: adding a file-based station throws, in some cases, a notice in the PHP log file.
+* Bug fix: the time is sometimes wrong in generated `stickertags` files for Netatmo stations.
 * Bug fix: removing a Weather Underground station may produce an inconsistent warning message.
 
 #3.2.5 / May 17th, 2017
