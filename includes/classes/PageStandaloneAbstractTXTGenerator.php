@@ -14,8 +14,6 @@ use WeatherStation\Data\Output;
  */
 abstract class TXTGenerator {
 
-    use Output;
-
     protected $content_type = 'Content-type: text/plain; charset=utf-8';
 
     /**

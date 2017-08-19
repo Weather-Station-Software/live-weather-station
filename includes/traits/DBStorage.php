@@ -243,63 +243,6 @@ trait Storage {
     }
 
     /**
-     * Creates table for the plugin.
-     *
-     * @since    2.7.0
-     */
-    private static function create_live_weather_station_owm_stations_table() {
-        global $wpdb;
-        $charset_collate = $wpdb->get_charset_collate();
-        $table_name = $wpdb->prefix.self::live_weather_station_owm_stations_table();
-        $sql = "CREATE TABLE IF NOT EXISTS ".$table_name;
-        $sql .= " ( station_id bigint(20) unsigned NOT NULL auto_increment,";
-        $sql .= " station_name varchar(60) DEFAULT '' NOT NULL,";
-        $sql .= " loc_city varchar(60) DEFAULT '' NOT NULL,";
-        $sql .= " loc_country_code varchar(2) DEFAULT '' NOT NULL,";
-        $sql .= " loc_timezone varchar(50) DEFAULT '' NOT NULL,";
-        $sql .= " loc_latitude varchar(20) DEFAULT '' NOT NULL,";
-        $sql .= " loc_longitude varchar(20) DEFAULT '' NOT NULL,";
-        $sql .= " loc_altitude varchar(20) DEFAULT '' NOT NULL,";
-        $sql .= " PRIMARY KEY (station_id)";
-        $sql .= ") $charset_collate;";
-        $wpdb->query($sql);
-    }
-
-    /**
-     * Creates table for the plugin.
-     *
-     * @since    2.7.0
-     */
-    private static function create_live_weather_station_infos_table() {
-        global $wpdb;
-        $charset_collate = $wpdb->get_charset_collate();
-        $table_name = $wpdb->prefix.self::live_weather_station_infos_table();
-        $sql = "CREATE TABLE IF NOT EXISTS ".$table_name;
-        $sql .= " (station_id varchar(17) NOT NULL,";
-        $sql .= " station_name varchar(60) DEFAULT '' NOT NULL,";
-        $sql .= " txt_sync boolean DEFAULT 0 NOT NULL,";
-        $sql .= " owm_user varchar(60) DEFAULT '' NOT NULL,";
-        $sql .= " owm_password varchar(60) DEFAULT '' NOT NULL,";
-        $sql .= " owm_id varchar(60) DEFAULT '' NOT NULL,";
-        $sql .= " owm_sync boolean DEFAULT 0 NOT NULL,";
-        $sql .= " pws_user varchar(60) DEFAULT '' NOT NULL,";
-        $sql .= " pws_password varchar(60) DEFAULT '' NOT NULL,";
-        $sql .= " pws_sync boolean DEFAULT 0 NOT NULL,";
-        $sql .= " wow_user varchar(60) DEFAULT '' NOT NULL,";
-        $sql .= " wow_password varchar(60) DEFAULT '' NOT NULL,";
-        $sql .= " wow_sync boolean DEFAULT 0 NOT NULL,";
-        /*$sql .= " wet_user varchar(60) DEFAULT '' NOT NULL,";
-        $sql .= " wet_password varchar(60) DEFAULT '' NOT NULL,";
-        $sql .= " wet_sync boolean DEFAULT 0 NOT NULL,";*/
-        $sql .= " wug_user varchar(60) DEFAULT '' NOT NULL,";
-        $sql .= " wug_password varchar(60) DEFAULT '' NOT NULL,";
-        $sql .= " wug_sync boolean DEFAULT 0 NOT NULL,";
-        $sql .= " PRIMARY KEY (station_id)";
-        $sql .= ") $charset_collate;";
-        $wpdb->query($sql);
-    }
-
-    /**
      * Creates table for the plugin logging system.
      *
      * @since 3.0.0
@@ -441,7 +384,6 @@ trait Storage {
     protected static function create_tables() {
         self::create_live_weather_station_datas_table();
         self::create_live_weather_station_stations_table();
-        self::create_live_weather_station_infos_table();
         self::create_live_weather_station_performance_cache_table();
         self::create_live_weather_station_performance_cron_table();
         self::create_live_weather_station_quota_day_table();
@@ -457,136 +399,19 @@ trait Storage {
     protected static function update_tables($oldversion) {
         global $wpdb;
         $id = $oldversion[0];
-
-        if ($id < 3) {
-
-            // VERSION 2.0.0
-            $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
-            $sql = "ALTER TABLE " . $table_name . " CHANGE measure_value";
-            $sql .= " measure_value varchar(50) DEFAULT '' NOT NULL";
-            $wpdb->query($sql);
-
-            // VERSION 2.5.0
-            $table_name = $wpdb->prefix . self::live_weather_station_infos_table();
-            if (self::is_empty_table($table_name)) {
-                $sql = 'DROP TABLE ' . $table_name;
-                $wpdb->query($sql);
-                self::create_live_weather_station_infos_table();
-            } else {
-                self::safe_add_column($table_name, 'owm_user', "ALTER TABLE " . $table_name . " ADD owm_user varchar(60) DEFAULT '' NOT NULL;");
-                self::safe_add_column($table_name, 'owm_password', "ALTER TABLE " . $table_name . " ADD owm_password varchar(60) DEFAULT '' NOT NULL;");
-                self::safe_add_column($table_name, 'owm_id', "ALTER TABLE " . $table_name . " ADD owm_id varchar(60) DEFAULT '' NOT NULL;");
-                self::safe_add_column($table_name, 'owm_sync', "ALTER TABLE " . $table_name . " ADD owm_sync boolean DEFAULT 0 NOT NULL;");
-                self::safe_add_column($table_name, 'pws_user', "ALTER TABLE " . $table_name . " ADD pws_user varchar(60) DEFAULT '' NOT NULL;");
-                self::safe_add_column($table_name, 'pws_password', "ALTER TABLE " . $table_name . " ADD pws_password varchar(60) DEFAULT '' NOT NULL;");
-                self::safe_add_column($table_name, 'pws_sync', "ALTER TABLE " . $table_name . " ADD pws_sync boolean DEFAULT 0 NOT NULL;");
-                self::safe_add_column($table_name, 'wow_user', "ALTER TABLE " . $table_name . " ADD wow_user varchar(60) DEFAULT '' NOT NULL;");
-                self::safe_add_column($table_name, 'wow_password', "ALTER TABLE " . $table_name . " ADD wow_password varchar(60) DEFAULT '' NOT NULL;");
-                self::safe_add_column($table_name, 'wow_sync', "ALTER TABLE " . $table_name . " ADD wow_sync boolean DEFAULT 0 NOT NULL;");
-            }
-
-            // VERSION 2.6.0
-            $table_name = $wpdb->prefix . self::live_weather_station_infos_table();
-            if (self::is_empty_table($table_name)) {
-                $sql = 'DROP TABLE ' . $table_name;
-                $wpdb->query($sql);
-                self::create_live_weather_station_infos_table();
-            } else {
-                self::safe_add_column($table_name, 'wug_user', "ALTER TABLE " . $table_name . " ADD wug_user varchar(60) DEFAULT '' NOT NULL;");
-                self::safe_add_column($table_name, 'wug_password', "ALTER TABLE " . $table_name . " ADD wug_password varchar(60) DEFAULT '' NOT NULL;");
-                self::safe_add_column($table_name, 'wug_sync', "ALTER TABLE " . $table_name . " ADD wug_sync boolean DEFAULT 0 NOT NULL;");
-            }
-
-            // VERSION 2.7.0
-            $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
-            $sql = "ALTER TABLE " . $table_name . " CHANGE module_type";
-            $sql .= " module_type varchar(12) DEFAULT '<unknown>' NOT NULL";
-            $wpdb->query($sql);
-
-            // VERSION 2.7.2
-            $table_name = $wpdb->prefix . self::live_weather_station_infos_table();
-            if (self::is_empty_table($table_name)) {
-                $sql = 'DROP TABLE ' . $table_name;
-                $wpdb->query($sql);
-                self::create_live_weather_station_infos_table();
-            } else {
-                self::safe_add_column($table_name, 'txt_sync', "ALTER TABLE " . $table_name . " ADD txt_sync boolean DEFAULT 0 NOT NULL;");
-            }
-
-            // VERSION 3.0.0
-            self::migrate_owm_stations_table();
-            self::migrate_infos_table();
-        }
-
         if ($id < 4) {
 
-        }
+            // No MIGRATION FOR NOW
 
-
-
-    }
-
-    /**
-     * Migrates from infos_table to stations_table.
-     *
-     * @since 3.0.0
-     */
-    private static function migrate_infos_table() {
-        global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_infos_table();
-        $sql = "SELECT * FROM " . $table_name ;
-        try {
-            $query = (array)$wpdb->get_results($sql);
-            $query_a = (array)$query;
-            foreach ($query_a as $val) {
-                self::insert_table(self::live_weather_station_stations_table(), (array)$val);
-            }
-            $sql = 'SELECT * FROM TABLE '.$table_name;
-            if ($wpdb->query($sql) !== false) {
-                update_option('live_weather_station_force_resync', 'yes');
-            }
-            $sql = 'DROP TABLE '.$table_name;
-            $wpdb->query($sql);
-            return true;
-        } catch (\Exception $ex) {
-            return false;
         }
     }
-    /**
-     * Migrates from infos_table to stations_table.
-     *
-     * @since 3.0.0
-     */
-    private static function migrate_owm_stations_table() {
-        global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_owm_stations_table();
-        $sql = "SELECT station_id as guid, station_name, loc_city, loc_country_code, loc_timezone, loc_latitude, loc_longitude, loc_altitude FROM " . $table_name ;
-        try {
-            $query = (array)$wpdb->get_results($sql);
-            $query_a = (array)$query;
-            foreach ($query_a as $val) {
-                $a = (array)$val;
-                $a['station_type'] = 1;
-                self::insert_table(self::live_weather_station_stations_table(), $a);
-            }
-            $sql = 'SELECT * FROM TABLE '.$table_name;
-            if ($wpdb->query($sql) !== false) {
-                update_option('live_weather_station_force_resync', 'yes');
-            }
-            $sql = 'DROP TABLE '.$table_name;
-            $wpdb->query($sql);
-            return true;
-        } catch (\Exception $ex) {
-            return false;
-        }
-    }
+
 
     /**
      * Truncate tables of the plugin.
      *
-     * @since    1.0.0
-     * @access   protected
-     * @static
+     * @since 1.0.0
+     * @access protected
      */
     protected static function truncate_data_table() {
         global $wpdb;
@@ -598,11 +423,11 @@ trait Storage {
     /**
      * Drop tables of the plugin.
      *
-     * @since    1.0.0
-     * @access   protected
-     * @static
+     * @param boolean $drop_log Drop log table too.
+     * @since 1.0.0
+     * @access protected
      */
-    protected static function drop_tables() {
+    protected static function drop_tables($drop_log = true) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
         $sql = 'DROP TABLE '.$table_name;
@@ -610,10 +435,15 @@ trait Storage {
         $table_name = $wpdb->prefix.self::live_weather_station_stations_table();
         $sql = 'DROP TABLE '.$table_name;
         $wpdb->query($sql);
-        $table_name = $wpdb->prefix.self::live_weather_station_log_table();
+        if ($drop_log) {
+            $table_name = $wpdb->prefix.self::live_weather_station_log_table();
+            $sql = 'DROP TABLE '.$table_name;
+            $wpdb->query($sql);
+        }
+        $table_name = $wpdb->prefix.self::live_weather_station_infos_table();
         $sql = 'DROP TABLE '.$table_name;
         $wpdb->query($sql);
-        $table_name = $wpdb->prefix.self::live_weather_station_infos_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_owm_stations_table();
         $sql = 'DROP TABLE '.$table_name;
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_performance_cache_table();
