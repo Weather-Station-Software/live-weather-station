@@ -712,10 +712,9 @@ trait Handling {
     /**
      * Verify options of the plugin and, if needed, do a migration to 3.x options system.
      *
-     * @param boolean $migrate Force migration to the 3.x options system.
      * @since 1.1.0
      */
-    protected static function verify_options($migrate) {
+    protected static function verify_options() {
         self::verify_option_string('live_weather_station_version', self::$live_weather_station_version);
         self::verify_option_integer('live_weather_station_logger_level', self::$live_weather_station_logger_level);
         self::verify_option_integer('live_weather_station_logger_rotate', self::$live_weather_station_logger_rotate);
@@ -748,73 +747,30 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_show_update', self::$live_weather_station_show_update);
         self::verify_option_integer('live_weather_station_quota_mode', self::$live_weather_station_quota_mode);
         self::verify_option_boolean('live_weather_station_force_frontend_styling', self::$live_weather_station_force_frontend_styling);
-        if ($migrate) {
-            self::verify_option_string('live_weather_station_netatmo_refresh_token', (get_option('live_weather_station_netatmo_account') ? get_option('live_weather_station_netatmo_account')[0] : self::$live_weather_station_netatmo_refresh_token));
-            self::verify_option_string('live_weather_station_netatmo_access_token', (get_option('live_weather_station_netatmo_account') ? get_option('live_weather_station_netatmo_account')[1] : self::$live_weather_station_netatmo_access_token));
-            self::verify_option_boolean('live_weather_station_netatmo_connected', (get_option('live_weather_station_netatmo_account') ? get_option('live_weather_station_netatmo_account')[2] : self::$live_weather_station_netatmo_connected));
-            delete_option('live_weather_station_netatmo_account');
-        }
-        else {
-            self::verify_option_string('live_weather_station_netatmo_refresh_token', self::$live_weather_station_netatmo_refresh_token);
-            self::verify_option_string('live_weather_station_netatmo_access_token', self::$live_weather_station_netatmo_access_token);
-            self::verify_option_boolean('live_weather_station_netatmo_connected', self::$live_weather_station_netatmo_connected);
-            self::verify_option_string('live_weather_station_netatmohc_refresh_token', self::$live_weather_station_netatmohc_refresh_token);
-            self::verify_option_string('live_weather_station_netatmohc_access_token', self::$live_weather_station_netatmohc_access_token);
-            self::verify_option_boolean('live_weather_station_netatmohc_connected', self::$live_weather_station_netatmohc_connected);
-        }
-        if ($migrate) {
-            self::verify_option_string('live_weather_station_owm_apikey', (get_option('live_weather_station_owm_account') ? get_option('live_weather_station_owm_account')[0] : self::$live_weather_station_owm_apikey));
-            delete_option('live_weather_station_owm_account');
-        }
-        else {
-            self::verify_option_string('live_weather_station_owm_apikey', self::$live_weather_station_owm_apikey);
-            self::verify_option_integer('live_weather_station_owm_plan', self::$live_weather_station_owm_plan);
-        }
-        if ($migrate) {
-            //
-        }
-        else {
-            self::verify_option_string('live_weather_station_wug_apikey', self::$live_weather_station_wug_apikey);
-            self::verify_option_integer('live_weather_station_wug_plan', self::$live_weather_station_wug_plan);
-        }
-        if ($migrate) {
-            self::verify_option_integer('live_weather_station_unit_temperature', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[0] : self::$live_weather_station_unit_temperature));
-            self::verify_option_integer('live_weather_station_unit_pressure', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[1] : self::$live_weather_station_unit_pressure));
-            self::verify_option_integer('live_weather_station_unit_wind_strength', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[2] : self::$live_weather_station_unit_wind_strength));
-            self::verify_option_integer('live_weather_station_unit_altitude', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[4] : self::$live_weather_station_unit_altitude));
-            self::verify_option_integer('live_weather_station_unit_distance', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[5] : self::$live_weather_station_unit_distance));
-            self::verify_option_integer('live_weather_station_unit_rain_snow', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[9] : self::$live_weather_station_unit_rain_snow));
-            self::verify_option_integer('live_weather_station_unit_gas', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[10] : self::$live_weather_station_unit_gas));
-            self::verify_option_integer('live_weather_station_measure_only', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[3] : self::$live_weather_station_measure_only));
-            self::verify_option_integer('live_weather_station_obsolescence', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[6] : self::$live_weather_station_obsolescence));
-            self::verify_option_integer('live_weather_station_min_max_mode', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[7] : self::$live_weather_station_min_max_mode));
-            self::verify_option_integer('live_weather_station_wind_semantics', (get_option('live_weather_station_settings') ? get_option('live_weather_station_settings')[8] : self::$live_weather_station_wind_semantics));
-            delete_option('live_weather_station_owm_account');
-        }
-        else {
-            self::verify_option_integer('live_weather_station_unit_temperature', self::$live_weather_station_unit_temperature);
-            self::verify_option_integer('live_weather_station_unit_pressure', self::$live_weather_station_unit_pressure);
-            self::verify_option_integer('live_weather_station_unit_wind_strength', self::$live_weather_station_unit_wind_strength);
-            self::verify_option_integer('live_weather_station_unit_altitude', self::$live_weather_station_unit_altitude);
-            self::verify_option_integer('live_weather_station_unit_distance', self::$live_weather_station_unit_distance);
-            self::verify_option_integer('live_weather_station_unit_psychrometry', self::$live_weather_station_unit_psychrometry);
-            self::verify_option_integer('live_weather_station_unit_rain_snow', self::$live_weather_station_unit_rain_snow);
-            self::verify_option_integer('live_weather_station_unit_gas', self::$live_weather_station_unit_gas);
-            self::verify_option_integer('live_weather_station_measure_only', self::$live_weather_station_measure_only);
-            self::verify_option_integer('live_weather_station_obsolescence', self::$live_weather_station_obsolescence);
-            self::verify_option_integer('live_weather_station_min_max_mode', self::$live_weather_station_min_max_mode);
-            self::verify_option_integer('live_weather_station_wind_semantics', self::$live_weather_station_wind_semantics);
-            self::verify_option_integer('live_weather_station_moon_icons', self::$live_weather_station_moon_icons);
-        }
-        if ($migrate) {
-            self::verify_option_integer('live_weather_station_logger_rotate', true);
-        }
-        else {
-            self::verify_option_integer('live_weather_station_logger_rotate', self::$live_weather_station_logger_rotate);
-        }
-        if ($migrate) {
-            Logger::info('Updater',null,null,null,null,null,null,'Plugin options correctly migrated to 3.x option system management.');
-        }
+        self::verify_option_string('live_weather_station_netatmo_refresh_token', self::$live_weather_station_netatmo_refresh_token);
+        self::verify_option_string('live_weather_station_netatmo_access_token', self::$live_weather_station_netatmo_access_token);
+        self::verify_option_boolean('live_weather_station_netatmo_connected', self::$live_weather_station_netatmo_connected);
+        self::verify_option_string('live_weather_station_netatmohc_refresh_token', self::$live_weather_station_netatmohc_refresh_token);
+        self::verify_option_string('live_weather_station_netatmohc_access_token', self::$live_weather_station_netatmohc_access_token);
+        self::verify_option_boolean('live_weather_station_netatmohc_connected', self::$live_weather_station_netatmohc_connected);
+        self::verify_option_string('live_weather_station_owm_apikey', self::$live_weather_station_owm_apikey);
+        self::verify_option_integer('live_weather_station_owm_plan', self::$live_weather_station_owm_plan);
+        self::verify_option_string('live_weather_station_wug_apikey', self::$live_weather_station_wug_apikey);
+        self::verify_option_integer('live_weather_station_wug_plan', self::$live_weather_station_wug_plan);
+        self::verify_option_integer('live_weather_station_unit_temperature', self::$live_weather_station_unit_temperature);
+        self::verify_option_integer('live_weather_station_unit_pressure', self::$live_weather_station_unit_pressure);
+        self::verify_option_integer('live_weather_station_unit_wind_strength', self::$live_weather_station_unit_wind_strength);
+        self::verify_option_integer('live_weather_station_unit_altitude', self::$live_weather_station_unit_altitude);
+        self::verify_option_integer('live_weather_station_unit_distance', self::$live_weather_station_unit_distance);
+        self::verify_option_integer('live_weather_station_unit_psychrometry', self::$live_weather_station_unit_psychrometry);
+        self::verify_option_integer('live_weather_station_unit_rain_snow', self::$live_weather_station_unit_rain_snow);
+        self::verify_option_integer('live_weather_station_unit_gas', self::$live_weather_station_unit_gas);
+        self::verify_option_integer('live_weather_station_measure_only', self::$live_weather_station_measure_only);
+        self::verify_option_integer('live_weather_station_obsolescence', self::$live_weather_station_obsolescence);
+        self::verify_option_integer('live_weather_station_min_max_mode', self::$live_weather_station_min_max_mode);
+        self::verify_option_integer('live_weather_station_wind_semantics', self::$live_weather_station_wind_semantics);
+        self::verify_option_integer('live_weather_station_moon_icons', self::$live_weather_station_moon_icons);
+        self::verify_option_integer('live_weather_station_logger_rotate', self::$live_weather_station_logger_rotate);
     }
 
     /**

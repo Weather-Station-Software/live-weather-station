@@ -173,16 +173,19 @@ class Core {
 	 */
 	private function check_and_perfom_update() {
         $old_version = '-';
-		if (!get_option('live_weather_station_version')) {
-            $option_migrate = false;
+        $option_overwrite = false;
+		if (get_option('live_weather_station_version')) {
+            $old_version = get_option('live_weather_station_version');
+            $option_overwrite = ($old_version[0] == '1' || $old_version[0] == '2');
+        }
+        if ($option_overwrite) {
+            self::reset_options();
         }
         else {
-            $old_version = get_option('live_weather_station_version');
-            $option_migrate =  ($old_version[0] == '1' || $old_version[0] == '2');
+            self::verify_options();
         }
-        self::verify_options($option_migrate);
         if ($old_version != LWS_VERSION && $old_version != '-') {
-            Updater::update(get_option('live_weather_station_version'));
+            Updater::update(get_option('live_weather_station_version'), $option_overwrite);
         }
 		update_option('live_weather_station_version', LWS_VERSION);
     }
@@ -190,7 +193,7 @@ class Core {
     /**
 	 * Run the loader to execute all of the hooks with WordPress.
 	 *
-	 * @since    1.0.0
+	 * @since 1.0.0
 	 */
 	public function run() {
 		$this->loader->run();

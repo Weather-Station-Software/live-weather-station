@@ -33,19 +33,31 @@ class Updater {
      * Creates table if needed and updates existing ones. Activates post update too.
      *
      * @param string $oldversion Version id before migration.
+     * @param boolean $overwrite Don't migrate but overwrite.
      * @since 2.0.0
      */
-    public static function update($oldversion) {
+    public static function update($oldversion, $overwrite) {
         if (get_transient(self::$transient_name)) {
             return;
         }
         set_transient(self::$transient_name, 1, self::$transient_expiry);
-        Logger::notice('Updater',null,null,null,null,null,null,'Starting ' . LWS_PLUGIN_NAME . ' update.', $oldversion);
-        Watchdog::stop();
-        self::create_tables();
-        self::update_tables($oldversion);
-        Logger::notice('Updater',null,null,null,null,null,null,'Restarting ' . LWS_PLUGIN_NAME . '.', $oldversion);
-        Logger::notice('Updater',null,null,null,null,null,null, LWS_PLUGIN_NAME . ' successfully updated from version ' . $oldversion . ' to version ' . LWS_VERSION . '.');
+        if ($overwrite) {
+            Logger::emergency('Updater',null,null,null,null,null,null,'Unable to update this old version of ' . LWS_PLUGIN_NAME . '... Full reinstallation will be necessary.');
+            Logger::notice('Updater',null,null,null,null,null,null,'Starting ' . LWS_PLUGIN_NAME . ' installation.');
+            Watchdog::stop();
+            self::drop_tables(false);
+            self::create_tables();
+            Logger::notice('Updater',null,null,null,null,null,null,'Starting ' . LWS_PLUGIN_NAME . '.');
+            Logger::notice('Updater',null,null,null,null,null,null, LWS_PLUGIN_NAME . ' successfully installed.');
+        }
+        else {
+            Logger::notice('Updater',null,null,null,null,null,null,'Starting ' . LWS_PLUGIN_NAME . ' update.', $oldversion);
+            Watchdog::stop();
+            self::create_tables();
+            self::update_tables($oldversion);
+            Logger::notice('Updater',null,null,null,null,null,null,'Restarting ' . LWS_PLUGIN_NAME . '.', $oldversion);
+            Logger::notice('Updater',null,null,null,null,null,null, LWS_PLUGIN_NAME . ' successfully updated from version ' . $oldversion . ' to version ' . LWS_VERSION . '.');
+        }
         update_option('live_weather_station_last_update', time());
         Cache::reset();
         self::_clean_usermeta('lws-analytics');
