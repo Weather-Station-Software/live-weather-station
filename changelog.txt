@@ -20,6 +20,7 @@
 * Improvement: ephemeris widget and textual shortcodes now take care of locations where there's no day or no night (on 24h).
 * Improvement: an admin notification informs you when Weather Station have been updated.
 * Improvement: widgets now hide the header blank zone when there's no title or information to display (thanks to Lisa Yoon for the suggestion).
+* Improvement: widgets have now generic css classes that allow styling without using jQuery (thanks to LarsHdg for the suggestion).
 * Improvement: UV index and strikes summary are now available in the *Outdoor Weather Summary* widget.
 * Improvement: it's now possible to override the Healthy Home Coach internal health index with a computed value (comparable with indoor modules).
 * Improvement: the *display* tab of *settings* screen has been reorganized for better readability.

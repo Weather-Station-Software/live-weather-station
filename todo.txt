@@ -12,11 +12,11 @@
  * 3.x - Pushing data to twitter / slack / fb / ...
  * 3.x - Extra heat indexes
  * 3.x - Visibility
+ * 3.x - Historical data / graph (24h?)
  * 4.x - Agricultural indexes (EMC for grains)
  * 4.x - 4 hours forecasting
  * 4.x - 5 days forecasting
  * 4.x - Buttons and config windows in TinyMCE
- * 4.x - Historical data / graph (24h?)
  * 5.x - Pushing data to MQTT broker
 
 
