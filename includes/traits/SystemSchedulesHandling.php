@@ -3,6 +3,7 @@
 namespace WeatherStation\System\Schedules;
 
 use WeatherStation\System\Cache\Cache;
+use WeatherStation\System\Data\Data;
 use WeatherStation\System\Analytics\Performance;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\SDK\MetOffice\Plugin\Pusher as Wow_Pusher;
@@ -43,8 +44,9 @@ trait Handling {
     public static $log_rotate_name = 'lws_log_rotate';
     public static $cache_flush_name = 'lws_cache_flush';
     public static $stats_clean_name = 'lws_stats_clean';
-    public static $cron_system = array('lws_watchdog', 'lws_translation_update', 'lws_log_rotate', 'lws_cache_flush', 
-                                        'lws_stats_clean');
+    public static $integrity_check_name = 'lws_integrity_check';
+    public static $cron_system = array('lws_watchdog', 'lws_translation_update', 'lws_log_rotate', 'lws_cache_flush',
+                                        'lws_stats_clean', 'lws_integrity_check');
 
     // PULL
     public static $netatmo_update_schedule_name = 'lws_netatmo_update';
@@ -319,6 +321,9 @@ trait Handling {
                 break;
             case 'lws_stats_clean':
                 return __('Statistics cleaning', 'live-weather-station');
+                break;
+            case 'lws_integrity_check':
+                return __('Data integrity checking', 'live-weather-station');
                 break;
             case 'lws_netatmo_update':
                 return __('Netatmo - Weather station', 'live-weather-station');
@@ -713,6 +718,31 @@ trait Handling {
         if (!wp_next_scheduled(self::$stats_clean_name)) {
             wp_schedule_event(time() + $timeshift, 'daily', self::$stats_clean_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$stats_clean_name).'" (re)scheduled.');
+        }
+    }
+
+    /**
+     * Define stats cleaning cron job.
+     *
+     * @since 3.1.0
+     */
+    protected static function define_integrity_check_cron() {
+        $data = new Data(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$integrity_check_name, array($data, 'full_check'));
+    }
+
+    /**
+     * Launch the data integrity check cron job if needed.
+     *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
+     * @since 3.1.0
+     */
+    protected static function launch_integrity_check_cron($timeshift=0, $system='Watchdog') {
+        if (!wp_next_scheduled(self::$integrity_check_name)) {
+            wp_schedule_event(time() + $timeshift, 'twicedaily', self::$integrity_check_name);
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$integrity_check_name).'" (re)scheduled.');
         }
     }
 

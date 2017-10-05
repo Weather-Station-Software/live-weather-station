@@ -12,6 +12,7 @@
  * 3.x - Pushing data to twitter / slack / fb / ...
  * 3.x - Extra heat indexes
  * 3.x - Visibility
+ * 3.x - Number formating
  * 3.x - Historical data / graph (24h?)
  * 4.x - Agricultural indexes (EMC for grains)
  * 4.x - 4 hours forecasting
@@ -59,4 +60,12 @@
 ***********************
 * FIXES TO DO         *
 ***********************
+
+
+
+***********************
+* DOCUMENTATION       *
+***********************
+
+link to cron in faq
 
