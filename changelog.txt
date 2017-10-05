@@ -1,4 +1,12 @@
 
+#3.3.1 / October 5th, 2017
+
+* Improvement: the computed health index now takes care of data (un)availability.
+* Improvement: data manager now checks integrity twice a day to find (and delete) orphaned measurement data.
+* Bug fix: extra modules are not collected in `clientraw.txt` files when they are not in standard order (thanks to Gerhard Witteveen for detecting it).
+* Bug fix: PHP notice when WeatherFlow send empty dataset for current observations.
+
+
 #3.3.0 / September 5th, 2017
 
 * New: Weather Station is now compatible with the ***Smart Weather Station*** from WeatherFlow (Air & Sky modules).

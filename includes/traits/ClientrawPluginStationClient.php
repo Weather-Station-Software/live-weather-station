@@ -250,12 +250,6 @@ trait StationClient {
             $this->update_data_table($updates);
         }
         Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
-        $tmp = array(16, 20, 21, 22,  23,  24,  25, 120, 121);
-        $hum = array(17, 26, 27, 28, 122, 123, 124, 125, 126);
-        $max = $weather[18];
-        if ($max > 9) {
-            $max = 9;
-        }
 
         // NAModule5
         $type = 'NAModule5';
@@ -390,11 +384,19 @@ trait StationClient {
         Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
         // NAModule9 - max 9 extra modules
+        $tmp = array(16, 20, 21, 22,  23,  24,  25, 120, 121);
+        $hum = array(17, 26, 27, 28, 122, 123, 124, 125, 126);
         $type = 'NAModule9';
         $updates['device_id'] = $station['station_id'];
         $updates['device_name'] = $station['station_name'];
-        if ($max > 0) {
-            for ($i = 0; $i < $max; $i++) {
+        for ($i = 0; $i < 9; $i++) {
+            if ($weather[$tmp[$i]] < -99) {
+                $weather[$tmp[$i]] = null;
+            }
+            if ($weather[$hum[$i]] >= 100) {
+                $weather[$hum[$i]] = null;
+            }
+            if (isset($weather[$tmp[$i]]) || isset($weather[$hum[$i]])) {
                 $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 9, $i);
                 $updates['module_type'] = $type;
                 $updates['module_name'] = $this->get_fake_module_name($type) . ' #' . $i;
@@ -406,12 +408,16 @@ trait StationClient {
                 $updates['measure_value'] = $timestamp;
                 $updates['measure_timestamp'] = $timestamp;
                 $this->update_data_table($updates);
-                $updates['measure_type'] = 'temperature';
-                $updates['measure_value'] = $weather[$tmp[$i]];
-                $this->update_data_table($updates);
-                $updates['measure_type'] = 'humidity';
-                $updates['measure_value'] = $weather[$hum[$i]];
-                $this->update_data_table($updates);
+                if (isset($weather[$tmp[$i]])) {
+                    $updates['measure_type'] = 'temperature';
+                    $updates['measure_value'] = $weather[$tmp[$i]];
+                    $this->update_data_table($updates);
+                }
+                if (isset($weather[$hum[$i]])) {
+                    $updates['measure_type'] = 'humidity';
+                    $updates['measure_value'] = $weather[$hum[$i]];
+                    $this->update_data_table($updates);
+                }
                 $health = $this->compute_health_index($weather[$tmp[$i]], $weather[$hum[$i]], null, null);
                 foreach ($health as $key => $idx) {
                     $updates['measure_type'] = $key;

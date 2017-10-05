@@ -444,7 +444,12 @@ trait Utilities {
         if ($val < 0) {
             $val = 0;
         }
-        $result['health_idx'] = round($val, 0);
+        if (count($result) > 1) {
+            $result['health_idx'] = round($val, 0);
+        }
+        else {
+            $result = array();
+        }
         return $result;
     }
 }
