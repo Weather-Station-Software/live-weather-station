@@ -142,13 +142,9 @@ class Handling {
     public function download_mo_file($target, $branch = 'stable') {
         if ($url = $this->get_mo_file_url($branch)) {
             if (!function_exists('download_url')) {
-                try {
-                    require_once ABSPATH . 'wp-admin/includes/file.php';
-                }
-                catch (\Exception $e) {
-                    Logger::alert($this->service_name, null, null, null, null, null, 666, 'Unable to activate download_url function.' . $this->locale_name . ' translation file can not be downloaded from WordPress.org.');
-                    return false;
-                }
+                Logger::alert('Core', null, null, null, null, null, 666, 'Unable to use download_url function. Your server lacks of free memory or disk space, or is overloaded.');
+                Logger::error($this->service_name, null, null, null, null, null, 666, $this->locale_name . ' translation file can not be downloaded from WordPress.org.');
+                return false;
             }
             $file = download_url($url);
             $target .= LWS_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . $this->locale . '.mo';

@@ -1,4 +1,12 @@
 
+#3.3.2 / October 11th, 2017
+
+* Improvement: the stations list has new columns to improve its use.
+* Improvement: if you have more than 2 collected stations, the stations list doesn't show anymore shortcodes links to speed up the displaying.
+* Bug fix: in some cases, uninstalling the plugin doesn't remove all its tables.
+* Bug fix: in extremely rare cases, updating partial translation may produce a PHP fatal error (thanks to Lars for detecting it).
+
+
 #3.3.1 / October 5th, 2017
 
 * Improvement: the computed health index now takes care of data (un)availability.

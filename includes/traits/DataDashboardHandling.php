@@ -650,6 +650,8 @@ trait Handling {
             }
         }
         if ($is_station) {
+            $station['last_refresh'] = date('Y-m-d H:i:s');
+            $station['last_seen'] = date('Y-m-d H:i:s', $lastseen);
             $this->update_stations_table($station, true);
         }
     }

@@ -1068,14 +1068,14 @@ trait Query {
     }
 
     /**
-     * Get list of stations for table view.
+     * Get the full list of stations.
      *
      * @param integer $offset The offset to record.
      * @param integer $rowcount Optional. The number of rows to return.
-     * @return array An array containing the filtered logged errors.
+     * @return array An array containing the stations.
      * @since 3.0.0
      */
-    protected function get_stations_table_list($offset = null, $rowcount = null) {
+    protected function get_stations_list($offset = null, $rowcount = null) {
         $limit = '';
         $id = '';
         if (!is_null($offset) && !is_null($rowcount)) {
@@ -1086,7 +1086,7 @@ trait Query {
         $table_name = $wpdb->prefix.self::live_weather_station_stations_table();
         $sql = "SELECT * FROM " . $table_name . " ORDER BY guid DESC " . $limit;
         try {
-            $cache_id = 'get_stations_table_list'.$id;
+            $cache_id = 'get_stations_list'.$id;
             $query = Cache::get_query($cache_id);
             if ($query === false) {
                 $query = (array)$wpdb->get_results($sql);

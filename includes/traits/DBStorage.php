@@ -27,12 +27,39 @@ trait Storage {
 
     protected $facility_DM = 'Data Manager';
 
+    protected $data_to_historize =
+        array('health_idx', 'cbi', 'co2', 'humidity', 'cloudiness', 'noise', 'pressure', 'temperature',
+            'heat_index', 'humidex', 'wind_chill', 'cloud_ceiling', 'wet_bulb', 'air_density', 'wood_emc', 
+            'equivalent_temperature', 'potential_temperature', 'equivalent_potential_temperature', 'specific_enthalpy', 
+            'partial_vapor_pressure', 'saturation_vapor_pressure', 'vapor_pressure', 'absolute_humidity', 
+            'partial_absolute_humidity', 'saturation_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 
+            'soil_temperature', 'leaf_wetness', 'moisture_content', 'moisture_tension', 'evapotranspiration',
+            'windangle', 'gustangle', 'windstrength', 'guststrength', 'rain', 'rain_hour_aggregated',
+            'rain_day_aggregated', 'strike_count', 'strike_instant', 'weather');
+
+
     /**
      *
      * @since    1.0.0
      */
     public static function live_weather_station_datas_table() {
         return 'live_weather_station_datas';
+    }
+
+    /**
+     *
+     * @since 3.3.2
+     */
+    public static function live_weather_station_histo_daily_table() {
+        return 'live_weather_station_datas_day';
+    }
+
+    /**
+     *
+     * @since 3.3.2
+     */
+    public static function live_weather_station_histo_yearly_table() {
+        return 'live_weather_station_datas_year';
     }
 
     /**
@@ -191,6 +218,49 @@ trait Storage {
     /**
      * Creates table for the plugin.
      *
+     * @since 3.3.2
+     */
+    private static function create_live_weather_station_histo_daily_table() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        $table_name = $wpdb->prefix.self::live_weather_station_histo_daily_table();
+        $sql = "CREATE TABLE IF NOT EXISTS ".$table_name;
+        $sql .= " (`timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',";
+        $sql .= " `device_id` varchar(17) NOT NULL,";
+        $sql .= " `module_id` varchar(17) NOT NULL,";
+        $sql .= " `module_type` varchar(12) DEFAULT '<unknown>' NOT NULL,";
+        $sql .= " `measure_type` varchar(40) DEFAULT '' NOT NULL,";
+        $sql .= " `measure_value` decimal(20,10) NOT NULL,";
+        $sql .= " UNIQUE KEY dly (`timestamp`, `device_id`, `module_id`, `measure_type`)";
+        $sql .= ") $charset_collate;";
+        $wpdb->query($sql);
+    }
+
+    /**
+     * Creates table for the plugin.
+     *
+     * @since 3.3.2
+     */
+    private static function create_live_weather_station_histo_yearly_table() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        $table_name = $wpdb->prefix.self::live_weather_station_histo_yearly_table();
+        $sql = "CREATE TABLE IF NOT EXISTS ".$table_name;
+        $sql .= " (`timestamp` date NOT NULL DEFAULT '0000-00-00',";
+        $sql .= " `device_id` varchar(17) NOT NULL,";
+        $sql .= " `module_id` varchar(17) NOT NULL,";
+        $sql .= " `module_type` varchar(12) DEFAULT '<unknown>' NOT NULL,";
+        $sql .= " `measure_type` varchar(40) DEFAULT '' NOT NULL,";
+        $sql .= " `measure_set` varchar(5) DEFAULT '' NOT NULL,";
+        $sql .= " `measure_value` decimal(20,10) NOT NULL,";
+        $sql .= " UNIQUE KEY dly (`timestamp`, `device_id`, `module_id`, `measure_type`, `measure_set`)";
+        $sql .= ") $charset_collate;";
+        $wpdb->query($sql);
+    }
+
+    /**
+     * Creates table for the plugin.
+     *
      * @since    3.0.0
      */
     private static function create_live_weather_station_stations_table() {
@@ -236,6 +306,8 @@ trait Storage {
         $sql .= " wug_user varchar(60) DEFAULT '' NOT NULL,";
         $sql .= " wug_password varchar(60) DEFAULT '' NOT NULL,";
         $sql .= " wug_sync boolean DEFAULT 0 NOT NULL,";
+        $sql .= " last_refresh datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,";
+        $sql .= " last_seen datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,";
         $sql .= " PRIMARY KEY (guid),";
         $sql .= " UNIQUE KEY (station_id)";
         $sql .= ") $charset_collate;";
@@ -383,6 +455,8 @@ trait Storage {
      */
     protected static function create_tables() {
         self::create_live_weather_station_datas_table();
+        self::create_live_weather_station_histo_daily_table();
+        self::create_live_weather_station_histo_yearly_table();
         self::create_live_weather_station_stations_table();
         self::create_live_weather_station_performance_cache_table();
         self::create_live_weather_station_performance_cron_table();
@@ -399,9 +473,30 @@ trait Storage {
     protected static function update_tables($oldversion) {
         global $wpdb;
         $id = $oldversion[0];
+
+        if ($id == 3) {
+            // DROP ALL OLD TABLES FROM 1.X & 2.X versions
+            $table_name = $wpdb->prefix . self::live_weather_station_owm_stations_table();
+            $sql = 'DROP TABLE IF EXISTS ' . $table_name;
+            $wpdb->query($sql);
+            $table_name = $wpdb->prefix . self::live_weather_station_infos_table();
+            $sql = 'DROP TABLE IF EXISTS ' . $table_name;
+            $wpdb->query($sql);
+        }
+
+        // UPADTES BEFORE 4.0
         if ($id < 4) {
 
-            // No MIGRATION FOR NOW
+            // VERSION 3.3.2
+            $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            if (self::is_empty_table($table_name)) {
+                $sql = 'DROP TABLE IF EXISTS ' . $table_name;
+                $wpdb->query($sql);
+                self::create_live_weather_station_stations_table();
+            } else {
+                self::safe_add_column($table_name, 'last_refresh', "ALTER TABLE " . $table_name . " ADD last_refresh datetime DEFAULT '0000-00-00 00:00:00' NOT NULL;");
+                self::safe_add_column($table_name, 'last_seen', "ALTER TABLE " . $table_name . " ADD last_seen datetime DEFAULT '0000-00-00 00:00:00' NOT NULL;");
+            }
 
         }
     }
@@ -430,33 +525,39 @@ trait Storage {
     protected static function drop_tables($drop_log = true) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
-        $sql = 'DROP TABLE '.$table_name;
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_stations_table();
-        $sql = 'DROP TABLE '.$table_name;
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
         if ($drop_log) {
             $table_name = $wpdb->prefix.self::live_weather_station_log_table();
-            $sql = 'DROP TABLE '.$table_name;
+            $sql = 'DROP TABLE IF EXISTS '.$table_name;
             $wpdb->query($sql);
         }
         $table_name = $wpdb->prefix.self::live_weather_station_infos_table();
-        $sql = 'DROP TABLE '.$table_name;
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_owm_stations_table();
-        $sql = 'DROP TABLE '.$table_name;
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_performance_cache_table();
-        $sql = 'DROP TABLE '.$table_name;
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_performance_cron_table();
-        $sql = 'DROP TABLE '.$table_name;
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_quota_day_table();
-        $sql = 'DROP TABLE '.$table_name;
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_quota_year_table();
-        $sql = 'DROP TABLE '.$table_name;
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        $wpdb->query($sql);
+        $table_name = $wpdb->prefix.self::live_weather_station_histo_daily_table();
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        $wpdb->query($sql);
+        $table_name = $wpdb->prefix.self::live_weather_station_histo_yearly_table();
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
     }
 
@@ -500,6 +601,38 @@ trait Storage {
     }
 
     /**
+     * Update daily historical table with current value line.
+     *
+     * @param array $value The values to update or insert in the table
+     * @since 3.3.2
+     */
+    private function update_historic($value) {
+        if ((bool)get_option('live_weather_station_collect_history')) {
+            if (in_array($value['measure_type'], $this->data_to_historize)) {
+                $ts = mysql2date('G', $value['measure_timestamp']);
+                $sec = $ts % 86400;
+                if ($sec > (86400 - 150)) {         //if near midnight (less than 2'30")
+                    $ts = $ts + 1 + 86400 - $sec;   //jump to tomorrow midnight + 1 second
+                }
+                $now = date('Y-m-d H:i', $ts);
+                if (in_array(substr($now, -1), array('8', '9', '0', '1', '2'))) {
+                    $min = '0:00';
+                } else {
+                    $min = '5:00';
+                }
+                $now = substr($now, 0, strlen($now) - 1) . $min;
+                $field_insert = array('timestamp', 'device_id', 'module_id', 'module_type', 'measure_type', 'measure_value');
+                $value_insert = array("'" . $now . "'", "'" . $value['device_id'] . "'", "'" . $value['module_id'] . "'", "'" . $value['module_type'] . "'", "'" . $value['measure_type'] . "'", "'" . $value['measure_value'] . "'");
+                global $wpdb;
+                $sql = "INSERT IGNORE INTO " . $wpdb->prefix . self::live_weather_station_histo_daily_table() . " ";
+                $sql .= "(" . implode(',', $field_insert) . ") ";
+                $sql .= "VALUES (" . implode(',', $value_insert) . ");";
+                $wpdb->query($sql);
+            }
+        }
+    }
+
+    /**
      * Update data table with current value line.
      *
      * @param   array   $value  The values to update or insert in the table
@@ -513,6 +646,7 @@ trait Storage {
         if ($verified) {
             try {
                 $this->update_table(self::live_weather_station_datas_table(), $value);
+                $this->update_historic($value);
             }
             catch (\Exception $ex) {
                 Logger::error($this->facility_DM, null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
