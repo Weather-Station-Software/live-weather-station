@@ -24,9 +24,14 @@ class Stations extends Base {
         Output::get_measurement_type insteadof Generator;
     }
 
-    private $limit = 5;
+    private $limit = 10;
     private $filters = array();
     private $active_guid = array();
+    private $show_short_codes = false;
+    private $show_publishing = false;
+    private $show_sharing = false;
+    private $show_time = false;
+
 
     public function __construct(){
         global $status, $page;
@@ -115,7 +120,7 @@ class Stations extends Base {
         $actions = array(
             'verify'    => sprintf('<a href="https://www.openstreetmap.org/?mlat=%1$s&mlon=%2$s#map=%3$s/%1$s/%2$s"' . ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank"' : '') . '>'.__('Verify on a map', 'live-weather-station').'</a>',$item['loc_latitude'],$item['loc_longitude'], get_option('live_weather_station_map_zoom')),
         );
-        return sprintf('%1$s - %2$s<br /><span style="color:silver">' . strtolower(__('Altitude', 'live-weather-station')) . ' %3$s</span>%4$s', $item['latitude'], $item['longitude'], $item['altitude'], $this->row_actions($actions));
+        return sprintf('%1$s - %2$s<br /><span style="color:silver">' . __('Altitude', 'live-weather-station') . ' %3$s</span>%4$s', $item['latitude'], $item['longitude'], $item['altitude'], $this->row_actions($actions));
     }
 
     /**
@@ -178,7 +183,6 @@ class Stations extends Base {
                         $result .= ' ' . __('and', 'live-weather-station') . ' ' . $comp[$i];
                     }
                 }
-
             }
         }
         if ($result == '') {
@@ -190,8 +194,37 @@ class Stations extends Base {
         return $result;
     }
 
-    protected function column_publishing($item){
-        return implode(', ', $this->get_sharing_details($item));
+    protected function column_data($item){
+        $result = '';
+        $share = implode(', ', $this->get_sharing_details($item));
+        $publish = implode(', ',$this->get_publishing_details($item));
+        if ($this->show_sharing && $share != '') {
+            if ($result != '') {
+                $result .= '<br/>';
+            }
+            $result .= __('Shared on:', 'live-weather-station') . ' ' . $share . '.';
+        }
+        if ($this->show_publishing && $publish != '') {
+            if ($result != '') {
+                $result .= '<br/>';
+            }
+            $result .= __('Published via:', 'live-weather-station') . ' ' .  $publish . '.';
+        }
+        return $result;
+    }
+
+    protected function column_time($item){
+        $last_refresh_icn = $this->output_iconic_value(0, 'refresh', false, false, 'style="color:#999"', 'fa-lg');
+        $last_refresh_txt = $this->output_value($item['last_refresh'], 'last_refresh', false, false, 'NAMain', $item['loc_timezone']);
+        $last_refresh_diff_txt = ucfirst(self::get_positive_time_diff_from_mysql_utc($item['last_refresh']));
+        $s = '<span style="width:100%;cursor: default;">' . $last_refresh_icn . '&nbsp;' . $last_refresh_txt . '</span><br/><span style="padding-left:28px;color:silver">' . $last_refresh_diff_txt . '</span><br/>';
+        if ($item['last_seen'] != '0000-00-00 00:00:00') {
+            $last_seen_icn = $this->output_iconic_value(0, 'last_seen', false, false, 'style="color:#999"', 'fa-lg');
+            $last_seen_txt = $this->output_value($item['last_seen'], 'last_seen', false, false, 'NAMain', $item['loc_timezone']);
+            $last_seen_diff_txt = ucfirst(self::get_positive_time_diff_from_mysql_utc($item['last_seen']));
+            $s .= '<span style="width:100%;cursor: default;">' . $last_seen_icn . '&nbsp;' . $last_seen_txt . '</span><br/><span style="padding-left:28px;color:silver">' . $last_seen_diff_txt . '</span>';
+        }
+        return $s;
     }
 
     protected function column_sc($item){
@@ -208,10 +241,15 @@ class Stations extends Base {
 
     public function get_columns(){
         $columns = array('title' => __('Station', 'live-weather-station'),
-                        'location' => __('Location', 'live-weather-station'),
-                        'composition' => __('Composition', 'live-weather-station'),
-                        'publishing' => __('Sharing on&hellip;', 'live-weather-station'),
-                        'sc' => __('Shortcodes', 'live-weather-station'));
+            'location' => __('Location', 'live-weather-station'),
+            'composition' => __('Composition', 'live-weather-station'),
+            'data' => __('Data', 'live-weather-station'));
+        if ($this->show_short_codes) {
+            $columns['sc'] = __('Shortcodes', 'live-weather-station');
+        }
+        if ($this->show_time) {
+            $columns['time'] = __('Freshness', 'live-weather-station');
+        }
         return $columns;
     }
 
@@ -246,12 +284,24 @@ class Stations extends Base {
     }
 
     public function prepare_items() {
+        $data = $this->get_stations_list();
+        $this->show_short_codes = count($data) < 3;
+        $count_share = 0;
+        $count_publish = 0;
+        if (count($data) > 0) {
+            foreach ($data as $item) {
+                $count_share += $item['owm_sync'] + $item['pws_sync'] + $item['wow_sync'] + $item['wet_sync'] + $item['wug_sync'];
+                $count_publish += $item['txt_sync'] + $item['raw_sync'] + $item['real_sync'] + $item['yow_sync'];
+            }
+        }
+        $this->show_sharing = $count_share > 0;
+        $this->show_publishing = $count_publish > 0;
+        $this->show_time = true;
         $this->init_values();
         $columns = $this->get_columns();
         $hidden = $this->get_hidden_columns();
         $sortable = $this->get_sortable_columns();
         $this->_column_headers = array($columns, $hidden, $sortable);
-        $data = $this->get_stations_table_list();
         if (count($data) > 0) {
             foreach ($data as &$item) {
                 $item['country'] = $this->get_country_name($item['loc_country_code']);
@@ -294,59 +344,61 @@ class Stations extends Base {
         }
         if ($which == 'bottom'){
             include(LWS_ADMIN_DIR.'partials/ListTableStationsBottom.php');
-            $js_array_textual = $this->get_all_stations_array(true, false, false, true, false, $this->active_guid);
-            $js_array_icon = $this->get_all_stations_array(true, false, false, true, false, $this->active_guid);
-            $js_array_lcd = $this->get_all_stations_array(false, true, true, false, false, $this->active_guid);
-            $js_array_justgage = $this->get_all_stations_array(false, false, true, true, true, $this->active_guid);
-            $js_array_steelmeter = $this->get_all_stations_array(false, false, true, true, false, $this->active_guid);
+            if ($this->show_short_codes) {
+                $js_array_textual = $this->get_all_stations_array(true, false, false, true, false, $this->active_guid);
+                $js_array_icon = $this->get_all_stations_array(true, false, false, true, false, $this->active_guid);
+                $js_array_lcd = $this->get_all_stations_array(false, true, true, false, false, $this->active_guid);
+                $js_array_justgage = $this->get_all_stations_array(false, false, true, true, true, $this->active_guid);
+                $js_array_steelmeter = $this->get_all_stations_array(false, false, true, true, false, $this->active_guid);
 
-            $js_array_justgage_design = $this->get_justgage_design_js_array();
-            $js_array_justgage_color = $this->get_justgage_color_js_array();
-            $js_array_justgage_pointer = $this->get_justgage_pointer_js_array();
-            $js_array_justgage_title = $this->get_justgage_title_js_array();
-            $js_array_justgage_unit = $this->get_justgage_unit_js_array();
-            $js_array_justgage_size = $this->get_size_js_array(true);
-            $js_array_justgage_background = $this->get_justgage_background_js_array();
+                $js_array_justgage_design = $this->get_justgage_design_js_array();
+                $js_array_justgage_color = $this->get_justgage_color_js_array();
+                $js_array_justgage_pointer = $this->get_justgage_pointer_js_array();
+                $js_array_justgage_title = $this->get_justgage_title_js_array();
+                $js_array_justgage_unit = $this->get_justgage_unit_js_array();
+                $js_array_justgage_size = $this->get_size_js_array(true);
+                $js_array_justgage_background = $this->get_justgage_background_js_array();
 
-            $js_array_lcd_design = $this->get_lcd_design_js_array();
-            $js_array_lcd_size = $this->get_size_js_array();
-            $js_array_lcd_speed = $this->get_lcd_speed_js_array();
+                $js_array_lcd_design = $this->get_lcd_design_js_array();
+                $js_array_lcd_size = $this->get_size_js_array();
+                $js_array_lcd_speed = $this->get_lcd_speed_js_array();
 
-            $js_array_steelmeter_design = $this->get_steelmeter_design_js_array();
-            $js_array_steelmeter_frame = $this->get_steelmeter_frame_js_array();
-            $js_array_steelmeter_background = $this->get_steelmeter_background_js_array();
-            $js_array_steelmeter_orientation = $this->get_steelmeter_orientation_js_array();
-            $js_array_steelmeter_glass = $this->get_steelmeter_glass_js_array();
-            $js_array_steelmeter_pointer_type = $this->get_steelmeter_pointer_type_js_array();
-            $js_array_steelmeter_pointer_color = $this->get_steelmeter_pointer_color_js_array();
-            $js_array_steelmeter_knob = $this->get_steelmeter_knob_js_array();
-            $js_array_steelmeter_lcd_color = $this->get_steelmeter_lcd_design_js_array();
-            $js_array_steelmeter_led_color = $this->get_steelmeter_led_color_js_array();
-            $js_array_steelmeter_minmax = $this->get_steelmeter_minmax_js_array();
-            $js_array_steelmeter_index_color = $this->get_steelmeter_index_color_js_array();
-            $js_array_steelmeter_index_style = $this->get_steelmeter_index_style_js_array();
-            $js_array_steelmeter_size = $this->get_size_js_array(false, true, false);
+                $js_array_steelmeter_design = $this->get_steelmeter_design_js_array();
+                $js_array_steelmeter_frame = $this->get_steelmeter_frame_js_array();
+                $js_array_steelmeter_background = $this->get_steelmeter_background_js_array();
+                $js_array_steelmeter_orientation = $this->get_steelmeter_orientation_js_array();
+                $js_array_steelmeter_glass = $this->get_steelmeter_glass_js_array();
+                $js_array_steelmeter_pointer_type = $this->get_steelmeter_pointer_type_js_array();
+                $js_array_steelmeter_pointer_color = $this->get_steelmeter_pointer_color_js_array();
+                $js_array_steelmeter_knob = $this->get_steelmeter_knob_js_array();
+                $js_array_steelmeter_lcd_color = $this->get_steelmeter_lcd_design_js_array();
+                $js_array_steelmeter_led_color = $this->get_steelmeter_led_color_js_array();
+                $js_array_steelmeter_minmax = $this->get_steelmeter_minmax_js_array();
+                $js_array_steelmeter_index_color = $this->get_steelmeter_index_color_js_array();
+                $js_array_steelmeter_index_style = $this->get_steelmeter_index_style_js_array();
+                $js_array_steelmeter_size = $this->get_size_js_array(false, true, false);
 
-            foreach ($js_array_textual as $guid => $station) {
-                $station_guid = $guid;
-                if (isset($station[0])) {
-                    $station_name = $station[0];
-                }
-                if (isset($station[1])) {
-                    $station_id = $station[1];
-                }
-                if (in_array($guid, $this->active_guid)) {
-                    include(LWS_ADMIN_DIR.'partials/ShortcodesTextual.php');
-                    include(LWS_ADMIN_DIR.'partials/ShortcodesJustgage.php');
-                    include(LWS_ADMIN_DIR.'partials/ShortcodesLCD.php');
-                    include(LWS_ADMIN_DIR.'partials/ShortcodesSteelmeter.php');
+                foreach ($js_array_textual as $guid => $station) {
+                    $station_guid = $guid;
+                    if (isset($station[0])) {
+                        $station_name = $station[0];
+                    }
+                    if (isset($station[1])) {
+                        $station_id = $station[1];
+                    }
+                    if (in_array($guid, $this->active_guid)) {
+                        include(LWS_ADMIN_DIR . 'partials/ShortcodesTextual.php');
+                        include(LWS_ADMIN_DIR . 'partials/ShortcodesJustgage.php');
+                        include(LWS_ADMIN_DIR . 'partials/ShortcodesLCD.php');
+                        include(LWS_ADMIN_DIR . 'partials/ShortcodesSteelmeter.php');
+                    }
                 }
             }
         }
     }
 
     public function get_line_number_select() {
-        $_disp = [5, 10, 15, 20];
+        $_disp = [10, 20, 30];
         $result = array();
         foreach ($_disp as $d) {
             $l = array();

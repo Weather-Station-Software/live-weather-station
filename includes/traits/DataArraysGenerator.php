@@ -857,7 +857,7 @@ trait Generator {
      */
     protected function get_all_stations_array($full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $guids=array()) {
         $result = array();
-        $stations = $this->get_stations_table_list();
+        $stations = $this->get_stations_list();
         if (count($stations) > 0) {
             foreach ($stations as $station) {
                 if (!empty($guids)) {

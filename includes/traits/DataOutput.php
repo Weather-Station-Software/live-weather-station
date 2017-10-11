@@ -5409,7 +5409,7 @@ trait Output {
     }
 
     /**
-     * Get publishing details for a station.
+     * Get sharing details for a station.
      *
      * @param array $data The station data.
      * @return array An array containing the effective details.
@@ -5426,6 +5426,27 @@ trait Output {
         }
         if ($data['wug_sync']) {
             $result[] = '<a href="https://www.wunderground.com/personal-weather-station/dashboard?ID=' . $data['wug_user'] . '&apiref=d97bd03904cd49c5"' . $t . '>Weather Underground</a>';
+        }
+        return $result;
+    }
+
+    /**
+     * Get publishing details for a station.
+     *
+     * @param array $data The station data.
+     * @return array An array containing the effective details.
+     * @since 3.3.1
+     */
+    protected function get_publishing_details($data) {
+        $result = array();
+        $target = ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank"' : '');
+        if ($data['txt_sync']) {
+            $url = site_url('/get-weather/' . strtolower($data['station_id']) . '/stickertags/');
+            $result[] = '<a href="' . $url . '"' . $target . '>Stickertags</a>';
+        }
+        if ($data['yow_sync']) {
+            $url = site_url('/get-weather/' . strtolower($data['station_id']) . '/yowindow/');
+            $result[] = '<a href="' . $url . '"' . $target . '>YoWindow</a>';
         }
         return $result;
     }

@@ -44,7 +44,6 @@ $hw = (strpos($module['module_type'], 'AModule') == 1);
     <?php if (array_key_exists('last_seen', $module)) { ?>
         <div style="margin-bottom: 10px;">
             <span style="width:100%;cursor: default;"><?php echo $last_seen_icn; ?>&nbsp;<?php echo $module['last_seen_txt']; ?></span><span style="color:silver"> (<?php echo $module['last_seen_diff_txt']; ?>)</span>
-
         </div>
     <?php } ?>
     <?php if (array_key_exists('firmware', $module)) { ?>

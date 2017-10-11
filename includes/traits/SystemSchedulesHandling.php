@@ -21,6 +21,7 @@ use WeatherStation\SDK\OpenWeatherMap\Plugin\StationUpdater as Owm_Station_Updat
 use WeatherStation\SDK\WeatherUnderground\Plugin\StationUpdater as Wug_Station_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\PollutionUpdater as Owm_Pollution_Updater;
 use WeatherStation\System\I18N\Handling as i18n;
+use WeatherStation\Data\History\Builder as HistoryBuilder;
 
 /**
  * Functionalities for schedules & cron handling.
@@ -45,8 +46,9 @@ trait Handling {
     public static $cache_flush_name = 'lws_cache_flush';
     public static $stats_clean_name = 'lws_stats_clean';
     public static $integrity_check_name = 'lws_integrity_check';
+    public static $history_build_name = 'lws_history_build';
     public static $cron_system = array('lws_watchdog', 'lws_translation_update', 'lws_log_rotate', 'lws_cache_flush',
-                                        'lws_stats_clean', 'lws_integrity_check');
+                                        'lws_stats_clean', 'lws_integrity_check', 'lws_history_build');
 
     // PULL
     public static $netatmo_update_schedule_name = 'lws_netatmo_update';
@@ -324,6 +326,9 @@ trait Handling {
                 break;
             case 'lws_integrity_check':
                 return __('Data integrity checking', 'live-weather-station');
+                break;
+            case 'lws_history_build':
+                return __('Historical data consolidation', 'live-weather-station');
                 break;
             case 'lws_netatmo_update':
                 return __('Netatmo - Weather station', 'live-weather-station');
@@ -649,7 +654,7 @@ trait Handling {
     /**
      * Define log rotate cron job.
      *
-     * @since    2.8.0
+     * @since 2.8.0
      */
     protected static function define_log_rotate_cron() {
         $logger = new Logger(LWS_PLUGIN_NAME, LWS_VERSION);
@@ -668,6 +673,31 @@ trait Handling {
         if (!wp_next_scheduled(self::$log_rotate_name)) {
             wp_schedule_event(time() + $timeshift, 'daily', self::$log_rotate_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$log_rotate_name).'" (re)scheduled.');
+        }
+    }
+
+    /**
+     * Define historical data consolidation cron job.
+     *
+     * @since 3.3.2
+     */
+    protected static function define_history_build_cron() {
+        $builder = new HistoryBuilder(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$history_build_name, array($builder, 'cron'));
+    }
+
+    /**
+     * Launch the historical data consolidation cron job if needed.
+     *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
+     * @since 3.3.2
+     */
+    protected static function launch_history_build_cron($timeshift=0, $system='Watchdog') {
+        if (!wp_next_scheduled(self::$history_build_name)) {
+            wp_schedule_event(time() + $timeshift, 'four_hours', self::$history_build_name);
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$history_build_name).'" (re)scheduled.');
         }
     }
 
@@ -977,6 +1007,19 @@ trait Handling {
         $schedules['thirty_minutes'] = array(
             'interval' => 1800,
             'display'  => __( 'Every thirty minutes', 'live-weather-station' ),
+        );
+        return $schedules;
+    }
+
+    /**
+     * Add a new 4 hours interval capacity to the WP cron feature.
+     *
+     * @since 3.3.2
+     */
+    public static function add_cron_4_hours_interval($schedules) {
+        $schedules['four_hours'] = array(
+            'interval' => 14400,
+            'display'  => __( 'Every four hours', 'live-weather-station' ),
         );
         return $schedules;
     }

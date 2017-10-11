@@ -81,6 +81,7 @@ trait BaseClient {
                 $device_id = self::get_unique_owm_id($station['guid']);
                 $s = $this->get_station_informations_by_guid($station['guid']);
                 $s['station_id'] = $device_id;
+                $s['last_refresh'] = date('Y-m-d H:i:s');
                 $this->update_stations_table($s);
                 $updates = array() ;
                 $updates['device_id'] = $device_id;
@@ -129,6 +130,7 @@ trait BaseClient {
                 $device_id = self::get_unique_owm_true_id($station['guid']);
                 $s = $this->get_station_informations_by_guid($station['guid']);
                 $s['station_id'] = $device_id;
+                $s['last_refresh'] = date('Y-m-d H:i:s');
                 $this->update_stations_table($s);
                 $list[] = $device_id;
             }

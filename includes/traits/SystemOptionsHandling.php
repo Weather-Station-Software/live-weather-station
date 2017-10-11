@@ -75,6 +75,11 @@ trait Handling {
     private static $live_weather_station_wind_semantics = 0;
     private static $live_weather_station_moon_icons = 0;
 
+    private static $live_weather_station_collect_history = false;
+    private static $live_weather_station_build_history = false;
+    private static $live_weather_station_full_history = false;
+
+
     /**
      * Get the thresholds options of the plugin.
      *
@@ -464,6 +469,10 @@ trait Handling {
         delete_option('live_weather_station_collection_http_timeout');
         delete_option('live_weather_station_sharing_http_timeout');
         delete_option('live_weather_station_system_http_timeout');
+        delete_option('live_weather_station_collect_history');
+        delete_option('live_weather_station_build_history');
+        delete_option('live_weather_station_full_history');
+
         self::delete_thresholds_options();
     }
 
@@ -543,6 +552,17 @@ trait Handling {
     }
 
     /**
+     * Init history options of the plugin.
+     *
+     * @since 3.3.2
+     */
+    protected static function init_history_options() {
+        update_option('live_weather_station_collect_history', self::$live_weather_station_collect_history);
+        update_option('live_weather_station_build_history', self::$live_weather_station_build_history);
+        update_option('live_weather_station_full_history', self::$live_weather_station_full_history);
+    }
+
+    /**
      * Init the mapping options of the plugin.
      *
      * @since 3.0.0
@@ -581,6 +601,7 @@ trait Handling {
         self::init_display_options();
         self::init_thresholds_options();
         self::init_map_options();
+        self::init_history_options();
         update_option('live_weather_station_unit_temperature', self::$live_weather_station_unit_temperature);
         update_option('live_weather_station_unit_pressure', self::$live_weather_station_unit_pressure);
         update_option('live_weather_station_unit_wind_strength', self::$live_weather_station_unit_wind_strength);
@@ -613,6 +634,7 @@ trait Handling {
             self::init_system_options();
             self::init_thresholds_options();
             self::init_map_options();
+            self::init_history_options();
         }
     }
 
@@ -634,6 +656,7 @@ trait Handling {
             self::init_system_options();
             self::init_thresholds_options();
             self::init_map_options();
+            self::init_history_options();
         }
     }
 
@@ -771,6 +794,10 @@ trait Handling {
         self::verify_option_integer('live_weather_station_wind_semantics', self::$live_weather_station_wind_semantics);
         self::verify_option_integer('live_weather_station_moon_icons', self::$live_weather_station_moon_icons);
         self::verify_option_integer('live_weather_station_logger_rotate', self::$live_weather_station_logger_rotate);
+        self::verify_option_boolean('live_weather_station_collect_history', self::$live_weather_station_collect_history);
+        self::verify_option_boolean('live_weather_station_build_history', self::$live_weather_station_build_history);
+        self::verify_option_boolean('live_weather_station_full_history', self::$live_weather_station_full_history);
+
     }
 
     /**

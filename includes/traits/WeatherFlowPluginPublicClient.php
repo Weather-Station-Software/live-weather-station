@@ -187,6 +187,8 @@ trait PublicClient {
                     $updates['measure_value'] = $observation['barometric_pressure'];
                     $this->update_data_table($updates);
                 }
+                $station['last_refresh'] = date('Y-m-d H:i:s');
+                $station['last_seen'] = $timestamp;
                 $this->update_table(self::live_weather_station_stations_table(), $station);
                 Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 

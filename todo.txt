@@ -13,7 +13,8 @@
  * 3.x - Extra heat indexes
  * 3.x - Visibility
  * 3.x - Number formating
- * 3.x - Historical data / graph (24h?)
+ * 3.x - Historical data / graph
+ * 3.x - Historical data import
  * 4.x - Agricultural indexes (EMC for grains)
  * 4.x - 4 hours forecasting
  * 4.x - 5 days forecasting
@@ -68,4 +69,6 @@
 ***********************
 
 link to cron in faq
+
+15K/Station with standard
 

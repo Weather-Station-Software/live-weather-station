@@ -60,6 +60,7 @@ class Watchdog {
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_15_minutes_interval'));
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_20_minutes_interval'));
         add_filter('cron_schedules', array(get_called_class(), 'add_cron_30_minutes_interval'));
+        add_filter('cron_schedules', array(get_called_class(), 'add_cron_4_hours_interval'));
         self::define_schedules();
         self::launch();
     }
