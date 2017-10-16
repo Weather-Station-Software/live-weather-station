@@ -32,3 +32,8 @@
     <h2><?php echo __('Tasks durations: hourly average for "system" pool', 'live-weather-station'); ?></h2>
     <?php echo do_shortcode('[live-weather-station-admin-analytics item="task" metric="time_for_system"]'); ?>
 </div>
+
+<div style="padding:20px;">
+    <h2><?php echo __('Tasks durations: hourly average for "history" pool', 'live-weather-station'); ?></h2>
+    <?php echo do_shortcode('[live-weather-station-admin-analytics item="task" metric="time_for_history"]'); ?>
+</div>

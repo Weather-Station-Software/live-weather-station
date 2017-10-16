@@ -25,12 +25,12 @@ class InlineHelp {
     private static $links = array (
         'en' => array (
             'handbook/settings', //0  source: settings - general tab
-            '---', //1  unused
+            'handbook/settings/history', //1  source: settings - history tab
             'handbook/settings/services', //2  source: settings - service tab
             'handbook/settings/display', //3  source: settings - display tab
             'handbook/settings/thresholds', //4  source: settings - thresholds tab
             'handbook/settings/system', //5  source: settings - system tab
-            '---', //6  unused
+            'handbook/historical-data/', //6  source: settings - history tab
             'support/frequently-asked-questions', //7  faq section
             'handbook/dashboard', //8  dashboard
             'handbook/stations-management', //9  stations
@@ -46,12 +46,12 @@ class InlineHelp {
             ),
         'fr' => array (
             'documentation/reglages', //0  source: settings - general tab
-            '---', //1  unused
+            'documentation/reglages/historiques', //1  source: settings - history tab
             'documentation/reglages/services', //2  source: settings - service tab
             'documentation/reglages/affichage', //3  source: settings - display tab
             'documentation/reglages/seuils', //4  source: settings - thresholds tab
             'documentation/reglages/systeme', //5  source: settings - system tab
-            '---', //6  unused
+            'documentation/donnees-dhistorique/', //6  source: settings - history tab
             'assistance/questions-frequentes', //7  faq section
             'documentation/tableau-de-bord', //8  dashboard
             'documentation/gestion-des-stations', //9  stations
@@ -371,7 +371,7 @@ class InlineHelp {
      * Contextual help for "settings" panel.
      *
      * @see set_contextual_help()
-     * @since    3.0.0
+     * @since 3.0.0
      */
     public static function set_contextual_settings() {
         $s = sprintf(__('This screen allows you to adjust all settings required to adapt the operation of %s to what you expect.', 'live-weather-station'), LWS_PLUGIN_NAME);
@@ -387,13 +387,14 @@ class InlineHelp {
         $s3 = '<strong>' . __('Services', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('In order to work properly, %s has to be connected to some services. You can manage here these connections.', 'live-weather-station'), LWS_PLUGIN_NAME);
         $s4 = '<strong>' . __('Display', 'live-weather-station') . '</strong> &mdash; ' . __('You can set here all the units and display options for controls and widgets.', 'live-weather-station') . ' ' . sprintf(__('This tab is visible only if %s runs in extended mode.', 'live-weather-station'), LWS_PLUGIN_NAME);
         $s5 = '<strong>' . __('Thresholds', 'live-weather-station') . '</strong> &mdash; ' . __('You can set here all the thresholds which define limits and alarms in some controls (LCD panel, gauges, meters, etc.).', 'live-weather-station') . ' ' . sprintf(__('This tab is visible only if %s runs in extended mode.', 'live-weather-station'), LWS_PLUGIN_NAME);
-        $s6 = '<strong>' . __('System', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('You can set here all the parameters related to the operation of the %s subsystems.', 'live-weather-station'), LWS_PLUGIN_NAME) . ' ' . sprintf(__('This tab is visible only if %s runs in extended mode.', 'live-weather-station'), LWS_PLUGIN_NAME);
-        $s7 = '<strong>' . __('Maintenance', 'live-weather-station') . '</strong> &mdash; ' . __('Here, you can make some maintenance operations that are not directly accessible elsewhere.', 'live-weather-station') . ' ' . sprintf(__('This tab is visible only if %s runs in extended mode.', 'live-weather-station'), LWS_PLUGIN_NAME);
-        $s8 = '<strong>' . __('Sheduled tasks', 'live-weather-station') . '</strong> &mdash; ' . __('Here, you can view all scheduled tasks, force their execution or reschedule them.', 'live-weather-station') . ' ' . __('This tab is visible only if you\'re a time sorcerer.', 'live-weather-station');
+        $s6 = '<strong>' . __('History', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Here, you can set and review the settings used by %s to store and manage historical data.', 'live-weather-station'), LWS_PLUGIN_NAME) . ' ' . sprintf(__('This tab is visible only if %s runs in extended mode.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        $s7 = '<strong>' . __('System', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('You can set here all the parameters related to the operation of the %s subsystems.', 'live-weather-station'), LWS_PLUGIN_NAME) . ' ' . sprintf(__('This tab is visible only if %s runs in extended mode.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        $s8 = '<strong>' . __('Maintenance', 'live-weather-station') . '</strong> &mdash; ' . __('Here, you can make some maintenance operations that are not directly accessible elsewhere.', 'live-weather-station') . ' ' . sprintf(__('This tab is visible only if %s runs in extended mode.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        $s9 = '<strong>' . __('Sheduled tasks', 'live-weather-station') . '</strong> &mdash; ' . __('Here, you can view all scheduled tasks, force their execution or reschedule them.', 'live-weather-station') . ' ' . __('This tab is visible only if you\'re a time sorcerer.', 'live-weather-station');
         $tabs[] = array(
             'title'    => __('Content', 'live-weather-station'),
             'id'       => 'lws-contextual-settings-content',
-            'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p><p>' . $s5 . '</p><p>' . $s6 . '</p><p>' . $s7 . '</p><p>' . $s8 . '</p>');
+            'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p><p>' . $s5 . '</p><p>' . $s6 . '</p><p>' . $s7 . '</p><p>' . $s8 . '</p><p>' . $s9 . '</p>');
 
         $s1 = __('To obtain an API key from OpenWeatherMap please, follow these steps:', 'live-weather-station' );
         $s2 = self::get(-23, __('%s on the OpenWeatherMap website.', 'live-weather-station'), __('Create an account', 'live-weather-station'));

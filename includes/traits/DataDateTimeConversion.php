@@ -13,6 +13,53 @@ use WeatherStation\System\Logs\Logger;
  * @since 1.0.0
  */
 trait Conversion {
+
+    /**
+     * Get the timestamp corresponding to midnight of today in a specific timezone.
+     *
+     * @param string  $tz The timezone.
+     * @return integer The timestamp corresponding to midnight of today in this timezone.
+     * @since 3.4.0
+     */
+    public static function get_local_today_midnight($tz) {
+        $datetime = new \DateTime('today midnight', new \DateTimeZone($tz));
+        return $datetime->getTimestamp();
+    }
+
+    /**
+     * Get the timestamp corresponding to noon of today in a specific timezone.
+     *
+     * @param string  $tz The timezone.
+     * @return integer The timestamp corresponding to noon of today in this timezone.
+     * @since 3.4.0
+     */
+    public static function get_local_today_noon($tz) {
+        return self::get_local_today_midnight($tz)+86399;
+    }
+
+    /**
+     * Get the timestamp corresponding to midnight of yesterday in a specific timezone.
+     *
+     * @param string  $tz The timezone.
+     * @return integer The timestamp corresponding to midnight of yesterday in this timezone.
+     * @since 3.4.0
+     */
+    public static function get_local_yesterday_midnight($tz) {
+        $datetime = new \DateTime('yesterday midnight', new \DateTimeZone($tz));
+        return $datetime->getTimestamp();
+    }
+
+    /**
+     * Get the timestamp corresponding to noon of yesterday in a specific timezone.
+     *
+     * @param string  $tz The timezone.
+     * @return integer The timestamp corresponding to noon of yesterday in this timezone.
+     * @since 3.4.0
+     */
+    public static function get_local_yesterday_noon($tz) {
+        return self::get_local_yesterday_midnight($tz)+86399;
+    }
+
     /**
      * Converts a date expressed in specific TZ into an UTC date.
      *

@@ -23,6 +23,7 @@ $buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; '
         <?php if ((bool)get_option('live_weather_station_advanced_mode')) { ?>
             <a href="?page=lws-settings&tab=display" class="nav-tab <?php echo $active_tab == 'display' ? 'nav-tab-active' : ''; ?>"><?php echo __('Display', 'live-weather-station');?></a>
             <a href="?page=lws-settings&tab=thresholds" class="nav-tab <?php echo $active_tab == 'thresholds' ? 'nav-tab-active' : ''; ?>"><?php echo __('Thresholds', 'live-weather-station');?></a>
+            <a href="?page=lws-settings&tab=history" class="nav-tab <?php echo $active_tab == 'history' ? 'nav-tab-active' : ''; ?>"><?php echo __('History', 'live-weather-station');?></a>
             <a href="?page=lws-settings&tab=system" class="nav-tab <?php echo $active_tab == 'system' ? 'nav-tab-active' : ''; ?>"><?php echo __('System', 'live-weather-station');?></a>
             <a href="?page=lws-settings&tab=maintenance" class="nav-tab <?php echo $active_tab == 'maintenance' ? 'nav-tab-active' : ''; ?>"><?php echo __('Maintenance', 'live-weather-station');?></a>
             <?php if ((bool)get_option('live_weather_station_show_tasks')) { ?>
@@ -49,6 +50,9 @@ $buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; '
     <?php } ?>
     <?php if ($active_tab == 'tasks') { ?>
         <?php include(LWS_ADMIN_DIR.'partials/SettingsTasks.php'); ?>
+    <?php } ?>
+    <?php if ($active_tab == 'history') { ?>
+        <?php include(LWS_ADMIN_DIR.'partials/SettingsHistory.php'); ?>
     <?php } ?>
 
 </div>

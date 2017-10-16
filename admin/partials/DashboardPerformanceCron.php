@@ -6,7 +6,7 @@
  * @since 3.2.0
  */
 
-$fields = array('pull', 'push', 'system');
+$fields = array('pull', 'push', 'system', 'history');
 $values = array();
 foreach ($fields as $field) {
     if ($field == 'system') {

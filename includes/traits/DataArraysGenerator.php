@@ -1501,6 +1501,33 @@ trait Generator {
     }
 
     /**
+     * Get the available history modes.
+     *
+     * @return array An array containing the history modes.
+     * @since 3.2.0
+     */
+    protected function get_history_collect_js_array() {
+        $result = array();
+        $result[] = array(0, __('None', 'live-weather-station'));
+        $result[] = array(1, __('Only daily data', 'live-weather-station'));
+        $result[] = array(2, __('Daily and historical data', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get the standard/scientific modes.
+     *
+     * @return array An array containing the standard/scientific modes.
+     * @since 3.2.0
+     */
+    protected function get_history_full_js_array() {
+        $result = array();
+        $result[] = array(0, __('Standard', 'live-weather-station'));
+        $result[] = array(1, __('Scientific', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
      * Get the available quota management modes.
      *
      * @return array An array containing the quota management modes.
