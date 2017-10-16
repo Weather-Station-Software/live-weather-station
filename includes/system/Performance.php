@@ -281,7 +281,7 @@ class Performance {
         if ($result = Cache::get_backend(Cache::$db_stat_perf_cron)) {
             return $result;
         }
-        $fields = array('system', 'push', 'pull');
+        $fields = array('system', 'push', 'pull', 'history');
         global $wpdb;
         $sql = "SELECT * FROM " . $wpdb->prefix.Cache::live_weather_station_performance_cron_table() . " ;";
         $cutoff = time() - (get_option('live_weather_station_analytics_cutoff', 7)*DAY_IN_SECONDS);

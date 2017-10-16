@@ -175,6 +175,9 @@ trait Description {
      */
     protected function get_measurement_type ($type, $abbr=false, $module_type='NAMain') { 
         switch (strtolower($type)) {
+            case 'weather':
+                $result = ($abbr ? __('Conditions', 'live-weather-station') : __('Current conditions', 'live-weather-station'));
+                break;
             case 'firmware':
                 $result = ($abbr ? __('Firmware', 'live-weather-station') : __('Firmware version', 'live-weather-station'));
                 break;
@@ -557,10 +560,3 @@ trait Description {
         return $result;
     }
 }
-
-
-
-
-
-
-

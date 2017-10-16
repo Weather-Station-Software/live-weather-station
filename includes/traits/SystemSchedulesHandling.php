@@ -34,7 +34,7 @@ use WeatherStation\Data\History\Builder as HistoryBuilder;
 
 trait Handling {
 
-    public static $pools = array('system', 'push', 'pull');
+    public static $pools = array('system', 'push', 'pull', 'history');
 
 
     // WARNING: CRON NAMES MUST NOT HAVE MORE THAN 30 CAR...
@@ -46,9 +46,12 @@ trait Handling {
     public static $cache_flush_name = 'lws_cache_flush';
     public static $stats_clean_name = 'lws_stats_clean';
     public static $integrity_check_name = 'lws_integrity_check';
-    public static $history_build_name = 'lws_history_build';
     public static $cron_system = array('lws_watchdog', 'lws_translation_update', 'lws_log_rotate', 'lws_cache_flush',
-                                        'lws_stats_clean', 'lws_integrity_check', 'lws_history_build');
+                                        'lws_stats_clean', 'lws_integrity_check');
+
+    // SYSTEM
+    public static $history_build_name = 'lws_history_build';
+    public static $cron_history = array('lws_history_build');
 
     // PULL
     public static $netatmo_update_schedule_name = 'lws_netatmo_update';
@@ -182,7 +185,7 @@ trait Handling {
      * @since 3.2.0
      */
     protected static function define_schedules() {
-        foreach (array_merge(self::$cron_system, self::$cron_pull, self::$cron_push) as $cron) {
+        foreach (array_merge(self::$cron_system, self::$cron_pull, self::$cron_push, self::$cron_history) as $cron) {
             self::define_cron($cron);
         }
     }
@@ -193,7 +196,7 @@ trait Handling {
      * @since 1.0.0
      */
     protected static function delete_schedules() {
-        foreach (array_merge(self::$cron_system, self::$cron_pull, self::$cron_push, self::$cron_old) as $cron) {
+        foreach (array_merge(self::$cron_system, self::$cron_pull, self::$cron_push, self::$cron_old, self::$cron_history) as $cron) {
             wp_clear_scheduled_hook($cron);
         }
     }
@@ -204,7 +207,7 @@ trait Handling {
      * @since 2.0.0
      */
     protected static function init_schedules() {
-        foreach (array_merge(self::$cron_system, self::$cron_pull, self::$cron_push) as $cron) {
+        foreach (array_merge(self::$cron_system, self::$cron_pull, self::$cron_push, self::$cron_history) as $cron) {
             if ($cron != self::$watchdog_name) {
                 self::reschedule_cron($cron, 'Watchdog', false, true);
             }
@@ -248,7 +251,7 @@ trait Handling {
      * @since 3.2.0
      */
     public static function get_cron_pool($cron_id) {
-        $field_defs = array('system' => self::$cron_system, 'push' => self::$cron_push, 'pull' => self::$cron_pull);
+        $field_defs = array('system' => self::$cron_system, 'push' => self::$cron_push, 'pull' => self::$cron_pull, 'history' => self::$cron_history);
         foreach (self::$pools as $field) {
             foreach ($field_defs[$field] as $def) {
                 if ($def == $cron_id) {
@@ -278,6 +281,9 @@ trait Handling {
             case 'pull' :
                 return __('collection', 'live-weather-station');
                 break;
+            case 'history' :
+                return __('history', 'live-weather-station');
+                break;
             default :
                 return __('generic', 'live-weather-station');
         }
@@ -295,6 +301,7 @@ trait Handling {
         $field_names = array('system' => __('system', 'live-weather-station'),
             'push' => __('sharing', 'live-weather-station'),
             'pull' => __('collection', 'live-weather-station'),
+            'history' => __('history', 'live-weather-station'),
             'unknow' => __('generic', 'live-weather-station'));
         return $field_names[self::get_cron_pool($cron_id)];
     }

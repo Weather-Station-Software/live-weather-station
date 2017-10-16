@@ -63,6 +63,8 @@ function get_display_locale($user_id = 0) {
     }
 }
 
+
+
 /**
  * Definition of main constants.
  *
@@ -71,10 +73,10 @@ function get_display_locale($user_id = 0) {
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.3.2');
-define('LWS_CODENAME', '"Kat Onoma"');
-define('LWS_WATSNEW_EN', 'https://weather.station.software/en/weather-station-3-3-katonoma/');
-define('LWS_WATSNEW_FR', 'https://weather.station.software/fr/weather-station-3-3-kat-onoma/');
+define('LWS_VERSION', '3.4.0-dev0');
+define('LWS_CODENAME', '"Louise Attaque"');
+define('LWS_WATSNEW_EN', 'https://weather.station.software/en/weather-station-3-4-louiseattaque/');
+define('LWS_WATSNEW_FR', 'https://weather.station.software/fr/weather-station-3-4-louise-attaque/');
 
 //---------------------------------------------------------------------------------------------------
 

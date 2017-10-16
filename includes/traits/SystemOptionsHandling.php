@@ -78,6 +78,7 @@ trait Handling {
     private static $live_weather_station_collect_history = false;
     private static $live_weather_station_build_history = false;
     private static $live_weather_station_full_history = false;
+    private static $live_weather_station_retention_history = 5;
 
 
     /**
@@ -472,6 +473,7 @@ trait Handling {
         delete_option('live_weather_station_collect_history');
         delete_option('live_weather_station_build_history');
         delete_option('live_weather_station_full_history');
+        delete_option('live_weather_station_retention_history');
 
         self::delete_thresholds_options();
     }
@@ -560,6 +562,7 @@ trait Handling {
         update_option('live_weather_station_collect_history', self::$live_weather_station_collect_history);
         update_option('live_weather_station_build_history', self::$live_weather_station_build_history);
         update_option('live_weather_station_full_history', self::$live_weather_station_full_history);
+        update_option('live_weather_station_retention_history', self::$live_weather_station_retention_history);
     }
 
     /**
@@ -797,6 +800,7 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_collect_history', self::$live_weather_station_collect_history);
         self::verify_option_boolean('live_weather_station_build_history', self::$live_weather_station_build_history);
         self::verify_option_boolean('live_weather_station_full_history', self::$live_weather_station_full_history);
+        self::verify_option_integer('live_weather_station_retention_history', self::$live_weather_station_retention_history);
 
     }
 

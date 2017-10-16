@@ -43,6 +43,9 @@ class Tasks extends Base {
             case 'push' :
                 $result = '<i style="color:#999" class="fa fa-lg fa-fw fa-share-alt"></i>&nbsp;';
                 break;
+            case 'history' :
+                $result = '<i style="color:#999" class="fa fa-lg fa-fw fa-history"></i>&nbsp;';
+                break;
             default :
                 $result = '<i style="color:#999" class="fa fa-lg fa-fw fa-random"></i>&nbsp;';
                 break;
@@ -155,7 +158,7 @@ class Tasks extends Base {
         $sortable = $this->get_sortable_columns();
         $this->_column_headers = array($columns, $hidden, $sortable);
         $data = array();
-        foreach (array_merge(self::$cron_system, self::$cron_pull, self::$cron_push) as $cron) {
+        foreach (array_merge(self::$cron_system, self::$cron_pull, self::$cron_push, self::$cron_history) as $cron) {
             $a = array();
             $a['hook'] = $cron;
             $a['task'] = self::get_cron_name($cron);

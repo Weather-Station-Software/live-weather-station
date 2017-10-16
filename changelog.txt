@@ -1,4 +1,13 @@
 
+#3.4.0 / November XXXXth, 2017
+
+* New: Weather Station now collects data for daily graph and values and historical rendering.
+* New: the scheduled tasks tab allows to proceed on execution and reschedule of tasks belonging to the new history pool.
+* New: the task analytics graphs now takes care of the new history pool.
+* Improvement:
+* Bug fix: 
+
+
 #3.3.2 / October 11th, 2017
 
 * Improvement: the stations list has new columns to improve its use.

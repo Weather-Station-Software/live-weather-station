@@ -62,7 +62,7 @@ class Admin {
 
 	private $reload = false;
 
-    private $settings = array('general', 'services', 'display', 'thresholds', 'system');
+    private $settings = array('general', 'services', 'display', 'thresholds', 'history', 'system');
     private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground');
     private $service = 'Backend';
 
@@ -129,12 +129,14 @@ class Admin {
         add_settings_section('lws_services_section', null, array($this, 'services_section_callback'), 'lws_services');
         add_settings_section('lws_display_section', null, array($this, 'display_section_callback'), 'lws_display');
         add_settings_section('lws_thresholds_section', null, array($this, 'thresholds_section_callback'), 'lws_thresholds');
+        add_settings_section('lws_history_section', null, array($this, 'history_section_callback'), 'lws_history');
         add_settings_section('lws_system_section', null, array($this, 'system_section_callback'), 'lws_system');
         add_settings_section('lws_maintenance_section', null, array($this, 'maintenance_section_callback'), 'lws_maintenance');
         add_settings_section('lws_tasks_section', null, array($this, 'tasks_section_callback'), 'lws_tasks');
         $this->init_system_settings();
         $this->init_display_settings();
         $this->init_thresholds_settings();
+        $this->init_history_settings();
     }
 
     /**
@@ -189,6 +191,11 @@ class Admin {
     public function thresholds_section_callback() {
         $h = InlineHelp::get(4, __('You can find help on these settings on %s.', 'live-weather-station'), __('this page', 'live-weather-station'));
         echo '<p>' . __('You can set here all the thresholds which define limits and alarms in some controls (LCD panel, gauges, meters, etc.).', 'live-weather-station') . ' ' . $h . '</p>';
+    }
+
+    public function history_section_callback() {
+        $h = InlineHelp::get(1, __('You can find help on these settings on %s.', 'live-weather-station'), __('this page', 'live-weather-station'));
+        echo '<p>' . sprintf(__('Here, you can set and review the settings used by %s to store and manage historical data.', 'live-weather-station'), LWS_PLUGIN_NAME) . ' ' . $h . '</p>';
     }
 
     public function system_section_callback() {
@@ -343,6 +350,63 @@ class Admin {
                 array($threshold));
             register_setting('lws_thresholds', 'lws_thresholds_' . $threshold);
         }
+    }
+
+    /**
+     * Initializes system fields.
+     *
+     * @since 3.0.0
+     */
+    public function init_history_settings() {
+        add_settings_field('lws_history_collect', __('Data category', 'live-weather-station'),
+            array($this, 'lws_history_collect_callback'), 'lws_history', 'lws_history_section',
+            array(sprintf(__('Category of data compiled by %s.', 'live-weather-station'), LWS_PLUGIN_NAME)));
+        register_setting('lws_history', 'lws_history_collect');
+        add_settings_field('lws_history_full', __('Compilation mode', 'live-weather-station'),
+            array($this, 'lws_history_full_callback'), 'lws_history', 'lws_history_section',
+            array(sprintf(__('Types of compiled data and operations computed by %s.', 'live-weather-station'), LWS_PLUGIN_NAME)));
+        register_setting('lws_history', 'lws_history_full');
+        add_settings_field('lws_history_retention', __('Retention period', 'live-weather-station'),
+            array($this, 'lws_history_retention_callback'), 'lws_history', 'lws_history_section',
+            array(__('Duration for which historical data should be retained. Set to 0 for unlimited duration.', 'live-weather-station')));
+        register_setting('lws_history', 'lws_history_retention');
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.4.0
+     */
+    public function lws_history_collect_callback($args) {
+        $mode = 0;
+        if ((bool)get_option('live_weather_station_collect_history')) {
+            $mode = 1;
+            if ((bool)get_option('live_weather_station_build_history')) {
+                $mode = 2;
+            }
+        }
+        echo $this->field_select($this->get_history_collect_js_array(), $mode, 'lws_history_collect', $args[0]);
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.0.0
+     */
+    public function lws_history_full_callback($args) {
+        echo $this->field_select($this->get_history_full_js_array(), get_option('live_weather_station_full_history'), 'lws_history_full', $args[0]);
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.4.0
+     */
+    public function lws_history_retention_callback($args) {
+        echo $this->field_input_number(get_option('live_weather_station_retention_history'), 'lws_history_retention', 0, 600, 1, $args[0], __('weeks', 'live-weather-station'));
     }
 
     /**
@@ -746,6 +810,28 @@ class Admin {
                 $result = false;
             }
         }
+        if ($section == 'history') {
+            if (array_key_exists('submit', $_POST)) {
+                $mode = (integer)$_POST['lws_history_collect'];
+                if ($mode == 0) {
+                    update_option('live_weather_station_collect_history', 0);
+                    update_option('live_weather_station_build_history', 0);
+                }
+                if ($mode == 1) {
+                    update_option('live_weather_station_collect_history', 1);
+                    update_option('live_weather_station_build_history', 0);
+                }
+                if ($mode == 2) {
+                    update_option('live_weather_station_collect_history', 1);
+                    update_option('live_weather_station_build_history', 1);
+                }
+                update_option('live_weather_station_full_history', (integer)$_POST['lws_history_full']);
+                update_option('live_weather_station_retention_history', (integer)$_POST['lws_history_retention']);
+            }
+            else {
+                $result = false;
+            }
+        }
         if ($section == 'thresholds') {
             if (array_key_exists('submit', $_POST)) {
                 $thresholds = self::get_thresholds();
@@ -835,6 +921,9 @@ class Admin {
         if ($section == 'thresholds') {
             self::init_thresholds_options();
         }
+        if ($section == 'history') {
+            $result = false;
+        }
         if ($section == 'system') {
             self::init_system_options();
         }
@@ -880,6 +969,7 @@ class Admin {
             case 'services' : $settings_string = __('Services settings', 'live-weather-station'); break;
             case 'display' : $settings_string = __('Display settings', 'live-weather-station'); break;
             case 'thresholds' : $settings_string = __('Thresholds settings', 'live-weather-station'); break;
+            case 'history' : $settings_string = __('History settings', 'live-weather-station'); break;
             case 'system' : $settings_string = __('System settings', 'live-weather-station'); break;
             default: $settings_string = __('Unknown settings', 'live-weather-station');
         }

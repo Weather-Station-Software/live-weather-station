@@ -13,6 +13,7 @@ use WeatherStation\Utilities\ColorsManipulation;
 use WeatherStation\DB\Query;
 use WeatherStation\System\Analytics\Performance;
 use WeatherStation\Utilities\Markdown;
+use WeatherStation\Data\History\Builder as History;
 
 /**
  * Outputing / shortcoding functionalities for Weather Station plugin.
@@ -46,8 +47,6 @@ trait Output {
         'sunrise_c','sunrise_n','sunrise_a', 'sunset_c','sunset_n', 'sunset_a', 'day_length_c', 'day_length_n',
         'day_length_a', 'dawn_length_a','dawn_length_n', 'dawn_length_c', 'dusk_length_a', 'dusk_length_n',
         'dusk_length_c','saturation_vapor_pressure','saturation_absolute_humidity','equivalent_potential_temperature');
-
-
 
 
 
@@ -405,7 +404,7 @@ trait Output {
                 $result .= '  });' . PHP_EOL;
                 $result .= '</script>' . PHP_EOL;
             }
-            if ($_attributes['metric'] == 'time_for_system' || $_attributes['metric'] == 'time_for_pull' || $_attributes['metric'] == 'time_for_push') {
+            if ($_attributes['metric'] == 'time_for_system' || $_attributes['metric'] == 'time_for_pull' || $_attributes['metric'] == 'time_for_push' || $_attributes['metric'] == 'time_for_history') {
                 wp_enqueue_script('colorbrewer.js');
                 $cpt = substr_count($perf['dat'][$_attributes['metric']], '"key"');
                 if ($cpt < 3) {
@@ -2489,6 +2488,9 @@ trait Output {
      */
     protected function output_iconic_value($value, $type, $module_type='NAMain', $show_value=false, $style='', $extra='') {
         switch (strtolower($type)) {
+            case 'weather':
+                $result = '<i %1$s class="wi wi-fw %2$s wi-day-cloudy" aria-hidden="true"></i>';
+                break;
             case 'battery':
                 $level = $this->get_battery_level($value, $module_type);
                 switch ($level) {
@@ -5450,4 +5452,283 @@ trait Output {
         }
         return $result;
     }
+
+
+    /**
+     * Get available historical operations.
+     *
+     * @param array $operations The permitted operations.
+     * @param bool $full_mode Optional. Set full mode.
+     * @return array An array containing all the available historical operations.
+     * @since 3.4.0
+     */
+    private function get_all_historical_operations($operations, $full_mode=false) {
+        $result = array();
+        foreach ($operations as $set) {
+            switch ($set) {
+                case 'min' : $result[$set] = __('minimum value', 'live-weather-station'); break;
+                case 'max' : $result[$set] = __('maximum value', 'live-weather-station'); break;
+                case 'avg' : $result[$set] = __('average value', 'live-weather-station'); break;
+                case 'dev' : $result[$set] = __('standard deviation', 'live-weather-station'); break;
+                case 'med' : $result[$set] = __('median value', 'live-weather-station'); break;
+                case 'agg' : $result[$set] = __('aggregated value', 'live-weather-station'); break;
+                case 'dom' : $result[$set] = __('prevalent value', 'live-weather-station'); break;
+                case 'amp' : $result[$set] = __('amplitude', 'live-weather-station'); break;
+                case 'mid' : $result[$set] = __('middle value', 'live-weather-station'); break;
+                case 'maxhr' : $result[$set] = __('hourly maximum', 'live-weather-station'); break;
+            }
+        }
+        if (class_exists('\Collator')) {
+            $collator = new \Collator(get_display_locale());
+            $collator->asort($result);
+        }
+        else {
+            asort($result, SORT_STRING | SORT_FLAG_CASE | SORT_NATURAL);
+        }
+        return $result;
+    }
+
+    /**
+     * Get available historical measurements.
+     *
+     * @param bool $current Optional. Get only true current measurements.
+     * @param string $force_mode Optional. Forced mode when $current==false.
+     * @param bool $show_always Optional. Always show measurement.
+     * @return array An array containing the available historical standards/extended measurements.
+     * @since 3.4.0
+     */
+    public function get_historical_measurements($current=true, $force_mode='standard', $show_always=false) {
+        $history = new History(LWS_PLUGIN_NAME, LWS_VERSION);
+        $names = array();
+        $measurements = array();
+        $result = array();
+        foreach (array_merge($history->extended_measurements, $history->standard_measurements) as $measurement) {
+            $names[$measurement] = $this->get_measurement_type($measurement);
+            $measurements[$measurement]['standard'] = $this->get_all_historical_operations($history->get_measurements_operations_type($measurement, '', false));
+            $measurements[$measurement]['extended'] = $this->get_all_historical_operations($history->get_measurements_operations_type($measurement, '', true));
+        }
+        if (class_exists('\Collator')) {
+            $collator = new \Collator(get_display_locale());
+            $collator->asort($names);
+        }
+        else {
+            asort($names, SORT_STRING | SORT_FLAG_CASE | SORT_NATURAL);
+        }
+        foreach ($names as $id=>$name) {
+            if (in_array($id, $history->standard_measurements)) {
+                $type = 'standard';
+                if ($current) {
+                    $compiled = (bool)get_option('live_weather_station_collect_history');
+                    $aggregated = (bool)get_option('live_weather_station_collect_history') &&
+                                  (bool)get_option('live_weather_station_build_history');
+                }
+                else {
+                    $compiled = true;
+                    $aggregated = true;
+                }
+            }
+            else {
+                $type = 'extended';
+                if ($current) {
+                    $compiled = (bool)get_option('live_weather_station_collect_history') &&
+                                (bool)get_option('live_weather_station_full_history');
+                    $aggregated = (bool)get_option('live_weather_station_collect_history') &&
+                                  (bool)get_option('live_weather_station_full_history') &&
+                                  (bool)get_option('live_weather_station_build_history');
+                }
+                else {
+                    $compiled = $force_mode == 'extended';
+                    $aggregated = $force_mode == 'extended';
+                }
+            }
+            if (!$compiled && !$show_always) {
+                continue;
+            }
+            $result[$id]['name'] = $name;
+            $result[$id]['icon'] = $this->output_iconic_value(0, $id, false, false, 'style="color:#666666;"');
+            $result[$id]['type'] = $type;
+            $result[$id]['compiled'] = $compiled;
+            $result[$id]['aggregated'] = $aggregated;
+            $result[$id]['operations'] = $measurements[$id];
+        }
+        return $result;
+    }
+
+    /**
+     * Get the historical capabilities.
+     *
+     * @return string $attributes The type of capabilities queryed by the shortcode.
+     * @since 3.4.0
+     */
+    public function admin_historical_capabilities_shortcodes($attributes) {
+        $result = '';
+        $_attributes = shortcode_atts( array('item' => 'daily', 'mode' => 'current', 'style' => 'icon', 'column' => 3, 'border_color' => '#D9D9D9', 'background_color' => '#F4F4F4', 'font_color' => '#FFFFFF'), $attributes );
+        $item = $_attributes['item'];
+        $column = $_attributes['column'];
+        $style = $_attributes['style'];
+        $bcol = $_attributes['border_color'];
+        $bgcol = $_attributes['background_color'];
+        $fcol = $_attributes['font_color'];
+        if($_attributes['mode'] == 'current') {
+            $type = (bool)get_option('live_weather_station_full_history') ? 'extended' : 'standard';
+            $current = true;
+        }
+        else {
+            $type = strtolower($_attributes['mode']);
+            $current = false;
+        }
+        $_measurements = $this->get_historical_measurements($current, $type, $style=='check' || ($item=='yearly' && $column==3));
+        $measurements = array_values($_measurements);
+        $cnt = count($measurements);
+        $itr = 0;
+        switch ($item) {
+            case 'daily':
+                $result .= '<div class="lws-histo-cap-table">';
+                while ($itr < $cnt) {
+                    if (($itr % $column) == 0) {
+                        $result .= '<div class="lws-histo-cap-table-row">';
+                    }
+                    $result .= '<div class="lws-histo-cap-table-row-item">';
+                    if ($style=='icon') {
+                        $result .= '<span style="vertical-align:middle">' . $measurements[$itr]['icon'];
+                    }
+                    elseif ($style=='check') {
+                        if ($measurements[$itr]['compiled']) {
+                            $result .= '<span style="vertical-align:middle"><i style="color:limegreen;" class="fa fa-fw fa-check-circle" aria-hidden="true"></i>';
+                        }
+                        else {
+                            $result .= '<span style="vertical-align:middle"><i style="color:red;"  class="fa fa-fw fa-times-circle" aria-hidden="true"></i>';
+                        }
+                    }
+                    $result .= '&nbsp;' . $measurements[$itr]['name'].'</span>';
+                    $result .= '</div>';
+                    $itr += 1;
+                    if (($itr % $column) == 0) {
+                        $result .= '</div>';
+                    }
+                }
+                while (($itr % $column) != 0) {
+                    $result .= '<div class="lws-histo-cap-table-row-item">&nbsp;</div>';
+                    $itr += 1;
+                    if (($itr % $column) == 0) {
+                        $result .= '</div>';
+                    }
+                }
+                $result .= '</div>';
+                break;
+            case 'yearly':
+                if ($column == 1) {
+                    $result .= '<div class="lws-histo-cap-table">';
+                    while ($itr < $cnt) {
+                        if (($itr % $column) == 0) {
+                            $result .= '<div class="lws-histo-cap-table-row">';
+                        }
+                        $result .= '<div class="lws-histo-cap-table-row-item">';
+                        if ($style == 'icon') {
+                            $result .= '<span style="vertical-align:middle">' . $measurements[$itr]['icon'];
+                        } elseif ($style == 'check') {
+                            if ($measurements[$itr]['aggregated']) {
+                                $result .= '<span style="vertical-align:middle"><i style="color:limegreen;" class="fa fa-fw fa-check-circle" aria-hidden="true"></i>';
+                            } else {
+                                $result .= '<span style="vertical-align:middle"><i style="color:red;"  class="fa fa-fw fa-times-circle" aria-hidden="true"></i>';
+                            }
+                        }
+                        $cap = '';
+                        if ($measurements[$itr]['aggregated']) {
+                            $cap = implode(', ', $measurements[$itr]['operations'][$type]);
+                        }
+                        if ($cap == '') {
+                            $cap = '-';
+                        }
+                        $result .= '&nbsp;' . $measurements[$itr]['name'] . ' / ' . $cap . '.</span>';
+                        $result .= '</div>';
+                        $itr += 1;
+                        if (($itr % $column) == 0) {
+                            $result .= '</div>';
+                        }
+                    }
+                    while (($itr % $column) != 0) {
+                        $result .= '<div class="lws-histo-cap-table-row-item">&nbsp;</div>';
+                        $itr += 1;
+                        if (($itr % $column) == 0) {
+                            $result .= '</div>';
+                        }
+                    }
+                    $result .= '</div>';
+                }
+                if ($column == 3) {
+                    $result .= '<div class="lws-histo-cap-table-3c">';
+                    $result .= '<div class="lws-histo-cap-table-3c-row">';
+                    $result .= '<div class="lws-histo-cap-table-3c-row-item" style="border-bottom: solid 1px ' . $bcol . ';">&nbsp;</div>';
+                    $result .= '<div class="lws-histo-cap-table-3c-row-item-header" style="background-color: ' . $bcol . ';border-left: solid 1px ' . $bcol . ';">';
+                    $result .= '<span style="color: ' . $fcol . ';">' . __('Standard', 'live-weather-station') . '</span>';
+                    $result .= '</div>';
+                    $result .= '<div class="lws-histo-cap-table-3c-row-item-header" style="background-color: ' . $bcol . ';border-left: solid 1px ' . $bcol . ';">';
+                    $result .= '<span style="color: ' . $fcol . ';">' . __('Scientific', 'live-weather-station') . '</span>';
+                    $result .= '</div>';
+                    $result .= '</div>';
+                    $itr = 0;
+                    foreach ($measurements as $measurement) {
+                        $s = '';
+                        if ($itr & 1) {
+                            $s = ' style="background-color:' . $bgcol .'"';
+                        }
+                        $result .= '<div class="lws-histo-cap-table-3c-row"' . $s . '>';
+                        $result .= '<div class="lws-histo-cap-table-3c-row-item" style="border-left: solid 1px ' . $bcol . '; border-right: solid 1px ' . $bcol . ';">';
+                        if ($style == 'icon') {
+                            $result .= '<span style="vertical-align:middle">' . $measurement['icon'];
+                        } elseif ($style == 'check') {
+                            if ($measurement['aggregated']) {
+                                $result .= '<span style="vertical-align:middle"><i style="color:limegreen;" class="fa fa-fw fa-check-circle" aria-hidden="true"></i>';
+                            } else {
+                                $result .= '<span style="vertical-align:middle"><i style="color:red;"  class="fa fa-fw fa-times-circle" aria-hidden="true"></i>';
+                            }
+                        }
+                        $result .= '&nbsp;' . $measurement['name']. '.</span>';
+                        $result .= '</div>';
+                        $result .= '<div class="lws-histo-cap-table-3c-row-item">';
+                        $cap = '';
+                        if ($measurements[$itr]['aggregated']) {
+                            $cap = implode(', ', $measurement['operations']['standard']);
+                        }
+                        if ($cap == '') {
+                            $cap = '-';
+                        }
+                        else {
+                            $cap = ucfirst($cap) . '.';
+                        }
+                        $result .= $cap . '</div>';
+                        $result .= '<div class="lws-histo-cap-table-3c-row-item" style="border-left: solid 1px ' . $bcol . '; border-right: solid 1px ' . $bcol . ';">';
+                        $cap = '';
+                        if ($measurements[$itr]['aggregated']) {
+                            $cap = implode(', ', $measurement['operations']['extended']);
+                        }
+                        if ($cap == '') {
+                            $cap = '-';
+                        }
+                        else {
+                            $cap = ucfirst($cap) . '.';
+                        }
+                        $result .= $cap . '</div>';
+                        $result .= '</div>';
+                        $itr += 1;
+                    }
+                    $result .= '<div class="lws-histo-cap-table-3c-row" style="padding:0;height: 0;">';
+                    $result .= '<div class="lws-histo-cap-table-3c-row-item" style="padding:0;height: 0;border-left: solid 1px ' . $bcol . '; border-right: solid 1px ' . $bcol . ';border-bottom: solid 1px ' . $bcol . ';"></div>';
+                    $result .= '<div class="lws-histo-cap-table-3c-row-item" style="padding:0;height: 0;border-bottom: solid 1px ' . $bcol . ';"></div>';
+                    $result .= '<div class="lws-histo-cap-table-3c-row-item" style="padding:0;height: 0;border-left: solid 1px ' . $bcol . '; border-right: solid 1px ' . $bcol . ';border-bottom: solid 1px ' . $bcol . ';"></div>';
+                    $result .= '</div>';
+                    $result .= '</div>';
+                }
+                break;
+            default:
+                $result = '<p>' . __('Malformed shortcode. Please verify it!', 'live-weather-station') . '</p>';
+        }
+        wp_enqueue_style('weather-icons.css', LWS_PUBLIC_URL . 'css/weather-icons.min.css', array(), LWS_VERSION);
+        wp_enqueue_style('weather-icons-wind.css', LWS_PUBLIC_URL . 'css/weather-icons-wind.min.css', array(), LWS_VERSION);
+        wp_enqueue_style('font-awesome.css', LWS_PUBLIC_URL.'css/font-awesome.min.css', array(), LWS_VERSION);
+        wp_enqueue_style('lws-table.css', LWS_PUBLIC_URL.'css/live-weather-station-table.min.css', array(), LWS_VERSION);
+        return $result;
+    }
+
 }

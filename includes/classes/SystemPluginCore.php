@@ -164,6 +164,7 @@ class Core {
         add_shortcode( 'live-weather-station-steelmeter', array($plugin_public, 'steelmeter_shortcodes') );
         add_shortcode( 'live-weather-station-admin-analytics', array($plugin_public, 'admin_analytics_shortcodes') );
         add_shortcode( 'live-weather-station-changelog', array($plugin_public, 'admin_changelog_shortcodes') );
+        add_shortcode( 'live-weather-station-historical-capabilities', array($plugin_public, 'admin_historical_capabilities_shortcodes') );
 	}
 
 	/**
