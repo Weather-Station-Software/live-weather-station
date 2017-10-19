@@ -5,7 +5,7 @@
 * New: the scheduled tasks tab allows to proceed on execution and reschedule of tasks belonging to the new history pool.
 * New: the task analytics graphs now takes care of the new history pool.
 * Improvement:
-* Bug fix: 
+* Bug fix: in some cases, the plugin try to download translations statistics at each loading.
 
 
 #3.3.2 / October 11th, 2017

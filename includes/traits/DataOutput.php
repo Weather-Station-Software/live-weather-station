@@ -14,6 +14,7 @@ use WeatherStation\DB\Query;
 use WeatherStation\System\Analytics\Performance;
 use WeatherStation\Utilities\Markdown;
 use WeatherStation\Data\History\Builder as History;
+use WeatherStation\System\Environment\Manager as EnvManager;
 
 /**
  * Outputing / shortcoding functionalities for Weather Station plugin.
@@ -49,8 +50,6 @@ trait Output {
         'dusk_length_c','saturation_vapor_pressure','saturation_absolute_humidity','equivalent_potential_temperature');
 
 
-
-
     /**
      * Get the changelog.
      *
@@ -62,6 +61,7 @@ trait Output {
         $style = $_attributes['style'];
         $title = $_attributes['title'];
         $list = $_attributes['list'];
+
         $changelog = LWS_PLUGIN_DIR . 'changelog.txt';
         if (file_exists($changelog)) {
             try {
@@ -5684,7 +5684,7 @@ trait Output {
                                 $result .= '<span style="vertical-align:middle"><i style="color:red;"  class="fa fa-fw fa-times-circle" aria-hidden="true"></i>';
                             }
                         }
-                        $result .= '&nbsp;' . $measurement['name']. '.</span>';
+                        $result .= '&nbsp;' . $measurement['name']. '</span>';
                         $result .= '</div>';
                         $result .= '<div class="lws-histo-cap-table-3c-row-item">';
                         $cap = '';
@@ -5728,6 +5728,89 @@ trait Output {
         wp_enqueue_style('weather-icons-wind.css', LWS_PUBLIC_URL . 'css/weather-icons-wind.min.css', array(), LWS_VERSION);
         wp_enqueue_style('font-awesome.css', LWS_PUBLIC_URL.'css/font-awesome.min.css', array(), LWS_VERSION);
         wp_enqueue_style('lws-table.css', LWS_PUBLIC_URL.'css/live-weather-station-table.min.css', array(), LWS_VERSION);
+        return $result;
+    }
+
+    /**
+     * Get the tranlations.
+     *
+     * @return string $attributes The type of analytics queryed by the shortcode.
+     * @since 3.4.0
+     */
+    public function admin_translations_shortcodes($attributes) {
+        $_attributes = shortcode_atts( array('min' => 0, 'max' => 100, 'style' => 'check', 'column' => 2), $attributes );
+        $min = (int)$_attributes['min'];
+        $max = (int)$_attributes['max'];
+        $column = $_attributes['column'];
+        $style = $_attributes['style'];
+        $langs = array_values(EnvManager::stat_translation_by_locale($min, $max));
+        $cnt = count($langs);
+        $itr = 0;
+        $result = '<div class="lws-lang-cap-table">';
+        while ($itr < $cnt) {
+            if (($itr % $column) == 0) {
+                $result .= '<div class="lws-lang-cap-table-row">';
+            }
+            $result .= '<div class="lws-lang-cap-table-row-item">';
+            $link = 'https://translate.wordpress.org/locale/' . $langs[$itr]['locale_code'] . '/default/wp-plugins/live-weather-station';
+            if ($style == 'multi-icon') {
+                $shadow = 'box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.18), 0 6px 20px 0 rgba(0, 0, 0, 0.15);';
+                $result .= '<a href="' . $link . '" style="' . $shadow . 'margin-right:16px; width:80px;" class="flag-icon ' . $langs[$itr]['svg-class'] . '"></a>';
+                $result .= '<span>' . $langs[$itr]['name'].'<br/>';
+                $result .= '<span style="color:#999">' . __('Translation:', 'live-weather-station') . ' ' . $langs[$itr]['translated'] . '%</span></span>';
+            }
+            elseif ($style == 'icon') {
+                $result .= '<a href="' . $link . '" style="margin-right:10px;" class="flag-icon ' . $langs[$itr]['svg-class'] . '"></a>';
+                $result .= '<span>' . $langs[$itr]['name'].'</span>';
+            }
+            else {
+                $result .= '<span style="vertical-align:middle">' . $langs[$itr]['name'].'</span>';
+            }
+            $result .= '</div>';
+            $itr += 1;
+            if (($itr % $column) == 0) {
+                $result .= '</div>';
+            }
+        }
+        while (($itr % $column) != 0) {
+            $result .= '<div class="lws-lang-cap-table-row-item">&nbsp;</div>';
+            $itr += 1;
+            if (($itr % $column) == 0) {
+                $result .= '</div>';
+            }
+        }
+        $result .= '</div>';
+        if ($style == 'icon' || $style == 'multi-icon') {
+            wp_enqueue_style('flags', 'https://weather.station.software/extra/flags/css/flag-icon.min.css', null, true);
+        }
+        return $result;
+    }
+
+    /**
+     * Get the plugin statistics.
+     *
+     * @@param array $attributes The type of statistics queryed by the shortcode.
+     * @return integer The value of the statistics item.
+     * @since 3.4.0
+     */
+    public function admin_statistics_shortcodes($attributes) {
+        $_attributes = shortcode_atts(array('item' => 'downloaded'), $attributes);
+        switch ($_attributes['item']) {
+            case 'active_installs':
+                $result = EnvManager::stat_active_installs();
+                break;
+            case 'downloaded':
+                $result = EnvManager::stat_downloaded();
+                break;
+            case 'num_ratings':
+                $result = EnvManager::stat_num_ratings();
+                break;
+            case 'rating':
+                $result = EnvManager::stat_rating();
+                break;
+            default:
+                $result = 0;
+        }
         return $result;
     }
 

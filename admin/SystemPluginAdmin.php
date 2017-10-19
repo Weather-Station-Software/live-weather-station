@@ -572,6 +572,10 @@ class Admin {
             'id' => 'lws_system_show_tasks',
             'checked' => (bool)get_option('live_weather_station_show_tasks'),
             'description' => sprintf(__('Check this to get access to the scheduled tasks tab.', 'live-weather-station'), LWS_PLUGIN_NAME). InlineHelp::article(10));
+        $cbxs[] = array('text' => __('Display plugin statistics', 'live-weather-station'),
+            'id' => 'lws_system_plugin_stat',
+            'checked' => (bool)get_option('live_weather_station_plugin_stat'),
+            'description' => sprintf(__('Check this you want to display statistics about the plugin in your dashboard.', 'live-weather-station'), LWS_PLUGIN_NAME));
         echo $this->field_multi_checkbox($cbxs);
     }
 
@@ -869,6 +873,7 @@ class Admin {
                 update_option('live_weather_station_show_technical', (array_key_exists('lws_system_show_technical', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_analytics', (array_key_exists('lws_system_show_analytics', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_tasks', (array_key_exists('lws_system_show_tasks', $_POST) ? 1 : 0));
+                update_option('live_weather_station_plugin_stat', (array_key_exists('lws_system_plugin_stat', $_POST) ? 1 : 0));
                 update_option('live_weather_station_overload_hc', (array_key_exists('lws_system_overload_hc', $_POST) ? 1 : 0));
                 update_option('live_weather_station_analytics_cutoff', (integer)$_POST['lws_system_analytics_cutoff']);
                 update_option('live_weather_station_quota_mode', (integer)$_POST['lws_system_quota']);

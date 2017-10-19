@@ -21,7 +21,9 @@ use WeatherStation\SDK\OpenWeatherMap\Plugin\StationUpdater as Owm_Station_Updat
 use WeatherStation\SDK\WeatherUnderground\Plugin\StationUpdater as Wug_Station_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\PollutionUpdater as Owm_Pollution_Updater;
 use WeatherStation\System\I18N\Handling as i18n;
+use WeatherStation\System\Plugin\Stats;
 use WeatherStation\Data\History\Builder as HistoryBuilder;
+use WeatherStation\Data\History\Cleaner as HistoryCleaner;
 
 /**
  * Functionalities for schedules & cron handling.
@@ -46,12 +48,14 @@ trait Handling {
     public static $cache_flush_name = 'lws_cache_flush';
     public static $stats_clean_name = 'lws_stats_clean';
     public static $integrity_check_name = 'lws_integrity_check';
+    public static $plugin_stat_name = 'lws_plugin_stat';
     public static $cron_system = array('lws_watchdog', 'lws_translation_update', 'lws_log_rotate', 'lws_cache_flush',
-                                        'lws_stats_clean', 'lws_integrity_check');
+                                        'lws_stats_clean', 'lws_integrity_check', 'lws_plugin_stat');
 
-    // SYSTEM
+    // HISTORY
     public static $history_build_name = 'lws_history_build';
-    public static $cron_history = array('lws_history_build');
+    public static $history_clean_name = 'lws_history_clean';
+    public static $cron_history = array('lws_history_build', 'lws_history_clean');
 
     // PULL
     public static $netatmo_update_schedule_name = 'lws_netatmo_update';
@@ -299,10 +303,10 @@ trait Handling {
      */
     public static function get_cron_pool_name($cron_id) {
         $field_names = array('system' => __('system', 'live-weather-station'),
-            'push' => __('sharing', 'live-weather-station'),
-            'pull' => __('collection', 'live-weather-station'),
-            'history' => __('history', 'live-weather-station'),
-            'unknow' => __('generic', 'live-weather-station'));
+                             'push' => __('sharing', 'live-weather-station'),
+                             'pull' => __('collection', 'live-weather-station'),
+                             'history' => __('history', 'live-weather-station'),
+                             'unknow' => __('generic', 'live-weather-station'));
         return $field_names[self::get_cron_pool($cron_id)];
     }
 
@@ -336,6 +340,9 @@ trait Handling {
                 break;
             case 'lws_history_build':
                 return __('Historical data consolidation', 'live-weather-station');
+                break;
+            case 'lws_history_clean':
+                return __('Historical data cleaning', 'live-weather-station');
                 break;
             case 'lws_netatmo_update':
                 return __('Netatmo - Weather station', 'live-weather-station');
@@ -378,6 +385,9 @@ trait Handling {
                 break;
             case 'lws_wug_current_push':
                 return __('Weather Underground - Outdoor data', 'live-weather-station');
+                break;
+            case 'lws_plugin_stat':
+                return __('Plugin statistics', 'live-weather-station');
                 break;
             default :
                 return __('unknown', 'live-weather-station');
@@ -705,6 +715,56 @@ trait Handling {
         if (!wp_next_scheduled(self::$history_build_name)) {
             wp_schedule_event(time() + $timeshift, 'four_hours', self::$history_build_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$history_build_name).'" (re)scheduled.');
+        }
+    }
+
+    /**
+     * Define plugin stats cron job.
+     *
+     * @since 3.4.0
+     */
+    protected static function define_plugin_stat_cron() {
+        $stats = new Stats(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$plugin_stat_name, array($stats, 'cron'));
+    }
+
+    /**
+     * Launch the plugin stats cron job if needed.
+     *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
+     * @since 3.4.0
+     */
+    protected static function launch_plugin_stat_cron($timeshift=0, $system='Watchdog') {
+        if (!wp_next_scheduled(self::$plugin_stat_name)) {
+            wp_schedule_event(time() + $timeshift, 'daily', self::$plugin_stat_name);
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$plugin_stat_name).'" (re)scheduled.');
+        }
+    }
+
+    /**
+     * Define historical data consolidation cron job.
+     *
+     * @since 3.4.0
+     */
+    protected static function define_history_clean_cron() {
+        $cleaner = new Historycleaner(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$history_clean_name, array($cleaner, 'cron'));
+    }
+
+    /**
+     * Launch the historical data consolidation cron job if needed.
+     *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
+     * @since 3.4.0
+     */
+    protected static function launch_history_clean_cron($timeshift=0, $system='Watchdog') {
+        if (!wp_next_scheduled(self::$history_clean_name)) {
+            wp_schedule_event(time() + $timeshift, 'daily', self::$history_clean_name);
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$history_clean_name).'" (re)scheduled.');
         }
     }
 

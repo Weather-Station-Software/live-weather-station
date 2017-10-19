@@ -82,14 +82,15 @@ class Builder
                                 $this->delete_daily_values($device_id, $measure['module_id'], $measure['measure_type'], $station['loc_timezone']);
                             }
                         }
+                        Logger::notice($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'Daily data compiled.');
                         $this->delete_remaining_daily_values($device_id, $station['loc_timezone']);
-                        Logger::notice($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'Historical data consolidated.');
+                        Logger::notice($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'Old daily data cleaned.');
                     }
                 }
             }
             else {
                 $this->delete_remaining_daily_values($device_id, $station['loc_timezone']);
-                Logger::notice($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'Historical data cleaned.');
+                Logger::notice($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'Old daily data cleaned.');
             }
         }
     }

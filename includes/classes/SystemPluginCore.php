@@ -146,25 +146,27 @@ class Core {
         $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_styles', 1);
         $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
-		$this->loader->add_action( 'wp_ajax_lws_query_lcd_datas', $plugin_public, 'lws_query_lcd_datas_callback' );
-		$this->loader->add_action( 'wp_ajax_nopriv_lws_query_lcd_datas', $plugin_public, 'lws_query_lcd_datas_callback' );
-		$this->loader->add_action( 'wp_ajax_lws_query_justgage_config', $plugin_public, 'lws_query_justgage_config_callback' );
-		$this->loader->add_action( 'wp_ajax_nopriv_lws_query_justgage_config', $plugin_public, 'lws_query_justgage_config_callback' );
+		$this->loader->add_action( 'wp_ajax_lws_query_lcd_datas', $plugin_public, 'lws_query_lcd_datas_callback');
+		$this->loader->add_action( 'wp_ajax_nopriv_lws_query_lcd_datas', $plugin_public, 'lws_query_lcd_datas_callback');
+		$this->loader->add_action( 'wp_ajax_lws_query_justgage_config', $plugin_public, 'lws_query_justgage_config_callback');
+		$this->loader->add_action( 'wp_ajax_nopriv_lws_query_justgage_config', $plugin_public, 'lws_query_justgage_config_callback');
 		$this->loader->add_action( 'wp_ajax_lws_query_justgage_datas', $plugin_public, 'lws_query_justgage_datas_callback' );
-		$this->loader->add_action( 'wp_ajax_nopriv_lws_query_justgage_datas', $plugin_public, 'lws_query_justgage_datas_callback' );
-        $this->loader->add_action( 'wp_ajax_lws_query_steelmeter_config', $plugin_public, 'lws_query_steelmeter_config_callback' );
-        $this->loader->add_action( 'wp_ajax_nopriv_lws_query_steelmeter_config', $plugin_public, 'lws_query_steelmeter_config_callback' );
-        $this->loader->add_action( 'wp_ajax_lws_query_steelmeter_datas', $plugin_public, 'lws_query_steelmeter_datas_callback' );
-        $this->loader->add_action( 'wp_ajax_nopriv_lws_query_steelmeter_datas', $plugin_public, 'lws_query_steelmeter_datas_callback' );
-        $this->loader->add_action( 'wp_ajax_lws_query_steelmeter_datas', $plugin_public, 'lws_clientraw_test_callback' );
-        $this->loader->add_action( 'wp_ajax_nopriv_lws_query_steelmeter_datas', $plugin_public, 'lws_clientraw_test_callback' );
-        add_shortcode( 'live-weather-station-textual', array($plugin_public, 'textual_shortcodes') );
-        add_shortcode( 'live-weather-station-lcd', array($plugin_public, 'lcd_shortcodes') );
-		add_shortcode( 'live-weather-station-justgage', array($plugin_public, 'justgage_shortcodes') );
-        add_shortcode( 'live-weather-station-steelmeter', array($plugin_public, 'steelmeter_shortcodes') );
-        add_shortcode( 'live-weather-station-admin-analytics', array($plugin_public, 'admin_analytics_shortcodes') );
-        add_shortcode( 'live-weather-station-changelog', array($plugin_public, 'admin_changelog_shortcodes') );
-        add_shortcode( 'live-weather-station-historical-capabilities', array($plugin_public, 'admin_historical_capabilities_shortcodes') );
+		$this->loader->add_action( 'wp_ajax_nopriv_lws_query_justgage_datas', $plugin_public, 'lws_query_justgage_datas_callback');
+        $this->loader->add_action( 'wp_ajax_lws_query_steelmeter_config', $plugin_public, 'lws_query_steelmeter_config_callback');
+        $this->loader->add_action( 'wp_ajax_nopriv_lws_query_steelmeter_config', $plugin_public, 'lws_query_steelmeter_config_callback');
+        $this->loader->add_action( 'wp_ajax_lws_query_steelmeter_datas', $plugin_public, 'lws_query_steelmeter_datas_callback');
+        $this->loader->add_action( 'wp_ajax_nopriv_lws_query_steelmeter_datas', $plugin_public, 'lws_query_steelmeter_datas_callback');
+        $this->loader->add_action( 'wp_ajax_lws_query_steelmeter_datas', $plugin_public, 'lws_clientraw_test_callback');
+        $this->loader->add_action( 'wp_ajax_nopriv_lws_query_steelmeter_datas', $plugin_public, 'lws_clientraw_test_callback');
+        add_shortcode( 'live-weather-station-textual', array($plugin_public, 'textual_shortcodes'));
+        add_shortcode( 'live-weather-station-lcd', array($plugin_public, 'lcd_shortcodes'));
+		add_shortcode( 'live-weather-station-justgage', array($plugin_public, 'justgage_shortcodes'));
+        add_shortcode( 'live-weather-station-steelmeter', array($plugin_public, 'steelmeter_shortcodes'));
+        add_shortcode( 'live-weather-station-admin-analytics', array($plugin_public, 'admin_analytics_shortcodes'));
+        add_shortcode( 'live-weather-station-changelog', array($plugin_public, 'admin_changelog_shortcodes'));
+        add_shortcode( 'live-weather-station-historical-capabilities', array($plugin_public, 'admin_historical_capabilities_shortcodes'));
+        add_shortcode( 'live-weather-station-statistics', array($plugin_public, 'admin_statistics_shortcodes'));
+        add_shortcode( 'live-weather-station-translations', array($plugin_public, 'admin_translations_shortcodes'));
 	}
 
 	/**

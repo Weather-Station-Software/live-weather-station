@@ -61,6 +61,20 @@ trait Conversion {
     }
 
     /**
+     * Get the timestamp corresponding to midnight, N days ago in a specific timezone.
+     *
+     * @param integer $n The number of days ago.
+     * @param string $tz The timezone.
+     * @return integer The timestamp corresponding to midnight, N days ago in a specific timezone.
+     * @since 3.4.0
+     */
+    public static function get_local_n_days_ago_midnight($n, $tz) {
+        $datetime = new \DateTime('yesterday midnight', new \DateTimeZone($tz));
+        $datetime->sub(new \DateInterval('P'.$n.'D'));
+        return $datetime->getTimestamp();
+    }
+
+    /**
      * Converts a date expressed in specific TZ into an UTC date.
      *
      * @param integer $ts The date to be converted.
