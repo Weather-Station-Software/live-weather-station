@@ -25,7 +25,7 @@ class Cache {
     public static $backend_expiry = 900;   //15 minutes
     public static $frontend_expiry = 119;  // 2 minutes - 1 second
     public static $widget_expiry = 119;    // 2 minutes - 1 second
-    public static $i18n_expiry = 7200;     // 2 hours
+    public static $i18n_expiry = 43200;     // 12 hours
 
     public static $db_stat = 'lws_cache_db_stat';
     public static $db_stat_log = 'lws_cache_db_stat_log';

@@ -29,7 +29,7 @@ class Handling {
     private $count_translated;
     private $translation_exists;
     private $last_modified;
-    private $percent_min = 100;
+    private $percent_min = 95;
     private $cpt;
 
     private $service_name = 'I18n Helper';
@@ -333,15 +333,6 @@ class Handling {
      */
     public static function get_language_id()
     {
-        $lang = 'en';
-        $extra_language = array('fr');
-        $l = strtolower(get_display_locale());
-        foreach ($extra_language as $extra) {
-            if (strpos($l, $extra) === 0) {
-                $lang = $extra;
-                break;
-            }
-        }
-        return $lang;
+        return get_display_language_id();
     }
 }

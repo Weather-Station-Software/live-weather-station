@@ -22,6 +22,7 @@ spl_autoload_register(
         case 'WeatherStation\Data\Dashboard\Handling': $file = LWS_INCLUDES_DIR.'traits/DataDashboardHandling.php'; break;
         case 'WeatherStation\Data\DateTime\Conversion': $file = LWS_INCLUDES_DIR.'traits/DataDateTimeConversion.php'; break;
         case 'WeatherStation\Data\History\Builder': $file = LWS_INCLUDES_DIR.'classes/HistoryBuilder.php'; break;
+        case 'WeatherStation\Data\History\Cleaner': $file = LWS_INCLUDES_DIR.'classes/HistoryCleaner.php'; break;
         case 'WeatherStation\Data\ID\Handling': $file = LWS_INCLUDES_DIR.'traits/DataIDHandling.php'; break;
         case 'WeatherStation\Data\Output': $file = LWS_INCLUDES_DIR.'traits/DataOutput.php'; break;
         case 'WeatherStation\Data\Type\Description': $file = LWS_INCLUDES_DIR.'traits/DataTypeDescription.php'; break;
@@ -117,6 +118,7 @@ spl_autoload_register(
         case 'WeatherStation\System\Plugin\Frontend': $file = LWS_PUBLIC_DIR.'SystemPluginFrontend.php'; break;
         case 'WeatherStation\System\Plugin\I18n': $file = LWS_INCLUDES_DIR.'classes/SystemPluginI18n.php'; break;
         case 'WeatherStation\System\Plugin\Loader': $file = LWS_INCLUDES_DIR.'classes/SystemPluginLoader.php'; break;
+        case 'WeatherStation\System\Plugin\Stats': $file = LWS_INCLUDES_DIR.'classes/SystemPluginStats.php'; break;
         case 'WeatherStation\System\Plugin\Updater': $file = LWS_INCLUDES_DIR.'classes/SystemPluginUpdater.php'; break;
         case 'WeatherStation\System\Quota\Quota': $file = LWS_INCLUDES_DIR.'system/Quota.php'; break;
         case 'WeatherStation\System\Schedules\Watchdog': $file = LWS_INCLUDES_DIR.'system/Watchdog.php'; break;

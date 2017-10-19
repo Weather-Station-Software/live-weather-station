@@ -44,6 +44,7 @@ trait Handling {
     private static $live_weather_station_auto_update = true;
     private static $live_weather_station_cron_speed = 0;
     private static $live_weather_station_show_update = true;
+    private static $live_weather_station_plugin_stat = false;
     private static $live_weather_station_collection_http_timeout = 45;
     private static $live_weather_station_sharing_http_timeout = 45;
     private static $live_weather_station_system_http_timeout = 20;
@@ -467,6 +468,7 @@ trait Handling {
         delete_option('live_weather_station_force_frontend_styling');
         delete_option('live_weather_station_cron_speed');
         delete_option('live_weather_station_show_update');
+        delete_option('live_weather_station_plugin_stat');
         delete_option('live_weather_station_collection_http_timeout');
         delete_option('live_weather_station_sharing_http_timeout');
         delete_option('live_weather_station_system_http_timeout');
@@ -543,6 +545,7 @@ trait Handling {
         update_option('live_weather_station_show_technical', self::$live_weather_station_show_technical);
         update_option('live_weather_station_show_analytics', self::$live_weather_station_show_analytics);
         update_option('live_weather_station_show_tasks', self::$live_weather_station_show_tasks);
+        update_option('live_weather_station_plugin_stat', self::$live_weather_station_plugin_stat);
         update_option('live_weather_station_analytics_cutoff', self::$live_weather_station_analytics_cutoff);
         update_option('live_weather_station_auto_update', self::$live_weather_station_auto_update);
         update_option('live_weather_station_quota_mode', self::$live_weather_station_quota_mode);
@@ -771,6 +774,7 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_advanced_mode', self::$live_weather_station_advanced_mode);
         self::verify_option_boolean('live_weather_station_partial_translation', self::$live_weather_station_partial_translation);
         self::verify_option_boolean('live_weather_station_show_update', self::$live_weather_station_show_update);
+        self::verify_option_boolean('live_weather_station_plugin_stat', self::$live_weather_station_plugin_stat);
         self::verify_option_integer('live_weather_station_quota_mode', self::$live_weather_station_quota_mode);
         self::verify_option_boolean('live_weather_station_force_frontend_styling', self::$live_weather_station_force_frontend_styling);
         self::verify_option_string('live_weather_station_netatmo_refresh_token', self::$live_weather_station_netatmo_refresh_token);

@@ -19,6 +19,29 @@
     padding-bottom: 10px;
     padding-left: 4%;
 }
+
+.lws-lang-cap-table {
+    display: flex;
+    flex-flow: column nowrap;
+    justify-content: space-around;
+}
+
+.lws-lang-cap-table-row {
+    width: 100%;
+    display: flex;
+    flex-flow: row nowrap;
+}
+
+.lws-lang-cap-table-row-item {
+    display: flex;
+    flex-flow: row nowrap;
+    flex-grow: 1;
+    flex-basis: 0;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 4%;
+}
+
 .lws-histo-cap-table-3c {
     display: flex;
     flex-flow: column nowrap;

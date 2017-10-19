@@ -19,6 +19,7 @@ class Manager {
 
     private $Live_Weather_Station;
     private $version;
+    private static $stats_ttl = 172800;
 
     /**
      * Initialize the class and set its properties.
@@ -378,6 +379,286 @@ class Manager {
             }
         } catch (\Exception $ex) {
             $result = 'x';
+        }
+        return $result;
+    }
+
+    /**
+     * Get a stat.
+     *
+     * @param $arg string The stat to get.
+     * @return integer The value of the stat.
+     * @since 3.4.0
+     */
+    private static function stat_misc_get($arg) {
+        $result = 0;
+        if ($stats = get_option('live_weather_station_misc_stat', false)) {
+            if (array_key_exists('timestamp', $stats)) {
+                if (time() - $stats['timestamp'] < self::$stats_ttl) {
+                    if (array_key_exists($arg, $stats)) {
+                        $result = $stats[$arg];
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get active installs number.
+     *
+     * @return integer The active installs number.
+     * @since 3.4.0
+     */
+    public static function stat_active_installs() {
+        return self::stat_misc_get('active_installs');
+    }
+
+    /**
+     * Get downloaded number.
+     *
+     * @return integer The downloaded number.
+     * @since 3.4.0
+     */
+    public static function stat_downloaded() {
+        $result =  self::stat_misc_get('downloaded');
+        return ((int)($result / 1000)) * 1000;
+    }
+
+    /**
+     * Get ratings number.
+     *
+     * @return integer The ratings number.
+     * @since 3.4.0
+     */
+    public static function stat_num_ratings() {
+        return self::stat_misc_get('num_ratings');
+    }
+
+    /**
+     * Get downloaded number.
+     *
+     * @return integer The downloaded number.
+     * @since 3.4.0
+     */
+    public static function stat_rating() {
+        $result =  self::stat_misc_get('rating');
+        return sprintf('%.1F', round($result/20, 1));
+    }
+
+    /**
+     * Get translation stat.
+     *
+     * @return array The value of the stat.
+     * @since 3.4.0
+     */
+    private static function stat_translation_get() {
+        $result = array('translation_sets' => array());
+        if ($stats = get_option('live_weather_station_translation_stat', false)) {
+            $result = $stats;
+        }
+        return $result;
+    }
+
+    /**
+     * Get translations stats.
+     *
+     * @param integer $min Min value of percent translated.
+     * @param integer $max Max value of percent translated.
+     * @return array The translations.
+     * @since 3.4.0
+     */
+    public static function stat_translation($min=0, $max=100) {
+        $result = array();
+        if ($max == 100) {
+            $a = array();
+            $a['id'] = 0;
+            $a['name'] = 'English (USA)';
+            $a['slug'] = 'default';
+            $a['project_id'] = 318504;
+            $a['locale'] = 'en-us';
+            $a['current_count'] = 0;
+            $a['untranslated_count'] = 0;
+            $a['waiting_count'] = 0;
+            $a['fuzzy_count'] = 0;
+            $a['percent_translated'] = 100;
+            $a['wp_locale'] = 'en_US';
+            $a['last_modified'] = '';
+            $result[] = $a;
+        }
+        $stat = self::stat_translation_get();
+        if (array_key_exists('translation_sets', $stat)) {
+            foreach ($stat['translation_sets'] as $lang) {
+                if (array_key_exists('percent_translated', $lang)) {
+                    if ($lang['percent_translated'] >= $min && $lang['percent_translated'] <= $max) {
+                        $result[] = $lang;
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get special locale names.
+     *
+     * @param string $id The id of the locale.
+     * @return string The locale name.
+     * @since 3.4.0
+     */
+    private static function locale_name($id) {
+        switch ($id) {
+            case 'arq': $result = (get_display_language_id() == 'fr') ? 'Arabe (Algérie)' : 'Arabic (Algeria)' ; break;
+            case 'ary': $result = (get_display_language_id() == 'fr') ? 'Arabe (Maroc)' : 'Arabic (Morocco)' ; break;
+            case 'azb': $result = (get_display_language_id() == 'fr') ? 'Azerbaïdjanais du Sud' : 'South Azerbaijani' ; break;
+            case 'bcc': $result = (get_display_language_id() == 'fr') ? 'Balochi du Sud' : 'Southern Balochi' ; break;
+            case 'frp': $result = (get_display_language_id() == 'fr') ? 'Arpitan' : 'Arpitan' ; break;
+            case 'fuc': $result = (get_display_language_id() == 'fr') ? 'Pulaar' : 'Pulaar' ; break;
+            case 'haz': $result = (get_display_language_id() == 'fr') ? 'Hazaragi' : 'Hazaragi' ; break;
+            case 'kin': $result = (get_display_language_id() == 'fr') ? 'Kinyarwanda' : 'Kinyarwanda' ; break;
+            case 'kmr': $result = (get_display_language_id() == 'fr') ? 'Kurde du Nord' : 'Northern Kurdish' ; break;
+            case 'ory': $result = (get_display_language_id() == 'fr') ? 'Oriya' : 'Oriya' ; break;
+            case 'rhg': $result = (get_display_language_id() == 'fr') ? 'Rohingya' : 'Rohingya' ; break;
+            case 'szl': $result = (get_display_language_id() == 'fr') ? 'Silésien' : 'Silesian' ; break;
+            case 'twd': $result = (get_display_language_id() == 'fr') ? 'Twents' : 'Twents' ; break;
+            default: $result = \Locale::getDisplayName($id, get_display_language_id());
+
+        }
+        return $result;
+    }
+
+    /**
+     * Get special country code for a locale.
+     *
+     * @param string $id The id of the locale.
+     * @return string The country code name.
+     * @since 3.4.0
+     */
+    private static function country_code($id) {
+        $result = '';
+        if ($result == '' && strpos($id, '_')) {
+            $result = substr($id, strpos($id, '_') + 1);
+        }
+        if ($result == '' && strpos($id, '-')) {
+            $result = substr($id, strpos($id, '-') + 1);
+        }
+        if ($result == '') {
+            switch ($id) {
+                case 'sq': $result = 'AL' ; break;
+                case 'an': $result = 'ES' ; break;
+                case 'hy': $result = 'AM' ; break;
+                case 'as': $result = 'IN' ; break;
+                case 'ba': $result = 'RU' ; break;
+                case 'co': $result = 'FR' ; break;
+                case 'dv': $result = 'MV' ; break;
+                case 'et': $result = 'EE' ; break;
+                case 'fo': $result = 'DK' ; break;
+                case 'fy': $result = 'NL' ; break;
+                case 'cy': $result = 'GB' ; break;
+                case 'el': $result = 'GR' ; break;
+                case 'ja': $result = 'JP' ; break;
+                case 'kn': $result = 'IN' ; break;
+                case 'lv': $result = 'LV' ; break;
+                case 'mr': $result = 'IN' ; break;
+                case 'th': $result = 'TH' ; break;
+                case 'tl': $result = 'PH' ; break;
+                case 'arq': $result = 'DZ' ; break;
+                case 'ary': $result = 'MA' ; break;
+                case 'bel': $result = 'BY' ; break;
+                case 'bre': $result = 'FR' ; break;
+                case 'ceb': $result = 'PH' ; break;
+                case 'dzo': $result = 'BT' ; break;
+                case 'fur': $result = 'IT' ; break;
+                case 'haz': $result = 'AF' ; break;
+                case 'kab': $result = 'DZ' ; break;
+                case 'kal': $result = 'DK' ; break;
+                case 'ory': $result = 'IN' ; break;
+                case 'roh': $result = 'CH' ; break;
+                case 'sah': $result = 'RU' ; break;
+                case 'scn': $result = 'IT' ; break;
+                case 'srd': $result = 'IT' ; break;
+                case 'tah': $result = 'FR' ; break;
+                case 'twd': $result = 'NL' ; break;
+                case 'xho': $result = 'ZA' ; break;
+                case 'art-xemoji': $result = 'ZZ' ; break;
+            }
+        }
+        if ($result == '') {
+            $result = 'WP';
+        }
+        return $result;
+    }
+
+    /**
+     * Get country name.
+     *
+     * @param string $id The country code.
+     * @return string The country name.
+     * @since 3.4.0
+     */
+    private static function country_name($id) {
+        if ($id == 'WP') {
+            $result = '-';
+        }
+        else {
+            $result = \Locale::getDisplayRegion('-'.$id, get_display_locale());
+        }
+        return $result;
+    }
+
+    /**
+     * Get translations stats sorted by locale names.
+     *
+     * @param integer $min Min value of percent translated.
+     * @param integer $max Max value of percent translated.
+     * @return array The translations sorted by locale names.
+     * @since 3.4.0
+     */
+    public static function stat_translation_by_locale($min=0, $max=100) {
+        $result = array();
+        $set = array();
+        $translations = self::stat_translation($min, $max);
+        foreach ($translations as $id => $translation) {
+            $name = self::locale_name($translation['locale']);
+            $name = mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
+            if ($translation['slug'] != 'default') {
+                $slug = $translation['slug'];
+                if (get_display_language_id() == 'en') {
+                    $name = '%s ' . $name;
+                }
+                if (get_display_language_id() == 'fr') {
+                    if (strpos($name, ' (') > 0) {
+                        $name = str_replace(' (', ' %s (', $name);
+                    }
+                    else {
+                        $name = $name . ' %s';
+                    }
+                    if ($translation['slug'] == 'formal') {
+                        $slug = __('formal', 'live-weather-station');
+                    }
+                    if ($translation['slug'] == 'informal') {
+                        $slug = __('informal', 'live-weather-station');
+                    }
+                }
+                $name = sprintf($name, $slug);
+            }
+            $set[$id] = $name;
+        }
+        if (class_exists('\Collator')) {
+            $collator = new \Collator(get_display_locale());
+            $collator->asort($set);
+        }
+        else {
+            asort($set, SORT_STRING | SORT_FLAG_CASE | SORT_NATURAL);
+        }
+        foreach ($set as $id => $translation) {
+            $result[$id]['name'] = $translation;
+            $result[$id]['translated'] = $translations[$id]['percent_translated'];
+            $result[$id]['locale_code'] = $translations[$id]['locale'];
+            $result[$id]['country_code'] = strtoupper(self::country_code($translations[$id]['wp_locale']));
+            $result[$id]['country_name'] = self::country_name($result[$id]['country_code']);
+            $result[$id]['details'] = $translations[$id];
+            $result[$id]['svg-class'] = 'flag-icon-' . strtolower($result[$id]['country_code']);
         }
         return $result;
     }
