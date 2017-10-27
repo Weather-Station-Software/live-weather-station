@@ -38,6 +38,31 @@ function get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $ser
 }
 
 /**
+ * Get and admin page url based on the current one.
+ *
+ * @param array $params The params to override.
+ * @return string The full url of the admin page.
+ * @since 3.4.0
+ */
+function re_get_admin_page_url($params) {
+    $set = array('page', 'tab', 'action', 'service', 'id');
+    $args = array();
+    foreach ($set as $arg) {
+        if (isset($_POST[$arg])) {
+            $args[$arg] = $_POST[$arg];
+        }
+        if (isset($_GET[$arg])) {
+            $args[$arg] = $_GET[$arg];
+        }
+        if (array_key_exists($arg, $params)) {
+            $args[$arg] = $params[$arg];
+        }
+    }
+    $url = add_query_arg($args, admin_url('admin.php'));
+    return $url;
+}
+
+/**
  * Get the proper user locale regarding WP version differences.
  *
  * @param int|WP_User $user_id User's ID or a WP_User object. Defaults to current user.

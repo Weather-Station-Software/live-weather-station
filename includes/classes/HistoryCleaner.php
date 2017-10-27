@@ -80,7 +80,6 @@ class Cleaner
      */
     private function delete_old_yearly_values($device_id, $tz) {
         $max = date('Y-m-d', self::get_local_n_days_ago_midnight(7 * get_option('live_weather_station_retention_history'), $tz));
-        Logger::warning($this->facility, null, null, null, null, null, null, $max);
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
         $sql = "DELETE FROM ".$table_name." WHERE `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "';";

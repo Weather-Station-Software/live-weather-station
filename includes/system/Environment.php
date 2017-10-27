@@ -121,6 +121,15 @@ class Manager {
     }
 
     /**
+     * Verification of the home web server.
+     *
+     * @since 3.4.0
+     */
+    public static function is_home_server() {
+        return strpos(self::webserver_domain(), 'eather.station.software') > 0;
+    }
+
+    /**
      * Get the domain of this web server.
      *
      * @since 3.1.0
@@ -625,6 +634,7 @@ class Manager {
                 $slug = $translation['slug'];
                 if (get_display_language_id() == 'en') {
                     $name = '%s ' . $name;
+                    $slug = ucfirst($slug);
                 }
                 if (get_display_language_id() == 'fr') {
                     if (strpos($name, ' (') > 0) {
@@ -655,7 +665,13 @@ class Manager {
             $result[$id]['name'] = $translation;
             $result[$id]['translated'] = $translations[$id]['percent_translated'];
             $result[$id]['locale_code'] = $translations[$id]['locale'];
-            $result[$id]['country_code'] = strtoupper(self::country_code($translations[$id]['wp_locale']));
+            if (array_key_exists('wp_locale', $translations[$id])) {
+                $result[$id]['country_code'] = strtoupper(self::country_code($translations[$id]['wp_locale']));
+            }
+            else {
+                $result[$id]['country_code'] = 'WP';
+            }
+
             $result[$id]['country_name'] = self::country_name($result[$id]['country_code']);
             $result[$id]['details'] = $translations[$id];
             $result[$id]['svg-class'] = 'flag-icon-' . strtolower($result[$id]['country_code']);
@@ -780,6 +796,55 @@ class Manager {
     public static function wordpress_version_id() {
         global $wp_version;
         return 'WordPress/' . $wp_version;
+    }
+
+    /**
+     * Get the current admin color scheme.
+     *
+     * @since 3.4.0
+     */
+    public static function current_color_scheme() {
+        global $_wp_admin_css_colors;
+        $key = get_user_meta(get_current_user_id(), 'admin_color', true);
+        if (array_key_exists($key, $_wp_admin_css_colors)) {
+            $c = object_to_array($_wp_admin_css_colors[$key]);
+            $c['key'] = $key;
+            return $c;
+        }
+        else {
+            return array(
+                'key' => 'default',
+                'name' =>  _x( 'Default', 'admin color scheme' ),
+                'url' => false,
+                'colors' => array( '#222', '#333', '#0073aa', '#00a0d2' ),
+                'icon_colors' => array( 'base' => '#82878c', 'focus' => '#00a0d2', 'current' => '#fff' ));
+        }
+    }
+    /**
+     * Get the current admin color scheme.
+     *
+     * @since 3.4.0
+     */
+    public static function icon_color_scheme() {
+        $c = self::current_color_scheme();
+        $result = array();
+        switch ($c['key']) {
+            case 'light':
+                $result['text'] = '#FFF';
+                $result['border'] = $c['colors'][1];
+                $result['background'] = $c['colors'][1];
+                break;
+            case 'midnight':
+                $result['text'] = $c['icon_colors']['current'];
+                $result['border'] = $c['colors'][1];
+                $result['background'] = $c['colors'][3];
+                break;
+            default:
+                $result['text'] = $c['icon_colors']['current'];
+                $result['border'] = $c['colors'][1];
+                $result['background'] = $c['colors'][2];
+        }
+        return $result;
     }
 
     /**

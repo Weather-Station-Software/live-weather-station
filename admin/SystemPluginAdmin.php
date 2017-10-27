@@ -92,6 +92,7 @@ class Admin {
         wp_enqueue_style($this->Live_Weather_Station, LWS_ADMIN_URL.'css/live-weather-station-admin.min.css', array(), $this->version);
         wp_enqueue_style('live-weather-station-public.css', LWS_PUBLIC_URL.'css/live-weather-station-public.min.css', array(), $this->version);
         wp_enqueue_style('font-awesome.css', LWS_PUBLIC_URL.'css/font-awesome.min.css', array(), $this->version);
+        wp_enqueue_style('font-chart-icons.css', LWS_PUBLIC_URL.'css/font-chart-icons.min.css', array(), $this->version);
         wp_enqueue_style('weather-icons.css', LWS_PUBLIC_URL . 'css/weather-icons.min.css', array(), $this->version);
         wp_enqueue_style('weather-icons-wind.css', LWS_PUBLIC_URL . 'css/weather-icons-wind.min.css', array(), $this->version);
         wp_enqueue_style('thickbox');
@@ -927,7 +928,7 @@ class Admin {
             self::init_thresholds_options();
         }
         if ($section == 'history') {
-            $result = false;
+            self::init_history_options();
         }
         if ($section == 'system') {
             self::init_system_options();
@@ -1134,6 +1135,9 @@ class Admin {
                     $view = 'configuration';
                 }
                 if ($service == 'station' && ($tab == 'edit' || $tab == 'view') && $action == 'manage') {
+                    $view = 'station';
+                }
+                if (($tab == 'current' || $tab == 'daily' || $tab == 'yearly') && $action == 'shortcode') {
                     $view = 'station';
                 }
                 if ($service != '' && $tab != '' && $action == 'form') {
