@@ -62,6 +62,10 @@
 * FIXES TO DO         *
 ***********************
 
+TR : Valeur moyenne
+TR : "Vous trouverez de l'aide sur..." => "Vous trouverez de l'aide concernant..."
+TR : "Publié, Partagé..." => "Publiée, Partagée..."
+
 
 
 ***********************
@@ -69,6 +73,8 @@
 ***********************
 
 link to cron in faq
+
+History settings in Handbook
 
 15K/Station with standard
 

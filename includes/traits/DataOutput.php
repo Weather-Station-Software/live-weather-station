@@ -5738,7 +5738,7 @@ trait Output {
      * @since 3.4.0
      */
     public function admin_translations_shortcodes($attributes) {
-        $_attributes = shortcode_atts( array('min' => 0, 'max' => 100, 'style' => 'check', 'column' => 2), $attributes );
+        $_attributes = shortcode_atts( array('min' => 0, 'max' => 100, 'style' => 'multi-icon', 'column' => 2), $attributes );
         $min = (int)$_attributes['min'];
         $max = (int)$_attributes['max'];
         $column = $_attributes['column'];
@@ -5780,8 +5780,14 @@ trait Output {
             }
         }
         $result .= '</div>';
+        wp_enqueue_style('lws-table.css', LWS_PUBLIC_URL.'css/live-weather-station-table.min.css', array(), LWS_VERSION);
         if ($style == 'icon' || $style == 'multi-icon') {
-            wp_enqueue_style('flags', 'https://weather.station.software/extra/flags/css/flag-icon.min.css', null, true);
+            if (EnvManager::is_home_server()) {
+                wp_enqueue_style('flags', 'https://media.station.software/flags/css/flag-icon.min.css');
+            }
+            else {
+                wp_enqueue_style('flags', 'https://weather.station.software/extra/flags/css/flag-icon.min.css', null, true);
+            }
         }
         return $result;
     }

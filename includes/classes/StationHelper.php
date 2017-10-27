@@ -12,6 +12,13 @@ use WeatherStation\SDK\PWSWeather\Plugin\Pusher as PWS_Pusher;
 use WeatherStation\SDK\MetOffice\Plugin\Pusher as WOW_Pusher;
 use WeatherStation\SDK\WeatherUnderground\Plugin\Pusher as WUG_Pusher;
 
+use WeatherStation\Engine\Module\Maintainer as ModuleMaintainer;
+use WeatherStation\Engine\Module\Current\Gauge;
+use WeatherStation\Engine\Module\Current\Lcd;
+use WeatherStation\Engine\Module\Current\Meter;
+use WeatherStation\Engine\Module\Current\Textual;
+
+
 /**
  * This class builds elements of the station view.
  *
@@ -34,12 +41,28 @@ class Handling {
     private $version;
     private $screen;
     private $screen_id;
+    private $station_guid;
     private $station_id;
     private $station_name;
+    private $arg_service;
+    private $arg_tab;
+    private $arg_action;
     private $service = 'Backend';
     private $publishable = array(LWS_NETATMO_SID, LWS_LOC_SID, LWS_OWM_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WUG_SID, LWS_WFLW_SID);
     private $sharable = array(LWS_NETATMO_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WFLW_SID);
     private $publishing_proto = array('txt', 'raw', 'real', 'yow');
+
+    /**
+     * Register all available modules.
+     *
+     * @since 3.4.0
+     */
+    private function register_modules() {
+        Gauge::register_module('current');
+        Lcd::register_module('current');
+        Meter::register_module('current');
+        Textual::register_module('current');
+    }
 
     /**
      * Initialize the class and set its properties.
@@ -52,6 +75,57 @@ class Handling {
     public function __construct($Live_Weather_Station, $version, $station) {
         $this->Live_Weather_Station = $Live_Weather_Station;
         $this->version = $version;
+        $this->register_modules();
+        $this->get_args();
+        if ($this->station_guid != 0) {
+            $this->edit_station();
+            $station_information = $this->get_station_informations_by_guid($this->station_guid);
+            $this->station_name = $station_information['station_name'];
+            $this->station_id = $station_information['station_id'];
+            $this->screen = $station;
+            $pref = 'lws-station-';
+            if ($this->arg_action == 'shortcode') {
+                $pref .= 'shortcode-';
+                if ($this->arg_service != '') {
+                    $pref .= $this->arg_service . '-';
+                }
+            }
+            $this->screen_id = $pref . $this->station_guid;
+        }
+        if ($this->arg_action == 'manage') {
+            add_action('load-' . $station, array($this, 'station_add_options'));
+            add_action('admin_footer-' . $station, array($this, 'station_add_footer'));
+            add_filter('screen_settings', array($this, 'append_screen_settings'), 10, 2);
+        }
+        else {
+            add_action('admin_footer-' . $station, array($this, 'station_add_footer'));
+        }
+    }
+
+    /**
+     * Get the module array.
+     *
+     * @return array An array containing the available modules instanciated;
+     * @since 3.4.0
+     */
+    private function get_modules() {
+        $result = array();
+        foreach (ModuleMaintainer::get_modules($this->arg_tab) as $class){
+            $module = new $class($this->station_guid, $this->station_id, $this->station_name);
+            if ($this->arg_service == $module->get_id()) {
+                $module->select();
+            }
+            $result[] = $module;
+        }
+        return $result;
+    }
+
+    /**
+     * Get all the args view.
+     *
+     * @since 3.4.0
+     */
+    private function get_args() {
         if (!($id = filter_input(INPUT_GET, 'id'))) {
             if (!$id = filter_input(INPUT_POST, 'id')) {
                 $id = 0;
@@ -60,17 +134,19 @@ class Handling {
         if (strpos($id, ':') > 0) {
             $id = $this->get_station_guid_by_station_id($id);
         }
-        $this->station_id = $id;
-
-        if ($id != 0) {
-            $this->edit_station();
-            $this->station_name = $this->get_infos_station_name_by_guid($id);
-            $this->screen = $station;
-            $this->screen_id = 'lws-station-' . $id;
+        $this->station_guid = $id;
+        if (!($tab = filter_input(INPUT_POST, 'tab'))) {
+            $this->arg_tab = filter_input(INPUT_GET, 'tab');
         }
-        add_action('load-' . $station, array($this, 'station_add_options'));
-        add_action('admin_footer-' . $station, array($this, 'station_add_footer'));
-        add_filter('screen_settings', array($this, 'append_screen_settings'), 10, 2);
+        if (!($action = filter_input(INPUT_POST, 'action'))) {
+            $this->arg_action = filter_input(INPUT_GET, 'action');
+        }
+        if (!($service = filter_input(INPUT_POST, 'service'))) {
+            $this->arg_service = filter_input(INPUT_GET, 'service');
+        }
+        $this->arg_tab = strtolower($this->arg_tab);
+        $this->arg_action = strtolower($this->arg_action);
+        $this->arg_service = strtolower($this->arg_service);
     }
 
     /**
@@ -79,16 +155,7 @@ class Handling {
      * @since 3.0.0
      */
     public function edit_station() {
-        if (!($tab = filter_input(INPUT_POST, 'tab'))) {
-            $tab = filter_input(INPUT_GET, 'tab');
-        }
-        if (!($action = filter_input(INPUT_POST, 'action'))) {
-            $action = filter_input(INPUT_GET, 'action');
-        }
-        if (!($service = filter_input(INPUT_POST, 'service'))) {
-            $service = filter_input(INPUT_GET, 'service');
-        }
-        if ($service == 'station' && $tab == 'edit' && $action == 'manage') {
+        if ($this->arg_service == 'station' && $this->arg_tab == 'edit' && $this->arg_action == 'manage') {
             $station = array();
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'edit-station')) {
                 if (array_key_exists('guid', $_POST)) {
@@ -99,8 +166,7 @@ class Handling {
                     $wug = false;
                     $pws = false;
                     $wow = false;
-                    //Logger::debug(null, null, null, null, null, null, null, print_r($_POST, true));
-                    if (($guid != 0) && ($guid == $this->station_id)) {
+                    if (($guid != 0) && ($guid == $this->station_guid)) {
                         $station = $this->get_station_informations_by_guid($guid);
                         if (array_key_exists('submit-publish', $_POST)) {
                             foreach ($this->publishing_proto as $proto) {
@@ -204,12 +270,12 @@ class Handling {
                                         $service_name = 'PWS Weather';
                                     }
                                 }
-                               if (!$save) {
-                                   $message = __('Unable to activate data sharing with %s.', 'live-weather-station');
-                                   $message = sprintf($message, '<em>' . $service_name . '</em>');
-                                   add_settings_error('lws_nonce_error', 403, $message, 'error');
-                                   Logger::error($this->service, $service_name, $station['station_id'], $station['station_name'], null, null, null, 'Unable to share data with this service: ' . $result);
-                               }
+                                if (!$save) {
+                                    $message = __('Unable to activate data sharing with %s.', 'live-weather-station');
+                                    $message = sprintf($message, '<em>' . $service_name . '</em>');
+                                    add_settings_error('lws_nonce_error', 403, $message, 'error');
+                                    Logger::error($this->service, $service_name, $station['station_id'], $station['station_name'], null, null, null, 'Unable to share data with this service: ' . $result);
+                                }
                             }
                             catch (\Exception $ex) {
                                 //error_log(LWS_PLUGIN_NAME . ' / ' . LWS_VERSION . ' / ' . get_class() . ' / ' . get_class($this) . ' / Error code: ' . $ex->getCode() . ' / Error message: ' . $ex->getMessage());
@@ -289,7 +355,7 @@ class Handling {
         if ($screen->id !== $s->id) {
             return $current;
         }
-        if ($this->station_id == 0) {
+        if ($this->station_guid == 0) {
             return $current;
         }
         $current .= '<div id="lws_station" class="metabox-prefs custom-options-panel requires-autosave"><input type="hidden" name="_wpnonce-lws_station" value="' . wp_create_nonce('save_settings_lws_station') . '" />';
@@ -335,7 +401,7 @@ class Handling {
                     continue;
                 }
                 foreach ($wp_meta_boxes[$screen][$context][$priority] as $box) {
-                    if (false == $box || ! $box['title']) {
+                    if (false == $box || !$box['title']) {
                         continue;
                     }
                     if ('submitdiv' == $box['id'] || 'linksubmitdiv' == $box['id']) {
@@ -369,27 +435,45 @@ class Handling {
     public function get() {
         echo '<div class="wrap">';
         echo '<h1>' . $this->station_name . '</h1>';
+        include(LWS_ADMIN_DIR.'partials/StationTab.php');
         settings_errors();
-        echo '<form name="lws_station" method="post">';
-        echo '<div id="dashboard-widgets-wrap">';
-        wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false);
-        wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false);
-        echo '    <div id="dashboard-widgets" class="metabox-holder">';
-        echo '        <div id="postbox-container-1" class="postbox-container">';
-        do_meta_boxes($this->screen_id,'advanced',null);
-        echo '        </div>';
-        echo '        <div id="postbox-container-2" class="postbox-container">';
-        do_meta_boxes($this->screen_id,'side',null);
-        echo '        </div>';
-        echo '        <div id="postbox-container-3" class="postbox-container">';
-        do_meta_boxes($this->screen_id,'column3',null);
-        echo '        </div>';
-        echo '        <div id="postbox-container-4" class="postbox-container">';
-        do_meta_boxes($this->screen_id,'column4',null);
-        echo '        </div>';
-        echo '    </div>';
-        echo '</div>';
-        echo '</form>';
+        if ($this->arg_action == 'manage') {
+            echo '<form name="lws_station" method="post">';
+            echo '<div id="dashboard-widgets-wrap">';
+            wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false);
+            wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false);
+            echo '    <div id="dashboard-widgets" class="metabox-holder">';
+            echo '        <div id="postbox-container-1" class="postbox-container">';
+            do_meta_boxes($this->screen_id, 'advanced', null);
+            echo '        </div>';
+            echo '        <div id="postbox-container-2" class="postbox-container">';
+            do_meta_boxes($this->screen_id, 'side', null);
+            echo '        </div>';
+            echo '        <div id="postbox-container-3" class="postbox-container">';
+            do_meta_boxes($this->screen_id, 'column3', null);
+            echo '        </div>';
+            echo '        <div id="postbox-container-4" class="postbox-container">';
+            do_meta_boxes($this->screen_id, 'column4', null);
+            echo '        </div>';
+            echo '    </div>';
+            echo '</div>';
+            echo '</form>';
+        }
+        if ($this->arg_action == 'shortcode') {
+            $modules = $this->get_modules();
+            echo '<div id="dashboard-widgets-wrap">';
+            echo '    <div id="shortcodes-widgets" class="metabox-holder">';
+            echo '        <div id="shortcodes-container" class="postbox-container" style="width:100%">';
+            include(LWS_ADMIN_DIR.'partials/ChooseModuleType.php');
+            foreach ($modules as $module) {
+                if ($module->is_selected()) {
+                    $module->print_form();
+                }
+            }
+            echo '        </div>';
+            echo '    </div>';
+            echo '</div>';
+        }
         echo '</div>';
     }
 
@@ -399,14 +483,13 @@ class Handling {
      * @since 3.0.0
      */
     public function add_metaboxes() {
-        if ($this->station_id != 0) {
-            $data = $this->get_all_formated_datas($this->station_id);
+        if ($this->station_guid != 0) {
+            $data = $this->get_all_formated_datas($this->station_guid);
             $station = $data['station'];
             $gid = strtolower(str_replace(':', '', $station['station_id']));
             // Left column
             add_meta_box('lws-station', __('Station', 'live-weather-station' ), array($this, 'station_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
             add_meta_box('lws-location', __('Location', 'live-weather-station' ), array($this, 'location_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
-            add_meta_box('lws-shortcodes', __('Shortcodes', 'live-weather-station' ), array($this, 'shortcodes_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
             if (in_array($station['station_type'], $this->publishable)) {
                 add_meta_box('lws-datapublishing', __('Data publishing', 'live-weather-station' ), array($this, 'publishing_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
             }
@@ -474,62 +557,6 @@ class Handling {
             $station = $args['args']['station'];
         }
         include(LWS_ADMIN_DIR.'partials/StationPublishing.php');
-    }
-
-    /**
-     * Get content of the short codes widget box.
-     *
-     * @since 3.0.0
-     */
-    public function shortcodes_widget($n, $args) {
-        $station = array();
-        if (array_key_exists('station', $args['args'])) {
-            $station = $args['args']['station'];
-            $station_guid = $station['guid'];
-            $station_name = $station['station_name'];
-            $station_id = $station['station_id'];
-            $guids = array($station_guid);
-
-            include(LWS_ADMIN_DIR.'partials/StationShortcodes.php');
-
-            $js_array_textual = $this->get_all_stations_array(true, false, false, true, false, $guids);
-            $js_array_icon = $this->get_all_stations_array(true, false, false, true, false, $guids);
-            $js_array_lcd = $this->get_all_stations_array(false, true, true, false, false, $guids);
-            $js_array_justgage = $this->get_all_stations_array(false, false, true, true, true, $guids);
-            $js_array_steelmeter = $this->get_all_stations_array(false, false, true, true, false, $guids);
-
-            $js_array_justgage_design = $this->get_justgage_design_js_array();
-            $js_array_justgage_color = $this->get_justgage_color_js_array();
-            $js_array_justgage_pointer = $this->get_justgage_pointer_js_array();
-            $js_array_justgage_title = $this->get_justgage_title_js_array();
-            $js_array_justgage_unit = $this->get_justgage_unit_js_array();
-            $js_array_justgage_size = $this->get_size_js_array(true);
-            $js_array_justgage_background = $this->get_justgage_background_js_array();
-
-            $js_array_lcd_design = $this->get_lcd_design_js_array();
-            $js_array_lcd_size = $this->get_size_js_array();
-            $js_array_lcd_speed = $this->get_lcd_speed_js_array();
-
-            $js_array_steelmeter_design = $this->get_steelmeter_design_js_array();
-            $js_array_steelmeter_frame = $this->get_steelmeter_frame_js_array();
-            $js_array_steelmeter_background = $this->get_steelmeter_background_js_array();
-            $js_array_steelmeter_orientation = $this->get_steelmeter_orientation_js_array();
-            $js_array_steelmeter_glass = $this->get_steelmeter_glass_js_array();
-            $js_array_steelmeter_pointer_type = $this->get_steelmeter_pointer_type_js_array();
-            $js_array_steelmeter_pointer_color = $this->get_steelmeter_pointer_color_js_array();
-            $js_array_steelmeter_knob = $this->get_steelmeter_knob_js_array();
-            $js_array_steelmeter_lcd_color = $this->get_steelmeter_lcd_design_js_array();
-            $js_array_steelmeter_led_color = $this->get_steelmeter_led_color_js_array();
-            $js_array_steelmeter_minmax = $this->get_steelmeter_minmax_js_array();
-            $js_array_steelmeter_index_color = $this->get_steelmeter_index_color_js_array();
-            $js_array_steelmeter_index_style = $this->get_steelmeter_index_style_js_array();
-            $js_array_steelmeter_size = $this->get_size_js_array(false, true, false);
-
-            include(LWS_ADMIN_DIR.'partials/ShortcodesTextual.php');
-            include(LWS_ADMIN_DIR.'partials/ShortcodesJustgage.php');
-            include(LWS_ADMIN_DIR.'partials/ShortcodesLCD.php');
-            include(LWS_ADMIN_DIR.'partials/ShortcodesSteelmeter.php');
-        }
     }
 
     /**

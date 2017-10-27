@@ -28,6 +28,11 @@ spl_autoload_register(
         case 'WeatherStation\Data\Type\Description': $file = LWS_INCLUDES_DIR.'traits/DataTypeDescription.php'; break;
         case 'WeatherStation\Data\Unit\Conversion': $file = LWS_INCLUDES_DIR.'traits/DataUnitConversion.php'; break;
         case 'WeatherStation\Data\Unit\Description': $file = LWS_INCLUDES_DIR.'traits/DataUnitDescription.php'; break;
+        case 'WeatherStation\Engine\Module\Maintainer': $file = LWS_INCLUDES_DIR.'classes/Module.php'; break;
+        case 'WeatherStation\Engine\Module\Current\Gauge': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentGauge.php'; break;
+        case 'WeatherStation\Engine\Module\Current\Lcd': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentLcd.php'; break;
+        case 'WeatherStation\Engine\Module\Current\Meter': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentMeter.php'; break;
+        case 'WeatherStation\Engine\Module\Current\Textual': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentTextual.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\TXTGenerator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneAbstractTXTGenerator.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Framework': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneFramework.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Generator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneGenerator.php'; break;
