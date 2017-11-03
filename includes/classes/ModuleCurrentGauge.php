@@ -6,7 +6,7 @@ use WeatherStation\Data\Output;
 use WeatherStation\Data\Arrays\Generator;
 
 /**
- * Class to generate stickertags.txt text files.
+ * Class to generate parameter gauge form.
  *
  * @package Includes\Classes
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
@@ -20,6 +20,7 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         Output::get_module_type insteadof Generator;
         Output::get_fake_module_name insteadof Generator;
         Output::get_measurement_type insteadof Generator;
+        Output::get_dimension_name insteadof Generator;
     }
 
 
@@ -47,7 +48,7 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     protected function prepare() {
-        $js_array_justgage = $this->get_all_stations_array(false, false, true, true, true, array($this->station_guid));
+        $js_array_justgage = $this->get_all_stations_array(false, false, true, true, true, false, false, array($this->station_guid));
         if (array_key_exists($this->station_guid, $js_array_justgage)) {
             if (array_key_exists(2, $js_array_justgage[$this->station_guid])) {
                 $this->data = $js_array_justgage[$this->station_guid][2];
@@ -113,7 +114,7 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$( "#justgage-datas-measurement-' . $this->station_guid . '" ).change();});';
 
         $content .= '$("#justgage-datas-measurement-' . $this->station_guid . '").change(function() {';
-        $content .= '$( "#justgage-datas-design-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#justgage-datas-design-' . $this->station_guid . '" ).change();});';
         $content .= '$("#justgage-datas-design-' . $this->station_guid . '").change(function() {';
         $content .= '$("#justgage-datas-color-' . $this->station_guid . '" ).change();});';
         $content .= '$("#justgage-datas-color-' . $this->station_guid . '").change(function() {';

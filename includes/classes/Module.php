@@ -398,7 +398,7 @@ abstract class Maintainer {
         $result .= '    $.each($(".lws-placeholder"), function() {$(this).toggle(!wrapped);});';
         $result .= '}).resize();';
         // data
-        $result .= 'var js_array_' . $this->module_id . '_' . $this->station_guid . ' = ' . json_encode($this->data) . ';';
+        $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_' . $this->station_guid . ' = ' . json_encode($this->data) . ';';
         // content
         $result .= $content;
         $result .= '});';
@@ -433,16 +433,54 @@ abstract class Maintainer {
     }
 
     /**
-     * Print the error box for data unavailable.
+     * Get the error box for data unavailable.
      *
+     * @return string The box, ready to be printed.
      * @since 3.4.0
      */
-    private function print_error() {
+    private function get_no_collect_box() {
+        $title = __('No data compilation', 'live-weather-station');
+        $url = get_admin_page_url('lws-settings', null, 'history');
+        $s = sprintf('<a href="%s">%s</a>', $url, __('right option', 'live-weather-station'));
+        $content = sprintf(__('%s is not set to compile daily data and, for this reason, it is not possible to generate shortcodes for these data. To compile daily data, please set the %s.', 'live-weather-station' ), LWS_PLUGIN_NAME, $s);
+        return $this->get_box('lws-error-id', $title, $content);
+    }
+
+    /**
+     * Get the error box for data unavailable.
+     *
+     * @return string The box, ready to be printed.
+     * @since 3.4.0
+     */
+    private function get_no_build_box() {
+        $title = __('No data compilation', 'live-weather-station');
+        $url = get_admin_page_url('lws-settings', null, 'history');
+        $s = sprintf('<a href="%s">%s</a>', $url, __('right option', 'live-weather-station'));
+        $content = sprintf(__('%s is not set to compile historical data and, for this reason, it is not possible to generate shortcodes for these data. To compile historical data, please set the %s.', 'live-weather-station' ), LWS_PLUGIN_NAME, $s);
+        return $this->get_box('lws-error-id', $title, $content);
+    }
+
+    /**
+     * Print the error box for data unavailable.
+     *
+     * @param integer $id Optional. Type of the error.
+     * @since 3.4.0
+     */
+    private function print_error($id=0) {
         $result = '';
         $result .= '<div class="main-boxes-container">';
         $result .= '<div class="row-boxes-container">';
         $result .= '<div class="item-boxes-container" id="lws-error">';
-        $result .= $this->get_error_box();
+        switch ($id) {
+            case 1:
+                $result .= $this->get_no_collect_box();
+                break;
+            case 2:
+                $result .= $this->get_no_build_box();
+                break;
+            default:
+                $result .= $this->get_error_box();
+        }
         $result .= '</div>';
         $result .= '</div>';
         $result .= '</div>';
@@ -534,11 +572,17 @@ abstract class Maintainer {
      */
     public function print_form() {
         $this->datasource_title = __('1. Select data sources', 'live-weather-station');
-        $this->parameter_title = __('2. Set the design parameters', 'live-weather-station');
+        $this->parameter_title = __('2. Set the general design parameters', 'live-weather-station');
         $this->preview_title = __('3. Verify the generated output', 'live-weather-station');
         $this->prepare();
         if (is_null($this->data)) {
             $this->print_error();
+        }
+        elseif ($this->module_type() == 'daily' && !(bool)get_option('live_weather_station_collect_history')) {
+            $this->print_error(1);
+        }
+        elseif ($this->module_type() == 'yearly' && !(bool)get_option('live_weather_station_build_history')) {
+            $this->print_error(2);
         }
         else {
             $this->print_boxes();

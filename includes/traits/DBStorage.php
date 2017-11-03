@@ -35,7 +35,7 @@ trait Storage {
             'partial_absolute_humidity', 'saturation_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 
             'soil_temperature', 'leaf_wetness', 'moisture_content', 'moisture_tension', 'evapotranspiration',
             'windangle', 'gustangle', 'windstrength', 'guststrength', 'rain', 'rain_hour_aggregated',
-            'rain_day_aggregated', 'strike_count', 'strike_instant', 'weather');
+            'rain_day_aggregated', 'strike_count', 'strike_instant', 'weather', 'dew_point', 'frost_point');
 
 
     /**

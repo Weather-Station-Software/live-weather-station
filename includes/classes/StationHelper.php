@@ -17,6 +17,8 @@ use WeatherStation\Engine\Module\Current\Gauge;
 use WeatherStation\Engine\Module\Current\Lcd;
 use WeatherStation\Engine\Module\Current\Meter;
 use WeatherStation\Engine\Module\Current\Textual;
+use WeatherStation\Engine\Module\Daily\Line as DailyLine;
+use WeatherStation\Engine\Module\Daily\Lines as DailyLines;
 
 
 /**
@@ -35,6 +37,7 @@ class Handling {
         Output::get_module_type insteadof Generator;
         Output::get_fake_module_name insteadof Generator;
         Output::get_measurement_type insteadof Generator;
+        Output::get_dimension_name insteadof Generator;
     }
 
     private $Live_Weather_Station;
@@ -58,10 +61,12 @@ class Handling {
      * @since 3.4.0
      */
     private function register_modules() {
+        Textual::register_module('current');
         Gauge::register_module('current');
         Lcd::register_module('current');
         Meter::register_module('current');
-        Textual::register_module('current');
+        DailyLine::register_module('daily');
+        DailyLines::register_module('daily');
     }
 
     /**
@@ -105,7 +110,7 @@ class Handling {
     /**
      * Get the module array.
      *
-     * @return array An array containing the available modules instanciated;
+     * @return array An array containing the available instanciated modules;
      * @since 3.4.0
      */
     private function get_modules() {
@@ -460,6 +465,13 @@ class Handling {
             echo '</form>';
         }
         if ($this->arg_action == 'shortcode') {
+
+            wp_enqueue_style('nv.d3.css');
+            wp_enqueue_script('d3.v3.js');
+            wp_enqueue_script('nv.d3.v3.js');
+            wp_enqueue_script('colorbrewer.js');
+            wp_enqueue_script('spin.js');
+
             $modules = $this->get_modules();
             echo '<div id="dashboard-widgets-wrap">';
             echo '    <div id="shortcodes-widgets" class="metabox-holder">';

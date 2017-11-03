@@ -15,6 +15,7 @@
  * 3.x - Number formating
  * 3.x - Historical data / graph
  * 3.x - Historical data import
+ * 3.x - CDN for common scripts ans css
  * 4.x - Agricultural indexes (EMC for grains)
  * 4.x - 4 hours forecasting
  * 4.x - 5 days forecasting
@@ -65,6 +66,8 @@
 TR : Valeur moyenne
 TR : "Vous trouverez de l'aide sur..." => "Vous trouverez de l'aide concernant..."
 TR : "Publié, Partagé..." => "Publiée, Partagée..."
+TR : "Purple" => "Violet"
+add unit dimension in textual shortcode
 
 
 
