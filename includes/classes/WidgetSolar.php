@@ -36,7 +36,7 @@ class Solar extends \WP_Widget {
         load_plugin_textdomain( 'live-weather-station' );
         parent::__construct(
             'Live_Weather_Station_Widget_Solar',
-            __( 'Solar' , 'live-weather-station'),
+            '<>☀ ' . __( 'Solar' , 'live-weather-station'),
             array( 'description' => sprintf(__('Display solar conditions recorded by a station added to %s.' , 'live-weather-station'), LWS_PLUGIN_NAME))
         );
         if ( is_admin() || is_blog_admin()) {

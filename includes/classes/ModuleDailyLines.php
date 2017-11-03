@@ -1,19 +1,19 @@
 <?php
 
-namespace WeatherStation\Engine\Module\Current;
+namespace WeatherStation\Engine\Module\Daily;
 
 use WeatherStation\Data\Output;
 use WeatherStation\Data\Arrays\Generator;
 
 /**
- * Class to generate parameter textual form.
+ * Class to generate parameter daily lines form.
  *
  * @package Includes\Classes
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.4.0
  */
-class Textual extends \WeatherStation\Engine\Module\Maintainer {
+class Lines extends \WeatherStation\Engine\Module\Maintainer {
 
     use Output, Generator {
         Output::get_service_name insteadof Generator;
@@ -22,6 +22,12 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         Output::get_measurement_type insteadof Generator;
         Output::get_dimension_name insteadof Generator;
     }
+
+
+
+    ////////////////////////
+    /// MEAN, MEDIAN, MIDDLE
+    /////////////////////////
 
 
     /**
@@ -33,10 +39,10 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     public function __construct($station_guid, $station_id, $station_name) {
-        $this->module_id = 'textual';
-        $this->module_name = ucfirst(__('textual data', 'live-weather-station'));
-        $this->module_hint = __('Display current data as textual values.', 'live-weather-station');
-        $this->module_icon = 'ch fa-lg fa-fw ch-note-2';
+        $this->module_id = 'daily-lines';
+        $this->module_name = ucfirst(__('line series', 'live-weather-station'));
+        $this->module_hint = __('Display daily data as multiple lines chart. Allows to view, side by side on the same graph, several types of measurement having the same unit.', 'live-weather-station');
+        $this->module_icon = 'ch fa-lg fa-fw ch-line-chart-7';
         $this->layout = '12-3-4';
         parent::__construct($station_guid, $station_id, $station_name);
     }
@@ -47,7 +53,7 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     protected function prepare() {
-        $js_array_textual = $this->get_all_stations_array(true, false, false, true, false, false, false, array($this->station_guid));
+        /*$js_array_textual = $this->get_all_stations_array(true, false, false, true, false, array($this->station_guid));
         if (array_key_exists($this->station_guid, $js_array_textual)) {
             if (array_key_exists(2, $js_array_textual[$this->station_guid])) {
                 $this->data = $js_array_textual[$this->station_guid][2];
@@ -55,7 +61,7 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         }
         else {
             $this->data = null;
-        }
+        }*/
     }
 
     /**
@@ -65,12 +71,13 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     protected function get_datasource() {
-        $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
+        /*$content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
         $content .= $this->get_assoc_option_select('textual-datas-module-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
         $content .= $this->get_neutral_option_select('textual-datas-measurement-'. $this->station_guid, __('Measurement', 'live-weather-station'));
         $content .= $this->get_neutral_option_select('textual-datas-element-'. $this->station_guid, __('Element', 'live-weather-station'));
         $content .= '</tbody></table>';
-        return $this->get_box('lws-datasource-id', $this->datasource_title, $content);
+        return $this->get_box('lws-datasource-id', $this->datasource_title, $content);*/
+        return '';
     }
 
     /**
@@ -80,12 +87,13 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     protected function get_parameters() {
-        $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
+        /*$content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
         $content .= $this->get_neutral_option_select('textual-datas-format-'. $this->station_guid, __('Format', 'live-weather-station'));
         $content .= $this->get_placeholder_option_select();
         $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
-        return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
+        return $this->get_box('lws-parameter-id', $this->parameter_title, $content);*/
+        return '';
     }
 
     /**
@@ -95,14 +103,14 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     protected function get_script() {
-        $content = '';
+        /*$content = '';
         $content .= '$("#textual-datas-module-' . $this->station_guid . '").change(function() {';
         $content .= 'var js_array_textual_measurement_' . $this->station_guid . ' = js_array_textual_' . $this->station_guid . '[$(this).val()][2];';
         $content .= '$("#textual-datas-measurement-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_textual_measurement_' . $this->station_guid . ').each(function (i) {';
         $content .= '$("#textual-datas-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_textual_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
         $content .= '$( "#textual-datas-measurement-' . $this->station_guid . '" ).change();});';
-        
+
         $content .= '$("#textual-datas-measurement-' . $this->station_guid . '").change(function() {';
         $content .= 'var js_array_textual_element_' . $this->station_guid . ' = js_array_textual_' . $this->station_guid . '[$("#textual-datas-module-' . $this->station_guid . '").val()][2][$(this).val()][2];';
         $content .= '$("#textual-datas-element-' . $this->station_guid . '").html("");';
@@ -129,8 +137,9 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$("#textual-datas-shortcode-' . $this->station_guid . '").html(shortcode);});';
 
         $content .= '$("#textual-datas-module-' . $this->station_guid . '" ).change();';
-        
-        return $this->get_script_box($content);
+
+        return $this->get_script_box($content);*/
+        return '';
     }
 
     /**
@@ -140,9 +149,10 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     protected function get_preview() {
-        $id = 'textual-datas-output-'. $this->station_guid;
+        /*$id = 'textual-datas-output-'. $this->station_guid;
         $content = '<textarea readonly rows="1" style="width:100%;font-weight:bold;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="' . $id . '"></textarea>';
-        return $this->get_box('lws-preview-id', $this->preview_title, $content);
+        return $this->get_box('lws-preview-id', $this->preview_title, $content);*/
+        return '';
     }
 }
 

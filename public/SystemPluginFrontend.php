@@ -69,6 +69,7 @@ class Frontend {
         wp_register_script('nv.d3.v3.js', LWS_PUBLIC_URL.'js/nv.d3.v3.min.js', array('d3.v3.js'), $this->version, true );
         wp_register_script('cal-heatmap.js', LWS_PUBLIC_URL.'js/cal-heatmap.min.js', array('d3.v3.js'), $this->version, true );
         wp_register_script('colorbrewer.js', LWS_PUBLIC_URL.'js/colorbrewer.min.js', array(), $this->version, true );
+        wp_register_script('spin.js', LWS_PUBLIC_URL.'js/spin.min.js', array(), $this->version, true );
     }
 
     /**
@@ -90,11 +91,62 @@ class Frontend {
     }
 
 	/**
-	 * Callback method for querying datas by the lcd control.
+	 * Callback method for querying data for graphs.
 	 *
-	 * @since 1.0.0
+	 * @since 3.4.0
 	 */
-	public function lws_query_lcd_datas_callback() {
+	public function lws_graph_data_callback() {
+        $attributes = array();
+        foreach ($this->graph_allowed_parameter as $param) {
+            if (array_key_exists($param, $_POST)) {
+                $attributes[$param] = wp_kses($_POST[$param], array());
+            }
+        }
+        for ($i = 1; $i <= 8; $i++) {
+            if (array_key_exists('device_id_'.$i, $_POST)) {
+                $attributes['device_id_'.$i] = wp_kses($_POST['device_id_'.$i], array());
+                foreach ($this->graph_allowed_serie as $param) {
+                    if (array_key_exists($param.'_'.$i, $_POST)) {
+                        $attributes[$param.'_'.$i] = wp_kses($_POST[$param.'_'.$i], array());
+                    }
+                }
+            }
+        }
+        $result = $this->graph_query($attributes, true);
+        exit ($result['values']);
+    }
+
+    /**
+     * Callback method for querying code to inject for graphs.
+     *
+     * @since 3.4.0
+     */
+    public function lws_graph_code_callback() {
+        $attributes = array();
+        foreach ($this->graph_allowed_parameter as $param) {
+            if (array_key_exists($param, $_POST)) {
+                $attributes[$param] = wp_kses($_POST[$param], array());
+            }
+        }
+        for ($i = 1; $i <= 8; $i++) {
+            if (array_key_exists('device_id_'.$i, $_POST)) {
+                $attributes['device_id_'.$i] = wp_kses($_POST['device_id_'.$i], array());
+                foreach ($this->graph_allowed_serie as $param) {
+                    if (array_key_exists($param.'_'.$i, $_POST)) {
+                        $attributes[$param.'_'.$i] = wp_kses($_POST[$param.'_'.$i], array());
+                    }
+                }
+            }
+        }
+        exit ($this->graph_shortcodes($attributes));
+    }
+
+    /**
+     * Callback method for querying datas by the lcd control.
+     *
+     * @since 1.0.0
+     */
+    public function lws_query_lcd_datas_callback() {
         $_attributes = array();
         $_attributes['device_id'] = wp_kses($_POST['device_id'], array());
         $_attributes['module_id'] = wp_kses($_POST['module_id'], array());

@@ -55,6 +55,7 @@ class Admin {
         FormsRenderer::get_module_type insteadof Arrays;
         FormsRenderer::get_fake_module_name insteadof Arrays;
         FormsRenderer::get_measurement_type insteadof Arrays;
+        FormsRenderer::get_dimension_name insteadof Arrays;
     }
 
 	private $Live_Weather_Station;
@@ -117,6 +118,7 @@ class Admin {
         wp_enqueue_script('nv.d3.v3.js', LWS_PUBLIC_URL.'js/nv.d3.v3.min.js', array('d3.v3.js'), $this->version, true );
         wp_enqueue_script('cal-heatmap.js', LWS_PUBLIC_URL.'js/cal-heatmap.min.js', array('d3.v3.js'), $this->version, true );
         wp_enqueue_script('colorbrewer.js', LWS_PUBLIC_URL.'js/colorbrewer.min.js', array(), $this->version, true );
+        wp_register_script('spin.js', LWS_PUBLIC_URL.'js/spin.min.js', array(), $this->version, true );
 
     }
 

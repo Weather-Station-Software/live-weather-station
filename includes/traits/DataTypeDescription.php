@@ -559,4 +559,68 @@ trait Description {
         }
         return $result;
     }
+    /**
+     * Get the dimension name in plain text.
+     *
+     * @param string $type The dimension type.
+     * @return  string  The name of the dimension in plain text.
+     * @since 3.4.0
+     */
+    protected function get_dimension_name($type) {
+        switch (strtolower($type)) {
+            case 'percentage':
+                $result =  __('Percentage', 'live-weather-station');
+                break;
+            case 'length':
+                $result =  __('Length', 'live-weather-station');
+                break;
+            case 'concentration-m':
+            case 'concentration-b':
+                $result =  __('Concentration', 'live-weather-station');
+                break;
+            case 'area-density':
+                $result =  __('Area density', 'live-weather-station');
+                break;
+            case 'count':
+            case 'base-11':
+            case 'dimensionless':
+                $result =  __('Dimensionless', 'live-weather-station');
+                break;
+            case 'angle':
+                $result =  __('Angle', 'live-weather-station');
+                break;
+            case 'speed':
+                $result =  __('Speed', 'live-weather-station');
+                break;
+            case 'pressure':
+            case 'pressure-h':
+                $result =  __('Pressure', 'live-weather-station');
+                break;
+            case 'temperature':
+                $result =  __('Temperature', 'live-weather-station');
+                break;
+            case 'duration':
+                $result =  __('Duration', 'live-weather-station');
+                break;
+            case 'density':
+                $result =  __('Density', 'live-weather-station');
+                break;
+            case 'humidity':
+                $result =  __('Humidity', 'live-weather-station');
+                break;
+            case 'irradiance':
+                $result =  __('Power flux density', 'live-weather-station');
+                break;
+            case 'illuminance':
+                $result =  __('Luminous flux density', 'live-weather-station');
+                break;
+            case 'specific-energy':
+            case 'specific-energy-k':
+                $result =  __('Specific energy', 'live-weather-station');
+                break;
+            default:
+                $result =  __('Unknown', 'live-weather-station');
+        }
+        return $result;
+    }
 }

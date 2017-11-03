@@ -5,6 +5,7 @@ namespace WeatherStation\Data\Arrays;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\Type\Description as Type_Description;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector;
+use WeatherStation\Data\History\Builder as History;
 
 /**
  * Arrays generator for javascript conversion.
@@ -138,6 +139,8 @@ trait Generator {
         $result[2] = array (__('Unit symbol or abbreviation', 'live-weather-station'), 'type-unit', $sample[2]);
         $result[3] = array (__('Unit with complement (if any)', 'live-weather-station'), 'type-unit-full', $sample[3]);
         $result[4] = array (__('Unit name', 'live-weather-station'), 'type-unit-long', $sample[4]);
+        $result[5] = array (__('Raw dimension', 'live-weather-station'), 'type-raw-dimension', $sample[5]);
+        $result[6] = array (__('Formated dimension', 'live-weather-station'), 'type-formated-dimension', $sample[6]);
         return $result;
     }
 
@@ -300,7 +303,7 @@ trait Generator {
         $result[] = array(__('Module name', 'live-weather-station'), 'module_name', $this->get_td_module_name_format(array($ref['module_name'])));
         $result[] = array(__('Measurement timestamp', 'live-weather-station'), 'measure_timestamp', $this->get_td_time_format(array($ts, $this->get_date_from_mysql_utc($ts, $ref['loc_timezone']), $this->get_time_from_mysql_utc($ts, $ref['loc_timezone']), $this->get_time_diff_from_mysql_utc($ts))));
         $unit = $this->output_unit($mtype, false, $ref['module_type']);
-        $result[] = array(__('Measurement type', 'live-weather-station'), 'measure_type', $this->get_td_measure_type_format(array($mtype,$this->get_measurement_type($mtype, false, $ref['module_type']),$unit['unit'],$unit['full'],$unit['long'])));
+        $result[] = array(__('Measurement type', 'live-weather-station'), 'measure_type', $this->get_td_measure_type_format(array($mtype,$this->get_measurement_type($mtype, false, $ref['module_type']),$unit['unit'],$unit['full'],$unit['long'],$unit['dimension'], $this->get_dimension_name($unit['dimension']))));
         switch ($mtype) {
             case 'battery':
             case 'signal':
@@ -385,10 +388,12 @@ trait Generator {
      * @param boolean $reduced The array is reduced. i.e. contains only modules and measures.
      * @param boolean $computed The array must contain computed data types.
      * @param boolean $mono The array must contain min/max.
+     * @param boolean $daily Optional. The array must contain daily data types only.
+     * @param boolean $historical Optional. The array must contain historical data types only.
      * @return array An array containing the module measure lines.
      * @since 3.0.0
      */
-    private function get_module_array($ref, $data, $full=false, $aggregated=false, $reduced=false, $computed=false, $mono=false) {
+    private function get_module_array($ref, $data, $full=false, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false) {
         $result = array();
         $netatmo = OWM_Base_Collector::is_netatmo_station($ref['device_id']);
         $wug = OWM_Base_Collector::is_wug_station($ref['device_id']);
@@ -750,26 +755,41 @@ trait Generator {
                 }
                 break;
             case 'napollution': // Virtual module for pollution
-                if ($aggregated) {
-                    $result[] = array($this->get_measurement_type('aggregated'), 'aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'aggregated')));
-                }
-                if ($full) {
-                    $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
-                }
-                if ($full) {
-                    $result[] = array($this->get_measurement_type('firmware'), 'firmware', ($reduced ? array() : $this->get_measure_array($ref, $data, 'firmware')));
-                }
-                $result[] = array($this->get_measurement_type('o3'), 'o3', ($reduced ? array() : $this->get_measure_array($ref, $data, 'o3')));
-                if ($full ) {
-                    $result[] = array($this->get_measurement_type('o3_distance'), 'o3_distance', ($reduced ? array() : $this->get_measure_array($ref, $data, 'o3_distance')));
-                }
-                $result[] = array($this->get_measurement_type('co'), 'co', ($reduced ? array() : $this->get_measure_array($ref, $data, 'co')));
-                if ($full ) {
-                    $result[] = array($this->get_measurement_type('co_distance'), 'co_distance', ($reduced ? array() : $this->get_measure_array($ref, $data, 'co_distance')));
-                }
+                    if ($aggregated) {
+                        $result[] = array($this->get_measurement_type('aggregated'), 'aggregated', ($reduced ? array() : $this->get_measure_array($ref, $data, 'aggregated')));
+                    }
+                    if ($full) {
+                        $result[] = array($this->get_measurement_type('last_refresh'), 'last_refresh', ($reduced ? array() : $this->get_measure_array($ref, $data, 'last_refresh')));
+                    }
+                    if ($full) {
+                        $result[] = array($this->get_measurement_type('firmware'), 'firmware', ($reduced ? array() : $this->get_measure_array($ref, $data, 'firmware')));
+                    }
+                    $result[] = array($this->get_measurement_type('o3'), 'o3', ($reduced ? array() : $this->get_measure_array($ref, $data, 'o3')));
+                    if ($full) {
+                        $result[] = array($this->get_measurement_type('o3_distance'), 'o3_distance', ($reduced ? array() : $this->get_measure_array($ref, $data, 'o3_distance')));
+                    }
+                    $result[] = array($this->get_measurement_type('co'), 'co', ($reduced ? array() : $this->get_measure_array($ref, $data, 'co')));
+                    if ($full) {
+                        $result[] = array($this->get_measurement_type('co_distance'), 'co_distance', ($reduced ? array() : $this->get_measure_array($ref, $data, 'co_distance')));
+                    }
                 break;
         }
-        return array ($ref['module_name'], $ref['module_id'], $result);
+        if ($daily || $historical) {
+            $temp = array();
+            $h = new History(LWS_PLUGIN_NAME, LWS_VERSION);
+            foreach ($result as $item) {
+                if ($h->is_allowed_measurement($item[1])) {
+                    $temp[] = $item;
+                }
+            }
+            $result = $temp;
+        }
+        if (!empty($result)) {
+            return array ($ref['module_name'], $ref['module_id'], $result);
+        }
+        else {
+            return array();
+        }
     }
 
     /**
@@ -781,10 +801,12 @@ trait Generator {
      * @param boolean $reduced Optional. The array is reduced. i.e. contains only modules and measures.
      * @param boolean $computed Optional. The array must contain computed data types.
      * @param boolean $mono Optional. The array must contain min/max.
+     * @param boolean $daily Optional. The array must contain daily data types only.
+     * @param boolean $historical Optional. The array must contain historical data types only.
      * @return array An array containing the available station's datas ready to convert to a JS array.
      * @since 3.0.0
      */
-    protected function get_station_array($guid, $full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false) {
+    protected function get_station_array($guid, $full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false) {
         $data = $this->get_all_formated_datas($guid, false, true);
         $result = array();
         $modules = array();
@@ -817,7 +839,10 @@ trait Generator {
                 $ref['module_type'] = 'aggregated';
                 $ref['module_name'] = __('[all modules]', 'live-weather-station');
                 $ref['loc_timezone'] = $data['station']['loc_timezone'];
-                $modules[] = $this->get_module_array($ref, $mainbase, $full, $aggregated, $reduced, $computed, $mono);
+                $m = $this->get_module_array($ref, $mainbase, $full, $aggregated, $reduced, $computed, $mono, $daily, $historical);
+                if (!empty($m)){
+                    $modules[] = $m;
+                }
             }
             foreach ($data['module'] as $module) {
                 $ref = array();
@@ -836,7 +861,10 @@ trait Generator {
                 if (($module['module_type'] == 'NAComputed') && !$computed) {
                     continue;
                 }
-                $modules[] = $this->get_module_array($ref, $module, $full, $aggregated, $reduced, $computed, $mono);
+                $m = $this->get_module_array($ref, $module, $full, $aggregated, $reduced, $computed, $mono, $daily, $historical);
+                if (!empty($m)){
+                    $modules[] = $m;
+                }
             }
         }
         $result[] = $modules;
@@ -851,11 +879,13 @@ trait Generator {
      * @param boolean $reduced Optional. The array is reduced. i.e. contains only modules and measures.
      * @param boolean $computed Optional. The array must contain computed data types.
      * @param boolean $mono Optional. The array must contain min/max.
+     * @param boolean $daily Optional. The array must contain daily data types only.
+     * @param boolean $historical Optional. The array must contain historical data types only.
      * @param array $guids Optional. An array of guids to get. Get data for all guids if not provided.
      * @return array An array containing the available station's datas ready to convert to a JS array.
      * @since 3.0.0
      */
-    protected function get_all_stations_array($full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $guids=array()) {
+    protected function get_all_stations_array($full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $guids=array()) {
         $result = array();
         $stations = $this->get_stations_list();
         if (count($stations) > 0) {
@@ -867,7 +897,7 @@ trait Generator {
                     $todo = true;
                 }
                 if ($todo && ($station['comp_bas'] + $station['comp_ext'] + $station['comp_int'] + $station['comp_xtd'] + $station['comp_vrt']) > 0) {
-                    $result[$station['guid']] = $this->get_station_array($station['guid'], $full, $aggregated, $reduced, $computed, $mono);
+                    $result[$station['guid']] = $this->get_station_array($station['guid'], $full, $aggregated, $reduced, $computed, $mono, $daily, $historical);
                 }
             }
         }
@@ -1385,6 +1415,7 @@ trait Generator {
         $result[] = array('BLACK',  __('Black', 'live-weather-station'));
         return $result;
     }
+
     /**
      * Get the radial indicator style options for the steel meter.
      *
@@ -1414,6 +1445,224 @@ trait Generator {
         $result[] = array('invcomplementary-liquid',  __('Inverted complementary - Liquid', 'live-weather-station'));
         $result[] = array('invcomplementary-soft',  __('Inverted complementary - Soft', 'live-weather-station'));
         $result[] = array('invcomplementary-hard',  __('Inverted complementary - Hard', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get guideline array.
+     *
+     * @return array An array containing the guideline ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_guideline_js_array() {
+        $result = array();
+        $result[] = array('standard',  __('Standard', 'live-weather-station'));
+        $result[] = array('interactive',  __('Interactive', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get time scale array.
+     *
+     * @return array An array containing the time scale options ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_x_scale_js_array() {
+        $result = array();
+        $result[] = array('auto',  __('Automatic', 'live-weather-station'));
+        $result[] = array('adaptative',  __('Adaptative', 'live-weather-station'));
+        $result[] = array('fixed',  __('Fixed', 'live-weather-station'));
+        $result[] = array('none',  __('None', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get time scale array.
+     *
+     * @return array An array containing the time scale options ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_y_scale_js_array() {
+        $result = array();
+        $result[] = array('auto',  __('Automatic', 'live-weather-station'));
+        $result[] = array('adaptative',  __('Adaptative', 'live-weather-station'));
+        $result[] = array('fixed',  __('Fixed', 'live-weather-station'));
+        $result[] = array('boundaries',  __('Thresholds limits', 'live-weather-station'));
+        $result[] = array('alarm',  __('Thresholds alarms', 'live-weather-station'));
+        $result[] = array('top',  __('0-based - top', 'live-weather-station'));
+        $result[] = array('bottom',  __('0-based - bottom', 'live-weather-station'));
+        $result[] = array('none',  __('None', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get dot style array.
+     *
+     * @return array An array containing the dot style ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_dot_style_js_array() {
+        $result = array();
+        $result[] = array('none',  __('None', 'live-weather-station'));
+        $result[] = array('small-dot',  __('Small dot', 'live-weather-station'));
+        $result[] = array('large-dot',  __('Large dot', 'live-weather-station'));
+        $result[] = array('small-circle',  __('Small circle', 'live-weather-station'));
+        $result[] = array('large-circle',  __('Large circle', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get line style array.
+     *
+     * @return array An array containing the line style ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_line_style_js_array() {
+        $result = array();
+        $result[] = array('solid',  __('Solid', 'live-weather-station'));
+        $result[] = array('dotted',  __('Dotted', 'live-weather-station'));
+        $result[] = array('dashed',  __('Dashed', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get line mode array.
+     *
+     * @return array An array containing the line mode ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_line_mode_js_array() {
+        $result = array();
+        $result[] = array('transparent',  __('Transparent', 'live-weather-station'));
+        $result[] = array('line',  __('Line', 'live-weather-station'));
+        $result[] = array('area',  __('Array', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get line size array.
+     *
+     * @return array An array containing the line size ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_line_size_js_array() {
+        $result = array();
+        $result[] = array('thin',  __('Thin', 'live-weather-station'));
+        $result[] = array('regular',  __('Regular', 'live-weather-station'));
+        $result[] = array('thick',  __('Thick', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get graph size array.
+     *
+     * @return array An array containing the line size ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_graph_size_js_array() {
+        $result = array();
+        $result[] = array('150px',  __('XS', 'live-weather-station'));
+        $result[] = array('200px',  __('S', 'live-weather-station'));
+        $result[] = array('300px',  __('M', 'live-weather-station'));
+        $result[] = array('400px',  __('L', 'live-weather-station'));
+        $result[] = array('555px',  __('XL', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get graph template array.
+     *
+     * @return array An array containing the graph templates ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_graph_template_js_array() {
+        $result = array();
+        $result[] = array('neutral',  __('Neutral', 'live-weather-station'));
+        $result[] = array('night',  __('Night', 'live-weather-station'));
+        $result[] = array('bw',  __('Black & white', 'live-weather-station'));
+        $result[] = array('bwi',  __('Black & white - inverted', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get interpolation methods array.
+     *
+     * @return array An array containing the interpotaion methods ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_interpolation_js_array() {
+        $result = array();
+        $result[] = array('linear',  __('Linear', 'live-weather-station'));
+        $result[] = array('monotone',  __('Monotone', 'live-weather-station'));
+        $result[] = array('bundle',  __('Bundle', 'live-weather-station'));
+        $result[] = array('step-before',  __('Step before', 'live-weather-station'));
+        $result[] = array('step-after',  __('Step after', 'live-weather-station'));
+        $result[] = array('basis',  __('Basis', 'live-weather-station'));
+        $result[] = array('basis-open',  __('Basis - Open', 'live-weather-station'));
+        $result[] = array('basis-closed',  __('Basis - Closed', 'live-weather-station'));
+        $result[] = array('cardinal',  __('Cardinal', 'live-weather-station'));
+        $result[] = array('cardinal-open',  __('Cardinal - Open', 'live-weather-station'));
+        $result[] = array('cardinal-closed',  __('Cardinal - Closed', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get colors array.
+     *
+     * @return array An array containing ColorBrewer options ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_colorbrewer_js_array() {
+        $result = array();
+        $sep = '-';
+        $dsq =  __('sequential', 'live-weather-station');
+        $ddv =  __('diverging', 'live-weather-station');
+        $dql =  __('qualitative', 'live-weather-station');
+        $tmh =  __('multi-hue', 'live-weather-station');
+        $tsh =  __('single hue', 'live-weather-station');
+        $yl =  __('Yellow', 'live-weather-station');
+        $gn =  __('Green', 'live-weather-station');
+        $bu =  __('Blue', 'live-weather-station');
+        $pu =  __('Purple', 'live-weather-station');
+        $or =  __('Orange', 'live-weather-station');
+        $rd =  __('Red', 'live-weather-station');
+        $br =  __('Brown', 'live-weather-station');
+        $gr =  __('Grey', 'live-weather-station');
+        $pi =  __('Pink', 'live-weather-station');
+        $sp =  __('Spectral', 'live-weather-station');
+        $result[] = array('Blues', $bu . ' (' . $dsq . ', ' . $tsh . ')');
+        $result[] = array('Greens', $gn . ' (' . $dsq . ', ' . $tsh . ')');
+        $result[] = array('Oranges', $or . ' (' . $dsq . ', ' . $tsh . ')');
+        $result[] = array('Purples', $pu . ' (' . $dsq . ', ' . $tsh . ')');
+        $result[] = array('Reds', $rd . ' (' . $dsq . ', ' . $tsh . ')');
+        $result[] = array('Greys', $gr . ' (' . $dsq . ', ' . $tsh . ')');
+        $result[] = array('BuGn', $bu . $sep . $gn . ' (' . $dsq . ', ' . $tmh . ')');
+        $result[] = array('BuPu', $bu . $sep . $pu . ' (' . $dsq . ', ' . $tmh . ')');
+        $result[] = array('GnBu', $gn . $sep . $bu . ' (' . $dsq . ', ' . $tmh . ')');
+        $result[] = array('OrRd', $or . $sep . $rd . ' (' . $dsq . ', ' . $tmh . ')');
+        $result[] = array('PuBu', $pu . $sep . $bu . ' (' . $dsq . ', ' . $tmh . ')');
+        $result[] = array('PuBuGn', $pu . $sep . $bu . $sep . $gn . ' (' . $dsq . ', ' . $tmh . ')');
+        $result[] = array('PuRd', $pu . $sep . $rd . ' (' . $dsq . ', ' . $tmh . ')');
+        $result[] = array('RdPu', $rd . $sep . $pu . ' (' . $dsq . ', ' . $tmh . ')');
+        $result[] = array('YlGn', $yl . $sep . $gn . ' (' . $dsq . ', ' . $tmh . ')');
+        $result[] = array('YlOrBr', $yl . $sep . $or . $sep . $br . ' (' . $dsq . ', ' . $tmh . ')');
+        $result[] = array('YlOrRd', $yl . $sep . $or . $sep . $rd . ' (' . $dsq . ', ' . $tmh . ')');
+        $result[] = array('PRGn', $pu . $sep . $gn . ' (' . $ddv . ')');
+        $result[] = array('PuOr', $or . $sep . $pu . ' (' . $ddv . ')');
+        $result[] = array('RdBu', $rd . $sep . $bu . ' (' . $ddv . ')');
+        $result[] = array('RdGy', $rd . $sep . $gr . ' (' . $ddv . ')');
+        $result[] = array('RdYlBu', $rd . $sep . $yl . $sep . $bu . ' (' . $ddv . ')');
+        $result[] = array('BrBG', $br . $sep . $bu . $sep . $gn . ' (' . $ddv . ')');
+        $result[] = array('PiYG', $pi . $sep . $yl . $sep . $gn . ' (' . $ddv . ')');
+        $result[] = array('Spectral', $sp . ' (' . $ddv . ')');
+        $result[] = array('Accent', __('Accent', 'live-weather-station') . ' (' . $dql . ')');
+        $result[] = array('Dark2', __('Dark', 'live-weather-station') . ' (' . $dql . ')');
+        $result[] = array('Paired', __('Paired', 'live-weather-station') . ' (' . $dql . ')');
+        $result[] = array('Pastel1', __('Pastel', 'live-weather-station') . ' - 1 (' . $dql . ')');
+        $result[] = array('Pastel2', __('Pastel', 'live-weather-station') . ' - 2 (' . $dql . ')');
+        $result[] = array('Set1', __('Set', 'live-weather-station') . ' - 1 (' . $dql . ')');
+        $result[] = array('Set2', __('Set', 'live-weather-station') . ' - 2 (' . $dql . ')');
+        $result[] = array('Set3', __('Set', 'live-weather-station') . ' - 3 (' . $dql . ')');
         return $result;
     }
 

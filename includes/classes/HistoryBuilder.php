@@ -27,7 +27,7 @@ class Builder
     public $standard_measurements = 
         array('health_idx', 'co2', 'humidity', 'cloudiness', 'noise', 'pressure', 'temperature', 'irradiance', 
               'uv_index', 'illuminance', 'cloud_ceiling', 'heat_index', 'humidex', 'wind_chill', 'windangle', 
-              'windstrength', 'rain_day_aggregated', 'rain', 'weather');
+              'windstrength', 'rain_day_aggregated', 'rain', 'weather', 'dew_point', 'frost_point');
     public $extended_measurements = 
         array('cbi', 'wet_bulb', 'air_density', 'wood_emc', 'equivalent_temperature', 'potential_temperature',
               'equivalent_potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
@@ -61,6 +61,27 @@ class Builder
         $cron_id = Watchdog::init_chrono(Watchdog::$history_build_name);
         $this->__full_build();
         Watchdog::stop_chrono($cron_id);
+    }
+
+    /**
+     * Indicates, regarding the current settings, if this measurement is part of daily/historical measurements.
+     *
+     * @param string $measurement The measurement to test.
+     * @return boolean True if it's ok, false otherwise.
+     * @since 3.4.0
+     */
+    public function is_allowed_measurement($measurement) {
+        $result = false;
+        if ((bool)get_option('live_weather_station_collect_history')) {
+            if ((bool)get_option('live_weather_station_full_history')) {
+                $measure_types = array_merge($this->extended_measurements, $this->standard_measurements);
+            }
+            else {
+                $measure_types = $this->standard_measurements;
+            }
+            $result = in_array($measurement, $measure_types);
+        }
+        return $result;
     }
 
     /**

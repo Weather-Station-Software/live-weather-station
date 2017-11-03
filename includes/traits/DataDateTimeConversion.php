@@ -140,6 +140,23 @@ trait Conversion {
     }
 
     /**
+     * Converts an UTC date into the correct format (all Netatmo timestamps are UTC).
+     *
+     * @param string  $ts The UTC MySql datetime to be converted.
+     * @param string $tz Optional. The timezone.
+     * @return integer Corrected timestamp.
+     * @since  3.4.0
+     */
+    public static function get_converted_from_mysql_utc($ts, $tz='UTC') {
+        $datetime = new \DateTime($ts, new \DateTimeZone('UTC'));
+        $offset = new \DateTime($ts, new \DateTimeZone($tz));
+        /*if ($tz != 'UTC') {
+            $datetime->setTimezone(new \DateTimeZone($tz));
+        }*/
+        return $datetime->getTimestamp() + $offset->getOffset();
+    }
+
+    /**
      * Converts an UTC time into the correct format (all timestamps *are* UTC).
      *
      * @param integer $ts The UTC timestamp to be converted.

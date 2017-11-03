@@ -203,20 +203,24 @@ trait Query {
         foreach ($this->get_all_id_by_type(6) as $id) {
             $ids[] = '\'' . $id['station_id'] . '\'';
         }
-        global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
-        $sql = "SELECT DISTINCT device_id, device_name, module_id, module_name FROM ".$table_name . " WHERE (module_type='NAModule4') OR (module_type='NAModule9') OR (module_type='NAMain' AND device_id IN (".implode(',', $ids)."));";
-        try {
-            $query = (array)$wpdb->get_results($sql);
-            $query_a = (array)$query;
-            $result = array();
-            foreach ($query_a as $val) {
-                $result[] = (array)$val;
+        if (count($ids) > 0) {
+            global $wpdb;
+            $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+            $sql = "SELECT DISTINCT device_id, device_name, module_id, module_name FROM " . $table_name . " WHERE (module_type='NAModule4') OR (module_type='NAModule9') OR (module_type='NAMain' AND device_id IN (" . implode(',', $ids) . "));";
+            try {
+                $query = (array)$wpdb->get_results($sql);
+                $query_a = (array)$query;
+                $result = array();
+                foreach ($query_a as $val) {
+                    $result[] = (array)$val;
+                }
+                return $result;
+            } catch (\Exception $ex) {
+                return array('device_name' => __(LWS_PLUGIN_NAME, 'live-weather-station') . ' ' . __('is not running...', 'live-weather-station'), 'device_id' => 'N/A');
             }
-            return $result;
         }
-        catch(\Exception $ex) {
-            return array('device_name' => __(LWS_PLUGIN_NAME, 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
+        else {
+            return array();
         }
     }
 

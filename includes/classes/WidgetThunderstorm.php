@@ -34,9 +34,10 @@ class Thunderstorm extends \WP_Widget {
      */
     public function __construct() {
         load_plugin_textdomain( 'live-weather-station' );
+        $icon =
         parent::__construct(
             'Live_Weather_Station_Widget_Thunderstorm',
-            __( 'Thunderstorm' , 'live-weather-station'),
+            '<>⚡ ' . __( 'Thunderstorm' , 'live-weather-station'),
             array( 'description' => sprintf(__('Display thunderstorm conditions recorded by a station added to %s.' , 'live-weather-station'), LWS_PLUGIN_NAME))
         );
         if ( is_admin() || is_blog_admin()) {

@@ -36,7 +36,7 @@ class Outdoor extends \WP_Widget {
         load_plugin_textdomain( 'live-weather-station' );
         parent::__construct(
             'Live_Weather_Station_Widget_Outdoor',
-            __( 'Outdoor weather summary' , 'live-weather-station'),
+            '<>🌤 ' . __( 'Outdoor weather summary' , 'live-weather-station'),
             array( 'description' => sprintf(__('Display outdoor measurements of a station added to %s.' , 'live-weather-station'), LWS_PLUGIN_NAME))
         );
         if ( is_admin() || is_blog_admin()) {

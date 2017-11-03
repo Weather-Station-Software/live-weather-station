@@ -22,6 +22,7 @@ class Stations extends Base {
         Output::get_module_type insteadof Generator;
         Output::get_fake_module_name insteadof Generator;
         Output::get_measurement_type insteadof Generator;
+        Output::get_dimension_name insteadof Generator;
     }
 
     private $limit = 10;

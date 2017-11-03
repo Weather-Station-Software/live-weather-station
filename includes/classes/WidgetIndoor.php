@@ -36,7 +36,7 @@ class Indoor extends \WP_Widget {
         load_plugin_textdomain( 'live-weather-station' );
         parent::__construct(
             'Live_Weather_Station_Widget_Indoor',
-            __( 'Indoor comfort' , 'live-weather-station'),
+            '<>🛏 ' . __( 'Indoor comfort' , 'live-weather-station'),
             array('description' => sprintf(__('Display indoor comfort for a module of a station added to %s.' , 'live-weather-station'), LWS_PLUGIN_NAME))
         );
         if ( is_admin() || is_blog_admin()) {

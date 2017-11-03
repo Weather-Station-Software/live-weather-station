@@ -36,7 +36,7 @@ class Fire extends \WP_Widget {
         load_plugin_textdomain( 'live-weather-station' );
         parent::__construct(
             'Live_Weather_Station_Widget_Fire',
-            __( 'Fire weather' , 'live-weather-station'),
+            '<>🔥 ' . __( 'Fire weather' , 'live-weather-station'),
             array( 'description' => sprintf(__('Display fire weather of a station added to %s.' , 'live-weather-station'), LWS_PLUGIN_NAME))
         );
         if ( is_admin() || is_blog_admin()) {

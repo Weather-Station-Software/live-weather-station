@@ -6,8 +6,11 @@
 * New: the task analytics graphs now takes care of the new history pool.
 * Improvement: the station view has been totally redesigned and is now faster to load.
 * Improvement: plugin admin (all tabs and screens) is now fully responsive, you can use it easily on your smartphone or tablet.
+* Improvement: the widgets names contains now an icon for an easier identification in the customizer.
+* Improvement: the textual shortcodes can now render dimension names of measurements (i.e. length, speed, etc.).
 * Bug fix: in some cases, the plugin try to download translations statistics at each loading.
 * Bug fix: with some browsers, the layout of shortcode window is ugly.
+* Bug fix: a PHP/MySQL error may appears when using "indoor" widget when no collected station provides this type of data.
 
 
 #3.3.2 / October 11th, 2017

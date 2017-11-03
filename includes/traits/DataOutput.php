@@ -48,6 +48,8 @@ trait Output {
         'sunrise_c','sunrise_n','sunrise_a', 'sunset_c','sunset_n', 'sunset_a', 'day_length_c', 'day_length_n',
         'day_length_a', 'dawn_length_a','dawn_length_n', 'dawn_length_c', 'dusk_length_a', 'dusk_length_n',
         'dusk_length_c','saturation_vapor_pressure','saturation_absolute_humidity','equivalent_potential_temperature');
+    private $graph_allowed_serie = array('device_id', 'module_id', 'measurement', 'line_mode', 'dot_style', 'line_style', 'line_size');
+    private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data');
 
 
     /**
@@ -99,6 +101,639 @@ trait Output {
 
         $result = str_replace('<h1', '<'.$title, $result);
         $result = str_replace('</h1', '</'.$title, $result);
+        return $result;
+    }
+
+    /**
+     * Transform in a json string.
+     *
+     * @param array $info The key fields.
+     * @param array $values The values.
+     * @return string The values jsonified.
+     * @since 3.4.0
+     */
+    private function jsonify($info, $values) {
+        $val = array();
+        foreach ($values as $value) {
+            $val[] = array($value['timestamp'], $value['measure_value']);
+        }
+        $inf = array();
+        foreach ($info as $key=>$field) {
+            $inf[] = '"' . $key . '":"' . $field . '"';
+        }
+        $inf[] = '"values":' . str_replace('"', '', json_encode($val));
+        return '{' . implode(', ', $inf) . '}';
+    }
+
+    /**
+     * Query values for graph.
+     *
+     * @param array $attributes The type of values queried.
+     * @param boolean $json The result must json encoded.
+     * @return array The values.
+     * @since 3.4.0
+     */
+    public function graph_query($attributes, $json=false) {
+        $result = array();
+        $mode = $attributes['mode'];
+        $type = $attributes['type'];
+        $args = $attributes['args'];
+        $station_id = '';
+        $ymin = 0;
+        $ymax = 0;
+        $ydmin = 0;
+        $ydmax = 0;
+        $yamin = 0;
+        $yamax = 0;
+        $start = true;
+        if (count($args) > 0) {
+            foreach ($args as $arg) {
+                if (strpos($arg['device_id'], ':') == 2) {
+                    $station_id = $arg['device_id'];
+                    $result['legend']['unit'] = $this->output_unit($arg['measurement']);
+                    break;
+                }
+            }
+            if ($station_id != '') {
+                global $wpdb;
+                // Get station information
+                $station = $this->get_station_informations_by_station_id($station_id);
+                $date_offset = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                $offset = $date_offset->getOffset();
+                $shift = get_option('gmt_offset') * 3600;
+                // Compute date limits
+                if ($mode == 'daily') {
+                    $min = date('Y-m-d H:i:s', self::get_local_today_midnight($station['loc_timezone']));
+                    $max = date('Y-m-d H:i:s', self::get_local_today_noon($station['loc_timezone']));
+                    $result['xdomain']['min'] = (self::get_date_from_mysql_utc($min, 'UTC', 'U') + $offset - $shift).'000';
+                    $result['xdomain']['max'] = (self::get_date_from_mysql_utc($max, 'UTC', 'U') + $offset - $shift).'000';
+                    $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
+                }
+                if ($mode == 'yearly') {
+                    ///
+                    /// DEFINE MIN AND MAX
+                    ///
+                    $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
+                }
+                foreach ($args as $arg) {
+                    if (strpos($arg['module_id'], ':') == 2) {
+                        $sql = "SELECT `timestamp`, `module_type`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "';";
+                        try {
+                            $query = (array)$wpdb->get_results($sql);
+                            $query_a = (array)$query;
+                            $set = array();
+                            foreach ($query_a as $val) {
+                                $a = (array)$val;
+                                $a['timestamp'] = (self::get_date_from_mysql_utc($a['timestamp'], $station['loc_timezone'], 'U') - $shift).'000';
+                                $a['measure_value'] = $this->output_value($a['measure_value'], $arg['measurement']);
+                                if ($start) {
+                                    $ymin = $a['measure_value'];
+                                    $ymax = $a['measure_value'];
+                                    $ydmin = $this->get_measurement_min($arg['measurement'], $a['module_type']);
+                                    $ydmax = $this->get_measurement_max($arg['measurement'], $a['module_type']);
+                                    $yamax = $this->get_measurement_alarm_max($arg['measurement'], $a['module_type']);
+                                    $yamin = $this->get_measurement_alarm_min($arg['measurement'], $a['module_type']);
+                                    $start = false;
+                                }
+                                if ($a['measure_value'] > $ymax) {
+                                    $ymax = $a['measure_value'];
+                                }
+                                if ($a['measure_value'] < $ymin) {
+                                    $ymin = $a['measure_value'];
+                                }
+                                $set[] = $a;
+                            }
+                            if (count($query_a) > 0) {
+                                $a = (array)$query_a[0];
+                                if ($this->get_measurement_max($arg['measurement'], $a['module_type']) > $ydmax) {
+                                    $ydmax = $this->get_measurement_max($arg['measurement'], $a['module_type']);
+                                }
+                                if ($this->get_measurement_min($arg['measurement'], $a['module_type']) < $ydmin) {
+                                    $ydmin = $this->get_measurement_min($arg['measurement'], $a['module_type']);
+                                }
+                                if ($this->get_measurement_alarm_max($arg['measurement'], $a['module_type']) > $yamax) {
+                                    $yamax = $this->get_measurement_alarm_max($arg['measurement'], $a['module_type']);
+                                }
+                                if ($this->get_measurement_alarm_min($arg['measurement'], $a['module_type']) < $yamin) {
+                                    $yamin = $this->get_measurement_alarm_min($arg['measurement'], $a['module_type']);
+                                }
+                            }
+                        }
+                        catch (\Exception $ex) {
+                            $set = array();
+                        }
+                        $info = array();
+                        $info['key'] = $this->get_measurement_type($arg['measurement']);
+                        if ($arg['line_mode'] == 'area') {
+                            $info['area'] = true;
+                        }
+                        $classes = array();
+                        if ($arg['line_style'] == 'dashed') {
+                            $classes[] = 'lws-dashed-line';
+                        }
+                        if ($arg['line_style'] == 'dotted') {
+                            $classes[] = 'lws-dotted-line';
+                        }
+                        if ($arg['line_size'] == 'thin') {
+                            $info['strokeWidth'] = 1;
+                        }
+                        if ($arg['line_size'] == 'regular') {
+                            $info['strokeWidth'] = 2;
+                        }
+                        if ($arg['line_size'] == 'thick') {
+                            $info['strokeWidth'] = 3;
+                        }
+                        $info['classed'] = implode(',', $classes);
+                        if ($json) {
+                            $result['values'][] = $this->jsonify($info, $set);
+                        }
+                        else {
+                            $info['values'] = $set;
+                            $result['values'][] = $info;
+                        }
+                    }
+                }
+            }
+        }
+        $result['ydomain']['min'] = $ymin;
+        $result['ydomain']['max'] = $ymax;
+        $result['ydomain']['dmin'] = $ydmin;
+        $result['ydomain']['dmax'] = $ydmax;
+        $result['ydomain']['amin'] = $yamin;
+        $result['ydomain']['amax'] = $yamax;
+        if ($json) {
+            $result['values'] = '[' . implode(', ', $result['values']) . ']';
+        }
+        return $result;
+    }
+
+    /**
+     * Get the time format.
+     *
+     * @param array $values The values.
+     * @param string $mode The mode of graph.
+     * @return array The domain boundaries.
+     * @since 3.4.0
+     */
+    private function graph_format($values, $mode) {
+        $result = '';
+        if ($mode == 'daily') {
+            $result = '%H:%M';
+        }
+        return $result;
+    }
+
+    /**
+     * Get the Y doamin boundaries.
+     *
+     * @param array $values The values.
+     * @param string $valuescale The type of scale.
+     * @return array The domain boundaries.
+     * @since 3.4.0
+     */
+    private function graph_domain($values, $valuescale) {
+        $ymin = $values['ydomain']['min'];
+        $ymax = $values['ydomain']['max'];
+        switch ($valuescale) {
+            case 'fixed':
+                $ymin = $ymin - (($ymax-$ymin)/4);
+                $ymax = $ymax + (($ymax-$ymin)/4);
+                break;
+            case 'boundaries':
+                $ymin = $values['ydomain']['dmin'];
+                $ymax = $values['ydomain']['dmax'];
+                break;
+            case 'alarm':
+                $ymin = $values['ydomain']['amin'];
+                $ymax = $values['ydomain']['amax'];
+                break;
+            case 'percentage':
+                $ymin = 0;
+                $ymax = 100;
+                break;
+            case 'base-11':
+                $ymin = 0;
+                $ymax = 11;
+                break;
+            case 'angle':
+                $ymin = 0;
+                $ymax = $this->output_value(360, 'angle');
+                break;
+            case 'top':
+                $ymin = 0;
+                $ymax = $ymax + (($ymax-$ymin)/4);
+                break;
+            case 'bottom':
+                $ymin = $ymin - (($ymax-$ymin)/4);
+                $ymax = 0;
+                break;
+        }
+        $result = array();
+        $result['min'] = $ymin;
+        $result['max'] = $ymax;
+        return $result;
+    }
+
+    /**
+     * Get the Y ticks array.
+     *
+     * @param string $height The height of the graph.
+     * @return string The size id.
+     * @since 3.4.0
+     */
+    private function graph_size($height){
+        $result = 'medium';
+        $h = str_replace('px', '', $height);
+        if (!strpos($h, '%')) {
+            if ((int)$h < 250) {
+                $result = 'small';
+            }
+            if ((int)$h > 550) {
+                $result = 'large';
+            }
+        }
+        else {
+            $h = str_replace('%', '', $h);
+            if ((int)$h < 40) {
+                $result = 'small';
+            }
+        }
+        return $result;
+    }
+    /**
+     * Get the Y ticks array.
+     *
+     * @param array $domain The current domain.
+     * @param string $valuescale The type of scale.
+     * @param string $measurement The measurement.
+     * @param string $height The height of the graph.
+     * @return array The Y ticks.
+     * @since 3.4.0
+     */
+    private function graph_ticks($domain, $valuescale, $measurement, $height) {
+        $amplitude = $domain['max'] - $domain['min'];
+        $size = $this->graph_size($height);
+        $small = $size == 'small';
+        $large = $size == 'large';
+        $ticks = array();
+        if ($amplitude < 2) {
+            $decimal = $this->decimal_for_output($measurement);
+            if ($decimal > 2) {
+                $decimal = 2;
+            }
+            if ($small) {
+                $ticks[] = round (($domain['min'] + ($amplitude / 2)), $decimal);
+            }
+            else {
+                $ticks[] = round (($domain['min'] + ($amplitude / 3)), $decimal);
+                $ticks[] = round (($domain['max'] - ($amplitude / 3)), $decimal);
+            }
+        }
+        else {
+            $factor = 5 ;
+            if ($small) {
+                $factor = 3 ;
+            }
+            if ($large) {
+                $factor = 10 ;
+            }
+            $step = (int)(floor($amplitude/$factor));
+            if ($step == 0) {
+                $step = 1;
+            }
+            for ($i = 1; $i <= (int)floor($amplitude+1); $i+=$step) {
+                $val = (int)floor($domain['min'] + $i);
+                if ($i == 1) {
+                    if ($domain['min'] != $val) {
+                        $ticks[] = $val;
+                    }
+                }
+                else {
+                    if ($domain['max'] >= $val) {
+                        $ticks[] = $val;
+                    }
+                }
+            }
+        }
+        if ($valuescale == 'percentage') {
+            $ticks = array();
+            if ($small) {
+                //$ticks[] = 0;
+                $ticks[] = 50;
+                $ticks[] = 100;
+            }
+            else {
+                //$ticks[] = 0;
+                $ticks[] = 25;
+                $ticks[] = 50;
+                $ticks[] = 75;
+                $ticks[] = 100;
+            }
+        }
+        if ($valuescale == 'base-11') {
+            $ticks = array();
+            if ($small) {
+                //$ticks[] = 0;
+                $ticks[] = 6;
+                $ticks[] = 10;
+            }
+            else {
+                //$ticks[] = 0;
+                $ticks[] = 3;
+                $ticks[] = 6;
+                $ticks[] = 8;
+                $ticks[] = 10;
+            }
+        }
+        if ($valuescale == 'angle') {
+            $ticks = array();
+            //$ticks[] = 0;
+            $ticks[] = $this->output_value(90, 'angle');
+            $ticks[] = $this->output_value(180, 'angle');
+            $ticks[] = $this->output_value(270, 'angle');
+            $ticks[] = $this->output_value(360, 'angle');
+        }
+        if ($valuescale == 'none') {
+            $ticks = array();
+        }
+        return $ticks;
+    }
+
+    /**
+     * Get the Y ticks array.
+     *
+     * @param string $measurement The measurement.
+     * @return string The computed value scale.
+     * @since 3.4.0
+     */
+    private function graph_valuescale($measurement) {
+        switch ($this->output_unit($measurement)['dimension']) {
+            case 'percentage':
+                $result = 'percentage';
+                break;
+            case 'angle':
+                $result = 'angle';
+                break;
+            case 'base-11':
+                $result = 'base-11';
+                break;
+            case 'concentration-m':
+            case 'concentration-b':
+            case 'area-density':
+            //case 'density':
+            case 'humidity':
+            case 'irradiance':
+            case 'illuminance':
+            case 'specific-energy':
+            case 'specific-energy-k':
+                $result = 'top';
+                break;
+            default:
+                $result = 'fixed';
+        }
+        switch ($measurement) {
+        case 'cloud_ceiling':
+                $result = 'top';
+                break;
+        }
+        return $result;
+    }
+
+
+    /**
+     * Get the template properties.
+     *
+     * @param integer $id The id of the template.
+     * @return array The properties of the template.
+     * @since 3.4.0
+     */
+    private function graph_template($id) {
+        $prop = array();
+        switch ($id) {
+            case 'night':
+                $prop['container'] = 'background-color:#101030;border-radius: 3px;border: solid 1px #2D2C3F;';
+                $prop['nv-axis-line'] = 'stroke: #2D2C40;';
+                $prop['nv-axis-domain'] = 'stroke: #4b4888;stroke-opacity: 1;';
+                $prop['text'] = 'fill: #4b4888;';
+                $prop['spinner'] = '#FFFFFF';
+                break;
+            case 'bwi':
+                $prop['container'] = 'background-color:#000000;border-radius: 3px;border: solid 1px #FFFFFF;';
+                $prop['nv-axis-line'] = 'stroke: #FFFFFF;';
+                $prop['nv-axis-domain'] = 'stroke: #FFFFFF;stroke-opacity: 1;';
+                $prop['text'] = 'fill: #FFFFFF;';
+                $prop['spinner'] = '#FFFFFF';
+                break;
+            case 'bw':
+                $prop['container'] = 'background-color:#FFFFFF;border-radius: 3px;border: solid 1px #000000;';
+                $prop['nv-axis-line'] = 'stroke: #000000;';
+                $prop['nv-axis-domain'] = 'stroke: #000000;stroke-opacity: 1;';
+                $prop['text'] = 'fill: #000000;';
+                $prop['spinner'] = '#000000';
+                break;
+            default:
+                $prop['container'] = '';
+                $prop['nv-axis-line'] = '';
+                $prop['nv-axis-domain'] = 'stroke-opacity: .75;';
+                $prop['text'] = '';
+                $prop['spinner'] = '#000000';
+        }
+        return $prop;
+    }
+
+    /**
+     * Get a graph.
+     *
+     * @param array $attributes The type of graph queried by the shortcode.
+     * @return string The graph ready to print.
+     * @since 3.4.0
+     */
+    public function graph_shortcodes($attributes) {
+        $_attributes = shortcode_atts( array('mode' => '', 'type' => '', 'template' => 'neutral', 'color' => 'Blues', 'interpolation' => 'linear', 'guideline' => 'none', 'height' => '', 'timescale' => 'auto', 'valuescale' => 'auto', 'data' => 'inline', 'cache' => 'cache'), $attributes );
+        $mode = $_attributes['mode'];
+        $type = $_attributes['type'];
+        $color = $_attributes['color'];
+        $interpolation = $_attributes['interpolation'];
+        $guideline = ($_attributes['guideline'] == 'interactive');
+        $height = ($_attributes['height'] == '' ? '300px' : $_attributes['height']);
+        $fingerprint = uniqid('', true);
+        $uniq = 'graph' . substr ($fingerprint, strlen($fingerprint)-6, 80);
+        $svg = 'svg' . substr ($fingerprint, strlen($fingerprint)-6, 80);
+        $spinner = 'spinner' . substr ($fingerprint, strlen($fingerprint)-6, 80);
+
+
+        // prepare query params
+        $items = array();
+        for ($i = 1; $i <= 8; $i++) {
+            if (array_key_exists('device_id_'.$i, $attributes)) {
+                $item = array();
+                foreach ($this->graph_allowed_serie as $param) {
+                    if (array_key_exists($param.'_'.$i, $attributes)) {
+                        $item[$param] = $attributes[$param.'_'.$i];
+                    }
+                }
+                $items[$i] = $item;
+            }
+        }
+        $cpt = count($items);
+        if ($cpt < 3) {
+            $cpt = 3;
+        }
+        if ($cpt > 8) {
+            $cpt = 8;
+        }
+        $value_params = array();
+        $value_params['mode'] = $mode;
+        if ($type == 'line' || $type == 'lines') {
+            $value_params['type'] = 'timeseries';
+        }
+        $value_params['args'] = $items;
+        if (array_key_exists('measurement', $items[1])) {
+            $measurement1 = $items[1]['measurement'];
+        }
+        else {
+            $measurement1 = '';
+        }
+        if (isset($items[2]) && array_key_exists('measurement', $items[2])) {
+            $measurement2 = $items[2]['measurement'];
+        }
+        else {
+            $measurement2 = '';
+        }
+
+
+        // Compute scales
+        $timescale = $_attributes['timescale'];
+        if ($timescale == 'auto' && $mode == 'daily') {
+            $timescale = 'fixed';
+        }
+        $fixed_timescale = ($timescale != 'adaptative');
+        $valuescale = $_attributes['valuescale'];
+        if ($valuescale == 'auto') {
+            $valuescale = $this->graph_valuescale($measurement1);
+        }
+        $fixed_valuescale = ($valuescale != 'adaptative');
+
+
+        // Queries...
+        $values = $this->graph_query($value_params, true);
+        $domain = $this->graph_domain($values, $valuescale);
+        $time_format = $this->graph_format($values, $mode);
+        $prop = $this->graph_template($_attributes['template']);
+        if ($type == 'line' || $type == 'lines') {
+            $ticks = $this->graph_ticks($domain, $valuescale, $measurement1, $height);
+        }
+
+        // Render...
+        $result = '';
+        if ($type == 'line' || $type == 'lines') {
+            wp_enqueue_style('nv.d3.css');
+            wp_enqueue_script('d3.v3.js');
+            wp_enqueue_script('nv.d3.v3.js');
+            wp_enqueue_script('colorbrewer.js');
+            wp_enqueue_script('spin.js');
+            $result .= '<style type="text/css">' . PHP_EOL;
+            if ($prop['text'] != '') {
+                $result .= '#' . $svg . ' .nvd3 text {' . $prop['text'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axis-domain'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis path.domain {' . $prop['nv-axis-domain'] . '}' . PHP_EOL;
+            }
+
+            if ($prop['nv-axis-line'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis line {' . $prop['nv-axis-line'] . '}' . PHP_EOL;
+            }
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dashed-line {stroke-dasharray:10,10;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dotted-line {stroke-dasharray:2,2;}' . PHP_EOL;
+            for ($i = 1; $i <= $cpt; $i++) {
+                if ($items[$i]['dot_style'] == 'small-dot') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
+                }
+                if ($items[$i]['dot_style'] == 'large-dot') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:3;}' . PHP_EOL;
+                }
+                if ($items[$i]['dot_style'] == 'small-circle') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:12;}' . PHP_EOL;
+                }
+                if ($items[$i]['dot_style'] == 'large-circle') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
+                }
+                if ($items[$i]['line_mode'] == 'transparent') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-line {stroke-opacity:0;}' . PHP_EOL;
+                }
+            }
+            $result .= '</style>' . PHP_EOL;
+            $result .= '<div><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:14px;height: ' . $height . ';"><svg id="' . $svg . '" style="overflow:visible"></svg></div></div>' . PHP_EOL;
+            $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
+            $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+            $scale = '0.5';
+            if ($this->graph_size($height) == 'small') {
+                $scale = '0.25';
+            }
+            if ($this->graph_size($height) == 'large') {
+                $scale = '0.75';
+            }
+            $result .= '    var opts = {lines: 15, length: 28, width: 8, radius: 42, scale: ' . $scale . ', corners: 1, color: "' . $prop['spinner'] . '", opacity: 0.2, rotate: 0, direction: 1, speed: 1, trail: 60, fps: 20, zIndex: 2e9, className: "c_' . $spinner .'", top: "50%", left: "50%", shadow: false, hwaccel: false, position: "relative"};' . PHP_EOL;
+            $result .= '    var target = document.getElementById("' . $uniq . '");' . PHP_EOL;
+            $result .= '    var ' . $spinner . ' = new Spinner(opts).spin(target);' . PHP_EOL;
+            $result .= '    var data'.$uniq.' =' . $values['values'] . ';' . PHP_EOL;
+            if ($fixed_timescale && $mode == 'daily') {
+                $result .= '    var minDomain' . $uniq . ' = new Date(' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $result .= '    var maxDomain' . $uniq . ' = new Date(' . $values['xdomain']['max'] . ');' . PHP_EOL;
+            }
+            if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
+                $result .= '    var h04Tick'.$uniq.' = new Date(' . ($values['xdomain']['min'] + 14400000) . ');' . PHP_EOL;
+                $result .= '    var h08Tick'.$uniq.' = new Date(' . ($values['xdomain']['min'] + 14400000*2) . ');' . PHP_EOL;
+                $result .= '    var h12Tick'.$uniq.' = new Date(' . ($values['xdomain']['min'] + 14400000*3) . ');' . PHP_EOL;
+                $result .= '    var h16Tick'.$uniq.' = new Date(' . ($values['xdomain']['min'] + 14400000*4) . ');' . PHP_EOL;
+                $result .= '    var h20Tick'.$uniq.' = new Date(' . ($values['xdomain']['min'] + 14400000*5) . ');' . PHP_EOL;
+                $result .= '    var h24Tick'.$uniq.' = new Date(' . ($values['xdomain']['min'] + 14400000*6 - 1000) . ');' . PHP_EOL;
+            }
+            $result .= '    nv.addGraph(function() {' . PHP_EOL;
+            $result .= '      var chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
+            $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
+            $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
+            $result .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
+            if ($fixed_timescale) {
+                $result .= '               .xDomain([minDomain'.$uniq.', maxDomain'.$uniq.'])' . PHP_EOL;
+            }
+            if ($fixed_valuescale) {
+                $result .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
+            }
+            $result .= '               .color(colorbrewer.' . $color . '[' . $cpt . '])' . PHP_EOL;
+            $result .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
+            if ($guideline) {
+                $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
+            }
+            else {
+                $result .= '               .useInteractiveGuideline(false);' . PHP_EOL;
+            }
+            $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
+            $result .= '                 .showMaxMin(false)' . PHP_EOL;
+            $result .= '                 .tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
+                $result .= '      chart'.$uniq.'.xAxis.tickValues([h04Tick'.$uniq.', h08Tick'.$uniq.', h12Tick'.$uniq.', h16Tick'.$uniq.', h20Tick'.$uniq.', h24Tick'.$uniq.']);' . PHP_EOL;
+            }
+            if ($timescale == 'none') {
+                $result .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
+            }
+            $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
+            if ($_attributes['valuescale'] == 'adaptative') {
+                $result .= '                 .showMaxMin(true)' . PHP_EOL;
+            }
+            else {
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+            }
+            $result .= '                 .tickFormat(function(d) { return d + " ' . $values['legend']['unit']['unit'] . '"; });' . PHP_EOL;
+            $result .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
+            $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(1000).call(chart'.$uniq.');' . PHP_EOL;
+            $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+            $result .= '      return chart'.$uniq.';' . PHP_EOL;
+            $result .= '    });'.PHP_EOL;
+            $result .= '   setTimeout(function() {' . $spinner . '.stop();}, 500);'. PHP_EOL;
+            $result .= '  });' . PHP_EOL;
+            $result .= '</script>' . PHP_EOL;
+        }
         return $result;
     }
 
@@ -404,7 +1039,7 @@ trait Output {
                 $result .= '  });' . PHP_EOL;
                 $result .= '</script>' . PHP_EOL;
             }
-            if ($_attributes['metric'] == 'time_for_system' || $_attributes['metric'] == 'time_for_pull' || $_attributes['metric'] == 'time_for_push' || $_attributes['metric'] == 'time_for_history') {
+            if ($_attributes['metric'] == 'time_for_system' || $_attributes['metric'] == 'time_for_pull' || $_attributes['metric'] == 'time_for_push') {
                 wp_enqueue_script('colorbrewer.js');
                 $cpt = substr_count($perf['dat'][$_attributes['metric']], '"key"');
                 if ($cpt < 3) {
@@ -1960,6 +2595,24 @@ trait Output {
                         $result = $err ;
                 }
                 break;
+            case 'type-raw-dimension':
+                switch ($_attributes['element']) {
+                    case 'measure_type':
+                        $result = $this->output_unit($result, $module_type)['dimension'];
+                        break;
+                    default:
+                        $result = $err ;
+                }
+                break;
+            case 'type-formated-dimension':
+                switch ($_attributes['element']) {
+                    case 'measure_type':
+                        $result = $this->get_dimension_name($this->output_unit($result, $module_type)['dimension']);
+                        break;
+                    default:
+                        $result = $err ;
+                }
+                break;
             case 'local-date':
                 try {
                     if ($_attributes['element'] == 'measure_timestamp') {
@@ -2110,6 +2763,25 @@ trait Output {
     }
 
     /**
+     * Get value for icon shortcodes.
+     *
+     * @param array $attributes The value queryed by the shortcode.
+     * @return string The result of the shortcode.
+     * @since 3.4.0
+     */
+    public function icon_shortcodes($attributes) {
+        $_attributes = shortcode_atts( array('type'=>'simple', 'measurement'=>'', 'color'=>''), $attributes);
+        $result = '';
+        switch ($_attributes['type']) {
+            case 'simple':
+                $style = '';
+                $result = $this->output_iconic_value(0, $_attributes['measurement'], null, false, $style);
+                break;
+        }
+        return $result;
+    }
+
+    /**
      * Output a value with user's unit.
      *
      * @param   mixed       $value          The value to output.
@@ -2211,6 +2883,7 @@ trait Output {
                 $result = $this->get_snow($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_snow_unit($ref) : '');
                 break;
+            case 'angle':
             case 'windangle':
             case 'gustangle':
             case 'windangle_max':
@@ -2950,7 +3623,7 @@ trait Output {
      * @access   protected
      */
     protected function output_unit($type, $module_type='NAMain', $force_ref=0) {
-        $result = array('unit'=>'', 'comp'=>'', 'full'=>'', 'long'=>'');
+        $result = array('unit'=>'', 'comp'=>'', 'full'=>'', 'long'=>'', 'dimension'=>'unknown');
         switch ($type) {
             case 'loc_altitude':
             case 'cloud_ceiling':
@@ -2960,6 +3633,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_altitude_unit($ref) ;
                 $result['long'] = $this->get_altitude_unit_full($ref) ;
+                $result['dimension'] = 'length';
                 break;
             case 'battery':
                 $ref = 0;
@@ -2968,6 +3642,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_battery_unit($ref) ;
                 $result['long'] = $this->get_battery_unit_full($ref) ;
+                $result['dimension'] = 'percentage';
                 break;
             case 'signal':
                 $ref = 0;
@@ -2976,6 +3651,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_signal_unit($ref) ;
                 $result['long'] = $this->get_signal_unit_full($ref) ;
+                $result['dimension'] = 'percentage';
                 break;
             case 'co2':
                 $ref = get_option('live_weather_station_unit_gas');
@@ -2984,6 +3660,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_co2_unit($ref) ;
                 $result['long'] = $this->get_co2_unit_full($ref) ;
+                $result['dimension'] = 'concentration-m';
                 break;
             case 'co':
                 $ref = get_option('live_weather_station_unit_gas');
@@ -2992,6 +3669,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_co_unit($ref) ;
                 $result['long'] = $this->get_co_unit_full($ref) ;
+                $result['dimension'] = 'concentration-b';
                 break;
             case 'o3':
                 $ref = 0;
@@ -3000,6 +3678,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_o3_unit($ref) ;
                 $result['long'] = $this->get_o3_unit_full($ref) ;
+                $result['dimension'] = 'area-density';
                 break;
             case 'humidity':
             case 'humidity_min':
@@ -3014,6 +3693,7 @@ trait Output {
                 $result['unit'] = $this->get_humidity_unit($ref) ;
                 $result['long'] = $this->get_humidity_unit_full($ref) ;
                 $result['comp'] = __('hum', 'live-weather-station') ;
+                $result['dimension'] = 'percentage';
                 break;
             case 'cloudiness':
             case 'cloud_cover':
@@ -3023,6 +3703,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_cloudiness_unit($ref) ;
                 $result['long'] = $this->get_cloudiness_unit_full($ref) ;
+                $result['dimension'] = 'percentage';
                 break;
             case 'noise':
                 $ref = 0;
@@ -3031,6 +3712,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_noise_unit($ref) ;
                 $result['long'] = $this->get_noise_unit_full($ref) ;
+                $result['dimension'] = 'dimensionless';
                 break;
             case 'health_idx':
                 $ref = 0;
@@ -3040,6 +3722,7 @@ trait Output {
                 $result['unit'] = $this->get_health_index_unit($ref) ;
                 $result['long'] = $this->get_health_index_unit_full($ref) ;
                 $result['comp'] = __('hlth', 'live-weather-station') ;
+                $result['dimension'] = 'percentage';
                 break;
             case 'cbi':
                 $ref = 0;
@@ -3049,6 +3732,7 @@ trait Output {
                 $result['unit'] = $this->get_cbi_unit($ref) ;
                 $result['long'] = $this->get_cbi_unit_full($ref) ;
                 $result['comp'] = __('CBi', 'live-weather-station') ;
+                $result['dimension'] = 'dimensionless';
                 break;
             case 'rain':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
@@ -3064,6 +3748,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_rain_unit($ref) ;
                 $result['long'] = $this->get_rain_unit_full($ref) ;
+                $result['dimension'] = 'unknown';
                 break;
             case 'rain_hour_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
@@ -3073,6 +3758,7 @@ trait Output {
                 $result['comp'] = __('/ 1 hr', 'live-weather-station') ;
                 $result['unit'] = $this->get_rain_unit($ref) ;
                 $result['long'] = $this->get_rain_unit_full($ref) ;
+                $result['dimension'] = 'length';
                 break;
             case 'rain_month_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
@@ -3082,6 +3768,7 @@ trait Output {
                 $result['comp'] = __('month', 'live-weather-station') ;
                 $result['unit'] = $this->get_rain_unit($ref) ;
                 $result['long'] = $this->get_rain_unit_full($ref) ;
+                $result['dimension'] = 'length';
                 break;
             case 'rain_year_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
@@ -3091,6 +3778,7 @@ trait Output {
                 $result['comp'] = __('year', 'live-weather-station') ;
                 $result['unit'] = $this->get_rain_unit($ref) ;
                 $result['long'] = $this->get_rain_unit_full($ref) ;
+                $result['dimension'] = 'length';
                 break;
             case 'rain_day_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
@@ -3100,6 +3788,7 @@ trait Output {
                 $result['comp'] = __('today', 'live-weather-station') ;
                 $result['unit'] = $this->get_rain_unit($ref) ;
                 $result['long'] = $this->get_rain_unit_full($ref) ;
+                $result['dimension'] = 'length';
                 break;
             case 'rain_yesterday_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
@@ -3109,6 +3798,7 @@ trait Output {
                 $result['comp'] = __('yda.', 'live-weather-station') ;
                 $result['unit'] = $this->get_rain_unit($ref) ;
                 $result['long'] = $this->get_rain_unit_full($ref) ;
+                $result['dimension'] = 'length';
                 break;
             case 'rain_season_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
@@ -3118,6 +3808,7 @@ trait Output {
                 $result['comp'] = __('season', 'live-weather-station') ;
                 $result['unit'] = $this->get_rain_unit($ref) ;
                 $result['long'] = $this->get_rain_unit_full($ref) ;
+                $result['dimension'] = 'length';
                 break;
             case 'snow':
                 $ref = get_option('live_weather_station_unit_rain_snow') ;
@@ -3129,6 +3820,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_snow_unit($ref) ;
                 $result['long'] = $this->get_snow_unit_full($ref) ;
+                $result['dimension'] = 'length';
                 break;
             case 'windangle':
             case 'gustangle':
@@ -3153,6 +3845,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_wind_angle_unit($ref);
                 $result['long'] = $this->get_wind_angle_unit_full($ref);
+                $result['dimension'] = 'angle';
                 break;
             case 'windstrength':
             case 'guststrength':
@@ -3177,6 +3870,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_wind_speed_unit($ref);
                 $result['long'] = $this->get_wind_speed_unit_full($ref);
+                $result['dimension'] = 'speed';
                 break;
             case 'pressure':
             case 'pressure_min':
@@ -3188,6 +3882,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_pressure_unit($ref);
                 $result['long'] = $this->get_pressure_unit_full($ref);
+                $result['dimension'] = 'pressure-h';
                 break;
             case 'temperature':
             case 'tempint':
@@ -3204,6 +3899,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_temperature_unit($ref);
                 $result['long'] = $this->get_temperature_unit_full($ref);
+                $result['dimension'] = 'temperature';
                 break;
             case 'dawn_length_c':
             case 'dawn_length_n':
@@ -3213,6 +3909,7 @@ trait Output {
             case 'dusk_length_a':
                 $result['unit'] = $this->get_dusk_dawn_unit();
                 $result['long'] = $this->get_dusk_dawn_unit_full();
+                $result['dimension'] = 'duration';
                 break;
             case 'day_length':
             case 'day_length_c':
@@ -3220,6 +3917,7 @@ trait Output {
             case 'day_length_a':
                 $result['unit'] = $this->get_day_length_unit();
                 $result['long'] = $this->get_day_length_unit_full();
+                $result['dimension'] = 'duration';
                 break;
             case 'moon_illumination':
                 $ref = 0;
@@ -3228,6 +3926,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_moon_illumination_unit($ref);
                 $result['long'] = $this->get_moon_illumination_unit_full($ref);
+                $result['dimension'] = 'percentage';
                 break;
             case 'moon_diameter':
             case 'sun_diameter':
@@ -3237,6 +3936,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_degree_diameter_unit($ref);
                 $result['long'] = $this->get_degree_diameter_unit_full($ref);
+                $result['dimension'] = 'length';
                 break;
             case 'moon_distance':
             case 'sun_distance':
@@ -3246,6 +3946,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_distance_unit($ref);
                 $result['long'] = $this->get_distance_unit_full($ref);
+            $result['dimension'] = 'length';
                 break;
             // PSYCHROMETRY
             case 'wet_bulb':
@@ -3258,6 +3959,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_temperature_unit($ref);
                 $result['long'] = $this->get_temperature_unit_full($ref);
+                $result['dimension'] = 'temperature';
                 break;
             case 'air_density':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
@@ -3267,6 +3969,7 @@ trait Output {
                 $result['unit'] = $this->get_density_unit($ref) ;
                 $result['long'] = $this->get_density_unit_full($ref) ;
                 //$result['comp'] = __('air', 'live-weather-station') ;
+                $result['dimension'] = 'density';
                 break;
             case 'wood_emc':
             case 'emc':
@@ -3276,6 +3979,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_emc_unit($ref) ;
                 $result['long'] = $this->get_emc_unit_full($ref) ;
+                $result['dimension'] = 'percentage';
                 break;
             case 'specific_enthalpy':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
@@ -3284,6 +3988,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_enthalpy_unit($ref) ;
                 $result['long'] = $this->get_enthalpy_unit_full($ref) ;
+                $result['dimension'] = 'specific-energy-k';
                 break;
             case 'partial_vapor_pressure':
             case 'vapor_pressure':
@@ -3293,6 +3998,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_precise_pressure_unit($ref) ;
                 $result['long'] = $this->get_precise_pressure_unit_full($ref) ;
+                $result['dimension'] = 'pressure';
                 break;
             case 'saturation_vapor_pressure':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
@@ -3302,6 +4008,7 @@ trait Output {
                 $result['unit'] = $this->get_precise_pressure_unit($ref) ;
                 $result['long'] = $this->get_precise_pressure_unit_full($ref) ;
                 $result['comp'] = __('sat.', 'live-weather-station') ;
+                $result['dimension'] = 'pressure';
                 break;
             case 'partial_absolute_humidity':
             case 'absolute_humidity':
@@ -3311,6 +4018,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_absolute_humidity_unit($ref) ;
                 $result['long'] = $this->get_absolute_humidity_unit_full($ref) ;
+                $result['dimension'] = 'humidity';
                 break;
             case 'saturation_absolute_humidity':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
@@ -3320,6 +4028,7 @@ trait Output {
                 $result['unit'] = $this->get_absolute_humidity_unit($ref) ;
                 $result['long'] = $this->get_absolute_humidity_unit_full($ref) ;
                 $result['comp'] = __('sat.', 'live-weather-station') ;
+                $result['dimension'] = 'humidity';
                 break;
             // SOLAR
             case 'irradiance':
@@ -3329,6 +4038,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_irradiance_unit($ref) ;
                 $result['long'] = $this->get_irradiance_unit_full($ref) ;
+                $result['dimension'] = 'irradiance';
                 break;
             case 'illuminance':
                 $ref = 0;
@@ -3337,9 +4047,11 @@ trait Output {
                 }
                 $result['unit'] = $this->get_illuminance_unit($ref) ;
                 $result['long'] = $this->get_illuminance_unit_full($ref) ;
+                $result['dimension'] = 'illuminance';
                 break;
             case 'uv_index':
                 $result['comp'] = __('UV', 'live-weather-station') ;
+                $result['dimension'] = 'base-11';
                 break;
             // SOIL
             case 'soil_temperature':
@@ -3349,6 +4061,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_temperature_unit($ref) ;
                 $result['long'] = $this->get_temperature_unit_full($ref) ;
+                $result['dimension'] = 'temperature';
                 break;
             case 'leaf_wetness':
                 $ref = 0;
@@ -3358,6 +4071,7 @@ trait Output {
                 $result['unit'] = $this->get_humidity_unit($ref) ;
                 $result['long'] = $this->get_humidity_unit_full($ref) ;
                 $result['comp'] = __('wet', 'live-weather-station') ;
+                $result['dimension'] = 'percentage';
                 break;
             case 'moisture_content':
                 $ref = 0;
@@ -3367,6 +4081,7 @@ trait Output {
                 $result['unit'] = $this->get_humidity_unit($ref) ;
                 $result['long'] = $this->get_humidity_unit_full($ref) ;
                 $result['comp'] = __('moist', 'live-weather-station') ;
+                $result['dimension'] = 'percentage';
                 break;
             case 'moisture_tension':
                 $ref = get_option('live_weather_station_unit_pressure') ;
@@ -3376,6 +4091,7 @@ trait Output {
                 $result['unit'] = $this->get_pressure_unit($ref) ;
                 $result['long'] = $this->get_pressure_unit_full($ref) ;
                 $result['comp'] = __('moist', 'live-weather-station') ;
+                $result['dimension'] = 'pressure';
                 break;
             case 'evapotranspiration':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
@@ -3385,6 +4101,7 @@ trait Output {
                 $result['unit'] = $this->get_rain_unit($ref) ;
                 $result['long'] = $this->get_rain_unit_full($ref) ;
                 $result['comp'] = __('evap', 'live-weather-station') ;
+                $result['dimension'] = 'length';
                 break;
             // THUNDERSTORM
             case 'strike_instant':
@@ -3393,6 +4110,7 @@ trait Output {
                     $ref = $force_ref;
                 }
                 $result['comp'] = __('now', 'live-weather-station') ;
+                $result['dimension'] = 'count';
                 break;
             case 'strike_count':
                 $ref = get_option('live_weather_station_unit_distance');
@@ -3400,6 +4118,7 @@ trait Output {
                     $ref = $force_ref;
                 }
                 $result['comp'] = __('total', 'live-weather-station') ;
+                $result['dimension'] = 'count';
                 break;
             case 'strike_distance':
                 $ref = get_option('live_weather_station_unit_distance');
@@ -3409,6 +4128,7 @@ trait Output {
                 $result['unit'] = $this->get_distance_unit($ref);
                 $result['long'] = $this->get_distance_unit_full($ref);
                 $result['comp'] = __('last', 'live-weather-station') ;
+                $result['dimension'] = 'length';
                 break;
             case 'strike_bearing':
                 $ref = 0;
@@ -3418,6 +4138,7 @@ trait Output {
                 $result['unit'] = $this->get_wind_angle_unit($ref);
                 $result['long'] = $this->get_wind_angle_unit_full($ref);
                 $result['comp'] = __('last', 'live-weather-station') ;
+                $result['dimension'] = 'angle';
                 break;
         }
         if ($result['comp'] != __('now', 'live-weather-station')) {
@@ -5270,6 +5991,30 @@ trait Output {
      */
     protected function get_measurement_max($type, $module_type) {
         return $this->get_measurement_option($type, $module_type, 'max_value');
+    }
+
+    /**
+     * Get the measurement minimal rendered value.
+     *
+     * @param string $type The type of the value.
+     * @param string $module_type The type of the module.
+     * @return integer The the measurement minimal to render in controls.
+     * @since 2.1.0
+     */
+    protected function get_measurement_alarm_min($type, $module_type) {
+        return $this->get_measurement_option($type, $module_type, 'min_alarm');
+    }
+
+    /**
+     * Get the measurement maximal rendered value.
+     *
+     * @param string $type The type of the value.
+     * @param string $module_type The type of the module.
+     * @return integer The the measurement maximal to render in controls.
+     * @since 2.1.0
+     */
+    protected function get_measurement_alarm_max($type, $module_type) {
+        return $this->get_measurement_option($type, $module_type, 'max_alarm');
     }
 
     /**
