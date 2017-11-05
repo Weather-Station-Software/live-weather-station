@@ -1570,6 +1570,20 @@ trait Generator {
     }
 
     /**
+     * Get graph data array.
+     *
+     * @return array An array containing the line size ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_graph_data_js_array() {
+        $result = array();
+        $result[] = array('inline',  __('Inline', 'live-weather-station'));
+        $result[] = array('ajax',  __('Ajax preload', 'live-weather-station'));
+        $result[] = array('ajax_refresh',  __('Ajax refresh', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
      * Get graph template array.
      *
      * @return array An array containing the graph templates ready to convert to a JS array.

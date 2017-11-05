@@ -354,7 +354,7 @@ abstract class Maintainer {
         $result .= '<div class="meta-box-sortables" style="width:100%;">';
         $result .= '<div class="postbox" id="' . $id . '" style="min-width:300px;">';
         $result .= '<button type="button" class="handlediv" aria-expanded="true"><span class="screen-reader-text">' . __('Click to toggle', 'live-weather-station') . '</span><span class="toggle-indicator" aria-hidden="true"></span></button>';
-        $result .= '<h3 class="hndle" style="cursor:default"><span>' . $title . '</span></h3>';
+        $result .= '<h3 class="hndle" style="cursor:default"><span>' . $title . '</span><span class="' . $id . '-spinner" style ="float: initial;margin-top:-4px;margin-bottom:-1px;"></span></h3>';
         $result .= '<div class="inside" style="text-align:center;">';
         $result .= $content;
         $result .= '</div>';

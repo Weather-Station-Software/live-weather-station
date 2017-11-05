@@ -451,7 +451,7 @@ class InlineHelp {
         $tabs = array();
         if (isset($action) && $action == 'manage') {
             $s1 = __('This "station view" shows you the details of a station.', 'live-weather-station');
-            $s2 = __('The left-hand column display statical information on the station as well as shortcodes or publishing format options.', 'live-weather-station');
+            $s2 = __('The left-hand column display statical information on the station as well as sharing and publishing format options.', 'live-weather-station');
             $s3 = __('The right-hand column displays all modules (main base, outdoor, indoor and virtual modules) attached to the station.', 'live-weather-station');
             $tabs[] = array(
                 'title'    => __('Overview', 'live-weather-station'),

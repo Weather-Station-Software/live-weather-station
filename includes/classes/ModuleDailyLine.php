@@ -73,6 +73,7 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_key_value_option_select('daily-line-datas-line-style-'. $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid');
         $content .= $this->get_key_value_option_select('daily-line-datas-line-size-'. $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular');
         $content .= $this->get_placeholder_option_select();
+        $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
         return $this->get_box('lws-datasource-id', $this->datasource_title, $content);
     }
@@ -92,6 +93,7 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_key_value_option_select('daily-line-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(), true, 'auto');
         $content .= $this->get_key_value_option_select('daily-line-datas-guideline-'. $this->station_guid, __('Hint', 'live-weather-station'), $this->get_guideline_js_array(), true, 'standard');
         $content .= $this->get_key_value_option_select('daily-line-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
+        $content .= $this->get_key_value_option_select('daily-line-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'ajax');
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }
@@ -132,8 +134,10 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$("#daily-line-datas-guideline-' . $this->station_guid . '" ).change();});';
         $content .= '$("#daily-line-datas-guideline-' . $this->station_guid . '").change(function() {';
         $content .= '$("#daily-line-datas-height-' . $this->station_guid . '" ).change();});';
-
         $content .= '$("#daily-line-datas-height-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#daily-line-datas-data-' . $this->station_guid . '" ).change();});';
+
+        $content .= '$("#daily-line-datas-data-' . $this->station_guid . '").change(function() {';
         $content .= 'var sc_device_1 = "' . $this->station_id . '";';
         $content .= 'var sc_module_1 = js_array_daily_line_' . $this->station_guid . '[$("#daily-line-datas-module-' . $this->station_guid . '").val()][1];';
         $content .= 'var sc_measurement_1 = js_array_daily_line_' . $this->station_guid . '[$("#daily-line-datas-module-' . $this->station_guid . '").val()][2][$("#daily-line-datas-measurement-' . $this->station_guid . '").val()][1];';
@@ -149,8 +153,6 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$("#daily-line-datas-line-style-' . $this->station_guid . '").prop("disabled", false);';
         $content .= '$("#daily-line-datas-line-size-' . $this->station_guid . '").prop("disabled", false);}';
 
-
-
         $content .= 'var sc_template = $("#daily-line-datas-template-' . $this->station_guid . '").val();';
         $content .= 'var sc_color = $("#daily-line-datas-color-' . $this->station_guid . '").val();';
         $content .= 'var sc_interpolation = $("#daily-line-datas-interpolation-' . $this->station_guid . '").val();';
@@ -158,11 +160,13 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var sc_valuescale = $("#daily-line-datas-valuescale-' . $this->station_guid . '").val();';
         $content .= 'var sc_guideline = $("#daily-line-datas-guideline-' . $this->station_guid . '").val();';
         $content .= 'var sc_height = $("#daily-line-datas-height-' . $this->station_guid . '").val();';
+        $content .= 'var sc_data = $("#daily-line-datas-data-' . $this->station_guid . '").val();';
 
-        $content .= 'var shortcode = "[live-weather-station-graph mode=\'daily\' type=\'line\' template=\'"+sc_template+"\' color=\'"+sc_color+"\' interpolation=\'"+sc_interpolation+"\' timescale=\'"+sc_timescale+"\' valuescale=\'"+sc_valuescale+"\' guideline=\'"+sc_guideline+"\' height=\'"+sc_height+"\' device_id_1=\'"+sc_device_1+"\' module_id_1=\'"+sc_module_1+"\' measurement_1=\'"+sc_measurement_1+"\' line_mode_1=\'"+sc_line_mode_1+"\' dot_style_1=\'"+sc_dot_style_1+"\' line_style_1=\'"+sc_line_style_1+"\' line_size_1=\'"+sc_line_size_1+"\']";';
+        $content .= 'var shortcode = "[live-weather-station-graph mode=\'daily\' type=\'line\' template=\'"+sc_template+"\' data=\'"+sc_data+"\' color=\'"+sc_color+"\' interpolation=\'"+sc_interpolation+"\' timescale=\'"+sc_timescale+"\' valuescale=\'"+sc_valuescale+"\' guideline=\'"+sc_guideline+"\' height=\'"+sc_height+"\' device_id_1=\'"+sc_device_1+"\' module_id_1=\'"+sc_module_1+"\' measurement_1=\'"+sc_measurement_1+"\' line_mode_1=\'"+sc_line_mode_1+"\' dot_style_1=\'"+sc_dot_style_1+"\' line_style_1=\'"+sc_line_style_1+"\' line_size_1=\'"+sc_line_size_1+"\']";';
 
-        $content .= '$.post( "' . LWS_AJAX_URL . '", { action: "lws_query_graph_code", cache:"no_cache", mode:"daily", type:"line", template:sc_template, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, device_id_1:sc_device_1, module_id_1:sc_module_1, measurement_1:sc_measurement_1, line_mode_1:sc_line_mode_1, dot_style_1:sc_dot_style_1, line_style_1:sc_line_style_1, line_size_1:sc_line_size_1}).done(function(data) {$("#lws-graph-preview").html(data);});';
-
+        $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
+        $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
+        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"daily", type:"line", template:sc_template, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, device_id_1:sc_device_1, module_id_1:sc_module_1, measurement_1:sc_measurement_1, line_mode_1:sc_line_mode_1, dot_style_1:sc_dot_style_1, line_style_1:sc_line_style_1, line_size_1:sc_line_size_1}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
 
         $content .= '$("#daily-line-datas-shortcode-' . $this->station_guid . '").html(shortcode);});';
         $content .= '$("#daily-line-datas-module-' . $this->station_guid . '" ).change();';

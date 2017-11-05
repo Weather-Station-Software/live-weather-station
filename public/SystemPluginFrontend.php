@@ -112,7 +112,7 @@ class Frontend {
                 }
             }
         }
-        $result = $this->graph_query($attributes, true);
+        $result = $this->graph_query($this->graph_prepare($attributes), true);
         exit ($result['values']);
     }
 
