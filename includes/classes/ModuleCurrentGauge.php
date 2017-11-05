@@ -165,8 +165,8 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'if (sc_size=="small") {$("#' . $this->fingerprint . '").width(100).height(100);}';
         $content .= 'if (sc_size=="medium") {$("#' . $this->fingerprint . '").width(225).height(225);}';
         $content .= 'if (sc_size=="large" || sc_size=="scalable") {$("#' . $this->fingerprint . '" ).width(350).height(350);}';
-        $content .= '$("#justgage-bg-' . $this->station_guid . '").addClass("spinner");';
-        $content .= '$("#justgage-bg-' . $this->station_guid . '").addClass("is-active");';
+        $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
+        $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
         $content .= 'var http = new XMLHttpRequest();';
         $content .= 'var params = "action=lws_query_justgage_config";';
         $content .= 'params = params+"&id=' . $this->fingerprint . '";';
@@ -185,8 +185,8 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'http.onreadystatechange = function () {';
         $content .= 'if (http.readyState == 4 && http.status == 200) {';
         $content .= 'var g' . $this->fingerprint . ' = new JustGage(JSON.parse(http.responseText));';
-        $content .= '$("#justgage-bg-' . $this->station_guid . '").removeClass("is-active");';
-        $content .= '$("#justgage-bg-' . $this->station_guid . '").removeClass("spinner");';
+        $content .= '$(".lws-preview-id-spinner").removeClass("is-active");';
+        $content .= '$(".lws-preview-id-spinner").removeClass("spinner");';
         $content .= '$("#justgage-bg-color-' . $this->station_guid . '").change();}};';
         $content .= 'http.send(params);});';
 

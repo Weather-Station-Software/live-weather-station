@@ -140,20 +140,24 @@ trait Conversion {
     }
 
     /**
-     * Converts an UTC date into the correct format (all Netatmo timestamps are UTC).
+     * Converts an UTC date into the correct format.
      *
-     * @param string  $ts The UTC MySql datetime to be converted.
-     * @param string $tz Optional. The timezone.
-     * @return integer Corrected timestamp.
-     * @since  3.4.0
+     * @param string $ts The UTC MySql datetime to be converted.
+     * @param string $tz The timezone.
+     * @return string Date "offsetted" to the given timezone.
+     * @since 3.4.0
      */
-    public static function get_converted_from_mysql_utc($ts, $tz='UTC') {
-        $datetime = new \DateTime($ts, new \DateTimeZone('UTC'));
-        $offset = new \DateTime($ts, new \DateTimeZone($tz));
-        /*if ($tz != 'UTC') {
-            $datetime->setTimezone(new \DateTimeZone($tz));
-        }*/
-        return $datetime->getTimestamp() + $offset->getOffset();
+    public static function get_js_date_from_mysql_utc($ts, $tz) {
+        $utc_tz = new \DateTimeZone('UTC');
+        $target_tz = new \DateTimeZone($tz);
+        $utc_date = new \DateTime($ts, $utc_tz);
+
+        $shift = get_option('gmt_offset', 0) * 3600;
+
+        $result = (string)($utc_date->getTimestamp()+ $target_tz->getOffset($utc_date) - $shift).'000';
+
+
+        return $result;
     }
 
     /**
@@ -190,7 +194,6 @@ trait Conversion {
      * @param   string  $format Optional. The time format.
      * @return  string  Formatted time relative to the local timezone.
      * @since    1.0.0
-     * @access   protected
      */
     public static function get_time_from_mysql_utc($ts, $tz='', $format='-') {
         if ($format == '-') {
@@ -212,7 +215,6 @@ trait Conversion {
      * @param   integer $from The UTC timestamp from which the difference must be computed (as today).
      * @return  string  Human readable time difference.
      * @since    1.0.0
-     * @access   protected
      */
     public static function get_time_diff_from_utc($from) {
         if ($from == -1) {

@@ -224,8 +224,8 @@ class Meter extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$("#steelmeter-datas-index-color-' . $this->station_guid . '").prop("disabled", false);}';
         $content .= 'if (sc_index_style.indexOf("none") > -1) {';
         $content .= '$("#steelmeter-datas-index-color-' . $this->station_guid . '").prop("disabled", true);}';
-        $content .= '$("#steelmeter-bg-' . $this->station_guid . '").addClass("spinner");';
-        $content .= '$("#steelmeter-bg-' . $this->station_guid . '").addClass("is-active");';
+        $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
+        $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
         $content .= '$("#' . $this->fingerprint . '" ).empty();';
         $content .= 'if (sc_size=="small") {var wsize = 150;}';
         $content .= 'if (sc_size=="medium") {var wsize = 200;}';
@@ -302,8 +302,8 @@ class Meter extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'if (sc_design.indexOf("altimeter-") > -1) {';
         $content .= 'g' . $this->fingerprint . '.setValue(values.value);}}};';
         $content .= 'http2.send(params2);';
-        $content .= '$("#steelmeter-bg-' . $this->station_guid . '").removeClass("spinner");';
-        $content .= '$("#steelmeter-bg-' . $this->station_guid . '").removeClass("is-active");}};';
+        $content .= '$(".lws-preview-id-spinner").removeClass("spinner");';
+        $content .= '$(".lws-preview-id-spinner").removeClass("is-active");}};';
         $content .= 'http.send(params);}); ';
 
         $content .= '$("#steelmeter-datas-module-' . $this->station_guid . '" ).change();';
