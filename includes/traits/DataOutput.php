@@ -257,7 +257,9 @@ trait Output {
                         if ($arg['line_size'] == 'thick') {
                             $info['strokeWidth'] = 3;
                         }
-                        $info['classed'] = implode(',', $classes);
+                        if (count($classes) > 0) {
+                            $info['classed'] = implode(',', $classes);
+                        }
                         if ($json) {
                             $result['values'][] = $this->jsonify($info, $set);
                         }
@@ -697,6 +699,7 @@ trait Output {
         $items = array();
         for ($i = 1; $i <= 8; $i++) {
             if (array_key_exists('device_id_'.$i, $attributes)) {
+                if ($attributes['measurement_'.$i] == 'none') { break;}
                 $item = array();
                 foreach ($this->graph_allowed_serie as $param) {
                     if (array_key_exists($param.'_'.$i, $attributes)) {
@@ -750,8 +753,11 @@ trait Output {
         $value_params = $this->graph_prepare($attributes);
         $items = $value_params['args'];
         $cpt = count($items);
+        if ($cpt == 0) {
+            return __('Malformed shortcode. Please verify it!', 'live-weather-station');
+        }
         if ($cpt < 3) {
-            $cpt = 3;
+        $cpt = 3;
         }
         if ($cpt > 8) {
             $cpt = 8;

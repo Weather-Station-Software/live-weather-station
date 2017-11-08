@@ -419,9 +419,9 @@ trait Generator {
         $real = OWM_Base_Collector::is_real_station($ref['device_id']);
         $txt = OWM_Base_Collector::is_txt_station($ref['device_id']);
         $wflw = OWM_Base_Collector::is_wflw_station($ref['device_id']);
-        /*if ($noned) {
-            $result[] = array($this->get_measurement_type('none'), 'none', array(), 'none');
-        }*/
+        if ($noned) {
+            $result[] = array('- ' . __('None', 'live-weather-station') . ' -', 'none', array(), 'none');
+        }
         switch (strtolower($ref['module_type'])) {
             case 'namain':
                 if ($aggregated) {
@@ -857,12 +857,12 @@ trait Generator {
                 $ref = array();
                 $ref['device_id'] = $data['station']['station_id'];
                 $ref['device_name'] = $data['station']['station_name'];
-                $ref['module_id'] = 'anone';
-                $ref['module_type'] = 'anone';
-                $ref['module_name'] = __('None', 'live-weather-station');
+                $ref['module_id'] = 'none';
+                $ref['module_type'] = 'none';
+                $ref['module_name'] = '- ' . __('None', 'live-weather-station') . ' -';
                 $ref['loc_timezone'] = $data['station']['loc_timezone'];
-                $modules[] = array (__('None', 'live-weather-station'), 'anone', array(__('None', 'live-weather-station'), 'anone', array(), 'anone'));
-                $noned = false;
+                $modules[] = array ('- ' . __('None', 'live-weather-station') . ' -', 'none', array(array('- ' . __('None', 'live-weather-station') . ' -', 'none', array(), 'none')));
+                //$noned = false;
             }
             if ($aggregated  && ($netatmo || $wug || $raw || $real || $txt || $wflw)) {
                 $ref = array();
@@ -1483,6 +1483,20 @@ trait Generator {
     }
 
     /**
+     * Get comparable dimensions array.
+     *
+     * @return array An array containing the comparable dimensions ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_comparable_dimensions_js_array() {
+        $result = array();
+        foreach ($this->comparable_dimensions as $dimension) {
+            $result[] = array($dimension, $this->get_dimension_name($dimension, true));
+        }
+        return $result;
+    }
+
+    /**
      * Get guideline array.
      *
      * @return array An array containing the guideline ready to convert to a JS array.
@@ -1628,11 +1642,13 @@ trait Generator {
      * @return array An array containing the line size ready to convert to a JS array.
      * @since 3.4.0
      */
-    protected function get_graph_data_js_array() {
+    protected function get_graph_data_js_array($with_refresh=true) {
         $result = array();
         $result[] = array('inline',  __('Inline', 'live-weather-station'));
         $result[] = array('ajax',  __('Ajax preload', 'live-weather-station'));
-        $result[] = array('ajax_refresh',  __('Ajax refresh', 'live-weather-station'));
+        if ($with_refresh) {
+            $result[] = array('ajax_refresh',  __('Ajax refresh', 'live-weather-station'));
+        }
         return $result;
     }
 
