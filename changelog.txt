@@ -1,13 +1,15 @@
 
 #3.4.0 / November XXXXth, 2017
 
-* New: Weather Station now collects data for daily graph and values and historical rendering.
+* New: Weather Station now compiles data as daily and historical values.
+* New: new single line chart for daily graph with tons of options and settings.
 * New: the scheduled tasks tab allows to proceed on execution and reschedule of tasks belonging to the new history pool.
 * New: the task analytics graphs now takes care of the new history pool.
 * Improvement: the station view has been totally redesigned and is now faster to load.
 * Improvement: plugin admin (all tabs and screens) is now fully responsive, you can use it easily on your smartphone or tablet.
 * Improvement: the widgets names contains now an icon for an easier identification in the customizer.
 * Improvement: the textual shortcodes can now render dimension names of measurements (i.e. length, speed, etc.).
+* Improvement: if a cache manager is installed, Weather Station can now flush its cache when the cache manager does it (settings in *system* tab). Compatible with Autoptimize, Hyper Cache, W3 Total Cache, WP Rocket and WP Super Cache.
 * Bug fix: in some cases, the plugin try to download translations statistics at each loading.
 * Bug fix: with some browsers, the layout of shortcode window is ugly.
 * Bug fix: a PHP/MySQL error may appears when using "indoor" widget when no collected station provides this type of data.

@@ -47,7 +47,7 @@ class Lcd extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     protected function prepare() {
-        $js_array_lcd = $this->get_all_stations_array(false, true, true, false, false, false, false, array($this->station_guid));
+        $js_array_lcd = $this->get_all_stations_array(false, true, true, false, false, false, false, false, array($this->station_guid));
         if (array_key_exists($this->station_guid, $js_array_lcd)) {
             if (array_key_exists(2, $js_array_lcd[$this->station_guid])) {
                 $this->data = $js_array_lcd[$this->station_guid][2];
