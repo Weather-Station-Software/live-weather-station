@@ -52,10 +52,11 @@ trait Description {
      *
      * @param string $type The type of the module.
      * @param boolean $module Optional. Get the module name.
+     * @param boolean $nice Optional. Get the module nice name.
      * @return string The type of the module in plain text.
      * @since 1.0.0
      */
-    protected function get_module_type($type, $module=true) {
+    protected function get_module_type($type, $module=true, $nice=false) {
         switch (strtolower($type)) {
             case 'namain':
                 $result = __('Base station', 'live-weather-station');
@@ -116,6 +117,11 @@ trait Description {
                 break;
             default:
                 $result = __('Unknown module', 'live-weather-station');
+        }
+        if ($nice) {
+            if (strpos($result, ' (') > 0) {
+                $result = substr($result, 0, strpos($result, ' ('));
+            }
         }
         return $result;
     }
@@ -591,6 +597,9 @@ trait Description {
                 break;
             case 'speed':
                 $result =  __('Speed', 'live-weather-station');
+                break;
+            case 'rate':
+                $result =  __('Rate', 'live-weather-station');
                 break;
             case 'pressure':
             case 'pressure-h':

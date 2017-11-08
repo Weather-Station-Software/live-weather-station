@@ -3,6 +3,7 @@
 namespace WeatherStation\System\Plugin;
 
 use WeatherStation\System\Logs\Logger;
+use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Options\Handling as Options;
 use WeatherStation\Data\Type\Description as Type_Description;
 use WeatherStation\Data\Unit\Description as Unit_Description;
@@ -141,7 +142,8 @@ class Core {
 	 * @since 1.0.0
 	 */
 	private function define_public_hooks() {
-		$plugin_public = new Frontend( $this->get_Live_Weather_Station(), $this->get_version() );
+		$plugin_public = new Frontend( $this->get_Live_Weather_Station(), $this->get_version());
+		$this->define_conditional_filters($plugin_public);
         $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_scripts', 1);
         $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_styles', 1);
         $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
@@ -174,6 +176,39 @@ class Core {
         add_shortcode( 'live-weather-station-statistics', array($plugin_public, 'admin_statistics_shortcodes'));
         add_shortcode( 'live-weather-station-translations', array($plugin_public, 'admin_translations_shortcodes'));
 	}
+
+    /**
+     * Register all of conditional hooks related to the frontend functionality of the plugin.
+     *
+     * @since 3.4.0
+     */
+    private function define_conditional_filters($instance) {
+        if ((bool)get_option('live_weather_station_purge_cache')) {
+            if (LWS_IC_WPROCKET) {
+                $this->loader->add_action('after_rocket_clean_domain', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+            }
+            if (LWS_IC_WPSC) {
+                $this->loader->add_action('wp_cache_gc', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+            }
+            if (LWS_IC_W3TC) {
+                $this->loader->add_action('w3tc_flush_after_fragmentcache', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+                $this->loader->add_action('w3tc_flush_after_fragmentcache_group', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+                $this->loader->add_action('w3tc_flush_after_minify', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+                $this->loader->add_action('w3tc_cdn_purge_all_after', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+                $this->loader->add_action('w3tc_cdn_purge_files_after', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+                $this->loader->add_action('w3tc_flush_post', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+                $this->loader->add_action('w3tc_flush_posts', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+                $this->loader->add_action('w3tc_flush_all', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+                $this->loader->add_action('w3tc_flush_url', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+            }
+            if (LWS_IC_AUTOPTIMIZE) {
+                $this->loader->add_action('autoptimize_action_cachepurged', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+            }
+            if (LWS_IC_HC) {
+                $this->loader->add_action('hyper_cache_flush', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+            }
+        }
+    }
 
 	/**
 	 * Checks if an update is needed and if it the case, performs it.

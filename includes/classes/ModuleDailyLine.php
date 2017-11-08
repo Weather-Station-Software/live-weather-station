@@ -47,7 +47,7 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     protected function prepare() {
-        $js_array_dailyline = $this->get_all_stations_array(false, false, true, true, true, true, false, array($this->station_guid));
+        $js_array_dailyline = $this->get_all_stations_array(false, false, true, true, true, true, false, false, array($this->station_guid));
         if (array_key_exists($this->station_guid, $js_array_dailyline)) {
             if (array_key_exists(2, $js_array_dailyline[$this->station_guid])) {
                 $this->data = $js_array_dailyline[$this->station_guid][2];
@@ -74,6 +74,7 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_key_value_option_select('daily-line-datas-line-size-'. $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular');
         $content .= $this->get_placeholder_option_select();
         $content .= $this->get_placeholder_option_select();
+        $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
         return $this->get_box('lws-datasource-id', $this->datasource_title, $content);
     }
@@ -88,12 +89,13 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
         $content .= $this->get_key_value_option_select('daily-line-datas-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
         $content .= $this->get_key_value_option_select('daily-line-datas-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array());
-        $content .= $this->get_key_value_option_select('daily-line-datas-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_interpolation_js_array(), true, 'linear');
-        $content .= $this->get_key_value_option_select('daily-line-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(), true, 'auto');
-        $content .= $this->get_key_value_option_select('daily-line-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(), true, 'auto');
+        $content .= $this->get_key_value_option_select('daily-line-datas-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_label_js_array(), true, 'standard');
         $content .= $this->get_key_value_option_select('daily-line-datas-guideline-'. $this->station_guid, __('Hint', 'live-weather-station'), $this->get_guideline_js_array(), true, 'standard');
         $content .= $this->get_key_value_option_select('daily-line-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
-        $content .= $this->get_key_value_option_select('daily-line-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'ajax');
+        $content .= $this->get_key_value_option_select('daily-line-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(), true, 'auto');
+        $content .= $this->get_key_value_option_select('daily-line-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(), true, 'auto');
+        $content .= $this->get_key_value_option_select('daily-line-datas-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_interpolation_js_array(), true, 'none');
+        $content .= $this->get_key_value_option_select('daily-line-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }
@@ -135,6 +137,8 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$("#daily-line-datas-guideline-' . $this->station_guid . '").change(function() {';
         $content .= '$("#daily-line-datas-height-' . $this->station_guid . '" ).change();});';
         $content .= '$("#daily-line-datas-height-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#daily-line-datas-label-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#daily-line-datas-label-' . $this->station_guid . '").change(function() {';
         $content .= '$("#daily-line-datas-data-' . $this->station_guid . '" ).change();});';
 
         $content .= '$("#daily-line-datas-data-' . $this->station_guid . '").change(function() {';
@@ -160,13 +164,14 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var sc_valuescale = $("#daily-line-datas-valuescale-' . $this->station_guid . '").val();';
         $content .= 'var sc_guideline = $("#daily-line-datas-guideline-' . $this->station_guid . '").val();';
         $content .= 'var sc_height = $("#daily-line-datas-height-' . $this->station_guid . '").val();';
+        $content .= 'var sc_label = $("#daily-line-datas-label-' . $this->station_guid . '").val();';
         $content .= 'var sc_data = $("#daily-line-datas-data-' . $this->station_guid . '").val();';
 
-        $content .= 'var shortcode = "[live-weather-station-graph mode=\'daily\' type=\'line\' template=\'"+sc_template+"\' data=\'"+sc_data+"\' color=\'"+sc_color+"\' interpolation=\'"+sc_interpolation+"\' timescale=\'"+sc_timescale+"\' valuescale=\'"+sc_valuescale+"\' guideline=\'"+sc_guideline+"\' height=\'"+sc_height+"\' device_id_1=\'"+sc_device_1+"\' module_id_1=\'"+sc_module_1+"\' measurement_1=\'"+sc_measurement_1+"\' line_mode_1=\'"+sc_line_mode_1+"\' dot_style_1=\'"+sc_dot_style_1+"\' line_style_1=\'"+sc_line_style_1+"\' line_size_1=\'"+sc_line_size_1+"\']";';
+        $content .= 'var shortcode = "[live-weather-station-graph mode=\'daily\' type=\'line\' template=\'"+sc_template+"\' data=\'"+sc_data+"\' color=\'"+sc_color+"\' label=\'"+sc_label+"\' interpolation=\'"+sc_interpolation+"\' timescale=\'"+sc_timescale+"\' valuescale=\'"+sc_valuescale+"\' guideline=\'"+sc_guideline+"\' height=\'"+sc_height+"\' device_id_1=\'"+sc_device_1+"\' module_id_1=\'"+sc_module_1+"\' measurement_1=\'"+sc_measurement_1+"\' line_mode_1=\'"+sc_line_mode_1+"\' dot_style_1=\'"+sc_dot_style_1+"\' line_style_1=\'"+sc_line_style_1+"\' line_size_1=\'"+sc_line_size_1+"\']";';
 
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
-        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"daily", type:"line", template:sc_template, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, device_id_1:sc_device_1, module_id_1:sc_module_1, measurement_1:sc_measurement_1, line_mode_1:sc_line_mode_1, dot_style_1:sc_dot_style_1, line_style_1:sc_line_style_1, line_size_1:sc_line_size_1}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
+        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"daily", type:"line", template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, device_id_1:sc_device_1, module_id_1:sc_module_1, measurement_1:sc_measurement_1, line_mode_1:sc_line_mode_1, dot_style_1:sc_dot_style_1, line_style_1:sc_line_style_1, line_size_1:sc_line_size_1}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
 
         $content .= '$("#daily-line-datas-shortcode-' . $this->station_guid . '").html(shortcode);});';
         $content .= '$("#daily-line-datas-module-' . $this->station_guid . '" ).change();';

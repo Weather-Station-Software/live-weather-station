@@ -49,7 +49,7 @@ trait Output {
         'day_length_a', 'dawn_length_a','dawn_length_n', 'dawn_length_c', 'dusk_length_a', 'dusk_length_n',
         'dusk_length_c','saturation_vapor_pressure','saturation_absolute_humidity','equivalent_potential_temperature');
     private $graph_allowed_serie = array('device_id', 'module_id', 'measurement', 'line_mode', 'dot_style', 'line_style', 'line_size');
-    private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data');
+    private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data');
 
 
     /**
@@ -149,21 +149,14 @@ trait Output {
             foreach ($args as $arg) {
                 if (strpos($arg['device_id'], ':') == 2) {
                     $station_id = $arg['device_id'];
-                    $result['legend']['unit'] = $this->output_unit($arg['measurement']);
                     break;
                 }
             }
             if ($station_id != '') {
                 global $wpdb;
-                // Get station information
-                $station = $this->get_station_informations_by_station_id($station_id);
-                /*$date_offset = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
-                $offset = $date_offset->getOffset();
-                $gmt_offset = get_option( 'gmt_offset' );
-                if (!$gmt_offset) {
-                    $gmt_offset = 0;
-                }
-                $shift = $gmt_offset * 3600;*/
+                // Get extended station information
+                $station = $this->get_extended_station_informations_by_station_id($station_id);
+
                 // Compute date limits
                 if ($mode == 'daily') {
                     $min = date('Y-m-d H:i:s', self::get_local_today_midnight($station['loc_timezone']));
@@ -181,6 +174,7 @@ trait Output {
 
                 foreach ($args as $arg) {
                     if (strpos($arg['module_id'], ':') == 2) {
+                        $module_type = 'NAMain';
                         $sql = "SELECT `timestamp`, `module_type`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "';";
                         try {
                             $query = (array)$wpdb->get_results($sql);
@@ -188,15 +182,16 @@ trait Output {
                             $set = array();
                             foreach ($query_a as $val) {
                                 $a = (array)$val;
+                                $module_type = $a['module_type'];
                                 $a['timestamp'] = self::get_js_date_from_mysql_utc($a['timestamp'], $station['loc_timezone']);
-                                $a['measure_value'] = $this->output_value($a['measure_value'], $arg['measurement']);
+                                $a['measure_value'] = $this->output_value($a['measure_value'], $arg['measurement'], false, false, $a['module_type'] );
                                 if ($start) {
                                     $ymin = $a['measure_value'];
                                     $ymax = $a['measure_value'];
-                                    $ydmin = $this->get_measurement_min($arg['measurement'], $a['module_type']);
-                                    $ydmax = $this->get_measurement_max($arg['measurement'], $a['module_type']);
-                                    $yamax = $this->get_measurement_alarm_max($arg['measurement'], $a['module_type']);
-                                    $yamin = $this->get_measurement_alarm_min($arg['measurement'], $a['module_type']);
+                                    $ydmin = $this->get_measurement_min($arg['measurement'], $module_type);
+                                    $ydmax = $this->get_measurement_max($arg['measurement'], $module_type);
+                                    $yamax = $this->get_measurement_alarm_max($arg['measurement'], $module_type);
+                                    $yamin = $this->get_measurement_alarm_min($arg['measurement'], $module_type);
                                     $start = false;
                                 }
                                 if ($a['measure_value'] > $ymax) {
@@ -209,16 +204,16 @@ trait Output {
                             }
                             if (count($query_a) > 0) {
                                 $a = (array)$query_a[0];
-                                if ($this->get_measurement_max($arg['measurement'], $a['module_type']) > $ydmax) {
-                                    $ydmax = $this->get_measurement_max($arg['measurement'], $a['module_type']);
+                                if ($this->get_measurement_max($arg['measurement'], $module_type) > $ydmax) {
+                                    $ydmax = $this->get_measurement_max($arg['measurement'], $module_type);
                                 }
-                                if ($this->get_measurement_min($arg['measurement'], $a['module_type']) < $ydmin) {
-                                    $ydmin = $this->get_measurement_min($arg['measurement'], $a['module_type']);
+                                if ($this->get_measurement_min($arg['measurement'], $module_type) < $ydmin) {
+                                    $ydmin = $this->get_measurement_min($arg['measurement'], $module_type);
                                 }
-                                if ($this->get_measurement_alarm_max($arg['measurement'], $a['module_type']) > $yamax) {
+                                if ($this->get_measurement_alarm_max($arg['measurement'], $module_type) > $yamax) {
                                     $yamax = $this->get_measurement_alarm_max($arg['measurement'], $a['module_type']);
                                 }
-                                if ($this->get_measurement_alarm_min($arg['measurement'], $a['module_type']) < $yamin) {
+                                if ($this->get_measurement_alarm_min($arg['measurement'], $module_type) < $yamin) {
                                     $yamin = $this->get_measurement_alarm_min($arg['measurement'], $a['module_type']);
                                 }
                             }
@@ -227,7 +222,22 @@ trait Output {
                             $set = array();
                         }
                         $info = array();
-                        $info['key'] = $this->get_measurement_type($arg['measurement']);
+                        $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                        $extra = array();
+                        $extra['measurement_type'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                        $extra['module_type'] = $module_type;
+                        $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
+                        $extra['module_name'] = $this->get_module_type($module_type, false, true);
+                        $extra['station_name'] = $station['station_name'];
+                        $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
+                        $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
+                        $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
+                        $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
+                        if (array_key_exists($arg['module_id'], $station['modules_names'])) {
+                            $extra['module_name'] = $station['modules_names'][$arg['module_id']];
+                        }
+                        $result['extras'][] = $extra;
+                        $result['legend']['unit'] = $this->output_unit($arg['measurement'], $module_type);
                         if ($arg['line_mode'] == 'area') {
                             $info['area'] = true;
                         }
@@ -288,7 +298,49 @@ trait Output {
     }
 
     /**
-     * Get the Y doamin boundaries.
+     * Get the title.
+     *
+     * @param array $values The values.
+     * @param string $type The type of graph.
+     * @param string $mode The mode of label.
+     * @param string $sep Optional. The separator.
+     * @return string The title.
+     * @since 3.4.0
+     */
+    private function graph_title($values, $type, $mode, $sep=' - ') {
+        $result = '';
+        switch ($type) {
+            case 'line':
+                switch ($mode) {
+                    case 'simple':  // dimension for lines
+                        $result = ucwords($values['extras'][0]['measurement_type']);
+                        break;
+                    case 'generic':
+                        $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name_generic']);
+                        break;
+                    case 'named':
+                        $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name']);
+                        break;
+                    case 'station':
+                        $result = ucwords($values['extras'][0]['station_name']) . $sep . ucwords($values['extras'][0]['measurement_type']);
+                        break;
+                    case 'located':
+                        $result = ucwords($values['extras'][0]['station_loc']) . $sep . ucwords($values['extras'][0]['measurement_type']);
+                        break;
+                    case 'coord':
+                        $result = ucwords($values['extras'][0]['station_coord']) . $sep . $result = ucwords($values['extras'][0]['station_alt']) . $sep . ucwords($values['extras'][0]['measurement_type']);
+                        break;
+                    case 'full':
+                        $result = ucwords($values['extras'][0]['station_name'])  . $sep . ucwords($values['extras'][0]['module_name']) . $sep . ucwords($values['extras'][0]['measurement_type']);
+                        break;
+                }
+                break;
+        }
+        return $result;   // '  ●  '
+    }
+
+    /**
+     * Get the Y domain boundaries.
      *
      * @param array $values The values.
      * @param string $valuescale The type of scale.
@@ -408,12 +460,12 @@ trait Output {
             for ($i = 1; $i <= (int)floor($amplitude+1); $i+=$step) {
                 $val = (int)floor($domain['min'] + $i);
                 if ($i == 1) {
-                    if ($domain['min'] != $val) {
+                    if ($domain['min'] + ($amplitude/20) < $val) {
                         $ticks[] = $val;
                     }
                 }
                 else {
-                    if ($domain['max'] >= $val) {
+                    if ($domain['max'] + ($amplitude/40) > $val) {
                         $ticks[] = $val;
                     }
                 }
@@ -484,26 +536,19 @@ trait Output {
             case 'concentration-m':
             case 'concentration-b':
             case 'area-density':
-            //case 'density':
-            case 'humidity':
+            case 'speed':
             case 'irradiance':
             case 'illuminance':
-            case 'specific-energy':
-            case 'specific-energy-k':
-            case 'rain':
-            case 'rain_hour_aggregated':
-            case 'rain_day_aggregated':
-            case 'rain_month_aggregated':
-            case 'rain_season_aggregated':
-            case 'rain_year_aggregated':
-            case 'rain_yesterday_aggregated':
+            case 'rate':
+            case 'length':
                 $result = 'top';
                 break;
             default:
                 $result = 'fixed';
         }
         switch ($measurement) {
-        case 'cloud_ceiling':
+            case 'cloud_ceiling':
+            case 'rain':
                 $result = 'top';
                 break;
         }
@@ -519,39 +564,124 @@ trait Output {
      * @since 3.4.0
      */
     private function graph_template($id) {
-        $prop = array();
+        $prop = array();      // light dark organic mineral
         switch ($id) {
             case 'night':
                 $prop['container'] = 'background-color:#101030;border-radius: 3px;border: solid 1px #2D2C3F;';
                 $prop['nv-axis-line'] = 'stroke: #2D2C40;';
                 $prop['nv-axis-domain'] = 'stroke: #4b4888;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
-                $prop['text'] = 'fill: #4b4888;';
+                $prop['text'] = 'font:normal 12px "Lucida Sans Unicode", "Lucida Grande", sans-serif;fill: #4b4888;';
                 $prop['spinner'] = '#FFFFFF';
+                $prop['separator'] = '  ●  ';
+                break;
+            case 'modern':
+                $prop['container'] = 'background-color:#EEEEEE;border-radius: 3px;border: solid 1px #CCCCCC;';
+                $prop['nv-axis-line'] = 'stroke: #DDDDDD;';
+                $prop['nv-axis-domain'] = 'stroke: #666666;stroke-opacity: 1;';
+                $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
+                $prop['text'] = 'font:normal 12px Verdana, Geneva, sans-serif;fill: #666666;';
+                $prop['spinner'] = '#666666';
+                $prop['separator'] = '  ●  ';
+                break;
+            case 'light':
+                $prop['container'] = 'background-color:#FAFAFA;border-radius: 3px;border: solid 1px #EAEAEA;';
+                $prop['nv-axis-line'] = 'stroke: #F0F0F0;';
+                $prop['nv-axis-domain'] = 'stroke: #D0D0D0;stroke-opacity: 1;';
+                $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
+                $prop['text'] = 'font:normal 12px Verdana, Geneva, sans-serif;fill: #909090;';
+                $prop['spinner'] = '#909090';
+                $prop['separator'] = '  ●  ';
+                break;
+            case 'ws':
+                $prop['container'] = 'background-color:#484848;border-radius: 3px;border: solid 1px #F8DC65;';
+                $prop['nv-axis-line'] = 'stroke: #666666;';
+                $prop['nv-axis-domain'] = 'stroke: #F8DC65;stroke-opacity: 1;';
+                $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
+                $prop['text'] = 'font:normal 12px Verdana, Geneva, sans-serif;fill: #F8DC65;';
+                $prop['spinner'] = '#F8DC65';
+                $prop['separator'] = '  ●  ';
+                break;
+            case 'dark':
+                $prop['container'] = 'background-color:#40424D;border-radius: 3px;border: solid 1px #303137;';
+                $prop['nv-axis-line'] = 'stroke: #515B69;';
+                $prop['nv-axis-domain'] = 'stroke: #8792A2;stroke-opacity: 1;';
+                $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
+                $prop['text'] = 'font:normal 12px Verdana, Geneva, sans-serif;fill: #878A9A;';
+                $prop['spinner'] = '#878A9A';
+                $prop['separator'] = '  ●  ';
+                break;
+            case 'sand':
+                $prop['container'] = 'background-color:#D7C2A7;border-radius: 5px;border: solid 1px #897458;';
+                $prop['nv-axis-line'] = 'stroke: #A09280;';
+                $prop['nv-axis-domain'] = 'stroke: #897458;stroke-opacity: 1;';
+                $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
+                $prop['text'] = 'font:normal 12px "Palatino Linotype", "Book Antiqua", Palatino, serif;fill: #9B7543;';
+                $prop['spinner'] = '#9B7543';
+                $prop['separator'] = '  ●  ';
+                break;
+            case 'organic':
+                $prop['container'] = 'background-color:#BACEB7;border-radius: 3px;border: solid 1px #506040;';
+                $prop['nv-axis-line'] = 'stroke: #A3B293;';
+                $prop['nv-axis-domain'] = 'stroke: #506040;stroke-opacity: 1;';
+                $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
+                $prop['text'] = 'font:normal 12px Georgia, serif;fill: #605D40;';
+                $prop['spinner'] = '#605D40';
+                $prop['separator'] = '  ●  ';
+                break;
+            case 'mineral':
+                $prop['container'] = 'background-color:#C0CED8;border-radius: 3px;border: solid 1px #575A6A;';
+                $prop['nv-axis-line'] = 'stroke: #7A8890;';
+                $prop['nv-axis-domain'] = 'stroke: #506040;stroke-opacity: 1;';
+                $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
+                $prop['text'] = 'font:normal 12px "Trebuchet MS", Helvetica, sans-serif;fill: #494D5F;';
+                $prop['spinner'] = '#494D5F';
+                $prop['separator'] = '  ●  ';
                 break;
             case 'bwi':
                 $prop['container'] = 'background-color:#000000;border-radius: 3px;border: solid 1px #FFFFFF;';
                 $prop['nv-axis-line'] = 'stroke: #FFFFFF;';
                 $prop['nv-axis-domain'] = 'stroke: #FFFFFF;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
-                $prop['text'] = 'fill: #FFFFFF;';
+                $prop['text'] = 'font:normal 12px Arial, Helvetica, sans-serif;fill: #FFFFFF;';
                 $prop['spinner'] = '#FFFFFF';
+                $prop['separator'] = '  ●  ';
                 break;
             case 'bw':
                 $prop['container'] = 'background-color:#FFFFFF;border-radius: 3px;border: solid 1px #000000;';
                 $prop['nv-axis-line'] = 'stroke: #000000;';
                 $prop['nv-axis-domain'] = 'stroke: #000000;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
-                $prop['text'] = 'fill: #000000;';
+                $prop['text'] = 'font:normal 12px Arial, Helvetica, sans-serif;fill: #000000;';
                 $prop['spinner'] = '#000000';
+                $prop['separator'] = '  ●  ';
+                break;
+            case 'terminal':
+                $prop['container'] = 'background-color:#AAAAAA;border: solid 1px #0000AA;';
+                $prop['nv-axis-line'] = 'stroke: #AAAAAA;';
+                $prop['nv-axis-domain'] = 'stroke: #0000AA;stroke-opacity: 1;';
+                $prop['nv-axislabel'] = 'font-size: 15px;';
+                $prop['text'] = 'font:normal 12px "Courier New", Courier, monospace;fill: #0000AA;';
+                $prop['spinner'] = '#0000AA';
+                $prop['separator'] = ' / ';
+                break;
+            case 'console':
+                $prop['container'] = 'background-color:#CCCCCC;border: solid 1px #0099CC;';
+                $prop['nv-axis-line'] = 'stroke: #0099CC;';
+                $prop['nv-axis-domain'] = 'stroke: #0099CC;stroke-opacity: 1;';
+                $prop['nv-axislabel'] = 'font-size: 15px;letter-spacing:1px;';
+                $prop['text'] = 'font:normal 12px "Lucida Console", Monaco, monospace;fill: #0099CC;';
+                $prop['spinner'] = '#0099CC';
+                $prop['separator'] = ' - ';
                 break;
             default:
                 $prop['container'] = '';
                 $prop['nv-axis-line'] = '';
                 $prop['nv-axis-domain'] = 'stroke-opacity: .75;';
-                $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
-                $prop['text'] = '';
+                $prop['nv-axislabel'] = 'font-size: 15px;letter-spacing:1px;';
+                $prop['text'] = 'font:normal 12px Arial, Helvetica, sans-serif;';
                 $prop['spinner'] = '#000000';
+                $prop['separator'] = '  ●  ';
         }
         return $prop;
     }
@@ -595,11 +725,12 @@ trait Output {
      * @since 3.4.0
      */
     public function graph_shortcodes($attributes) {
-        $_attributes = shortcode_atts( array('mode' => '', 'type' => '', 'template' => 'neutral', 'color' => 'Blues', 'interpolation' => 'linear', 'guideline' => 'none', 'height' => '300px', 'timescale' => 'auto', 'valuescale' => 'auto', 'data' => 'inline', 'cache' => 'cache'), $attributes );
+        $_attributes = shortcode_atts( array('mode' => '', 'type' => '', 'template' => 'neutral', 'color' => 'Blues', 'label' => 'none', 'interpolation' => 'linear', 'guideline' => 'none', 'height' => '300px', 'timescale' => 'auto', 'valuescale' => 'auto', 'data' => 'inline', 'cache' => 'cache'), $attributes );
         $mode = $_attributes['mode'];
         $type = $_attributes['type'];
         $color = $_attributes['color'];
         $data = $_attributes['data'];
+        $label = $_attributes['label'];
         $interpolation = $_attributes['interpolation'];
         $guideline = ($_attributes['guideline'] == 'interactive');
         $height = $_attributes['height'];
@@ -608,7 +739,12 @@ trait Output {
         $svg = 'svg' . substr ($fingerprint, strlen($fingerprint)-6, 80);
         $spinner = 'spinner' . substr ($fingerprint, strlen($fingerprint)-6, 80);
         $inter = 'inter' . substr ($fingerprint, strlen($fingerprint)-6, 80);
-
+        if ($mode == 'daily') {
+            $refresh = 120000 + random_int(-30000, 30000);
+        }
+        else {
+            $refresh = 3600000 + random_int(-90000, 90000);
+        }
 
         // prepare query params
         $value_params = $this->graph_prepare($attributes);
@@ -655,9 +791,9 @@ trait Output {
         if ($type == 'line' || $type == 'lines') {
             $ticks = $this->graph_ticks($domain, $valuescale, $measurement1, $height);
         }
+        $label_txt = $this->graph_title($values, $type, $label, $prop['separator']);
 
 
-        $label = 'BlahBlah - Blahbli...';
 
         // Render...
         $result = '';
@@ -684,7 +820,7 @@ trait Output {
             }
             $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dashed-line {stroke-dasharray:10,10;}' . PHP_EOL;
             $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dotted-line {stroke-dasharray:2,2;}' . PHP_EOL;
-            for ($i = 1; $i <= $cpt; $i++) {
+            for ($i = 1; $i <= count($items); $i++) {
                 if ($items[$i]['dot_style'] == 'small-dot') {
                     $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
                 }
@@ -704,22 +840,24 @@ trait Output {
             $result .= '</style>' . PHP_EOL;
 
             // BEGIN MAIN BODY
+            $body .= '      var shift' . $uniq . ' = new Date();' . PHP_EOL;
+            $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
             if ($fixed_timescale && $mode == 'daily') {
-                $body .= '    var minDomain' . $uniq . ' = new Date(' . $values['xdomain']['min'] . ');' . PHP_EOL;
-                $body .= '    var maxDomain' . $uniq . ' = new Date(' . $values['xdomain']['max'] . ');' . PHP_EOL;
+                $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
             if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
-                $body .= '    var h04Tick'.$uniq.' = new Date(' . ($values['xdomain']['min'] + 14400000) . ');' . PHP_EOL;
-                $body .= '    var h08Tick'.$uniq.' = new Date(' . ($values['xdomain']['min'] + 14400000*2) . ');' . PHP_EOL;
-                $body .= '    var h12Tick'.$uniq.' = new Date(' . ($values['xdomain']['min'] + 14400000*3) . ');' . PHP_EOL;
-                $body .= '    var h16Tick'.$uniq.' = new Date(' . ($values['xdomain']['min'] + 14400000*4) . ');' . PHP_EOL;
-                $body .= '    var h20Tick'.$uniq.' = new Date(' . ($values['xdomain']['min'] + 14400000*5) . ');' . PHP_EOL;
-                $body .= '    var h24Tick'.$uniq.' = new Date(' . ($values['xdomain']['min'] + 14400000*6 - 1000) . ');' . PHP_EOL;
+                $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['min'] + 14400000) . ');' . PHP_EOL;
+                $body .= '    var h08Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['min'] + 14400000*2) . ');' . PHP_EOL;
+                $body .= '    var h12Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['min'] + 14400000*3) . ');' . PHP_EOL;
+                $body .= '    var h16Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['min'] + 14400000*4) . ');' . PHP_EOL;
+                $body .= '    var h20Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['min'] + 14400000*5) . ');' . PHP_EOL;
+                $body .= '    var h24Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['min'] + 14400000*6 - 1000) . ');' . PHP_EOL;
             }
             $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '    nv.addGraph(function() {' . PHP_EOL;
             $body .= '       chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
-            $body .= '               .x(function(d) {return d[0]})' . PHP_EOL;
+            $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
             $body .= '               .y(function(d) {return d[1]})' . PHP_EOL;
             $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
             $body .= '               .showLegend(' . ($type == 'lines'?'true':'false') . ')' . PHP_EOL;
@@ -738,7 +876,7 @@ trait Output {
             else {
                 $body .= '               .useInteractiveGuideline(false);' . PHP_EOL;
             }
-            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
             if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([h04Tick'.$uniq.', h08Tick'.$uniq.', h12Tick'.$uniq.', h16Tick'.$uniq.', h20Tick'.$uniq.', h24Tick'.$uniq.']);' . PHP_EOL;
             }
@@ -762,7 +900,7 @@ trait Output {
 
 
         // FINAL RENDER
-        $result .= '<div class="module-' . $mode . '-' . $type . '" ><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:14px;height: ' . $height . ';"><svg id="' . $svg . '" style="overflow:visible"></svg></div></div>' . PHP_EOL;
+        $result .= '<div class="module-' . $mode . '-' . $type . '" ><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';"><svg id="' . $svg . '" style="overflow:visible"></svg></div></div>' . PHP_EOL;
         $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         if ($data == 'inline') {
@@ -804,7 +942,6 @@ trait Output {
             $result .= '    ' . $spinner . '.stop();' . PHP_EOL;
             if ($data == 'ajax_refresh') {
                 $result .= '    var ' . $inter . ' = setInterval(function() {';
-                $result .= '    console.log("ok");' . PHP_EOL;
                 $result .= '    ' . $spinner . '.spin(target);' . PHP_EOL;
                 $result .= '$.post( "' . LWS_AJAX_URL . '", ' . $arg . ').done(function(data) {';
                 $result .= '    data'.$uniq.' = JSON.parse(data);' . PHP_EOL;
@@ -812,7 +949,7 @@ trait Output {
                 $result .= '    ' . $spinner . '.stop();})' . PHP_EOL;
 
 
-                $result .= '}, 120000); ' . PHP_EOL;
+                $result .= '}, ' . $refresh . '); ' . PHP_EOL;
             }
             $result .= '});';
         }
@@ -3819,9 +3956,11 @@ trait Output {
                 $result['dimension'] = 'dimensionless';
                 break;
             case 'rain':
+                $result['dimension'] = 'unknown';
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
                 if (strtolower($module_type)=='namodule3') {
                     $ref = $ref + 1;
+                    $result['dimension'] = 'rate';
                 }
                 if ($force_ref != 0) {
                     $ref = $force_ref;
@@ -3829,10 +3968,10 @@ trait Output {
                 $result['comp'] = __('now', 'live-weather-station') ;
                 if (strtolower($module_type)=='nacurrent') {
                     $result['comp'] = __('/ 3 hr', 'live-weather-station') ;
+                    $result['dimension'] = 'rate';
                 }
                 $result['unit'] = $this->get_rain_unit($ref) ;
                 $result['long'] = $this->get_rain_unit_full($ref) ;
-                $result['dimension'] = 'unknown';
                 break;
             case 'rain_hour_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
@@ -3895,16 +4034,17 @@ trait Output {
                 $result['dimension'] = 'length';
                 break;
             case 'snow':
+                $result['dimension'] = 'length';
                 $ref = get_option('live_weather_station_unit_rain_snow') ;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
                 }
                 if (strtolower($module_type)=='nacurrent') {
                     $result['comp'] = __('/ 3 hr', 'live-weather-station') ;
+                    $result['dimension'] = 'rate';
                 }
                 $result['unit'] = $this->get_snow_unit($ref) ;
                 $result['long'] = $this->get_snow_unit_full($ref) ;
-                $result['dimension'] = 'length';
                 break;
             case 'windangle':
             case 'gustangle':

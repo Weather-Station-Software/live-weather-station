@@ -24,7 +24,7 @@ use WeatherStation\System\Environment\Manager as EnvManager;
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.4.0-dev4');
+define('LWS_VERSION', '3.4.0-dev5');
 define('LWS_CODENAME', '"Louise Attaque"');
 define('LWS_WATSNEW_EN', 'https://weather.station.software/en/weather-station-3-4-louiseattaque/');
 define('LWS_WATSNEW_FR', 'https://weather.station.software/fr/weather-station-3-4-louise-attaque/');
@@ -55,6 +55,12 @@ define('LWS_CURL_LOADED', EnvManager::is_curl_loaded());
 define('LWS_JSON_LOADED', EnvManager::is_json_loaded());
 define('LWS_PHPVERSION_OK', EnvManager::is_php_version_ok());
 define('LWS_PLUGIN_AGENT', LWS_FULL_NAME . ' (' . EnvManager::wordpress_version_id() . '; ' . EnvManager::weatherstation_version_id() . '; +https://weather.station.software)');
+define('LWS_IC_WPROCKET', EnvManager::is_wp_rocket_installed());
+define('LWS_IC_WPSC', EnvManager::is_wp_super_cache_installed());
+define('LWS_IC_W3TC', EnvManager::is_w3_total_cache_installed());
+define('LWS_IC_AUTOPTIMIZE', EnvManager::is_autoptimize_installed());
+define('LWS_IC_HC', EnvManager::is_hyper_cache_installed());
+
 
 
 /**

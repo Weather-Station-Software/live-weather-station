@@ -2,6 +2,7 @@
 
 namespace WeatherStation\System\Plugin;
 
+use WeatherStation\System\Environment\Manager as EnvManager;
 use WeatherStation\SDK\Clientraw\Plugin\StationCollector as ClientrawCollector;
 use WeatherStation\SDK\Realtime\Plugin\StationCollector as RealtimeCollector;
 use WeatherStation\SDK\WeatherFlow\Plugin\StationCollector as WeatherFlowCollector;
@@ -524,6 +525,12 @@ class Admin {
             'id' => 'lws_system_txt_cache_bypass',
             'checked' => (bool)get_option('live_weather_station_txt_cache_bypass'),
             'description' => __('Check this to prevent caching of the generated text files. Required on some server configurations, particularly when using Varnish.', 'live-weather-station'));
+        if (EnvManager::is_cache_installed()) {
+            $cbxs[] = array('text' => sprintf(__('Follow cache purges initiated by %s ', 'live-weather-station'), EnvManager::installed_cache_name()),
+                'id' => 'lws_system_purge_cache',
+                'checked' => (bool)get_option('live_weather_station_purge_cache'),
+                'description' => sprintf(__('As %1$s is installed, you can ask %2$s to flush its own cache when %1$s does.', 'live-weather-station'), EnvManager::installed_cache_name(), LWS_PLUGIN_NAME));
+        }
         echo $this->field_multi_checkbox($cbxs);
     }
 

@@ -869,4 +869,83 @@ class Manager {
         return 'WeatherStation/' . LWS_VERSION;
     }
 
+    /**
+     * Verify if WP Rocket is installed.
+     *
+     * @since 3.4.0
+     */
+    public static function is_wp_rocket_installed() {
+        return function_exists('rocket_clean_domain');
+    }
+
+    /**
+     * Verify if WP Super Cache is installed.
+     *
+     * @since 3.4.0
+     */
+    public static function is_wp_super_cache_installed() {
+        return function_exists('wpsc_init');
+    }
+
+    /**
+     * Verify if W3 Total Cache is installed.
+     *
+     * @since 3.4.0
+     */
+    public static function is_w3_total_cache_installed() {
+        return class_exists('\W3TC\Root_Loader');
+    }
+
+    /**
+     * Verify if Autoptimize is installed.
+     *
+     * @since 3.4.0
+     */
+    public static function is_autoptimize_installed() {
+        return class_exists('autoptimizeCache');
+    }
+
+    /**
+     * Verify if HyperCache is installed.
+     *
+     * @since 3.4.0
+     */
+    public static function is_hyper_cache_installed() {
+        return class_exists('HyperCache');
+    }
+
+    /**
+     * Get installed cache name.
+     *
+     * @since 3.4.0
+     */
+    public static function installed_cache_name() {
+        if (self::is_wp_rocket_installed()) {
+            return 'WP Rocket';
+        }
+        if (self::is_wp_super_cache_installed()) {
+            return 'WP Super Cache';
+        }
+        if (self::is_w3_total_cache_installed()) {
+            return 'W3 Total Cache';
+        }
+        if (self::is_autoptimize_installed()) {
+            return 'Autoptimize';
+        }
+        if (self::is_hyper_cache_installed()) {
+            return 'Hyper Cache';
+        }
+    }
+
+    /**
+     * Verify if a cache is installed.
+     *
+     * @since 3.4.0
+     */
+    public static function is_cache_installed() {
+        return self::is_wp_rocket_installed() || self::is_wp_super_cache_installed() ||
+               self::is_w3_total_cache_installed() || self::is_autoptimize_installed() ||
+               self::is_hyper_cache_installed();
+    }
+
 }

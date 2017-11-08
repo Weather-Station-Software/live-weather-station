@@ -33,6 +33,7 @@ trait Handling {
     private static $live_weather_station_query_cache = true;
     private static $live_weather_station_frontend_cache = true;
     private static $live_weather_station_widget_cache = true;
+    private static $live_weather_station_purge_cache = true;
     private static $live_weather_station_redirect_internal_links = false;
     private static $live_weather_station_redirect_external_links = true;
     private static $live_weather_station_time_shift_threshold = 30;
@@ -476,6 +477,7 @@ trait Handling {
         delete_option('live_weather_station_build_history');
         delete_option('live_weather_station_full_history');
         delete_option('live_weather_station_retention_history');
+        delete_option('live_weather_station_purge_cache');
 
         self::delete_thresholds_options();
     }
@@ -537,6 +539,7 @@ trait Handling {
         update_option('live_weather_station_widget_cache', self::$live_weather_station_widget_cache);
         update_option('live_weather_station_query_cache', self::$live_weather_station_query_cache);
         update_option('live_weather_station_backend_cache', self::$live_weather_station_backend_cache);
+        update_option('live_weather_station_purge_cache', self::$live_weather_station_purge_cache);
         update_option('live_weather_station_redirect_internal_links', self::$live_weather_station_redirect_internal_links);
         update_option('live_weather_station_redirect_external_links', self::$live_weather_station_redirect_external_links);
         update_option('live_weather_station_time_shift_threshold', self::$live_weather_station_time_shift_threshold);
@@ -753,6 +756,7 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_widget_cache', self::$live_weather_station_widget_cache);
         self::verify_option_boolean('live_weather_station_query_cache', self::$live_weather_station_query_cache);
         self::verify_option_boolean('live_weather_station_backend_cache', self::$live_weather_station_backend_cache);
+        self::verify_option_boolean('live_weather_station_purge_cache', self::$live_weather_station_purge_cache);
         self::verify_option_boolean('live_weather_station_redirect_internal_links', self::$live_weather_station_redirect_internal_links);
         self::verify_option_boolean('live_weather_station_redirect_external_links', self::$live_weather_station_redirect_external_links);
         self::verify_option_integer('live_weather_station_time_shift_threshold', self::$live_weather_station_time_shift_threshold);

@@ -906,6 +906,44 @@ trait Query {
     }
 
     /**
+     * Get modules names.
+     *
+     * @param integer $station_id The station id.
+     * @return array An array containing the module names.
+     * @since 3.4.0
+     */
+    protected function get_module_names($station_id) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $sql = "SELECT DISTINCT module_id, module_name FROM " . $table_name . " WHERE device_id='" . $station_id . "';";
+        $result = array();
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            foreach ($query as $q) {
+                $tmp = (array)$q;
+                $result[$tmp['module_id']] = $tmp['module_name'];
+            }
+            return $result;
+        }
+        catch (\Exception $ex) {
+            return array();
+        }
+    }
+
+    /**
+     * Get extended station informations.
+     *
+     * @param integer $station_id The station id.
+     * @return array An array containing the extended station informations.
+     * @since 3.4.0
+     */
+    protected function get_extended_station_informations_by_station_id($station_id) {
+        $result = $this->get_station_informations_by_station_id($station_id);
+        $result['modules_names'] = $this->get_module_names($station_id);
+        return $result ;
+    }
+
+    /**
      * Get station guid.
      *
      * @param integer $station_id The station id.

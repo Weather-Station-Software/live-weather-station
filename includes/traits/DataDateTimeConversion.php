@@ -151,12 +151,7 @@ trait Conversion {
         $utc_tz = new \DateTimeZone('UTC');
         $target_tz = new \DateTimeZone($tz);
         $utc_date = new \DateTime($ts, $utc_tz);
-
-        $shift = get_option('gmt_offset', 0) * 3600;
-
-        $result = (string)($utc_date->getTimestamp()+ $target_tz->getOffset($utc_date) - $shift).'000';
-
-
+        $result = (string)($utc_date->getTimestamp()+ $target_tz->getOffset($utc_date)).'000';
         return $result;
     }
 
