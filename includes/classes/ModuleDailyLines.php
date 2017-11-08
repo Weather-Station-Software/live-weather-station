@@ -24,6 +24,7 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
     }
 
 
+
     /**
      * Initialize the class and set its properties.
      *
@@ -38,6 +39,7 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
         $this->module_hint = __('Display daily data as multiple lines chart. Allows to view, side by side on the same graph, several types of measurement having the same physical dimension.', 'live-weather-station');
         $this->module_icon = 'ch fa-lg fa-fw ch-line-chart-7';
         $this->layout = '12-3-4';
+        $this->series_number = 2;
         parent::__construct($station_guid, $station_id, $station_name);
     }
 
@@ -66,15 +68,15 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_datasource() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_assoc_option_select('daily-lines-datas-module-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
-        $content .= $this->get_neutral_option_select('daily-lines-datas-measurement-'. $this->station_guid, __('Measurement', 'live-weather-station'));
-        $content .= $this->get_key_value_option_select('daily-lines-datas-line-mode-'. $this->station_guid, __('Mode', 'live-weather-station'), $this->get_line_mode_js_array(), true, 'line');
-        $content .= $this->get_key_value_option_select('daily-lines-datas-dot-style-'. $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none');
-        $content .= $this->get_key_value_option_select('daily-lines-datas-line-style-'. $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid');
-        $content .= $this->get_key_value_option_select('daily-lines-datas-line-size-'. $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular');
-        $content .= $this->get_placeholder_option_select();
-        $content .= $this->get_placeholder_option_select();
-        $content .= $this->get_placeholder_option_select();
+        $content .= $this->get_key_value_option_select('daily-lines-datas-dimension-' . $this->station_guid, __('Dimension', 'live-weather-station'), $this->get_comparable_dimensions_js_array(), true, 'temperature');
+        for ($i=1; $i<=$this->series_number; $i++) {
+            $content .= $this->get_assoc_option_select('daily-lines-datas-module-' . $i . '-' . $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
+            $content .= $this->get_neutral_option_select('daily-lines-datas-measurement-' . $i . '-' . $this->station_guid, __('Measurement', 'live-weather-station'));
+            $content .= $this->get_key_value_option_select('daily-lines-datas-line-mode-' . $i . '-' . $this->station_guid, __('Mode', 'live-weather-station'), $this->get_line_mode_js_array(), true, 'line');
+            $content .= $this->get_key_value_option_select('daily-lines-datas-dot-style-' . $i . '-' . $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none');
+            $content .= $this->get_key_value_option_select('daily-lines-datas-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid');
+            $content .= $this->get_key_value_option_select('daily-lines-datas-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular');
+        }
         $content .= '</tbody></table>';
         return $this->get_box('lws-datasource-id', $this->datasource_title, $content);
     }
@@ -108,21 +110,26 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_script() {
         $content = '';
-        $content .= '$("#daily-lines-datas-module-' . $this->station_guid . '").change(function() {';
-        $content .= 'var js_array_daily_lines_measurement_' . $this->station_guid . ' = js_array_daily_lines_' . $this->station_guid . '[$(this).val()][2];';
-        $content .= '$("#daily-lines-datas-measurement-' . $this->station_guid . '").html("");';
-        $content .= '$(js_array_daily_lines_measurement_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#daily-lines-datas-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_daily_lines_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
-        $content .= '$( "#daily-lines-datas-measurement-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#daily-lines-datas-measurement-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#daily-lines-datas-line-mode-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#daily-lines-datas-line-mode-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#daily-lines-datas-dot-style-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#daily-lines-datas-dot-style-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#daily-lines-datas-line-style-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#daily-lines-datas-line-style-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#daily-lines-datas-line-size-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#daily-lines-datas-line-size-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#daily-lines-datas-dimension-' .$this->station_guid . '").change(function() {';
+
+        for ($i=1; $i<=$this->series_number; $i++) {
+            $content .= '$("#daily-lines-datas-module-' . $i . '-' . $this->station_guid . '" ).change();});';
+            $content .= '$("#daily-lines-datas-module-' . $i . '-' . $this->station_guid . '").change(function() {';
+            $content .= 'var js_array_daily_lines_measurement_' . $this->station_guid . ' = js_array_daily_lines_' . $this->station_guid . '[$(this).val()][2];';
+            $content .= '$("#daily-lines-datas-measurement-' . $i . '-' . $this->station_guid . '").html("");';
+            $content .= '$(js_array_daily_lines_measurement_' . $this->station_guid . ').each(function (i) {';
+            $content .= '$("#daily-lines-datas-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+" "+((js_array_daily_lines_measurement_' . $this->station_guid . '[i][3] != $("#daily-lines-datas-dimension-' . $this->station_guid . '").val() && js_array_daily_lines_measurement_' . $this->station_guid . '[i][1] != "none") ? "disabled" : "")+">"+js_array_daily_lines_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+            $content .= '$("#daily-lines-datas-measurement-' . $i . '-' . $this->station_guid . '" ).change();});';
+            $content .= '$("#daily-lines-datas-measurement-' . $i . '-' . $this->station_guid . '").change(function() {';
+            $content .= '$("#daily-lines-datas-line-mode-' . $i . '-' . $this->station_guid . '" ).change();});';
+            $content .= '$("#daily-lines-datas-line-mode-' . $i . '-' . $this->station_guid . '").change(function() {';
+            $content .= '$("#daily-lines-datas-dot-style-' . $i . '-' . $this->station_guid . '" ).change();});';
+            $content .= '$("#daily-lines-datas-dot-style-' . $i . '-' . $this->station_guid . '").change(function() {';
+            $content .= '$("#daily-lines-datas-line-style-' . $i . '-' . $this->station_guid . '" ).change();});';
+            $content .= '$("#daily-lines-datas-line-style-' . $i . '-' . $this->station_guid . '").change(function() {';
+            $content .= '$("#daily-lines-datas-line-size-' . $i . '-' . $this->station_guid . '" ).change();});';
+            $content .= '$("#daily-lines-datas-line-size-' . $i . '-' . $this->station_guid . '").change(function() {';
+        }
         $content .= '$("#daily-lines-datas-template-' . $this->station_guid . '" ).change();});';
         $content .= '$("#daily-lines-datas-template-' . $this->station_guid . '").change(function() {';
         $content .= '$("#daily-lines-datas-color-' . $this->station_guid . '" ).change();});';
@@ -140,23 +147,30 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$("#daily-lines-datas-label-' . $this->station_guid . '" ).change();});';
         $content .= '$("#daily-lines-datas-label-' . $this->station_guid . '").change(function() {';
         $content .= '$("#daily-lines-datas-data-' . $this->station_guid . '" ).change();});';
-
         $content .= '$("#daily-lines-datas-data-' . $this->station_guid . '").change(function() {';
-        $content .= 'var sc_device_1 = "' . $this->station_id . '";';
-        $content .= 'var sc_module_1 = js_array_daily_lines_' . $this->station_guid . '[$("#daily-lines-datas-module-' . $this->station_guid . '").val()][1];';
-        $content .= 'var sc_measurement_1 = js_array_daily_lines_' . $this->station_guid . '[$("#daily-lines-datas-module-' . $this->station_guid . '").val()][2][$("#daily-lines-datas-measurement-' . $this->station_guid . '").val()][1];';
-        $content .= 'var sc_line_mode_1 = $("#daily-lines-datas-line-mode-' . $this->station_guid . '").val();';
-        $content .= 'var sc_dot_style_1 = $("#daily-lines-datas-dot-style-' . $this->station_guid . '").val();';
-        $content .= 'var sc_line_style_1 = $("#daily-lines-datas-line-style-' . $this->station_guid . '").val();';
-        $content .= 'var sc_line_size_1 = $("#daily-lines-datas-line-size-' . $this->station_guid . '").val();';
 
-        $content .= 'if ($("#daily-lines-datas-line-mode-' . $this->station_guid . '").val() == "transparent") {';
+
+        for ($i=1; $i<=$this->series_number; $i++) {
+            $content .= 'var sc_device_' . $i . ' = "' . $this->station_id . '";';
+            $content .= 'var sc_module_' . $i . ' = js_array_daily_lines_' . $this->station_guid . '[$("#daily-lines-datas-module-' . $i . '-' . $this->station_guid . '").val()][1];';
+            $content .= 'var sc_measurement_' . $i . ' = js_array_daily_lines_' . $this->station_guid . '[$("#daily-lines-datas-module-' . $i . '-' . $this->station_guid . '").val()][2][$("#daily-lines-datas-measurement-' . $i . '-' . $this->station_guid . '").val()][1];';
+            $content .= 'var sc_line_mode_' . $i . ' = $("#daily-lines-datas-line-mode-' . $i . '-' . $this->station_guid . '").val();';
+            $content .= 'var sc_dot_style_' . $i . ' = $("#daily-lines-datas-dot-style-' . $i . '-' . $this->station_guid . '").val();';
+            $content .= 'var sc_line_style_' . $i . ' = $("#daily-lines-datas-line-style-' . $i . '-' . $this->station_guid . '").val();';
+            $content .= 'var sc_line_size_' . $i . ' = $("#daily-lines-datas-line-size-' . $i . '-' . $this->station_guid . '").val();';
+            $content .= 'var sc_' . $i . ' = "";';
+            $content .= ' if (sc_measurement_' . $i . ' != "none") {';
+            $content .= '   sc_' . $i . ' = " device_id_' . $i . '=\'"+sc_device_' . $i . '+"\' module_id_' . $i . '=\'"+sc_module_' . $i . '+"\' measurement_' . $i . '=\'"+sc_measurement_' . $i . '+"\' line_mode_' . $i . '=\'"+sc_line_mode_' . $i . '+"\' dot_style_' . $i . '=\'"+sc_dot_style_' . $i . '+"\' line_style_' . $i . '=\'"+sc_line_style_' . $i . '+"\' line_size_' . $i . '=\'"+sc_line_size_' . $i . '+"\'"';
+            $content .= ' }';
+        }
+
+        /*$content .= 'if ($("#daily-lines-datas-line-mode-' . $this->station_guid . '").val() == "transparent") {';
         $content .= '$("#daily-lines-datas-line-style-' . $this->station_guid . '").prop("disabled", true);';
         $content .= '$("#daily-lines-datas-line-size-' . $this->station_guid . '").prop("disabled", true);}';
         $content .= 'else {';
         $content .= '$("#daily-lines-datas-line-style-' . $this->station_guid . '").prop("disabled", false);';
         $content .= '$("#daily-lines-datas-line-size-' . $this->station_guid . '").prop("disabled", false);}';
-
+*/
         $content .= 'var sc_template = $("#daily-lines-datas-template-' . $this->station_guid . '").val();';
         $content .= 'var sc_color = $("#daily-lines-datas-color-' . $this->station_guid . '").val();';
         $content .= 'var sc_interpolation = $("#daily-lines-datas-interpolation-' . $this->station_guid . '").val();';
@@ -167,14 +181,28 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var sc_label = $("#daily-lines-datas-label-' . $this->station_guid . '").val();';
         $content .= 'var sc_data = $("#daily-lines-datas-data-' . $this->station_guid . '").val();';
 
-        $content .= 'var shortcode = "[live-weather-station-graph mode=\'daily\' type=\'lines\' template=\'"+sc_template+"\' data=\'"+sc_data+"\' color=\'"+sc_color+"\' label=\'"+sc_label+"\' interpolation=\'"+sc_interpolation+"\' timescale=\'"+sc_timescale+"\' valuescale=\'"+sc_valuescale+"\' guideline=\'"+sc_guideline+"\' height=\'"+sc_height+"\' device_id_1=\'"+sc_device_1+"\' module_id_1=\'"+sc_module_1+"\' measurement_1=\'"+sc_measurement_1+"\' line_mode_1=\'"+sc_line_mode_1+"\' dot_style_1=\'"+sc_dot_style_1+"\' line_style_1=\'"+sc_line_style_1+"\' line_size_1=\'"+sc_line_size_1+"\']";';
-
+        $content .= 'var shortcode = "[live-weather-station-graph mode=\'daily\' type=\'lines\' template=\'"+sc_template+"\' data=\'"+sc_data+"\' color=\'"+sc_color+"\' label=\'"+sc_label+"\' interpolation=\'"+sc_interpolation+"\' timescale=\'"+sc_timescale+"\' valuescale=\'"+sc_valuescale+"\' guideline=\'"+sc_guideline+"\' height=\'"+sc_height+"\'"';
+        for ($i=1; $i<=$this->series_number; $i++) {
+            $content .= '+sc_' . $i;
+        }
+        $content .= '+"]";';
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
-        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"daily", type:"lines", template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, device_id_1:sc_device_1, module_id_1:sc_module_1, measurement_1:sc_measurement_1, line_mode_1:sc_line_mode_1, dot_style_1:sc_dot_style_1, line_style_1:sc_line_style_1, line_size_1:sc_line_size_1}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
+        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"daily", type:"lines", template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, ';
+        $t = array();
+        for ($i=1; $i<=$this->series_number; $i++) {
+            $u = array();
+            foreach ($this->graph_allowed_serie as $param) {
+                $u[] = $param . '_' . $i . ':sc_' . str_replace('_id', '', $param) . '_' . $i;
+            }
+            $t[] = implode(', ', $u);
+        }
+        //'device_id_1:sc_device_1, module_id_1:sc_module_1, measurement_1:sc_measurement_1, line_mode_1:sc_line_mode_1, dot_style_1:sc_dot_style_1, line_style_1:sc_line_style_1, line_size_1:sc_line_size_1'
+        $content .= implode(', ', $t);
+        $content .= '}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
 
         $content .= '$("#daily-lines-datas-shortcode-' . $this->station_guid . '").html(shortcode);});';
-        $content .= '$("#daily-lines-datas-module-' . $this->station_guid . '" ).change();';
+        $content .= '$("#daily-lines-datas-dimension-' . $this->station_guid . '" ).change();';
         return $this->get_script_box($content);
     }
 

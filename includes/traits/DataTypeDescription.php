@@ -13,6 +13,69 @@ namespace WeatherStation\Data\Type;
 
 
 trait Description {
+
+    protected $comparable_dimensions = array('percentage', 'pressure', 'temperature', 'concentration-m', 'concentration-b', 'length', 'angle', 'speed', 'pressure-h', 'humidity', 'specific-energy', 'specific-energy-k', 'rate');
+
+/*case :
+$result =  __('Percentage', 'live-weather-station');
+break;
+case :
+$result =  __('Length', 'live-weather-station');
+break;
+case :
+$result =  __('Concentration', 'live-weather-station');
+break;
+case :
+$result =  __('Concentration', 'live-weather-station');
+break;
+case 'area-density':
+$result =  __('Area density', 'live-weather-station');
+break;
+case 'count':
+case 'base-11':
+case 'dimensionless':
+$result =  __('Dimensionless', 'live-weather-station');
+break;
+case :
+$result =  __('Angle', 'live-weather-station');
+break;
+case :
+$result =  __('Speed', 'live-weather-station');
+break;
+case :
+$result =  __('Rate', 'live-weather-station');
+break;
+case :
+$result =  __('Pressure', 'live-weather-station');
+break;
+case :
+$result =  __('Pressure', 'live-weather-station');
+break;
+case :
+$result =  __('Temperature', 'live-weather-station');
+break;
+case 'duration':
+$result =  __('Duration', 'live-weather-station');
+break;
+case 'density':
+$result =  __('Density', 'live-weather-station');
+break;
+case :
+$result =  __('Humidity', 'live-weather-station');
+break;
+case 'irradiance':
+$result =  __('Power flux density', 'live-weather-station');
+break;
+case 'illuminance':
+$result =  __('Luminous flux density', 'live-weather-station');
+break;
+case :
+$result =  __('Specific energy', 'live-weather-station');
+break;
+case :
+$result =  __('Specific energy', 'live-weather-station');
+break;*/
+
     /**
      * Get the service type in plain text.
      *
@@ -569,10 +632,11 @@ trait Description {
      * Get the dimension name in plain text.
      *
      * @param string $type The dimension type.
+     * @param boolean $ten Optional. Get spec in power of ten.
      * @return  string  The name of the dimension in plain text.
      * @since 3.4.0
      */
-    protected function get_dimension_name($type) {
+    protected function get_dimension_name($type, $ten=false) {
         switch (strtolower($type)) {
             case 'percentage':
                 $result =  __('Percentage', 'live-weather-station');
@@ -581,6 +645,8 @@ trait Description {
                 $result =  __('Length', 'live-weather-station');
                 break;
             case 'concentration-m':
+                $result =  __('Concentration', 'live-weather-station');
+                break;
             case 'concentration-b':
                 $result =  __('Concentration', 'live-weather-station');
                 break;
@@ -602,6 +668,8 @@ trait Description {
                 $result =  __('Rate', 'live-weather-station');
                 break;
             case 'pressure':
+                $result =  __('Pressure', 'live-weather-station');
+                break;
             case 'pressure-h':
                 $result =  __('Pressure', 'live-weather-station');
                 break;
@@ -624,6 +692,8 @@ trait Description {
                 $result =  __('Luminous flux density', 'live-weather-station');
                 break;
             case 'specific-energy':
+                $result =  __('Specific energy', 'live-weather-station');
+                break;
             case 'specific-energy-k':
                 $result =  __('Specific energy', 'live-weather-station');
                 break;

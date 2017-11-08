@@ -35,6 +35,8 @@ abstract class Maintainer {
     protected $parameter_min_height = false;
     protected $preview_min_height = false;
 
+    protected $series_number = 1;
+
     /**
      * Initialize the class and set its properties.
      *
