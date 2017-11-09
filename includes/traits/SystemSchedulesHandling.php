@@ -1090,4 +1090,17 @@ trait Handling {
         );
         return $schedules;
     }
+
+    /**
+     * Add a new 6 hours interval capacity to the WP cron feature.
+     *
+     * @since 3.4.0
+     */
+    public static function add_cron_6_hours_interval($schedules) {
+        $schedules['six_hours'] = array(
+            'interval' => 21600,
+            'display'  => __( 'Every six hours', 'live-weather-station' ),
+        );
+        return $schedules;
+    }
 }
