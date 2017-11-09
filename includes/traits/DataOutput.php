@@ -697,9 +697,13 @@ trait Output {
      */
     public function graph_prepare($attributes){
         $items = array();
+        $noned = false;
         for ($i = 1; $i <= 8; $i++) {
             if (array_key_exists('device_id_'.$i, $attributes)) {
-                if ($attributes['measurement_'.$i] == 'none') { break;}
+                if ($attributes['measurement_'.$i] == 'none') {
+                    $noned = true;
+                    break;
+                }
                 $item = array();
                 foreach ($this->graph_allowed_serie as $param) {
                     if (array_key_exists($param.'_'.$i, $attributes)) {
@@ -717,6 +721,7 @@ trait Output {
             $value_params['mode'] = '';
         }
         $value_params['args'] = $items;
+        $value_params['noned'] = $noned;
         return $value_params;
     }
 
@@ -754,7 +759,12 @@ trait Output {
         $items = $value_params['args'];
         $cpt = count($items);
         if ($cpt == 0) {
-            return __('Malformed shortcode. Please verify it!', 'live-weather-station');
+            if ($value_params['noned']) {
+                return __('No Data To Display', 'live-weather-station');
+            }
+            else {
+                return __('Malformed shortcode. Please verify it!', 'live-weather-station');
+            }
         }
         if ($cpt < 3) {
         $cpt = 3;
