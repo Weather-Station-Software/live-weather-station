@@ -53,6 +53,7 @@ class Admin {
 
     use Schedule, Options, Arrays, FormsRenderer {
         FormsRenderer::get_service_name insteadof Arrays;
+        FormsRenderer::get_comparable_dimensions insteadof Arrays;
         FormsRenderer::get_module_type insteadof Arrays;
         FormsRenderer::get_fake_module_name insteadof Arrays;
         FormsRenderer::get_measurement_type insteadof Arrays;

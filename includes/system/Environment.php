@@ -346,7 +346,7 @@ class Manager {
      * @return string The major version number.
      * @since 3.3.0
      */
-    private static function major_version($version = LWS_VERSION) {
+    public static function major_version($version = LWS_VERSION) {
         try {
             $result = substr($version, 0, strpos($version, '.'));
         } catch (\Exception $ex) {
@@ -362,7 +362,7 @@ class Manager {
      * @return string The major version number.
      * @since 3.3.0
      */
-    private static function minor_version($version = LWS_VERSION) {
+    public static function minor_version($version = LWS_VERSION) {
         try {
             $result = substr($version, strpos($version, '.') + 1, 1000);
             $result = substr($result, 0, strpos($result, '.'));
@@ -379,7 +379,7 @@ class Manager {
      * @return string The major version number.
      * @since 3.3.0
      */
-    private static function patch_version($version = LWS_VERSION) {
+    public static function patch_version($version = LWS_VERSION) {
         try {
             $result = substr($version, strpos($version, '.') + 1, 1000);
             $result = substr($result, strpos($result, '.') + 1, 1000);

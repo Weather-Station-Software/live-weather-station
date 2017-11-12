@@ -118,3 +118,37 @@ function object_to_array($obj) {
     }
     return $arr;
 }
+
+/**
+ * Order an array of array.
+ *
+ * @return array The sorted array.
+ * @since 3.4.0
+ */
+function array_orderby(){
+    $args = func_get_args();
+    $data = array_shift($args);
+    foreach ($args as $n => $field) {
+        if (is_string($field)) {
+            $tmp = array();
+            foreach ($data as $key => $row)
+                $tmp[$key] = $row[$field];
+            $args[$n] = $tmp;
+        }
+    }
+    $args[] = &$data;
+    call_user_func_array('array_multisort', $args);
+    return array_pop($args);
+}
+
+/**
+ * Compare the key 1 of two arrays.
+ *
+ * @return boolean Result of the comparison.
+ * @since 3.4.0
+ */
+function array_compare_1($a, $b){
+    $a = (array)$a;
+    $b = (array)$b;
+    return strcasecmp($a[1], $b[1]);
+}

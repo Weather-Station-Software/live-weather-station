@@ -1,7 +1,6 @@
 <?php
 
 namespace WeatherStation\Engine\Module;
-use function Sodium\randombytes_random16;
 
 /**
  * Abstract class to maintains each module.
@@ -248,7 +247,7 @@ abstract class Maintainer {
         $visibility = '';
         if ($id == '') {
             $visibility = ' class="lws-placeholder" style="visibility:hidden;"';
-            $id = md5(random_bytes(20));
+            $id = 'o' . md5(random_bytes(20));
             $title = '';
         }
         $result = '';
@@ -267,6 +266,71 @@ abstract class Maintainer {
         $result .= '</span>';
         $result .= '</td>';
         $result .= '</tr>';
+        return $result;
+    }
+
+    /**
+     * Get an option group.
+     *
+     * @param string $id The control id.
+     * @param array $args The contents of the group.
+     * @return string The group ready to print.
+     * @since 3.4.0
+     */
+    protected function get_group($id, $args) {
+        if ($id == '') {
+            $id = 'g' . md5(random_bytes(20));
+        }
+        $tab_id = $id . '-tab-';
+        $item_id = $id . '-item-';
+        $result = '<tr style="display:table-row;height:12px;"><th width="35%"></th><td width="2%"/><td></td></tr>';
+        $result .= '<tr>';
+        $result .= '<th class="lws-option" width="35%" align="center" scope="row">';
+        $show = true;
+        $i = 1;
+        foreach ($args as $arg) {
+            if ($show) {
+                $class = 'class="' . $tab_id . $i . ' lws-group-selected"';
+                $show = false;
+            }
+            else {
+                $class = 'class="' . $tab_id . $i . ' lws-group-unselected"';
+            }
+            $result .= '<span ' . $class . '>' . $arg['name'] . '</span>';
+            $i++;
+        }
+        $result .= '</th>';
+        $result .= '<td width="0"><span class="lws-group-separator"></span></td>';
+        $result .= '<td align="left">';
+        $show = true;
+        $i = 1;
+        foreach ($args as $arg) {
+            if ($show) {
+                $class = 'class="' . $item_id . $i . ' lws-group-option-selected"';
+                $show = false;
+            }
+            else {
+                $class = 'class="' . $item_id . $i . ' lws-group-option-unselected"';
+            }
+            $result .= '<span ' . $class . '><table cellspacing="0"><tbody>';
+            $result .= $arg['content'];
+            $result .= '</tbody></table></span>';
+            $i++;
+        }
+        $result .= '</td>';
+        $result .= '</tr>';
+        $result .= '<script language="javascript" type="text/javascript">';
+        $result .= 'jQuery(document).ready(function($) {';
+        for ($i=1 ; $i<=count($args) ; $i++) {
+            $result .= '$(".' . $tab_id . $i . '").click(function() {';
+            $result .= '$(".lws-group-selected").removeClass("lws-group-selected").addClass("lws-group-unselected");';
+            $result .= '$(this).addClass("lws-group-selected").removeClass("lws-group-unselected");';
+            $result .= '$(".lws-group-option-selected").removeClass("lws-group-option-selected").addClass("lws-group-option-unselected");';
+            $result .= '$(".' . $item_id . $i . '").addClass("lws-group-option-selected").removeClass("lws-group-option-unselected");';
+            $result .= '});';
+        }
+        $result .= '});' . PHP_EOL;
+        $result .= '</script>' . PHP_EOL;
         return $result;
     }
 
@@ -497,6 +561,7 @@ abstract class Maintainer {
     protected function print_boxes() {
         $result = '';
         $result .= '<div class="main-boxes-container">';
+        $result .=wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false, false);
         switch ($this->layout) {
             case '12-3-4':
                 $result .= '<div class="row-boxes-container">';

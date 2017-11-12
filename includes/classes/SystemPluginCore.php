@@ -142,7 +142,7 @@ class Core {
 	 * @since 1.0.0
 	 */
 	private function define_public_hooks() {
-		$plugin_public = new Frontend( $this->get_Live_Weather_Station(), $this->get_version());
+		$plugin_public = new Frontend($this->get_Live_Weather_Station(), $this->get_version());
 		$this->define_conditional_filters($plugin_public);
         $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_scripts', 1);
         $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_styles', 1);
@@ -184,28 +184,29 @@ class Core {
      */
     private function define_conditional_filters($instance) {
         if ((bool)get_option('live_weather_station_purge_cache')) {
+            $cache = new Cache($this->get_Live_Weather_Station(), $this->get_version());
             if (LWS_IC_WPROCKET) {
-                $this->loader->add_action('after_rocket_clean_domain', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+                $this->loader->add_action('after_rocket_clean_domain', $cache, 'flush');
             }
             if (LWS_IC_WPSC) {
-                $this->loader->add_action('wp_cache_gc', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+                $this->loader->add_action('wp_cache_gc', $cache, 'flush');
             }
             if (LWS_IC_W3TC) {
-                $this->loader->add_action('w3tc_flush_after_fragmentcache', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
-                $this->loader->add_action('w3tc_flush_after_fragmentcache_group', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
-                $this->loader->add_action('w3tc_flush_after_minify', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
-                $this->loader->add_action('w3tc_cdn_purge_all_after', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
-                $this->loader->add_action('w3tc_cdn_purge_files_after', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
-                $this->loader->add_action('w3tc_flush_post', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
-                $this->loader->add_action('w3tc_flush_posts', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
-                $this->loader->add_action('w3tc_flush_all', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
-                $this->loader->add_action('w3tc_flush_url', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+                $this->loader->add_action('w3tc_flush_after_fragmentcache', $cache, 'flush');
+                $this->loader->add_action('w3tc_flush_after_fragmentcache_group', $cache, 'flush');
+                $this->loader->add_action('w3tc_flush_after_minify', $cache, 'flush');
+                $this->loader->add_action('w3tc_cdn_purge_all_after', $cache, 'flush');
+                $this->loader->add_action('w3tc_cdn_purge_files_after', $cache, 'flush');
+                $this->loader->add_action('w3tc_flush_post', $cache, 'flush');
+                $this->loader->add_action('w3tc_flush_posts', $cache, 'flush');
+                $this->loader->add_action('w3tc_flush_all', $cache, 'flush');
+                $this->loader->add_action('w3tc_flush_url', $cache, 'flush');
             }
             if (LWS_IC_AUTOPTIMIZE) {
-                $this->loader->add_action('autoptimize_action_cachepurged', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+                $this->loader->add_action('autoptimize_action_cachepurged', $cache, 'flush');
             }
             if (LWS_IC_HC) {
-                $this->loader->add_action('hyper_cache_flush', new Cache(LWS_PLUGIN_NAME, LWS_VERSION), 'flush');
+                $this->loader->add_action('hyper_cache_flush', $cache, 'flush');
             }
         }
     }

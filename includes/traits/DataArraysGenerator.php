@@ -391,7 +391,7 @@ trait Generator {
      */
     private function get_line_array($ref, $data, $reduced, $module_type, $measurement_type) {
         $unit = $this->output_unit($measurement_type, $module_type);
-        return array($this->get_measurement_type($measurement_type), $measurement_type, ($reduced ? array() : $this->get_measure_array($ref, $data, $measurement_type)), $unit['dimension']);
+        return array($this->get_measurement_type($measurement_type, false, $module_type), $measurement_type, ($reduced ? array() : $this->get_measure_array($ref, $data, $measurement_type)), $unit['dimension']);
     }
 
 
@@ -776,23 +776,23 @@ trait Generator {
                 }
                 break;
             case 'napollution': // Virtual module for pollution
-                    if ($aggregated) {
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated');
-                    }
-                    if ($full) {
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh');
-                    }
-                    if ($full) {
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware');
-                    }
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'o3');
-                    if ($full) {
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'o3_distance');
-                    }
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'co');
-                    if ($full) {
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'co_distance');
-                    }
+                if ($aggregated) {
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'aggregated');
+                }
+                if ($full) {
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'last_refresh');
+                }
+                if ($full) {
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'firmware');
+                }
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'o3');
+                if ($full) {
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'o3_distance');
+                }
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'co');
+                if ($full) {
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'co_distance');
+                }
                 break;
         }
         if ($daily || $historical) {
@@ -892,6 +892,9 @@ trait Generator {
                     continue;
                 }
                 if (($module['module_type'] == 'NAComputed') && !$computed) {
+                    continue;
+                }
+                if (($module['module_type'] == 'NAPollution') && ($daily || $historical)) {
                     continue;
                 }
                 $m = $this->get_module_array($ref, $module, $full, $aggregated, $reduced, $computed, $mono, $daily, $historical, $noned);
@@ -1490,9 +1493,10 @@ trait Generator {
      */
     protected function get_comparable_dimensions_js_array() {
         $result = array();
-        foreach ($this->comparable_dimensions as $dimension) {
+        foreach ($this->get_comparable_dimensions() as $dimension) {
             $result[] = array($dimension, $this->get_dimension_name($dimension, true));
         }
+        usort($result, 'array_compare_1');
         return $result;
     }
 
@@ -1525,6 +1529,22 @@ trait Generator {
         $result[] = array('located',  __('Location', 'live-weather-station'));
         $result[] = array('coord',  __('Coordinates', 'live-weather-station'));
         $result[] = array('full',  __('Full', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get label array.
+     *
+     * @return array An array containing the label types ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_multi_label_js_array() {
+        $result = array();
+        $result[] = array('none',  __('None', 'live-weather-station'));
+        $result[] = array('simple',  __('Simple', 'live-weather-station'));
+        $result[] = array('station',  __('Station', 'live-weather-station'));
+        $result[] = array('located',  __('Location', 'live-weather-station'));
+        $result[] = array('coord',  __('Coordinates', 'live-weather-station'));
         return $result;
     }
 

@@ -17,6 +17,7 @@ class Settings {
 
     use Arrays, Output{
         Output::get_service_name insteadof Arrays;
+        Output::get_comparable_dimensions insteadof Generator;
         Output::get_module_type insteadof Arrays;
         Output::get_fake_module_name insteadof Arrays;
         Output::get_measurement_type insteadof Arrays;
