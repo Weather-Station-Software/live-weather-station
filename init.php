@@ -24,13 +24,15 @@ use WeatherStation\System\Environment\Manager as EnvManager;
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.4.0-dev7');
+define('LWS_VERSION', '3.4.0-dev8');
 define('LWS_CODENAME', '"Louise Attaque"');
 define('LWS_WATSNEW_EN', 'https://weather.station.software/en/weather-station-3-4-louiseattaque/');
 define('LWS_WATSNEW_FR', 'https://weather.station.software/fr/weather-station-3-4-louise-attaque/');
 
 //---------------------------------------------------------------------------------------------------
 
+define('LWS_CHANGELOG_EN', 'https://weather.station.software/en/handbook/changelog/');
+define('LWS_CHANGELOG_FR', 'https://weather.station.software/fr/documentation/journal-des-versions/');
 define('LWS_FULL_NAME', 'Weather Station 3');
 define('LWS_OWM_READY', false);
 define('LWS_MINIMUM_WP_VERSION', '4.0');

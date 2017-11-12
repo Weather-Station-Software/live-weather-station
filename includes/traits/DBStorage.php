@@ -484,7 +484,7 @@ trait Storage {
             $wpdb->query($sql);
         }
 
-        // UPADTES BEFORE 4.0
+        // UPDATES BEFORE 4.0
         if ($id < 4) {
 
             // VERSION 3.3.2
@@ -497,6 +497,11 @@ trait Storage {
                 self::safe_add_column($table_name, 'last_refresh', "ALTER TABLE " . $table_name . " ADD last_refresh datetime DEFAULT '0000-00-00 00:00:00' NOT NULL;");
                 self::safe_add_column($table_name, 'last_seen', "ALTER TABLE " . $table_name . " ADD last_seen datetime DEFAULT '0000-00-00 00:00:00' NOT NULL;");
             }
+
+            // VERSION 3.3.3
+            update_option('live_weather_station_tempext_min_boundary', -70);
+            update_option('live_weather_station_frost_point_min_boundary', -70);
+            update_option('live_weather_station_wind_chill_min_boundary', -120);
 
         }
     }

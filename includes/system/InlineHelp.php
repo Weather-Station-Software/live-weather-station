@@ -97,6 +97,12 @@ class InlineHelp {
         if ($lang == 'fr') {
             $url = LWS_WATSNEW_FR;
         }
+        if (Manager::patch_version() != 0) {
+            $url = LWS_CHANGELOG_EN;
+            if ($lang == 'fr') {
+                $url = LWS_CHANGELOG_FR;
+            }
+        }
         if (Manager::is_plugin_in_production_mode()) {
             return '<a href="' . $url . '"' . $target . '>' . __('See what\'s new', 'live-weather-station') . '&hellip;</a>';
         }

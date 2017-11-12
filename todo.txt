@@ -67,7 +67,7 @@ TR : Valeur moyenne
 TR : "Vous trouverez de l'aide sur..." => "Vous trouverez de l'aide concernant..."
 TR : "Publié, Partagé..." => "Publiée, Partagée..."
 TR : "Purple" => "Violet"
-add unit dimension in textual shortcode
+windchill decimal
 
 
 

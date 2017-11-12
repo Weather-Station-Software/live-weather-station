@@ -17,6 +17,7 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
 
     use Output, Generator {
         Output::get_service_name insteadof Generator;
+        Output::get_comparable_dimensions insteadof Generator;
         Output::get_module_type insteadof Generator;
         Output::get_fake_module_name insteadof Generator;
         Output::get_measurement_type insteadof Generator;
@@ -89,7 +90,7 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
         $content .= $this->get_key_value_option_select('daily-line-datas-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
         $content .= $this->get_key_value_option_select('daily-line-datas-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array());
-        $content .= $this->get_key_value_option_select('daily-line-datas-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_label_js_array(), true, 'standard');
+        $content .= $this->get_key_value_option_select('daily-line-datas-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_label_js_array(), true, 'simple');
         $content .= $this->get_key_value_option_select('daily-line-datas-guideline-'. $this->station_guid, __('Hint', 'live-weather-station'), $this->get_guideline_js_array(), true, 'standard');
         $content .= $this->get_key_value_option_select('daily-line-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
         $content .= $this->get_key_value_option_select('daily-line-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(), true, 'auto');

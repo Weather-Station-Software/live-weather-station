@@ -145,11 +145,26 @@ trait Output {
         $yamin = 0;
         $yamax = 0;
         $start = true;
+        $similar = false;
+        $identical = false;
         if (count($args) > 0) {
             foreach ($args as $arg) {
                 if (strpos($arg['device_id'], ':') == 2) {
                     $station_id = $arg['device_id'];
                     break;
+                }
+            }
+            $temp = array();
+            if (count($args) > 1) {
+                foreach ($args as $arg) {
+                    $temp[] = $arg['measurement'];
+                }
+                $t = array_unique($temp);
+                if (count($t) != count($args)) {
+                    $similar = true;
+                    if (count($t) == 1) {
+                        $identical = true;
+                    }
                 }
             }
             if ($station_id != '') {
@@ -222,20 +237,36 @@ trait Output {
                             $set = array();
                         }
                         $info = array();
-                        $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                        if (array_key_exists($arg['module_id'], $station['modules_names'])) {
+                            $module_name = str_replace(array('[', ']'), array('', ''), $station['modules_names'][$arg['module_id']]);
+                        }
+                        else {
+                            $module_name = $this->get_module_type($module_type, false, true);
+                        }
+                        if ($identical) {
+                            $info['key'] = $module_name;
+                        }
+                        elseif ($similar) {
+                            if ($module_type != 'NAComputed') {
+                                $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type) .  ' (' . $module_name . ')';
+                            }
+                            else {
+                                $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                            }
+                        }
+                        else {
+                            $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                        }
                         $extra = array();
                         $extra['measurement_type'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
                         $extra['module_type'] = $module_type;
                         $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
-                        $extra['module_name'] = $this->get_module_type($module_type, false, true);
+                        $extra['module_name'] = $module_name;
                         $extra['station_name'] = $station['station_name'];
                         $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
                         $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
                         $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
                         $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
-                        if (array_key_exists($arg['module_id'], $station['modules_names'])) {
-                            $extra['module_name'] = $station['modules_names'][$arg['module_id']];
-                        }
                         $result['extras'][] = $extra;
                         $result['legend']['unit'] = $this->output_unit($arg['measurement'], $module_type);
                         if ($arg['line_mode'] == 'area') {
@@ -313,9 +344,29 @@ trait Output {
         $result = '';
         switch ($type) {
             case 'line':
+            case 'lines':
+                $name = $values['extras'][0]['measurement_type'];
+                if ($type == 'lines') {
+                    $name = $this->get_dimension_name($values['legend']['unit']['dimension'], false, true);
+                    if (strpos($values['legend']['unit']['dimension'], 'oncentration') > 0) {
+                        $name .= ' (' . $values['extras'][0]['measurement_type'] . ')';
+                    }
+                    $wind = true;
+                    if ($values['legend']['unit']['dimension'] == 'speed') {
+                        foreach ($values['extras'] as $w) {
+                            if (!strpos($w['measurement_type'], 'strength')) {
+                                $wind = false;
+                                break;
+                            }
+                        }
+                    }
+                    if ($wind) {
+                        $name = __('Wind', 'live-weather-station');
+                    }
+                }
                 switch ($mode) {
                     case 'simple':  // dimension for lines
-                        $result = ucwords($values['extras'][0]['measurement_type']);
+                        $result = ucwords($name);
                         break;
                     case 'generic':
                         $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name_generic']);
@@ -324,16 +375,16 @@ trait Output {
                         $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name']);
                         break;
                     case 'station':
-                        $result = ucwords($values['extras'][0]['station_name']) . $sep . ucwords($values['extras'][0]['measurement_type']);
+                        $result = ucwords($values['extras'][0]['station_name']) . $sep . ucwords($name);
                         break;
                     case 'located':
-                        $result = ucwords($values['extras'][0]['station_loc']) . $sep . ucwords($values['extras'][0]['measurement_type']);
+                        $result = ucwords($values['extras'][0]['station_loc']) . $sep . ucwords($name);
                         break;
                     case 'coord':
-                        $result = ucwords($values['extras'][0]['station_coord']) . $sep . $result = ucwords($values['extras'][0]['station_alt']) . $sep . ucwords($values['extras'][0]['measurement_type']);
+                        $result = ucwords($values['extras'][0]['station_coord']) . $sep . $result = ucwords($values['extras'][0]['station_alt']) . $sep . ucwords($name);
                         break;
                     case 'full':
-                        $result = ucwords($values['extras'][0]['station_name'])  . $sep . ucwords($values['extras'][0]['module_name']) . $sep . ucwords($values['extras'][0]['measurement_type']);
+                        $result = ucwords($values['extras'][0]['station_name'])  . $sep . ucwords($values['extras'][0]['module_name']) . $sep . ucwords($name);
                         break;
                 }
                 break;
@@ -702,7 +753,7 @@ trait Output {
             if (array_key_exists('device_id_'.$i, $attributes)) {
                 if ($attributes['measurement_'.$i] == 'none') {
                     $noned = true;
-                    break;
+                    continue;
                 }
                 $item = array();
                 foreach ($this->graph_allowed_serie as $param) {

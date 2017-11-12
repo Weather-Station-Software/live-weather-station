@@ -14,68 +14,6 @@ namespace WeatherStation\Data\Type;
 
 trait Description {
 
-    protected $comparable_dimensions = array('percentage', 'pressure', 'temperature', 'concentration-m', 'concentration-b', 'length', 'angle', 'speed', 'pressure-h', 'humidity', 'specific-energy', 'specific-energy-k', 'rate');
-
-/*case :
-$result =  __('Percentage', 'live-weather-station');
-break;
-case :
-$result =  __('Length', 'live-weather-station');
-break;
-case :
-$result =  __('Concentration', 'live-weather-station');
-break;
-case :
-$result =  __('Concentration', 'live-weather-station');
-break;
-case 'area-density':
-$result =  __('Area density', 'live-weather-station');
-break;
-case 'count':
-case 'base-11':
-case 'dimensionless':
-$result =  __('Dimensionless', 'live-weather-station');
-break;
-case :
-$result =  __('Angle', 'live-weather-station');
-break;
-case :
-$result =  __('Speed', 'live-weather-station');
-break;
-case :
-$result =  __('Rate', 'live-weather-station');
-break;
-case :
-$result =  __('Pressure', 'live-weather-station');
-break;
-case :
-$result =  __('Pressure', 'live-weather-station');
-break;
-case :
-$result =  __('Temperature', 'live-weather-station');
-break;
-case 'duration':
-$result =  __('Duration', 'live-weather-station');
-break;
-case 'density':
-$result =  __('Density', 'live-weather-station');
-break;
-case :
-$result =  __('Humidity', 'live-weather-station');
-break;
-case 'irradiance':
-$result =  __('Power flux density', 'live-weather-station');
-break;
-case 'illuminance':
-$result =  __('Luminous flux density', 'live-weather-station');
-break;
-case :
-$result =  __('Specific energy', 'live-weather-station');
-break;
-case :
-$result =  __('Specific energy', 'live-weather-station');
-break;*/
-
     /**
      * Get the service type in plain text.
      *
@@ -108,6 +46,15 @@ break;*/
                 $result = null;
         }
         return $result;
+    }
+
+    /**
+     * Get the comparable dimensions.
+     * @return array The comparable dimensions.
+     * @since 3.4.0
+     */
+    protected function get_comparable_dimensions() {
+        return array('percentage', 'pressure-h', 'pressure', 'temperature', 'concentration-m', 'length', 'angle', 'speed', 'humidity');
     }
 
     /**
@@ -633,72 +580,86 @@ break;*/
      *
      * @param string $type The dimension type.
      * @param boolean $ten Optional. Get spec in power of ten.
+     * @param boolean $plural Optional. Get the plural form.
      * @return  string  The name of the dimension in plain text.
      * @since 3.4.0
      */
-    protected function get_dimension_name($type, $ten=false) {
+    protected function get_dimension_name($type, $ten=false, $plural=false) {
+        $n = ($plural ? 2 : 1);
         switch (strtolower($type)) {
             case 'percentage':
-                $result =  __('Percentage', 'live-weather-station');
+                $result =  _n('Percentage', 'Percentages', $n,  'live-weather-station');
                 break;
             case 'length':
-                $result =  __('Length', 'live-weather-station');
+                $result =  _n('Length', 'Lengths', $n, 'live-weather-station');
                 break;
             case 'concentration-m':
-                $result =  __('Concentration', 'live-weather-station');
+                $result =  _n('Concentration', 'Concentrations', $n, 'live-weather-station');
+                if ($ten) {
+                    $result .= ' (10⁻⁶)';
+                }
                 break;
             case 'concentration-b':
-                $result =  __('Concentration', 'live-weather-station');
+                $result =  _n('Concentration', 'Concentrations', $n, 'live-weather-station');
+                if ($ten) {
+                    $result .= ' (10⁻⁹)';
+                }
                 break;
             case 'area-density':
-                $result =  __('Area density', 'live-weather-station');
+                $result =  _n('Area density', 'Area densities', $n, 'live-weather-station');
                 break;
             case 'count':
             case 'base-11':
             case 'dimensionless':
-                $result =  __('Dimensionless', 'live-weather-station');
+                $result =  _n('Dimensionless', 'Dimensionless', $n, 'live-weather-station');
                 break;
             case 'angle':
-                $result =  __('Angle', 'live-weather-station');
+                $result =  _n('Angle', 'Angles', $n, 'live-weather-station');
                 break;
             case 'speed':
-                $result =  __('Speed', 'live-weather-station');
+                $result =  _n('Speed', 'Speeds', $n, 'live-weather-station');
                 break;
             case 'rate':
-                $result =  __('Rate', 'live-weather-station');
+                $result =  _n('Rate', 'Rates', $n, 'live-weather-station');
                 break;
             case 'pressure':
-                $result =  __('Pressure', 'live-weather-station');
+                $result =  _n('Pressure', 'Pressures', $n, 'live-weather-station');
                 break;
             case 'pressure-h':
-                $result =  __('Pressure', 'live-weather-station');
+                $result =  _n('Pressure', 'Pressures', $n, 'live-weather-station');
+                if ($ten) {
+                    $result .= ' (10²)';
+                }
                 break;
             case 'temperature':
-                $result =  __('Temperature', 'live-weather-station');
+                $result =  _n('Temperature', 'Temperatures', $n, 'live-weather-station');
                 break;
             case 'duration':
-                $result =  __('Duration', 'live-weather-station');
+                $result =  _n('Duration', 'Durations', $n, 'live-weather-station');
                 break;
             case 'density':
-                $result =  __('Density', 'live-weather-station');
+                $result =  _n('Density', 'Densities', $n, 'live-weather-station');
                 break;
             case 'humidity':
-                $result =  __('Humidity', 'live-weather-station');
+                $result =  _n('Humidity', 'Humidity', $n, 'live-weather-station');
                 break;
             case 'irradiance':
-                $result =  __('Power flux density', 'live-weather-station');
+                $result =  _n('Power flux density', 'Power flux densities', $n, 'live-weather-station');
                 break;
             case 'illuminance':
-                $result =  __('Luminous flux density', 'live-weather-station');
+                $result =  _n('Luminous flux density', 'Luminous flux densities', $n, 'live-weather-station');
                 break;
             case 'specific-energy':
-                $result =  __('Specific energy', 'live-weather-station');
+                $result =  _n('Specific energy', 'Specific energies', $n, 'live-weather-station');
                 break;
             case 'specific-energy-k':
-                $result =  __('Specific energy', 'live-weather-station');
+                $result =  _n('Specific energy', 'Specific energies', $n, 'live-weather-station');
+                if ($ten) {
+                    $result .= ' (10³)';
+                }
                 break;
             default:
-                $result =  __('Unknown', 'live-weather-station');
+                $result =  _n('Unknown', 'Unknown', $n, 'live-weather-station');
         }
         return $result;
     }
