@@ -2,6 +2,9 @@
 
 namespace WeatherStation\Engine\Module;
 
+use WeatherStation\Data\Output;
+use WeatherStation\Data\Arrays\Generator;
+
 /**
  * Abstract class to maintains each module.
  *
@@ -12,6 +15,17 @@ namespace WeatherStation\Engine\Module;
  */
 abstract class Maintainer {
 
+    use Output, Generator {
+        Output::get_service_name insteadof Generator;
+        Output::get_comparable_dimensions insteadof Generator;
+        Output::get_module_type insteadof Generator;
+        Output::get_fake_module_name insteadof Generator;
+        Output::get_measurement_type insteadof Generator;
+        Output::get_dimension_name insteadof Generator;
+    }
+
+    protected $module_mode = '';
+    protected $module_type = '';
     protected $module_id = '';
     protected $module_name = '';
     protected $module_hint = '';
@@ -45,6 +59,7 @@ abstract class Maintainer {
      * @since 3.4.0
      */
     public function __construct($station_guid, $station_id, $station_name) {
+        $this->module_id = $this->module_mode . '-' . $this->module_type;
         $this->station_guid = $station_guid;
         $this->station_id = $station_id;
         $this->station_name = $station_name;
@@ -654,5 +669,134 @@ abstract class Maintainer {
         else {
             $this->print_boxes();
         }
+    }
+
+
+    /**
+     * Get the standard script section of the form.
+     *
+     * @return string The script section, ready to be printed.
+     * @since 3.4.0
+     */
+    protected function get_standard_script() {
+        $name = $this->module_mode . '-' . $this->module_type;
+        $js_name = $this->module_mode . '_' . $this->module_type;
+        $content = '';
+        for ($i=1; $i<=$this->series_number; $i++) {
+            $content .= '$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").change(function() {';
+            $content .= 'var js_array_' . $js_name . '_measurement_' . $this->station_guid . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$(this).val()][2];';
+            $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").html("");';
+            $content .= '$(js_array_' . $js_name . '_measurement_' . $this->station_guid . ').each(function (i) {';
+            if ($this->module_type == 'lines') {
+                $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+" "+((js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] != $("#' . $name . '-datas-dimension-' . $this->station_guid . '").val() && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none") ? "disabled" : "")+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+            }
+            else {
+                $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+            }
+            $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '" ).change();});';
+            $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").change(function() {';
+            if ($this->module_type == 'lines') {
+                $content .= 'if ($("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").val() == 0) {';
+                $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . ' option[value=\'line\']").attr("selected", true);';
+                $content .= '$("#' . $name . '-datas-dot-style-' . $i . '-' . $this->station_guid . ' option[value=\'none\']").attr("selected", true);';
+                $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . ' option[value=\'solid\']").attr("selected", true);';
+                $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . ' option[value=\'regular\']").attr("selected", true);};';
+            }
+            if ($this->module_mode == 'yearly') {
+                $content .= 'var js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()][2][$(this).val()][4];';
+                $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").html("");';
+                $content .= '$(js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . ').each(function (i) {';
+                $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][1]+"</option>");});';
+                $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . ' option[value=\'avg\']").attr("selected", true);';
+                $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '" ).change();});';
+                $content .= '$("#yearly-line-datas-set-' . $i . '-' . $this->station_guid . '").change(function() {';
+            }
+            $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . '" ).change();});';
+            $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . '").change(function() {';
+            $content .= 'if ($(this).val() == "transparent") {';
+            $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '").prop("disabled", true);';
+            $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").prop("disabled", true);}';
+            $content .= 'else {';
+            $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '").prop("disabled", false);';
+            $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").prop("disabled", false);}';
+            $content .= '$("#' . $name . '-datas-dot-style-' . $i . '-' . $this->station_guid . '" ).change();});';
+
+            $content .= '$("#' . $name . '-datas-dot-style-' . $i . '-' . $this->station_guid . '").change(function() {';
+            $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '" ).change();});';
+            $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '").change(function() {';
+            $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '" ).change();});';
+            $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").change(function() {';
+            $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '" ).change();});';
+        }
+
+        $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#' . $name . '-datas-color-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#' . $name . '-datas-color-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#' . $name . '-datas-interpolation-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#' . $name . '-datas-interpolation-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#' . $name . '-datas-timescale-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#' . $name . '-datas-timescale-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#' . $name . '-datas-valuescale-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#' . $name . '-datas-valuescale-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#' . $name . '-datas-guideline-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#' . $name . '-datas-guideline-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#' . $name . '-datas-height-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#' . $name . '-datas-height-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#' . $name . '-datas-label-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#' . $name . '-datas-label-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#' . $name . '-datas-data-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#' . $name . '-datas-data-' . $this->station_guid . '").change(function() {';
+
+        for ($i=1; $i<=$this->series_number; $i++) {
+            $content .= 'if (typeof js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()] !== "undefined" && typeof js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()][2][$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").val()] !== "undefined") {';
+            $content .= 'var sc_device_' . $i . ' = "' . $this->station_id . '";';
+            $content .= 'var sc_module_' . $i . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()][1];';
+            $content .= 'var sc_measurement_' . $i . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()][2][$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").val()][1];';
+            if ($this->module_mode == 'yearly') {
+                $content .= 'var sc_set_' . $i . ' = $("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").val();';
+                $content .= '  sc_measurement_' . $i . ' = sc_set_' . $i . '+":"+sc_measurement_' . $i . ';';
+
+            }
+            $content .= 'var sc_line_mode_' . $i . ' = $("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . '").val();';
+            $content .= 'var sc_dot_style_' . $i . ' = $("#' . $name . '-datas-dot-style-' . $i . '-' . $this->station_guid . '").val();';
+            $content .= 'var sc_line_style_' . $i . ' = $("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '").val();';
+            $content .= 'var sc_line_size_' . $i . ' = $("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").val();';
+            $content .= 'var sc_' . $i . ' = "";';
+            $content .= ' if (sc_measurement_' . $i . ' != "none") {';
+            $content .= '   sc_' . $i . ' = " device_id_' . $i . '=\'"+sc_device_' . $i . '+"\' module_id_' . $i . '=\'"+sc_module_' . $i . '+"\' measurement_' . $i . '=\'"+sc_measurement_' . $i . '+"\' line_mode_' . $i . '=\'"+sc_line_mode_' . $i . '+"\' dot_style_' . $i . '=\'"+sc_dot_style_' . $i . '+"\' line_style_' . $i . '=\'"+sc_line_style_' . $i . '+"\' line_size_' . $i . '=\'"+sc_line_size_' . $i . '+"\'";';
+            $content .= ' }';
+            $content .= ' }';
+        }
+
+        $content .= 'var sc_template = $("#' . $name . '-datas-template-' . $this->station_guid . '").val();';
+        $content .= 'var sc_color = $("#' . $name . '-datas-color-' . $this->station_guid . '").val();';
+        $content .= 'var sc_interpolation = $("#' . $name . '-datas-interpolation-' . $this->station_guid . '").val();';
+        $content .= 'var sc_timescale = $("#' . $name . '-datas-timescale-' . $this->station_guid . '").val();';
+        $content .= 'var sc_valuescale = $("#' . $name . '-datas-valuescale-' . $this->station_guid . '").val();';
+        $content .= 'var sc_guideline = $("#' . $name . '-datas-guideline-' . $this->station_guid . '").val();';
+        $content .= 'var sc_height = $("#' . $name . '-datas-height-' . $this->station_guid . '").val();';
+        $content .= 'var sc_label = $("#' . $name . '-datas-label-' . $this->station_guid . '").val();';
+        $content .= 'var sc_data = $("#' . $name . '-datas-data-' . $this->station_guid . '").val();';
+
+        $content .= 'var shortcode = "[live-weather-station-graph mode=\'' . $this->module_mode . '\' type=\'' . $this->module_type . '\' template=\'"+sc_template+"\' data=\'"+sc_data+"\' color=\'"+sc_color+"\' label=\'"+sc_label+"\' interpolation=\'"+sc_interpolation+"\' timescale=\'"+sc_timescale+"\' valuescale=\'"+sc_valuescale+"\' guideline=\'"+sc_guideline+"\' height=\'"+sc_height+"\'"';
+        for ($i=1; $i<=$this->series_number; $i++) {
+            $content .= '+sc_' . $i;
+        }
+        $content .= '+"]";';
+        $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
+        $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
+        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"' . $this->module_mode . '", type:"' . $this->module_type . '", template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, ';
+        $t = array();
+        for ($i=1; $i<=$this->series_number; $i++) {
+            $u = array();
+            foreach ($this->graph_allowed_serie as $param) {
+                $u[] = $param . '_' . $i . ':sc_' . str_replace('_id', '', $param) . '_' . $i;
+            }
+            $t[] = implode(', ', $u);
+        }
+        $content .= implode(', ', $t);
+        $content .= '}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
+        $content .= '$("#' . $name . '-datas-shortcode-' . $this->station_guid . '").html(shortcode);});';
+        return $content;
     }
 }
