@@ -391,7 +391,7 @@ trait Generator {
      */
     private function get_line_array($ref, $data, $reduced, $module_type, $measurement_type) {
         $unit = $this->output_unit($measurement_type, $module_type);
-        return array($this->get_measurement_type($measurement_type, false, $module_type), $measurement_type, ($reduced ? array() : $this->get_measure_array($ref, $data, $measurement_type)), $unit['dimension']);
+        return array($this->get_measurement_type($measurement_type, false, $module_type), $measurement_type, ($reduced ? array() : $this->get_measure_array($ref, $data, $measurement_type)), $unit['dimension'], $this->get_available_operations($measurement_type, $module_type));
     }
 
 

@@ -19,6 +19,8 @@ use WeatherStation\Engine\Module\Current\Meter;
 use WeatherStation\Engine\Module\Current\Textual;
 use WeatherStation\Engine\Module\Daily\Line as DailyLine;
 use WeatherStation\Engine\Module\Daily\Lines as DailyLines;
+use WeatherStation\Engine\Module\Yearly\Line as YearlyLine;
+
 
 
 /**
@@ -68,6 +70,7 @@ class Handling {
         Meter::register_module('current');
         DailyLine::register_module('daily');
         DailyLines::register_module('daily');
+        YearlyLine::register_module('yearly');
     }
 
     /**

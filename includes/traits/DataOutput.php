@@ -6525,6 +6525,30 @@ trait Output {
     }
 
     /**
+     * Get available operations for a type of measurement.
+     *
+     * @param string $measurement_type The type of measurement.
+     * @param string $module_type Optional. The type of the module.
+     * @return array An array containing the available operations.
+     * @since 3.4.0
+     */
+    public function get_available_operations($measurement_type, $module_type='NAMain') {
+        $result = array();
+        if ((bool)get_option('live_weather_station_collect_history') && (bool)get_option('live_weather_station_build_history')) {
+            $history = new History(LWS_PLUGIN_NAME, LWS_VERSION);
+            $operations = $history->get_measurements_operations_type($measurement_type, $module_type, (bool)get_option('live_weather_station_full_history'));
+            $set = array();
+            foreach ($operations as $operation) {
+                $set[] = $operation;
+            }
+            foreach ($this->get_all_historical_operations($set) as $key=>$operation) {
+                $result[] = array($key, ucfirst($operation));
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Get available historical measurements.
      *
      * @param bool $current Optional. Get only true current measurements.
@@ -6556,7 +6580,7 @@ trait Output {
                 if ($current) {
                     $compiled = (bool)get_option('live_weather_station_collect_history');
                     $aggregated = (bool)get_option('live_weather_station_collect_history') &&
-                                  (bool)get_option('live_weather_station_build_history');
+                        (bool)get_option('live_weather_station_build_history');
                 }
                 else {
                     $compiled = true;
@@ -6567,10 +6591,10 @@ trait Output {
                 $type = 'extended';
                 if ($current) {
                     $compiled = (bool)get_option('live_weather_station_collect_history') &&
-                                (bool)get_option('live_weather_station_full_history');
+                        (bool)get_option('live_weather_station_full_history');
                     $aggregated = (bool)get_option('live_weather_station_collect_history') &&
-                                  (bool)get_option('live_weather_station_full_history') &&
-                                  (bool)get_option('live_weather_station_build_history');
+                        (bool)get_option('live_weather_station_full_history') &&
+                        (bool)get_option('live_weather_station_build_history');
                 }
                 else {
                     $compiled = $force_mode == 'extended';
