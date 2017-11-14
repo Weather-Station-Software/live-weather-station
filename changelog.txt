@@ -2,7 +2,7 @@
 #3.4.0 / December XXXXth, 2017
 
 * New: Weather Station now compiles data as daily and historical values.
-* New: new single line chart for daily graph with tons of options and settings.
+* New: new single-line and multi-lines chart for daily graph with tons of options and settings.
 * New: the scheduled tasks tab allows to proceed on execution and reschedule of tasks belonging to the new history pool.
 * New: the task analytics graphs now takes care of the new history pool.
 * Improvement: the station view has been totally redesigned and is now faster to load.
@@ -13,6 +13,7 @@
 * Bug fix: in some cases, the plugin try to download translations statistics at each loading.
 * Bug fix: with some browsers, the layout of shortcode window is ugly.
 * Bug fix: a PHP/MySQL error may appears when using "indoor" widget when no collected station provides this type of data.
+* Bug fix: in some (rare) race condition, it's not impossible that an event is not recorded in the event log.
 
 #3.3.3 / November 13th, 2017
 

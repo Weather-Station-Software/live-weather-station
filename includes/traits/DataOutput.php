@@ -49,7 +49,7 @@ trait Output {
         'day_length_a', 'dawn_length_a','dawn_length_n', 'dawn_length_c', 'dusk_length_a', 'dusk_length_n',
         'dusk_length_c','saturation_vapor_pressure','saturation_absolute_humidity','equivalent_potential_temperature');
     private $graph_allowed_serie = array('device_id', 'module_id', 'measurement', 'line_mode', 'dot_style', 'line_style', 'line_size');
-    private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data');
+    private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
 
 
     /**
@@ -269,7 +269,7 @@ trait Output {
                         $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
                         $result['extras'][] = $extra;
                         $result['legend']['unit'] = $this->output_unit($arg['measurement'], $module_type);
-                        if ($arg['line_mode'] == 'area') {
+                        if ($arg['line_mode'] == 'area' || $arg['line_mode'] == 'arealine') {
                             $info['area'] = true;
                         }
                         $classes = array();
@@ -784,7 +784,7 @@ trait Output {
      * @since 3.4.0
      */
     public function graph_shortcodes($attributes) {
-        $_attributes = shortcode_atts( array('mode' => '', 'type' => '', 'template' => 'neutral', 'color' => 'Blues', 'label' => 'none', 'interpolation' => 'linear', 'guideline' => 'none', 'height' => '300px', 'timescale' => 'auto', 'valuescale' => 'auto', 'data' => 'inline', 'cache' => 'cache'), $attributes );
+        $_attributes = shortcode_atts( array('mode' => '', 'type' => '', 'template' => 'neutral', 'color' => 'Blues', 'label' => 'none', 'interpolation' => 'linear', 'guideline' => 'none', 'height' => '300px', 'timescale' => 'auto', 'valuescale' => 'auto', 'data' => 'inline', 'cache' => 'cache', 'periodtype' => 'none', 'periodvalue' => 'none'), $attributes );
         $mode = $_attributes['mode'];
         $type = $_attributes['type'];
         $color = $_attributes['color'];
@@ -900,7 +900,7 @@ trait Output {
                 if ($items[$i]['dot_style'] == 'large-circle') {
                     $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
                 }
-                if ($items[$i]['line_mode'] == 'transparent') {
+                if ($items[$i]['line_mode'] == 'transparent' || $items[$i]['line_mode'] == 'area') {
                     $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-line {stroke-opacity:0;}' . PHP_EOL;
                 }
             }

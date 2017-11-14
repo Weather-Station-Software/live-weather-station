@@ -50,6 +50,7 @@ class Handling {
     private $station_guid;
     private $station_id;
     private $station_name;
+    private $station_information;
     private $arg_service;
     private $arg_tab;
     private $arg_action;
@@ -88,9 +89,9 @@ class Handling {
         $this->get_args();
         if ($this->station_guid != 0) {
             $this->edit_station();
-            $station_information = $this->get_station_informations_by_guid($this->station_guid);
-            $this->station_name = $station_information['station_name'];
-            $this->station_id = $station_information['station_id'];
+            $this->station_information = $this->get_station_informations_by_guid($this->station_guid);
+            $this->station_name = $this->station_information['station_name'];
+            $this->station_id = $this->station_information['station_id'];
             $this->screen = $station;
             $pref = 'lws-station-';
             if ($this->arg_action == 'shortcode') {
@@ -120,7 +121,7 @@ class Handling {
     private function get_modules() {
         $result = array();
         foreach (ModuleMaintainer::get_modules($this->arg_tab) as $class){
-            $module = new $class($this->station_guid, $this->station_id, $this->station_name);
+            $module = new $class($this->station_information);
             if ($this->arg_service == $module->get_id()) {
                 $module->select();
             }

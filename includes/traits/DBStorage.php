@@ -3,6 +3,7 @@
 namespace WeatherStation\DB;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\System\Cache\Cache;
+use WeatherStation\Data\History\Builder;
 
 /**
  * Storage management.
@@ -24,18 +25,6 @@ define('LWS_TXT_SID', 7);
 define('LWS_WFLW_SID', 8);
 
 trait Storage {
-
-    protected $facility_DM = 'Data Manager';
-
-    protected $data_to_historize =
-        array('health_idx', 'cbi', 'co2', 'humidity', 'cloudiness', 'noise', 'pressure', 'temperature',
-            'heat_index', 'humidex', 'wind_chill', 'cloud_ceiling', 'wet_bulb', 'air_density', 'wood_emc', 
-            'equivalent_temperature', 'potential_temperature', 'equivalent_potential_temperature', 'specific_enthalpy', 
-            'partial_vapor_pressure', 'saturation_vapor_pressure', 'vapor_pressure', 'absolute_humidity', 
-            'partial_absolute_humidity', 'saturation_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 
-            'soil_temperature', 'leaf_wetness', 'moisture_content', 'moisture_tension', 'evapotranspiration',
-            'windangle', 'gustangle', 'windstrength', 'guststrength', 'rain', 'rain_hour_aggregated',
-            'rain_day_aggregated', 'strike_count', 'strike_instant', 'weather', 'dew_point', 'frost_point');
 
 
     /**
@@ -308,6 +297,7 @@ trait Storage {
         $sql .= " wug_sync boolean DEFAULT 0 NOT NULL,";
         $sql .= " last_refresh datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,";
         $sql .= " last_seen datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,";
+        $sql .= " oldest_data date NOT NULL DEFAULT '0000-00-00',";
         $sql .= " PRIMARY KEY (guid),";
         $sql .= " UNIQUE KEY (station_id)";
         $sql .= ") $charset_collate;";
@@ -328,7 +318,7 @@ trait Storage {
         $sql .= " `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',";
         $sql .= " `level` enum('emergency','alert','critical','error','warning','notice','info','debug','unknown') NOT NULL DEFAULT 'unknown',";
         $sql .= " `plugin` varchar(20) NOT NULL DEFAULT '" . LWS_PLUGIN_NAME . "',";
-        $sql .= " `version` varchar(10) NOT NULL DEFAULT 'N/A',";
+        $sql .= " `version` varchar(11) NOT NULL DEFAULT 'N/A',";
         $sql .= " `system` varchar(50) NOT NULL DEFAULT 'N/A',";
         $sql .= " `service` varchar(50) NOT NULL DEFAULT 'N/A',";
         $sql .= " `device_id` varchar(17) NOT NULL DEFAULT '00:00:00:00:00:00',";
@@ -503,6 +493,26 @@ trait Storage {
             update_option('live_weather_station_frost_point_min_boundary', -70);
             update_option('live_weather_station_wind_chill_min_boundary', -120);
 
+
+            // VERSION 3.4.0
+            $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            if (self::is_empty_table($table_name)) {
+                $sql = 'DROP TABLE IF EXISTS ' . $table_name;
+                $wpdb->query($sql);
+                self::create_live_weather_station_stations_table();
+            } else {
+                self::safe_add_column($table_name, 'oldest_data', "ALTER TABLE " . $table_name . " ADD oldest_data date NOT NULL DEFAULT '0000-00-00';");
+            }
+
+            $table_name = $wpdb->prefix . self::live_weather_station_log_table();
+            if (self::is_empty_table($table_name)) {
+                $sql = 'DROP TABLE IF EXISTS ' . $table_name;
+                $wpdb->query($sql);
+                self::create_live_weather_station_log_table();
+            } else {
+                $sql = "ALTER TABLE " . $table_name . " MODIFY COLUMN version varchar(11) NOT NULL DEFAULT 'N/A';";
+                $wpdb->query($sql);
+            }
         }
     }
 
@@ -613,7 +623,7 @@ trait Storage {
      */
     private function update_historic($value) {
         if ((bool)get_option('live_weather_station_collect_history')) {
-            if (in_array($value['measure_type'], $this->data_to_historize)) {
+            if (in_array($value['measure_type'], Builder::$data_to_historize)) {
                 $ts = mysql2date('G', $value['measure_timestamp']);
                 $sec = $ts % 86400;
                 if ($sec > (86400 - 150)) {         //if near midnight (less than 2'30")
@@ -654,15 +664,15 @@ trait Storage {
                 $this->update_historic($value);
             }
             catch (\Exception $ex) {
-                Logger::error($this->facility_DM, null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
+                Logger::error('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
             }
         }
         else {
             try {
-                Logger::error($this->facility_DM, null, $value['device_id'], $value['device_name'], $value['module_id'], $value['module_name'], 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
+                Logger::error('Data Manager', null, $value['device_id'], $value['device_name'], $value['module_id'], $value['module_name'], 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
             }
             catch (\Exception $ex) {
-                Logger::error($this->facility_DM, null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
+                Logger::error('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
             }
 
         }
@@ -700,10 +710,10 @@ trait Storage {
                         return $this->update_stations_table($value);
                     }
                     else {
-                        Logger::error($this->facility_DM, null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to insert station ' . $value['station_id'] . '.');
+                        Logger::error('Data Manager', null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to insert station ' . $value['station_id'] . '.');
                     }
                 } else {
-                    Logger::error($this->facility_DM, null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to find station ' . $value['station_id'] . '.');
+                    Logger::error('Data Manager', null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to find station ' . $value['station_id'] . '.');
                 }
             }
         }
@@ -715,7 +725,7 @@ trait Storage {
             Cache::flush_query();
         }
         else {
-            Logger::error($this->facility_DM, null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to get guid for this record: ' . print_r($value, true));
+            Logger::error('Data Manager', null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to get guid for this record: ' . print_r($value, true));
         }
         return $result;
     }

@@ -113,7 +113,7 @@ class Logger {
             $values['level'] = $level;
             $values['timestamp'] = date('Y-m-d H:i:s');
             $values['plugin'] = LWS_PLUGIN_NAME;
-            $values['version'] = $version;
+            $values['version'] = substr($version, 0, 11);
             if (!is_null($system)) {
                 $values['system'] = substr($system, 0, 49);
             }

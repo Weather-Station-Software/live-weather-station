@@ -877,6 +877,48 @@ trait Query {
     }
 
     /**
+     * Get the oldest data array.
+     *
+     * @param array $station The station.
+     * @return mixed The oldest date or false.
+     * @since 3.4.0
+     */
+    public function get_oldest_data($station) {
+        $data = $this->_get_oldest_data($station);
+        if (count($data) > 1) {
+            return $data[1]['timestamp'];
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
+     * Get the oldest data array.
+     *
+     * @param array $station The station.
+     * @return array The 3 oldest dates.
+     * @since 3.4.0
+     */
+    private function _get_oldest_data($station) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
+        $sql = "SELECT DISTINCT(`timestamp`) FROM ".$table_name. " WHERE device_id='".$station['station_id']."' ORDER BY `timestamp` ASC LIMIT 3" ;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $data = array();
+            foreach ($query_a as $val) {
+                $data[] = (array)$val;
+            }
+            return $data;
+        }
+        catch(\Exception $ex) {
+            return array();
+        }
+    }
+
+    /**
      * Get station informations.
      *
      * @param integer $station_id The station id.
