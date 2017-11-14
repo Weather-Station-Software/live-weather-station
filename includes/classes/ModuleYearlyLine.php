@@ -15,19 +15,17 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
     /**
      * Initialize the class and set its properties.
      *
-     * @param string $station_guid The GUID of the station.
-     * @param string $station_id The ID of the device.
-     * @param string $station_name The name of the station.
+     * @param array $station_information An array containing the station inforrmations.
      * @since 3.4.0
      */
-    public function __construct($station_guid, $station_id, $station_name) {
+    public function __construct($station_information) {
         $this->module_mode = 'yearly';
         $this->module_type = 'line';
         $this->module_name = ucfirst(__('single line', 'live-weather-station'));
         $this->module_hint = __('Display historical data as a line chart. Allows to view a single dataset from a single type of measurement.', 'live-weather-station');
         $this->module_icon = 'ch fa-lg fa-fw ch-line-chart-5';
         $this->layout = '12-3-4';
-        parent::__construct($station_guid, $station_id, $station_name);
+        parent::__construct($station_information);
     }
 
     /**
@@ -45,6 +43,7 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
         else {
             $this->data = null;
         }
+        $this->period = $this->get_period_value_js_array($this->station_information);
     }
 
     /**
@@ -55,6 +54,8 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_datasource() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
+        $content .= $this->get_key_value_option_select('yearly-line-datas-period-type-'. $this->station_guid, __('Period type', 'live-weather-station'), $this->get_period_type_js_array(), true);
+        $content .= $this->get_neutral_option_select('yearly-line-datas-period-value-'. $this->station_guid, __('Period', 'live-weather-station'));
         $content .= $this->get_assoc_option_select('yearly-line-datas-module-1-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
         $content .= $this->get_neutral_option_select('yearly-line-datas-measurement-1-'. $this->station_guid, __('Measurement', 'live-weather-station'));
         $content .= $this->get_neutral_option_select('yearly-line-datas-set-1-'. $this->station_guid, __('Dataset', 'live-weather-station'));
@@ -62,8 +63,6 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_key_value_option_select('yearly-line-datas-dot-style-1-'. $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none');
         $content .= $this->get_key_value_option_select('yearly-line-datas-line-style-1-'. $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid');
         $content .= $this->get_key_value_option_select('yearly-line-datas-line-size-1-'. $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular');
-        $content .= $this->get_placeholder_option_select();
-        $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
         return $this->get_box('lws-datasource-id', $this->datasource_title, $content);
     }

@@ -23,6 +23,16 @@ class Builder
 
     use Query;
     use Conversion;
+
+    public static $data_to_historize =
+        array('health_idx', 'cbi', 'co2', 'humidity', 'cloudiness', 'noise', 'pressure', 'temperature',
+            'heat_index', 'humidex', 'wind_chill', 'cloud_ceiling', 'wet_bulb', 'air_density', 'wood_emc',
+            'equivalent_temperature', 'potential_temperature', 'equivalent_potential_temperature', 'specific_enthalpy',
+            'partial_vapor_pressure', 'saturation_vapor_pressure', 'vapor_pressure', 'absolute_humidity',
+            'partial_absolute_humidity', 'saturation_absolute_humidity', 'irradiance', 'uv_index', 'illuminance',
+            'soil_temperature', 'leaf_wetness', 'moisture_content', 'moisture_tension', 'evapotranspiration',
+            'windangle', 'gustangle', 'windstrength', 'guststrength', 'rain', 'rain_hour_aggregated',
+            'rain_day_aggregated', 'strike_count', 'strike_instant', 'weather', 'dew_point', 'frost_point');
     
     public $standard_measurements = 
         array('health_idx', 'co2', 'humidity', 'cloudiness', 'noise', 'pressure', 'temperature', 'irradiance', 

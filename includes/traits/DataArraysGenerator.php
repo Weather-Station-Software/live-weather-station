@@ -1485,6 +1485,85 @@ trait Generator {
         return $result;
     }
 
+
+    /**
+     * Get period types array.
+     *
+     * @return array An array containing the period types ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_period_type_js_array() {
+        $result = array();
+        $result[] = array('fixed-month',  __('Fixed month', 'live-weather-station'));
+        $result[] = array('sliding-month',  __('Sliding month', 'live-weather-station'));
+        $result[] = array('fixed-season',  __('Fixed season', 'live-weather-station'));
+        $result[] = array('sliding-season',  __('Sliding season', 'live-weather-station'));
+        $result[] = array('fixed-year',  __('Fixed year', 'live-weather-station'));
+        $result[] = array('sliding-year',  __('Sliding year', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get period values array.
+     *
+     * @param array $station The station informations.
+     * @return array An array containing the period values ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_period_value_js_array($station) {
+        $result = array();
+        $oldest_date = $this->get_oldest_data($station);
+
+        // Sliding month
+        $period = array();
+        for ($i=0; $i<=12; $i++) {
+            $s = '';
+            if ($i != 0) {
+                $s = ' - ' . $i;
+            }
+            $period[] = array( 'month-'.$i, __('Current month', 'live-weather-station') . $s);
+        }
+        $result[] = array('sliding-month',  $period);
+
+        // Sliding season
+        $period = array();
+        for ($i=0; $i<=4; $i++) {
+            $s = '';
+            if ($i != 0) {
+                $s = ' - ' . $i;
+            }
+            $period[] = array( 'season-'.$i, __('Current season', 'live-weather-station') . $s);
+        }
+        $result[] = array('sliding-season',  $period);
+
+        // Sliding year
+        $period = array();
+        for ($i=0; $i<=1; $i++) {
+            $s = '';
+            if ($i != 0) {
+                $s = ' - ' . $i;
+            }
+            $period[] = array( 'year-'.$i, __('Current year', 'live-weather-station') . $s);
+        }
+        $result[] = array('sliding-year',  $period);
+
+
+
+
+
+
+
+
+
+
+        $result[] = array('fixed-month',  array(array('none', 'none')));
+        $result[] = array('fixed-season',  array(array('none', 'none')));
+        $result[] = array('fixed-year',  array(array('none', 'none')));
+
+
+        return $result;
+    }
+
     /**
      * Get comparable dimensions array.
      *
@@ -1623,6 +1702,7 @@ trait Generator {
         $result[] = array('transparent',  __('Transparent', 'live-weather-station'));
         $result[] = array('line',  __('Line', 'live-weather-station'));
         $result[] = array('area',  __('Array', 'live-weather-station'));
+        $result[] = array('arealine',  __('Array & Line', 'live-weather-station'));
         return $result;
     }
 

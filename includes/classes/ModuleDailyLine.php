@@ -15,19 +15,17 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
     /**
      * Initialize the class and set its properties.
      *
-     * @param string $station_guid The GUID of the station.
-     * @param string $station_id The ID of the device.
-     * @param string $station_name The name of the station.
+     * @param array $station_information An array containing the station inforrmations.
      * @since 3.4.0
      */
-    public function __construct($station_guid, $station_id, $station_name) {
+    public function __construct($station_information) {
         $this->module_mode = 'daily';
         $this->module_type = 'line';
         $this->module_name = ucfirst(__('single line', 'live-weather-station'));
         $this->module_hint = __('Display daily data as a line chart. Allows to view a single type of measurement.', 'live-weather-station');
         $this->module_icon = 'ch fa-lg fa-fw ch-line-chart-5';
         $this->layout = '12-3-4';
-        parent::__construct($station_guid, $station_id, $station_name);
+        parent::__construct($station_information);
     }
 
     /**

@@ -58,15 +58,14 @@ class Cleaner
      * @since 3.4.0
      */
     private function __clean() {
-        if (get_option('live_weather_station_retention_history') > 0) {
-            $stations = $this->get_stations_list();
-            foreach ($stations as $station) {
-                $device_id = $station['station_id'];
-                if ($this->delete_old_yearly_values($device_id, $station['loc_timezone'])) {
-                    Logger::notice($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'Old historical data cleaned.');
-                }
-                Logger::info($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'No old historical data to clean.');
+        $stations = $this->get_stations_list();
+        foreach ($stations as $station) {
+            $device_id = $station['station_id'];
+            if ($this->delete_old_yearly_values($device_id, $station['loc_timezone'])) {
+                Logger::notice($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'Old historical data cleaned.');
             }
+            Logger::info($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'No old historical data to clean.');
+            $this->update_oldest_data($station);
         }
     }
 
@@ -79,12 +78,30 @@ class Cleaner
      * @since 3.4.0
      */
     private function delete_old_yearly_values($device_id, $tz) {
-        $max = date('Y-m-d', self::get_local_n_days_ago_midnight(7 * get_option('live_weather_station_retention_history'), $tz));
-        global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
-        $sql = "DELETE FROM ".$table_name." WHERE `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "';";
-        return $wpdb->query($sql);
+        if (get_option('live_weather_station_retention_history') > 0) {
+            $max = date('Y-m-d', self::get_local_n_days_ago_midnight(7 * get_option('live_weather_station_retention_history'), $tz));
+            global $wpdb;
+            $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
+            $sql = "DELETE FROM " . $table_name . " WHERE `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "';";
+            return $wpdb->query($sql);
+        }
+        else {
+            return false;
+        }
     }
 
+    /**
+     * Update the value 'oldest_data' for a station.
+     *
+     * @param array $station The station.
+     * @since 3.4.0
+     */
+    private function update_oldest_data($station) {
+        if ($date = $this->get_oldest_data($station)) {
+            $station['oldest_data'] = $date;
+            $this->update_stations_table($station);
+            Logger::debug('History Cleaner', null, $station['station_id'], $station['station_name'], null, null, null, '"oldest_data" field updated.');
+        }
+    }
 
 }

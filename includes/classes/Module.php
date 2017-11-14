@@ -4,6 +4,7 @@ namespace WeatherStation\Engine\Module;
 
 use WeatherStation\Data\Output;
 use WeatherStation\Data\Arrays\Generator;
+use WeatherStation\System\Logs\Logger;
 
 /**
  * Abstract class to maintains each module.
@@ -35,7 +36,9 @@ abstract class Maintainer {
     protected $station_guid = 0;
     protected $station_id = '';
     protected $station_name = 0;
+    protected $station_information;
     protected $data = null;
+    protected $period = null;
     protected $layout = '';
     protected $fingerprint = '';
     public static $classes = array();
@@ -53,16 +56,15 @@ abstract class Maintainer {
     /**
      * Initialize the class and set its properties.
      *
-     * @param string $station_guid The GUID of the station.
-     * @param string $station_id The ID of the device.
-     * @param string $station_name The name of the station.
+     * @param array $station_information An array containing the station inforrmations.
      * @since 3.4.0
      */
-    public function __construct($station_guid, $station_id, $station_name) {
+    public function __construct($station_information) {
         $this->module_id = $this->module_mode . '-' . $this->module_type;
-        $this->station_guid = $station_guid;
-        $this->station_id = $station_id;
-        $this->station_name = $station_name;
+        $this->station_information = $station_information;
+        $this->station_guid = $this->station_information['guid'];
+        $this->station_id = $this->station_information['station_id'];
+        $this->station_name = $this->station_information['station_name'];
         $fingerprint = uniqid('', true);
         $this->fingerprint = $this->module_id.substr ($fingerprint, strlen($fingerprint)-6, 80);
     }
@@ -480,6 +482,10 @@ abstract class Maintainer {
         $result .= '}).resize();';
         // data
         $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_' . $this->station_guid . ' = ' . json_encode($this->data) . ';';
+        // period
+        if ($this->module_mode == 'yearly') {
+            $result .= 'var js_array_period_' . $this->station_guid . ' = ' . json_encode($this->period) . ';';
+        }
         // content
         $result .= $content;
         $result .= '});';
@@ -542,6 +548,18 @@ abstract class Maintainer {
     }
 
     /**
+     * Get the error box for data unavailable.
+     *
+     * @return string The box, ready to be printed.
+     * @since 3.4.0
+     */
+    private function get_no_history_box() {
+        $title = __('No data yet', 'live-weather-station');
+        $content = sprintf(__('%s collects and compiles weather data for this station but, for now, there is not enough historical data to display graphs. Please, come back in 24-36 hours', 'live-weather-station' ), LWS_PLUGIN_NAME);
+        return $this->get_box('lws-error-id', $title, $content);
+    }
+
+    /**
      * Print the error box for data unavailable.
      *
      * @param integer $id Optional. Type of the error.
@@ -558,6 +576,9 @@ abstract class Maintainer {
                 break;
             case 2:
                 $result .= $this->get_no_build_box();
+                break;
+            case 3:
+                $result .= $this->get_no_history_box();
                 break;
             default:
                 $result .= $this->get_error_box();
@@ -658,13 +679,16 @@ abstract class Maintainer {
         $this->preview_title = __('3. Verify the generated output', 'live-weather-station');
         $this->prepare();
         if (is_null($this->data)) {
-            $this->print_error();
+            $this->print_error(0);
         }
         elseif ($this->module_type() == 'daily' && !(bool)get_option('live_weather_station_collect_history')) {
             $this->print_error(1);
         }
         elseif ($this->module_type() == 'yearly' && !(bool)get_option('live_weather_station_build_history')) {
             $this->print_error(2);
+        }
+        elseif ($this->module_type() == 'yearly' && $this->station_information['oldest_data'] == '0000-00-00') {
+            $this->print_error(3);
         }
         else {
             $this->print_boxes();
@@ -713,7 +737,7 @@ abstract class Maintainer {
             }
             $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . '" ).change();});';
             $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . '").change(function() {';
-            $content .= 'if ($(this).val() == "transparent") {';
+            $content .= 'if ($(this).val() == "transparent" || $(this).val() == "area") {';
             $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '").prop("disabled", true);';
             $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").prop("disabled", true);}';
             $content .= 'else {';
@@ -728,12 +752,23 @@ abstract class Maintainer {
             $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").change(function() {';
             $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '" ).change();});';
         }
-
         $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '").change(function() {';
         $content .= '$("#' . $name . '-datas-color-' . $this->station_guid . '" ).change();});';
         $content .= '$("#' . $name . '-datas-color-' . $this->station_guid . '").change(function() {';
         $content .= '$("#' . $name . '-datas-interpolation-' . $this->station_guid . '" ).change();});';
         $content .= '$("#' . $name . '-datas-interpolation-' . $this->station_guid . '").change(function() {';
+        if ($this->module_mode == 'yearly') {
+            $content .= '$("#' . $name . '-datas-period-type-' . $this->station_guid . '" ).change();});';
+            $content .= '$("#' . $name . '-datas-period-type-' . $this->station_guid . '").change(function() {';
+            $content .= 'var js_array_p_' . $this->station_guid . ' = null;';
+            $content .= '$(js_array_period_' . $this->station_guid . ').each(function (i) {';
+            $content .= 'if (js_array_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-datas-period-type-' . $this->station_guid . '").val()) {js_array_p_' . $this->station_guid . '=js_array_period_' . $this->station_guid . '[i][1]}  ;});';
+            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").html("");';
+            $content .= '$(js_array_p_' . $this->station_guid . ').each(function (i) {';
+            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").append("<option value="+js_array_p_' . $this->station_guid . '[i][0]+">"+js_array_p_' . $this->station_guid . '[i][1]+"</option>");});';
+            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '" ).change();});';
+            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").change(function() {';
+        }
         $content .= '$("#' . $name . '-datas-timescale-' . $this->station_guid . '" ).change();});';
         $content .= '$("#' . $name . '-datas-timescale-' . $this->station_guid . '").change(function() {';
         $content .= '$("#' . $name . '-datas-valuescale-' . $this->station_guid . '" ).change();});';
@@ -754,8 +789,7 @@ abstract class Maintainer {
             $content .= 'var sc_measurement_' . $i . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()][2][$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").val()][1];';
             if ($this->module_mode == 'yearly') {
                 $content .= 'var sc_set_' . $i . ' = $("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").val();';
-                $content .= '  sc_measurement_' . $i . ' = sc_set_' . $i . '+":"+sc_measurement_' . $i . ';';
-
+                $content .= 'sc_measurement_' . $i . ' = sc_set_' . $i . '+":"+sc_measurement_' . $i . ';';
             }
             $content .= 'var sc_line_mode_' . $i . ' = $("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . '").val();';
             $content .= 'var sc_dot_style_' . $i . ' = $("#' . $name . '-datas-dot-style-' . $i . '-' . $this->station_guid . '").val();';
@@ -767,7 +801,14 @@ abstract class Maintainer {
             $content .= ' }';
             $content .= ' }';
         }
-
+        if ($this->module_mode == 'yearly') {
+            $content .= 'var sc_period_type = $("#' . $name . '-datas-period-type-' . $this->station_guid . '").val();';
+            $content .= 'var sc_period_value = $("#' . $name . '-datas-period-value-' . $this->station_guid . '").val();';
+        }
+        else {
+            $content .= 'var sc_period_type = "none";';
+            $content .= 'var sc_period_value = "none";';
+        }
         $content .= 'var sc_template = $("#' . $name . '-datas-template-' . $this->station_guid . '").val();';
         $content .= 'var sc_color = $("#' . $name . '-datas-color-' . $this->station_guid . '").val();';
         $content .= 'var sc_interpolation = $("#' . $name . '-datas-interpolation-' . $this->station_guid . '").val();';
@@ -777,15 +818,14 @@ abstract class Maintainer {
         $content .= 'var sc_height = $("#' . $name . '-datas-height-' . $this->station_guid . '").val();';
         $content .= 'var sc_label = $("#' . $name . '-datas-label-' . $this->station_guid . '").val();';
         $content .= 'var sc_data = $("#' . $name . '-datas-data-' . $this->station_guid . '").val();';
-
-        $content .= 'var shortcode = "[live-weather-station-graph mode=\'' . $this->module_mode . '\' type=\'' . $this->module_type . '\' template=\'"+sc_template+"\' data=\'"+sc_data+"\' color=\'"+sc_color+"\' label=\'"+sc_label+"\' interpolation=\'"+sc_interpolation+"\' timescale=\'"+sc_timescale+"\' valuescale=\'"+sc_valuescale+"\' guideline=\'"+sc_guideline+"\' height=\'"+sc_height+"\'"';
+        $content .= 'var shortcode = "[live-weather-station-graph mode=\'' . $this->module_mode . '\' type=\'' . $this->module_type . '\' template=\'"+sc_template+"\' data=\'"+sc_data+"\' color=\'"+sc_color+"\' label=\'"+sc_label+"\' interpolation=\'"+sc_interpolation+"\' timescale=\'"+sc_timescale+"\' valuescale=\'"+sc_valuescale+"\' guideline=\'"+sc_guideline+"\' height=\'"+sc_height+"\' periodtype=\'"+sc_period_type+"\' periodvalue=\'"+sc_period_value+"\'"';
         for ($i=1; $i<=$this->series_number; $i++) {
             $content .= '+sc_' . $i;
         }
         $content .= '+"]";';
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
-        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"' . $this->module_mode . '", type:"' . $this->module_type . '", template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, ';
+        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"' . $this->module_mode . '", type:"' . $this->module_type . '", template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, periodtype:sc_period_type, periodvalue:sc_period_value, ';
         $t = array();
         for ($i=1; $i<=$this->series_number; $i++) {
             $u = array();
