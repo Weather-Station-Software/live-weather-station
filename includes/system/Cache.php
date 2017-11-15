@@ -25,6 +25,8 @@ class Cache {
     public static $backend_expiry = 900;   //15 minutes
     public static $frontend_expiry = 119;  // 2 minutes - 1 second
     public static $widget_expiry = 119;    // 2 minutes - 1 second
+    public static $dgraph_expiry = 119;    // 2 minutes - 1 second
+    public static $ygraph_expiry = 3599;    // 1 hour - 1 second
     public static $i18n_expiry = 43200;     // 12 hours
 
     public static $db_stat = 'lws_cache_db_stat';
@@ -37,6 +39,8 @@ class Cache {
     public static $db_stat_perf_quota = 'lws_cache_db_stat_perf_quota';
     public static $db_stat_operational = 'lws_cache_db_stat_operational';
     public static $widget = 'lws_cache_widget';
+    public static $dgraph = 'lws_cache_dgraph';
+    public static $ygraph = 'lws_cache_ygraph';
     public static $frontend = 'lws_cache_control';
     public static $i18n = 'lws_i18n';
 
@@ -120,6 +124,12 @@ class Cache {
                 }
                 if (strpos($cache_id, self::$frontend)!==false) {
                     $key = 'frontend';
+                }
+                if (strpos($cache_id, self::$dgraph)!==false) {
+                    $key = 'dgraph';
+                }
+                if (strpos($cache_id, self::$ygraph)!==false) {
+                    $key = 'ygraph';
                 }
                 if (!array_key_exists($key, self::$stats)) {
                     self::$stats[$key]['hit_count'] = 0;
@@ -295,6 +305,111 @@ class Cache {
      */
     public static function flush_frontend($expired=true) {
         return self::_flush(self::$frontend, $expired);
+    }
+
+    /**
+     * Get the value of a cached element.
+     *
+     * If the element does not exist, does not have a value, or has expired,
+     * then the return value will be false.
+     *
+     * @param string $cache_id The cached element slug. Expected to not be SQL-escaped.
+     * @param string $mode Optional. The mode in which searching for.
+     * @return mixed Value of element.
+     * @since 3.4.0
+     *
+     */
+    public static function get_graph($cache_id, $mode='daily') {
+        if ($mode == 'yearly') {
+            $id = self::$ygraph.'_'.$cache_id;
+            $cache = (bool)get_option('live_weather_station_ygraph_cache');
+        }
+        else {
+            $id = self::$dgraph.'_'.$cache_id;
+            $cache = (bool)get_option('live_weather_station_dgraph_cache');
+        }
+        self::_init_chrono($id);
+        if (!$cache) {
+            return false;
+        }
+        else {
+            if ($r = get_transient($id)) {
+                self::_stop_chrono($id);
+            }
+            return $r;
+        }
+    }
+
+    /**
+     * Set/update the value of a cached element.
+     *
+     * You do not need to serialize values. If the value needs to be serialized, then
+     * it will be serialized before it is set.
+     *
+     * @param string $cache_id The cached element slug. Expected to not be SQL-escaped.
+     * @param string $mode Optional. The mode in which searching for.
+     * @param mixed $value Cached element value, must be serializable if non-scalar. Expected to not be SQL-escaped.
+     * @return bool False if value was not set and true if value was set.
+     * @since 3.4.0
+     *
+     */
+    public static function set_graph($cache_id, $mode='daily', $value) {
+        if ($mode == 'yearly') {
+            $id = self::$ygraph.'_'.$cache_id;
+            $expiry = self::$ygraph_expiry;
+            $cache = (bool)get_option('live_weather_station_ygraph_cache');
+        }
+        else {
+            $id = self::$dgraph.'_'.$cache_id;
+            $expiry = self::$dgraph_expiry;
+            $cache = (bool)get_option('live_weather_station_dgraph_cache');
+        }
+        if (!$cache) {
+            return false;
+        }
+        else {
+            $r = set_transient($id, $value, $expiry);
+            self::_stop_chrono($id, false);
+            return $r;
+        }
+    }
+
+    /**
+     * Delete the cached element.
+     *
+     * @param string $cache_id The cached element slug. Expected to not be SQL-escaped.
+     * @param string $mode Optional. The mode in which searching for.
+     * @return bool True if successful, false otherwise.
+     * @since 3.4.0
+     *
+     */
+    public static function invalidate_graph($cache_id, $mode='daily') {
+        if ($mode == 'yearly') {
+            $id = self::$ygraph.'_'.$cache_id;
+            $cache = (bool)get_option('live_weather_station_ygraph_cache');
+        }
+        else {
+            $id = self::$dgraph.'_'.$cache_id;
+            $cache = (bool)get_option('live_weather_station_dgraph_cache');
+        }
+        if (!$cache) {
+            return false;
+        }
+        else {
+            return delete_transient($id);
+        }
+    }
+
+    /**
+     * Flush all the cached element.
+     *
+     * @param bool $expired Optional. Delete only expired transients.
+     * @return integer Count of deleted transients.
+     * @since 3.4.0
+     *
+     */
+    public static function flush_graph($expired=true) {
+        return self::_flush(self::$dgraph, $expired) + self::_flush(self::$ygraph, $expired);
     }
 
     /**
@@ -521,6 +636,7 @@ class Cache {
         $result += self::flush_backend($expired);
         $result += self::flush_frontend($expired);
         $result += self::flush_widget($expired);
+        $result += self::flush_graph($expired);
         if (!$expired) {
             $result += self::flush_i18n($expired);
         }

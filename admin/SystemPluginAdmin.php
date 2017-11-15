@@ -518,6 +518,14 @@ class Admin {
             'id' => 'lws_system_widget_cache',
             'checked' => (bool)get_option('live_weather_station_widget_cache'),
             'description' => sprintf(__('Check this to activate the cache manager of %s for the widgets rendering.', 'live-weather-station'), LWS_PLUGIN_NAME));
+        $cbxs[] = array('text' => __('Cache daily graphs', 'live-weather-station'),
+            'id' => 'lws_system_dgraph_cache',
+            'checked' => (bool)get_option('live_weather_station_dgraph_cache'),
+            'description' => sprintf(__('Check this to activate the cache manager of %s for all daily graphs rendering.', 'live-weather-station'), LWS_PLUGIN_NAME));
+        $cbxs[] = array('text' => __('Cache historical graphs', 'live-weather-station'),
+            'id' => 'lws_system_ygraph_cache',
+            'checked' => (bool)get_option('live_weather_station_ygraph_cache'),
+            'description' => sprintf(__('Check this to activate the cache manager of %s for all historical graphs rendering.', 'live-weather-station'), LWS_PLUGIN_NAME));
         $cbxs[] = array('text' => __('Cache backend features', 'live-weather-station'),
             'id' => 'lws_system_backend_cache',
             'checked' => (bool)get_option('live_weather_station_backend_cache'),
@@ -875,6 +883,8 @@ class Admin {
                 update_option('live_weather_station_txt_cache_bypass', (array_key_exists('lws_system_txt_cache_bypass', $_POST) ? 1 : 0));
                 update_option('live_weather_station_frontend_cache', (array_key_exists('lws_system_frontend_cache', $_POST) ? 1 : 0));
                 update_option('live_weather_station_widget_cache', (array_key_exists('lws_system_widget_cache', $_POST) ? 1 : 0));
+                update_option('live_weather_station_dgraph_cache', (array_key_exists('lws_system_dgraph_cache', $_POST) ? 1 : 0));
+                update_option('live_weather_station_ygraph_cache', (array_key_exists('lws_system_ygraph_cache', $_POST) ? 1 : 0));
                 update_option('live_weather_station_backend_cache', (array_key_exists('lws_system_backend_cache', $_POST) ? 1 : 0));
                 update_option('live_weather_station_redirect_internal_links', (array_key_exists('lws_system_redirect_internal_links', $_POST) ? 1 : 0));
                 update_option('live_weather_station_redirect_external_links', (array_key_exists('lws_system_redirect_external_links', $_POST) ? 1 : 0));
