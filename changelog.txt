@@ -3,8 +3,9 @@
 
 * New: Weather Station now compiles data as daily and historical values.
 * New: new single-line and multi-lines chart for daily graph with tons of options and settings.
+* New: data for graphs can be cached (settings in *system* tab).
 * New: the scheduled tasks tab allows to proceed on execution and reschedule of tasks belonging to the new history pool.
-* New: the task analytics graphs now takes care of the new history pool.
+* New: the analytics graphs for task and cache now take care of the new history pools and caches.
 * Improvement: the station view has been totally redesigned and is now faster to load.
 * Improvement: plugin admin (all tabs and screens) is now fully responsive, you can use it easily on your smartphone or tablet.
 * Improvement: the widgets names contains now an icon for an easier identification in the customizer.

@@ -134,180 +134,184 @@ trait Output {
      * @since 3.4.0
      */
     public function graph_query($attributes, $json=false) {
-        $result = array();
-        $mode = $attributes['mode'];
-        $args = $attributes['args'];
-        $station_id = '';
-        $ymin = 0;
-        $ymax = 0;
-        $ydmin = 0;
-        $ydmax = 0;
-        $yamin = 0;
-        $yamax = 0;
-        $start = true;
-        $similar = false;
-        $identical = false;
-        if (count($args) > 0) {
-            foreach ($args as $arg) {
-                if (strpos($arg['device_id'], ':') == 2) {
-                    $station_id = $arg['device_id'];
-                    break;
-                }
-            }
-            $temp = array();
-            if (count($args) > 1) {
+        $result = null;
+        $fingerprint = md5(json_encode($attributes));
+        if (!$attributes['no_cache']) {
+            $result = Cache::get_graph($fingerprint, $attributes['mode']);
+        }
+        if (!$result) {
+            $result = array();
+            $mode = $attributes['mode'];
+            $args = $attributes['args'];
+            $station_id = '';
+            $ymin = 0;
+            $ymax = 0;
+            $ydmin = 0;
+            $ydmax = 0;
+            $yamin = 0;
+            $yamax = 0;
+            $start = true;
+            $similar = false;
+            $identical = false;
+            if (count($args) > 0) {
                 foreach ($args as $arg) {
-                    $temp[] = $arg['measurement'];
-                }
-                $t = array_unique($temp);
-                if (count($t) != count($args)) {
-                    $similar = true;
-                    if (count($t) == 1) {
-                        $identical = true;
+                    if (strpos($arg['device_id'], ':') == 2) {
+                        $station_id = $arg['device_id'];
+                        break;
                     }
                 }
-            }
-            if ($station_id != '') {
-                global $wpdb;
-                // Get extended station information
-                $station = $this->get_extended_station_informations_by_station_id($station_id);
-
-                // Compute date limits
-                if ($mode == 'daily') {
-                    $min = date('Y-m-d H:i:s', self::get_local_today_midnight($station['loc_timezone']));
-                    $max = date('Y-m-d H:i:s', self::get_local_today_noon($station['loc_timezone']));
-                    $result['xdomain']['min'] = self::get_js_date_from_mysql_utc($min, $station['loc_timezone']);
-                    $result['xdomain']['max'] = self::get_js_date_from_mysql_utc($max, $station['loc_timezone']);
-                    $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
+                $temp = array();
+                if (count($args) > 1) {
+                    foreach ($args as $arg) {
+                        $temp[] = $arg['measurement'];
+                    }
+                    $t = array_unique($temp);
+                    if (count($t) != count($args)) {
+                        $similar = true;
+                        if (count($t) == 1) {
+                            $identical = true;
+                        }
+                    }
                 }
-                if ($mode == 'yearly') {
-                    ///
-                    /// DEFINE MIN AND MAX
-                    ///
-                    $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
-                }
+                if ($station_id != '') {
+                    global $wpdb;
+                    // Get extended station information
+                    $station = $this->get_extended_station_informations_by_station_id($station_id);
 
-                foreach ($args as $arg) {
-                    if (strpos($arg['module_id'], ':') == 2) {
-                        $module_type = 'NAMain';
-                        $sql = "SELECT `timestamp`, `module_type`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "';";
-                        try {
-                            $query = (array)$wpdb->get_results($sql);
-                            $query_a = (array)$query;
-                            $set = array();
-                            foreach ($query_a as $val) {
-                                $a = (array)$val;
-                                $module_type = $a['module_type'];
-                                $a['timestamp'] = self::get_js_date_from_mysql_utc($a['timestamp'], $station['loc_timezone']);
-                                $a['measure_value'] = $this->output_value($a['measure_value'], $arg['measurement'], false, false, $a['module_type'] );
-                                if ($start) {
-                                    $ymin = $a['measure_value'];
-                                    $ymax = $a['measure_value'];
-                                    $ydmin = $this->get_measurement_min($arg['measurement'], $module_type);
-                                    $ydmax = $this->get_measurement_max($arg['measurement'], $module_type);
-                                    $yamax = $this->get_measurement_alarm_max($arg['measurement'], $module_type);
-                                    $yamin = $this->get_measurement_alarm_min($arg['measurement'], $module_type);
-                                    $start = false;
+                    // Compute date limits
+                    if ($mode == 'daily') {
+                        $min = date('Y-m-d H:i:s', self::get_local_today_midnight($station['loc_timezone']));
+                        $max = date('Y-m-d H:i:s', self::get_local_today_noon($station['loc_timezone']));
+                        $result['xdomain']['min'] = self::get_js_date_from_mysql_utc($min, $station['loc_timezone']);
+                        $result['xdomain']['max'] = self::get_js_date_from_mysql_utc($max, $station['loc_timezone']);
+                        $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
+                    }
+                    if ($mode == 'yearly') {
+                        ///
+                        /// DEFINE MIN AND MAX
+                        ///
+                        $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
+                    }
+
+                    foreach ($args as $arg) {
+                        if (strpos($arg['module_id'], ':') == 2) {
+                            $module_type = 'NAMain';
+                            $sql = "SELECT `timestamp`, `module_type`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "';";
+                            try {
+                                $query = (array)$wpdb->get_results($sql);
+                                $query_a = (array)$query;
+                                $set = array();
+                                foreach ($query_a as $val) {
+                                    $a = (array)$val;
+                                    $module_type = $a['module_type'];
+                                    $a['timestamp'] = self::get_js_date_from_mysql_utc($a['timestamp'], $station['loc_timezone']);
+                                    $a['measure_value'] = $this->output_value($a['measure_value'], $arg['measurement'], false, false, $a['module_type']);
+                                    if ($start) {
+                                        $ymin = $a['measure_value'];
+                                        $ymax = $a['measure_value'];
+                                        $ydmin = $this->get_measurement_min($arg['measurement'], $module_type);
+                                        $ydmax = $this->get_measurement_max($arg['measurement'], $module_type);
+                                        $yamax = $this->get_measurement_alarm_max($arg['measurement'], $module_type);
+                                        $yamin = $this->get_measurement_alarm_min($arg['measurement'], $module_type);
+                                        $start = false;
+                                    }
+                                    if ($a['measure_value'] > $ymax) {
+                                        $ymax = $a['measure_value'];
+                                    }
+                                    if ($a['measure_value'] < $ymin) {
+                                        $ymin = $a['measure_value'];
+                                    }
+                                    $set[] = $a;
                                 }
-                                if ($a['measure_value'] > $ymax) {
-                                    $ymax = $a['measure_value'];
+                                if (count($query_a) > 0) {
+                                    $a = (array)$query_a[0];
+                                    if ($this->get_measurement_max($arg['measurement'], $module_type) > $ydmax) {
+                                        $ydmax = $this->get_measurement_max($arg['measurement'], $module_type);
+                                    }
+                                    if ($this->get_measurement_min($arg['measurement'], $module_type) < $ydmin) {
+                                        $ydmin = $this->get_measurement_min($arg['measurement'], $module_type);
+                                    }
+                                    if ($this->get_measurement_alarm_max($arg['measurement'], $module_type) > $yamax) {
+                                        $yamax = $this->get_measurement_alarm_max($arg['measurement'], $a['module_type']);
+                                    }
+                                    if ($this->get_measurement_alarm_min($arg['measurement'], $module_type) < $yamin) {
+                                        $yamin = $this->get_measurement_alarm_min($arg['measurement'], $a['module_type']);
+                                    }
                                 }
-                                if ($a['measure_value'] < $ymin) {
-                                    $ymin = $a['measure_value'];
-                                }
-                                $set[] = $a;
+                            } catch (\Exception $ex) {
+                                $set = array();
                             }
-                            if (count($query_a) > 0) {
-                                $a = (array)$query_a[0];
-                                if ($this->get_measurement_max($arg['measurement'], $module_type) > $ydmax) {
-                                    $ydmax = $this->get_measurement_max($arg['measurement'], $module_type);
-                                }
-                                if ($this->get_measurement_min($arg['measurement'], $module_type) < $ydmin) {
-                                    $ydmin = $this->get_measurement_min($arg['measurement'], $module_type);
-                                }
-                                if ($this->get_measurement_alarm_max($arg['measurement'], $module_type) > $yamax) {
-                                    $yamax = $this->get_measurement_alarm_max($arg['measurement'], $a['module_type']);
-                                }
-                                if ($this->get_measurement_alarm_min($arg['measurement'], $module_type) < $yamin) {
-                                    $yamin = $this->get_measurement_alarm_min($arg['measurement'], $a['module_type']);
-                                }
+                            $info = array();
+                            if (array_key_exists($arg['module_id'], $station['modules_names'])) {
+                                $module_name = str_replace(array('[', ']'), array('', ''), $station['modules_names'][$arg['module_id']]);
+                            } else {
+                                $module_name = $this->get_module_type($module_type, false, true);
                             }
-                        }
-                        catch (\Exception $ex) {
-                            $set = array();
-                        }
-                        $info = array();
-                        if (array_key_exists($arg['module_id'], $station['modules_names'])) {
-                            $module_name = str_replace(array('[', ']'), array('', ''), $station['modules_names'][$arg['module_id']]);
-                        }
-                        else {
-                            $module_name = $this->get_module_type($module_type, false, true);
-                        }
-                        if ($identical) {
-                            $info['key'] = $module_name;
-                        }
-                        elseif ($similar) {
-                            if ($module_type != 'NAComputed') {
-                                $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type) .  ' (' . $module_name . ')';
-                            }
-                            else {
+                            if ($identical) {
+                                $info['key'] = $module_name;
+                            } elseif ($similar) {
+                                if ($module_type != 'NAComputed') {
+                                    $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type) . ' (' . $module_name . ')';
+                                } else {
+                                    $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                                }
+                            } else {
                                 $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
                             }
-                        }
-                        else {
-                            $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
-                        }
-                        $extra = array();
-                        $extra['measurement_type'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
-                        $extra['module_type'] = $module_type;
-                        $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
-                        $extra['module_name'] = $module_name;
-                        $extra['station_name'] = $station['station_name'];
-                        $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
-                        $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
-                        $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
-                        $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
-                        $result['extras'][] = $extra;
-                        $result['legend']['unit'] = $this->output_unit($arg['measurement'], $module_type);
-                        if ($arg['line_mode'] == 'area' || $arg['line_mode'] == 'arealine') {
-                            $info['area'] = true;
-                        }
-                        $classes = array();
-                        if ($arg['line_style'] == 'dashed') {
-                            $classes[] = 'lws-dashed-line';
-                        }
-                        if ($arg['line_style'] == 'dotted') {
-                            $classes[] = 'lws-dotted-line';
-                        }
-                        if ($arg['line_size'] == 'thin') {
-                            $info['strokeWidth'] = 1;
-                        }
-                        if ($arg['line_size'] == 'regular') {
-                            $info['strokeWidth'] = 2;
-                        }
-                        if ($arg['line_size'] == 'thick') {
-                            $info['strokeWidth'] = 3;
-                        }
-                        if (count($classes) > 0) {
-                            $info['classed'] = implode(',', $classes);
-                        }
-                        if ($json) {
-                            $result['values'][] = $this->jsonify($info, $set);
-                        }
-                        else {
-                            $info['values'] = $set;
-                            $result['values'][] = $info;
+                            $extra = array();
+                            $extra['measurement_type'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                            $extra['module_type'] = $module_type;
+                            $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
+                            $extra['module_name'] = $module_name;
+                            $extra['station_name'] = $station['station_name'];
+                            $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
+                            $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
+                            $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
+                            $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
+                            $result['extras'][] = $extra;
+                            $result['legend']['unit'] = $this->output_unit($arg['measurement'], $module_type);
+                            if ($arg['line_mode'] == 'area' || $arg['line_mode'] == 'arealine') {
+                                $info['area'] = true;
+                            }
+                            $classes = array();
+                            if ($arg['line_style'] == 'dashed') {
+                                $classes[] = 'lws-dashed-line';
+                            }
+                            if ($arg['line_style'] == 'dotted') {
+                                $classes[] = 'lws-dotted-line';
+                            }
+                            if ($arg['line_size'] == 'thin') {
+                                $info['strokeWidth'] = 1;
+                            }
+                            if ($arg['line_size'] == 'regular') {
+                                $info['strokeWidth'] = 2;
+                            }
+                            if ($arg['line_size'] == 'thick') {
+                                $info['strokeWidth'] = 3;
+                            }
+                            if (count($classes) > 0) {
+                                $info['classed'] = implode(',', $classes);
+                            }
+                            if ($json) {
+                                $result['values'][] = $this->jsonify($info, $set);
+                            } else {
+                                $info['values'] = $set;
+                                $result['values'][] = $info;
+                            }
                         }
                     }
                 }
             }
+            $result['ydomain']['min'] = $ymin;
+            $result['ydomain']['max'] = $ymax;
+            $result['ydomain']['dmin'] = $ydmin;
+            $result['ydomain']['dmax'] = $ydmax;
+            $result['ydomain']['amin'] = $yamin;
+            $result['ydomain']['amax'] = $yamax;
         }
-        $result['ydomain']['min'] = $ymin;
-        $result['ydomain']['max'] = $ymax;
-        $result['ydomain']['dmin'] = $ydmin;
-        $result['ydomain']['dmax'] = $ydmax;
-        $result['ydomain']['amin'] = $yamin;
-        $result['ydomain']['amax'] = $yamax;
+        if (!$attributes['no_cache']) {
+            Cache::set_graph($fingerprint, $attributes['mode'], $result);
+        }
         if ($json) {
             $result['values'] = '[' . implode(', ', $result['values']) . ']';
         }
@@ -773,6 +777,7 @@ trait Output {
         }
         $value_params['args'] = $items;
         $value_params['noned'] = $noned;
+        $value_params['no_cache'] = $attributes['cache'] == 'no_cache';
         return $value_params;
     }
 
@@ -1327,7 +1332,7 @@ trait Output {
                 $result .= '  });' . PHP_EOL;
                 $result .= '</script>' . PHP_EOL;
             }
-            if ($_attributes['metric'] == 'time_for_system' || $_attributes['metric'] == 'time_for_pull' || $_attributes['metric'] == 'time_for_push') {
+            if ($_attributes['metric'] == 'time_for_history' || $_attributes['metric'] == 'time_for_system' || $_attributes['metric'] == 'time_for_pull' || $_attributes['metric'] == 'time_for_push') {
                 wp_enqueue_script('colorbrewer.js');
                 $cpt = substr_count($perf['dat'][$_attributes['metric']], '"key"');
                 if ($cpt < 3) {

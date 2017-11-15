@@ -16,8 +16,10 @@ if (!file_exists($page) && ($active_tab != 'general')) {
 }
 
 $show_cache = ((bool)get_option('live_weather_station_frontend_cache') ||
-            (bool)get_option('live_weather_station_widget_cache') ||
-            (bool)get_option('live_weather_station_backend_cache'));
+    (bool)get_option('live_weather_station_widget_cache') ||
+    (bool)get_option('live_weather_station_dgraph_cache') ||
+    (bool)get_option('live_weather_station_ygraph_cache') ||
+    (bool)get_option('live_weather_station_backend_cache'));
 
 
 ?>

@@ -355,6 +355,14 @@ trait Storage {
         $sql .= " `frontend_hit_time` int(11) NOT NULL DEFAULT '0',";
         $sql .= " `frontend_miss_count` int(11) NOT NULL DEFAULT '0',";
         $sql .= " `frontend_miss_time` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `dgraph_hit_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `dgraph_hit_time` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `dgraph_miss_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `dgraph_miss_time` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `ygraph_hit_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `ygraph_hit_time` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `ygraph_miss_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `ygraph_miss_time` int(11) NOT NULL DEFAULT '0',";
         $sql .= " PRIMARY KEY (`timestamp`)";
         $sql .= ") $charset_collate;";
         $wpdb->query($sql);
@@ -513,6 +521,24 @@ trait Storage {
                 $sql = "ALTER TABLE " . $table_name . " MODIFY COLUMN version varchar(11) NOT NULL DEFAULT 'N/A';";
                 $wpdb->query($sql);
             }
+
+
+            $table_name = $wpdb->prefix . self::live_weather_station_performance_cache_table();
+            if (self::is_empty_table($table_name)) {
+                $sql = 'DROP TABLE IF EXISTS ' . $table_name;
+                $wpdb->query($sql);
+                self::create_live_weather_station_performance_cache_table();
+            } else {
+                self::safe_add_column($table_name, 'dgraph_hit_count', "ALTER TABLE " . $table_name . " ADD dgraph_hit_count int(11) NOT NULL DEFAULT '0';");
+                self::safe_add_column($table_name, 'dgraph_hit_time', "ALTER TABLE " . $table_name . " ADD dgraph_hit_time int(11) NOT NULL DEFAULT '0';");
+                self::safe_add_column($table_name, 'dgraph_miss_count', "ALTER TABLE " . $table_name . " ADD dgraph_miss_count int(11) NOT NULL DEFAULT '0';");
+                self::safe_add_column($table_name, 'dgraph_miss_time', "ALTER TABLE " . $table_name . " ADD dgraph_miss_time int(11) NOT NULL DEFAULT '0';");
+                self::safe_add_column($table_name, 'ygraph_hit_count', "ALTER TABLE " . $table_name . " ADD ygraph_hit_count int(11) NOT NULL DEFAULT '0';");
+                self::safe_add_column($table_name, 'ygraph_hit_time', "ALTER TABLE " . $table_name . " ADD ygraph_hit_time int(11) NOT NULL DEFAULT '0';");
+                self::safe_add_column($table_name, 'ygraph_miss_count', "ALTER TABLE " . $table_name . " ADD ygraph_miss_count int(11) NOT NULL DEFAULT '0';");
+                self::safe_add_column($table_name, 'ygraph_miss_time', "ALTER TABLE " . $table_name . " ADD ygraph_miss_time int(11) NOT NULL DEFAULT '0';");
+            }
+
         }
     }
 
