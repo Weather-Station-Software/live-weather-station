@@ -733,7 +733,7 @@ abstract class Maintainer {
                 $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][1]+"</option>");});';
                 $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . ' option[value=\'avg\']").attr("selected", true);';
                 $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '" ).change();});';
-                $content .= '$("#yearly-line-datas-set-' . $i . '-' . $this->station_guid . '").change(function() {';
+                $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").change(function() {';
             }
             $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . '" ).change();});';
             $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . '").change(function() {';
@@ -744,7 +744,6 @@ abstract class Maintainer {
             $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '").prop("disabled", false);';
             $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").prop("disabled", false);}';
             $content .= '$("#' . $name . '-datas-dot-style-' . $i . '-' . $this->station_guid . '" ).change();});';
-
             $content .= '$("#' . $name . '-datas-dot-style-' . $i . '-' . $this->station_guid . '").change(function() {';
             $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '" ).change();});';
             $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '").change(function() {';
@@ -796,7 +795,7 @@ abstract class Maintainer {
             $content .= 'var sc_line_style_' . $i . ' = $("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '").val();';
             $content .= 'var sc_line_size_' . $i . ' = $("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").val();';
             $content .= 'var sc_' . $i . ' = "";';
-            $content .= ' if (sc_measurement_' . $i . ' != "none") {';
+            $content .= ' if (sc_measurement_' . $i . ' != "none" && sc_measurement_' . $i . ' != "none:none") {';
             $content .= '   sc_' . $i . ' = " device_id_' . $i . '=\'"+sc_device_' . $i . '+"\' module_id_' . $i . '=\'"+sc_module_' . $i . '+"\' measurement_' . $i . '=\'"+sc_measurement_' . $i . '+"\' line_mode_' . $i . '=\'"+sc_line_mode_' . $i . '+"\' dot_style_' . $i . '=\'"+sc_dot_style_' . $i . '+"\' line_style_' . $i . '=\'"+sc_line_style_' . $i . '+"\' line_size_' . $i . '=\'"+sc_line_size_' . $i . '+"\'";';
             $content .= ' }';
             $content .= ' }';
