@@ -420,7 +420,7 @@ trait Generator {
         $txt = OWM_Base_Collector::is_txt_station($ref['device_id']);
         $wflw = OWM_Base_Collector::is_wflw_station($ref['device_id']);
         if ($noned) {
-            $result[] = array('- ' . __('None', 'live-weather-station') . ' -', 'none', array(), 'none');
+            $result[] = array('- ' . __('None', 'live-weather-station') . ' -', 'none', array(), 'none', array(array('none', '- ' . __('None', 'live-weather-station') . ' -')));
         }
         switch (strtolower($ref['module_type'])) {
             case 'namain':
@@ -861,8 +861,7 @@ trait Generator {
                 $ref['module_type'] = 'none';
                 $ref['module_name'] = '- ' . __('None', 'live-weather-station') . ' -';
                 $ref['loc_timezone'] = $data['station']['loc_timezone'];
-                $modules[] = array ('- ' . __('None', 'live-weather-station') . ' -', 'none', array(array('- ' . __('None', 'live-weather-station') . ' -', 'none', array(), 'none')));
-                //$noned = false;
+                $modules[] = array ('- ' . __('None', 'live-weather-station') . ' -', 'none', array(array('- ' . __('None', 'live-weather-station') . ' -', 'none', array(), 'none' , array(array('none', '- ' . __('None', 'live-weather-station') . ' -')))));
             }
             if ($aggregated  && ($netatmo || $wug || $raw || $real || $txt || $wflw)) {
                 $ref = array();
@@ -1560,7 +1559,7 @@ trait Generator {
         $result[] = array('fixed-season',  array(array('none', 'none')));
         $result[] = array('fixed-year',  array(array('none', 'none')));
 
-
+        $result[] = array('none',  array(array('none', 'none')));
         return $result;
     }
 

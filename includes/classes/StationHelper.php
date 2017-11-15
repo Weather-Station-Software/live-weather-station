@@ -20,6 +20,7 @@ use WeatherStation\Engine\Module\Current\Textual;
 use WeatherStation\Engine\Module\Daily\Line as DailyLine;
 use WeatherStation\Engine\Module\Daily\Lines as DailyLines;
 use WeatherStation\Engine\Module\Yearly\Line as YearlyLine;
+use WeatherStation\Engine\Module\Yearly\Lines as YearlyLines;
 
 
 
@@ -72,6 +73,7 @@ class Handling {
         DailyLine::register_module('daily');
         DailyLines::register_module('daily');
         YearlyLine::register_module('yearly');
+        YearlyLines::register_module('yearly');
     }
 
     /**
