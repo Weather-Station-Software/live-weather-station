@@ -1511,7 +1511,7 @@ trait Generator {
      */
     protected function get_period_value_js_array($station) {
         $result = array();
-        $oldest_date = $this->get_oldest_data($station);
+        $oldest_date = $this->get_oldest_data($station) . ' 12:00:00';
 
         // Sliding month
         $period = array();
@@ -1546,18 +1546,47 @@ trait Generator {
         }
         $result[] = array('sliding-year',  $period);
 
+        // Fixed month
+        $fixed_month = array();
+        $fixed_year = array();
+        $start = new \DateTime($oldest_date, new \DateTimeZone($station['loc_timezone']));
+        $year = $start->format('Y');
+        $month = $start->format('m');
+        $current = $start;
+        $end = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+        while ($year != $end->format('Y') && $month != $end->format('m')) {
+            $current->setDate($year, $month, 1);
+            $fixed_month[] = array($current->format('Ym'), date_i18n('Y, F', strtotime($current->format('Y-m-d H:i:s'))));
+            $month += 1;
+            if ($month > 12) {
+                $month = 1;
+                $year += 1;
+            }
+        }
+        //$fixed_month[] = array($end->format('Ym'), date_i18n('Y, F', strtotime($end->format('Y-m-d H:i:s'))));
+
+
+        $fixed_month[] = array($end->format('Ym'), $year . '-' . $month);
 
 
 
+        if (empty($fixed_month)) {
+            $fixed_month = array(array('none', 'none'));
+        }
+        $result[] = array('fixed-month', array_reverse($fixed_month));
+        if (empty($fixed_year)) {
+            $fixed_year = array(array('none', 'none'));
+        }
+        $result[] = array('fixed-year', array_reverse($fixed_year));
 
+        // Fixed season
+        $fixed_season = array();
 
+        if (empty($fixed_season)) {
+            $fixed_season = array(array('none', 'none'));
+        }
+        $result[] = array('fixed-season', array_reverse($fixed_season));
 
-
-
-
-        $result[] = array('fixed-month',  array(array('none', 'none')));
-        $result[] = array('fixed-season',  array(array('none', 'none')));
-        $result[] = array('fixed-year',  array(array('none', 'none')));
 
         $result[] = array('none',  array(array('none', 'none')));
         return $result;

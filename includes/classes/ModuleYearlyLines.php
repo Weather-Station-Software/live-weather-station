@@ -55,7 +55,7 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_datasource() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('yearly-lines-datas-period-type-'. $this->station_guid, __('Period type', 'live-weather-station'), $this->get_period_type_js_array(), true);
+        $content .= $this->get_key_value_option_select('yearly-lines-datas-period-type-'. $this->station_guid, __('Period type', 'live-weather-station'), $this->get_period_type_js_array(), true, 'sliding-month');
         $content .= $this->get_neutral_option_select('yearly-lines-datas-period-value-'. $this->station_guid, __('Period', 'live-weather-station'));
         $content .= $this->get_key_value_option_select('yearly-lines-datas-dimension-' . $this->station_guid, __('Dimension', 'live-weather-station'), $this->get_comparable_dimensions_js_array(), true, 'temperature');
         $a_group = array();
