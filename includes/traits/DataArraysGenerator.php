@@ -6,6 +6,7 @@ use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\Type\Description as Type_Description;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector;
 use WeatherStation\Data\History\Builder as History;
+use WeatherStation\SDK\Generic\Plugin\Season\Calculator as Season;
 
 /**
  * Arrays generator for javascript conversion.
@@ -1495,8 +1496,10 @@ trait Generator {
         $result = array();
         $result[] = array('fixed-month',  __('Fixed month', 'live-weather-station'));
         $result[] = array('sliding-month',  __('Sliding month', 'live-weather-station'));
-        $result[] = array('fixed-season',  __('Fixed season', 'live-weather-station'));
-        $result[] = array('sliding-season',  __('Sliding season', 'live-weather-station'));
+        $result[] = array('fixed-mseason',  __('Fixed meteorological season', 'live-weather-station'));
+        $result[] = array('sliding-mseason',  __('Sliding meteorological season', 'live-weather-station'));
+        //$result[] = array('fixed-aseason',  __('Fixed astronomical season', 'live-weather-station'));
+        //$result[] = array('sliding-aseason',  __('Sliding astronomical season', 'live-weather-station'));
         $result[] = array('fixed-year',  __('Fixed year', 'live-weather-station'));
         $result[] = array('sliding-year',  __('Sliding year', 'live-weather-station'));
         return $result;
@@ -1524,16 +1527,27 @@ trait Generator {
         }
         $result[] = array('sliding-month',  $period);
 
-        // Sliding season
+        // Sliding meteorological season
         $period = array();
         for ($i=0; $i<=4; $i++) {
             $s = '';
             if ($i != 0) {
                 $s = ' - ' . $i;
             }
-            $period[] = array( 'season-'.$i, __('Current season', 'live-weather-station') . $s);
+            $period[] = array( 'season-'.$i, __('Current meteorological season', 'live-weather-station') . $s);
         }
-        $result[] = array('sliding-season',  $period);
+        $result[] = array('sliding-mseason',  $period);
+
+        // Sliding astronomical season
+        $period = array();
+        for ($i=0; $i<=4; $i++) {
+            $s = '';
+            if ($i != 0) {
+                $s = ' - ' . $i;
+            }
+            $period[] = array( 'season-'.$i, __('Current astronomical season', 'live-weather-station') . $s);
+        }
+        $result[] = array('sliding-aseason',  $period);
 
         // Sliding year
         $period = array();
@@ -1546,30 +1560,34 @@ trait Generator {
         }
         $result[] = array('sliding-year',  $period);
 
-        // Fixed month
+        // Fixed year & month
         $fixed_month = array();
         $fixed_year = array();
         $start = new \DateTime($oldest_date, new \DateTimeZone($station['loc_timezone']));
+        $current = new \DateTime($oldest_date, new \DateTimeZone($station['loc_timezone']));
+        $util = new \DateTime($oldest_date, new \DateTimeZone($station['loc_timezone']));
         $year = $start->format('Y');
         $month = $start->format('m');
-        $current = $start;
         $end = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
-        while ($year != $end->format('Y') && $month != $end->format('m')) {
+        while ($year != $end->format('Y') || $month != $end->format('m')) {
             $current->setDate($year, $month, 1);
-            $fixed_month[] = array($current->format('Ym'), date_i18n('Y, F', strtotime($current->format('Y-m-d H:i:s'))));
+            $util->setDate($year, $month, $current->format('t'));
+            $fixed_month[] = array($current->format('Y-m-d') . ':' . $util->format('Y-m-d'), date_i18n('Y, F', strtotime($current->format('Y-m-d H:i:s'))));
             $month += 1;
             if ($month > 12) {
+                $current->setDate($year, 1, 1);
+                $util->setDate($year, 12, 31);
+                $fixed_year[] = array($current->format('Y-m-d') . ':' . $util->format('Y-m-d'), date_i18n('Y', strtotime($end->format('Y-m-d H:i:s'))));
                 $month = 1;
                 $year += 1;
             }
         }
-        //$fixed_month[] = array($end->format('Ym'), date_i18n('Y, F', strtotime($end->format('Y-m-d H:i:s'))));
-
-
-        $fixed_month[] = array($end->format('Ym'), $year . '-' . $month);
-
-
-
+        $current->setDate($year, $month, 1);
+        $util->setDate($year, $month, $current->format('t'));
+        $fixed_month[] = array($current->format('Y-m-d') . ':' . $util->format('Y-m-d'), date_i18n('Y, F', strtotime($end->format('Y-m-d H:i:s'))));
+        $current->setDate($year, 1, 1);
+        $util->setDate($year, 12, 31);
+        $fixed_year[] = array($current->format('Y-m-d') . ':' . $util->format('Y-m-d'), date_i18n('Y', strtotime($end->format('Y-m-d H:i:s'))));
         if (empty($fixed_month)) {
             $fixed_month = array(array('none', 'none'));
         }
@@ -1579,14 +1597,11 @@ trait Generator {
         }
         $result[] = array('fixed-year', array_reverse($fixed_year));
 
-        // Fixed season
-        $fixed_season = array();
+        // Fixed meteorological season
+        $result[] = array('fixed-mseason', Season::matchingMeteorologicalSeasons($fixed_month, $station['loc_timezone'], $station['loc_latitude'] >= 0));
 
-        if (empty($fixed_season)) {
-            $fixed_season = array(array('none', 'none'));
-        }
-        $result[] = array('fixed-season', array_reverse($fixed_season));
-
+        // Fixed astronomical season
+        //$result[] = array('fixed-aseason', Season::matchingAstronomicalSeasons($fixed_month, $station['loc_timezone'], $station['loc_latitude'] >= 0));
 
         $result[] = array('none',  array(array('none', 'none')));
         return $result;
