@@ -187,16 +187,37 @@ trait Output {
                         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
                     }
                     if ($mode == 'yearly') {
-                        ///
-                        /// DEFINE MIN AND MAX
-                        ///
+                        if (strpos($attributes['periodtype'], 'ixed-') > 0) {
+                            $d = explode(':', $attributes['periodvalue']);
+                            $min = $d[0];
+                            $max = $d[1];
+                        }
+                        //Logger::error(null, null, null, null, null, null, null, print_r($args,true));
+                        $result['xdomain']['min'] = self::get_js_date_from_mysql_utc($min, $station['loc_timezone']);
+                        $result['xdomain']['max'] = self::get_js_date_from_mysql_utc($max, $station['loc_timezone']);
                         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
                     }
 
                     foreach ($args as $arg) {
                         if (strpos($arg['module_id'], ':') == 2) {
                             $module_type = 'NAMain';
-                            $sql = "SELECT `timestamp`, `module_type`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "';";
+                            $set = '';
+                            $val = '`measure_value`';
+                            if ($mode == 'yearly') {
+                                $set = " AND `measure_set`='" . $arg['set'] . "'";
+                            }
+                            if (strtolower($arg['set']) == 'amp') {
+                                $set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
+                                $val = 'ABS(MAX(`measure_value`)-MIN(`measure_value`)) as computed_value';
+                            }
+                            if (strtolower($arg['set']) == 'mid') {
+                                $set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
+                                $val = 'AVG(`measure_value`) as computed_value';
+                            }
+                            $sql = "SELECT `timestamp`, `module_type`, " . $val . " FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $set . ";";
+
+                            Logger::debug(null, null, null, null, null, null, null, $sql);
+
                             try {
                                 $query = (array)$wpdb->get_results($sql);
                                 $query_a = (array)$query;
@@ -205,6 +226,14 @@ trait Output {
                                     $a = (array)$val;
                                     $module_type = $a['module_type'];
                                     $a['timestamp'] = self::get_js_date_from_mysql_utc($a['timestamp'], $station['loc_timezone']);
+                                    if (!array_key_exists('measure_value', $a)) {
+                                        if (array_key_exists('computed_value', $a)) {
+                                            $a['measure_value'] = $a['computed_value'];
+                                        }
+                                        else {
+                                            continue;
+                                        }
+                                    }
                                     $a['measure_value'] = $this->output_value($a['measure_value'], $arg['measurement'], false, false, $a['module_type']);
                                     if ($start) {
                                         $ymin = $a['measure_value'];
@@ -331,6 +360,9 @@ trait Output {
         if ($mode == 'daily') {
             $result = '%H:%M';
         }
+        if ($mode == 'yearly') {
+            $result = '%Y-%m-%d';
+        }
         return $result;
     }
 
@@ -369,7 +401,7 @@ trait Output {
                     }
                 }
                 switch ($mode) {
-                    case 'simple':  // dimension for lines
+                    case 'simple':
                         $result = ucwords($name);
                         break;
                     case 'generic':
@@ -763,6 +795,13 @@ trait Output {
                 foreach ($this->graph_allowed_serie as $param) {
                     if (array_key_exists($param.'_'.$i, $attributes)) {
                         $item[$param] = $attributes[$param.'_'.$i];
+                        if ($param == 'measurement') {
+                            if (strpos ($attributes[$param.'_'.$i], ':') > 0) {
+                                $s = explode(':', $attributes[$param.'_'.$i]);
+                                $item[$param] = $s[1];
+                                $item['set'] = $s[0];
+                            }
+                        }
                     }
                 }
                 $items[$i] = $item;
@@ -778,6 +817,8 @@ trait Output {
         $value_params['args'] = $items;
         $value_params['noned'] = $noned;
         $value_params['no_cache'] = $attributes['cache'] == 'no_cache';
+        $value_params['periodtype'] = $attributes['periodtype'];
+        $value_params['periodvalue'] = $attributes['periodvalue'];
         return $value_params;
     }
 
@@ -915,6 +956,10 @@ trait Output {
             $body .= '      var shift' . $uniq . ' = new Date();' . PHP_EOL;
             $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
             if ($fixed_timescale && $mode == 'daily') {
+                $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+            }
+            if ($fixed_timescale && $mode == 'yearly') {
                 $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
                 $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }

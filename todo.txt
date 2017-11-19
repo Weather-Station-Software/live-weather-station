@@ -16,6 +16,7 @@
  * 3.x - Historical data / graph
  * 3.x - Historical data import
  * 3.x - CDN for common scripts ans css
+ * 3.x - Astronomical seasons for period control
  * 4.x - Agricultural indexes (EMC for grains)
  * 4.x - 4 hours forecasting
  * 4.x - 5 days forecasting
