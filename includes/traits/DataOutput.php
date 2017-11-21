@@ -183,23 +183,31 @@ trait Output {
                         $min = date('Y-m-d H:i:s', self::get_local_today_midnight($station['loc_timezone']));
                         $max = date('Y-m-d H:i:s', self::get_local_today_noon($station['loc_timezone']));
                         $result['xdomain']['min'] = self::get_js_datetime_from_mysql_utc($min, $station['loc_timezone']);
-                        $result['xdomain']['max'] = self::get_js_datetime_from_mysql_utc($max, $station['loc_timezone']);
+                        $result['xdomain']['04'] = $result['xdomain']['min'] + 14400000;
+                        $result['xdomain']['08'] = $result['xdomain']['min'] + 14400000*2;
+                        $result['xdomain']['12'] = $result['xdomain']['min'] + 14400000*3;
+                        $result['xdomain']['16'] = $result['xdomain']['min'] + 14400000*4;
+                        $result['xdomain']['20'] = $result['xdomain']['min'] + 14400000*5;
+                        $result['xdomain']['max'] = (integer)self::get_js_datetime_from_mysql_utc($max, $station['loc_timezone']) + 1000;
                         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
                     }
                     if ($mode == 'yearly') {
                         $d = array('1971-08-01', '1971-08-31');
+                        $is_month = $attributes['periodduration'] == 'month';
+                        $is_mseason = $attributes['periodduration'] == 'mseason';
+                        $is_year = $attributes['periodduration'] == 'year';
                         if (strpos($attributes['periodtype'], 'ixed-') > 0) {
                             $d = explode(':', $attributes['periodvalue']);
                         }
-                        elseif (strpos($attributes['periodtype'], '-month') > 0) {
+                        elseif ($is_month) {
                             $v = explode('-', $attributes['periodvalue']);
                             $d = explode(':', $this->get_shifted_month(-$v[1], $station['loc_timezone']));
                         }
-                        elseif (strpos($attributes['periodtype'], '-year') > 0) {
+                        elseif ($is_year) {
                             $v = explode('-', $attributes['periodvalue']);
                             $d = explode(':', $this->get_shifted_year(-$v[1], $station['loc_timezone']));
                         }
-                        elseif (strpos($attributes['periodtype'], '-mseason') > 0) {
+                        elseif ($is_mseason) {
                             $v = explode('-', $attributes['periodvalue']);
                             $d = explode(':', $this->get_shifted_meteorological_season(-$v[1], $station['loc_timezone']));
                         }
@@ -207,6 +215,23 @@ trait Output {
                         $max = $d[1];
                         $result['xdomain']['min'] = self::get_js_date_from_mysql_utc($min, $station['loc_timezone']);
                         $result['xdomain']['max'] = self::get_js_date_from_mysql_utc($max, $station['loc_timezone']);
+                        $month = substr($min, 5, 2);
+                        $year = substr($min, 0, 4);
+                        if ($is_month) {
+                            $result['xdomain']['01'] = self::get_js_date_from_mysql_utc($year.'-' . $month .'-08', $station['loc_timezone']);
+                            $result['xdomain']['02'] = self::get_js_date_from_mysql_utc($year.'-' . $month .'-15', $station['loc_timezone']);
+                            $result['xdomain']['03'] = self::get_js_date_from_mysql_utc($year.'-' . $month .'-23', $station['loc_timezone']);
+                        }
+                        elseif ($is_year) {
+                            $result['xdomain']['01'] = self::get_js_date_from_mysql_utc($year.'-04-01', $station['loc_timezone']);
+                            $result['xdomain']['02'] = self::get_js_date_from_mysql_utc($year.'-07-01', $station['loc_timezone']);
+                            $result['xdomain']['03'] = self::get_js_date_from_mysql_utc($year.'-10-01', $station['loc_timezone']);
+                        }
+                        elseif ($is_mseason) {
+                            $result['xdomain']['01'] = self::get_js_date_from_mysql_utc($year.'-' . $month .'-23', $station['loc_timezone']);
+                            $result['xdomain']['02'] = self::get_js_date_from_mysql_utc($year.'-' . (string)($month+1) .'-15', $station['loc_timezone']);
+                            $result['xdomain']['03'] = self::get_js_date_from_mysql_utc($year.'-' . (string)($month+2) .'-08', $station['loc_timezone']);
+                        }
                         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
                     }
 
@@ -227,9 +252,6 @@ trait Output {
                                 $val = 'AVG(`measure_value`) as computed_value';
                             }
                             $sql = "SELECT `timestamp`, `module_type`, " . $val . " FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $set . ";";
-
-                            Logger::debug(null, null, null, null, null, null, null, $sql);
-
                             try {
                                 $query = (array)$wpdb->get_results($sql);
                                 $query_a = (array)$query;
@@ -369,16 +391,20 @@ trait Output {
      *
      * @param array $values The values.
      * @param string $mode The mode of graph.
+     * @param string $period_duration The period duration.
      * @return array The domain boundaries.
      * @since 3.4.0
      */
-    private function graph_format($values, $mode) {
+    private function graph_format($values, $mode, $period_duration) {
         $result = '';
         if ($mode == 'daily') {
             $result = '%H:%M';
         }
         if ($mode == 'yearly') {
             $result = '%Y-%m-%d';
+            if ($period_duration == 'year') {
+                $result = '%m/%Y';
+            }
         }
         return $result;
     }
@@ -836,6 +862,15 @@ trait Output {
         $value_params['no_cache'] = $attributes['cache'] == 'no_cache';
         $value_params['periodtype'] = $attributes['periodtype'];
         $value_params['periodvalue'] = $attributes['periodvalue'];
+        if (strpos($attributes['periodtype'], '-month') > 0) {
+            $value_params['periodduration'] = 'month';
+        }
+        if (strpos($attributes['periodtype'], '-mseason') > 0) {
+            $value_params['periodduration'] = 'mseason';
+        }
+        if (strpos($attributes['periodtype'], '-year') > 0) {
+            $value_params['periodduration'] = 'year';
+        }
         return $value_params;
     }
 
@@ -870,6 +905,7 @@ trait Output {
 
         // prepare query params
         $value_params = $this->graph_prepare($attributes);
+        $period_duration = $value_params['periodduration'];
         $items = $value_params['args'];
         $cpt = count($items);
         if ($cpt == 0) {
@@ -916,10 +952,11 @@ trait Output {
         $fixed_valuescale = ($valuescale != 'adaptative');
 
 
+
         // Queries...
         $values = $this->graph_query($value_params, true);
         $domain = $this->graph_domain($values, $valuescale);
-        $time_format = $this->graph_format($values, $mode);
+        $time_format = $this->graph_format($values, $mode, $period_duration);
         $prop = $this->graph_template($_attributes['template']);
         if ($type == 'line' || $type == 'lines') {
             $ticks = $this->graph_ticks($domain, $valuescale, $measurement1, $height);
@@ -984,12 +1021,20 @@ trait Output {
                 $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
             if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
-                $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['min'] + 14400000) . ');' . PHP_EOL;
-                $body .= '    var h08Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['min'] + 14400000*2) . ');' . PHP_EOL;
-                $body .= '    var h12Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['min'] + 14400000*3) . ');' . PHP_EOL;
-                $body .= '    var h16Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['min'] + 14400000*4) . ');' . PHP_EOL;
-                $body .= '    var h20Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['min'] + 14400000*5) . ');' . PHP_EOL;
-                $body .= '    var h24Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['min'] + 14400000*6 - 1000) . ');' . PHP_EOL;
+                $body .= '    var h00Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['04'] . ');' . PHP_EOL;
+                $body .= '    var h08Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['08'] . ');' . PHP_EOL;
+                $body .= '    var h12Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['12'] . ');' . PHP_EOL;
+                $body .= '    var h16Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['16'] . ');' . PHP_EOL;
+                $body .= '    var h20Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['20'] . ');' . PHP_EOL;
+                $body .= '    var h24Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+            }
+            if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
+                $body .= '    var h00Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $body .= '    var h01Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['01'] . ');' . PHP_EOL;
+                $body .= '    var h02Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['02'] . ');' . PHP_EOL;
+                $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
+                $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
             $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -1012,9 +1057,12 @@ trait Output {
             else {
                 $body .= '               .useInteractiveGuideline(false);' . PHP_EOL;
             }
-            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(' . ($mode == 'yearly'?'true':'false') . ').tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
             if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([h04Tick'.$uniq.', h08Tick'.$uniq.', h12Tick'.$uniq.', h16Tick'.$uniq.', h20Tick'.$uniq.', h24Tick'.$uniq.']);' . PHP_EOL;
+            }
+            if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
+                $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h01Tick'.$uniq.', h02Tick'.$uniq.', h03Tick'.$uniq.', h04Tick'.$uniq.']);' . PHP_EOL;
             }
             if ($timescale == 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
@@ -1025,7 +1073,7 @@ trait Output {
             }
             if ($mode == 'yearly') {
                 $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
-                $body .= '      chart' . $uniq . '.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d %H:%M")(new Date(d));});' . PHP_EOL;
+                $body .= '      chart' . $uniq . '.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
             }
             if ($_attributes['valuescale'] == 'adaptative') {
                 $body .= '      chart'.$uniq.'.yAxis.showMaxMin(true)';
