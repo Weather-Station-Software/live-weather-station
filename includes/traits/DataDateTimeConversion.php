@@ -2,7 +2,7 @@
 
 namespace WeatherStation\Data\DateTime;
 
-use WeatherStation\System\Logs\Logger;
+use WeatherStation\SDK\Generic\Plugin\Season\Calculator;
 
 /**
  * Date/Time conversions functionalities for Weather Station plugin.
@@ -140,19 +140,104 @@ trait Conversion {
     }
 
     /**
-     * Converts an UTC date into the correct format.
+     * Converts an UTC datetime into the correct format.
      *
      * @param string $ts The UTC MySql datetime to be converted.
      * @param string $tz The timezone.
      * @return string Date "offsetted" to the given timezone.
      * @since 3.4.0
      */
-    public static function get_js_date_from_mysql_utc($ts, $tz) {
+    public static function get_js_datetime_from_mysql_utc($ts, $tz) {
         $utc_tz = new \DateTimeZone('UTC');
         $target_tz = new \DateTimeZone($tz);
         $utc_date = new \DateTime($ts, $utc_tz);
         $result = (string)($utc_date->getTimestamp()+ $target_tz->getOffset($utc_date)).'000';
         return $result;
+    }
+
+    /**
+     * Converts an UTC date into the correct format.
+     *
+     * @param string $ts The UTC MySql date to be converted.
+     * @param string $tz The timezone.
+     * @return string Date "offsetted" to the given timezone.
+     * @since 3.4.0
+     */
+    public static function get_js_date_from_mysql_utc($ts, $tz) {
+        $ts .= ' 12:00:00';
+        $utc_tz = new \DateTimeZone('UTC');
+        //$target_tz = new \DateTimeZone($tz);
+        $utc_date = new \DateTime($ts, $utc_tz);
+        $result = (string)($utc_date->getTimestamp()).'000';
+        return $result;
+    }
+
+    /**
+     * Get a standard period id for a shifted month.
+     *
+     * @param integer $value The value of month to shift.
+     * @param string $tz The timezone.
+     * @return string A standard start:end period.
+     * @since 3.4.0
+     */
+    public static function get_shifted_month($value, $tz) {
+        $current = new \DateTime('now', new \DateTimeZone($tz));
+        $year = $current->format('Y');
+        $month = (integer)$current->format('m') + $value;
+        while ($month > 12) {
+            $month -= 12;
+            $year -= 1;
+        }
+        while ($month < 0) {
+            $month += 12;
+            $year += 1;
+        }
+        $start = new \DateTime('now', new \DateTimeZone($tz));
+        $start->setDate($year, $month, 1);
+        $end = new \DateTime('now', new \DateTimeZone($tz));
+        $end->setDate($year, $month, $start->format('t'));
+        return $start->format('Y-m-d') . ':' . $end->format('Y-m-d');
+    }
+
+    /**
+     * Get a standard period id for a shifted meteorological season.
+     *
+     * @param integer $value The value of meteorological season to shift.
+     * @param string $tz The timezone.
+     * @return string A standard start:end period.
+     * @since 3.4.0
+     */
+    public static function get_shifted_meteorological_season($value, $tz) {
+        $current = new \DateTime('now', new \DateTimeZone($tz));
+        $year = $current->format('Y');
+        $month = (integer)$current->format('m') + ($value * 3);
+        while ($month > 12) {
+            $month -= 12;
+            $year += 1;
+        }
+        while ($month < 0) {
+            $month += 12;
+            $year -= 1;
+        }
+        return Calculator::seasonMeteorologicalPeriod($year,$month, $tz);
+    }
+
+    /**
+     * Get a standard period id for a shifted year.
+     *
+     * @param integer $value The value of year to shift.
+     * @param string $tz The timezone.
+     * @return string A standard start:end period.
+     * @since 3.4.0
+     */
+    public static function get_shifted_year($value, $tz) {
+        $current = new \DateTime('now', new \DateTimeZone($tz));
+        $year = $current->format('Y') + $value;
+        $start = new \DateTime('now', new \DateTimeZone($tz));
+        $start->setDate($year, 1, 1);
+        $end = new \DateTime('now', new \DateTimeZone($tz));
+        $end->setDate($year, 12, 31);
+        return $start->format('Y-m-d') . ':' . $end->format('Y-m-d');
     }
 
     /**

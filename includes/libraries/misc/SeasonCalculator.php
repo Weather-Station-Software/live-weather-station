@@ -142,4 +142,13 @@ class Calculator {
         return $result;
     }
 
+    /**
+     * Get a standard meteorological season period.
+     */
+    public static function seasonMeteorologicalPeriod($year, $month, $tz) {
+        $start = self::getMeteorologicalSeasonStartDate($year,$month, $tz);
+        $end = self::getMeteorologicalSeasonEndDate($year,$month, $tz);
+        return $start.':'.$end;
+    }
+
 }
