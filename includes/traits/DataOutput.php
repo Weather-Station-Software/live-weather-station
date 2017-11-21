@@ -182,17 +182,29 @@ trait Output {
                     if ($mode == 'daily') {
                         $min = date('Y-m-d H:i:s', self::get_local_today_midnight($station['loc_timezone']));
                         $max = date('Y-m-d H:i:s', self::get_local_today_noon($station['loc_timezone']));
-                        $result['xdomain']['min'] = self::get_js_date_from_mysql_utc($min, $station['loc_timezone']);
-                        $result['xdomain']['max'] = self::get_js_date_from_mysql_utc($max, $station['loc_timezone']);
+                        $result['xdomain']['min'] = self::get_js_datetime_from_mysql_utc($min, $station['loc_timezone']);
+                        $result['xdomain']['max'] = self::get_js_datetime_from_mysql_utc($max, $station['loc_timezone']);
                         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
                     }
                     if ($mode == 'yearly') {
+                        $d = array('1971-08-01', '1971-08-31');
                         if (strpos($attributes['periodtype'], 'ixed-') > 0) {
                             $d = explode(':', $attributes['periodvalue']);
-                            $min = $d[0];
-                            $max = $d[1];
                         }
-                        //Logger::error(null, null, null, null, null, null, null, print_r($args,true));
+                        elseif (strpos($attributes['periodtype'], '-month') > 0) {
+                            $v = explode('-', $attributes['periodvalue']);
+                            $d = explode(':', $this->get_shifted_month(-$v[1], $station['loc_timezone']));
+                        }
+                        elseif (strpos($attributes['periodtype'], '-year') > 0) {
+                            $v = explode('-', $attributes['periodvalue']);
+                            $d = explode(':', $this->get_shifted_year(-$v[1], $station['loc_timezone']));
+                        }
+                        elseif (strpos($attributes['periodtype'], '-mseason') > 0) {
+                            $v = explode('-', $attributes['periodvalue']);
+                            $d = explode(':', $this->get_shifted_meteorological_season(-$v[1], $station['loc_timezone']));
+                        }
+                        $min = $d[0];
+                        $max = $d[1];
                         $result['xdomain']['min'] = self::get_js_date_from_mysql_utc($min, $station['loc_timezone']);
                         $result['xdomain']['max'] = self::get_js_date_from_mysql_utc($max, $station['loc_timezone']);
                         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
@@ -225,7 +237,12 @@ trait Output {
                                 foreach ($query_a as $val) {
                                     $a = (array)$val;
                                     $module_type = $a['module_type'];
-                                    $a['timestamp'] = self::get_js_date_from_mysql_utc($a['timestamp'], $station['loc_timezone']);
+                                    if ($mode == 'daily') {
+                                        $a['timestamp'] = self::get_js_datetime_from_mysql_utc($a['timestamp'], $station['loc_timezone']);
+                                    }
+                                    if ($mode == 'yearly') {
+                                        $a['timestamp'] = self::get_js_date_from_mysql_utc($a['timestamp'], $station['loc_timezone']);
+                                    }
                                     if (!array_key_exists('measure_value', $a)) {
                                         if (array_key_exists('computed_value', $a)) {
                                             $a['measure_value'] = $a['computed_value'];
@@ -888,6 +905,9 @@ trait Output {
         if ($timescale == 'auto' && $mode == 'daily') {
             $timescale = 'fixed';
         }
+        if ($timescale == 'auto' && $mode == 'yearly') {
+            $timescale = 'fixed';
+        }
         $fixed_timescale = ($timescale != 'adaptative');
         $valuescale = $_attributes['valuescale'];
         if ($valuescale == 'auto') {
@@ -978,7 +998,6 @@ trait Output {
             $body .= '               .y(function(d) {return d[1]})' . PHP_EOL;
             $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
             $body .= '               .showLegend(' . ($type == 'lines'?'true':'false') . ')' . PHP_EOL;
-
             if ($fixed_timescale) {
                 $body .= '               .xDomain([minDomain'.$uniq.', maxDomain'.$uniq.'])' . PHP_EOL;
             }
@@ -993,12 +1012,20 @@ trait Output {
             else {
                 $body .= '               .useInteractiveGuideline(false);' . PHP_EOL;
             }
-            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(' . ($mode == 'yearly'?'true':'false') . ').tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
             if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([h04Tick'.$uniq.', h08Tick'.$uniq.', h12Tick'.$uniq.', h16Tick'.$uniq.', h20Tick'.$uniq.', h24Tick'.$uniq.']);' . PHP_EOL;
             }
             if ($timescale == 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
+            }
+            if ($mode == 'daily') {
+                $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d %H:%M")(new Date(d));});' . PHP_EOL;
+                $body .= '      chart' . $uniq . '.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d %H:%M")(new Date(d));});' . PHP_EOL;
+            }
+            if ($mode == 'yearly') {
+                $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
+                $body .= '      chart' . $uniq . '.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d %H:%M")(new Date(d));});' . PHP_EOL;
             }
             if ($_attributes['valuescale'] == 'adaptative') {
                 $body .= '      chart'.$uniq.'.yAxis.showMaxMin(true)';

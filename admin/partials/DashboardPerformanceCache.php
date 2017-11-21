@@ -6,8 +6,8 @@
  * @since 3.1.0
  */
 
-$fields = array('frontend', 'widget', 'backend');
-$names = array(__('controls', 'live-weather-station'), __('widgets', 'live-weather-station'), __('backend', 'live-weather-station'));
+$fields = array('frontend', 'widget', 'backend', 'dgraph', 'ygraph');
+$names = array(__('controls', 'live-weather-station'), __('widgets', 'live-weather-station'), __('backend', 'live-weather-station'), __('daily graph', 'live-weather-station'), __('historical graph', 'live-weather-station'));
 $values = array();
 foreach ($fields as $key=>$field) {
     $values[$field]['txt'] = ucfirst($names[$key]);
