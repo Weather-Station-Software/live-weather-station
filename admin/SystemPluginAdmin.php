@@ -58,6 +58,7 @@ class Admin {
         FormsRenderer::get_fake_module_name insteadof Arrays;
         FormsRenderer::get_measurement_type insteadof Arrays;
         FormsRenderer::get_dimension_name insteadof Arrays;
+        FormsRenderer::get_operation_name insteadof Arrays;
     }
 
 	private $Live_Weather_Station;

@@ -663,4 +663,33 @@ trait Description {
         }
         return $result;
     }
+
+    /**
+     * Get the historical operation name.
+     *
+     * @param string $operation The operation id.
+     * @param boolean $plural Optional. Plural name.
+     * @return string The historical operation name.
+     * @since 3.4.0
+     */
+    protected function get_operation_name($operation, $plural=false) {
+        $n = 1;
+        if ($plural) {
+            $n = 2;
+        }
+        switch (strtolower($operation)) {
+            case 'min' : $result = _n('minimum value','minimum values', $n, 'live-weather-station'); break;
+            case 'max' : $result = _n('maximum value', 'maximum values', $n, 'live-weather-station'); break;
+            case 'avg' : $result = _n('average value', 'average values', $n, 'live-weather-station'); break;
+            case 'dev' : $result = _n('standard deviation', 'standard deviations', $n, 'live-weather-station'); break;
+            case 'med' : $result = _n('median value', 'median values', $n, 'live-weather-station'); break;
+            case 'agg' : $result = _n('aggregated value', 'aggregated values', $n, 'live-weather-station'); break;
+            case 'dom' : $result = _n('prevalent value', 'prevalent values', $n, 'live-weather-station'); break;
+            case 'amp' : $result = _n('amplitude', 'amplitudes', $n, 'live-weather-station'); break;
+            case 'mid' : $result = _n('middle value', 'middle values', $n, 'live-weather-station'); break;
+            case 'maxhr' : $result = _n('hourly maximum', 'hourly maximum', $n, 'live-weather-station'); break;
+            default : $result = __('unknown', 'live-weather-station');
+        }
+        return $result;
+    }
 }

@@ -22,6 +22,7 @@ class Lcd extends \WeatherStation\Engine\Module\Maintainer {
         Output::get_fake_module_name insteadof Generator;
         Output::get_measurement_type insteadof Generator;
         Output::get_dimension_name insteadof Generator;
+        Output::get_operation_name insteadof Generator;
     }
 
 

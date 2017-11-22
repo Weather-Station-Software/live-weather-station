@@ -1671,6 +1671,23 @@ trait Generator {
     }
 
     /**
+     * Get label array.
+     *
+     * @return array An array containing the label types ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_multi_2_label_js_array() {
+        $result = array();
+        $result[] = array('none',  __('None', 'live-weather-station'));
+        $result[] = array('simple',  __('Simple', 'live-weather-station'));
+        $result[] = array('generic',  __('Generic', 'live-weather-station'));
+        $result[] = array('station',  __('Station', 'live-weather-station'));
+        $result[] = array('located',  __('Location', 'live-weather-station'));
+        $result[] = array('coord',  __('Coordinates', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
      * Get time scale array.
      *
      * @return array An array containing the time scale options ready to convert to a JS array.
