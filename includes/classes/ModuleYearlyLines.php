@@ -84,7 +84,7 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
         $content .= $this->get_key_value_option_select('yearly-lines-datas-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
         $content .= $this->get_key_value_option_select('yearly-lines-datas-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array());
-        $content .= $this->get_key_value_option_select('yearly-lines-datas-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_label_js_array(), true, 'simple');
+        $content .= $this->get_key_value_option_select('yearly-lines-datas-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_multi_2_label_js_array(), true, 'simple');
         $content .= $this->get_key_value_option_select('yearly-lines-datas-guideline-'. $this->station_guid, __('Hint', 'live-weather-station'), $this->get_guideline_js_array(), true, 'standard');
         $content .= $this->get_key_value_option_select('yearly-lines-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
         $content .= $this->get_key_value_option_select('yearly-lines-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(), true, 'auto');

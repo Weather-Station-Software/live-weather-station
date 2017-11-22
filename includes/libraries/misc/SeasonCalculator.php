@@ -74,7 +74,7 @@ class Calculator {
         return $start->format('Y').'-'.$start->format('m').'-'.$start->format('d');
     }
 
-    private static function getmeteorologicalSeasonName ($month, $north_hemisphere=true) {
+    public static function meteorologicalSeasonName ($month, $north_hemisphere=true) {
         if ($north_hemisphere) {
             switch ($month) {
                 case 12:
@@ -136,7 +136,7 @@ class Calculator {
             $e = explode('-', $date[0]);
             $start = self::getMeteorologicalSeasonStartDate($e[0], $e[1], $tz);
             $end = self::getMeteorologicalSeasonEndDate($e[0], $e[1], $tz);
-            $seasons[] = array($start.':'.$end, $e[0] . ', ' . self::getMeteorologicalSeasonName($e[1], $north_hemisphere).$suf);
+            $seasons[] = array($start.':'.$end, $e[0] . ', ' . self::meteorologicalSeasonName($e[1], $north_hemisphere).$suf);
         }
         $result = array_unique($seasons);
         return $result;

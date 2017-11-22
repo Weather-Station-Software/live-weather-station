@@ -6,6 +6,7 @@ use WeatherStation\Data\DateTime\Conversion as Datetime_Conversion;
 use WeatherStation\Data\Type\Description as Type_Description;
 use WeatherStation\Data\Unit\Description as Unit_Description;
 use WeatherStation\Data\Unit\Conversion as Unit_Conversion;
+use WeatherStation\SDK\Generic\Plugin\Season\Calculator;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector;
 use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Logs\Logger;
@@ -153,23 +154,62 @@ trait Output {
             $start = true;
             $similar = false;
             $identical = false;
+            $similar_module=false;
+            $identical_module=false;
+            $similar_set=false;
+            $identical_set=false;
+            $cpt = 0;
             if (count($args) > 0) {
                 foreach ($args as $arg) {
-                    if (strpos($arg['device_id'], ':') == 2) {
+                    if ($arg['module_id'] != 'none' && strpos($arg['device_id'], ':') == 2) {
                         $station_id = $arg['device_id'];
-                        break;
+                        $cpt += 1;
                     }
                 }
                 $temp = array();
-                if (count($args) > 1) {
+                if ($cpt > 1) {
                     foreach ($args as $arg) {
-                        $temp[] = $arg['measurement'];
+                        if ($arg['measurement'] != 'none') {
+                            $temp[] = $arg['measurement'];
+                        }
                     }
                     $t = array_unique($temp);
                     if (count($t) != count($args)) {
                         $similar = true;
                         if (count($t) == 1) {
                             $identical = true;
+                        }
+                    }
+                }
+                if ($mode == 'yearly') {
+                    $temp = array();
+                    if ($cpt > 1) {
+                        foreach ($args as $arg) {
+                            if ($arg['module_id'] != 'none') {
+                                $temp[] = $arg['module_id'];
+                            }
+                        }
+                        $t = array_unique($temp);
+                        if (count($t) != count($args)) {
+                            $similar_module = true;
+                            if (count($t) == 1) {
+                                $identical_module = true;
+                            }
+                        }
+                    }
+                    $temp = array();
+                    if ($cpt > 1) {
+                        foreach ($args as $arg) {
+                            if ($arg['set'] != 'none') {
+                                $temp[] = $arg['set'];
+                            }
+                        }
+                        $t = array_unique($temp);
+                        if (count($t) != count($args)) {
+                            $similar_set = true;
+                            if (count($t) == 1) {
+                                $identical_set = true;
+                            }
                         }
                     }
                 }
@@ -315,23 +355,58 @@ trait Output {
                             } else {
                                 $module_name = $this->get_module_type($module_type, false, true);
                             }
-                            if ($identical) {
-                                $info['key'] = $module_name;
-                            } elseif ($similar) {
-                                if ($module_type != 'NAComputed') {
-                                    $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type) . ' (' . $module_name . ')';
+                            if ($mode == 'daily') {
+                                if ($identical) {
+                                    $info['key'] = $module_name;
+                                } elseif ($similar) {
+                                    if ($module_type != 'NAComputed') {
+                                        $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type) . ' (' . $module_name . ')';
+                                    } else {
+                                        $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                                    }
                                 } else {
                                     $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
                                 }
-                            } else {
-                                $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
                             }
+                            if ($mode == 'yearly') {
+                                if ($identical) {
+                                    if ($identical_module) {
+                                        $info['key'] = ucfirst($this->get_operation_name($arg['set'], true));
+                                    }
+                                    else {
+                                        $info['key'] = $module_name . ' - ' . ucfirst($this->get_operation_name($arg['set'], true));
+                                    }
+                                } elseif ($similar) {
+                                    if ($module_type != 'NAComputed') {
+                                        $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type) . ' (' . $module_name . ') - ' . ucfirst($this->get_operation_name($arg['set'], true));
+                                    } else {
+                                        $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                                    }
+                                } else {
+                                    $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type) . ' - ' . ucfirst($this->get_operation_name($arg['set'], true));
+                                }
+                            }
+
                             $extra = array();
+                            $period_name = '';
+                            if ($is_month) {
+                                $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                $now->setDate($year, $month, 1);
+                                $period_name = date_i18n('F Y', $now->getTimestamp());
+                            }
+                            elseif ($is_year) {
+                                $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
+                            }
+                            elseif ($is_mseason) {
+                                $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
+                            }
+                            $extra['period_name'] = $period_name;
                             $extra['measurement_type'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
                             $extra['module_type'] = $module_type;
                             $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
                             $extra['module_name'] = $module_name;
                             $extra['station_name'] = $station['station_name'];
+                            $extra['set_name'] = ucfirst($this->get_operation_name($arg['set'], true));
                             $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
                             $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
                             $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
@@ -414,12 +489,13 @@ trait Output {
      *
      * @param array $values The values.
      * @param string $type The type of graph.
-     * @param string $mode The mode of label.
+     * @param string $label The mode of label.
+     * @param string $mode The mode of graph.
      * @param string $sep Optional. The separator.
      * @return string The title.
      * @since 3.4.0
      */
-    private function graph_title($values, $type, $mode, $sep=' - ') {
+    private function graph_title($values, $type, $label, $mode, $sep=' - ') {
         $result = '';
         switch ($type) {
             case 'line':
@@ -430,8 +506,9 @@ trait Output {
                     if (strpos($values['legend']['unit']['dimension'], 'oncentration') > 0) {
                         $name .= ' (' . $values['extras'][0]['measurement_type'] . ')';
                     }
-                    $wind = true;
+                    $wind = false;
                     if ($values['legend']['unit']['dimension'] == 'speed') {
+                        $wind = true;
                         foreach ($values['extras'] as $w) {
                             if (!strpos($w['measurement_type'], 'strength')) {
                                 $wind = false;
@@ -443,32 +520,60 @@ trait Output {
                         $name = __('Wind', 'live-weather-station');
                     }
                 }
-                switch ($mode) {
-                    case 'simple':
-                        $result = ucwords($name);
-                        break;
-                    case 'generic':
-                        $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name_generic']);
-                        break;
-                    case 'named':
-                        $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name']);
-                        break;
-                    case 'station':
-                        $result = ucwords($values['extras'][0]['station_name']) . $sep . ucwords($name);
-                        break;
-                    case 'located':
-                        $result = ucwords($values['extras'][0]['station_loc']) . $sep . ucwords($name);
-                        break;
-                    case 'coord':
-                        $result = ucwords($values['extras'][0]['station_coord']) . $sep . $result = ucwords($values['extras'][0]['station_alt']) . $sep . ucwords($name);
-                        break;
-                    case 'full':
-                        $result = ucwords($values['extras'][0]['station_name'])  . $sep . ucwords($values['extras'][0]['module_name']) . $sep . ucwords($name);
-                        break;
+                if ($mode == 'daily') {
+                    switch ($label) {
+                        case 'simple':
+                            $result = ucwords($name);
+                            break;
+                        case 'generic':
+                            $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name_generic']);
+                            break;
+                        case 'named':
+                            $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name']);
+                            break;
+                        case 'station':
+                            $result = ucwords($values['extras'][0]['station_name']) . $sep . ucwords($name);
+                            break;
+                        case 'located':
+                            $result = ucwords($values['extras'][0]['station_loc']) . $sep . ucwords($name);
+                            break;
+                        case 'coord':
+                            $result = ucwords($values['extras'][0]['station_coord']) . $sep . $result = ucwords($values['extras'][0]['station_alt']) . $sep . ucwords($name);
+                            break;
+                        case 'full':
+                            $result = ucwords($values['extras'][0]['station_name'])  . $sep . ucwords($values['extras'][0]['module_name']) . $sep . ucwords($name);
+                            break;
+                    }
                 }
+                if ($mode == 'yearly') {
+                    switch ($label) {
+                        case 'simple':
+                            $result = ucwords($name);
+                            break;
+                        case 'generic':
+                            $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['period_name']);
+                            break;
+                        case 'named':
+                            $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name']);
+                            break;
+                        case 'station':
+                            $result = ucwords($values['extras'][0]['station_name']) . $sep . ucwords($name);
+                            break;
+                        case 'located':
+                            $result = ucwords($values['extras'][0]['station_loc']) . ', ' . ucwords($values['extras'][0]['period_name']) . $sep . ucwords($name);
+                            break;
+                        case 'coord':
+                            $result = ucwords($values['extras'][0]['station_coord']) . $sep . $result = ucwords($values['extras'][0]['station_alt']) . $sep . ucwords($name);
+                            break;
+                        case 'full':
+                            $result = ucwords($values['extras'][0]['station_name'])  . $sep . ucwords($values['extras'][0]['module_name']) . $sep . ucwords($name);
+                            break;
+                    }
+                }
+
                 break;
         }
-        return $result;   // '  ●  '
+        return $result;
     }
 
     /**
@@ -830,7 +935,7 @@ trait Output {
         $noned = false;
         for ($i = 1; $i <= 8; $i++) {
             if (array_key_exists('device_id_'.$i, $attributes)) {
-                if ($attributes['measurement_'.$i] == 'none') {
+                if ($attributes['measurement_'.$i] == 'none' || $attributes['measurement_'.$i] == 'none:none') {
                     $noned = true;
                     continue;
                 }
@@ -907,7 +1012,12 @@ trait Output {
         $value_params = $this->graph_prepare($attributes);
         $period_duration = $value_params['periodduration'];
         $items = $value_params['args'];
-        $cpt = count($items);
+        $cpt = 0;
+        foreach ($items as $item) {
+            if ($item['module_id'] != 'none') {
+                $cpt += 1;
+            }
+        }
         if ($cpt == 0) {
             if ($value_params['noned']) {
                 return __('No Data To Display', 'live-weather-station');
@@ -961,7 +1071,7 @@ trait Output {
         if ($type == 'line' || $type == 'lines') {
             $ticks = $this->graph_ticks($domain, $valuescale, $measurement1, $height);
         }
-        $label_txt = $this->graph_title($values, $type, $label, $prop['separator']);
+        $label_txt = $this->graph_title($values, $type, $label, $mode, $prop['separator']);
 
 
 
@@ -6626,18 +6736,7 @@ trait Output {
     private function get_all_historical_operations($operations, $full_mode=false) {
         $result = array();
         foreach ($operations as $set) {
-            switch ($set) {
-                case 'min' : $result[$set] = __('minimum value', 'live-weather-station'); break;
-                case 'max' : $result[$set] = __('maximum value', 'live-weather-station'); break;
-                case 'avg' : $result[$set] = __('average value', 'live-weather-station'); break;
-                case 'dev' : $result[$set] = __('standard deviation', 'live-weather-station'); break;
-                case 'med' : $result[$set] = __('median value', 'live-weather-station'); break;
-                case 'agg' : $result[$set] = __('aggregated value', 'live-weather-station'); break;
-                case 'dom' : $result[$set] = __('prevalent value', 'live-weather-station'); break;
-                case 'amp' : $result[$set] = __('amplitude', 'live-weather-station'); break;
-                case 'mid' : $result[$set] = __('middle value', 'live-weather-station'); break;
-                case 'maxhr' : $result[$set] = __('hourly maximum', 'live-weather-station'); break;
-            }
+            $result[$set] = $this->get_operation_name($set);
         }
         if (class_exists('\Collator')) {
             $collator = new \Collator(get_display_locale());
