@@ -283,11 +283,11 @@ trait Output {
                             if ($mode == 'yearly') {
                                 $set = " AND `measure_set`='" . $arg['set'] . "'";
                             }
-                            if (strtolower($arg['set']) == 'amp') {
+                            if ($mode == 'yearly' && strtolower($arg['set']) == 'amp') {
                                 $set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
                                 $val = 'ABS(MAX(`measure_value`)-MIN(`measure_value`)) as computed_value';
                             }
-                            if (strtolower($arg['set']) == 'mid') {
+                            if ($mode == 'yearly' && strtolower($arg['set']) == 'mid') {
                                 $set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
                                 $val = 'AVG(`measure_value`) as computed_value';
                             }
@@ -389,16 +389,19 @@ trait Output {
 
                             $extra = array();
                             $period_name = '';
-                            if ($is_month) {
-                                $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
-                                $now->setDate($year, $month, 1);
-                                $period_name = date_i18n('F Y', $now->getTimestamp());
-                            }
-                            elseif ($is_year) {
-                                $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
-                            }
-                            elseif ($is_mseason) {
-                                $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
+                            if ($mode == 'yearly') {
+                                if ($is_month) {
+                                    $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                    $now->setDate($year, $month, 1);
+                                    $period_name = date_i18n('F Y', $now->getTimestamp());
+                                }
+                                elseif ($is_year) {
+                                    $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
+                                }
+                                elseif ($is_mseason) {
+                                    $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
+                                }
+                                $extra['set_name'] = ucfirst($this->get_operation_name($arg['set'], true));
                             }
                             $extra['period_name'] = $period_name;
                             $extra['measurement_type'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
@@ -406,7 +409,6 @@ trait Output {
                             $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
                             $extra['module_name'] = $module_name;
                             $extra['station_name'] = $station['station_name'];
-                            $extra['set_name'] = ucfirst($this->get_operation_name($arg['set'], true));
                             $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
                             $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
                             $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
@@ -1098,6 +1100,10 @@ trait Output {
             if ($prop['nv-axislabel'] != '') {
                 $result .= '#' . $svg . ' .nvd3 .nv-axis text.nv-axislabel {' . $prop['nv-axislabel'] . '}' . PHP_EOL;
             }
+            if ($fixed_timescale) {
+                $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:first-of-type text {text-anchor: start !important;}' . PHP_EOL;
+                $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:last-of-type text {text-anchor: end !important;}' . PHP_EOL;
+            }
             $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dashed-line {stroke-dasharray:10,10;}' . PHP_EOL;
             $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dotted-line {stroke-dasharray:2,2;}' . PHP_EOL;
             for ($i = 1; $i <= count($items); $i++) {
@@ -1169,7 +1175,7 @@ trait Output {
             }
             $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
             if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
-                $body .= '      chart'.$uniq.'.xAxis.tickValues([h04Tick'.$uniq.', h08Tick'.$uniq.', h12Tick'.$uniq.', h16Tick'.$uniq.', h20Tick'.$uniq.', h24Tick'.$uniq.']);' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h04Tick'.$uniq.', h08Tick'.$uniq.', h12Tick'.$uniq.', h16Tick'.$uniq.', h20Tick'.$uniq.', h24Tick'.$uniq.']);' . PHP_EOL;
             }
             if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h01Tick'.$uniq.', h02Tick'.$uniq.', h03Tick'.$uniq.', h04Tick'.$uniq.']);' . PHP_EOL;
@@ -1249,14 +1255,13 @@ trait Output {
                 $result .= '    data'.$uniq.' = JSON.parse(data);' . PHP_EOL;
                 $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
                 $result .= '    ' . $spinner . '.stop();})' . PHP_EOL;
-
-
                 $result .= '}, ' . $refresh . '); ' . PHP_EOL;
             }
             $result .= '});';
         }
         $result .= '  });' . PHP_EOL;
         $result .= '</script>' . PHP_EOL;
+
         return $result;
     }
 
