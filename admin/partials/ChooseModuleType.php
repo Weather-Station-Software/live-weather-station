@@ -38,9 +38,9 @@ foreach ($modules as $module) {
                 </style>
                 <?php foreach ($modules as $module) { ?>
                     <?php if ($module->is_selected()) { ?>
-                        <div style="flex:auto;"><span style="color:<?php echo $colors['text']; ?>;" id="<?php echo $module->get_id(); ?>" class="actionable actionable-selected <?php echo $module->get_icon(); ?>"></span></div>
+                        <div style="flex:auto;"><span style="font-size:30px;color:<?php echo $colors['text']; ?>;" id="<?php echo $module->get_id(); ?>" class="actionable actionable-selected <?php echo $module->get_icon(); ?>"></span></div>
                     <?php } else { ?>
-                        <div style="flex:auto;"><span style="color:<?php echo $module->get_icon_color(); ?>;" id="<?php echo $module->get_id(); ?>" class="actionable <?php echo $module->get_icon(); ?>"></span></div>
+                        <div style="flex:auto;"><span style="font-size:30px;color:<?php echo $module->get_icon_color(); ?>;" id="<?php echo $module->get_id(); ?>" class="actionable <?php echo $module->get_icon(); ?>"></span></div>
                     <?php } ?>
                 <?php } ?>
             </div>

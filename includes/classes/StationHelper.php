@@ -473,13 +473,8 @@ class Handling {
             echo '</form>';
         }
         if ($this->arg_action == 'shortcode') {
-
-            wp_enqueue_style('nv.d3.css');
-            wp_enqueue_script('d3.v3.js');
-            wp_enqueue_script('nv.d3.v3.js');
-            wp_enqueue_script('colorbrewer.js');
-            wp_enqueue_script('spin.js');
-
+            wp_enqueue_style('lws-font-chart-icons');
+            wp_enqueue_script('lws-clipboard');
             $modules = $this->get_modules();
             echo '<div id="dashboard-widgets-wrap">';
             echo '    <div id="shortcodes-widgets" class="metabox-holder">';

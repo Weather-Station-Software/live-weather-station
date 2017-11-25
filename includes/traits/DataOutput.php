@@ -966,16 +966,32 @@ trait Output {
         }
         $value_params['args'] = $items;
         $value_params['noned'] = $noned;
-        $value_params['no_cache'] = $attributes['cache'] == 'no_cache';
-        $value_params['periodtype'] = $attributes['periodtype'];
-        $value_params['periodvalue'] = $attributes['periodvalue'];
-        if (strpos($attributes['periodtype'], '-month') > 0) {
+        if (array_key_exists('cache', $attributes)) {
+            $value_params['no_cache'] = $attributes['cache'];
+        }
+        else {
+            $value_params['no_cache'] = 'no_cache';
+        }
+        if (array_key_exists('periodtype', $attributes)) {
+            $value_params['periodtype'] = $attributes['periodtype'];
+        }
+        else {
+            $value_params['periodtype'] = 'none';
+        }
+        if (array_key_exists('periodvalue', $attributes)) {
+            $value_params['periodvalue'] = $attributes['periodvalue'];
+        }
+        else {
+            $value_params['periodvalue'] = 'none';
+        }
+        $value_params['periodduration'] = 'none';
+        if (strpos($value_params['periodtype'], '-month') > 0) {
             $value_params['periodduration'] = 'month';
         }
-        if (strpos($attributes['periodtype'], '-mseason') > 0) {
+        if (strpos($value_params['periodtype'], '-mseason') > 0) {
             $value_params['periodduration'] = 'mseason';
         }
-        if (strpos($attributes['periodtype'], '-year') > 0) {
+        if (strpos($value_params['periodtype'], '-year') > 0) {
             $value_params['periodduration'] = 'year';
         }
         return $value_params;
@@ -1081,11 +1097,11 @@ trait Output {
         $result = '';
         $body = '';
         if ($type == 'line' || $type == 'lines') {
-            wp_enqueue_style('nv.d3.css');
-            wp_enqueue_script('d3.v3.js');
-            wp_enqueue_script('nv.d3.v3.js');
-            wp_enqueue_script('colorbrewer.js');
-            wp_enqueue_script('spin.js');
+            wp_enqueue_style('lws-nvd3');
+            wp_enqueue_script('lws-d3');
+            wp_enqueue_script('lws-nvd3');
+            wp_enqueue_script('lws-colorbrewer');
+            wp_enqueue_script('lws-spin');
             $result .= '<style type="text/css">' . PHP_EOL;
             if ($prop['text'] != '') {
                 $result .= '#' . $svg . ' .nvd3 text {' . $prop['text'] . '}' . PHP_EOL;
@@ -1282,13 +1298,13 @@ trait Output {
 
         // QUOTA STATISTICS
         if ($_attributes['item'] == 'quota') {
-            wp_enqueue_style('nv.d3.css');
-            wp_enqueue_script('d3.v3.js');
-            wp_enqueue_script('nv.d3.v3.js');
+            wp_enqueue_style('lws-nvd3');
+            wp_enqueue_script('lws-d3');
+            wp_enqueue_script('lws-nvd3');
             $perf = Performance::get_quota_values();
 
             if ($_attributes['metric'] == 'service_short' || $_attributes['metric'] == 'service_long') {
-                wp_enqueue_script('nv.d3.v3.js');
+                wp_enqueue_script('lws-nvd3');
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg style="overflow:visible;"></svg></div>' . PHP_EOL;
                 $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
@@ -1402,13 +1418,13 @@ trait Output {
 
         // EVENTS STATISTICS
         if ($_attributes['item'] == 'event') {
-            wp_enqueue_style('nv.d3.css');
-            wp_enqueue_script('d3.v3.js');
-            wp_enqueue_script('nv.d3.v3.js');
+            wp_enqueue_style('lws-nvd3');
+            wp_enqueue_script('lws-d3');
+            wp_enqueue_script('lws-nvd3');
             $perf = Performance::get_event_values();
 
             if ($_attributes['metric'] == 'system' || $_attributes['metric'] == 'service' || $_attributes['metric'] == 'device_name') {
-                wp_enqueue_script('nv.d3.v3.js');
+                wp_enqueue_script('lws-nvd3');
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg style="overflow:visible;"></svg></div>' . PHP_EOL;
                 $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
@@ -1436,8 +1452,8 @@ trait Output {
             }
 
             if ($_attributes['metric'] == 'density' || $_attributes['metric'] == 'criticality') {
-                wp_enqueue_script('cal-heatmap.js');
-                wp_enqueue_style('cal-heatmap.css');
+                wp_enqueue_script('lws-cal-heatmap');
+                wp_enqueue_style('lws-cal-heatmap');
                 if ((bool)get_option('live_weather_station_force_frontend_styling')) {
                     wp_enqueue_style('buttons');
                 }
@@ -1509,9 +1525,9 @@ trait Output {
 
         // CRON PERFORMANCE STATISTICS
         if ($_attributes['item'] == 'task') {
-            wp_enqueue_style('nv.d3.css');
-            wp_enqueue_script('d3.v3.js');
-            wp_enqueue_script('nv.d3.v3.js');
+            wp_enqueue_style('lws-nvd3');
+            wp_enqueue_script('lws-d3');
+            wp_enqueue_script('lws-nvd3');
             $perf = Performance::get_cron_values();
             if ($_attributes['metric'] == 'count_by_pool') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
@@ -1568,7 +1584,7 @@ trait Output {
                 $result .= '</script>' . PHP_EOL;
             }
             if ($_attributes['metric'] == 'time_for_history' || $_attributes['metric'] == 'time_for_system' || $_attributes['metric'] == 'time_for_pull' || $_attributes['metric'] == 'time_for_push') {
-                wp_enqueue_script('colorbrewer.js');
+                wp_enqueue_script('lws-colorbrewer');
                 $cpt = substr_count($perf['dat'][$_attributes['metric']], '"key"');
                 if ($cpt < 3) {
                     $cpt = 3;
@@ -1605,9 +1621,9 @@ trait Output {
 
         // CACHE PERFORMANCE STATISTICS
         if ($_attributes['item'] == 'cache') {
-            wp_enqueue_style('nv.d3.css');
-            wp_enqueue_script('d3.v3.js');
-            wp_enqueue_script('nv.d3.v3.js');
+            wp_enqueue_style('lws-nvd3');
+            wp_enqueue_script('lws-d3');
+            wp_enqueue_script('lws-nvd3');
             $perf = Performance::get_cache_values();
             if ($_attributes['metric'] == 'count') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
@@ -1739,7 +1755,8 @@ trait Output {
             return __(LWS_PLUGIN_NAME, 'live-weather-station').' - '.$name['condition']['message'];
         }
         $name = substr($name, 0, 20);
-        wp_enqueue_script('lws-lcd.js',false, array(),$this->version);
+        wp_enqueue_style('lws-lcd');
+        wp_enqueue_script('lws-lcd');
         $result  = '<div id="'.$uniq.'"></div>'.PHP_EOL;
         $result .= '<script language="javascript" type="text/javascript">'.PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
@@ -2341,7 +2358,7 @@ trait Output {
                 break;
         }
         $style = 'width:'.$w.';height:'.$h.';';
-        wp_enqueue_script('justgage.js',false, array(),$this->version);
+        wp_enqueue_script('lws-justgage');
         $result  = '<div id="'.$uniq.'" style="'.$style.'"></div>'.PHP_EOL;
         $result .= '<script language="javascript" type="text/javascript">'.PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
@@ -2984,7 +3001,7 @@ trait Output {
         }
 
         $style = 'width:'.$w.';height:'.$h.';';
-        wp_enqueue_script('steelseries.js',false, array(),$this->version);
+        wp_enqueue_script('lws-steelseries');
         $result  = '<canvas id="'.$uniq.'" style="'.$style.'"></canvas>'.PHP_EOL;
         $result .= '<script language="javascript" type="text/javascript">'.PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
@@ -7013,10 +7030,10 @@ trait Output {
             default:
                 $result = '<p>' . __('Malformed shortcode. Please verify it!', 'live-weather-station') . '</p>';
         }
-        wp_enqueue_style('weather-icons.css', LWS_PUBLIC_URL . 'css/weather-icons.min.css', array(), LWS_VERSION);
-        wp_enqueue_style('weather-icons-wind.css', LWS_PUBLIC_URL . 'css/weather-icons-wind.min.css', array(), LWS_VERSION);
-        wp_enqueue_style('font-awesome.css', LWS_PUBLIC_URL.'css/font-awesome.min.css', array(), LWS_VERSION);
-        wp_enqueue_style('lws-table.css', LWS_PUBLIC_URL.'css/live-weather-station-table.min.css', array(), LWS_VERSION);
+        wp_enqueue_style('lws-weather-icons');
+        wp_enqueue_style('lws-weather-icons-wind');
+        wp_enqueue_style('lws-font-awesome');
+        wp_enqueue_style('lws-table');
         return $result;
     }
 
@@ -7069,7 +7086,7 @@ trait Output {
             }
         }
         $result .= '</div>';
-        wp_enqueue_style('lws-table.css', LWS_PUBLIC_URL.'css/live-weather-station-table.min.css', array(), LWS_VERSION);
+        wp_enqueue_style('lws-table');
         if ($style == 'icon' || $style == 'multi-icon') {
             if (EnvManager::is_home_server()) {
                 wp_enqueue_style('flags', 'https://media.station.software/flags/css/flag-icon.min.css');

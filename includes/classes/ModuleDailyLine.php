@@ -29,6 +29,18 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
     }
 
     /**
+     * Enqueues needed styles and scripts.
+     *
+     * @since 3.4.0
+     */
+    protected function enqueue_resources() {
+        wp_enqueue_style('lws-nvd3');
+        wp_enqueue_script('lws-nvd3');
+        wp_enqueue_script('lws-colorbrewer');
+        wp_enqueue_script('lws-spin');
+    }
+
+    /**
      * Prepare the data.
      *
      * @since 3.4.0
