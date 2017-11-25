@@ -168,6 +168,9 @@ trait Utilities {
      * @since 3.3.0
      */
     protected function compute_equivalent_potential_temperature($t, $p) {
+        if ($t == 0) {
+            return 0.0;
+        }
         $te = $this->compute_equivalent_temperature($t, $p);
         $tp = $this->compute_potential_temperature($t, $p);
         return round( $te * $tp / $t, 1);

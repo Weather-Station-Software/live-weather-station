@@ -237,7 +237,7 @@ class Builder
             return false;
         }
         $sub_result = false;
-        $date = date('Y-m-d', self::get_local_yesterday_midnight($tz));
+        $date = self::get_local_date($tz);
         $min = date('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
         $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         $selects = array();

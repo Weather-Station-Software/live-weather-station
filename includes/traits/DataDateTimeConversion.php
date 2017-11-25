@@ -61,6 +61,19 @@ trait Conversion {
     }
 
     /**
+     * Get the date corresponding to yesterday in a specific timezone.
+     *
+     * @param string  $tz The timezone.
+     * @return string The timestamp corresponding to yesterday in this timezone.
+     * @since 3.4.0
+     */
+    public static function get_local_date($tz) {
+        $datetime = new \DateTime('yesterday midnight', new \DateTimeZone($tz));
+        $datetime->setTime(12, 0, 0);
+        return $datetime->format('Y-m-d');
+    }
+
+    /**
      * Get the timestamp corresponding to midnight, N days ago in a specific timezone.
      *
      * @param integer $n The number of days ago.

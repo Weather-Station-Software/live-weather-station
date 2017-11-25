@@ -270,8 +270,8 @@ class Pollution extends \WP_Widget {
      * @since 3.1.0
      */
     public function widget($args, $instance) {
-        wp_enqueue_style('weather-icons.css', LWS_PUBLIC_URL . 'css/weather-icons.min.css', array(), LWS_VERSION);
-        wp_enqueue_style('weather-icons-wind.css', LWS_PUBLIC_URL . 'css/weather-icons-wind.min.css', array(), LWS_VERSION);
+        wp_enqueue_style('lws-weather-icons');
+        wp_enqueue_style('lws-weather-icons-wind');
         $instance = $this->_get_instance($instance);
         $title = $instance['title'];
         $subtitle = $instance['subtitle'];

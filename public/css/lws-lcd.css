@@ -1,0 +1,7 @@
+@font-face {
+    font-family: 'digital-7mono';
+    src: url('../font/digital-7_mono-webfont.eot');
+    src: url('../font/digital-7_mono-webfont.eot?#iefix') format('embedded-opentype'), url('../font/digital-7_mono-webfont.woff2') format('woff2'), url('../font/digital-7_mono-webfont.woff') format('woff'), url('../font/digital-7_mono-webfont.ttf') format('truetype'), url('../font/digital-7_mono-webfont.svg') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}

@@ -68,6 +68,7 @@ abstract class Maintainer {
         $this->station_name = $this->station_information['station_name'];
         $fingerprint = uniqid('', true);
         $this->fingerprint = $this->module_id.substr ($fingerprint, strlen($fingerprint)-6, 80);
+        $this->fingerprint = str_replace('-', '_', $this->fingerprint);
     }
 
     /**
@@ -108,6 +109,13 @@ abstract class Maintainer {
      * @since 3.4.0
      */
     protected abstract function get_preview();
+
+    /**
+     * Enqueues needed styles and scripts.
+     *
+     * @since 3.4.0
+     */
+    protected abstract function enqueue_resources();
 
     /**
      * Register the module.
@@ -692,6 +700,7 @@ abstract class Maintainer {
             $this->print_error(3);
         }
         else {
+            $this->enqueue_resources();
             $this->print_boxes();
         }
     }
