@@ -19,12 +19,18 @@
 * Bug fix: with some browsers, the layout of shortcode window is ugly.
 * Bug fix: a PHP/MySQL error may appears when using "indoor" widget when no collected station provides this type of data.
 * Bug fix: in some (rare) race condition, it's not impossible that an event is not recorded in the event log.
+
+#3.3.4 / November 27th, 2017
+
 * Bug fix: PHP warning when computing an equivalent potential temperature for a zero temperature.
+* Bug fix: daily and yearly rain data are wrongly recorded for stations based on `clientraw.txt` files (thanks to Jonathan G. for detecting it).
+
 
 #3.3.3 / November 13th, 2017
 
 * Improvement: compatibility with WordPress 4.9.
 * Improvement: lower boundaries for temperatures, frost point and windchill are now suitable for stations in extreme cold conditions (thanks to John S. for the suggestion).
+
 
 #3.3.2 / October 11th, 2017
 

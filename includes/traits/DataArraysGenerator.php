@@ -1864,7 +1864,7 @@ trait Generator {
      * @return array An array containing ColorBrewer options ready to convert to a JS array.
      * @since 3.4.0
      */
-    protected function get_colorbrewer_js_array() {
+    protected function get_colorbrewer_js_array($sequential=true, $diverging=true, $qaulitative=true, $inverted=true) {
         $result = array();
         $sep = '-';
         $dsq =  __('sequential', 'live-weather-station');
@@ -1882,23 +1882,25 @@ trait Generator {
         $gr =  __('Grey', 'live-weather-station');
         $pi =  __('Pink', 'live-weather-station');
         $sp =  __('Spectral', 'live-weather-station');
-        $result[] = array('Blues', $bu . ' (' . $dsq . ', ' . $tsh . ')');
-        $result[] = array('Greens', $gn . ' (' . $dsq . ', ' . $tsh . ')');
-        $result[] = array('Oranges', $or . ' (' . $dsq . ', ' . $tsh . ')');
-        $result[] = array('Purples', $pu . ' (' . $dsq . ', ' . $tsh . ')');
-        $result[] = array('Reds', $rd . ' (' . $dsq . ', ' . $tsh . ')');
-        $result[] = array('Greys', $gr . ' (' . $dsq . ', ' . $tsh . ')');
-        $result[] = array('BuGn', $bu . $sep . $gn . ' (' . $dsq . ', ' . $tmh . ')');
-        $result[] = array('BuPu', $bu . $sep . $pu . ' (' . $dsq . ', ' . $tmh . ')');
-        $result[] = array('GnBu', $gn . $sep . $bu . ' (' . $dsq . ', ' . $tmh . ')');
-        $result[] = array('OrRd', $or . $sep . $rd . ' (' . $dsq . ', ' . $tmh . ')');
-        $result[] = array('PuBu', $pu . $sep . $bu . ' (' . $dsq . ', ' . $tmh . ')');
-        $result[] = array('PuBuGn', $pu . $sep . $bu . $sep . $gn . ' (' . $dsq . ', ' . $tmh . ')');
-        $result[] = array('PuRd', $pu . $sep . $rd . ' (' . $dsq . ', ' . $tmh . ')');
-        $result[] = array('RdPu', $rd . $sep . $pu . ' (' . $dsq . ', ' . $tmh . ')');
-        $result[] = array('YlGn', $yl . $sep . $gn . ' (' . $dsq . ', ' . $tmh . ')');
-        $result[] = array('YlOrBr', $yl . $sep . $or . $sep . $br . ' (' . $dsq . ', ' . $tmh . ')');
-        $result[] = array('YlOrRd', $yl . $sep . $or . $sep . $rd . ' (' . $dsq . ', ' . $tmh . ')');
+        if ($sequential) {
+            $result[] = array('Blues', $bu . ' (' . $dsq . ', ' . $tsh . ')');
+            $result[] = array('Greens', $gn . ' (' . $dsq . ', ' . $tsh . ')');
+            $result[] = array('Oranges', $or . ' (' . $dsq . ', ' . $tsh . ')');
+            $result[] = array('Purples', $pu . ' (' . $dsq . ', ' . $tsh . ')');
+            $result[] = array('Reds', $rd . ' (' . $dsq . ', ' . $tsh . ')');
+            $result[] = array('Greys', $gr . ' (' . $dsq . ', ' . $tsh . ')');
+            $result[] = array('BuGn', $bu . $sep . $gn . ' (' . $dsq . ', ' . $tmh . ')');
+            $result[] = array('BuPu', $bu . $sep . $pu . ' (' . $dsq . ', ' . $tmh . ')');
+            $result[] = array('GnBu', $gn . $sep . $bu . ' (' . $dsq . ', ' . $tmh . ')');
+            $result[] = array('OrRd', $or . $sep . $rd . ' (' . $dsq . ', ' . $tmh . ')');
+            $result[] = array('PuBu', $pu . $sep . $bu . ' (' . $dsq . ', ' . $tmh . ')');
+            $result[] = array('PuBuGn', $pu . $sep . $bu . $sep . $gn . ' (' . $dsq . ', ' . $tmh . ')');
+            $result[] = array('PuRd', $pu . $sep . $rd . ' (' . $dsq . ', ' . $tmh . ')');
+            $result[] = array('RdPu', $rd . $sep . $pu . ' (' . $dsq . ', ' . $tmh . ')');
+            $result[] = array('YlGn', $yl . $sep . $gn . ' (' . $dsq . ', ' . $tmh . ')');
+            $result[] = array('YlOrBr', $yl . $sep . $or . $sep . $br . ' (' . $dsq . ', ' . $tmh . ')');
+            $result[] = array('YlOrRd', $yl . $sep . $or . $sep . $rd . ' (' . $dsq . ', ' . $tmh . ')');
+        }
         $result[] = array('PRGn', $pu . $sep . $gn . ' (' . $ddv . ')');
         $result[] = array('PuOr', $or . $sep . $pu . ' (' . $ddv . ')');
         $result[] = array('RdBu', $rd . $sep . $bu . ' (' . $ddv . ')');

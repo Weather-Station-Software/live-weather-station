@@ -33,8 +33,10 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Module\Current\Lcd': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentLcd.php'; break;
         case 'WeatherStation\Engine\Module\Current\Meter': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentMeter.php'; break;
         case 'WeatherStation\Engine\Module\Current\Textual': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentTextual.php'; break;
+        case 'WeatherStation\Engine\Module\Daily\BCLine': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyBCLine.php'; break;
         case 'WeatherStation\Engine\Module\Daily\Line': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyLine.php'; break;
         case 'WeatherStation\Engine\Module\Daily\Lines': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyLines.php'; break;
+        case 'WeatherStation\Engine\Module\Yearly\CalendarHM': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyCalendarHM.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Line': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyLine.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Lines': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyLines.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\TXTGenerator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneAbstractTXTGenerator.php'; break;
@@ -156,6 +158,7 @@ spl_autoload_register(
         case 'WeatherStation\UI\Widget\Psychrometry': $file = LWS_INCLUDES_DIR.'classes/WidgetPsychrometry.php'; break;
         case 'WeatherStation\UI\Widget\Solar': $file = LWS_INCLUDES_DIR.'classes/WidgetSolar.php'; break;
         case 'WeatherStation\UI\Widget\Thunderstorm': $file = LWS_INCLUDES_DIR.'classes/WidgetThunderstorm.php'; break;
+        case 'WeatherStation\Utilities\ColorBrewer': $file = LWS_INCLUDES_DIR.'libraries/misc/ColorBrewer.php'; break;
         case 'WeatherStation\Utilities\ColorsManipulation': $file = LWS_INCLUDES_DIR.'libraries/misc/ColorsManipulation.php'; break;
         case 'WeatherStation\Utilities\Markdown': $file = LWS_INCLUDES_DIR.'libraries/misc/Markdown.php'; break;
         case 'WeatherStation\Utilities\Settings': $file = LWS_INCLUDES_DIR.'classes/SettingsHelper.php'; break;

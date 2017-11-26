@@ -157,14 +157,15 @@ trait Conversion {
      *
      * @param string $ts The UTC MySql datetime to be converted.
      * @param string $tz The timezone.
+     * @param string $ps Optional. String to add at the end.
      * @return string Date "offsetted" to the given timezone.
      * @since 3.4.0
      */
-    public static function get_js_datetime_from_mysql_utc($ts, $tz) {
+    public static function get_js_datetime_from_mysql_utc($ts, $tz, $ps='000') {
         $utc_tz = new \DateTimeZone('UTC');
         $target_tz = new \DateTimeZone($tz);
         $utc_date = new \DateTime($ts, $utc_tz);
-        $result = (string)($utc_date->getTimestamp()+ $target_tz->getOffset($utc_date)).'000';
+        $result = (string)($utc_date->getTimestamp()+ $target_tz->getOffset($utc_date)).$ps;
         return $result;
     }
 
@@ -173,15 +174,16 @@ trait Conversion {
      *
      * @param string $ts The UTC MySql date to be converted.
      * @param string $tz The timezone.
+     * @param string $ps Optional. String to add at the end.
      * @return string Date "offsetted" to the given timezone.
      * @since 3.4.0
      */
-    public static function get_js_date_from_mysql_utc($ts, $tz) {
+    public static function get_js_date_from_mysql_utc($ts, $tz, $ps='000') {
         $ts .= ' 12:00:00';
         $utc_tz = new \DateTimeZone('UTC');
         //$target_tz = new \DateTimeZone($tz);
         $utc_date = new \DateTime($ts, $utc_tz);
-        $result = (string)($utc_date->getTimestamp()).'000';
+        $result = (string)($utc_date->getTimestamp()).$ps;
         return $result;
     }
 

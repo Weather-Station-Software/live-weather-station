@@ -205,12 +205,12 @@ trait StationClient {
         $updates['measure_value'] = $weather[10];
         $this->update_data_table($updates);
         $updates['measure_type'] = 'rain_day_aggregated';
-        $updates['measure_value'] = $weather[165];
+        $updates['measure_value'] = $weather[7];
         $this->update_data_table($updates);
         $updates['measure_type'] = 'rain_month_aggregated';
         $updates['measure_value'] = $weather[8];
         $this->update_data_table($updates);
-        $updates['measure_type'] = 'rain_season_aggregated';
+        $updates['measure_type'] = 'rain_year_aggregated';
         $updates['measure_value'] = $weather[9];
         $this->update_data_table($updates);
         $updates['measure_type'] = 'rain_yesterday_aggregated';
