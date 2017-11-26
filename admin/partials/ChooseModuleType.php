@@ -14,6 +14,7 @@ $type = __('graph', 'live-weather-station');
 foreach ($modules as $module) {
     if ($module->is_selected()) {
         $name = lcfirst($module->get_name());
+        $name = str_replace('lCD', 'LCD', $name);
         if ($module->module_type() == 'current') {
             $type = __('control', 'live-weather-station');
         }

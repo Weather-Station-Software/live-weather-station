@@ -18,8 +18,10 @@ use WeatherStation\Engine\Module\Current\Lcd;
 use WeatherStation\Engine\Module\Current\Meter;
 use WeatherStation\Engine\Module\Current\Textual;
 use WeatherStation\Engine\Module\Daily\Line as DailyLine;
+use WeatherStation\Engine\Module\Daily\BCLine as DailyBCLine;
 use WeatherStation\Engine\Module\Daily\Lines as DailyLines;
 use WeatherStation\Engine\Module\Yearly\Line as YearlyLine;
+use WeatherStation\Engine\Module\Yearly\CalendarHM as YearlyCalendarHM;
 use WeatherStation\Engine\Module\Yearly\Lines as YearlyLines;
 
 
@@ -72,9 +74,11 @@ class Handling {
         Lcd::register_module('current');
         Meter::register_module('current');
         DailyLine::register_module('daily');
+        DailyBCLine::register_module('daily');
         DailyLines::register_module('daily');
         YearlyLine::register_module('yearly');
         YearlyLines::register_module('yearly');
+        YearlyCalendarHM::register_module('yearly');
     }
 
     /**
