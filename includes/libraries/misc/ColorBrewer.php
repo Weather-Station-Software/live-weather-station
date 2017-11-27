@@ -329,7 +329,7 @@ class ColorBrewer {
 
     public static function get($set, $size, $rank, $reverse=false) {
         if ($reverse) {
-
+            $rank = $size - 1 - $rank;
         }
         return self::_get($set, $size, $rank);
     }

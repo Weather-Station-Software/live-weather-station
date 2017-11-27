@@ -154,6 +154,10 @@ trait Output {
             $mode = $attributes['mode'];
             $type = $attributes['type'];
             $args = $attributes['args'];
+            $self_color = $attributes['color'] == 'self';
+            if ($self_color) {
+                $prop = $this->graph_template($attributes['template']);
+            }
             $station_id = '';
             $ymin = 0;
             $ymax = 0;
@@ -285,8 +289,14 @@ trait Output {
                         }
                         elseif ($is_mseason) {
                             $result['xdomain']['01'] = self::get_js_date_from_mysql_utc($year.'-' . $month .'-23', $station['loc_timezone']);
-                            $result['xdomain']['02'] = self::get_js_date_from_mysql_utc($year.'-' . (string)($month+1) .'-15', $station['loc_timezone']);
-                            $result['xdomain']['03'] = self::get_js_date_from_mysql_utc($year.'-' . (string)($month+2) .'-08', $station['loc_timezone']);
+                            if ($month == 12) {
+                                $smonth = 0 ;
+                            }
+                            else {
+                                $smonth = $month ;
+                            }
+                            $result['xdomain']['02'] = self::get_js_date_from_mysql_utc($year.'-' . (string)($smonth+1) .'-15', $station['loc_timezone']);
+                            $result['xdomain']['03'] = self::get_js_date_from_mysql_utc($year.'-' . (string)($smonth+2) .'-08', $station['loc_timezone']);
                         }
                         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
                     }
@@ -370,6 +380,9 @@ trait Output {
                             if ($type == 'bcline' && $i == 2) {
                                 $info['bar'] = true;
                             }
+                            if ($self_color) {
+                                $info['color'] = $prop['fg_color'];
+                            }
                             if (array_key_exists($arg['module_id'], $station['modules_names'])) {
                                 $module_name = str_replace(array('[', ']'), array('', ''), $station['modules_names'][$arg['module_id']]);
                             } else {
@@ -423,12 +436,16 @@ trait Output {
                                 }
                                 elseif ($is_mseason) {
                                     $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
+                                    if ($month == 12) {
+                                        $period_name .= '~' . (string)($year+1);
+                                    }
                                     $period_range = 3;
                                 }
                                 $extra['set_name'] = ucfirst($this->get_operation_name($arg['set'], true));
                             }
                             $extra['period_name'] = $period_name;
                             $extra['period_range'] = $period_range;
+                            $extra['raw_measurement_type'] = $arg['measurement'];
                             $extra['measurement_type'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
                             $extra['module_type'] = $module_type;
                             $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
@@ -544,7 +561,7 @@ trait Output {
                     if ($values['legend']['unit']['dimension'] == 'speed') {
                         $wind = true;
                         foreach ($values['extras'] as $w) {
-                            if (!strpos($w['measurement_type'], 'strength')) {
+                            if (strpos($w['raw_measurement_type'], 'strength') !== 0) {
                                 $wind = false;
                                 break;
                             }
@@ -552,6 +569,21 @@ trait Output {
                     }
                     if ($wind) {
                         $name = __('Wind', 'live-weather-station');
+                    }
+                }
+                if ($mode == 'yearly') {
+                    $rain = false;
+                    if ($values['legend']['unit']['dimension'] == 'length') {
+                        $rain = true;
+                        foreach ($values['extras'] as $w) {
+                            if (strpos($w['raw_measurement_type'], 'rain_') !== 0) {
+                                $rain = false;
+                                break;
+                            }
+                        }
+                    }
+                    if ($rain) {
+                        $name = __('Rainfall', 'live-weather-station');
                     }
                 }
                 if ($mode == 'daily') {
@@ -838,6 +870,7 @@ trait Output {
         $prop = array();      // light dark organic mineral
         switch ($id) {
             case 'night':
+                $prop['fg_color'] = '#4b4888';
                 $prop['container'] = 'background-color:#101030;border-radius: 3px;border: solid 1px #2D2C3F;';
                 $prop['nv-axis-line'] = 'stroke: #2D2C40;';
                 $prop['nv-axis-domain'] = 'stroke: #4b4888;stroke-opacity: 1;';
@@ -847,6 +880,7 @@ trait Output {
                 $prop['separator'] = '  ●  ';
                 break;
             case 'modern':
+                $prop['fg_color'] = '#666666';
                 $prop['container'] = 'background-color:#EEEEEE;border-radius: 3px;border: solid 1px #CCCCCC;';
                 $prop['nv-axis-line'] = 'stroke: #DDDDDD;';
                 $prop['nv-axis-domain'] = 'stroke: #666666;stroke-opacity: 1;';
@@ -856,6 +890,7 @@ trait Output {
                 $prop['separator'] = '  ●  ';
                 break;
             case 'light':
+                $prop['fg_color'] = '#909090';
                 $prop['container'] = 'background-color:#FAFAFA;border-radius: 3px;border: solid 1px #EAEAEA;';
                 $prop['nv-axis-line'] = 'stroke: #F0F0F0;';
                 $prop['nv-axis-domain'] = 'stroke: #D0D0D0;stroke-opacity: 1;';
@@ -865,6 +900,7 @@ trait Output {
                 $prop['separator'] = '  ●  ';
                 break;
             case 'ws':
+                $prop['fg_color'] = '#F8DC65';
                 $prop['container'] = 'background-color:#484848;border-radius: 3px;border: solid 1px #F8DC65;';
                 $prop['nv-axis-line'] = 'stroke: #666666;';
                 $prop['nv-axis-domain'] = 'stroke: #F8DC65;stroke-opacity: 1;';
@@ -874,6 +910,7 @@ trait Output {
                 $prop['separator'] = '  ●  ';
                 break;
             case 'dark':
+                $prop['fg_color'] = '#878A9A';
                 $prop['container'] = 'background-color:#40424D;border-radius: 3px;border: solid 1px #303137;';
                 $prop['nv-axis-line'] = 'stroke: #515B69;';
                 $prop['nv-axis-domain'] = 'stroke: #8792A2;stroke-opacity: 1;';
@@ -883,6 +920,7 @@ trait Output {
                 $prop['separator'] = '  ●  ';
                 break;
             case 'sand':
+                $prop['fg_color'] = '#9B7543';
                 $prop['container'] = 'background-color:#D7C2A7;border-radius: 5px;border: solid 1px #897458;';
                 $prop['nv-axis-line'] = 'stroke: #A09280;';
                 $prop['nv-axis-domain'] = 'stroke: #897458;stroke-opacity: 1;';
@@ -892,6 +930,7 @@ trait Output {
                 $prop['separator'] = '  ●  ';
                 break;
             case 'organic':
+                $prop['fg_color'] = '#605D40';
                 $prop['container'] = 'background-color:#BACEB7;border-radius: 3px;border: solid 1px #506040;';
                 $prop['nv-axis-line'] = 'stroke: #A3B293;';
                 $prop['nv-axis-domain'] = 'stroke: #506040;stroke-opacity: 1;';
@@ -901,6 +940,7 @@ trait Output {
                 $prop['separator'] = '  ●  ';
                 break;
             case 'mineral':
+                $prop['fg_color'] = '#494D5F';
                 $prop['container'] = 'background-color:#C0CED8;border-radius: 3px;border: solid 1px #575A6A;';
                 $prop['nv-axis-line'] = 'stroke: #7A8890;';
                 $prop['nv-axis-domain'] = 'stroke: #506040;stroke-opacity: 1;';
@@ -910,6 +950,7 @@ trait Output {
                 $prop['separator'] = '  ●  ';
                 break;
             case 'bwi':
+                $prop['fg_color'] = '#FFFFFF';
                 $prop['container'] = 'background-color:#000000;border-radius: 3px;border: solid 1px #FFFFFF;';
                 $prop['nv-axis-line'] = 'stroke: #FFFFFF;';
                 $prop['nv-axis-domain'] = 'stroke: #FFFFFF;stroke-opacity: 1;';
@@ -919,6 +960,7 @@ trait Output {
                 $prop['separator'] = '  ●  ';
                 break;
             case 'bw':
+                $prop['fg_color'] = '#000000';
                 $prop['container'] = 'background-color:#FFFFFF;border-radius: 3px;border: solid 1px #000000;';
                 $prop['nv-axis-line'] = 'stroke: #000000;';
                 $prop['nv-axis-domain'] = 'stroke: #000000;stroke-opacity: 1;';
@@ -928,6 +970,7 @@ trait Output {
                 $prop['separator'] = '  ●  ';
                 break;
             case 'terminal':
+                $prop['fg_color'] = '#0000AA';
                 $prop['container'] = 'background-color:#AAAAAA;border: solid 1px #0000AA;';
                 $prop['nv-axis-line'] = 'stroke: #AAAAAA;';
                 $prop['nv-axis-domain'] = 'stroke: #0000AA;stroke-opacity: 1;';
@@ -937,6 +980,7 @@ trait Output {
                 $prop['separator'] = ' / ';
                 break;
             case 'console':
+                $prop['fg_color'] = '#0099CC';
                 $prop['container'] = 'background-color:#CCCCCC;border: solid 1px #0099CC;';
                 $prop['nv-axis-line'] = 'stroke: #0099CC;';
                 $prop['nv-axis-domain'] = 'stroke: #0099CC;stroke-opacity: 1;';
@@ -946,6 +990,7 @@ trait Output {
                 $prop['separator'] = ' - ';
                 break;
             default:
+                $prop['fg_color'] = '#999999';
                 $prop['container'] = '';
                 $prop['nv-axis-line'] = '';
                 $prop['nv-axis-domain'] = 'stroke-opacity: .75;';
@@ -1032,6 +1077,18 @@ trait Output {
         if (strpos($value_params['periodtype'], '-year') > 0) {
             $value_params['periodduration'] = 'year';
         }
+        if (array_key_exists('color', $attributes)) {
+            $value_params['color'] = $attributes['color'];
+        }
+        else {
+            $value_params['color'] = 'self';
+        }
+        if (array_key_exists('template', $attributes)) {
+            $value_params['template'] = $attributes['template'];
+        }
+        else {
+            $value_params['template'] = 'neutral';
+        }
         return $value_params;
     }
 
@@ -1047,6 +1104,11 @@ trait Output {
         $mode = $_attributes['mode'];
         $type = $_attributes['type'];
         $color = $_attributes['color'];
+        $inverted = false;
+        if (strpos($color, '_') > 0) {
+            $inverted = true;
+            $color = str_replace('i_', '', $color);
+        }
         $data = $_attributes['data'];
         $label = $_attributes['label'];
         $interpolation = $_attributes['interpolation'];
@@ -1220,7 +1282,15 @@ trait Output {
             if ($fixed_valuescale) {
                 $body .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
             }
-            $body .= '               .color(colorbrewer.' . $color . '[' . $cpt . '])' . PHP_EOL;
+            if ($color == 'self') {
+                // DONE BY COLOR KEY
+            }
+            elseif ($inverted) {
+                $body .= '               .color(colorbrewer.' . $color . '[' . $cpt . '].reverse())' . PHP_EOL;
+            }
+            else {
+                $body .= '               .color(colorbrewer.' . $color . '[' . $cpt . '])' . PHP_EOL;
+            }
             $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
             if ($guideline) {
                 $body .= '               .useInteractiveGuideline(true);' . PHP_EOL;
@@ -1399,10 +1469,10 @@ trait Output {
             $legendColors = array();
             for ($i = 1; $i < $step; $i++) {
                 $legend[] = $domain['min'] + ($i * $amplitude);
-                $c = ColorBrewer::get($color, $step, $i-1);
+                $c = ColorBrewer::get($color, $step, $i-1, $inverted);
                 $legendColors[] = 'div#'.$calendar.' .q' . $i . '{background-color: ' . $c . ' !important;fill: ' . $c . ' !important;}';
             }
-            $c = ColorBrewer::get($color, $step, $step-1);
+            $c = ColorBrewer::get($color, $step, $step-1, $inverted);
             $legendColors[] = 'div#'.$calendar.' .q' . $i . '{background-color: ' . $c . ' !important;fill: ' . $c . ' !important;}';
             $legend = '[' . implode(',', $legend) . ']';
             $design = 'rdsquare';
@@ -1487,6 +1557,7 @@ trait Output {
             $body .= '          cellRadius: ' . $cRadius . ',' . PHP_EOL;
             $body .= '          tooltip: true,' . PHP_EOL;
             $body .= '          displayLegend: true,' . PHP_EOL;
+            $body .= '          legendHorizontalPosition: "center",' . PHP_EOL;
 
 
 
