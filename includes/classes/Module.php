@@ -493,7 +493,7 @@ abstract class Maintainer {
         $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_' . $this->station_guid . ' = ' . json_encode($this->data) . ';';
         // period
         if ($this->module_mode == 'yearly') {
-            $result .= 'var js_array_period_' . $this->station_guid . ' = ' . json_encode($this->period) . ';';
+            $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_period_' . $this->station_guid . ' = ' . json_encode($this->period) . ';';
         }
         // content
         $result .= $content;
@@ -716,6 +716,26 @@ abstract class Maintainer {
         $name = $this->module_mode . '-' . $this->module_type;
         $js_name = $this->module_mode . '_' . $this->module_type;
         $content = '';
+
+        if ($this->module_mode == 'yearly') {
+            $content .= '$("#' . $name . '-datas-period-type-' . $this->station_guid . '").change(function() {';
+            $content .= 'var js_array_' . $js_name . '_p_' . $this->station_guid . ' = null;';
+            $content .= '$(js_array_' . $js_name . '_period_' . $this->station_guid . ').each(function (i) {';
+            $content .= 'if (js_array_' . $js_name . '_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-datas-period-type-' . $this->station_guid . '").val()) {js_array_' . $js_name . '_p_' . $this->station_guid . '=js_array_' . $js_name . '_period_' . $this->station_guid . '[i][1]}  ;});';
+            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").html("");';
+            $content .= '$(js_array_' . $js_name . '_p_' . $this->station_guid . ').each(function (i) {';
+            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]+"</option>");});';
+            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '" ).change();});';
+            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").change(function() {';
+            $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '" ).change();});';
+        }
+        if ($this->module_type == 'lines') {
+            $content .= '$("#' . $name . '-datas-dimension-' .$this->station_guid . '").change(function() {';
+            for ($i=1; $i<=$this->series_number; $i++) {
+                $content .= '$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . ' option[value=\'0\']").attr("selected", true);';
+            }
+            $content .= '$("#' . $name . '-datas-module-1-' . $this->station_guid . '").change();});';
+        }
         for ($i=1; $i<=$this->series_number; $i++) {
             $content .= '$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").change(function() {';
             $content .= 'var js_array_' . $js_name . '_measurement_' . $this->station_guid . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$(this).val()][2];';
@@ -745,39 +765,35 @@ abstract class Maintainer {
                 $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '" ).change();});';
                 $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").change(function() {';
             }
-            $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . '" ).change();});';
-            $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . '").change(function() {';
-            $content .= 'if ($(this).val() == "transparent" || $(this).val() == "area") {';
-            $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '").prop("disabled", true);';
-            $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").prop("disabled", true);}';
-            $content .= 'else {';
-            $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '").prop("disabled", false);';
-            $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").prop("disabled", false);}';
-            $content .= '$("#' . $name . '-datas-dot-style-' . $i . '-' . $this->station_guid . '" ).change();});';
-            $content .= '$("#' . $name . '-datas-dot-style-' . $i . '-' . $this->station_guid . '").change(function() {';
-            $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '" ).change();});';
-            $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '").change(function() {';
-            $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '" ).change();});';
-            $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").change(function() {';
-            $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '" ).change();});';
+            if ($this->module_type != 'calendarhm') {
+                $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . '" ).change();});';
+                $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . '").change(function() {';
+                $content .= 'if ($(this).val() == "transparent" || $(this).val() == "area") {';
+                $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '").prop("disabled", true);';
+                $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").prop("disabled", true);}';
+                $content .= 'else {';
+                $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '").prop("disabled", false);';
+                $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").prop("disabled", false);}';
+                $content .= '$("#' . $name . '-datas-dot-style-' . $i . '-' . $this->station_guid . '" ).change();});';
+                $content .= '$("#' . $name . '-datas-dot-style-' . $i . '-' . $this->station_guid . '").change(function() {';
+                $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '" ).change();});';
+                $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . '").change(function() {';
+                $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '" ).change();});';
+                $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").change(function() {';
+            }
+            if ($i<$this->series_number) {
+                $content .= '$("#' . $name . '-datas-module-' . (string)($i+1) . '-' . $this->station_guid . '").change();});';
+            }
+            else {
+                $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '" ).change();});';
+            }
         }
+
         $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '").change(function() {';
         $content .= '$("#' . $name . '-datas-color-' . $this->station_guid . '" ).change();});';
         $content .= '$("#' . $name . '-datas-color-' . $this->station_guid . '").change(function() {';
         $content .= '$("#' . $name . '-datas-interpolation-' . $this->station_guid . '" ).change();});';
         $content .= '$("#' . $name . '-datas-interpolation-' . $this->station_guid . '").change(function() {';
-        if ($this->module_mode == 'yearly') {
-            $content .= '$("#' . $name . '-datas-period-type-' . $this->station_guid . '" ).change();});';
-            $content .= '$("#' . $name . '-datas-period-type-' . $this->station_guid . '").change(function() {';
-            $content .= 'var js_array_p_' . $this->station_guid . ' = null;';
-            $content .= '$(js_array_period_' . $this->station_guid . ').each(function (i) {';
-            $content .= 'if (js_array_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-datas-period-type-' . $this->station_guid . '").val()) {js_array_p_' . $this->station_guid . '=js_array_period_' . $this->station_guid . '[i][1]}  ;});';
-            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").html("");';
-            $content .= '$(js_array_p_' . $this->station_guid . ').each(function (i) {';
-            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").append("<option value="+js_array_p_' . $this->station_guid . '[i][0]+">"+js_array_p_' . $this->station_guid . '[i][1]+"</option>");});';
-            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '" ).change();});';
-            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").change(function() {';
-        }
         $content .= '$("#' . $name . '-datas-timescale-' . $this->station_guid . '" ).change();});';
         $content .= '$("#' . $name . '-datas-timescale-' . $this->station_guid . '").change(function() {';
         $content .= '$("#' . $name . '-datas-valuescale-' . $this->station_guid . '" ).change();});';
@@ -846,6 +862,20 @@ abstract class Maintainer {
         $content .= implode(', ', $t);
         $content .= '}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
         $content .= '$("#' . $name . '-datas-shortcode-' . $this->station_guid . '").html(shortcode);});';
+
+        if ($this->module_mode == 'yearly') {
+            //$content .= '$("#' . $name . '-datas-period-type-' . $this->station_guid . '").change(function() {';
+            $content .= 'var tjs_array_' . $js_name . '_p_' . $this->station_guid . ' = null;';
+            $content .= '$(js_array_' . $js_name . '_period_' . $this->station_guid . ').each(function (i) {';
+            $content .= 'if (js_array_' . $js_name . '_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-datas-period-type-' . $this->station_guid . '").val()) {tjs_array_' . $js_name . '_p_' . $this->station_guid . '=js_array_' . $js_name . '_period_' . $this->station_guid . '[i][1]}  ;});';
+            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").html("");';
+            $content .= '$(tjs_array_' . $js_name . '_p_' . $this->station_guid . ').each(function (i) {';
+            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").append("<option value="+tjs_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]+">"+tjs_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]+"</option>");});';
+            //$content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '" ).change();});';
+            //$content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").change(function() {';
+            //$content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '" ).change();});';
+        }
+
         return $content;
     }
 }

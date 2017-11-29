@@ -99,7 +99,7 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_key_value_option_select('yearly-lines-datas-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_multi_2_label_js_array(), true, 'simple');
         $content .= $this->get_key_value_option_select('yearly-lines-datas-guideline-'. $this->station_guid, __('Hint', 'live-weather-station'), $this->get_guideline_js_array(), true, 'standard');
         $content .= $this->get_key_value_option_select('yearly-lines-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
-        $content .= $this->get_key_value_option_select('yearly-lines-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(), true, 'auto');
+        $content .= $this->get_key_value_option_select('yearly-lines-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(true), true, 'auto');
         $content .= $this->get_key_value_option_select('yearly-lines-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(), true, 'auto');
         $content .= $this->get_key_value_option_select('yearly-lines-datas-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_interpolation_js_array(), true, 'none');
         $content .= $this->get_key_value_option_select('yearly-lines-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
@@ -116,15 +116,9 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     protected function get_script() {
-        $content = '';
-        $content .= '$("#yearly-lines-datas-dimension-' .$this->station_guid . '").change(function() {';
-        for ($i=1; $i<=$this->series_number; $i++) {
-            $content .= '$("#yearly-lines-datas-module-' . $i . '-' . $this->station_guid . ' option[value=\'0\']").attr("selected", true);';
-            $content .= '$("#yearly-lines-datas-module-' . $i . '-' . $this->station_guid . '" ).change();';
-        }
-        $content .= '});';
-        $content .= $this->get_standard_script();
-        $content .= '$("#yearly-lines-datas-dimension-' . $this->station_guid . '" ).change();';
+        $content = $this->get_standard_script();
+        //$content .= '$("#yearly-lines-datas-period-type-' . $this->station_guid . '").change();';
+        $content .= '$("#yearly-lines-datas-dimension-' . $this->station_guid . '").change();';
         return $this->get_script_box($content);
     }
 

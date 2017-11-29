@@ -1693,10 +1693,13 @@ trait Generator {
      * @return array An array containing the time scale options ready to convert to a JS array.
      * @since 3.4.0
      */
-    protected function get_x_scale_js_array() {
+    protected function get_x_scale_js_array($focus=false) {
         $result = array();
         $result[] = array('auto',  __('Automatic', 'live-weather-station'));
         $result[] = array('adaptative',  __('Adaptative', 'live-weather-station'));
+        if($focus) {
+            $result[] = array('focus',  __('Adaptative with focus', 'live-weather-station'));
+        }
         $result[] = array('fixed',  __('Fixed', 'live-weather-station'));
         $result[] = array('none',  __('None', 'live-weather-station'));
         return $result;

@@ -1167,6 +1167,11 @@ trait Output {
 
         // Compute scales
         $timescale = $_attributes['timescale'];
+        $focus = false;
+        if ($timescale == 'focus') {
+            $timescale = 'adaptative';
+            $focus = true;
+        }
         if ($timescale == 'auto' && $mode == 'daily') {
             $timescale = 'fixed';
         }
@@ -1268,13 +1273,25 @@ trait Output {
                 $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
+            if ($color != 'self') {
+                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+            }
+            if ($inverted) {
+                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
+            }
             $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '    nv.addGraph(function() {' . PHP_EOL;
             $body .= '       chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
             $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
             $body .= '               .y(function(d) {return d[1]})' . PHP_EOL;
             $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
-            $body .= '               .focusEnable(false)' . PHP_EOL;
+            if ($focus) {
+                $body .= '               .focusEnable(true)' . PHP_EOL;
+                $body .= '               .focusShowAxisX(false)' . PHP_EOL;
+            }
+            else {
+                $body .= '               .focusEnable(false)' . PHP_EOL;
+            }
             $body .= '               .showLegend(' . ($type == 'lines'?'true':'false') . ')' . PHP_EOL;
             if ($fixed_timescale) {
                 $body .= '               .xDomain([minDomain'.$uniq.', maxDomain'.$uniq.'])' . PHP_EOL;
@@ -1285,11 +1302,8 @@ trait Output {
             if ($color == 'self') {
                 // DONE BY COLOR KEY
             }
-            elseif ($inverted) {
-                $body .= '               .color(colorbrewer.' . $color . '[' . $cpt . '].reverse())' . PHP_EOL;
-            }
             else {
-                $body .= '               .color(colorbrewer.' . $color . '[' . $cpt . '])' . PHP_EOL;
+                $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
             }
             $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
             if ($guideline) {
@@ -1558,6 +1572,7 @@ trait Output {
             $body .= '          tooltip: true,' . PHP_EOL;
             $body .= '          displayLegend: true,' . PHP_EOL;
             $body .= '          legendHorizontalPosition: "center",' . PHP_EOL;
+            $body .= '          legendCellPadding: 0,' . PHP_EOL;
 
 
 

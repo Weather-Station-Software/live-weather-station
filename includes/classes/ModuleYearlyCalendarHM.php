@@ -72,10 +72,10 @@ class CalendarHM extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_assoc_option_select('yearly-calendarhm-datas-module-1-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
         $content .= $this->get_neutral_option_select('yearly-calendarhm-datas-measurement-1-'. $this->station_guid, __('Measurement', 'live-weather-station'));
         $content .= $this->get_neutral_option_select('yearly-calendarhm-datas-set-1-'. $this->station_guid, __('Dataset', 'live-weather-station'));
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-line-mode-1-'. $this->station_guid, __('Mode', 'live-weather-station'), $this->get_line_mode_js_array(), true, 'line');
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-dot-style-1-'. $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none');
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-line-style-1-'. $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid');
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-line-size-1-'. $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular');
+        $content .= $this->get_placeholder_option_select();
+        $content .= $this->get_placeholder_option_select();
+        $content .= $this->get_placeholder_option_select();
+        $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
         return $this->get_box('lws-datasource-id', $this->datasource_title, $content);
     }
@@ -109,6 +109,7 @@ class CalendarHM extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_script() {
         $content = $this->get_standard_script();
+        //$content .= '$("#yearly-calendarhm-datas-period-type-' . $this->station_guid . '").change();';
         $content .= '$("#yearly-calendarhm-datas-module-1-' . $this->station_guid . '").change();';
         return $this->get_script_box($content);
     }
