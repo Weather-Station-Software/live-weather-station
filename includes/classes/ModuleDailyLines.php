@@ -111,15 +111,8 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     protected function get_script() {
-        $content = '';
-        $content .= '$("#daily-lines-datas-dimension-' .$this->station_guid . '").change(function() {';
-        for ($i=1; $i<=$this->series_number; $i++) {
-            $content .= '$("#daily-lines-datas-module-' . $i . '-' . $this->station_guid . ' option[value=\'0\']").attr("selected", true);';
-            $content .= '$("#daily-lines-datas-module-' . $i . '-' . $this->station_guid . '" ).change();';
-        }
-        $content .= '});';
-        $content .= $this->get_standard_script();
-        $content .= '$("#daily-lines-datas-dimension-' . $this->station_guid . '" ).change();';
+        $content = $this->get_standard_script();
+        $content .= '$("#daily-lines-datas-dimension-' . $this->station_guid . '").change();';
         return $this->get_script_box($content);
     }
 
