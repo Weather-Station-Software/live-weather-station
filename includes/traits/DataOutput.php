@@ -517,7 +517,7 @@ trait Output {
      * @param array $values The values.
      * @param string $mode The mode of graph.
      * @param string $period_duration The period duration.
-     * @return array The domain boundaries.
+     * @return string The time format (js style).
      * @since 3.4.0
      */
     private function graph_format($values, $mode, $period_duration) {
@@ -871,6 +871,7 @@ trait Output {
         switch ($id) {
             case 'night':
                 $prop['fg_color'] = '#4b4888';
+                $prop['bg_color'] = '#141442';
                 $prop['container'] = 'background-color:#101030;border-radius: 3px;border: solid 1px #2D2C3F;';
                 $prop['nv-axis-line'] = 'stroke: #2D2C40;';
                 $prop['nv-axis-domain'] = 'stroke: #4b4888;stroke-opacity: 1;';
@@ -881,6 +882,7 @@ trait Output {
                 break;
             case 'modern':
                 $prop['fg_color'] = '#666666';
+                $prop['bg_color'] = '#F4F4F4';
                 $prop['container'] = 'background-color:#EEEEEE;border-radius: 3px;border: solid 1px #CCCCCC;';
                 $prop['nv-axis-line'] = 'stroke: #DDDDDD;';
                 $prop['nv-axis-domain'] = 'stroke: #666666;stroke-opacity: 1;';
@@ -891,6 +893,7 @@ trait Output {
                 break;
             case 'light':
                 $prop['fg_color'] = '#909090';
+                $prop['bg_color'] = '#FEFEFE';
                 $prop['container'] = 'background-color:#FAFAFA;border-radius: 3px;border: solid 1px #EAEAEA;';
                 $prop['nv-axis-line'] = 'stroke: #F0F0F0;';
                 $prop['nv-axis-domain'] = 'stroke: #D0D0D0;stroke-opacity: 1;';
@@ -901,6 +904,7 @@ trait Output {
                 break;
             case 'ws':
                 $prop['fg_color'] = '#F8DC65';
+                $prop['bg_color'] = '#565656';
                 $prop['container'] = 'background-color:#484848;border-radius: 3px;border: solid 1px #F8DC65;';
                 $prop['nv-axis-line'] = 'stroke: #666666;';
                 $prop['nv-axis-domain'] = 'stroke: #F8DC65;stroke-opacity: 1;';
@@ -911,6 +915,7 @@ trait Output {
                 break;
             case 'dark':
                 $prop['fg_color'] = '#878A9A';
+                $prop['bg_color'] = '#464854';
                 $prop['container'] = 'background-color:#40424D;border-radius: 3px;border: solid 1px #303137;';
                 $prop['nv-axis-line'] = 'stroke: #515B69;';
                 $prop['nv-axis-domain'] = 'stroke: #8792A2;stroke-opacity: 1;';
@@ -921,6 +926,7 @@ trait Output {
                 break;
             case 'sand':
                 $prop['fg_color'] = '#9B7543';
+                $prop['bg_color'] = '#CEB99E';
                 $prop['container'] = 'background-color:#D7C2A7;border-radius: 5px;border: solid 1px #897458;';
                 $prop['nv-axis-line'] = 'stroke: #A09280;';
                 $prop['nv-axis-domain'] = 'stroke: #897458;stroke-opacity: 1;';
@@ -931,6 +937,7 @@ trait Output {
                 break;
             case 'organic':
                 $prop['fg_color'] = '#605D40';
+                $prop['bg_color'] = '#AAC8B0';
                 $prop['container'] = 'background-color:#BACEB7;border-radius: 3px;border: solid 1px #506040;';
                 $prop['nv-axis-line'] = 'stroke: #A3B293;';
                 $prop['nv-axis-domain'] = 'stroke: #506040;stroke-opacity: 1;';
@@ -941,6 +948,7 @@ trait Output {
                 break;
             case 'mineral':
                 $prop['fg_color'] = '#494D5F';
+                $prop['bg_color'] = '#B7C3D0';
                 $prop['container'] = 'background-color:#C0CED8;border-radius: 3px;border: solid 1px #575A6A;';
                 $prop['nv-axis-line'] = 'stroke: #7A8890;';
                 $prop['nv-axis-domain'] = 'stroke: #506040;stroke-opacity: 1;';
@@ -951,6 +959,7 @@ trait Output {
                 break;
             case 'bwi':
                 $prop['fg_color'] = '#FFFFFF';
+                $prop['bg_color'] = '#000000';
                 $prop['container'] = 'background-color:#000000;border-radius: 3px;border: solid 1px #FFFFFF;';
                 $prop['nv-axis-line'] = 'stroke: #FFFFFF;';
                 $prop['nv-axis-domain'] = 'stroke: #FFFFFF;stroke-opacity: 1;';
@@ -961,6 +970,7 @@ trait Output {
                 break;
             case 'bw':
                 $prop['fg_color'] = '#000000';
+                $prop['bg_color'] = '#FFFFFF';
                 $prop['container'] = 'background-color:#FFFFFF;border-radius: 3px;border: solid 1px #000000;';
                 $prop['nv-axis-line'] = 'stroke: #000000;';
                 $prop['nv-axis-domain'] = 'stroke: #000000;stroke-opacity: 1;';
@@ -971,6 +981,7 @@ trait Output {
                 break;
             case 'terminal':
                 $prop['fg_color'] = '#0000AA';
+                $prop['bg_color'] = '#C0C0C0';
                 $prop['container'] = 'background-color:#AAAAAA;border: solid 1px #0000AA;';
                 $prop['nv-axis-line'] = 'stroke: #AAAAAA;';
                 $prop['nv-axis-domain'] = 'stroke: #0000AA;stroke-opacity: 1;';
@@ -981,6 +992,7 @@ trait Output {
                 break;
             case 'console':
                 $prop['fg_color'] = '#0099CC';
+                $prop['bg_color'] = '#DDDDDD';
                 $prop['container'] = 'background-color:#CCCCCC;border: solid 1px #0099CC;';
                 $prop['nv-axis-line'] = 'stroke: #0099CC;';
                 $prop['nv-axis-domain'] = 'stroke: #0099CC;stroke-opacity: 1;';
@@ -991,6 +1003,7 @@ trait Output {
                 break;
             default:
                 $prop['fg_color'] = '#999999';
+                $prop['bg_color'] = '#F4F4F4';
                 $prop['container'] = '';
                 $prop['nv-axis-line'] = '';
                 $prop['nv-axis-domain'] = 'stroke-opacity: .75;';
@@ -1112,7 +1125,11 @@ trait Output {
         $data = $_attributes['data'];
         $label = $_attributes['label'];
         $interpolation = $_attributes['interpolation'];
-        $guideline = ($_attributes['guideline'] == 'interactive');
+        if (strpos($interpolation, 'olor-step-') > 0) {
+            $interpolation = str_replace('color-step-', '', $interpolation);
+        }
+        $type_guideline = $_attributes['guideline'];
+        $guideline = ($type_guideline != 'standard' && $type_guideline != 'none');
         $height = $_attributes['height'];
         $fingerprint = uniqid('', true);
         $uniq = 'graph' . substr ($fingerprint, strlen($fingerprint)-6, 80);
@@ -1477,10 +1494,12 @@ trait Output {
         }
 
         if ($type == 'calendarhm') {
-            $step = 8;
+            $step = (integer)$interpolation;
             $amplitude = ($domain['max'] - $domain['min']) / $step;
             $legend = array();
             $legendColors = array();
+            $legendColors[] = 'div#'.$calendar.' .graph-rect{background-color: ' . $prop['bg_color'] . ' !important;fill: ' . $prop['bg_color'] . ' !important;}';
+            $legendColors[] = 'div#'.$calendar.' .qi{background-color: ' . $prop['bg_color'] . ' !important;fill: ' . $prop['bg_color'] . ' !important;}';
             for ($i = 1; $i < $step; $i++) {
                 $legend[] = $domain['min'] + ($i * $amplitude);
                 $c = ColorBrewer::get($color, $step, $i-1, $inverted);
@@ -1489,7 +1508,7 @@ trait Output {
             $c = ColorBrewer::get($color, $step, $step-1, $inverted);
             $legendColors[] = 'div#'.$calendar.' .q' . $i . '{background-color: ' . $c . ' !important;fill: ' . $c . ' !important;}';
             $legend = '[' . implode(',', $legend) . ']';
-            $design = 'rdsquare';
+            $design = $timescale;
             $cRadius = 1;
             switch ($height) {
                 case '150px':
@@ -1527,10 +1546,6 @@ trait Output {
             if ($label == 'none') {
                 $inner_height = $height;
             }
-
-
-
-
             if ($label_txt != '') {
                 $label_txt = '<div style="padding-top:' . $ptop . 'px;' . str_replace('fill', 'color', $prop['text']) . '"><text style="' . $prop['nv-axislabel'] . '">' . $label_txt . '</text></div>';
             }
@@ -1544,7 +1559,8 @@ trait Output {
             if ($prop['text'] != '') {
                 $result .= '#' . $calendar . ' text.graph-label {' . $prop['text'] . '}' . PHP_EOL;
             }
-
+            $result .= '.ch-tooltip {width:auto !important;box-shadow: none !important;background: rgba(255,255,255, 0.8) !important;border: 1px solid rgba(0,0,0,0.5) !important;border-radius: 4px !important;position: absolute !important;color: rgba(0,0,0,1.0) !important;padding: 8px !important;z-index: 10000 !important;font-family: Arial !important;font-size: 13px !important;text-align: left !important;pointer-events: none !important;white-space: nowrap !important;-webkit-touch-callout: none !important;-webkit-user-select: none !important;-khtml-user-select: none !important;-moz-user-select: none !important;-ms-user-select: none !important;user-select: none !important;}' . PHP_EOL;
+            $result .= '.ch-tooltip::after{display:none !important;}' . PHP_EOL;
             $result .= implode(PHP_EOL, $legendColors) . PHP_EOL;
             $result .= '</style>' . PHP_EOL;
 
@@ -1570,35 +1586,25 @@ trait Output {
             $body .= '          cellSize: ' . $cSize . ',' . PHP_EOL;
             $body .= '          cellRadius: ' . $cRadius . ',' . PHP_EOL;
             $body .= '          tooltip: true,' . PHP_EOL;
-            $body .= '          displayLegend: true,' . PHP_EOL;
-            $body .= '          legendHorizontalPosition: "center",' . PHP_EOL;
-            $body .= '          legendCellPadding: 0,' . PHP_EOL;
-
-
-
-            $body .= '          subDomainTitleFormat: {empty: "' . sprintf(__('%s <br/>No data', 'live-weather-station'), '{date}'). '", filled: "' . sprintf(__('%s <br/>%s at %s', 'live-weather-station'), '{date}', '{name}', '{count}'). '"},' . PHP_EOL;
-            $body .= '          itemName: ["' . __('Criticality', 'live-weather-station') . '", "' . __('Criticality', 'live-weather-station') . '"],' . PHP_EOL;
-            //$body .= '          legendTitleFormat: {lower: "' . sprintf(__('%s lower than %s.', 'live-weather-station'), '{name}', '{min}'). '",inner: "' . sprintf(__('%s between %s and %s.', 'live-weather-station'), '{name}', '{down}', '{up}'). '",upper: "' . sprintf(__('%s greater than %s.', 'live-weather-station'), '{name}', '{max}'). '"}' . PHP_EOL;
-
+            if ($guideline) {
+                $body .= '          displayLegend: true,' . PHP_EOL;
+                $body .= '          legendHorizontalPosition: "' . $type_guideline . '",' . PHP_EOL;
+                $body .= '          legendCellPadding: 0,' . PHP_EOL;
+            }
+            else {
+                $body .= '          displayLegend: false,' . PHP_EOL;
+            }
+            $body .= '          subDomainTitleFormat: {empty: "' . sprintf(__('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>'). '", filled: "' . sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s %s</strong>', '{date}', $values['extras'][0]['measurement_type'] . ' - ' . $values['extras'][0]['set_name'], '{count}', $values['legend']['unit']['unit']). '"},' . PHP_EOL;
+            $body .= '          legendTitleFormat: {lower: "",inner: "",upper: ""}' . PHP_EOL;
             $body .= '      });' . PHP_EOL;
             // END MAIN BODY
         }
-
-        // circle or square
-        //display legend
-        // thresholds
-
-
-
-
-
-
 
 
         // FINAL RENDER
 
         if ($type == 'calendarhm') {
-            $result .= '<div class="module-' . $mode . '-' . $type . '" ><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:14px 14px 14px 14px;height: ' . $height . ';overflow: hidden;"><div id="' . $calendar . '" style="display: inline-block;height: ' . $inner_height . ';"></div>' . $label_txt . '</div></div>' . PHP_EOL;
+            $result .= '<div class="module-' . $mode . '-' . $type . '" ><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:14px 14px 14px 14px;height: ' . $height . ';/*overflow: hidden;*/"><div id="' . $calendar . '" style="display: inline-block;height: ' . $inner_height . ';"></div>' . $label_txt . '</div></div>' . PHP_EOL;
         }
         else {
             $result .= '<div class="module-' . $mode . '-' . $type . '" ><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';"><svg id="' . $svg . '" style="overflow:hidden;"></svg></div></div>' . PHP_EOL;

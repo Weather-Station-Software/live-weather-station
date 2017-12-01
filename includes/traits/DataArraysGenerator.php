@@ -1636,6 +1636,21 @@ trait Generator {
     }
 
     /**
+     * Get guideline array.
+     *
+     * @return array An array containing the guideline ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_legend_position_js_array() {
+        $result = array();
+        $result[] = array('none',  __('None', 'live-weather-station'));
+        $result[] = array('left',  __('Left', 'live-weather-station'));
+        $result[] = array('center',  __('Center', 'live-weather-station'));
+        $result[] = array('right',  __('Right', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
      * Get label array.
      *
      * @return array An array containing the label types ready to convert to a JS array.
@@ -1684,6 +1699,20 @@ trait Generator {
         $result[] = array('station',  __('Station', 'live-weather-station'));
         $result[] = array('located',  __('Location', 'live-weather-station'));
         $result[] = array('coord',  __('Coordinates', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get time scale array.
+     *
+     * @return array An array containing the time scale options ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_day_format_js_array() {
+        $result = array();
+        $result[] = array('square',  __('Square', 'live-weather-station'));
+        $result[] = array('rdsquare',  __('Rounded square', 'live-weather-station'));
+        $result[] = array('round',  __('Circle', 'live-weather-station'));
         return $result;
     }
 
@@ -1858,6 +1887,20 @@ trait Generator {
         $result[] = array('cardinal',  __('Cardinal', 'live-weather-station'));
         $result[] = array('cardinal-open',  __('Cardinal - Open', 'live-weather-station'));
         $result[] = array('cardinal-closed',  __('Cardinal - Closed', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get color thresholds array.
+     *
+     * @return array An array containing the interpotaion methods ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_color_threshold_js_array() {
+        $result = array();
+        for ($i=3; $i<9; $i++) {
+            $result[] = array('color-step-' . $i,  sprintf(_n('%s step', '%s steps', $i, 'live-weather-station'), $i));
+        }
         return $result;
     }
 
