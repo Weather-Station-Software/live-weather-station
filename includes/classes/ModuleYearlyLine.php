@@ -108,7 +108,6 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_script() {
         $content = $this->get_standard_script();
-        //$content .= '$("#yearly-line-datas-period-type-' . $this->station_guid . '").change();';
         $content .= '$("#yearly-line-datas-module-1-' . $this->station_guid . '").change();';
         return $this->get_script_box($content);
     }
