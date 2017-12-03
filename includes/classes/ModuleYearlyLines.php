@@ -22,7 +22,7 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
         $this->module_mode = 'yearly';
         $this->module_type = 'lines';
         $this->module_name = ucfirst(__('line series', 'live-weather-station'));
-        $this->module_hint = __('Display daily data as multiple lines chart. Allows to view, side by side on the same graph, several dataset from several types of measurement having the same physical dimension.', 'live-weather-station');
+        $this->module_hint = __('Display historical data as multiple lines chart. Allows to view, side by side on the same graph, several dataset from several types of measurement having the same physical dimension.', 'live-weather-station');
         $this->module_icon = 'ch fa-lg fa-fw ch-line-chart-7';
         $this->layout = '12-3-4';
         $this->series_number = 8;

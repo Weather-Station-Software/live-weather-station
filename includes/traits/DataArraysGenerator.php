@@ -1534,7 +1534,7 @@ trait Generator {
             if ($i != 0) {
                 $s = ' - ' . $i;
             }
-            $period[] = array( 'season-'.$i, __('Current meteorological season', 'live-weather-station') . $s);
+            $period[] = array( 'mseason-'.$i, __('Current meteorological season', 'live-weather-station') . $s);
         }
         $result[] = array('sliding-mseason',  $period);
 
@@ -1545,7 +1545,7 @@ trait Generator {
             if ($i != 0) {
                 $s = ' - ' . $i;
             }
-            $period[] = array( 'season-'.$i, __('Current astronomical season', 'live-weather-station') . $s);
+            $period[] = array( 'aseason-'.$i, __('Current astronomical season', 'live-weather-station') . $s);
         }
         $result[] = array('sliding-aseason',  $period);
 

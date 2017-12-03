@@ -885,8 +885,8 @@ trait Query {
      */
     public function get_oldest_data($station) {
         $data = $this->_get_oldest_data($station);
-        if (count($data) > 1) {
-            return $data[1]['timestamp'];
+        if (count($data) > 0) {
+            return $data[0]['timestamp'];
         }
         else {
             return false;

@@ -158,6 +158,10 @@ trait Output {
             if ($self_color) {
                 $prop = $this->graph_template($attributes['template']);
             }
+            $timescale = $attributes['timescale'];
+            if ($timescale == 'focus') {
+                $timescale = 'adaptative';
+            }
             $station_id = '';
             $ymin = 0;
             $ymax = 0;
@@ -291,18 +295,26 @@ trait Output {
                             $result['xdomain']['01'] = self::get_js_date_from_mysql_utc($year.'-' . $month .'-23', $station['loc_timezone']);
                             if ($month == 12) {
                                 $smonth = 0 ;
+                                $syear = $year + 1;
                             }
                             else {
                                 $smonth = $month ;
+                                $syear = $year;
                             }
-                            $result['xdomain']['02'] = self::get_js_date_from_mysql_utc($year.'-' . (string)($smonth+1) .'-15', $station['loc_timezone']);
-                            $result['xdomain']['03'] = self::get_js_date_from_mysql_utc($year.'-' . (string)($smonth+2) .'-08', $station['loc_timezone']);
+                            $result['xdomain']['02'] = self::get_js_date_from_mysql_utc($syear.'-' . (string)($smonth+1) .'-15', $station['loc_timezone']);
+                            $result['xdomain']['03'] = self::get_js_date_from_mysql_utc($syear.'-' . (string)($smonth+2) .'-08', $station['loc_timezone']);
                         }
                         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
                     }
 
                     $i = 1;
                     foreach ($args as $arg) {
+                        $subymin = 0;
+                        $subymax = 0;
+                        $subydmin = 0;
+                        $subydmax = 0;
+                        $subyamin = 0;
+                        $subyamax = 0;
                         if (strpos($arg['module_id'], ':') == 2) {
                             $module_type = 'NAMain';
                             $set = '';
@@ -322,7 +334,38 @@ trait Output {
                             try {
                                 $query = (array)$wpdb->get_results($sql);
                                 $query_a = (array)$query;
+
+                                if ($type == 'bcline' && $i == 1 && $mode == 'yearly' && $timescale != 'adaptative') {
+                                    if (count($query_a) > 0) {
+                                        $module_type = (array)($query_a[0]);
+                                        $module_type = $module_type['module_type'];
+                                    }
+                                    $t = array();
+                                    foreach ($query_a as $val) {
+                                        $a = (array)$val;
+                                        $t[$a['timestamp']] = $a;
+                                    }
+                                    $__start = (integer)self::get_js_date_from_mysql_utc($min, $station['loc_timezone'], '');
+                                    $__end = (integer)self::get_js_date_from_mysql_utc($max, $station['loc_timezone'], '');
+                                    $d = $__start;
+                                    while ($d <= $__end) {
+                                        $__date = date('Y-m-d', $d);
+                                        if (!array_key_exists($__date, $t)) {
+                                            $a = array();
+                                            $a['timestamp'] = $__date;
+                                            $a['module_type'] = $module_type;
+                                            $a['measure_value'] = '0';
+                                            $t[$a['timestamp']] = $a;
+                                        }
+                                        $d += 86400;
+                                    }
+                                    $query_a = array();
+                                    foreach ($t as $key=>$val) {
+                                        $query_a[] = $val;
+                                    }
+                                }
                                 $set = array();
+                                $substart = true;
                                 foreach ($query_a as $val) {
                                     $a = (array)$val;
                                     $module_type = $a['module_type'];
@@ -356,8 +399,24 @@ trait Output {
                                     if ($a['measure_value'] < $ymin) {
                                         $ymin = $a['measure_value'];
                                     }
+                                    if ($substart) {
+                                        $subymin = $a['measure_value'];
+                                        $subymax = $a['measure_value'];
+                                        $subydmin = $this->get_measurement_min($arg['measurement'], $module_type);
+                                        $subydmax = $this->get_measurement_max($arg['measurement'], $module_type);
+                                        $subyamax = $this->get_measurement_alarm_max($arg['measurement'], $module_type);
+                                        $subyamin = $this->get_measurement_alarm_min($arg['measurement'], $module_type);
+                                        $substart = false;
+                                    }
+                                    if ($a['measure_value'] > $subymax) {
+                                        $subymax = $a['measure_value'];
+                                    }
+                                    if ($a['measure_value'] < $subymin) {
+                                        $subymin = $a['measure_value'];
+                                    }
                                     $set[] = $a;
                                 }
+
                                 if (count($query_a) > 0) {
                                     $a = (array)$query_a[0];
                                     if ($this->get_measurement_max($arg['measurement'], $module_type) > $ydmax) {
@@ -372,12 +431,24 @@ trait Output {
                                     if ($this->get_measurement_alarm_min($arg['measurement'], $module_type) < $yamin) {
                                         $yamin = $this->get_measurement_alarm_min($arg['measurement'], $a['module_type']);
                                     }
+                                    if ($this->get_measurement_max($arg['measurement'], $module_type) > $subydmax) {
+                                        $subydmax = $this->get_measurement_max($arg['measurement'], $module_type);
+                                    }
+                                    if ($this->get_measurement_min($arg['measurement'], $module_type) < $subydmin) {
+                                        $subydmin = $this->get_measurement_min($arg['measurement'], $module_type);
+                                    }
+                                    if ($this->get_measurement_alarm_max($arg['measurement'], $module_type) > $subyamax) {
+                                        $subyamax = $this->get_measurement_alarm_max($arg['measurement'], $a['module_type']);
+                                    }
+                                    if ($this->get_measurement_alarm_min($arg['measurement'], $module_type) < $subyamin) {
+                                        $subyamin = $this->get_measurement_alarm_min($arg['measurement'], $a['module_type']);
+                                    }
                                 }
                             } catch (\Exception $ex) {
                                 $set = array();
                             }
                             $info = array();
-                            if ($type == 'bcline' && $i == 2) {
+                            if ($type == 'bcline' && $i == 1) {
                                 $info['bar'] = true;
                             }
                             if ($self_color) {
@@ -443,6 +514,12 @@ trait Output {
                                 }
                                 $extra['set_name'] = ucfirst($this->get_operation_name($arg['set'], true));
                             }
+                            $extra['ydomain']['min'] = $subymin;
+                            $extra['ydomain']['max'] = $subymax;
+                            $extra['ydomain']['dmin'] = $subydmin;
+                            $extra['ydomain']['dmax'] = $subydmax;
+                            $extra['ydomain']['amin'] = $subyamin;
+                            $extra['ydomain']['amax'] = $subyamax;
                             $extra['period_name'] = $period_name;
                             $extra['period_range'] = $period_range;
                             $extra['raw_measurement_type'] = $arg['measurement'];
@@ -455,6 +532,7 @@ trait Output {
                             $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
                             $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
                             $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
+                            $extra['unit'] = $this->output_unit($arg['measurement'], $module_type);
                             $result['extras'][] = $extra;
                             $result['legend']['unit'] = $this->output_unit($arg['measurement'], $module_type);
                             if ($arg['line_mode'] == 'area' || $arg['line_mode'] == 'arealine') {
@@ -551,6 +629,7 @@ trait Output {
             case 'calendarhm':
             case 'line':
             case 'lines':
+            case 'bcline':
                 $name = $values['extras'][0]['measurement_type'];
                 if ($type == 'lines') {
                     $name = $this->get_dimension_name($values['legend']['unit']['dimension'], false, true);
@@ -1080,6 +1159,12 @@ trait Output {
         else {
             $value_params['periodvalue'] = 'none';
         }
+        if (array_key_exists('timescale', $attributes)) {
+            $value_params['timescale'] = $attributes['timescale'];
+        }
+        else {
+            $value_params['timescale'] = 'none';
+        }
         $value_params['periodduration'] = 'none';
         if (strpos($value_params['periodtype'], '-month') > 0) {
             $value_params['periodduration'] = 'month';
@@ -1385,107 +1470,101 @@ trait Output {
                 $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:first-of-type text {text-anchor: start !important;}' . PHP_EOL;
                 $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:last-of-type text {text-anchor: end !important;}' . PHP_EOL;
             }
-            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dashed-line {stroke-dasharray:10,10;}' . PHP_EOL;
-            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dotted-line {stroke-dasharray:2,2;}' . PHP_EOL;
-            for ($i = 1; $i <= count($items); $i++) {
-                if ($items[$i]['dot_style'] == 'small-dot') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
-                }
-                if ($items[$i]['dot_style'] == 'large-dot') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:3;}' . PHP_EOL;
-                }
-                if ($items[$i]['dot_style'] == 'small-circle') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:12;}' . PHP_EOL;
-                }
-                if ($items[$i]['dot_style'] == 'large-circle') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
-                }
-                if ($items[$i]['line_mode'] == 'transparent' || $items[$i]['line_mode'] == 'area') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-line {stroke-opacity:0;}' . PHP_EOL;
-                }
+            $result .= '#' . $svg . ' .nvd3 .nv-y2 text {text-anchor: end !important;}' . PHP_EOL;
+            if ($items[2]['line_style'] == 'dotted') {
+                $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-line {stroke-dasharray:2,2;}' . PHP_EOL;
+            }
+            if ($items[2]['line_style'] == 'dashed') {
+                $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-line {stroke-dasharray:10,10;}' . PHP_EOL;
+            }
+            if ($items[2]['dot_style'] == 'small-dot') {
+                $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
+            }
+            if ($items[2]['dot_style'] == 'large-dot') {
+                $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:3;}' . PHP_EOL;
+            }
+            if ($items[2]['dot_style'] == 'small-circle') {
+                $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:12;}' . PHP_EOL;
+            }
+            if ($items[2]['dot_style'] == 'large-circle') {
+                $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
+            }
+            if ($items[2]['line_mode'] == 'transparent' || $items[2]['line_mode'] == 'area') {
+                $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-line {stroke-opacity:0;}' . PHP_EOL;
             }
             $result .= '</style>' . PHP_EOL;
 
             // BEGIN MAIN BODY
             $body .= '      var shift' . $uniq . ' = new Date();' . PHP_EOL;
             $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
-            if ($fixed_timescale && $mode == 'daily') {
+            if ($fixed_timescale) {
                 $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
                 $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
-            if ($fixed_timescale && $mode == 'yearly') {
-                $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
-                $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
-            }
-            if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
-                $body .= '    var h00Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
-                $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['04'] . ');' . PHP_EOL;
-                $body .= '    var h08Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['08'] . ');' . PHP_EOL;
-                $body .= '    var h12Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['12'] . ');' . PHP_EOL;
-                $body .= '    var h16Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['16'] . ');' . PHP_EOL;
-                $body .= '    var h20Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['20'] . ');' . PHP_EOL;
-                $body .= '    var h24Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
-            }
-            if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
+            if ($fixed_timescale && $timescale != 'none') {
                 $body .= '    var h00Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
                 $body .= '    var h01Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['01'] . ');' . PHP_EOL;
                 $body .= '    var h02Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['02'] . ');' . PHP_EOL;
                 $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
+            if ($color != 'self') {
+                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+            }
+            if ($inverted) {
+                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
+            }
             $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '      nv.addGraph(function() {' . PHP_EOL;
             $body .= '        chart'.$uniq.' = nv.models.linePlusBarChart()' . PHP_EOL;
-            ///$body .= '               .x(function(d,i) {return i})' . PHP_EOL;
+            $body .= '               .height(' . (integer)($height-14) . ')' . PHP_EOL;
             $body .= '               .x(function(d,i) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
             $body .= '               .y(function(d,i) {return d[1]})' . PHP_EOL;
-            $body .= '               .focusEnable(false)' . PHP_EOL;
+            $body .= '               .legendRightAxisHint(\'\')' . PHP_EOL;
+            $body .= '               .legendLeftAxisHint(\'\')' . PHP_EOL;
+            if ($focus) {
+                $body .= '               .focusEnable(true)' . PHP_EOL;
+                $body .= '               .focusShowAxisX(false)' . PHP_EOL;
+            }
+            else {
+                $body .= '               .focusEnable(false)' . PHP_EOL;
+            }
             $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
             if ($fixed_timescale) {
                 $body .= '               .xDomain([minDomain'.$uniq.', maxDomain'.$uniq.'])' . PHP_EOL;
             }
-            if ($fixed_valuescale) {
-                //$body .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
-            }
-            $body .= '               .color(colorbrewer.' . $color . '[' . $cpt . '])' . PHP_EOL;
-            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'");' . PHP_EOL;
-            if ($guideline) {
-                //$body .= '               .useInteractiveGuideline(true);' . PHP_EOL;
+            if ($color == 'self') {
+                // DONE BY COLOR KEY
             }
             else {
-                //$body .= '               .useInteractiveGuideline(false);' . PHP_EOL;
+                $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
             }
+            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'");' . PHP_EOL;
             $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
-            if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
-                $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h04Tick'.$uniq.', h08Tick'.$uniq.', h12Tick'.$uniq.', h16Tick'.$uniq.', h20Tick'.$uniq.', h24Tick'.$uniq.']);' . PHP_EOL;
-            }
-            if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
+            if ($fixed_timescale && $timescale != 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h01Tick'.$uniq.', h02Tick'.$uniq.', h03Tick'.$uniq.', h04Tick'.$uniq.']);' . PHP_EOL;
             }
             if ($timescale == 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
             }
-            if ($mode == 'daily') {
-                //$body .= '      chart' . $uniq . '.interactiveLayer.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d %H:%M")(new Date(d));});' . PHP_EOL;
-                $body .= '      chart' . $uniq . '.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d %H:%M")(new Date(d));});' . PHP_EOL;
-            }
-            if ($mode == 'yearly') {
-                //$body .= '      chart' . $uniq . '.interactiveLayer.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
-                $body .= '      chart' . $uniq . '.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
-            }
-            /*if ($_attributes['valuescale'] == 'adaptative') {
-                $body .= '      chart'.$uniq.'.yAxis.showMaxMin(true)';
-            }
-            else {
-                $body .= '      chart'.$uniq.'.yAxis.showMaxMin(false)';
-            }*/
-            //$body .= '.tickFormat(function(d) { return d + " ' . $values['legend']['unit']['unit'] . '"; });' . PHP_EOL;
-            $body .= '      chart'.$uniq.'.y1Axis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
-
-            //$body .= '      chart'.$uniq.'.y1Axis.tickFormat(d3.format(\',f\'));';
-            //$body .= '      chart'.$uniq.'.y2Axis.tickFormat(d3.format(\',f\'));';
 
 
+            //$body .= '      chart' . $uniq . '.interactiveLayer.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
+
+            //$body .= '      chart' . $uniq . '.tooltip.contentGenerator(function(d) {var s=\'<table><thead><tr><td colspan="3"><strong class="x-value">PL2017-12-02</strong></td></tr></thead><tbody><tr><td class="legend-color-guide"><div style="background-color: rgb(222, 235, 247);"></div></td><td class="key">Atmospheric pressure - Average values (right axis)</td><td class="value">1023.8 hPa</td></tr></tbody></table>\';return s;});' . PHP_EOL;
+
+            $body .= '      chart' . $uniq . '.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
+
+
+
+            if ($focus) {
+                $body .= '      chart' . $uniq . '.focusMargin({"top":20, "bottom":-10});' . PHP_EOL;
+            }
+            $body .= '      chart'.$uniq.'.y1Axis.tickFormat(function(d) { return d + " ' . $values['extras'][0]['unit']['unit'] . '"; });' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.y1Axis.showMaxMin(false);';
+            $body .= '      chart'.$uniq.'.y2Axis.tickFormat(function(d) { return d + " ' . $values['extras'][1]['unit']['unit'] . '"; });' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.y2Axis.tickPadding(-6);' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.y2Axis.showMaxMin(false);';
             $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
             $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
             $body .= '      return chart'.$uniq.';' . PHP_EOL;
@@ -1659,6 +1738,7 @@ trait Output {
             }
             $result .= '});';
         }
+
         $result .= '  });' . PHP_EOL;
         $result .= '</script>' . PHP_EOL;
 

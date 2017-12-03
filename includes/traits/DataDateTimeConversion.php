@@ -247,7 +247,10 @@ trait Conversion {
      */
     public static function get_shifted_year($value, $tz) {
         $current = new \DateTime('now', new \DateTimeZone($tz));
-        $year = $current->format('Y') + $value;
+        if ($value == '-0') {
+            $value = 0;
+        }
+        $year = (integer)$current->format('Y') + $value;
         $start = new \DateTime('now', new \DateTimeZone($tz));
         $start->setDate($year, 1, 1);
         $end = new \DateTime('now', new \DateTimeZone($tz));
