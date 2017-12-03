@@ -152,3 +152,21 @@ function array_compare_1($a, $b){
     $b = (array)$b;
     return strcasecmp($a[1], $b[1]);
 }
+
+/**
+ * Multi dimensional version of array_unique.
+ *
+ * @param array $array The array to make unique.
+ * @param string|integer $key The key on which comparing.
+ * @return array The uniquified array.
+ * @since 3.4.0
+ */
+function array_super_unique($array, $key){
+    $temp_array = array();
+    foreach ($array as &$v) {
+        if (!isset($temp_array[$v[$key]]))
+            $temp_array[$v[$key]] =& $v;
+    }
+    $array = array_values($temp_array);
+    return $array;
+}

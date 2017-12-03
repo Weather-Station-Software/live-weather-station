@@ -4,7 +4,6 @@ namespace WeatherStation\Engine\Module;
 
 use WeatherStation\Data\Output;
 use WeatherStation\Data\Arrays\Generator;
-use WeatherStation\System\Logs\Logger;
 
 /**
  * Abstract class to maintains each module.
@@ -266,15 +265,23 @@ abstract class Maintainer {
      * @param string $title The control title.
      * @param string $options Optional. The options of the control.
      * @param boolean $label Optional. Display the th of the table.
+     * @param boolean $hidden Optional. Hide the select option.
+     * @param boolean $displayed Optional. Display the select option.
      * @return string The control ready to print.
      * @since 3.4.0
      */
-    private function get_option_select($id, $title, $options='', $label=true) {
+    private function get_option_select($id, $title, $options='', $label=true, $hidden=false, $displayed=true) {
         $visibility = '';
         if ($id == '') {
             $visibility = ' class="lws-placeholder" style="visibility:hidden;"';
             $id = 'o' . md5(random_bytes(20));
             $title = '';
+        }
+        if ($hidden) {
+            $visibility = ' style="visibility:hidden;"';
+        }
+        if (!$displayed) {
+            $visibility = ' style="display:none;"';
         }
         $result = '';
         $result .= '<tr' . $visibility .'>';
@@ -413,10 +420,12 @@ abstract class Maintainer {
      * @param array $items The array of items.
      * @param boolean $label Optional. Display the th of the table.
      * @param mixed $selected Optional. Set the selected item.
+     * @param boolean $hidden Optional. Hide the select option.
+     * @param boolean $displayed Optional. Display the select option.
      * @return string The control ready to print.
      * @since 3.4.0
      */
-    protected function get_key_value_option_select($id, $title, $items, $label=true, $selected=null) {
+    protected function get_key_value_option_select($id, $title, $items, $label=true, $selected=null, $hidden=false, $displayed=true) {
         $result = '';
         foreach ($items as $item) {
             $sel = '';
@@ -427,7 +436,7 @@ abstract class Maintainer {
             }
             $result .= '<option value="' . $item[0] . '"' . $sel . '>' . $item[1] . '</option>;';
         }
-        return $this->get_option_select($id, $title, $result, $label);
+        return $this->get_option_select($id, $title, $result, $label, $hidden, $displayed);
     }
 
     /**
@@ -781,12 +790,7 @@ abstract class Maintainer {
                 $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '" ).change();});';
                 $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").change(function() {';
             }
-            if ($i<$this->series_number) {
-                $content .= '$("#' . $name . '-datas-module-' . (string)($i+1) . '-' . $this->station_guid . '").change();});';
-            }
-            else {
-                $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '" ).change();});';
-            }
+            $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '" ).change();});';
         }
 
         $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '").change(function() {';
@@ -863,17 +867,18 @@ abstract class Maintainer {
         $content .= '}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
         $content .= '$("#' . $name . '-datas-shortcode-' . $this->station_guid . '").html(shortcode);});';
 
+        // INIT
         if ($this->module_mode == 'yearly') {
-            //$content .= '$("#' . $name . '-datas-period-type-' . $this->station_guid . '").change(function() {';
-            $content .= 'var tjs_array_' . $js_name . '_p_' . $this->station_guid . ' = null;';
+            $content .= 'var js_array_' . $js_name . '_p_' . $this->station_guid . ' = null;';
             $content .= '$(js_array_' . $js_name . '_period_' . $this->station_guid . ').each(function (i) {';
-            $content .= 'if (js_array_' . $js_name . '_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-datas-period-type-' . $this->station_guid . '").val()) {tjs_array_' . $js_name . '_p_' . $this->station_guid . '=js_array_' . $js_name . '_period_' . $this->station_guid . '[i][1]}  ;});';
+            $content .= 'if (js_array_' . $js_name . '_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-datas-period-type-' . $this->station_guid . '").val()) {js_array_' . $js_name . '_p_' . $this->station_guid . '=js_array_' . $js_name . '_period_' . $this->station_guid . '[i][1]}  ;});';
             $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").html("");';
-            $content .= '$(tjs_array_' . $js_name . '_p_' . $this->station_guid . ').each(function (i) {';
-            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").append("<option value="+tjs_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]+">"+tjs_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]+"</option>");});';
-            //$content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '" ).change();});';
-            //$content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").change(function() {';
-            //$content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '" ).change();});';
+            $content .= '$(js_array_' . $js_name . '_p_' . $this->station_guid . ').each(function (i) {';
+            $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]+"</option>");});';
+        }
+
+        for ($i=1; $i<=$this->series_number; $i++) {
+            $content .= '$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").change();';
         }
 
         return $content;

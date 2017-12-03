@@ -4,6 +4,7 @@
 * New: Weather Station now compiles data as daily and historical values.
 * New: new single-line and multi-lines chart for daily graph with tons of options and settings.
 * New: new single-line and multi-lines chart for historical graph (month, meteorological season and year) with tons of options and settings.
+* New: new calendar heatmap for historical graph (month, meteorological season and year) with tons of options and settings.
 * New: data for graphs can be cached (settings in *system* tab).
 * New: the scheduled tasks tab allows to proceed on execution and reschedule of tasks belonging to the new history pool.
 * New: the analytics graphs for task and cache now take care of the new history pools and caches.
