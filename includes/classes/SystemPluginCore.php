@@ -57,7 +57,7 @@ class Core {
 	 * @since 3.0.0
 	 */
 	private function verify_requirements() {
-	    if (LWS_PHPVERSION_OK && LWS_JSON_LOADED && LWS_CURL_LOADED && LWS_I18N_LOADED) {
+	    if (LWS_PHPVERSION_OK && LWS_ICONV_LOADED && LWS_JSON_LOADED && LWS_CURL_LOADED && LWS_I18N_LOADED) {
             if (!defined('REQUIREMENTS_OK')) {
                 define('REQUIREMENTS_OK', true);
             }
@@ -72,6 +72,9 @@ class Core {
         }
         if (!LWS_JSON_LOADED) {
             Logger::emergency('Core', null, null, null, null, null, 666, 'JSON support is not installed on your server. ' . LWS_PLUGIN_NAME . ' can not run!');
+        }
+        if (!LWS_ICONV_LOADED) {
+            Logger::emergency('Core', null, null, null, null, null, 666, 'ICONV support is not installed on your server. ' . LWS_PLUGIN_NAME . ' can not run!');
         }
         if (!LWS_CURL_LOADED) {
             Logger::emergency('Core', null, null, null, null, null, 666, 'cURL support is not installed on your server. ' . LWS_PLUGIN_NAME . ' can not run!');

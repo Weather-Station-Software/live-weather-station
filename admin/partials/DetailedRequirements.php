@@ -54,6 +54,15 @@ use WeatherStation\System\Help\InlineHelp;
                             <td><?php echo __('JSON support is not installed.', 'live-weather-station'); ?></td>
                         <?php } ?>
                     </tr>
+                    <tr>
+                        <?php if (LWS_ICONV_LOADED) { ?>
+                            <td width="10%"/><td width="20px"><i style="color:limegreen" class="fa fa-lg fa-check-circle"></i></td>
+                            <td><?php echo __('ICONV support is installed.', 'live-weather-station'); ?></td>
+                        <?php } else { ?>
+                            <td width="10%"/><td width="20px"><i style="color:red" class="fa fa-lg fa-minus-circle"></i></td>
+                            <td><?php echo __('ICONV support is not installed.', 'live-weather-station'); ?></td>
+                        <?php } ?>
+                    </tr>
                 </tbody>
             </table>
         </div>
