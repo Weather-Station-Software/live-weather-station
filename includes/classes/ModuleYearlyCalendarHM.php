@@ -89,7 +89,7 @@ class CalendarHM extends \WeatherStation\Engine\Module\Maintainer {
     protected function get_parameters() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
         $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array(false, true, true, false));
+        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array(true, true, true, false));
         $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-interpolation-'. $this->station_guid, __('Color thresholds', 'live-weather-station'), $this->get_color_threshold_js_array(), true, 'color-step-5');
         $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-timescale-'. $this->station_guid, __('Day format', 'live-weather-station'), $this->get_day_format_js_array(), true, 'rdsquare');
         $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_multi_2_label_js_array(), true, 'simple');

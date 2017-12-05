@@ -457,6 +457,26 @@ class ColorsManipulation {
         return array( "light" => $lightColor, "dark" => $darkColor );
     }
 
+    /**
+     * Creates an array with two shades that can be used to make a gradient
+     * @param int $step Number of steps
+     * @param int $amount Optional percentage amount you want your contrast color
+     * @return array An array with a 'light' and 'dark' index
+     */
+    public function makeSteppedGradient( $step, $amount = self::DEFAULT_ADJUST ) {
+        $result = array();
+        $amount = (integer)(round($amount/($step-1), 0));
+        if ($this->isDark()) {
+            $this->_hsl = $this->_lighten($this->_hsl, 50);
+        }
+        $result[0] = self::hslToHex($this->_hsl);
+        for ($i=1; $i<=$step; $i++) {
+            $result[$i] = $this->darken($amount*$i);
+        }
+        // Return our stepped gradient array
+        return $result;
+    }
+
 
     /**
      * Returns whether or not given color is considered "light"

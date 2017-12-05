@@ -564,12 +564,7 @@ trait Generator {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_hour_aggregated', false, $ref['module_type']);
                 }
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_day_aggregated', false, $ref['module_type']);
-                if ($raw) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_yesterday_aggregated', false, $ref['module_type']);
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_month_aggregated', false, $ref['module_type']);
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_season_aggregated', false, $ref['module_type']);
-                }
-                if ($real) {
+                if ($raw || $real) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_yesterday_aggregated', false, $ref['module_type']);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_month_aggregated', false, $ref['module_type']);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_year_aggregated', false, $ref['module_type']);
@@ -1931,6 +1926,9 @@ trait Generator {
         $sp =  __('Spectral', 'live-weather-station');
         if ($self) {
             $result[] = array('self', ' -' . __('Template color', 'live-weather-station') . ' -');
+            if (!$qualitative) {
+                $result[] = array('i_self', ' -' . __('Template color', 'live-weather-station') . ' (' . $r . ') -');
+            }
         }
         if ($sequential) {
             $result[] = array('Blues', $bu . ' (' . $dsq . ', ' . $tsh . ')');

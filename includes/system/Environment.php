@@ -304,6 +304,15 @@ class Manager {
     }
 
     /**
+     * Verification of mandatory iconv extension.
+     *
+     * @since 3.4.0
+     */
+    public static function is_iconv_loaded() {
+        return (function_exists('iconv'));
+    }
+
+    /**
      * Verification of PHP version.
      *
      * @since 3.0.0

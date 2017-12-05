@@ -451,7 +451,7 @@ trait Output {
                             if ($type == 'bcline' && $i == 1) {
                                 $info['bar'] = true;
                             }
-                            if ($self_color) {
+                            if ($self_color && $type != 'lines') {
                                 $info['color'] = $prop['fg_color'];
                             }
                             if (array_key_exists($arg['module_id'], $station['modules_names'])) {
@@ -521,6 +521,7 @@ trait Output {
                             $extra['ydomain']['amin'] = $subyamin;
                             $extra['ydomain']['amax'] = $subyamax;
                             $extra['period_name'] = $period_name;
+                            $extra['info_key'] = $info['key'];
                             $extra['period_range'] = $period_range;
                             $extra['raw_measurement_type'] = $arg['measurement'];
                             $extra['measurement_type'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
@@ -539,6 +540,7 @@ trait Output {
                                 $info['area'] = true;
                             }
                             $classes = array();
+                            $classes[] = 'lws-serie-'.$i;
                             if ($arg['line_style'] == 'dashed') {
                                 $classes[] = 'lws-dashed-line';
                             }
@@ -555,7 +557,7 @@ trait Output {
                                 $info['strokeWidth'] = 3;
                             }
                             if (count($classes) > 0) {
-                                $info['classed'] = implode(',', $classes);
+                                $info['classed'] = implode(' ', $classes);
                             }
                             if ($json) {
                                 $result['values'][] = $this->jsonify($info, $set, $raw_json);
@@ -629,7 +631,6 @@ trait Output {
             case 'calendarhm':
             case 'line':
             case 'lines':
-            case 'bcline':
                 $name = $values['extras'][0]['measurement_type'];
                 if ($type == 'lines') {
                     $name = $this->get_dimension_name($values['legend']['unit']['dimension'], false, true);
@@ -665,59 +666,63 @@ trait Output {
                         $name = __('Rainfall', 'live-weather-station');
                     }
                 }
-                if ($mode == 'daily') {
-                    switch ($label) {
-                        case 'simple':
-                            $result = ucwords($name);
-                            break;
-                        case 'generic':
-                            $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name_generic']);
-                            break;
-                        case 'named':
-                            $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name']);
-                            break;
-                        case 'station':
-                            $result = ucwords($values['extras'][0]['station_name']) . $sep . ucwords($name);
-                            break;
-                        case 'located':
-                            $result = ucwords($values['extras'][0]['station_loc']) . $sep . ucwords($name);
-                            break;
-                        case 'coord':
-                            $result = ucwords($values['extras'][0]['station_coord']) . $sep . $result = ucwords($values['extras'][0]['station_alt']) . $sep . ucwords($name);
-                            break;
-                        case 'full':
-                            $result = ucwords($values['extras'][0]['station_name'])  . $sep . ucwords($values['extras'][0]['module_name']) . $sep . ucwords($name);
-                            break;
-                    }
-                }
-                if ($mode == 'yearly') {
-                    switch ($label) {
-                        case 'simple':
-                            $result = ucwords($name);
-                            break;
-                        case 'generic':
-                            $result = ucwords($name) . $sep . ucwords($values['extras'][0]['period_name']);
-                            break;
-                        case 'named':
-                            $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name']);
-                            break;
-                        case 'station':
-                            $result = ucwords($values['extras'][0]['station_name']) . $sep . ucwords($name);
-                            break;
-                        case 'located':
-                            $result = ucwords($values['extras'][0]['station_loc']) . ', ' . ucwords($values['extras'][0]['period_name']) . $sep . ucwords($name);
-                            break;
-                        case 'coord':
-                            $result = ucwords($values['extras'][0]['station_coord']) . $sep . $result = ucwords($values['extras'][0]['station_alt']) . $sep . ucwords($name);
-                            break;
-                        case 'full':
-                            $result = ucwords($values['extras'][0]['station_name'])  . $sep . ucwords($values['extras'][0]['module_name']) . $sep . ucwords($name);
-                            break;
-                    }
-                }
-
+                break;
+            case 'bcline':
+                $name = $values['extras'][0]['measurement_type'] . ' ~ ' . $values['extras'][1]['measurement_type'];
                 break;
         }
+
+        if ($mode == 'daily') {
+            switch ($label) {
+                case 'simple':
+                    $result = ucwords($name);
+                    break;
+                case 'generic':
+                    $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name_generic']);
+                    break;
+                case 'named':
+                    $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name']);
+                    break;
+                case 'station':
+                    $result = ucwords($values['extras'][0]['station_name']) . $sep . ucwords($name);
+                    break;
+                case 'located':
+                    $result = ucwords($values['extras'][0]['station_loc']) . $sep . ucwords($name);
+                    break;
+                case 'coord':
+                    $result = ucwords($values['extras'][0]['station_coord']) . $sep . $result = ucwords($values['extras'][0]['station_alt']) . $sep . ucwords($name);
+                    break;
+                case 'full':
+                    $result = ucwords($values['extras'][0]['station_name'])  . $sep . ucwords($values['extras'][0]['module_name']) . $sep . ucwords($name);
+                    break;
+            }
+        }
+        if ($mode == 'yearly') {
+            switch ($label) {
+                case 'simple':
+                    $result = ucwords($name);
+                    break;
+                case 'generic':
+                    $result = ucwords($name) . $sep . ucwords($values['extras'][0]['period_name']);
+                    break;
+                case 'named':
+                    $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name']);
+                    break;
+                case 'station':
+                    $result = ucwords($values['extras'][0]['station_name']) . $sep . ucwords($name);
+                    break;
+                case 'located':
+                    $result = ucwords($values['extras'][0]['station_loc']) . ', ' . ucwords($values['extras'][0]['period_name']) . $sep . ucwords($name);
+                    break;
+                case 'coord':
+                    $result = ucwords($values['extras'][0]['station_coord']) . $sep . $result = ucwords($values['extras'][0]['station_alt']) . $sep . ucwords($name);
+                    break;
+                case 'full':
+                    $result = ucwords($values['extras'][0]['station_name'])  . $sep . ucwords($values['extras'][0]['module_name']) . $sep . ucwords($name);
+                    break;
+            }
+        }
+
         return $result;
     }
 
@@ -1081,7 +1086,7 @@ trait Output {
                 $prop['separator'] = ' - ';
                 break;
             default:
-                $prop['fg_color'] = '#999999';
+                $prop['fg_color'] = '#EEEEEE';
                 $prop['bg_color'] = '#F4F4F4';
                 $prop['container'] = '';
                 $prop['nv-axis-line'] = '';
@@ -1309,6 +1314,14 @@ trait Output {
             wp_enqueue_script('lws-nvd3');
             wp_enqueue_script('lws-colorbrewer');
             wp_enqueue_script('lws-spin');
+            $legendColors = array();
+            if ($type == 'lines' && $color == 'self') {
+                $col = new ColorsManipulation($prop['fg_color']);
+                $col_array = $col->makeSteppedGradient($cpt, 50);
+                foreach ($col_array as $c) {
+                    $legendColors[] = '"#' . $c . '"';
+                }
+            }
             $result .= '<style type="text/css">' . PHP_EOL;
             if ($prop['text'] != '') {
                 $result .= '#' . $svg . ' .nvd3 text {' . $prop['text'] . '}' . PHP_EOL;
@@ -1329,22 +1342,26 @@ trait Output {
             }
             $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dashed-line {stroke-dasharray:10,10;}' . PHP_EOL;
             $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dotted-line {stroke-dasharray:2,2;}' . PHP_EOL;
-            for ($i = 1; $i <= count($items); $i++) {
-                if ($items[$i]['dot_style'] == 'small-dot') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
+            $i = 1;
+            //for ($i = 1; $i <= count($items); $i++) {
+            foreach ($items as $item) {
+                if ($item['dot_style'] == 'small-dot') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
                 }
-                if ($items[$i]['dot_style'] == 'large-dot') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:3;}' . PHP_EOL;
+                if ($item['dot_style'] == 'large-dot') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:3;}' . PHP_EOL;
                 }
-                if ($items[$i]['dot_style'] == 'small-circle') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:12;}' . PHP_EOL;
+                if ($item['dot_style'] == 'small-circle') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:12;}' . PHP_EOL;
                 }
-                if ($items[$i]['dot_style'] == 'large-circle') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
+                if ($item['dot_style'] == 'large-circle') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
                 }
-                if ($items[$i]['line_mode'] == 'transparent' || $items[$i]['line_mode'] == 'area') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-' . (string)($i-1) . ' .nv-line {stroke-opacity:0;}' . PHP_EOL;
+                if ($item['line_mode'] == 'transparent' || $item['line_mode'] == 'area') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-area {stroke-opacity:0;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-line {stroke-opacity:0;}' . PHP_EOL;
                 }
+                $i += 1;
             }
             $result .= '</style>' . PHP_EOL;
 
@@ -1378,6 +1395,9 @@ trait Output {
             if ($color != 'self') {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
             }
+            elseif ($type == 'lines') {
+                $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
+            }
             if ($inverted) {
                 $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
             }
@@ -1401,7 +1421,7 @@ trait Output {
             if ($fixed_valuescale) {
                 $body .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
             }
-            if ($color == 'self') {
+            if ($color == 'self' && $type == 'line') {
                 // DONE BY COLOR KEY
             }
             else {
@@ -1495,6 +1515,7 @@ trait Output {
             $result .= '</style>' . PHP_EOL;
 
             // BEGIN MAIN BODY
+            $body .= '      function sprintf(format){for( var i=1; i < arguments.length; i++ ) {format = format.replace( /%s/, arguments[i] );}return format;}' . PHP_EOL;
             $body .= '      var shift' . $uniq . ' = new Date();' . PHP_EOL;
             $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
             if ($fixed_timescale) {
@@ -1547,16 +1568,24 @@ trait Output {
             if ($timescale == 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
             }
-
-
-            //$body .= '      chart' . $uniq . '.interactiveLayer.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
-
-            //$body .= '      chart' . $uniq . '.tooltip.contentGenerator(function(d) {var s=\'<table><thead><tr><td colspan="3"><strong class="x-value">PL2017-12-02</strong></td></tr></thead><tbody><tr><td class="legend-color-guide"><div style="background-color: rgb(222, 235, 247);"></div></td><td class="key">Atmospheric pressure - Average values (right axis)</td><td class="value">1023.8 hPa</td></tr></tbody></table>\';return s;});' . PHP_EOL;
-
-            $body .= '      chart' . $uniq . '.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
-
-
-
+            $body .= '      chart' . $uniq . '.tooltip.contentGenerator(function(d) {';
+            $body .= '      var s=\'<table><thead><tr><td colspan="3"><strong class="x-value">%s</strong></td></tr></thead><tbody><tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">%s</td><td class="value">%s</td></tr></tbody></table>\';' . PHP_EOL;
+            $body .= '      var _date = "";' . PHP_EOL;
+            $body .= '      var _color = "";' . PHP_EOL;
+            $body .= '      var _key = "";' . PHP_EOL;
+            $body .= '      var _value = "";' . PHP_EOL;
+            $body .= '      if (d.hasOwnProperty("element")){' . PHP_EOL;
+            $body .= '        _color = d.series[0].color;' . PHP_EOL;
+            $body .= '        _key = d.series[0].key;' . PHP_EOL;
+            $body .= '        _value = d.series[0].value+" ' . $values['extras'][1]['unit']['unit'] . '";' . PHP_EOL;
+            $body .= '      }' . PHP_EOL;
+            $body .= '      else{' . PHP_EOL;
+            $body .= '        _color = d.color;' . PHP_EOL;
+            $body .= '        _key = "' . $values['extras'][0]['info_key'] . '";' . PHP_EOL;
+            $body .= '        _value = d.series[0].value+" ' . $values['extras'][0]['unit']['unit'] . '";' . PHP_EOL;
+            $body .= '      }' . PHP_EOL;
+            $body .= '      _date = d3.time.format("' . $time_format . '")(new Date(x' . $uniq . ' + d.value));' . PHP_EOL;
+            $body .= '      return sprintf(s, _date, _color, _key, _value)});' . PHP_EOL;
             if ($focus) {
                 $body .= '      chart' . $uniq . '.focusMargin({"top":20, "bottom":-10});' . PHP_EOL;
             }
@@ -1574,18 +1603,34 @@ trait Output {
 
         if ($type == 'calendarhm') {
             $step = (integer)$interpolation;
+            $col = new ColorsManipulation($prop['fg_color']);
             $amplitude = ($domain['max'] - $domain['min']) / $step;
             $legend = array();
             $legendColors = array();
             $legendColors[] = 'div#'.$calendar.' .graph-rect{background-color: ' . $prop['bg_color'] . ' !important;fill: ' . $prop['bg_color'] . ' !important;}';
             $legendColors[] = 'div#'.$calendar.' .qi{background-color: ' . $prop['bg_color'] . ' !important;fill: ' . $prop['bg_color'] . ' !important;}';
-            for ($i = 1; $i < $step; $i++) {
-                $legend[] = $domain['min'] + ($i * $amplitude);
-                $c = ColorBrewer::get($color, $step, $i-1, $inverted);
+            if ($color == 'self') {
+                $col_array = $col->makeSteppedGradient($step, 50);
+                if ($inverted) {
+                    $col_array = array_reverse($col_array);
+                }
+                for ($i = 1; $i < $step; $i++) {
+                    $legend[] = $domain['min'] + ($i * $amplitude);
+                    $c = '#' . $col_array[$i-1];
+                    $legendColors[] = 'div#'.$calendar.' .q' . $i . '{background-color: ' . $c . ' !important;fill: ' . $c . ' !important;}';
+                }
+                $c = '#' . $col_array[$step-1];
                 $legendColors[] = 'div#'.$calendar.' .q' . $i . '{background-color: ' . $c . ' !important;fill: ' . $c . ' !important;}';
             }
-            $c = ColorBrewer::get($color, $step, $step-1, $inverted);
-            $legendColors[] = 'div#'.$calendar.' .q' . $i . '{background-color: ' . $c . ' !important;fill: ' . $c . ' !important;}';
+            else {
+                for ($i = 1; $i < $step; $i++) {
+                    $legend[] = $domain['min'] + ($i * $amplitude);
+                    $c = ColorBrewer::get($color, $step, $i-1, $inverted);
+                    $legendColors[] = 'div#'.$calendar.' .q' . $i . '{background-color: ' . $c . ' !important;fill: ' . $c . ' !important;}';
+                }
+                $c = ColorBrewer::get($color, $step, $step-1, $inverted);
+                $legendColors[] = 'div#'.$calendar.' .q' . $i . '{background-color: ' . $c . ' !important;fill: ' . $c . ' !important;}';
+            }
             $legend = '[' . implode(',', $legend) . ']';
             $design = $timescale;
             $cRadius = 1;
