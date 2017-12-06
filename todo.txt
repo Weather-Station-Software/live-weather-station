@@ -73,6 +73,13 @@ windchill decimal
 
 
 ***********************
+* IMPROVEMENTS        *
+***********************
+
+"Data from" in the station view
+
+
+***********************
 * DOCUMENTATION       *
 ***********************
 
@@ -82,5 +89,7 @@ History settings in Handbook
 
 15K/Station with standard
 
-History builder/cleaner in events sources
+History builder/cleaner and device manager in events sources
+
+ICONV as requirement
 
