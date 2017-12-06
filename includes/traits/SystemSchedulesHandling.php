@@ -24,6 +24,7 @@ use WeatherStation\System\I18N\Handling as i18n;
 use WeatherStation\System\Plugin\Stats;
 use WeatherStation\Data\History\Builder as HistoryBuilder;
 use WeatherStation\Data\History\Cleaner as HistoryCleaner;
+use WeatherStation\System\Device\Manager as DeviceManager;
 
 /**
  * Functionalities for schedules & cron handling.
@@ -49,8 +50,9 @@ trait Handling {
     public static $stats_clean_name = 'lws_stats_clean';
     public static $integrity_check_name = 'lws_integrity_check';
     public static $plugin_stat_name = 'lws_plugin_stat';
+    public static $device_management_name = 'lws_device_management';
     public static $cron_system = array('lws_watchdog', 'lws_translation_update', 'lws_log_rotate', 'lws_cache_flush',
-                                        'lws_stats_clean', 'lws_integrity_check', 'lws_plugin_stat');
+                                        'lws_stats_clean', 'lws_integrity_check', 'lws_plugin_stat', 'lws_device_management');
 
     // HISTORY
     public static $history_build_name = 'lws_history_build';
@@ -334,6 +336,9 @@ trait Handling {
                 break;
             case 'lws_stats_clean':
                 return __('Statistics cleaning', 'live-weather-station');
+                break;
+            case 'lws_device_management':
+                return __('Device management', 'live-weather-station');
                 break;
             case 'lws_integrity_check':
                 return __('Data integrity checking', 'live-weather-station');
@@ -740,6 +745,31 @@ trait Handling {
         if (!wp_next_scheduled(self::$plugin_stat_name)) {
             wp_schedule_event(time() + $timeshift, 'daily', self::$plugin_stat_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$plugin_stat_name).'" (re)scheduled.');
+        }
+    }
+
+    /**
+     * Define device management cron job.
+     *
+     * @since 3.4.0
+     */
+    protected static function define_device_management_cron() {
+        $dm = new DeviceManager(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$device_management_name, array($dm, 'cron'));
+    }
+
+    /**
+     * Launch the device management cron job if needed.
+     *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
+     * @since 3.4.0
+     */
+    protected static function launch_device_management_cron($timeshift=0, $system='Watchdog') {
+        if (!wp_next_scheduled(self::$device_management_name)) {
+            wp_schedule_event(time() + $timeshift, 'daily', self::$device_management_name);
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$device_management_name).'" (re)scheduled.');
         }
     }
 

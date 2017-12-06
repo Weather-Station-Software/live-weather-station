@@ -668,7 +668,10 @@ trait Output {
                 }
                 break;
             case 'bcline':
-                $name = $values['extras'][0]['measurement_type'] . ' ~ ' . $values['extras'][1]['measurement_type'];
+                $name = $values['extras'][0]['measurement_type'];
+                if (array_key_exists(1, $values['extras'])) {
+                    $name .= ' ~ ' . $values['extras'][1]['measurement_type'];
+                }
                 break;
         }
 
@@ -1472,6 +1475,12 @@ trait Output {
             wp_enqueue_script('lws-nvd3');
             wp_enqueue_script('lws-colorbrewer');
             wp_enqueue_script('lws-spin');
+            if (array_key_exists(1, $values['extras'])) {
+                $unit = $values['extras'][1]['unit']['unit'];
+            }
+            else {
+                $unit = '';
+            }
             $result .= '<style type="text/css">' . PHP_EOL;
             if ($prop['text'] != '') {
                 $result .= '#' . $svg . ' .nvd3 text {' . $prop['text'] . '}' . PHP_EOL;
@@ -1491,26 +1500,28 @@ trait Output {
                 $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:last-of-type text {text-anchor: end !important;}' . PHP_EOL;
             }
             $result .= '#' . $svg . ' .nvd3 .nv-y2 text {text-anchor: end !important;}' . PHP_EOL;
-            if ($items[2]['line_style'] == 'dotted') {
-                $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-line {stroke-dasharray:2,2;}' . PHP_EOL;
-            }
-            if ($items[2]['line_style'] == 'dashed') {
-                $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-line {stroke-dasharray:10,10;}' . PHP_EOL;
-            }
-            if ($items[2]['dot_style'] == 'small-dot') {
-                $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
-            }
-            if ($items[2]['dot_style'] == 'large-dot') {
-                $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:3;}' . PHP_EOL;
-            }
-            if ($items[2]['dot_style'] == 'small-circle') {
-                $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:12;}' . PHP_EOL;
-            }
-            if ($items[2]['dot_style'] == 'large-circle') {
-                $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
-            }
-            if ($items[2]['line_mode'] == 'transparent' || $items[2]['line_mode'] == 'area') {
-                $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-line {stroke-opacity:0;}' . PHP_EOL;
+            if (array_key_exists(2, $items)) {
+                if ($items[2]['line_style'] == 'dotted') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-line {stroke-dasharray:2,2;}' . PHP_EOL;
+                }
+                if ($items[2]['line_style'] == 'dashed') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-line {stroke-dasharray:10,10;}' . PHP_EOL;
+                }
+                if ($items[2]['dot_style'] == 'small-dot') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
+                }
+                if ($items[2]['dot_style'] == 'large-dot') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:3;}' . PHP_EOL;
+                }
+                if ($items[2]['dot_style'] == 'small-circle') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:12;}' . PHP_EOL;
+                }
+                if ($items[2]['dot_style'] == 'large-circle') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
+                }
+                if ($items[2]['line_mode'] == 'transparent' || $items[2]['line_mode'] == 'area') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .nv-series-0 .nv-line {stroke-opacity:0;}' . PHP_EOL;
+                }
             }
             $result .= '</style>' . PHP_EOL;
 
@@ -1577,7 +1588,7 @@ trait Output {
             $body .= '      if (d.hasOwnProperty("element")){' . PHP_EOL;
             $body .= '        _color = d.series[0].color;' . PHP_EOL;
             $body .= '        _key = d.series[0].key;' . PHP_EOL;
-            $body .= '        _value = d.series[0].value+" ' . $values['extras'][1]['unit']['unit'] . '";' . PHP_EOL;
+            $body .= '        _value = d.series[0].value+" ' . $unit . '";' . PHP_EOL;
             $body .= '      }' . PHP_EOL;
             $body .= '      else{' . PHP_EOL;
             $body .= '        _color = d.color;' . PHP_EOL;
@@ -1591,7 +1602,7 @@ trait Output {
             }
             $body .= '      chart'.$uniq.'.y1Axis.tickFormat(function(d) { return d + " ' . $values['extras'][0]['unit']['unit'] . '"; });' . PHP_EOL;
             $body .= '      chart'.$uniq.'.y1Axis.showMaxMin(false);';
-            $body .= '      chart'.$uniq.'.y2Axis.tickFormat(function(d) { return d + " ' . $values['extras'][1]['unit']['unit'] . '"; });' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.y2Axis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
             $body .= '      chart'.$uniq.'.y2Axis.tickPadding(-6);' . PHP_EOL;
             $body .= '      chart'.$uniq.'.y2Axis.showMaxMin(false);';
             $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;

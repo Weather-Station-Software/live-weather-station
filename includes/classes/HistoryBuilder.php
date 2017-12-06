@@ -102,27 +102,37 @@ class Builder
     private function __full_build() {
         $stations = $this->get_stations_list();
         foreach ($stations as $station) {
-            $device_id = $station['station_id'];
-            if ((bool)get_option('live_weather_station_build_history')) {
-                if ($this->count_daily_values($device_id, $station['loc_timezone']) > 0) {
-                    $measures = $this->get_available_measurements($device_id, $station['loc_timezone']);
-                    if (count($measures) > 0) {
-                        foreach ($measures as $measure) {
-                            $operations = $this->get_measurements_operations_type($measure['measure_type'], $measure['module_type'], (bool)get_option('live_weather_station_full_history'));
-                            if ($this->perform_standard_aggregation($device_id, $measure['module_id'], $measure['module_type'], $measure['measure_type'], $station['loc_timezone'], $operations)) {
-                                $this->delete_daily_values($device_id, $measure['module_id'], $measure['measure_type'], $station['loc_timezone']);
-                            }
+            $this->build_for($station);
+        }
+    }
+
+    /**
+     * Build history for a specific station.
+     *
+     * @param array $station The station to build for.
+     * @since 3.4.0
+     */
+    public function build_for($station) {
+        $device_id = $station['station_id'];
+        if ((bool)get_option('live_weather_station_build_history')) {
+            if ($this->count_daily_values($device_id, $station['loc_timezone']) > 0) {
+                $measures = $this->get_available_measurements($device_id, $station['loc_timezone']);
+                if (count($measures) > 0) {
+                    foreach ($measures as $measure) {
+                        $operations = $this->get_measurements_operations_type($measure['measure_type'], $measure['module_type'], (bool)get_option('live_weather_station_full_history'));
+                        if ($this->perform_standard_aggregation($device_id, $measure['module_id'], $measure['module_type'], $measure['measure_type'], $station['loc_timezone'], $operations)) {
+                            $this->delete_daily_values($device_id, $measure['module_id'], $measure['measure_type'], $station['loc_timezone']);
                         }
-                        Logger::notice($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'Daily data compiled.');
-                        $this->delete_remaining_daily_values($device_id, $station['loc_timezone']);
-                        Logger::notice($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'Old daily data cleaned.');
                     }
+                    Logger::notice($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'Daily data compiled.');
+                    $this->delete_remaining_daily_values($device_id, $station['loc_timezone']);
+                    Logger::notice($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'Old daily data cleaned.');
                 }
             }
-            else {
-                $this->delete_remaining_daily_values($device_id, $station['loc_timezone']);
-                Logger::notice($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'Old daily data cleaned.');
-            }
+        }
+        else {
+            $this->delete_remaining_daily_values($device_id, $station['loc_timezone']);
+            Logger::notice($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'Old daily data cleaned.');
         }
     }
 
