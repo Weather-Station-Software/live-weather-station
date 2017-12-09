@@ -21,7 +21,7 @@
 * Improvement: better detection of needed php librairies and extensions.
 * Bug fix: in some cases, the plugin try to download translations statistics at each loading.
 * Bug fix: with some browsers, the layout of shortcode window is ugly.
-* Bug fix: for stations based on `clientraw.txt` files, seasonal aggregation can be selected while this type of measurement doesn't exists (thanks to OsservatoriOgea for detecting it).
+* Bug fix: for stations based on `clientraw.txt` files, seasonal aggregation can be selected while this type of measurement doesn't exists (thanks to Osservatorio GEA for detecting it).
 * Bug fix: a PHP/MySQL error may appears when using "indoor" widget when no collected station provides this type of data.
 * Bug fix: in some (rare) race condition, it's not impossible that an event is not recorded in the event log.
 

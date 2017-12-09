@@ -536,25 +536,27 @@ trait Output {
                             $extra['unit'] = $this->output_unit($arg['measurement'], $module_type);
                             $result['extras'][] = $extra;
                             $result['legend']['unit'] = $this->output_unit($arg['measurement'], $module_type);
-                            if ($arg['line_mode'] == 'area' || $arg['line_mode'] == 'arealine') {
-                                $info['area'] = true;
-                            }
                             $classes = array();
                             $classes[] = 'lws-serie-'.$i;
-                            if ($arg['line_style'] == 'dashed') {
-                                $classes[] = 'lws-dashed-line';
-                            }
-                            if ($arg['line_style'] == 'dotted') {
-                                $classes[] = 'lws-dotted-line';
-                            }
-                            if ($arg['line_size'] == 'thin') {
-                                $info['strokeWidth'] = 1;
-                            }
-                            if ($arg['line_size'] == 'regular') {
-                                $info['strokeWidth'] = 2;
-                            }
-                            if ($arg['line_size'] == 'thick') {
-                                $info['strokeWidth'] = 3;
+                            if (array_key_exists('line_mode', $arg)) {
+                                if ($arg['line_mode'] == 'area' || $arg['line_mode'] == 'arealine') {
+                                    $info['area'] = true;
+                                }
+                                if ($arg['line_style'] == 'dashed') {
+                                    $classes[] = 'lws-dashed-line';
+                                }
+                                if ($arg['line_style'] == 'dotted') {
+                                    $classes[] = 'lws-dotted-line';
+                                }
+                                if ($arg['line_size'] == 'thin') {
+                                    $info['strokeWidth'] = 1;
+                                }
+                                if ($arg['line_size'] == 'regular') {
+                                    $info['strokeWidth'] = 2;
+                                }
+                                if ($arg['line_size'] == 'thick') {
+                                    $info['strokeWidth'] = 3;
+                                }
                             }
                             if (count($classes) > 0) {
                                 $info['classed'] = implode(' ', $classes);
@@ -4114,6 +4116,9 @@ trait Output {
             case 'last_upgrade':
                 $result = self::get_date_from_mysql_utc($value, $tz) . ', ' . self::get_time_from_mysql_utc($value, $tz);
                 break;
+            case 'oldest_data':
+                $result = date_i18n(get_option('date_format'), strtotime(get_date_from_gmt($value)));
+                break;
             // PSYCHROMETRY
             case 'wet_bulb':
                 $ref = get_option('live_weather_station_unit_temperature') ;
@@ -4591,6 +4596,9 @@ trait Output {
                 else {
                     $result = '<i %1$s class="wi wi-fw %2$s wi-wind towards-0-deg" aria-hidden="true"></i>';
                 }
+                break;
+            case 'historical':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-history" aria-hidden="true"></i>';
                 break;
             default:
                 $result = '<i %s class="fa fa-fw %s fa-sun-o" aria-hidden="true"></i>';
