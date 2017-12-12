@@ -2248,6 +2248,8 @@ trait Generator {
         $result[] = 'MEA - Portable Weather Station';
         $result[] = 'MEA - Premium Weather Station';
         $result[] = 'MEA - Spray Drift Weather Station';
+        $result[] = 'Netatmo - Personal Weather Station';
+        $result[] = 'Netatmo - Healthy Home Coach';
         $result[] = 'New Mountain Innovations - NM100';
         $result[] = 'New Mountain Innovations - NM150';
         $result[] = 'Onset - HOBO';
