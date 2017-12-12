@@ -642,7 +642,7 @@ trait Storage {
     }
 
     /**
-     * Update daily historical table with current value line.
+     * Update daily table with current value line.
      *
      * @param array $value The values to update or insert in the table
      * @since 3.3.2

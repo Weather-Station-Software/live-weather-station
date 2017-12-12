@@ -182,7 +182,12 @@ class Watchdog {
             $sql .= "(" . implode(',', $field_insert) . ") ";
             $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
-            $wpdb->query($sql);
+            try {
+                $wpdb->query($sql);
+            }
+            catch (\Exception $ex) {
+                Logger::warning('Watchdog',null,null,null,null,null,null,'Table "' . $wpdb->prefix.self::live_weather_station_performance_cron_table() . '" not ready. This is likely a temporary defect.');
+            }
         }
     }
 

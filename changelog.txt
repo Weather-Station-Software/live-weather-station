@@ -10,7 +10,7 @@
 * New: the scheduled tasks tab allows to proceed on execution and reschedule of tasks belonging to the new history pool.
 * New: the analytics graphs for task and cache now take care of the new history pools and caches.
 * New: third-party scripts and stylesheets can now be loaded from external CDN (settings in *system* tab).
-* New: a new device manager now takes care of wind and rain gauges replacement for Netatmo stations.
+* New: a new device manager takes care of wind and rain gauges replacement for Netatmo stations.
 * Improvement: the station view has been totally redesigned and is now faster to load.
 * Improvement: plugin admin (all tabs and screens) is now fully responsive, you can use it easily on your smartphone or tablet.
 * Improvement: the widgets names contains now an icon for an easier identification in the customizer.
@@ -19,9 +19,11 @@
 * Improvement: scripts can now be loaded in footer to accelerate page render time (settings in *system* tab).
 * Improvement: scripts enqueuing has been optimized, admin pages are now 15% faster and pages with controls are 10% faster.
 * Improvement: better detection of needed php librairies and extensions.
+* Improvement: improved display behavior of rain values in outdoor weather summary and fire weather widgets for `clientraw.txt` and WeatherFlow stations (thanks to Alex for the suggestion).
 * Bug fix: in some cases, the plugin try to download translations statistics at each loading.
 * Bug fix: with some browsers, the layout of shortcode window is ugly.
-* Bug fix: for stations based on `clientraw.txt` files, seasonal aggregation can be selected while this type of measurement doesn't exists (thanks to Osservatorio GEA for detecting it).
+* Bug fix: for stations based on `clientraw.txt` files, seasonal aggregation can be selected while this type of measurement doesn't exists (thanks to Alex for detecting it).
+* Bug fix: when only stations based on `clientraw.txt` are collected, it's impossible to select a module in the Indoor Comfort widget (thanks to Alex for detecting it).
 * Bug fix: a PHP/MySQL error may appears when using "indoor" widget when no collected station provides this type of data.
 * Bug fix: in some (rare) race condition, it's not impossible that an event is not recorded in the event log.
 

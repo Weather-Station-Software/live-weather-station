@@ -379,8 +379,8 @@ class Fire extends \WP_Widget {
                         }
                         break;
                     case 'NAModule3': // Rain gauge
-                        $wug = ID::is_fake_modulex_id($module['id'], 3);
-                        if (array_key_exists('rain', $module['datas']) && !$wug) {
+                        //$wug = ID::is_fake_modulex_id($module['id'], 3);
+                        if (array_key_exists('rain', $module['datas'])) {
                             $NAModule3 = true;
                             $datas['rain'] = array();
                             $datas['rain']['value'] = $module['datas']['rain']['value'];
@@ -392,7 +392,7 @@ class Fire extends \WP_Widget {
                                 $rain_multipart = true;
                             }
                         }
-                        elseif (array_key_exists('rain_day_aggregated', $module['datas']) && $wug) {
+                        elseif (array_key_exists('rain_day_aggregated', $module['datas'])) {
                             $NAModule3 = true;
                             $datas['rain'] = array();
                             $datas['rain']['value'] = $module['datas']['rain_day_aggregated']['value'];

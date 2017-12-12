@@ -6855,7 +6855,7 @@ trait Output {
      */
     protected function is_valid_rain($temp_ref) {
         $result = false;
-        if ($temp_ref >= 0) {
+        if ($temp_ref > -10) {
             $result = true;
         }
         return $result;
@@ -6870,7 +6870,7 @@ trait Output {
      */
     protected function is_valid_snow($temp_ref) {
         $result = false;
-        if ($temp_ref < 3) {
+        if ($temp_ref < 10) {
             $result = true;
         }
         return $result;
