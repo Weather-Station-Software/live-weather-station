@@ -1963,6 +1963,7 @@ class Admin {
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'delete-station')) {
                 if ($res = $this->delete_stations_table(array($guid))) {
                     $res = $this->delete_operational_stations_table(array($station['station_id']));
+                    Cache::flush_query();
                 }
                 if ($res) {
                     $message = __('The station %s has been correctly removed.', 'live-weather-station');

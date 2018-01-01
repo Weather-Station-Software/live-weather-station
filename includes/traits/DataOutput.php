@@ -3987,9 +3987,12 @@ trait Output {
                 break;
             case 'heat_index':
             case 'humidex':
-            case 'wind_chill':
                 $ref = get_option('live_weather_station_unit_temperature') ;
                 $result = round($this->get_temperature($value, $ref));
+                break;
+            case 'wind_chill':
+                $ref = get_option('live_weather_station_unit_temperature') ;
+                $result = $this->get_temperature($value, $ref);
                 break;
             case 'loc_altitude':
                 $ref = get_option('live_weather_station_unit_altitude');

@@ -22,12 +22,13 @@ class Cache {
     private $facility = 'Cache Manager';
     private static $chrono = array();
     private static $stats = array();
-    public static $backend_expiry = 900;   //15 minutes
+    public static $backend_expiry = 900;   // 15 minutes
     public static $frontend_expiry = 119;  // 2 minutes - 1 second
     public static $widget_expiry = 119;    // 2 minutes - 1 second
     public static $dgraph_expiry = 119;    // 2 minutes - 1 second
-    public static $ygraph_expiry = 3599;    // 1 hour - 1 second
-    public static $i18n_expiry = 43200;     // 12 hours
+    public static $ygraph_expiry = 3599;   // 1 hour - 1 second
+    public static $wp_expiry = 7200;       // 2 hours
+    public static $i18n_expiry = 43200;    // 12 hours
 
     public static $db_stat = 'lws_cache_db_stat';
     public static $db_stat_log = 'lws_cache_db_stat_log';
@@ -586,7 +587,7 @@ class Cache {
             return false;
         }
         else {
-            return wp_cache_set($cache_id, $value);
+            return wp_cache_set($cache_id, $value, '', self::$wp_expiry);
         }
     }
 

@@ -67,6 +67,23 @@ class Cleaner
             Logger::info($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'No old historical data to clean.');
             $this->update_oldest_data($station);
         }
+        if ($this->delete_old_daily_values()) {
+            Logger::notice($this->facility, null, null, null, null, null, null, 'Stale daily data cleaned.');
+        }
+    }
+
+    /**
+     * Delete old daily values.
+     *
+     * @return bool True if operation was fully done, false otherwise.
+     * @since 3.4.0
+     */
+    private function delete_old_daily_values() {
+        $max = date('Y-m-d', self::get_local_n_days_ago_midnight(3, 'UTC'));
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
+        $sql = "DELETE FROM " . $table_name . " WHERE `timestamp`<='" . $max . "';";
+        return $wpdb->query($sql);
     }
 
     /**

@@ -500,6 +500,7 @@ trait Storage {
             update_option('live_weather_station_tempext_min_boundary', -70);
             update_option('live_weather_station_frost_point_min_boundary', -70);
             update_option('live_weather_station_wind_chill_min_boundary', -120);
+            update_option('live_weather_station_cbi_min_boundary', -30);
 
 
             // VERSION 3.4.0

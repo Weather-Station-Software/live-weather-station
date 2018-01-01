@@ -344,6 +344,7 @@ trait Generator {
                 break;
             case 'heat_index':
             case 'humidex':
+            case 'wind_chill':
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_simple_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']))));
                 break;
             case 'windangle':

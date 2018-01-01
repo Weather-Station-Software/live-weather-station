@@ -1554,6 +1554,7 @@ trait Query {
             $this->delete_operational_stations_table($device_id);
         }
         Cache::invalidate_backend(Cache::$db_stat_operational);
+        Cache::flush_query();
     }
 
     /**
