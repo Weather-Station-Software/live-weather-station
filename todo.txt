@@ -10,7 +10,6 @@
  * 3.x - Forest fire weather index computing
  * 3.x - Aridity index computing
  * 3.x - Pushing data to twitter / slack / fb / ...
- * 3.x - Extra heat indexes
  * 3.x - Visibility
  * 3.x - Number formating
  * 3.x - Historical data import
@@ -28,6 +27,7 @@
 *  UPCOMING CONTROLS  *
 ***********************
 
+ * 3.x - Simple Weather Widget
  * 4.x - Soil widget
  * 4.x - UV widget
  * 4.x - Icons dashboard
@@ -43,7 +43,6 @@
 ***********************
 
  * 3.x - Ability to change text color in clean gauges
- * 3.x - Change the modal box for shortcodes
 
 
 
@@ -59,30 +58,19 @@
  * 4.x - Metar / TAF / NOAA
 
 
-***********************
-* FIXES TO DO         *
-***********************
-
-TR : Valeur moyenne
-TR : "Vous trouverez de l'aide sur..." => "Vous trouverez de l'aide concernant..."
-TR : "Publié, Partagé..." => "Publiée, Partagée..."
-TR : "Purple" => "Violet"
-windchill decimal
-
-
 
 ***********************
-* IMPROVEMENTS        *
+* IMPROVEMENTS TO DO  *
 ***********************
 
 
 
 
 ***********************
-* BUGS                *
+* BUGS TO FIX         *
 ***********************
 
-Fully delete a station n fast collect mode
+Fully delete a station in fast collect mode
 
 
 
