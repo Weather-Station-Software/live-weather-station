@@ -88,3 +88,16 @@ History builder/cleaner and device manager in events sources
 
 ICONV as requirement
 
+
+
+
+ Before Release :
+------------------
+
+line size when focus activated
+speeds => wind
+cache with language
+inline help for graphs pages
+fixed year values
+title size for line & bar chart
+rain for OWM in wizard

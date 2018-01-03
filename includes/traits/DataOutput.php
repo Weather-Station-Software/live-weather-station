@@ -1551,7 +1551,12 @@ trait Output {
             $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '      nv.addGraph(function() {' . PHP_EOL;
             $body .= '        chart'.$uniq.' = nv.models.linePlusBarChart()' . PHP_EOL;
-            $body .= '               .height(' . (integer)($height-14) . ')' . PHP_EOL;
+            if ($label == 'none') {
+                $body .= '               .height(' . (integer)($height-14) . ')' . PHP_EOL;
+            }
+            else {
+                $body .= '               .height(' . (integer)($height-34) . ')' . PHP_EOL;
+            }
             $body .= '               .x(function(d,i) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
             $body .= '               .y(function(d,i) {return d[1]})' . PHP_EOL;
             $body .= '               .legendRightAxisHint(\'\')' . PHP_EOL;
@@ -1683,6 +1688,7 @@ trait Output {
             if ($label == 'none') {
                 $inner_height = $height;
             }
+            $inner_height = $inner_height . 'px';
             if ($label_txt != '') {
                 $label_txt = '<div style="padding-top:' . $ptop . 'px;' . str_replace('fill', 'color', $prop['text']) . '"><text style="' . $prop['nv-axislabel'] . '">' . $label_txt . '</text></div>';
             }
@@ -1739,6 +1745,9 @@ trait Output {
 
 
         // FINAL RENDER
+
+        //$height = $height +50;
+        //$height = $height.'px';
 
         if ($type == 'calendarhm') {
             $result .= '<div class="module-' . $mode . '-' . $type . '" ><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:14px 14px 14px 14px;height: ' . $height . ';/*overflow: hidden;*/"><div id="' . $calendar . '" style="display: inline-block;height: ' . $inner_height . ';"></div>' . $label_txt . '</div></div>' . PHP_EOL;
