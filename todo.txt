@@ -93,8 +93,3 @@ ICONV as requirement
 
  Before Release :
 ------------------
-
-speeds => wind
-inline help for graphs pages
-fixed year values
-rain for OWM in wizard

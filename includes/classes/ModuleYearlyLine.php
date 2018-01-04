@@ -19,7 +19,7 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     public function __construct($station_information) {
-        $this->module_mode = 'yearly';
+        self::$module_mode = 'yearly';
         $this->module_type = 'line';
         $this->module_name = ucfirst(__('single line', 'live-weather-station'));
         $this->module_hint = __('Display historical data as a line chart. Allows to view a single dataset from a single type of measurement.', 'live-weather-station');

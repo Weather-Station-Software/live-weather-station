@@ -559,16 +559,16 @@ trait Generator {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh');
                 }
                 if ($netatmo || $raw || $real || $wflw) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain', false, $ref['module_type']);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain');
                 }
                 if (!$raw) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_hour_aggregated', false, $ref['module_type']);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_hour_aggregated');
                 }
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_day_aggregated', false, $ref['module_type']);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_day_aggregated');
                 if ($raw || $real) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_yesterday_aggregated', false, $ref['module_type']);
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_month_aggregated', false, $ref['module_type']);
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_year_aggregated', false, $ref['module_type']);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_yesterday_aggregated');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_month_aggregated');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_year_aggregated');
                 }
                 break;
             case 'namodule4': // Additional indoor module
@@ -729,7 +729,9 @@ trait Generator {
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure');
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity');
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain');
+                if (!$historical) {
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain');
+                }
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'snow');
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle');
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength');
@@ -1573,7 +1575,7 @@ trait Generator {
             if ($month > 12) {
                 $current->setDate($year, 1, 1);
                 $util->setDate($year, 12, 31);
-                $fixed_year[] = array($current->format('Y-m-d') . ':' . $util->format('Y-m-d'), date_i18n('Y', strtotime($end->format('Y-m-d H:i:s'))));
+                $fixed_year[] = array($current->format('Y-m-d') . ':' . $util->format('Y-m-d'), date_i18n('Y', strtotime($current->format('Y-m-d H:i:s'))));
                 $month = 1;
                 $year += 1;
             }

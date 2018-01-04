@@ -25,7 +25,7 @@ abstract class Maintainer {
         Output::get_operation_name insteadof Generator;
     }
 
-    protected $module_mode = '';
+    public static $module_mode = '';
     protected $module_type = '';
     protected $module_id = '';
     protected $module_name = '';
@@ -60,7 +60,7 @@ abstract class Maintainer {
      * @since 3.4.0
      */
     public function __construct($station_information) {
-        $this->module_id = $this->module_mode . '-' . $this->module_type;
+        $this->module_id = self::$module_mode . '-' . $this->module_type;
         $this->station_information = $station_information;
         $this->station_guid = $this->station_information['guid'];
         $this->station_id = $this->station_information['station_id'];
@@ -501,7 +501,7 @@ abstract class Maintainer {
         // data
         $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_' . $this->station_guid . ' = ' . json_encode($this->data) . ';';
         // period
-        if ($this->module_mode == 'yearly') {
+        if (self::$module_mode == 'yearly') {
             $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_period_' . $this->station_guid . ' = ' . json_encode($this->period) . ';';
         }
         // content
@@ -722,11 +722,11 @@ abstract class Maintainer {
      * @since 3.4.0
      */
     protected function get_standard_script() {
-        $name = $this->module_mode . '-' . $this->module_type;
-        $js_name = $this->module_mode . '_' . $this->module_type;
+        $name = self::$module_mode . '-' . $this->module_type;
+        $js_name = self::$module_mode . '_' . $this->module_type;
         $content = '';
 
-        if ($this->module_mode == 'yearly') {
+        if (self::$module_mode == 'yearly') {
             $content .= '$("#' . $name . '-datas-period-type-' . $this->station_guid . '").change(function() {';
             $content .= 'var js_array_' . $js_name . '_p_' . $this->station_guid . ' = null;';
             $content .= '$(js_array_' . $js_name . '_period_' . $this->station_guid . ').each(function (i) {';
@@ -765,7 +765,7 @@ abstract class Maintainer {
                 $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . ' option[value=\'solid\']").attr("selected", true);';
                 $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . ' option[value=\'regular\']").attr("selected", true);};';
             }
-            if ($this->module_mode == 'yearly') {
+            if (self::$module_mode == 'yearly') {
                 $content .= 'var js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()][2][$(this).val()][4];';
                 $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").html("");';
                 $content .= '$(js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . ').each(function (i) {';
@@ -816,7 +816,7 @@ abstract class Maintainer {
             $content .= 'var sc_device_' . $i . ' = "' . $this->station_id . '";';
             $content .= 'var sc_module_' . $i . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()][1];';
             $content .= 'var sc_measurement_' . $i . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()][2][$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").val()][1];';
-            if ($this->module_mode == 'yearly') {
+            if (self::$module_mode == 'yearly') {
                 $content .= 'var sc_set_' . $i . ' = $("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").val();';
                 $content .= 'sc_measurement_' . $i . ' = sc_set_' . $i . '+":"+sc_measurement_' . $i . ';';
             }
@@ -830,7 +830,7 @@ abstract class Maintainer {
             $content .= ' }';
             $content .= ' }';
         }
-        if ($this->module_mode == 'yearly') {
+        if (self::$module_mode == 'yearly') {
             $content .= 'var sc_period_type = $("#' . $name . '-datas-period-type-' . $this->station_guid . '").val();';
             $content .= 'var sc_period_value = $("#' . $name . '-datas-period-value-' . $this->station_guid . '").val();';
         }
@@ -847,14 +847,14 @@ abstract class Maintainer {
         $content .= 'var sc_height = $("#' . $name . '-datas-height-' . $this->station_guid . '").val();';
         $content .= 'var sc_label = $("#' . $name . '-datas-label-' . $this->station_guid . '").val();';
         $content .= 'var sc_data = $("#' . $name . '-datas-data-' . $this->station_guid . '").val();';
-        $content .= 'var shortcode = "[live-weather-station-graph mode=\'' . $this->module_mode . '\' type=\'' . $this->module_type . '\' template=\'"+sc_template+"\' data=\'"+sc_data+"\' color=\'"+sc_color+"\' label=\'"+sc_label+"\' interpolation=\'"+sc_interpolation+"\' timescale=\'"+sc_timescale+"\' valuescale=\'"+sc_valuescale+"\' guideline=\'"+sc_guideline+"\' height=\'"+sc_height+"\' periodtype=\'"+sc_period_type+"\' periodvalue=\'"+sc_period_value+"\'"';
+        $content .= 'var shortcode = "[live-weather-station-graph mode=\'' . self::$module_mode . '\' type=\'' . $this->module_type . '\' template=\'"+sc_template+"\' data=\'"+sc_data+"\' color=\'"+sc_color+"\' label=\'"+sc_label+"\' interpolation=\'"+sc_interpolation+"\' timescale=\'"+sc_timescale+"\' valuescale=\'"+sc_valuescale+"\' guideline=\'"+sc_guideline+"\' height=\'"+sc_height+"\' periodtype=\'"+sc_period_type+"\' periodvalue=\'"+sc_period_value+"\'"';
         for ($i=1; $i<=$this->series_number; $i++) {
             $content .= '+sc_' . $i;
         }
         $content .= '+"]";';
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
-        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"' . $this->module_mode . '", type:"' . $this->module_type . '", template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, periodtype:sc_period_type, periodvalue:sc_period_value, ';
+        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"' . self::$module_mode . '", type:"' . $this->module_type . '", template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, periodtype:sc_period_type, periodvalue:sc_period_value, ';
         $t = array();
         for ($i=1; $i<=$this->series_number; $i++) {
             $u = array();
@@ -868,7 +868,7 @@ abstract class Maintainer {
         $content .= '$("#' . $name . '-datas-shortcode-' . $this->station_guid . '").html(shortcode);});';
 
         // INIT
-        if ($this->module_mode == 'yearly') {
+        if (self::$module_mode == 'yearly') {
             $content .= 'var js_array_' . $js_name . '_p_' . $this->station_guid . ' = null;';
             $content .= '$(js_array_' . $js_name . '_period_' . $this->station_guid . ').each(function (i) {';
             $content .= 'if (js_array_' . $js_name . '_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-datas-period-type-' . $this->station_guid . '").val()) {js_array_' . $js_name . '_p_' . $this->station_guid . '=js_array_' . $js_name . '_period_' . $this->station_guid . '[i][1]}  ;});';

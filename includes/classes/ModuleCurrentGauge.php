@@ -33,7 +33,7 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     public function __construct($station_information) {
-        $this->module_mode = 'current';
+        self::$module_mode = 'current';
         $this->module_type = 'justgage';
         $this->module_name = ucfirst(__('clean gauge', 'live-weather-station'));
         $this->module_hint = __('Display current data with a clean gauge.', 'live-weather-station');
