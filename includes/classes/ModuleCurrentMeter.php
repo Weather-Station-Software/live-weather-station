@@ -33,7 +33,7 @@ class Meter extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     public function __construct($station_information) {
-        $this->module_mode = 'current';
+        self::$module_mode = 'current';
         $this->module_type = 'steelmeter';
         $this->module_name = ucfirst(__('steel meter', 'live-weather-station'));
         $this->module_hint = __('Display current data with a steel meter.', 'live-weather-station');

@@ -33,7 +33,7 @@ class Lcd extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     public function __construct($station_information) {
-        $this->module_mode = 'current';
+        self::$module_mode = 'current';
         $this->module_type = 'lcd';
         $this->module_name = __('LCD display', 'live-weather-station');
         $this->module_hint = __('Display current data, cyclically, in a LCD display.', 'live-weather-station');

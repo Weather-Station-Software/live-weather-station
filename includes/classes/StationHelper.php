@@ -138,6 +138,22 @@ class Handling {
     }
 
     /**
+     * Get the inline help for module.
+     *
+     * @param string $type The type of module to view.
+     * @return string The inline help, ready to insert.
+     * @since 3.4.0
+     */
+    public function get_help_modules($type) {
+        $result = '';
+        foreach (ModuleMaintainer::get_modules($type) as $class){
+            $module = new $class($this->station_information);
+            $result .= '<p><i style="color:#666666" class="' . $module->get_icon() . '"></i>&nbsp;<strong>' . $module->get_name() . '</strong> &mdash; ' . $module->get_hint() . '</p>';
+        }
+        return $result;
+    }
+
+    /**
      * Get all the args view.
      *
      * @since 3.4.0

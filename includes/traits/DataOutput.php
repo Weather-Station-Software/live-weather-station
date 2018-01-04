@@ -646,7 +646,7 @@ trait Output {
                     if ($values['legend']['unit']['dimension'] == 'speed') {
                         $wind = true;
                         foreach ($values['extras'] as $w) {
-                            if (strpos($w['raw_measurement_type'], 'strength') !== 0) {
+                            if (strpos($w['raw_measurement_type'], 'strength') === false) {
                                 $wind = false;
                                 break;
                             }
@@ -661,7 +661,7 @@ trait Output {
                     if ($values['legend']['unit']['dimension'] == 'length') {
                         $rain = true;
                         foreach ($values['extras'] as $w) {
-                            if (strpos($w['raw_measurement_type'], 'rain_') !== 0) {
+                            if (strpos($w['raw_measurement_type'], 'rain_') === false) {
                                 $rain = false;
                                 break;
                             }
