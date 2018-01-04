@@ -550,12 +550,15 @@ trait Output {
                                 }
                                 if ($arg['line_size'] == 'thin') {
                                     $info['strokeWidth'] = 1;
+                                    $classes[] = 'lws-thin-line';
                                 }
                                 if ($arg['line_size'] == 'regular') {
                                     $info['strokeWidth'] = 2;
+                                    $classes[] = 'lws-regular-line';
                                 }
                                 if ($arg['line_size'] == 'thick') {
                                     $info['strokeWidth'] = 3;
+                                    $classes[] = 'lws-thick-line';
                                 }
                             }
                             if (count($classes) > 0) {
@@ -1345,10 +1348,12 @@ trait Output {
                 $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:first-of-type text {text-anchor: start !important;}' . PHP_EOL;
                 $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:last-of-type text {text-anchor: end !important;}' . PHP_EOL;
             }
-            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dashed-line {stroke-dasharray:10,10;}' . PHP_EOL;
-            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dotted-line {stroke-dasharray:2,2;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dashed-line {stroke-dasharray:10,10 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dotted-line {stroke-dasharray:2,2 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-thin-line {stroke-width: 1 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-regular-line {stroke-width: 2 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-thick-line {stroke-width: 3 !important;}' . PHP_EOL;
             $i = 1;
-            //for ($i = 1; $i <= count($items); $i++) {
             foreach ($items as $item) {
                 if ($item['dot_style'] == 'small-dot') {
                     $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
@@ -1456,6 +1461,9 @@ trait Output {
             if ($mode == 'yearly') {
                 $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
                 $body .= '      chart' . $uniq . '.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
+            }
+            if ($label != 'none') {
+                $body .= '      chart'.$uniq.'.xAxis.axisLabelDistance(6);' . PHP_EOL;
             }
             if ($_attributes['valuescale'] == 'adaptative') {
                 $body .= '      chart'.$uniq.'.yAxis.showMaxMin(true)';
@@ -1654,28 +1662,43 @@ trait Output {
             $cRadius = 1;
             switch ($height) {
                 case '150px':
-                    $cSize = 10;
+                    $cSize = 6;
+                    if ($label == 'none') {
+                        $cSize = 9;
+                    }
                     $ptop = 6;
                     if ($design == 'rdsquare') {$cRadius = 1;}
                     break;
                 case '200px':
-                    $cSize = 16;
+                    $cSize = 12;
+                    if ($label == 'none') {
+                        $cSize = 15;
+                    }
                     $ptop = 8;
                     if ($design == 'rdsquare') {$cRadius = 2;}
                     break;
                 case '300px':
-                    $cSize = 26;
+                    $cSize = 22;
+                    if ($label == 'none') {
+                        $cSize = 26;
+                    }
                     $ptop = 10;
                     if ($design == 'rdsquare') {$cRadius = 3;}
                     break;
                 case '400px':
-                    $cSize = 36;
+                    $cSize = 33;
+                    if ($label == 'none') {
+                        $cSize = 36;
+                    }
                     $ptop = 12;
                     if ($design == 'rdsquare') {$cRadius = 4;}
                     break;
                 case '555px':
-                    $cSize = 50;
-                    $ptop = 16;
+                    $cSize = 48;
+                    if ($label == 'none') {
+                        $cSize = 52;
+                    }
+                    $ptop = 20;
                     if ($design == 'rdsquare') {$cRadius = 5;}
                     break;
                 default:
@@ -1684,7 +1707,7 @@ trait Output {
             }
             if ($design == 'round') {$cRadius = (int)round($cSize/2);}
             if ($design == 'square') {$cRadius = 0;}
-            $inner_height = $height - 20;
+            $inner_height = $height - 50;
             if ($label == 'none') {
                 $inner_height = $height;
             }
@@ -1746,11 +1769,8 @@ trait Output {
 
         // FINAL RENDER
 
-        //$height = $height +50;
-        //$height = $height.'px';
-
         if ($type == 'calendarhm') {
-            $result .= '<div class="module-' . $mode . '-' . $type . '" ><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:14px 14px 14px 14px;height: ' . $height . ';/*overflow: hidden;*/"><div id="' . $calendar . '" style="display: inline-block;height: ' . $inner_height . ';"></div>' . $label_txt . '</div></div>' . PHP_EOL;
+            $result .= '<div class="module-' . $mode . '-' . $type . '" ><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:14px 14px 14px 14px;height: ' . $height . ';text-align: center;line-height: 1em;/*overflow: hidden;*/"><div id="' . $calendar . '" style="display: inline-block;/*height: ' . $inner_height . ';*/"></div>' . $label_txt . '</div></div>' . PHP_EOL;
         }
         else {
             $result .= '<div class="module-' . $mode . '-' . $type . '" ><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';"><svg id="' . $svg . '" style="overflow:hidden;"></svg></div></div>' . PHP_EOL;
