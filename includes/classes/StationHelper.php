@@ -148,7 +148,7 @@ class Handling {
         $result = '';
         foreach (ModuleMaintainer::get_modules($type) as $class){
             $module = new $class($this->station_information);
-            $result .= '<p><i style="color:#666666" class="' . $module->get_icon() . '"></i>&nbsp;<strong>' . $module->get_name() . '</strong> &mdash; ' . $module->get_hint() . '</p>';
+            $result .= '<p><i style="color:#666666" class="' . $module->get_icon() . '"></i>&nbsp;<strong>' . ucfirst($module->get_name()) . '</strong> &mdash; ' . $module->get_hint() . '</p>';
         }
         return $result;
     }

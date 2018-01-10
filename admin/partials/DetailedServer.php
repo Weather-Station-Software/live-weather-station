@@ -7,6 +7,13 @@
  */
 
 use WeatherStation\System\Environment\Manager as Env;
+use WeatherStation\System\Logs\Logger;
+
+$OS = Env::server_os();
+
+if (!$OS || !Env::server_cpu() || !Env::server_core()) {
+    Logger::warning('Core',null,null,null,null,null,null,'Your server configuration does not allow to query system informations.');
+}
 
 ?>
 <div id="normal-sortables" class="meta-box-sortables ui-sortable">
@@ -20,10 +27,12 @@ use WeatherStation\System\Environment\Manager as Env;
                     <td width="10%"/><td width="20px"><i style="color:#999999" class="fa fa-lg fa-server"></i></td>
                     <td/><?php echo gethostname().' <code>'.Env::server_ip().'</code>'; ?></td>
                 </tr>
-                <tr>
-                    <td width="10%"/><td width="20px"><i style="color:#999999" class="fa fa-lg fa-cog"></i></td>
-                    <td><?php echo Env::server_os(); ?></td>
-                </tr>
+                <?php if ($OS) { ?>
+                    <tr>
+                        <td width="10%"/><td width="20px"><i style="color:#999999" class="fa fa-lg fa-cog"></i></td>
+                        <td><?php echo $OS; ?></td>
+                    </tr>
+                <?php } ?>
                 <?php if (Env::server_cpu() && Env::server_core()) { ?>
                     <tr>
                         <td width="10%"/><td width="20px"><i style="color:#999999" class="fa fa-lg fa-microchip"></i></td>

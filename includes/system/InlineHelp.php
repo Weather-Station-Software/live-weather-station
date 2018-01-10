@@ -166,7 +166,7 @@ class InlineHelp {
             $result = '<a href="http://creativecommons.org/licenses/by-sa/4.0/"' . $target . '>' . __('Creative Commons CC:BY-SA 4.0 license', 'live-weather-station') . '</a>';
         }
         if ($number == -10) {
-            $result = sprintf($message, '<a href="https://translate.wordpress.org/projects/wp-plugins/live-weather-station"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://weather.station.software/en/support/languages-translation/"' . $target . '>' . $anchor . '</a>');
         }
         if ($number == -11) {
             $result = sprintf($message, '<a href="https://www.wunderground.com/weather/api/d/pricing.html?apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>');
@@ -690,12 +690,11 @@ class InlineHelp {
             $s3 = '<strong>' . __('Remove', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('To remove the station from the %s collect process.', 'live-weather-station'), LWS_PLUGIN_NAME);
             $s4 = '<strong>' . __('See events log', 'live-weather-station') . '</strong> &mdash; ' . __('To see events associated with the station.', 'live-weather-station');
             $s5 = '<strong>' . __('Verify on a map', 'live-weather-station') . '</strong> &mdash; ' . __('To verify, visually, the coordinates of the station.', 'live-weather-station');
-            $s6 = '<strong>' . __('Sharing on&hellip;', 'live-weather-station') . '</strong> &mdash; ' . __('To get the direct URL where the station shares its data.', 'live-weather-station');
-            $s7 = '<strong>' . __('Shortcodes', 'live-weather-station') . '</strong> &mdash; ' . __('To obtain shortcodes ready to insert in a page or a post.', 'live-weather-station');
+            $s6 = '<strong>' . __('Data', 'live-weather-station') . '</strong> &mdash; ' . __('To get the direct URL where the station shares its data.', 'live-weather-station');
             $tabs[] = array(
                 'title'    => __('Features', 'live-weather-station'),
                 'id'       => 'lws-contextual-stations-features',
-                'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p><p>' . $s5 . '</p><p>' . $s6 . '</p><p>' . $s7 . '</p>');
+                'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p><p>' . $s5 . '</p><p>' . $s6 . '</p>');
         }
         $screen = get_current_screen();
         foreach($tabs as $tab) {
