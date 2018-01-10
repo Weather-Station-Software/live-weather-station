@@ -1,5 +1,5 @@
 
-#3.4.0 / January XXXXth, 2018
+#3.4.0 / January 16th, 2018
 
 * New: Weather Station now compiles data as daily and historical values.
 * New: new single-line and multi-lines chart for daily graph with tons of options and settings.
@@ -22,6 +22,7 @@
 * Improvement: improved display behavior of rain values in outdoor weather summary and fire weather widgets for `clientraw.txt` and WeatherFlow stations (thanks to Alex for the suggestion).
 * Improvement: wind chill have now a consistent decimal value across all controls.
 * Improvement: better cache consistency when adding or removing station.
+* Improvement: a warning event is now generated when the server mask or disable some system functions.
 * Bug fix: in some cases, the plugin try to download translations statistics at each loading.
 * Bug fix: with some browsers, the layout of shortcode window is ugly.
 * Bug fix: for stations based on `clientraw.txt` files, seasonal aggregation can be selected while this type of measurement doesn't exists (thanks to Alex for detecting it).
@@ -29,6 +30,7 @@
 * Bug fix: a PHP/MySQL error may appears when using "indoor" widget when no collected station provides this type of data.
 * Bug fix: in some (rare) race condition, it's not impossible that an event is not recorded in the event log.
 * Bug fix: it's impossible (again) to save negative threshold values for the Chandler Burning index, in Chrome, Safari and Firefox.
+* Bug fix: it's impossible to save threshold values greater than 100 for the Chandler Burning index, in Chrome, Safari and Firefox.
 
 #3.3.4 / November 27th, 2017
 

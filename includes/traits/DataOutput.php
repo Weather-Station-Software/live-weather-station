@@ -146,8 +146,12 @@ trait Output {
     public function graph_query($attributes, $json=false) {
         $result = null;
         $fingerprint = md5(json_encode($attributes));
-        if (!$attributes['no_cache']) {
+        if ($attributes['cache'] != 'no_cache') {
             $result = Cache::get_graph($fingerprint, $attributes['mode']);
+        }
+        $raw_json = false;
+        if ($attributes['type'] == 'calendarhm') {
+            $raw_json = true;
         }
         if (!$result) {
             $result = array();
@@ -177,10 +181,8 @@ trait Output {
             $similar_set=false;
             $identical_set=false;
             $end_date = '000';
-            $raw_json = false;
             if ($type == 'calendarhm') {
                 $end_date = '';
-                $raw_json = true;
             }
             $cpt = 0;
             if (count($args) > 0) {
@@ -582,7 +584,7 @@ trait Output {
             $result['ydomain']['amin'] = $yamin;
             $result['ydomain']['amax'] = $yamax;
         }
-        if (!$attributes['no_cache']) {
+        if ($attributes['cache'] != 'no_cache') {
             Cache::set_graph($fingerprint, $attributes['mode'], $result);
         }
         if ($json) {
@@ -1155,10 +1157,10 @@ trait Output {
         $value_params['args'] = $items;
         $value_params['noned'] = $noned;
         if (array_key_exists('cache', $attributes)) {
-            $value_params['no_cache'] = $attributes['cache'];
+            $value_params['cache'] = $attributes['cache'];
         }
         else {
-            $value_params['no_cache'] = 'no_cache';
+            $value_params['cache'] = 'cache';
         }
         if (array_key_exists('periodtype', $attributes)) {
             $value_params['periodtype'] = $attributes['periodtype'];

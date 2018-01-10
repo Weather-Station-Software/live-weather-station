@@ -156,9 +156,14 @@ class Manager {
      * @since 3.1.0
      */
     public static function server_os() {
-        $os_detail = php_uname();
-        $os = explode( " ", trim($os_detail));
-        return $os[0] . ' ' . $os[12];
+        $os_detail = @php_uname();
+        if ($os_detail == '') {
+            return false;
+        }
+        else {
+            $os = explode( " ", trim($os_detail));
+            return $os[0] . ' ' . $os[12];
+        }
     }
 
     /**

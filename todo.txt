@@ -78,18 +78,26 @@ Fully delete a station in fast collect mode
 * DOCUMENTATION       *
 ***********************
 
-link to cron in faq
+--> project / Lines
+--> project / line+bar
+--> project / calendar heatmap
+Station Management doc (+ featured images in add/publis/share)
+General Settings doc (picture + icon)
+Services Settings doc (picture + icon)
+Display Settings doc (picture + icon)
+Thresholds Settings doc (picture + icon)
+--> History Settings
+System Settings doc : cache, cdn (picture + icon)
 
-History settings in Handbook
+
+
+
+
+--> Blog En+Fr
+
+
+
+
 
 15K/Station with standard
 
-History builder/cleaner and device manager in events sources
-
-ICONV as requirement
-
-
-
-
- Before Release :
-------------------
