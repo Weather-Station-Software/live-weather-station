@@ -52,9 +52,7 @@ trait Handling {
      * @since 3.0.0
      */
     public static function apply() {
-        error_log('Begin URL::apply();');
-        flush_rewrite_rules(false);
-        Logger::notice('Core', null, null, null, null, null, null, 'Rewrite rules flushed.');
-        error_log('End URL::apply();');
+        flush_rewrite_rules();
+        Logger::notice('Core', null, null, null, null, null, null, 'Rewrite rules flushed and regenerated.');
     }
 }

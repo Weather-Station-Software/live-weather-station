@@ -69,12 +69,6 @@ class Stats
             if (!function_exists('plugins_api')) {
                 require_once(ABSPATH . 'wp-admin/includes/plugin-install.php');
             }
-            /*
-            if (!function_exists('plugins_api')) {
-                Logger::alert('Core', null, null, null, null, null, 666, 'Unable to use plugins_api function. Your server lacks of free memory or disk space, or is overloaded.');
-                Logger::error('Core', null, null, null, null, null, 666, 'Plugin statistics can not be downloaded from WordPress.org.');
-                return false;
-            }*/
             Quota::verify($this->service, 'GET');
             $query = array( 'active_installs' => true,
                             'downloaded' => true,
@@ -119,7 +113,9 @@ class Stats
                     update_option('live_weather_station_translation_stat', $result);
                 }
             }
-            Logger::warning('Core', null, null, null, null, null, 1, 'Plugin translations statistics can not be downloaded from WordPress.org.');
+            else {
+                Logger::warning('Core', null, null, null, null, null, 1, 'Plugin translations statistics can not be downloaded from WordPress.org.');
+            }
         }
         catch (\Exception $e) {
             Logger::warning('Core', null, null, null, null, null, 2, 'Plugin translations statistics can not be downloaded from WordPress.org.');

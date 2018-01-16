@@ -43,6 +43,8 @@
 ***********************
 
  * 3.x - Ability to change text color in clean gauges
+ * 3.x - Wordpress env.
+ * 3.x - Scale alignment in L&B chart (when same dimension)
 
 
 
@@ -77,27 +79,3 @@ Fully delete a station in fast collect mode
 ***********************
 * DOCUMENTATION       *
 ***********************
-
---> project / Lines
---> project / line+bar
---> project / calendar heatmap
-Station Management doc (+ featured images in add/publis/share)
-General Settings doc (picture + icon)
-Services Settings doc (picture + icon)
-Display Settings doc (picture + icon)
-Thresholds Settings doc (picture + icon)
---> History Settings
-System Settings doc : cache, cdn (picture + icon)
-
-
-
-
-
---> Blog En+Fr
-
-
-
-
-
-15K/Station with standard
-
