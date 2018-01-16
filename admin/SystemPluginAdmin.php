@@ -1174,6 +1174,9 @@ class Admin {
      */
     public function lws_load_admin_page() {
         $page = filter_input(INPUT_GET, 'page');
+        if (strpos($page, 'lws-') === false) {
+            return;
+        }
         if (!($tab = filter_input(INPUT_GET, 'tab'))) {
             $tab = filter_input(INPUT_POST, 'tab');
         }

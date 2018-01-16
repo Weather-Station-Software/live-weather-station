@@ -31,7 +31,7 @@ class InlineHelp {
             'handbook/settings/display', //3  source: settings - display tab
             'handbook/settings/thresholds', //4  source: settings - thresholds tab
             'handbook/settings/system', //5  source: settings - system tab
-            'handbook/historical-data/', //6  source: settings - history tab
+            'handbook/data-historization/', //6  source: settings - history tab
             'support/frequently-asked-questions', //7  faq section
             'handbook/dashboard', //8  dashboard
             'handbook/stations-management', //9  stations
@@ -53,7 +53,7 @@ class InlineHelp {
             'documentation/reglages/affichage', //3  source: settings - display tab
             'documentation/reglages/seuils', //4  source: settings - thresholds tab
             'documentation/reglages/systeme', //5  source: settings - system tab
-            'documentation/donnees-dhistorique/', //6  source: settings - history tab
+            'documentation/historisation-donnees/', //6  source: settings - history tab
             'assistance/questions-frequentes', //7  faq section
             'documentation/tableau-de-bord', //8  dashboard
             'documentation/gestion-des-stations', //9  stations

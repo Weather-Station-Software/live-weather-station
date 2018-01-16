@@ -90,6 +90,10 @@ class Handling {
      * @since 3.0.0
      */
     public function __construct($Live_Weather_Station, $version, $station) {
+        $page = filter_input(INPUT_GET, 'page');
+        if (strpos($page, 'lws-') === false) {
+            return;
+        }
         $this->Live_Weather_Station = $Live_Weather_Station;
         $this->version = $version;
         $this->register_modules();
@@ -160,7 +164,7 @@ class Handling {
      */
     private function get_args() {
         if (!($id = filter_input(INPUT_GET, 'id'))) {
-            if (!$id = filter_input(INPUT_POST, 'id')) {
+            if (!($id = filter_input(INPUT_POST, 'id'))) {
                 $id = 0;
             }
         }
@@ -188,160 +192,159 @@ class Handling {
      * @since 3.0.0
      */
     public function edit_station() {
-        if ($this->arg_service == 'station' && $this->arg_tab == 'edit' && $this->arg_action == 'manage') {
+        if ($this->arg_service == 'station' && $this->arg_tab == 'view' && $this->arg_action == 'manage') {
             $station = array();
-            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'edit-station')) {
-                if (array_key_exists('guid', $_POST)) {
-                    $guid = stripslashes(htmlspecialchars_decode($_POST['guid']));
-                    $save = false;
-                    $connect = false;
-                    $owm = false;
-                    $wug = false;
-                    $pws = false;
-                    $wow = false;
-                    if (($guid != 0) && ($guid == $this->station_guid)) {
-                        $station = $this->get_station_informations_by_guid($guid);
-                        if (array_key_exists('submit-publish', $_POST)) {
-                            foreach ($this->publishing_proto as $proto) {
-                                if (array_key_exists($proto . '_sync', $_POST)) {
-                                    $station[$proto . '_sync'] = 1;
+            if (array_key_exists('_wpnonce', $_POST)) {
+                if (wp_verify_nonce($_POST['_wpnonce'], 'edit-station')) {
+                    if (array_key_exists('guid', $_POST)) {
+                        $guid = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                        $save = false;
+                        $connect = false;
+                        $owm = false;
+                        $wug = false;
+                        $pws = false;
+                        $wow = false;
+                        if (($guid != 0) && ($guid == $this->station_guid)) {
+                            $station = $this->get_station_informations_by_guid($guid);
+                            if (array_key_exists('submit-publish', $_POST)) {
+                                foreach ($this->publishing_proto as $proto) {
+                                    if (array_key_exists($proto . '_sync', $_POST)) {
+                                        $station[$proto . '_sync'] = 1;
+                                    } else {
+                                        $station[$proto . '_sync'] = 0;
+                                    }
+                                }
+                                $save = true;
+                            }
+                            if (array_key_exists('wow-unshare', $_POST)) {
+                                $station['wow_sync'] = 0;
+                                $station['wow_user'] = '';
+                                $station['wow_password'] = '';
+                                $save = true;
+                            }
+                            if (array_key_exists('pws-unshare', $_POST)) {
+                                $station['pws_sync'] = 0;
+                                $station['pws_user'] = '';
+                                $station['pws_password'] = '';
+                                $save = true;
+                            }
+                            if (array_key_exists('wug-unshare', $_POST)) {
+                                $station['wug_sync'] = 0;
+                                $station['wug_user'] = '';
+                                $station['wug_password'] = '';
+                                $save = true;
+                            }
+                            if (array_key_exists('wow-share', $_POST)) {
+                                if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
+                                    $station['wow_user'] = stripslashes(htmlspecialchars_decode($_POST['user']));
+                                    $station['wow_password'] = stripslashes(htmlspecialchars_decode($_POST['password']));
+                                    $station['wow_sync'] = 1;
+                                    $wow = true;
+                                    $connect = true;
+                                }
+                            }
+                            if (array_key_exists('pws-share', $_POST)) {
+                                if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
+                                    $station['pws_user'] = stripslashes(htmlspecialchars_decode($_POST['user']));
+                                    $station['pws_password'] = stripslashes(htmlspecialchars_decode($_POST['password']));
+                                    $station['pws_sync'] = 1;
+                                    $pws = true;
+                                    $connect = true;
+                                }
+                            }
+                            if (array_key_exists('wug-share', $_POST)) {
+                                if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
+                                    $station['wug_user'] = stripslashes(htmlspecialchars_decode($_POST['user']));
+                                    $station['wug_password'] = stripslashes(htmlspecialchars_decode($_POST['password']));
+                                    $station['wug_sync'] = 1;
+                                    $wug = true;
+                                    $connect = true;
+                                }
+                            }
+                            if ($connect) {
+                                $this->update_stations_table($station);
+                                $datas = array();
+                                $save = true;
+                                $service_name = null;
+                                $result = 'unknown reason...';
+                                try {
+                                    if ($owm) {
+                                        $push = new OWM_Pusher();
+                                        if (($result = $push->push_data(array($station))) != '') {
+                                            $station['owm_sync'] = 0;
+                                            $station['owm_user'] = '';
+                                            $station['owm_password'] = '';
+                                            $save = false;
+                                            $service_name = 'OpenWeatherMap';
+                                        }
+                                    }
+                                    if ($wug) {
+                                        $push = new WUG_Pusher();
+                                        if (($result = $push->push_data(array($station))) != '') {
+                                            $station['wug_sync'] = 0;
+                                            $station['wug_user'] = '';
+                                            $station['wug_password'] = '';
+                                            $save = false;
+                                            $service_name = 'Weather Underground';
+                                        }
+                                    }
+                                    if ($wow) {
+                                        $push = new WOW_Pusher();
+                                        if (($result = $push->push_data(array($station))) != '') {
+                                            $station['wow_sync'] = 0;
+                                            $station['wow_user'] = '';
+                                            $station['wow_password'] = '';
+                                            $save = false;
+                                            $service_name = 'WOW Met Office';
+                                        }
+                                    }
+                                    if ($pws) {
+                                        $push = new PWS_Pusher();
+                                        if (($result = $push->push_data(array($station))) != '') {
+                                            $station['pws_sync'] = 0;
+                                            $station['pws_user'] = '';
+                                            $station['pws_password'] = '';
+                                            $save = false;
+                                            $service_name = 'PWS Weather';
+                                        }
+                                    }
+                                    if (!$save) {
+                                        $message = __('Unable to activate data sharing with %s.', 'live-weather-station');
+                                        $message = sprintf($message, '<em>' . $service_name . '</em>');
+                                        add_settings_error('lws_nonce_error', 403, $message, 'error');
+                                        Logger::error($this->service, $service_name, $station['station_id'], $station['station_name'], null, null, null, 'Unable to share data with this service: ' . $result);
+                                    }
+                                } catch (\Exception $ex) {
+                                    //error_log(LWS_PLUGIN_NAME . ' / ' . LWS_VERSION . ' / ' . get_class() . ' / ' . get_class($this) . ' / Error code: ' . $ex->getCode() . ' / Error message: ' . $ex->getMessage());
+                                }
+                            }
+                            if ($this->update_stations_table($station)) {
+                                if ($save) {
+                                    $message = __('The station %s has been correctly updated.', 'live-weather-station');
+                                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                                    add_settings_error('lws_nonce_success', 200, $message, 'updated');
+                                    Logger::notice($this->service, null, $station['station_id'], $station['station_name'], null, null, null, 'Station updated.');
+                                    Framework::apply_configuration();
                                 } else {
-                                    $station[$proto . '_sync'] = 0;
-                                }
-                            }
-                            $save = true;
-                        }
-                        if (array_key_exists('wow-unshare', $_POST)) {
-                            $station['wow_sync'] = 0;
-                            $station['wow_user'] = '';
-                            $station['wow_password'] = '';
-                            $save = true;
-                        }
-                        if (array_key_exists('pws-unshare', $_POST)) {
-                            $station['pws_sync'] = 0;
-                            $station['pws_user'] = '';
-                            $station['pws_password'] = '';
-                            $save = true;
-                        }
-                        if (array_key_exists('wug-unshare', $_POST)) {
-                            $station['wug_sync'] = 0;
-                            $station['wug_user'] = '';
-                            $station['wug_password'] = '';
-                            $save = true;
-                        }
-                        if (array_key_exists('wow-share', $_POST)) {
-                            if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
-                                $station['wow_user'] = stripslashes(htmlspecialchars_decode($_POST['user']));
-                                $station['wow_password'] = stripslashes(htmlspecialchars_decode($_POST['password']));
-                                $station['wow_sync'] = 1;
-                                $wow = true;
-                                $connect = true;
-                            }
-                        }
-                        if (array_key_exists('pws-share', $_POST)) {
-                            if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
-                                $station['pws_user'] = stripslashes(htmlspecialchars_decode($_POST['user']));
-                                $station['pws_password'] = stripslashes(htmlspecialchars_decode($_POST['password']));
-                                $station['pws_sync'] = 1;
-                                $pws = true;
-                                $connect = true;
-                            }
-                        }
-                        if (array_key_exists('wug-share', $_POST)) {
-                            if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
-                                $station['wug_user'] = stripslashes(htmlspecialchars_decode($_POST['user']));
-                                $station['wug_password'] = stripslashes(htmlspecialchars_decode($_POST['password']));
-                                $station['wug_sync'] = 1;
-                                $wug = true;
-                                $connect = true;
-                            }
-                        }
-                        if ($connect) {
-                            $this->update_stations_table($station);
-                            $datas = array();
-                            $save = true;
-                            $service_name = null;
-                            $result = 'unknown reason...';
-                            try {
-                                if ($owm) {
-                                    $push = new OWM_Pusher();
-                                    if (($result = $push->push_data(array($station))) != '') {
-                                        $station['owm_sync'] = 0;
-                                        $station['owm_user'] = '';
-                                        $station['owm_password'] = '';
-                                        $save = false;
-                                        $service_name = 'OpenWeatherMap';
-                                    }
-                                }
-                                if ($wug) {
-                                    $push = new WUG_Pusher();
-                                    if (($result = $push->push_data(array($station))) != '') {
-                                        $station['wug_sync'] = 0;
-                                        $station['wug_user'] = '';
-                                        $station['wug_password'] = '';
-                                        $save = false;
-                                        $service_name = 'Weather Underground';
-                                    }
-                                }
-                                if ($wow) {
-                                    $push = new WOW_Pusher();
-                                    if (($result = $push->push_data(array($station))) != '') {
-                                        $station['wow_sync'] = 0;
-                                        $station['wow_user'] = '';
-                                        $station['wow_password'] = '';
-                                        $save = false;
-                                        $service_name = 'WOW Met Office';
-                                    }
-                                }
-                                if ($pws) {
-                                    $push = new PWS_Pusher();
-                                    if (($result = $push->push_data(array($station))) != '') {
-                                        $station['pws_sync'] = 0;
-                                        $station['pws_user'] = '';
-                                        $station['pws_password'] = '';
-                                        $save = false;
-                                        $service_name = 'PWS Weather';
-                                    }
-                                }
-                                if (!$save) {
-                                    $message = __('Unable to activate data sharing with %s.', 'live-weather-station');
-                                    $message = sprintf($message, '<em>' . $service_name . '</em>');
+                                    $message = __('Unable to update the station %s.', 'live-weather-station');
+                                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                                     add_settings_error('lws_nonce_error', 403, $message, 'error');
-                                    Logger::error($this->service, $service_name, $station['station_id'], $station['station_name'], null, null, null, 'Unable to share data with this service: ' . $result);
+                                    Logger::error($this->service, null, $station['station_id'], $station['station_name'], null, null, null, 'Unable to update the station.');
                                 }
-                            }
-                            catch (\Exception $ex) {
-                                //error_log(LWS_PLUGIN_NAME . ' / ' . LWS_VERSION . ' / ' . get_class() . ' / ' . get_class($this) . ' / Error code: ' . $ex->getCode() . ' / Error message: ' . $ex->getMessage());
-                            }
-                        }
-                        if ($this->update_stations_table($station)) {
-                            if ($save) {
-                                $message = __('The station %s has been correctly updated.', 'live-weather-station');
-                                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
-                                add_settings_error('lws_nonce_success', 200, $message, 'updated');
-                                Logger::notice($this->service, null, $station['station_id'], $station['station_name'], null, null, null, 'Station updated.');
-                                Framework::apply_configuration();
-                            }
-                            else {
+                            } else {
                                 $message = __('Unable to update the station %s.', 'live-weather-station');
                                 $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                                 Logger::error($this->service, null, $station['station_id'], $station['station_name'], null, null, null, 'Unable to update the station.');
                             }
                         }
-                        else {
-                            $message = __('Unable to update the station %s.', 'live-weather-station');
-                            $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
-                            add_settings_error('lws_nonce_error', 403, $message, 'error');
-                            Logger::error($this->service, null, $station['station_id'], $station['station_name'], null, null, null, 'Unable to update the station.');
-                        }
                     }
+                } else {
+                    $message = __('Unable to perform this update.', 'live-weather-station');
+                    add_settings_error('lws_nonce_error', 403, $message, 'error');
+                    Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
+                    Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to securely perform an update for a station.');
                 }
-            } else {
-                $message = __('Unable to perform this update.', 'live-weather-station');
-                add_settings_error('lws_nonce_error', 403, $message, 'error');
-                Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-                Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to securely perform an update for a station.');
             }
         }
     }

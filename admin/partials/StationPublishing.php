@@ -35,10 +35,7 @@ $message_real = sprintf(__('This file can be accessed at %s or at %s.', 'live-we
 
 ?>
 
-<form action="<?php echo esc_url(get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid'])); ?>" method="POST" style="margin:0px;padding:0px;">
-    <input type="hidden" name="action" value="manage" />
-    <input type="hidden" name="service" value="station" />
-    <input type="hidden" name="tab" value="edit" />
+<form name="publish" id="publish" action="<?php echo esc_url(get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
     <input type="hidden" name="guid" value="<?php echo $station['guid']; ?>" />
     <?php wp_nonce_field('edit-station', '_wpnonce', false ); ?>
     <div class="inside" style="padding: 11px;">
