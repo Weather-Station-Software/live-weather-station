@@ -10,7 +10,6 @@
  * 3.x - Forest fire weather index computing
  * 3.x - Aridity index computing
  * 3.x - Pushing data to twitter / slack / fb / ...
- * 3.x - Visibility
  * 3.x - Number formating
  * 3.x - Historical data import
  * 3.x - Astronomical seasons for period control
@@ -43,7 +42,6 @@
 ***********************
 
  * 3.x - Ability to change text color in clean gauges
- * 3.x - Wordpress env.
  * 3.x - Scale alignment in L&B chart (when same dimension)
 
 

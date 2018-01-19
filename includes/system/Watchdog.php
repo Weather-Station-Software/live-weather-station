@@ -168,6 +168,7 @@ class Watchdog {
     public static function write_stats(){
         $now = date('Y-m-d H') . ':00:00';
         global $wpdb;
+        $err_bup = $wpdb->show_errors(false);
         $field_insert = array('timestamp', 'cron', 'count', 'time');
         foreach (self::$stats as $key => $values) {
             $value_insert = array();
@@ -189,6 +190,7 @@ class Watchdog {
                 Logger::warning('Watchdog',null,null,null,null,null,null,'Table "' . $wpdb->prefix.self::live_weather_station_performance_cron_table() . '" not ready. This is likely a temporary defect.');
             }
         }
+        $wpdb->show_errors($err_bup);
     }
 
 }

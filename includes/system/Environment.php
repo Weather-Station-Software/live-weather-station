@@ -780,12 +780,93 @@ class Manager {
     }
 
     /**
+     * Get the database size.
+     *
+     * @since 3.4.1
+     */
+    public static function mysql_total_size() {
+        global $wpdb;
+        $query = $wpdb->get_results('SHOW TABLE STATUS', ARRAY_A);
+        $result = 0;
+        if ($wpdb->num_rows > 0) {
+            foreach ($query as $row) {
+                $result += $row['Data_length'] + $row['Index_length'];
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get the database size allocated for Weather Station.
+     *
+     * @since 3.4.1
+     */
+    public static function mysql_lws_size() {
+        global $wpdb;
+        $query = $wpdb->get_results('SHOW TABLE STATUS', ARRAY_A);
+        $result = 0;
+        if ($wpdb->num_rows > 0) {
+            foreach ($query as $row) {
+                if (strpos($row['Name'], 'live_weather_station_') !== false) {
+                    $result += $row['Data_length'] + $row['Index_length'];
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Get the MYSQL version human readable.
      *
      * @since 3.0.0
      */
     public static function mysql_version_text() {
         return 'MySQL ' . self::mysql_version();
+    }
+
+    /**
+     * Get the database size human readable.
+     *
+     * @since 3.4.1
+     */
+    public static function mysql_total_size_text() {
+        return size_format(self::mysql_total_size(), 1);
+    }
+
+    /**
+     * Get the database size allocated for Weather Station human readable.
+     *
+     * @since 3.4.1
+     */
+    public static function mysql_lws_size_text() {
+        return size_format(self::mysql_lws_size(), 1);
+    }
+
+    /**
+     * Get the database name and host.
+     *
+     * @since 3.4.1
+     */
+    public static function mysql_name_text() {
+        return DB_NAME . '@' . DB_HOST;
+    }
+
+    /**
+     * Get the database charset.
+     *
+     * @since 3.4.1
+     */
+    public static function mysql_charset_text() {
+        return DB_CHARSET;
+    }
+
+    /**
+     * Get the database charset.
+     *
+     * @since 3.4.1
+     */
+    public static function mysql_user_text() {
+        return DB_USER;
     }
 
     /**
@@ -810,6 +891,34 @@ class Manager {
     public static function wordpress_version_id() {
         global $wp_version;
         return 'WordPress/' . $wp_version;
+    }
+
+    /**
+     * Get the Wordpress debug statu.
+     *
+     * @since 3.0.0
+     */
+    public static function wordpress_debug_text() {
+        $debug = false;
+        $opt = array();
+        $s = '';
+        if (defined('WP_DEBUG')) {
+            if (WP_DEBUG) {
+                $debug = true;
+                if (defined('WP_DEBUG_LOG')) {
+                    if (WP_DEBUG_LOG) {
+                        $opt[] = __('log', 'live-weather-station');
+                    }
+                }
+                if (defined('WP_DEBUG_DISPLAY')) {
+                    if (WP_DEBUG_DISPLAY) {
+                        $opt[] = __('display', 'live-weather-station');
+                    }
+                }
+                $s = implode(', ', $opt);
+            }
+        }
+        return ($debug ? __('Debug enabled', 'live-weather-station') .($s != '' ? ' (' . $s . ')' : '') :  __('Debug disabled', 'live-weather-station'));
     }
 
     /**
@@ -929,26 +1038,76 @@ class Manager {
     }
 
     /**
-     * Get installed cache name.
+     * Verify if opcache is active.
      *
      * @since 3.4.0
      */
-    public static function installed_cache_name() {
+    public static function is_opcache_installed() {
+        if (function_exists('opcache_get_status')) {
+            return opcache_get_status()['opcache_enabled'];
+
+        }
+        else return false;
+    }
+
+    /**
+     * Verify if WP_CACHE is active.
+     *
+     * @since 3.4.0
+     */
+    public static function is_wpcache_installed() {
+        if (defined('WP_CACHE')) {
+            return WP_CACHE;
+
+        }
+        else return false;
+    }
+
+    /**
+     * Get the installed cache name.
+     *
+     * @since 3.4.0
+     */
+    public static function get_installed_cache_name() {
+        $result = '';
         if (self::is_wp_rocket_installed()) {
-            return 'WP Rocket';
+            $result = 'WP Rocket';
         }
         if (self::is_wp_super_cache_installed()) {
-            return 'WP Super Cache';
+            $result = 'WP Super Cache';
         }
         if (self::is_w3_total_cache_installed()) {
-            return 'W3 Total Cache';
+            $result = 'W3 Total Cache';
         }
         if (self::is_autoptimize_installed()) {
-            return 'Autoptimize';
+            $result = 'Autoptimize';
         }
         if (self::is_hyper_cache_installed()) {
-            return 'Hyper Cache';
+            $result = 'Hyper Cache';
         }
+        return $result;
+    }
+
+    /**
+     * Get the Wordpress cache text.
+     *
+     * @since 3.4.1
+     */
+    public static function wordpress_cache_text() {
+        $opt = array();
+        if (self::is_wpcache_installed()) {
+            $opt[] = ucfirst(__('persistent cache', 'live-weather-station'));
+        }
+        else {
+            $opt[] = ucfirst(__('transient cache', 'live-weather-station'));
+        }
+        if (self::is_opcache_installed()) {
+            $opt[] = __('OPcache', 'live-weather-station');
+        }
+        if (self::is_cache_installed()) {
+            $opt[] = self::get_installed_cache_name();
+        }
+        return implode(' + ', $opt);
     }
 
     /**
@@ -960,6 +1119,106 @@ class Manager {
         return self::is_wp_rocket_installed() || self::is_wp_super_cache_installed() ||
                self::is_w3_total_cache_installed() || self::is_autoptimize_installed() ||
                self::is_hyper_cache_installed();
+    }
+
+    /**
+     * Verify if Polylang is installed.
+     *
+     * @since 3.4.1
+     */
+    public static function is_polylang_installed() {
+        return function_exists('pll_current_language');
+    }
+
+    /**
+     * Verify if WPML is installed.
+     *
+     * @since 3.4.1
+     */
+    public static function is_wpml_installed() {
+        return function_exists('icl_object_id');
+    }
+
+    /**
+     * Verify if Babble is installed.
+     *
+     * @since 3.4.1
+     */
+    public static function is_babble_installed() {
+        return function_exists('bbl_get_current_content_lang_code');
+    }
+
+    /**
+     * Verify if Weglot is installed.
+     *
+     * @since 3.4.1
+     */
+    public static function is_weglot_installed() {
+        return class_exists('Weglot');
+    }
+
+
+    /**
+     * Get the installed multilang manager name.
+     *
+     * @since 3.4.1
+     */
+    public static function get_installed_multilang_name() {
+        $result = '';
+        if (self::is_polylang_installed()) {
+            $result = 'Polylang';
+        }
+        elseif (self::is_wpml_installed()) {
+            $result = 'WPML';
+        }
+        if (self::is_babble_installed()) {
+            $result = 'Babble';
+        }
+        if (self::is_weglot_installed()) {
+            $result = 'Weglot';
+        }
+        return $result;
+    }
+
+    /**
+     * Verify if a multilang manager is installed.
+     *
+     * @since 3.4.1
+     */
+    public static function is_multilang_installed() {
+        return self::is_polylang_installed() || self::is_wpml_installed() ||
+            self::is_babble_installed() || self::is_weglot_installed();
+    }
+
+    /**
+     * Get the current language id for the page.
+     *
+     * @since 3.4.1
+     */
+    public static function get_multilang_language_id() {
+        $result = 'xx';
+        if (self::is_polylang_installed()) {
+            $result = pll_current_language();
+        }
+        else if (self::is_wpml_installed()) {
+            $result = ICL_LANGUAGE_CODE;
+        }
+        if (self::is_babble_installed()) {
+            $result = bbl_get_current_content_lang_code();
+        }
+        if (self::is_weglot_installed()) {
+            $result = Weglot::Instance()->getCurrentLang();
+        }
+        return strtolower($result);
+    }
+
+    /**
+     * Get the cache prefix.
+     *
+     * @since 3.4.1
+     */
+    public static function get_cache_prefix() {
+        return self::get_multilang_language_id() . '_';
     }
 
 }
