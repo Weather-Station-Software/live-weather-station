@@ -63,6 +63,7 @@ trait CurrentClient {
         if (!is_array($weather)) {
             throw new \Exception('JSON / '.(string)$json_weather);
         }
+        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($weather, true));
         if (array_key_exists('cod', $weather) && $weather['cod'] != 200) {
             if (array_key_exists('message', $weather)) {
                 throw new \Exception($weather['message']);
@@ -137,6 +138,12 @@ trait CurrentClient {
                 $result['data_type'][] = 'cloudiness';
             } else {
                 $dashboard['cloudiness'] = 0;
+            }
+            if (array_key_exists('visibility', $weather)) {
+                $dashboard['visibility'] = $weather['visibility'];
+                $result['data_type'][] = 'visibility';
+            } else {
+                $dashboard['visibility'] = -1;
             }
             if (array_key_exists('sys', $weather) && is_array($weather['sys']) && isset($weather['sys']['sunrise']) && isset($weather['sys']['sunset'])) {
                 $now = time();

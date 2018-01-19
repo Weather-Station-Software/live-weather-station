@@ -570,6 +570,9 @@ trait Description {
             case 'strike_bearing':
                 $result = ($abbr ? __('Strike bear.', 'live-weather-station') : __('Strike bearing', 'live-weather-station'));
                 break;
+            case 'visibility':
+                $result = ($abbr ? __('Visibility', 'live-weather-station') : __('Visibility', 'live-weather-station'));
+                break;
             default:
                 $result = ($abbr ? '?' : __('Unknown measurement', 'live-weather-station'));
         }

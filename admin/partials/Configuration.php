@@ -24,6 +24,8 @@
             <div class="postbox-container" style="width: 100%;margin-right: 10px;">
                 <?php include(LWS_ADMIN_DIR.'partials/DetailedServer.php'); ?>
                 <?php include(LWS_ADMIN_DIR.'partials/DetailedWebserver.php'); ?>
+                <?php include(LWS_ADMIN_DIR.'partials/DetailedDB.php'); ?>
+                <?php include(LWS_ADMIN_DIR.'partials/DetailedWordPress.php'); ?>
                 <?php include(LWS_ADMIN_DIR.'partials/PhpInfo.php'); ?>
             </div>
         </div>

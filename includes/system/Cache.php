@@ -4,6 +4,7 @@ namespace WeatherStation\System\Cache;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\DB\Storage;
 use WeatherStation\System\Schedules\Watchdog;
+use WeatherStation\System\Environment\Manager as Env;
 
 /**
  * The class to manage backend and frontend cache.
@@ -156,6 +157,7 @@ class Cache {
      *
      */
     public static function get_backend($cache_id) {
+        $cache_id = Env::get_cache_prefix() . $cache_id;
         self::_init_chrono($cache_id);
         if (!(bool)get_option('live_weather_station_backend_cache')) {
             return false;
@@ -181,6 +183,7 @@ class Cache {
      *
      */
     public static function set_backend($cache_id, $value) {
+        $cache_id = Env::get_cache_prefix() . $cache_id;
         if (!(bool)get_option('live_weather_station_backend_cache')) {
             return false;
         }
@@ -200,6 +203,7 @@ class Cache {
      *
      */
     public static function invalidate_backend($cache_id) {
+        $cache_id = Env::get_cache_prefix() . $cache_id;
         if (!(bool)get_option('live_weather_station_backend_cache')) {
             return false;
         }
@@ -244,6 +248,7 @@ class Cache {
      *
      */
     public static function get_frontend($cache_id) {
+        $cache_id = Env::get_cache_prefix() . $cache_id;
         self::_init_chrono(self::$frontend.'_'.$cache_id);
         if (!(bool)get_option('live_weather_station_frontend_cache')) {
             return false;
@@ -269,6 +274,7 @@ class Cache {
      *
      */
     public static function set_frontend($cache_id, $value) {
+        $cache_id = Env::get_cache_prefix() . $cache_id;
         if (!(bool)get_option('live_weather_station_frontend_cache')) {
             return false;
         }
@@ -288,6 +294,7 @@ class Cache {
      *
      */
     public static function invalidate_frontend($cache_id) {
+        $cache_id = Env::get_cache_prefix() . $cache_id;
         if (!(bool)get_option('live_weather_station_frontend_cache')) {
             return false;
         }
@@ -321,6 +328,7 @@ class Cache {
      *
      */
     public static function get_graph($cache_id, $mode='daily') {
+        $cache_id = Env::get_cache_prefix() . $cache_id;
         if ($mode == 'yearly') {
             $id = self::$ygraph.'_'.$cache_id;
             $cache = (bool)get_option('live_weather_station_ygraph_cache');
@@ -355,6 +363,7 @@ class Cache {
      *
      */
     public static function set_graph($cache_id, $mode='daily', $value) {
+        $cache_id = Env::get_cache_prefix() . $cache_id;
         if ($mode == 'yearly') {
             $id = self::$ygraph.'_'.$cache_id;
             $expiry = self::$ygraph_expiry;
@@ -385,6 +394,7 @@ class Cache {
      *
      */
     public static function invalidate_graph($cache_id, $mode='daily') {
+        $cache_id = Env::get_cache_prefix() . $cache_id;
         if ($mode == 'yearly') {
             $id = self::$ygraph.'_'.$cache_id;
             $cache = (bool)get_option('live_weather_station_ygraph_cache');
@@ -425,6 +435,7 @@ class Cache {
      *
      */
     public static function get_widget($cache_id) {
+        $cache_id = Env::get_cache_prefix() . $cache_id;
         self::_init_chrono(self::$widget.'_'.$cache_id);
         if (!(bool)get_option('live_weather_station_widget_cache')) {
             return false;
@@ -450,6 +461,7 @@ class Cache {
      *
      */
     public static function set_widget($cache_id, $value) {
+        $cache_id = Env::get_cache_prefix() . $cache_id;
         if (!(bool)get_option('live_weather_station_widget_cache')) {
             return false;
         }
@@ -469,6 +481,7 @@ class Cache {
      *
      */
     public static function invalidate_widget($cache_id) {
+        $cache_id = Env::get_cache_prefix() . $cache_id;
         if (!(bool)get_option('live_weather_station_widget_cache')) {
             return false;
         }
@@ -562,6 +575,7 @@ class Cache {
      *
      */
     public static function get_query($cache_id) {
+        $cache_id = Env::get_cache_prefix() . $cache_id;
         if (!(bool)get_option('live_weather_station_query_cache')) {
             return false;
         }
@@ -583,6 +597,7 @@ class Cache {
      *
      */
     public static function set_query($cache_id, $value) {
+        $cache_id = Env::get_cache_prefix() . $cache_id;
         if (!(bool)get_option('live_weather_station_query_cache')) {
             return false;
         }
@@ -600,6 +615,7 @@ class Cache {
      *
      */
     public static function invalidate_query($cache_id) {
+        $cache_id = Env::get_cache_prefix() . $cache_id;
         if (!(bool)get_option('live_weather_station_query_cache')) {
             return false;
         }
@@ -682,6 +698,7 @@ class Cache {
     public static function write_stats(){
         $now = date('Y-m-d H') . ':00:00';
         global $wpdb;
+        $err_bup = $wpdb->show_errors(false);
         $fields = array ('hit_count', 'hit_time', 'miss_count', 'miss_time');
         $field_insert = array('timestamp');
         $value_insert = array("'".$now."'");
@@ -702,6 +719,7 @@ class Cache {
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
             $wpdb->query($sql);
         }
+        $wpdb->show_errors($err_bup);
     }
 
     /**

@@ -44,7 +44,7 @@ trait Output {
         'equivalent_temperature', 'potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
         'partial_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 'soil_temperature', 'leaf_wetness',
         'moisture_content', 'moisture_tension', 'evapotranspiration', 'strike_count', 'strike_instant',
-        'strike_distance', 'strike_bearing');
+        'strike_distance', 'strike_bearing', 'visibility');
     private $not_showable_measurements = array('battery', 'firmware', 'signal', 'loc_timezone', 'loc_altitude',
         'loc_latitude', 'loc_longitude', 'last_seen', 'last_refresh', 'first_setup', 'last_upgrade', 'last_setup',
         'sunrise_c','sunrise_n','sunrise_a', 'sunset_c','sunset_n', 'sunset_a', 'day_length_c', 'day_length_n',
@@ -332,7 +332,7 @@ trait Output {
                                 $set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
                                 $val = 'AVG(`measure_value`) as computed_value';
                             }
-                            $sql = "SELECT `timestamp`, `module_type`, " . $val . " FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $set . ";";
+                            $sql = "SELECT `timestamp`, `module_type`, " . $val . " FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $set . " ORDER BY `timestamp` ASC;";
                             try {
                                 $query = (array)$wpdb->get_results($sql);
                                 $query_a = (array)$query;
@@ -1705,6 +1705,7 @@ trait Output {
                     break;
                 default:
                     $cSize = 10;
+                    $ptop = 6;
                     if ($design == 'rdsquare') {$cRadius = 1;}
             }
             if ($design == 'round') {$cRadius = (int)round($cSize/2);}
@@ -1773,9 +1774,11 @@ trait Output {
 
         if ($type == 'calendarhm') {
             $result .= '<div class="module-' . $mode . '-' . $type . '" ><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:14px 14px 14px 14px;height: ' . $height . ';text-align: center;line-height: 1em;/*overflow: hidden;*/"><div id="' . $calendar . '" style="display: inline-block;/*height: ' . $inner_height . ';*/"></div>' . $label_txt . '</div></div>' . PHP_EOL;
+            $targetNode = $calendar;
         }
         else {
             $result .= '<div class="module-' . $mode . '-' . $type . '" ><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';"><svg id="' . $svg . '" style="overflow:hidden;"></svg></div></div>' . PHP_EOL;
+            $targetNode = $svg;
         }
         $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
@@ -1827,7 +1830,19 @@ trait Output {
             }
             $result .= '});';
         }
-
+        if ($type != 'calendarhm') {
+            $result .= 'var targetNode' . $uniq . ' = document.getElementById("' . $uniq . '").parentElement.parentElement.parentElement.parentElement;' . PHP_EOL;
+            $result .= 'var callback' . $uniq . ' = function(mutationsList) {' . PHP_EOL;
+            $result .= '    for(var mutation of mutationsList) {' . PHP_EOL;
+            $result .= '        if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display != "none") { if (mutation.oldValue !== null) {if (mutation.oldValue.indexOf("display: none") != -1) {chart'.$uniq.'.update();}}}}}' . PHP_EOL;
+            $result .= '    }' . PHP_EOL;
+            $result .= '};' . PHP_EOL;
+            $result .= 'var observer' . $uniq . ' = new MutationObserver(callback' . $uniq . ');' . PHP_EOL;
+            $result .= 'observer' . $uniq . '.observe(targetNode' . $uniq . ',{attributes: true, subtree: true, attributeOldValue: true});' . PHP_EOL;
+            $result .= '' . PHP_EOL;
+            $result .= '' . PHP_EOL;
+            $result .= '' . PHP_EOL;
+        }
         $result .= '  });' . PHP_EOL;
         $result .= '</script>' . PHP_EOL;
 
@@ -4243,6 +4258,11 @@ trait Output {
                 $result = $this->get_wind_angle($value);
                 $result .= ($unit ? $this->unit_espace.$this->get_wind_angle_unit() : '');
                 break;
+            case 'visibility':
+                $ref = get_option('live_weather_station_unit_distance');
+                $result = $this->get_visibility($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_altitude_unit($ref) : '');
+                break;
             }
         return $result;
     }
@@ -4621,6 +4641,9 @@ trait Output {
                 break;
             case 'strike_distance':
                 $result = '<i %1$s class="fa fa-fw %2$s fa-crosshairs" aria-hidden="true"></i>';
+                break;
+            case 'visibility':
+                $result = '<i %1$s class="fa fa-fw %2$s fa-eye-slash" aria-hidden="true"></i>';
                 break;
             case 'strike_bearing':
                 if ($show_value) {
@@ -5246,6 +5269,15 @@ trait Output {
                 $result['comp'] = __('last', 'live-weather-station') ;
                 $result['dimension'] = 'angle';
                 break;
+            case 'visibility':
+                $ref = get_option('live_weather_station_unit_distance');
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_altitude_unit($ref);
+                $result['long'] = $this->get_altitude_unit_full($ref);
+                $result['dimension'] = 'length';
+                break;
         }
         if ($result['comp'] != __('now', 'live-weather-station')) {
             $result['full'] = $result['unit'].' '.$result['comp'];   
@@ -5515,6 +5547,9 @@ trait Output {
                 break;
             case 'strike_distance':
                 $result = __('distance', 'live-weather-station') ;
+                break;
+            case 'visibility':
+                $result = __('visibility', 'live-weather-station') ;
                 break;
             case 'strike_bearing':
                 $result = __('bearing', 'live-weather-station') ;
@@ -6503,6 +6538,7 @@ trait Output {
                         case 'strike_count':
                         case 'strike_instant':
                         case 'strike_distance':
+                        case 'visibility':
                         case 'strike_bearing':
                         if (($data['measure_type'] == $measure_type) || $aggregated || $outdoor) {
                             $response[] = $measure;

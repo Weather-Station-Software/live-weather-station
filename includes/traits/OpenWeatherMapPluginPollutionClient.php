@@ -85,6 +85,7 @@ trait PollutionClient {
         if (!is_array($pollution)) {
             throw new \Exception('JSON / '.(string)$json_pollution['body']);
         }
+        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($pollution, true));
         $response = $json_pollution['response'];
         if (!is_array($response)) {
             throw new \Exception('JSON / '.(string)$json_pollution['response']);

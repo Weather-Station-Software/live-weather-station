@@ -40,6 +40,7 @@ trait StationClient {
         if (!is_array($weather)) {
             throw new \Exception('JSON / '.(string)$json_weather);
         }
+        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($weather, true));
         if (array_key_exists('cod', $weather) && $weather['cod'] != 200) {
             if (array_key_exists('message', $weather)) {
                 throw new \Exception($weather['message']);

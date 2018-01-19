@@ -732,6 +732,7 @@ trait Generator {
                 if (!$historical) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain');
                 }
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'visibility');
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'snow');
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle');
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength');

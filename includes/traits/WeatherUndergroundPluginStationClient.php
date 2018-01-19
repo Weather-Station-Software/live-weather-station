@@ -303,6 +303,45 @@ trait StationClient {
 
 
 
+            // NAModule5
+            $type = 'NAModule5';
+            $updates['device_id'] = $station['station_id'];
+            $updates['device_name'] = $station['station_name'];
+            $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 5);
+            $updates['module_type'] = $type;
+            $updates['module_name'] = $this->get_fake_module_name($type);
+            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_type'] = 'last_refresh';
+            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $this->update_data_table($updates);
+            $updates['measure_type'] = 'last_seen';
+            $updates['measure_value'] = $timestamp;
+            $updates['measure_timestamp'] = $timestamp;
+            $this->update_data_table($updates);
+            $updates['measure_timestamp'] = $timestamp;
+            if (array_key_exists('solarradiation', $observation)) {
+                $updates['measure_type'] = 'irradiance';
+                if (is_numeric($observation['solarradiation'])) {
+                    $updates['measure_value'] = $observation['solarradiation'];
+                }
+                else {
+                    $updates['measure_value'] = 0;
+                }
+                $this->update_data_table($updates);
+            }
+            $updates['measure_timestamp'] = $timestamp;
+            if (array_key_exists('UV', $observation)) {
+                $updates['measure_type'] = 'uv_index';
+                if (is_numeric($observation['UV'])) {
+                    $updates['measure_value'] = $observation['UV'];
+                }
+                else {
+                    $updates['measure_value'] = 0;
+                }
+                $this->update_data_table($updates);
+            }
+
+
         }
         else {
             Logger::notice($this->facility, $this->service_name, $station['station_id'], $station['station_name'], null, null, 0, 'Data are empty or irrelevant.');

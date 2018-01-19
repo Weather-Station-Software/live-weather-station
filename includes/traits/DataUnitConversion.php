@@ -1318,6 +1318,38 @@ trait Conversion {
     }
 
     /**
+     * Get the visibility expressed in specific unit.
+     *
+     * @param mixed $value The value of the altitude.
+     * @param integer $id Optional. The unit id.
+     * @return string The cloud ceiling altitude expressed in specific unit.
+     * @since 3.0.9
+     */
+    protected function get_visibility($value, $id = 0)
+    {
+        $result = $this->get_altitude($value, $id);
+        if ($result < 100) {
+            $result = 5 * round($result/5, 0);
+        }
+        elseif ($result < 200) {
+            $result = 10 * round($result/10, 0);
+        }
+        elseif ($result < 500) {
+            $result = 50 * round($result/50, 0);
+        }
+        elseif ($result < 2000) {
+            $result = 100 * round($result/100, 0);
+        }
+        elseif ($result < 10000) {
+            $result = 500 * round($result/500, 0);
+        }
+        else {
+            $result = 1000 * round($result/1000, 0);
+        }
+        return sprintf('%d', round($result, 0));
+    }
+
+    /**
      * Get the altitude expressed in specific unit.
      *
      * @param   mixed   $value  The value of the altitude.
@@ -1525,7 +1557,8 @@ trait Conversion {
                 $result = $this->get_reverse_illuminance($value);
                 break;
             case 'strike_distance':
-                $result = $this->get_reverse_distance_from_meters($value);
+            case 'visibility':
+                $result = $this->get_reverse_altitude($value, get_option('live_weather_station_unit_distance'));
                 break;
         }
         return $result;

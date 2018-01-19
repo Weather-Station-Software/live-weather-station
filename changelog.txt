@@ -1,4 +1,19 @@
 
+
+#3.4.1 / January 19th, 2018
+
+* Improvement: for multilingual sites, Weather Station now takes care of the page language in all controls and widgets. Compatible with Babble, Polylang, Weglot and WPML.
+* Improvement: for multilingual sites, cache management is now done on a per language basis.
+* Improvement: visibility is now collected for OpenWeatherMap stations and all stations under [Current Records] virtual module (and available in current, daily and historical data).
+* Improvement: UV index and irradiance are now collected for Weather Underground stations (and available in current, daily and historical data).
+* Improvement: the detailed server configuration is much more elaborated with Wordpress and database environments.
+* Bug fix: the display of oldest data date may be buggy for some very recently added stations.
+* Bug fix: graphs may have wrong width properties when inserted in tabs (thanks to Ralf Karpa and his son for detecting it).
+* Bug fix: daily graphs maybe unordered if you have manually inserted values in DB table - please, don't do that :-/ (thanks to Ralf Karpa for detecting it).
+* Bug fix: in some cases, last strike distance is wrong when expressed in imperial system.
+* Bug fix: a MySQL warning at plugin activation gives an error in smoke test.
+* Bug fix: there's some layout "glitches" in the charts with Safari and Chrome on iOS.
+
 #3.4.0 / January 16th, 2018
 
 * New: Weather Station now compiles data as daily and historical values.

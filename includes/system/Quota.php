@@ -355,6 +355,7 @@ class Quota {
         $now = substr($now, 0, strlen($now)-1);
         $now .= '0:00';
         global $wpdb;
+        $err_bup = $wpdb->show_errors(false);
         foreach (self::$stats as $key => $values) {
             $field_insert = array('timestamp', 'service');
             $value_insert = array();
@@ -372,6 +373,7 @@ class Quota {
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
             $wpdb->query($sql);
         }
+        $wpdb->show_errors($err_bup);
     }
 
     /**
