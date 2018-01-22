@@ -20,9 +20,12 @@ use WeatherStation\Engine\Module\Current\Textual;
 use WeatherStation\Engine\Module\Daily\Line as DailyLine;
 use WeatherStation\Engine\Module\Daily\Lines as DailyLines;
 use WeatherStation\Engine\Module\Yearly\Line as YearlyLine;
+use WeatherStation\Engine\Module\Yearly\Bar as YearlyBar;
+use WeatherStation\Engine\Module\Yearly\Bars as YearlyBars;
 use WeatherStation\Engine\Module\Yearly\CalendarHM as YearlyCalendarHM;
 use WeatherStation\Engine\Module\Yearly\BCLine as YearlyBCLine;
 use WeatherStation\Engine\Module\Yearly\Lines as YearlyLines;
+use WeatherStation\Engine\Module\Yearly\StackedAreas as YearlyStackedAreas;
 
 
 
@@ -76,9 +79,12 @@ class Handling {
         DailyLine::register_module('daily');
         DailyLines::register_module('daily');
         YearlyLine::register_module('yearly');
+        //YearlyBar::register_module('yearly');
         YearlyLines::register_module('yearly');
+        //YearlyBars::register_module('yearly');
         YearlyBCLine::register_module('yearly');
         YearlyCalendarHM::register_module('yearly');
+        //YearlyStackedAreas::register_module('yearly');
     }
 
     /**

@@ -49,15 +49,6 @@ trait Description {
     }
 
     /**
-     * Get the comparable dimensions.
-     * @return array The comparable dimensions.
-     * @since 3.4.0
-     */
-    protected function get_comparable_dimensions() {
-        return array('percentage', 'pressure-h', 'pressure', 'temperature', 'concentration-m', 'length', 'angle', 'speed', 'humidity');
-    }
-
-    /**
      * Get the module type in plain text.
      *
      * @param string $type The type of the module.
@@ -665,6 +656,15 @@ trait Description {
                 $result =  _n('Unknown', 'Unknown', $n, 'live-weather-station');
         }
         return $result;
+    }
+
+    /**
+     * Get the comparable dimensions.
+     * @return array The comparable dimensions.
+     * @since 3.4.0
+     */
+    protected function get_comparable_dimensions() {
+        return array('percentage', 'pressure-h', 'pressure', 'temperature', 'concentration-m', 'length', 'angle', 'speed', 'humidity', 'area-density', 'rate', 'density', 'irradiance', 'illuminance', 'specific-energy', 'specific-energy-k');
     }
 
     /**

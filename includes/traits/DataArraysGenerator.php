@@ -1635,6 +1635,34 @@ trait Generator {
     }
 
     /**
+     * Get bar group array.
+     *
+     * @return array An array containing the groups ready to convert to a JS array.
+     * @since 3.5.0
+     */
+    protected function get_bar_group_js_array() {
+        $result = array();
+        $result[] = array('free',  __('Free', 'live-weather-station'));
+        $result[] = array('grouped',  __('Grouped', 'live-weather-station'));
+        $result[] = array('stacked',  __('Stacked', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get stacked areas group array.
+     *
+     * @return array An array containing the groups ready to convert to a JS array.
+     * @since 3.5.0
+     */
+    protected function get_sareas_group_js_array() {
+        $result = array();
+        $result[] = array('stacked',  __('Stacked', 'live-weather-station'));
+        //$result[] = array('stream',  __('Stream', 'live-weather-station'));
+        $result[] = array('expanded',  __('Expanded', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
      * Get guideline array.
      *
      * @return array An array containing the guideline ready to convert to a JS array.
@@ -1798,6 +1826,19 @@ trait Generator {
     }
 
     /**
+     * Get stackable mode array.
+     *
+     * @return array An array containing the stackable mode ready to convert to a JS array.
+     * @since 3.5.0
+     */
+    protected function get_stackable_mode_js_array() {
+        $result = array();
+        $result[] = array('single',  __('Single', 'live-weather-station'));
+        $result[] = array('stackable',  __('Stackable', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
      * Get line size array.
      *
      * @return array An array containing the line size ready to convert to a JS array.
@@ -1886,6 +1927,19 @@ trait Generator {
         $result[] = array('cardinal',  __('Cardinal', 'live-weather-station'));
         $result[] = array('cardinal-open',  __('Cardinal - Open', 'live-weather-station'));
         $result[] = array('cardinal-closed',  __('Cardinal - Closed', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get starts stacking  array.
+     *
+     * @return array An array containing the start stacking ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_stacking_js_array() {
+        $result = array();
+        $result[] = array('grouped',  __('Grouped', 'live-weather-station'));
+        $result[] = array('stacked',  __('Stacked', 'live-weather-station'));
         return $result;
     }
 
