@@ -277,11 +277,15 @@ abstract class Maintainer {
             $id = 'o' . md5(random_bytes(20));
             $title = '';
         }
+        $style = array();
         if ($hidden) {
-            $visibility = ' style="visibility:hidden;"';
+            $style[] = 'visibility:hidden';
         }
         if (!$displayed) {
-            $visibility = ' style="display:none;"';
+            $style[] = 'display:none';
+        }
+        if (count($style) > 0) {
+            $visibility .= ' style="' . implode(';', $style) . '"';
         }
         $result = '';
         $result .= '<tr' . $visibility .'>';
@@ -738,7 +742,7 @@ abstract class Maintainer {
             $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").change(function() {';
             $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '" ).change();});';
         }
-        if ($this->module_type == 'lines') {
+        if ($this->module_type == 'lines' || $this->module_type == 'bars' || $this->module_type == 'sareas') {
             $content .= '$("#' . $name . '-datas-dimension-' .$this->station_guid . '").change(function() {';
             for ($i=1; $i<=$this->series_number; $i++) {
                 $content .= '$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . ' option[value=\'0\']").attr("selected", true);';
@@ -750,7 +754,7 @@ abstract class Maintainer {
             $content .= 'var js_array_' . $js_name . '_measurement_' . $this->station_guid . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$(this).val()][2];';
             $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").html("");';
             $content .= '$(js_array_' . $js_name . '_measurement_' . $this->station_guid . ').each(function (i) {';
-            if ($this->module_type == 'lines') {
+            if ($this->module_type == 'lines' || $this->module_type == 'bars' || $this->module_type == 'sareas') {
                 $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+" "+((js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] != $("#' . $name . '-datas-dimension-' . $this->station_guid . '").val() && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none") ? "disabled" : "")+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
             }
             else {
@@ -758,7 +762,7 @@ abstract class Maintainer {
             }
             $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '" ).change();});';
             $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").change(function() {';
-            if ($this->module_type == 'lines') {
+            if ($this->module_type == 'lines' || $this->module_type == 'bars' || $this->module_type == 'sareas') {
                 $content .= 'if ($("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").val() == 0) {';
                 $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . ' option[value=\'line\']").attr("selected", true);';
                 $content .= '$("#' . $name . '-datas-dot-style-' . $i . '-' . $this->station_guid . ' option[value=\'none\']").attr("selected", true);';

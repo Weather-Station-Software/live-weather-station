@@ -169,6 +169,8 @@ trait Output {
             $station_id = '';
             $ymin = 0;
             $ymax = 0;
+            $cmin = 0;
+            $cmax = 0;
             $ydmin = 0;
             $ydmax = 0;
             $yamin = 0;
@@ -336,8 +338,25 @@ trait Output {
                             try {
                                 $query = (array)$wpdb->get_results($sql);
                                 $query_a = (array)$query;
-
-                                if ($type == 'bcline' && $i == 1 && $mode == 'yearly' && $timescale != 'adaptative') {
+                                if ((($type == 'bcline' && $i == 1) || $type == 'bar' || $type == 'bars' || $type == 'sareas') && $mode == 'yearly' && $timescale != 'adaptative') {
+                                    $dummy = '0';
+                                    if ($type == 'sareas') {
+                                        $d = $this->decimal_for_output($arg['measurement']);
+                                        if ($d > 0) {
+                                            $dummy = '0.';
+                                        }
+                                        else {
+                                            $dummy = '1';
+                                        }
+                                        if ($d > 1) {
+                                            for ($i = 1; $i < $d; $i++) {
+                                                $dummy .= '0';
+                                            }
+                                        }
+                                        if ($d > 0) {
+                                            $dummy .= '1';
+                                        }
+                                    }
                                     if (count($query_a) > 0) {
                                         $module_type = (array)($query_a[0]);
                                         $module_type = $module_type['module_type'];
@@ -356,11 +375,12 @@ trait Output {
                                             $a = array();
                                             $a['timestamp'] = $__date;
                                             $a['module_type'] = $module_type;
-                                            $a['measure_value'] = '0';
+                                            $a['measure_value'] = $dummy;
                                             $t[$a['timestamp']] = $a;
                                         }
                                         $d += 86400;
                                     }
+                                    ksort($t);
                                     $query_a = array();
                                     foreach ($t as $key=>$val) {
                                         $query_a[] = $val;
@@ -453,7 +473,10 @@ trait Output {
                             if ($type == 'bcline' && $i == 1) {
                                 $info['bar'] = true;
                             }
-                            if ($self_color && $type != 'lines') {
+                            if (($type == 'bars' || $type == 'sareas') && $arg['line_mode'] == 'single') {
+                                $info['nonStackable'] = true;
+                            }
+                            if ($self_color && $type != 'lines' && $type != 'bars' && $type != 'sareas') {
                                 $info['color'] = $prop['fg_color'];
                             }
                             if (array_key_exists($arg['module_id'], $station['modules_names'])) {
@@ -540,7 +563,7 @@ trait Output {
                             $result['legend']['unit'] = $this->output_unit($arg['measurement'], $module_type);
                             $classes = array();
                             $classes[] = 'lws-serie-'.$i;
-                            if (array_key_exists('line_mode', $arg)) {
+                            if (array_key_exists('line_mode', $arg) && $type != 'bar' && $type != 'bars' && $type != 'sareas') {
                                 if ($arg['line_mode'] == 'area' || $arg['line_mode'] == 'arealine') {
                                     $info['area'] = true;
                                 }
@@ -574,18 +597,24 @@ trait Output {
                             }
                         }
                         $i += 1;
+                        $cmin += $ymin;
+                        $cmax += $ymax;
                     }
                 }
             }
             $result['ydomain']['min'] = $ymin;
             $result['ydomain']['max'] = $ymax;
+            if ($type == 'sareas') {
+                $result['ydomain']['min'] = $cmin;
+                $result['ydomain']['max'] = $cmax;
+            }
             $result['ydomain']['dmin'] = $ydmin;
             $result['ydomain']['dmax'] = $ydmax;
             $result['ydomain']['amin'] = $yamin;
             $result['ydomain']['amax'] = $yamax;
-        }
-        if ($attributes['cache'] != 'no_cache') {
-            Cache::set_graph($fingerprint, $attributes['mode'], $result);
+            if ($attributes['cache'] != 'no_cache') {
+                Cache::set_graph($fingerprint, $attributes['mode'], $result);
+            }
         }
         if ($json) {
             if ($raw_json) {
@@ -638,6 +667,9 @@ trait Output {
             case 'calendarhm':
             case 'line':
             case 'lines':
+            case 'bar':
+            case 'bars':
+            case 'sareas':
                 $name = $values['extras'][0]['measurement_type'];
                 if ($type == 'lines') {
                     $name = $this->get_dimension_name($values['legend']['unit']['dimension'], false, true);
@@ -966,7 +998,7 @@ trait Output {
             case 'night':
                 $prop['fg_color'] = '#4b4888';
                 $prop['bg_color'] = '#141442';
-                $prop['container'] = 'background-color:#101030;border-radius: 3px;border: solid 1px #2D2C3F;';
+                $prop['container'] = 'background-color:#101030;border-radius: 3px;border: 1px solid #2D2C3F;';
                 $prop['nv-axis-line'] = 'stroke: #2D2C40;';
                 $prop['nv-axis-domain'] = 'stroke: #4b4888;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
@@ -977,7 +1009,7 @@ trait Output {
             case 'modern':
                 $prop['fg_color'] = '#666666';
                 $prop['bg_color'] = '#F4F4F4';
-                $prop['container'] = 'background-color:#EEEEEE;border-radius: 3px;border: solid 1px #CCCCCC;';
+                $prop['container'] = 'background-color:#EEEEEE;border-radius: 3px;border: 1px solid #CCCCCC;';
                 $prop['nv-axis-line'] = 'stroke: #DDDDDD;';
                 $prop['nv-axis-domain'] = 'stroke: #666666;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
@@ -988,7 +1020,7 @@ trait Output {
             case 'light':
                 $prop['fg_color'] = '#909090';
                 $prop['bg_color'] = '#FEFEFE';
-                $prop['container'] = 'background-color:#FAFAFA;border-radius: 3px;border: solid 1px #EAEAEA;';
+                $prop['container'] = 'background-color:#FAFAFA;border-radius: 3px;border: 1px solid #EAEAEA;';
                 $prop['nv-axis-line'] = 'stroke: #F0F0F0;';
                 $prop['nv-axis-domain'] = 'stroke: #D0D0D0;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
@@ -999,7 +1031,7 @@ trait Output {
             case 'ws':
                 $prop['fg_color'] = '#F8DC65';
                 $prop['bg_color'] = '#565656';
-                $prop['container'] = 'background-color:#484848;border-radius: 3px;border: solid 1px #F8DC65;';
+                $prop['container'] = 'background-color:#484848;border-radius: 3px;border: 1px solid #F8DC65;';
                 $prop['nv-axis-line'] = 'stroke: #666666;';
                 $prop['nv-axis-domain'] = 'stroke: #F8DC65;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
@@ -1010,7 +1042,7 @@ trait Output {
             case 'dark':
                 $prop['fg_color'] = '#878A9A';
                 $prop['bg_color'] = '#464854';
-                $prop['container'] = 'background-color:#40424D;border-radius: 3px;border: solid 1px #303137;';
+                $prop['container'] = 'background-color:#40424D;border-radius: 3px;border: 1px solid #303137;';
                 $prop['nv-axis-line'] = 'stroke: #515B69;';
                 $prop['nv-axis-domain'] = 'stroke: #8792A2;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
@@ -1021,7 +1053,7 @@ trait Output {
             case 'sand':
                 $prop['fg_color'] = '#9B7543';
                 $prop['bg_color'] = '#CEB99E';
-                $prop['container'] = 'background-color:#D7C2A7;border-radius: 5px;border: solid 1px #897458;';
+                $prop['container'] = 'background-color:#D7C2A7;border-radius: 5px;border: 1px solid #897458;';
                 $prop['nv-axis-line'] = 'stroke: #A09280;';
                 $prop['nv-axis-domain'] = 'stroke: #897458;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
@@ -1032,7 +1064,7 @@ trait Output {
             case 'organic':
                 $prop['fg_color'] = '#605D40';
                 $prop['bg_color'] = '#AAC8B0';
-                $prop['container'] = 'background-color:#BACEB7;border-radius: 3px;border: solid 1px #506040;';
+                $prop['container'] = 'background-color:#BACEB7;border-radius: 3px;border: 1px solid #506040;';
                 $prop['nv-axis-line'] = 'stroke: #A3B293;';
                 $prop['nv-axis-domain'] = 'stroke: #506040;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
@@ -1043,7 +1075,7 @@ trait Output {
             case 'mineral':
                 $prop['fg_color'] = '#494D5F';
                 $prop['bg_color'] = '#B7C3D0';
-                $prop['container'] = 'background-color:#C0CED8;border-radius: 3px;border: solid 1px #575A6A;';
+                $prop['container'] = 'background-color:#C0CED8;border-radius: 3px;border: 1px solid #575A6A;';
                 $prop['nv-axis-line'] = 'stroke: #7A8890;';
                 $prop['nv-axis-domain'] = 'stroke: #506040;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
@@ -1054,7 +1086,7 @@ trait Output {
             case 'bwi':
                 $prop['fg_color'] = '#FFFFFF';
                 $prop['bg_color'] = '#000000';
-                $prop['container'] = 'background-color:#000000;border-radius: 3px;border: solid 1px #FFFFFF;';
+                $prop['container'] = 'background-color:#000000;border-radius: 3px;border: 1px solid #FFFFFF;';
                 $prop['nv-axis-line'] = 'stroke: #FFFFFF;';
                 $prop['nv-axis-domain'] = 'stroke: #FFFFFF;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
@@ -1065,7 +1097,7 @@ trait Output {
             case 'bw':
                 $prop['fg_color'] = '#000000';
                 $prop['bg_color'] = '#FFFFFF';
-                $prop['container'] = 'background-color:#FFFFFF;border-radius: 3px;border: solid 1px #000000;';
+                $prop['container'] = 'background-color:#FFFFFF;border-radius: 3px;border: 1px solid #000000;';
                 $prop['nv-axis-line'] = 'stroke: #000000;';
                 $prop['nv-axis-domain'] = 'stroke: #000000;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
@@ -1076,7 +1108,7 @@ trait Output {
             case 'terminal':
                 $prop['fg_color'] = '#0000AA';
                 $prop['bg_color'] = '#C0C0C0';
-                $prop['container'] = 'background-color:#AAAAAA;border: solid 1px #0000AA;';
+                $prop['container'] = 'background-color:#AAAAAA;border: 1px solid #0000AA;';
                 $prop['nv-axis-line'] = 'stroke: #AAAAAA;';
                 $prop['nv-axis-domain'] = 'stroke: #0000AA;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;';
@@ -1087,7 +1119,7 @@ trait Output {
             case 'console':
                 $prop['fg_color'] = '#0099CC';
                 $prop['bg_color'] = '#DDDDDD';
-                $prop['container'] = 'background-color:#CCCCCC;border: solid 1px #0099CC;';
+                $prop['container'] = 'background-color:#CCCCCC;border: 1px solid #0099CC;';
                 $prop['nv-axis-line'] = 'stroke: #0099CC;';
                 $prop['nv-axis-domain'] = 'stroke: #0099CC;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;letter-spacing:1px;';
@@ -1318,6 +1350,206 @@ trait Output {
         $body = '';
 
 
+        if ($type == 'sareas') {
+            $ticks = $this->graph_ticks($domain, $valuescale, $measurement1, $height);
+            wp_enqueue_style('lws-nvd3');
+            wp_enqueue_script('lws-nvd3');
+            wp_enqueue_script('lws-colorbrewer');
+            wp_enqueue_script('lws-spin');
+            if (array_key_exists(0, $values['extras'])) {
+                $unit = $values['extras'][0]['unit']['unit'];
+            }
+            else {
+                $unit = '';
+            }
+            $legendColors = array();
+            if ($color == 'self') {
+                $col = new ColorsManipulation($prop['fg_color']);
+                $col_array = $col->makeSteppedGradient($cpt, 50);
+                foreach ($col_array as $c) {
+                    $legendColors[] = '"#' . $c . '"';
+                }
+            }
+            $result .= '<style type="text/css">' . PHP_EOL;
+            if ($prop['text'] != '') {
+                $result .= '#' . $svg . ' .nvd3 text {' . $prop['text'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axis-domain'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis path.domain {' . $prop['nv-axis-domain'] . '}' . PHP_EOL;
+            }
+
+            if ($prop['nv-axis-line'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis line {' . $prop['nv-axis-line'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axislabel'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis text.nv-axislabel {' . $prop['nv-axislabel'] . '}' . PHP_EOL;
+            }
+            if ($fixed_timescale) {
+                $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:first-of-type text {text-anchor: start !important;}' . PHP_EOL;
+                $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:last-of-type text {text-anchor: end !important;}' . PHP_EOL;
+            }
+            $result .= '</style>' . PHP_EOL;
+
+            // BEGIN MAIN BODY
+            $body .= '      var shift' . $uniq . ' = new Date();' . PHP_EOL;
+            $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
+            if ($color != 'self') {
+                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+            }
+            else {
+                $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
+            }
+            if ($inverted) {
+                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
+            }
+            $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
+            $body .= '      nv.addGraph(function() {' . PHP_EOL;
+            $body .= '         chart'.$uniq.' = nv.models.stackedAreaChart()' . PHP_EOL;
+            $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
+            $body .= '               .y(function(d) {return d[1]})' . PHP_EOL;
+            $body .= '               .clipEdge(true)' . PHP_EOL;
+            $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
+            $body .= '               .useInteractiveGuideline(true)' . PHP_EOL;
+            if ($fixed_valuescale && $type_guideline == 'stacked') {
+                $body .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
+            }
+            //$body .= '               .showLegend(true)' . PHP_EOL;
+            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
+            $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
+            $body .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","grouped":"' . __('Grouped', 'live-weather-station') . '"}).showControls(false);' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            if ($timescale == 'none') {
+                $body .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
+            }
+            if ($label != 'none') {
+                $body .= '      chart'.$uniq.'.xAxis.axisLabelDistance(6);' . PHP_EOL;
+            }
+            if ($_attributes['valuescale'] == 'adaptative' || $type_guideline == 'expanded') {
+                $body .= '      chart'.$uniq.'.yAxis.showMaxMin(true);';
+            }
+            else {
+                $body .= '      chart'.$uniq.'.yAxis.showMaxMin(false);';
+            }
+            if ($type_guideline == 'stacked') {
+                $body .= '      chart' . $uniq . '.yAxis.tickValues([' . implode(', ', $ticks) . ']);' . PHP_EOL;
+            }
+            if ($type_guideline == 'stacked') {
+                $body .= '      chart'.$uniq.'.style("stack");' . PHP_EOL;
+            }
+            if ($type_guideline == 'stream') {
+                $body .= '      chart'.$uniq.'.style("stream");' . PHP_EOL;
+            }
+            if ($type_guideline == 'expanded') {
+                $body .= '      chart'.$uniq.'.style("expand");' . PHP_EOL;
+            }
+            $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+            $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+            $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+            $body .= '      return chart'.$uniq.';' . PHP_EOL;
+            $body .= '    });'.PHP_EOL;
+            // END MAIN BODY
+        }
+
+        if ($type == 'bar' || $type == 'bars') {
+            $ticks = $this->graph_ticks($domain, $valuescale, $measurement1, $height);
+            wp_enqueue_style('lws-nvd3');
+            wp_enqueue_script('lws-nvd3');
+            wp_enqueue_script('lws-colorbrewer');
+            wp_enqueue_script('lws-spin');
+            if (array_key_exists(0, $values['extras'])) {
+                $unit = $values['extras'][0]['unit']['unit'];
+            }
+            else {
+                $unit = '';
+            }
+            $legendColors = array();
+            if ($type == 'bars' && $color == 'self') {
+                $col = new ColorsManipulation($prop['fg_color']);
+                $col_array = $col->makeSteppedGradient($cpt, 50);
+                foreach ($col_array as $c) {
+                    $legendColors[] = '"#' . $c . '"';
+                }
+            }
+            $result .= '<style type="text/css">' . PHP_EOL;
+            if ($prop['text'] != '') {
+                $result .= '#' . $svg . ' .nvd3 text {' . $prop['text'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axis-domain'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis path.domain {' . $prop['nv-axis-domain'] . '}' . PHP_EOL;
+            }
+
+            if ($prop['nv-axis-line'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis line {' . $prop['nv-axis-line'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axislabel'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis text.nv-axislabel {' . $prop['nv-axislabel'] . '}' . PHP_EOL;
+            }
+            if ($fixed_timescale) {
+                $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:first-of-type text {text-anchor: start !important;}' . PHP_EOL;
+                $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:last-of-type text {text-anchor: end !important;}' . PHP_EOL;
+            }
+            $result .= '</style>' . PHP_EOL;
+
+            // BEGIN MAIN BODY
+            $body .= '      var shift' . $uniq . ' = new Date();' . PHP_EOL;
+            $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
+            if ($color != 'self') {
+                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+            }
+            elseif ($type == 'bars') {
+                $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
+            }
+            if ($inverted) {
+                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
+            }
+            $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
+            $body .= '      nv.addGraph(function() {' . PHP_EOL;
+            $body .= '         chart'.$uniq.' = nv.models.multiBarChart()' . PHP_EOL;
+            $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
+            $body .= '               .y(function(d) {return d[1]})' . PHP_EOL;
+            $body .= '               .reduceXTicks(true)' . PHP_EOL;
+            if ($type_guideline == 'stacked') {
+                $body .= '               .stacked(true)' . PHP_EOL;
+            }
+            if ($fixed_valuescale) {
+                $body .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
+            }
+            $body .= '               .showLegend(' . ($type == 'bars'?'true':'false') . ')' . PHP_EOL;
+            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
+            if ($color == 'self' && $type == 'bar') {
+                // DONE BY COLOR KEY
+            }
+            else {
+                $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
+            }
+            if ($type == 'bars') {
+                $body .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","grouped":"' . __('Grouped', 'live-weather-station') . '"}).showControls(' . ($type_guideline == 'free'?'true':'false') . ');' . PHP_EOL;
+            }
+            else {
+                $body .= '               .controlLabels({}).showControls(false);' . PHP_EOL;
+            }
+            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            if ($timescale == 'none') {
+                $body .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
+            }
+            if ($label != 'none') {
+                $body .= '      chart'.$uniq.'.xAxis.axisLabelDistance(6);' . PHP_EOL;
+            }
+            if ($_attributes['valuescale'] == 'adaptative') {
+                $body .= '      chart'.$uniq.'.yAxis.showMaxMin(true);';
+            }
+            else {
+                $body .= '      chart'.$uniq.'.yAxis.showMaxMin(false);';
+            }
+            $body .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+            $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+            $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+            $body .= '      return chart'.$uniq.';' . PHP_EOL;
+            $body .= '    });'.PHP_EOL;
+            // END MAIN BODY
+        }
+
         if ($type == 'line' || $type == 'lines') {
             $ticks = $this->graph_ticks($domain, $valuescale, $measurement1, $height);
             wp_enqueue_style('lws-nvd3');
@@ -1477,7 +1709,7 @@ trait Output {
             $body .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
             $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
             $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
-            $body .= '      return chart'.$uniq.';' . PHP_EOL;
+            //$body .= '      return chart'.$uniq.';' . PHP_EOL;
             $body .= '    });'.PHP_EOL;
             // END MAIN BODY
         }
@@ -1797,6 +2029,7 @@ trait Output {
             $result .= '    var opts = {lines: 15, length: 28, width: 8, radius: 42, scale: ' . $scale . ', corners: 1, color: "' . $prop['spinner'] . '", opacity: 0.2, rotate: 0, direction: 1, speed: 1, trail: 60, fps: 20, zIndex: 2e9, className: "c_' . $spinner .'", top: "50%", left: "50%", shadow: false, hwaccel: false, position: "relative"};' . PHP_EOL;
             $result .= '    var target = document.getElementById("' . $uniq . '");' . PHP_EOL;
             $result .= '    var ' . $spinner . ' = new Spinner(opts).spin(target);' . PHP_EOL;
+            $result .= '    var observer' . $uniq . ' = null;' . PHP_EOL;
 
             $args = array();
             $args[] = 'action:"lws_query_graph_datas"';
@@ -1828,9 +2061,25 @@ trait Output {
                 $result .= '    ' . $spinner . '.stop();})' . PHP_EOL;
                 $result .= '}, ' . $refresh . '); ' . PHP_EOL;
             }
-            $result .= '});';
+            if ($type != 'calendarhm') {
+                $result .= 'if (observer' . $uniq . ' === null) { ' . PHP_EOL;
+                $result .= 'var targetNode' . $uniq . ' = document.getElementById("' . $uniq . '").parentElement.parentElement.parentElement.parentElement;' . PHP_EOL;
+                $result .= 'var callback' . $uniq . ' = function(mutationsList) {' . PHP_EOL;
+                $result .= '    for(var mutation of mutationsList) {' . PHP_EOL;
+                $result .= '        if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display != "none") { if (mutation.oldValue !== null) {if (mutation.oldValue.indexOf("display: none") != -1) {chart'.$uniq.'.update();}}}}}' . PHP_EOL;
+                $result .= '    }' . PHP_EOL;
+                $result .= '};' . PHP_EOL;
+                $result .= 'observer' . $uniq . ' = new MutationObserver(callback' . $uniq . ');' . PHP_EOL;
+                $result .= 'observer' . $uniq . '.observe(targetNode' . $uniq . ',{attributes: true, subtree: true, attributeOldValue: true});' . PHP_EOL;
+                //$result .= 'console.log("' . $uniq . '");' . PHP_EOL;
+                $result .= '}' . PHP_EOL;
+                $result .= '' . PHP_EOL;
+                $result .= '' . PHP_EOL;
+            }
+
+            $result .= '});' . PHP_EOL;
         }
-        if ($type != 'calendarhm') {
+        if ($type != 'calendarhm' && $data != 'ajax' && $data != 'ajax_refresh') {
             $result .= 'var targetNode' . $uniq . ' = document.getElementById("' . $uniq . '").parentElement.parentElement.parentElement.parentElement;' . PHP_EOL;
             $result .= 'var callback' . $uniq . ' = function(mutationsList) {' . PHP_EOL;
             $result .= '    for(var mutation of mutationsList) {' . PHP_EOL;
@@ -1839,7 +2088,7 @@ trait Output {
             $result .= '};' . PHP_EOL;
             $result .= 'var observer' . $uniq . ' = new MutationObserver(callback' . $uniq . ');' . PHP_EOL;
             $result .= 'observer' . $uniq . '.observe(targetNode' . $uniq . ',{attributes: true, subtree: true, attributeOldValue: true});' . PHP_EOL;
-            $result .= '' . PHP_EOL;
+            //$result .= 'console.log("' . $uniq . '");' . PHP_EOL;
             $result .= '' . PHP_EOL;
             $result .= '' . PHP_EOL;
         }
@@ -7559,11 +7808,11 @@ trait Output {
                 if ($column == 3) {
                     $result .= '<div class="lws-histo-cap-table-3c">';
                     $result .= '<div class="lws-histo-cap-table-3c-row">';
-                    $result .= '<div class="lws-histo-cap-table-3c-row-item" style="border-bottom: solid 1px ' . $bcol . ';">&nbsp;</div>';
-                    $result .= '<div class="lws-histo-cap-table-3c-row-item-header" style="background-color: ' . $bcol . ';border-left: solid 1px ' . $bcol . ';">';
+                    $result .= '<div class="lws-histo-cap-table-3c-row-item" style="border-bottom: 1px solid ' . $bcol . ';">&nbsp;</div>';
+                    $result .= '<div class="lws-histo-cap-table-3c-row-item-header" style="background-color: ' . $bcol . ';border-left: 1px solid ' . $bcol . ';">';
                     $result .= '<span style="color: ' . $fcol . ';">' . __('Standard', 'live-weather-station') . '</span>';
                     $result .= '</div>';
-                    $result .= '<div class="lws-histo-cap-table-3c-row-item-header" style="background-color: ' . $bcol . ';border-left: solid 1px ' . $bcol . ';">';
+                    $result .= '<div class="lws-histo-cap-table-3c-row-item-header" style="background-color: ' . $bcol . ';border-left: 1px solid ' . $bcol . ';">';
                     $result .= '<span style="color: ' . $fcol . ';">' . __('Scientific', 'live-weather-station') . '</span>';
                     $result .= '</div>';
                     $result .= '</div>';
@@ -7574,7 +7823,7 @@ trait Output {
                             $s = ' style="background-color:' . $bgcol .'"';
                         }
                         $result .= '<div class="lws-histo-cap-table-3c-row"' . $s . '>';
-                        $result .= '<div class="lws-histo-cap-table-3c-row-item" style="border-left: solid 1px ' . $bcol . '; border-right: solid 1px ' . $bcol . ';">';
+                        $result .= '<div class="lws-histo-cap-table-3c-row-item" style="border-left: 1px solid ' . $bcol . '; border-right: 1px solid ' . $bcol . ';">';
                         if ($style == 'icon') {
                             $result .= '<span style="vertical-align:middle">' . $measurement['icon'];
                         } elseif ($style == 'check') {
@@ -7598,7 +7847,7 @@ trait Output {
                             $cap = ucfirst($cap) . '.';
                         }
                         $result .= $cap . '</div>';
-                        $result .= '<div class="lws-histo-cap-table-3c-row-item" style="border-left: solid 1px ' . $bcol . '; border-right: solid 1px ' . $bcol . ';">';
+                        $result .= '<div class="lws-histo-cap-table-3c-row-item" style="border-left: 1px solid ' . $bcol . '; border-right: 1px solid ' . $bcol . ';">';
                         $cap = '';
                         if ($measurements[$itr]['aggregated']) {
                             $cap = implode(', ', $measurement['operations']['extended']);
@@ -7614,9 +7863,9 @@ trait Output {
                         $itr += 1;
                     }
                     $result .= '<div class="lws-histo-cap-table-3c-row" style="padding:0;height: 0;">';
-                    $result .= '<div class="lws-histo-cap-table-3c-row-item" style="padding:0;height: 0;border-left: solid 1px ' . $bcol . '; border-right: solid 1px ' . $bcol . ';border-bottom: solid 1px ' . $bcol . ';"></div>';
-                    $result .= '<div class="lws-histo-cap-table-3c-row-item" style="padding:0;height: 0;border-bottom: solid 1px ' . $bcol . ';"></div>';
-                    $result .= '<div class="lws-histo-cap-table-3c-row-item" style="padding:0;height: 0;border-left: solid 1px ' . $bcol . '; border-right: solid 1px ' . $bcol . ';border-bottom: solid 1px ' . $bcol . ';"></div>';
+                    $result .= '<div class="lws-histo-cap-table-3c-row-item" style="padding:0;height: 0;border-left: 1px solid ' . $bcol . '; border-right: 1px solid ' . $bcol . ';border-bottom: 1px solid ' . $bcol . ';"></div>';
+                    $result .= '<div class="lws-histo-cap-table-3c-row-item" style="padding:0;height: 0;border-bottom: 1px solid ' . $bcol . ';"></div>';
+                    $result .= '<div class="lws-histo-cap-table-3c-row-item" style="padding:0;height: 0;border-left: 1px solid ' . $bcol . '; border-right: 1px solid ' . $bcol . ';border-bottom: 1px solid ' . $bcol . ';"></div>';
                     $result .= '</div>';
                     $result .= '</div>';
                 }
