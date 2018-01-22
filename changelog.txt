@@ -1,5 +1,4 @@
-
-#3.4.2 / February 22nd, 2018
+#3.4.2 / January 22nd, 2018
 
 * Improvement: new dimensions added to charts: density & area density, power flux & luminous flux densities, specific energy (thanks to Ralf Karpa for the suggestion).
 * Bug fix: some css border have their property inverted.
