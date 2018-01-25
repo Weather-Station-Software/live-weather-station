@@ -1,3 +1,11 @@
+
+
+#3.4.3 / January 25th, 2018
+
+* Improvement: better name handling for multiline charts.
+* Bug fix: some `realtime.txt` based stations that worked before 3.4.2 can reverse - again :/ - uv index and irradiance (thanks to Ralf Karpa for detecting it).
+* Bug fix: a cache error may appear in some case when using a cache manager (thanks to John Schauer for reporting it).
+
 #3.4.2 / January 22nd, 2018
 
 * Improvement: new dimensions added to charts: density & area density, power flux & luminous flux densities, specific energy (thanks to Ralf Karpa for the suggestion).

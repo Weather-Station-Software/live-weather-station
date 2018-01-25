@@ -671,8 +671,18 @@ trait Output {
             case 'bars':
             case 'sareas':
                 $name = $values['extras'][0]['measurement_type'];
-                if ($type == 'lines') {
+                if ($type == 'lines' || $type == 'bars' || $type == 'sareas') {
                     $name = $this->get_dimension_name($values['legend']['unit']['dimension'], false, true);
+                    $force = true;
+                    foreach ($values['extras'] as $w) {
+                        if ($w['raw_measurement_type'] != $values['extras'][0]['raw_measurement_type']) {
+                            $force = false;
+                            break;
+                        }
+                    }
+                    if ($force) {
+                        $name = $values['extras'][0]['measurement_type'];
+                    }
                     if (strpos($values['legend']['unit']['dimension'], 'oncentration') > 0) {
                         $name .= ' (' . $values['extras'][0]['measurement_type'] . ')';
                     }

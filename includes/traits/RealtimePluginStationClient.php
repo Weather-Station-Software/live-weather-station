@@ -298,8 +298,8 @@ trait StationClient {
         $this->update_data_table($updates);
         $updates['measure_timestamp'] = $timestamp;
         $updates['measure_type'] = 'uv_index';
-        if (is_numeric($weather[45])) {
-            $updates['measure_value'] = $weather[45];
+        if (is_numeric($weather[43])) {
+            $updates['measure_value'] = $weather[43];
         }
         else {
             $updates['measure_value'] = 0;
@@ -307,8 +307,8 @@ trait StationClient {
         $this->update_data_table($updates);
         $updates['measure_timestamp'] = $timestamp;
         $updates['measure_type'] = 'irradiance';
-        if (is_numeric($weather[47])) {
-            $updates['measure_value'] = $weather[47];
+        if (is_numeric($weather[45])) {
+            $updates['measure_value'] = $weather[45];
         }
         else {
             $updates['measure_value'] = 0;
@@ -333,8 +333,8 @@ trait StationClient {
         $this->update_data_table($updates);
         $updates['measure_timestamp'] = $timestamp;
         $updates['measure_type'] = 'evapotranspiration';
-        if (is_numeric($weather[46])) {
-            $updates['measure_value'] = $weather[46];
+        if (is_numeric($weather[44])) {
+            $updates['measure_value'] = $weather[44];
         }
         else {
             $updates['measure_value'] = 0;
