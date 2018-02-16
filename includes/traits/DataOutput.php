@@ -158,11 +158,12 @@ trait Output {
             $mode = $attributes['mode'];
             $type = $attributes['type'];
             $args = $attributes['args'];
+            $timescale = $attributes['timescale'];
+            $valuescale = $attributes['valuescale'];
             $self_color = $attributes['color'] == 'self';
             if ($self_color) {
                 $prop = $this->graph_template($attributes['template']);
             }
-            $timescale = $attributes['timescale'];
             if ($timescale == 'focus') {
                 $timescale = 'adaptative';
             }
@@ -310,297 +311,568 @@ trait Output {
                         }
                         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
                     }
-
-                    $i = 1;
-                    foreach ($args as $arg) {
-                        $subymin = 0;
-                        $subymax = 0;
-                        $subydmin = 0;
-                        $subydmax = 0;
-                        $subyamin = 0;
-                        $subyamax = 0;
-                        if (strpos($arg['module_id'], ':') == 2) {
-                            $module_type = 'NAMain';
-                            $set = '';
-                            $val = '`measure_value`';
+                    if ($type == 'astream') {
+                        if (count($args) == 2) {
+                            $sects = str_replace('s', '', $args[1]['line_mode']);
+                            $angle_val = (int)(360 / $sects);
+                            $sectors = array();
+                            for ($i = 0; $i < $sects; $i++) {
+                                $a = ($i * $angle_val) - ($angle_val / 2);
+                                $b = ($i * $angle_val) + ($angle_val / 2);
+                                $sectors[] = array($a, $b);
+                            }
                             if ($mode == 'yearly') {
-                                $set = " AND `measure_set`='" . $arg['set'] . "'";
+                                $timeshift = 86400;
+                            } else {
+                                $timeshift = 600;
                             }
-                            if ($mode == 'yearly' && strtolower($arg['set']) == 'amp') {
-                                $set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
-                                $val = 'ABS(MAX(`measure_value`)-MIN(`measure_value`)) as computed_value';
+                            $dummy='0';
+                            $val0 = '`measure_value`';
+                            $val1 = '`measure_value`';
+                            $set0 = '';
+                            $set1 = '';
+                            if ($mode == 'yearly') {
+                                $set0 = " AND `measure_set`='" . $args[1]['set'] . "'";
+                                $set1 = " AND `measure_set`='" . $args[2]['set'] . "'";
                             }
-                            if ($mode == 'yearly' && strtolower($arg['set']) == 'mid') {
-                                $set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
-                                $val = 'AVG(`measure_value`) as computed_value';
+                            if ($mode == 'yearly' && strtolower($args[1]['set']) == 'amp') {
+                                $set0 = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
+                                $val0 = 'ABS(MAX(`measure_value`)-MIN(`measure_value`)) as computed_value';
                             }
-                            $sql = "SELECT `timestamp`, `module_type`, " . $val . " FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $set . " ORDER BY `timestamp` ASC;";
+                            if ($mode == 'yearly' && strtolower($args[1]['set']) == 'mid') {
+                                $set0 = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
+                                $val0 = 'AVG(`measure_value`) as computed_value';
+                            }
+                            if ($mode == 'yearly' && strtolower($args[2]['set']) == 'amp') {
+                                $set1 = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
+                                $val1 = 'ABS(MAX(`measure_value`)-MIN(`measure_value`)) as computed_value';
+                            }
+                            if ($mode == 'yearly' && strtolower($args[2]['set']) == 'mid') {
+                                $set1 = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
+                                $val1 = 'AVG(`measure_value`) as computed_value';
+                            }
+                            $sql_angle = "SELECT `timestamp`, `module_type`, " . $val0 . " FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "'" . $set0 . " ORDER BY `timestamp` ASC;";
+                            $sql_value = "SELECT `timestamp`, `module_type`, " . $val1 . " FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "'" . $set1 . " ORDER BY `timestamp` ASC;";
                             try {
-                                $query = (array)$wpdb->get_results($sql);
-                                $query_a = (array)$query;
-                                if ((($type == 'bcline' && $i == 1) || $type == 'bar' || $type == 'bars' || $type == 'sareas') && $mode == 'yearly' && $timescale != 'adaptative') {
-                                    $dummy = '0';
-                                    if ($type == 'sareas') {
-                                        $d = $this->decimal_for_output($arg['measurement']);
-                                        if ($d > 0) {
-                                            $dummy = '0.';
+                                $angles = $wpdb->get_results($sql_angle, ARRAY_A);
+                                $values = $wpdb->get_results($sql_value, ARRAY_A);
+                                $measures = array();
+                                foreach ($values as $val) {
+                                    $measures[$val['timestamp']] = $val;
+                                }
+                                if (count($values) > 0) {
+                                    $module_type = $values[0]['module_type'];
+                                } else {
+                                    $module_type = 'NAMain';
+                                }
+                                $t = array();
+                                foreach ($angles as $angle) {
+                                    $v = $angle['measure_value'];
+                                    if (get_option('live_weather_station_angle_semantics') == 1) {
+                                        $v = $v + 180;
+                                        if ($v > 360) {
+                                            $v = $v - 360;
+                                        }
+                                    }
+                                    $ts = $angle['timestamp'];
+                                    if (array_key_exists($ts, $measures)) {
+                                        if (array_key_exists('measure_value', $measures[$ts])) {
+                                            $m = $measures[$ts]['measure_value'];
+                                        }
+                                        elseif (array_key_exists('computed_value', $measures[$ts])) {
+                                            $m = $measures[$ts]['computed_value'];
                                         }
                                         else {
-                                            $dummy = '1';
+                                            $m = $dummy;
                                         }
-                                        if ($d > 1) {
-                                            for ($i = 1; $i < $d; $i++) {
-                                                $dummy .= '0';
-                                            }
+                                    } else {
+                                        $m = $dummy;
+                                    }
+                                    for ($i = 0; $i < $sects; $i++) {
+                                        $a = $sectors[$i][0];
+                                        $b = $sectors[$i][1];
+                                        if ($a < 0) {
+                                            $v = $v - 360;
                                         }
-                                        if ($d > 0) {
-                                            $dummy .= '1';
+                                        if ($b > 360) {
+                                            $v = $v + 360;
                                         }
-                                    }
-                                    if (count($query_a) > 0) {
-                                        $module_type = (array)($query_a[0]);
-                                        $module_type = $module_type['module_type'];
-                                    }
-                                    $t = array();
-                                    foreach ($query_a as $val) {
-                                        $a = (array)$val;
-                                        $t[$a['timestamp']] = $a;
-                                    }
-                                    $__start = (integer)self::get_js_date_from_mysql_utc($min, $station['loc_timezone'], '');
-                                    $__end = (integer)self::get_js_date_from_mysql_utc($max, $station['loc_timezone'], '');
-                                    $d = $__start;
-                                    while ($d <= $__end) {
-                                        $__date = date('Y-m-d', $d);
-                                        if (!array_key_exists($__date, $t)) {
-                                            $a = array();
-                                            $a['timestamp'] = $__date;
-                                            $a['module_type'] = $module_type;
-                                            $a['measure_value'] = $dummy;
-                                            $t[$a['timestamp']] = $a;
+                                        $d = array();
+                                        if ($v < $b && $v >= $a) {
+                                            $d['measure_value'] = $m;
+                                        } else {
+                                            $d['measure_value'] = $dummy;
                                         }
-                                        $d += 86400;
-                                    }
-                                    ksort($t);
-                                    $query_a = array();
-                                    foreach ($t as $key=>$val) {
-                                        $query_a[] = $val;
+                                        if ($a < 0) {
+                                            $v = $v + 360;
+                                        }
+                                        if ($b > 360) {
+                                            $v = $v - 360;
+                                        }
+                                        $d['timestamp'] = $angle['timestamp'];
+                                        $d['module_type'] = $module_type;
+                                        $t[$i][$d['timestamp']] = $d;
                                     }
                                 }
-                                $set = array();
-                                $substart = true;
-                                foreach ($query_a as $val) {
-                                    $a = (array)$val;
-                                    $module_type = $a['module_type'];
+                                if ($timescale != 'adaptative') {
                                     if ($mode == 'daily') {
-                                        $a['timestamp'] = self::get_js_datetime_from_mysql_utc($a['timestamp'], $station['loc_timezone'], $end_date);
+                                        $__start = (integer)self::get_js_datetime_from_mysql_utc($min, $station['loc_timezone'], '');
+                                        $__end = (integer)self::get_js_datetime_from_mysql_utc($max, $station['loc_timezone'], '');
                                     }
                                     if ($mode == 'yearly') {
-                                        $a['timestamp'] = self::get_js_date_from_mysql_utc($a['timestamp'], $station['loc_timezone'], $end_date);
+                                        $__start = (integer)self::get_js_date_from_mysql_utc($min, $station['loc_timezone'], '');
+                                        $__end = (integer)self::get_js_date_from_mysql_utc($max, $station['loc_timezone'], '');
                                     }
-                                    if (!array_key_exists('measure_value', $a)) {
-                                        if (array_key_exists('computed_value', $a)) {
-                                            $a['measure_value'] = $a['computed_value'];
+                                    $d = $__start;
+                                    while ($d <= $__end) {
+                                        if ($mode == 'yearly') {
+                                            $__date = date('Y-m-d', $d);
+                                        } else {
+                                            $__date = date('Y-m-d H:i:s', $d);
                                         }
-                                        else {
-                                            continue;
+                                        for ($i = 0; $i < $sects; $i++) {
+                                            if (!array_key_exists($__date, $t[$i])) {
+                                                $e = array();
+                                                $e['timestamp'] = $__date;
+                                                $e['module_type'] = $module_type;
+                                                $e['measure_value'] = $dummy;
+                                                $t[$i][$e['timestamp']] = $e;
+                                            }
                                         }
+                                        $d += $timeshift;
                                     }
-                                    $a['measure_value'] = $this->output_value($a['measure_value'], $arg['measurement'], false, false, $a['module_type']);
-                                    if ($start) {
-                                        $ymin = $a['measure_value'];
-                                        $ymax = $a['measure_value'];
-                                        $ydmin = $this->get_measurement_min($arg['measurement'], $module_type);
-                                        $ydmax = $this->get_measurement_max($arg['measurement'], $module_type);
-                                        $yamax = $this->get_measurement_alarm_max($arg['measurement'], $module_type);
-                                        $yamin = $this->get_measurement_alarm_min($arg['measurement'], $module_type);
-                                        $start = false;
-                                    }
-                                    if ($a['measure_value'] > $ymax) {
-                                        $ymax = $a['measure_value'];
-                                    }
-                                    if ($a['measure_value'] < $ymin) {
-                                        $ymin = $a['measure_value'];
-                                    }
-                                    if ($substart) {
-                                        $subymin = $a['measure_value'];
-                                        $subymax = $a['measure_value'];
-                                        $subydmin = $this->get_measurement_min($arg['measurement'], $module_type);
-                                        $subydmax = $this->get_measurement_max($arg['measurement'], $module_type);
-                                        $subyamax = $this->get_measurement_alarm_max($arg['measurement'], $module_type);
-                                        $subyamin = $this->get_measurement_alarm_min($arg['measurement'], $module_type);
-                                        $substart = false;
-                                    }
-                                    if ($a['measure_value'] > $subymax) {
-                                        $subymax = $a['measure_value'];
-                                    }
-                                    if ($a['measure_value'] < $subymin) {
-                                        $subymin = $a['measure_value'];
-                                    }
-                                    $set[] = $a;
                                 }
-
-                                if (count($query_a) > 0) {
-                                    $a = (array)$query_a[0];
-                                    if ($this->get_measurement_max($arg['measurement'], $module_type) > $ydmax) {
-                                        $ydmax = $this->get_measurement_max($arg['measurement'], $module_type);
+                                for ($i = 0; $i < $sects; $i++) {
+                                    ksort($t[$i]);
+                                }
+                                foreach ($t as $key => $s) {
+                                    $set = array();
+                                    $substart = true;
+                                    foreach ($s as $a) {
+                                        $module_type = $a['module_type'];
+                                        if ($mode == 'daily') {
+                                            $a['timestamp'] = self::get_js_datetime_from_mysql_utc($a['timestamp'], $station['loc_timezone'], $end_date);
+                                        }
+                                        if ($mode == 'yearly') {
+                                            $a['timestamp'] = self::get_js_date_from_mysql_utc($a['timestamp'], $station['loc_timezone'], $end_date);
+                                        }
+                                        $mes_typ = $args[2]['measurement'];
+                                        $a['measure_value'] = $this->output_value($a['measure_value'], $mes_typ, false, false, $a['module_type']);
+                                        if ($start) {
+                                            $ymin = $a['measure_value'];
+                                            $ymax = $a['measure_value'];
+                                            $ydmin = $this->get_measurement_min($mes_typ, $module_type);
+                                            $ydmax = $this->get_measurement_max($mes_typ, $module_type);
+                                            $yamax = $this->get_measurement_alarm_max($mes_typ, $module_type);
+                                            $yamin = $this->get_measurement_alarm_min($mes_typ, $module_type);
+                                            $start = false;
+                                        }
+                                        if ($a['measure_value'] > $ymax) {
+                                            $ymax = $a['measure_value'];
+                                        }
+                                        if ($a['measure_value'] < $ymin) {
+                                            $ymin = $a['measure_value'];
+                                        }
+                                        if ($substart) {
+                                            $subymin = $a['measure_value'];
+                                            $subymax = $a['measure_value'];
+                                            $subydmin = $this->get_measurement_min($mes_typ, $module_type);
+                                            $subydmax = $this->get_measurement_max($mes_typ, $module_type);
+                                            $subyamax = $this->get_measurement_alarm_max($mes_typ, $module_type);
+                                            $subyamin = $this->get_measurement_alarm_min($mes_typ, $module_type);
+                                            $substart = false;
+                                        }
+                                        if ($a['measure_value'] > $subymax) {
+                                            $subymax = $a['measure_value'];
+                                        }
+                                        if ($a['measure_value'] < $subymin) {
+                                            $subymin = $a['measure_value'];
+                                        }
+                                        $set[] = $a;
                                     }
-                                    if ($this->get_measurement_min($arg['measurement'], $module_type) < $ydmin) {
-                                        $ydmin = $this->get_measurement_min($arg['measurement'], $module_type);
+                                    $info = array();
+                                    $module_name = $this->get_angle_full_text($key * $angle_val);
+                                    $info['key'] = $module_name;
+                                    $extra = array();
+                                    $period_name = '';
+                                    $period_range = 0;
+                                    if ($mode == 'yearly') {
+                                        if ($is_month) {
+                                            $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                            $now->setDate($year, $month, 1);
+                                            $period_name = date_i18n('F Y', $now->getTimestamp());
+                                            $period_range = 1;
+                                        } elseif ($is_year) {
+                                            $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
+                                            $period_range = 12;
+                                        } elseif ($is_mseason) {
+                                            $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
+                                            if ($month == 12) {
+                                                $period_name .= '~' . (string)($year + 1);
+                                            }
+                                            $period_range = 3;
+                                        }
+                                        $extra['set_name'] = ucfirst($this->get_operation_name($arg['set'], true));
                                     }
-                                    if ($this->get_measurement_alarm_max($arg['measurement'], $module_type) > $yamax) {
-                                        $yamax = $this->get_measurement_alarm_max($arg['measurement'], $a['module_type']);
+                                    $extra['ydomain']['min'] = $subymin;
+                                    $extra['ydomain']['max'] = $subymax;
+                                    $extra['ydomain']['dmin'] = $subydmin;
+                                    $extra['ydomain']['dmax'] = $subydmax;
+                                    $extra['ydomain']['amin'] = $subyamin;
+                                    $extra['ydomain']['amax'] = $subyamax;
+                                    $extra['period_name'] = $period_name;
+                                    $extra['info_key'] = $info['key'];
+                                    $extra['period_range'] = $period_range;
+                                    $extra['raw_measurement_type'] = $arg['measurement'];
+                                    $extra['measurement_type'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                                    $extra['module_type'] = $module_type;
+                                    $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
+                                    $extra['module_name'] = $module_name;
+                                    $extra['station_name'] = $station['station_name'];
+                                    $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
+                                    $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
+                                    $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
+                                    $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
+                                    $extra['unit'] = $this->output_unit($arg['measurement'], $module_type);
+                                    $result['extras'][] = $extra;
+                                    $result['legend']['unit'] = $this->output_unit($arg['measurement'], $module_type);
+                                    $classes = array();
+                                    $classes[] = 'lws-serie-' . $i;
+                                    if (count($classes) > 0) {
+                                        $info['classed'] = implode(' ', $classes);
                                     }
-                                    if ($this->get_measurement_alarm_min($arg['measurement'], $module_type) < $yamin) {
-                                        $yamin = $this->get_measurement_alarm_min($arg['measurement'], $a['module_type']);
-                                    }
-                                    if ($this->get_measurement_max($arg['measurement'], $module_type) > $subydmax) {
-                                        $subydmax = $this->get_measurement_max($arg['measurement'], $module_type);
-                                    }
-                                    if ($this->get_measurement_min($arg['measurement'], $module_type) < $subydmin) {
-                                        $subydmin = $this->get_measurement_min($arg['measurement'], $module_type);
-                                    }
-                                    if ($this->get_measurement_alarm_max($arg['measurement'], $module_type) > $subyamax) {
-                                        $subyamax = $this->get_measurement_alarm_max($arg['measurement'], $a['module_type']);
-                                    }
-                                    if ($this->get_measurement_alarm_min($arg['measurement'], $module_type) < $subyamin) {
-                                        $subyamin = $this->get_measurement_alarm_min($arg['measurement'], $a['module_type']);
+                                    if ($json) {
+                                        $result['values'][] = $this->jsonify($info, $set, $raw_json);
+                                    } else {
+                                        $info['values'] = $set;
+                                        $result['values'][] = $info;
                                     }
                                 }
                             } catch (\Exception $ex) {
-                                $set = array();
-                            }
-                            $info = array();
-                            if ($type == 'bcline' && $i == 1) {
-                                $info['bar'] = true;
-                            }
-                            if (($type == 'bars' || $type == 'sareas') && $arg['line_mode'] == 'single') {
-                                $info['nonStackable'] = true;
-                            }
-                            if ($self_color && $type != 'lines' && $type != 'bars' && $type != 'sareas') {
-                                $info['color'] = $prop['fg_color'];
-                            }
-                            if (array_key_exists($arg['module_id'], $station['modules_names'])) {
-                                $module_name = str_replace(array('[', ']'), array('', ''), $station['modules_names'][$arg['module_id']]);
-                            } else {
-                                $module_name = $this->get_module_type($module_type, false, true);
-                            }
-                            if ($mode == 'daily') {
-                                if ($identical) {
-                                    $info['key'] = $module_name;
-                                } elseif ($similar) {
-                                    if ($module_type != 'NAComputed') {
-                                        $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type) . ' (' . $module_name . ')';
-                                    } else {
-                                        $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
-                                    }
-                                } else {
-                                    $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
-                                }
-                            }
-                            if ($mode == 'yearly') {
-                                if ($identical) {
-                                    if ($identical_module) {
-                                        $info['key'] = ucfirst($this->get_operation_name($arg['set'], true));
-                                    }
-                                    else {
-                                        $info['key'] = $module_name . ' - ' . ucfirst($this->get_operation_name($arg['set'], true));
-                                    }
-                                } elseif ($similar) {
-                                    if ($module_type != 'NAComputed') {
-                                        $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type) . ' (' . $module_name . ') - ' . ucfirst($this->get_operation_name($arg['set'], true));
-                                    } else {
-                                        $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
-                                    }
-                                } else {
-                                    $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type) . ' - ' . ucfirst($this->get_operation_name($arg['set'], true));
-                                }
-                            }
-
-                            $extra = array();
-                            $period_name = '';
-                            $period_range = 0;
-                            if ($mode == 'yearly') {
-                                if ($is_month) {
-                                    $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
-                                    $now->setDate($year, $month, 1);
-                                    $period_name = date_i18n('F Y', $now->getTimestamp());
-                                    $period_range = 1;
-                                }
-                                elseif ($is_year) {
-                                    $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
-                                    $period_range = 12;
-                                }
-                                elseif ($is_mseason) {
-                                    $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
-                                    if ($month == 12) {
-                                        $period_name .= '~' . (string)($year+1);
-                                    }
-                                    $period_range = 3;
-                                }
-                                $extra['set_name'] = ucfirst($this->get_operation_name($arg['set'], true));
-                            }
-                            $extra['ydomain']['min'] = $subymin;
-                            $extra['ydomain']['max'] = $subymax;
-                            $extra['ydomain']['dmin'] = $subydmin;
-                            $extra['ydomain']['dmax'] = $subydmax;
-                            $extra['ydomain']['amin'] = $subyamin;
-                            $extra['ydomain']['amax'] = $subyamax;
-                            $extra['period_name'] = $period_name;
-                            $extra['info_key'] = $info['key'];
-                            $extra['period_range'] = $period_range;
-                            $extra['raw_measurement_type'] = $arg['measurement'];
-                            $extra['measurement_type'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
-                            $extra['module_type'] = $module_type;
-                            $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
-                            $extra['module_name'] = $module_name;
-                            $extra['station_name'] = $station['station_name'];
-                            $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
-                            $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
-                            $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
-                            $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
-                            $extra['unit'] = $this->output_unit($arg['measurement'], $module_type);
-                            $result['extras'][] = $extra;
-                            $result['legend']['unit'] = $this->output_unit($arg['measurement'], $module_type);
-                            $classes = array();
-                            $classes[] = 'lws-serie-'.$i;
-                            if (array_key_exists('line_mode', $arg) && $type != 'bar' && $type != 'bars' && $type != 'sareas') {
-                                if ($arg['line_mode'] == 'area' || $arg['line_mode'] == 'arealine') {
-                                    $info['area'] = true;
-                                }
-                                if ($arg['line_style'] == 'dashed') {
-                                    $classes[] = 'lws-dashed-line';
-                                }
-                                if ($arg['line_style'] == 'dotted') {
-                                    $classes[] = 'lws-dotted-line';
-                                }
-                                if ($arg['line_size'] == 'thin') {
-                                    $info['strokeWidth'] = 1;
-                                    $classes[] = 'lws-thin-line';
-                                }
-                                if ($arg['line_size'] == 'regular') {
-                                    $info['strokeWidth'] = 2;
-                                    $classes[] = 'lws-regular-line';
-                                }
-                                if ($arg['line_size'] == 'thick') {
-                                    $info['strokeWidth'] = 3;
-                                    $classes[] = 'lws-thick-line';
-                                }
-                            }
-                            if (count($classes) > 0) {
-                                $info['classed'] = implode(' ', $classes);
-                            }
-                            if ($json) {
-                                $result['values'][] = $this->jsonify($info, $set, $raw_json);
-                            } else {
-                                $info['values'] = $set;
-                                $result['values'][] = $info;
+                                error_log($ex->getMessage());
+                                $result = array();
                             }
                         }
-                        $i += 1;
-                        $cmin += $ymin;
-                        $cmax += $ymax;
+                        else {
+                            $result = array();
+                        }
+                    }
+                    else {
+                        $i = 1;
+                        foreach ($args as $arg) {
+                            $subymin = 0;
+                            $subymax = 0;
+                            $subydmin = 0;
+                            $subydmax = 0;
+                            $subyamin = 0;
+                            $subyamax = 0;
+                            if (strpos($arg['module_id'], ':') == 2) {
+                                $module_type = 'NAMain';
+                                $set = '';
+                                $val = '`measure_value`';
+                                if ($mode == 'yearly') {
+                                    $set = " AND `measure_set`='" . $arg['set'] . "'";
+                                }
+                                if ($mode == 'yearly' && strtolower($arg['set']) == 'amp') {
+                                    $set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
+                                    $val = 'ABS(MAX(`measure_value`)-MIN(`measure_value`)) as computed_value';
+                                }
+                                if ($mode == 'yearly' && strtolower($arg['set']) == 'mid') {
+                                    $set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
+                                    $val = 'AVG(`measure_value`) as computed_value';
+                                }
+                                $sql = "SELECT `timestamp`, `module_type`, " . $val . " FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $set . " ORDER BY `timestamp` ASC;";
+                                try {
+                                    $query = (array)$wpdb->get_results($sql);
+                                    $query_a = (array)$query;
+                                    if ((($type == 'bcline' && $i == 1) || $type == 'bar' || $type == 'bars' || $type == 'sareas') && $mode == 'yearly' && $timescale != 'adaptative') {
+                                        $dummy = '0';
+                                        if ($type == 'sareas') {
+                                            $d = $this->decimal_for_output($arg['measurement']);
+                                            if ($d > 0) {
+                                                $dummy = '0.';
+                                            } else {
+                                                $dummy = '1';
+                                            }
+                                            if ($d > 1) {
+                                                for ($i = 1; $i < $d; $i++) {
+                                                    $dummy .= '0';
+                                                }
+                                            }
+                                            if ($d > 0) {
+                                                $dummy .= '1';
+                                            }
+                                        }
+                                        if (count($query_a) > 0) {
+                                            $module_type = (array)($query_a[0]);
+                                            $module_type = $module_type['module_type'];
+                                        }
+                                        $t = array();
+                                        foreach ($query_a as $val) {
+                                            $a = (array)$val;
+                                            $t[$a['timestamp']] = $a;
+                                        }
+                                        $__start = (integer)self::get_js_date_from_mysql_utc($min, $station['loc_timezone'], '');
+                                        $__end = (integer)self::get_js_date_from_mysql_utc($max, $station['loc_timezone'], '');
+                                        $d = $__start;
+                                        while ($d <= $__end) {
+                                            $__date = date('Y-m-d', $d);
+                                            if (!array_key_exists($__date, $t)) {
+                                                $a = array();
+                                                $a['timestamp'] = $__date;
+                                                $a['module_type'] = $module_type;
+                                                $a['measure_value'] = $dummy;
+                                                $t[$a['timestamp']] = $a;
+                                            }
+                                            $d += 86400;
+                                        }
+                                        ksort($t);
+                                        $query_a = array();
+                                        foreach ($t as $key => $val) {
+                                            $query_a[] = $val;
+                                        }
+                                    }
+                                    $set = array();
+                                    $substart = true;
+                                    foreach ($query_a as $val) {
+                                        $a = (array)$val;
+                                        $module_type = $a['module_type'];
+                                        if ($mode == 'daily') {
+                                            $a['timestamp'] = self::get_js_datetime_from_mysql_utc($a['timestamp'], $station['loc_timezone'], $end_date);
+                                        }
+                                        if ($mode == 'yearly') {
+                                            $a['timestamp'] = self::get_js_date_from_mysql_utc($a['timestamp'], $station['loc_timezone'], $end_date);
+                                        }
+                                        if (!array_key_exists('measure_value', $a)) {
+                                            if (array_key_exists('computed_value', $a)) {
+                                                $a['measure_value'] = $a['computed_value'];
+                                            } else {
+                                                continue;
+                                            }
+                                        }
+                                        $a['measure_value'] = $this->output_value($a['measure_value'], $arg['measurement'], false, false, $a['module_type']);
+                                        if ($start) {
+                                            $ymin = $a['measure_value'];
+                                            $ymax = $a['measure_value'];
+                                            $ydmin = $this->get_measurement_min($arg['measurement'], $module_type);
+                                            $ydmax = $this->get_measurement_max($arg['measurement'], $module_type);
+                                            $yamax = $this->get_measurement_alarm_max($arg['measurement'], $module_type);
+                                            $yamin = $this->get_measurement_alarm_min($arg['measurement'], $module_type);
+                                            $start = false;
+                                        }
+                                        if ($a['measure_value'] > $ymax) {
+                                            $ymax = $a['measure_value'];
+                                        }
+                                        if ($a['measure_value'] < $ymin) {
+                                            $ymin = $a['measure_value'];
+                                        }
+                                        if ($substart) {
+                                            $subymin = $a['measure_value'];
+                                            $subymax = $a['measure_value'];
+                                            $subydmin = $this->get_measurement_min($arg['measurement'], $module_type);
+                                            $subydmax = $this->get_measurement_max($arg['measurement'], $module_type);
+                                            $subyamax = $this->get_measurement_alarm_max($arg['measurement'], $module_type);
+                                            $subyamin = $this->get_measurement_alarm_min($arg['measurement'], $module_type);
+                                            $substart = false;
+                                        }
+                                        if ($a['measure_value'] > $subymax) {
+                                            $subymax = $a['measure_value'];
+                                        }
+                                        if ($a['measure_value'] < $subymin) {
+                                            $subymin = $a['measure_value'];
+                                        }
+                                        $set[] = $a;
+                                    }
+
+                                    if (count($query_a) > 0) {
+                                        $a = (array)$query_a[0];
+                                        if ($this->get_measurement_max($arg['measurement'], $module_type) > $ydmax) {
+                                            $ydmax = $this->get_measurement_max($arg['measurement'], $module_type);
+                                        }
+                                        if ($this->get_measurement_min($arg['measurement'], $module_type) < $ydmin) {
+                                            $ydmin = $this->get_measurement_min($arg['measurement'], $module_type);
+                                        }
+                                        if ($this->get_measurement_alarm_max($arg['measurement'], $module_type) > $yamax) {
+                                            $yamax = $this->get_measurement_alarm_max($arg['measurement'], $a['module_type']);
+                                        }
+                                        if ($this->get_measurement_alarm_min($arg['measurement'], $module_type) < $yamin) {
+                                            $yamin = $this->get_measurement_alarm_min($arg['measurement'], $a['module_type']);
+                                        }
+                                        if ($this->get_measurement_max($arg['measurement'], $module_type) > $subydmax) {
+                                            $subydmax = $this->get_measurement_max($arg['measurement'], $module_type);
+                                        }
+                                        if ($this->get_measurement_min($arg['measurement'], $module_type) < $subydmin) {
+                                            $subydmin = $this->get_measurement_min($arg['measurement'], $module_type);
+                                        }
+                                        if ($this->get_measurement_alarm_max($arg['measurement'], $module_type) > $subyamax) {
+                                            $subyamax = $this->get_measurement_alarm_max($arg['measurement'], $a['module_type']);
+                                        }
+                                        if ($this->get_measurement_alarm_min($arg['measurement'], $module_type) < $subyamin) {
+                                            $subyamin = $this->get_measurement_alarm_min($arg['measurement'], $a['module_type']);
+                                        }
+                                    }
+                                } catch (\Exception $ex) {
+                                    $set = array();
+                                }
+                                $info = array();
+                                if ($type == 'bcline' && $i == 1) {
+                                    $info['bar'] = true;
+                                }
+                                if (($type == 'bars' || $type == 'sareas') && $arg['line_mode'] == 'single') {
+                                    $info['nonStackable'] = true;
+                                }
+                                if ($self_color && $type != 'lines' && $type != 'bars' && $type != 'sareas') {
+                                    $info['color'] = $prop['fg_color'];
+                                }
+                                if (array_key_exists($arg['module_id'], $station['modules_names'])) {
+                                    $module_name = str_replace(array('[', ']'), array('', ''), $station['modules_names'][$arg['module_id']]);
+                                } else {
+                                    $module_name = $this->get_module_type($module_type, false, true);
+                                }
+                                if ($mode == 'daily') {
+                                    if ($identical) {
+                                        $info['key'] = $module_name;
+                                    } elseif ($similar) {
+                                        if ($module_type != 'NAComputed') {
+                                            $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type) . ' (' . $module_name . ')';
+                                        } else {
+                                            $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                                        }
+                                    } else {
+                                        $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                                    }
+                                }
+                                if ($mode == 'yearly') {
+                                    if ($identical) {
+                                        if ($identical_module) {
+                                            $info['key'] = ucfirst($this->get_operation_name($arg['set'], true));
+                                        } else {
+                                            $info['key'] = $module_name . ' - ' . ucfirst($this->get_operation_name($arg['set'], true));
+                                        }
+                                    } elseif ($similar) {
+                                        if ($module_type != 'NAComputed') {
+                                            $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type) . ' (' . $module_name . ') - ' . ucfirst($this->get_operation_name($arg['set'], true));
+                                        } else {
+                                            $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                                        }
+                                    } else {
+                                        $info['key'] = $this->get_measurement_type($arg['measurement'], false, $module_type) . ' - ' . ucfirst($this->get_operation_name($arg['set'], true));
+                                    }
+                                }
+
+                                $extra = array();
+                                $period_name = '';
+                                $period_range = 0;
+                                if ($mode == 'yearly') {
+                                    if ($is_month) {
+                                        $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                        $now->setDate($year, $month, 1);
+                                        $period_name = date_i18n('F Y', $now->getTimestamp());
+                                        $period_range = 1;
+                                    } elseif ($is_year) {
+                                        $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
+                                        $period_range = 12;
+                                    } elseif ($is_mseason) {
+                                        $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
+                                        if ($month == 12) {
+                                            $period_name .= '~' . (string)($year + 1);
+                                        }
+                                        $period_range = 3;
+                                    }
+                                    $extra['set_name'] = ucfirst($this->get_operation_name($arg['set'], true));
+                                }
+                                $extra['ydomain']['min'] = $subymin;
+                                $extra['ydomain']['max'] = $subymax;
+                                $extra['ydomain']['dmin'] = $subydmin;
+                                $extra['ydomain']['dmax'] = $subydmax;
+                                $extra['ydomain']['amin'] = $subyamin;
+                                $extra['ydomain']['amax'] = $subyamax;
+                                $extra['period_name'] = $period_name;
+                                $extra['info_key'] = $info['key'];
+                                $extra['period_range'] = $period_range;
+                                $extra['raw_measurement_type'] = $arg['measurement'];
+                                $extra['measurement_type'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                                $extra['module_type'] = $module_type;
+                                $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
+                                $extra['module_name'] = $module_name;
+                                $extra['station_name'] = $station['station_name'];
+                                $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
+                                $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
+                                $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
+                                $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
+                                $extra['unit'] = $this->output_unit($arg['measurement'], $module_type);
+                                $result['extras'][] = $extra;
+                                $result['legend']['unit'] = $this->output_unit($arg['measurement'], $module_type);
+                                $classes = array();
+                                $classes[] = 'lws-serie-' . $i;
+                                if (array_key_exists('line_mode', $arg) && $type != 'bar' && $type != 'bars' && $type != 'sareas') {
+                                    if ($arg['line_mode'] == 'area' || $arg['line_mode'] == 'arealine') {
+                                        $info['area'] = true;
+                                    }
+                                    if ($arg['line_style'] == 'dashed') {
+                                        $classes[] = 'lws-dashed-line';
+                                    }
+                                    if ($arg['line_style'] == 'dotted') {
+                                        $classes[] = 'lws-dotted-line';
+                                    }
+                                    if ($arg['line_size'] == 'thin') {
+                                        $info['strokeWidth'] = 1;
+                                        $classes[] = 'lws-thin-line';
+                                    }
+                                    if ($arg['line_size'] == 'regular') {
+                                        $info['strokeWidth'] = 2;
+                                        $classes[] = 'lws-regular-line';
+                                    }
+                                    if ($arg['line_size'] == 'thick') {
+                                        $info['strokeWidth'] = 3;
+                                        $classes[] = 'lws-thick-line';
+                                    }
+                                }
+                                if (count($classes) > 0) {
+                                    $info['classed'] = implode(' ', $classes);
+                                }
+                                if ($json) {
+                                    $result['values'][] = $this->jsonify($info, $set, $raw_json);
+                                } else {
+                                    $info['values'] = $set;
+                                    $result['values'][] = $info;
+                                }
+                            }
+                            $i += 1;
+                            $cmin += $ymin;
+                            $cmax += $ymax;
+                        }
                     }
                 }
+            }
+            if ($valuescale == 'consistent' && $mode == 'yearly') {
+                foreach ($args as $arg) {
+                    if (strpos($arg['module_id'], ':') == 2) {
+                        $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val, MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='" . $arg['set'] . "';";
+                        try {
+                            $query = $wpdb->get_results($sql, ARRAY_A);
+                            $min = $query[0]['min_val'];
+                            $max = $query[0]['max_val'];
+                            if ($min < $ymin) {
+                                $ymin = $min;
+                            }
+                            if ($min < $cmin) {
+                                $cmin = $min;
+                            }
+                            if ($max > $ymax) {
+                                $ymax = $max;
+                            }
+                            if ($max > $cmax) {
+                                $cmax = $max;
+                            }
+                        }
+                        catch (\Exception $ex) {
+                            // keep $y and $c min and max
+                        }
+                    }
+                }
+                $cmin *= count($args);
+                $cmax *= count($args);
             }
             $result['ydomain']['min'] = $ymin;
             $result['ydomain']['max'] = $ymax;
@@ -621,7 +893,12 @@ trait Output {
                 $result['values'] = implode(', ', $result['values']);
             }
             else {
-                $result['values'] = '[' . implode(', ', $result['values']) . ']';
+                if (!is_null($result) && isset($result['values']) && count($result['values']) > 0) {
+                    $result['values'] = '[' . implode(', ', $result['values']) . ']';
+                }
+                else {
+                    $result['values'] = '[]';
+                }
             }
         }
         return $result;
@@ -670,7 +947,14 @@ trait Output {
             case 'bar':
             case 'bars':
             case 'sareas':
-                $name = $values['extras'][0]['measurement_type'];
+            case 'astream':
+                if (is_null($values)) {
+                    return $result;
+                }
+                $name = '';
+                if (!is_null($values) && isset($values['extras'][0]['measurement_type'])) {
+                    $name = $values['extras'][0]['measurement_type'];
+                }
                 if ($type == 'lines' || $type == 'bars' || $type == 'sareas') {
                     $name = $this->get_dimension_name($values['legend']['unit']['dimension'], false, true);
                     $force = true;
@@ -774,7 +1058,6 @@ trait Output {
                     break;
             }
         }
-
         return $result;
     }
 
@@ -1222,6 +1505,12 @@ trait Output {
         else {
             $value_params['timescale'] = 'none';
         }
+        if (array_key_exists('valuescale', $attributes)) {
+            $value_params['valuescale'] = $attributes['valuescale'];
+        }
+        else {
+            $value_params['valuescale'] = 'none';
+        }
         $value_params['periodduration'] = 'none';
         if (strpos($value_params['periodtype'], '-month') > 0) {
             $value_params['periodduration'] = 'month';
@@ -1359,6 +1648,85 @@ trait Output {
         $result = '';
         $body = '';
 
+
+        if ($type == 'astream') {
+            wp_enqueue_style('lws-nvd3');
+            wp_enqueue_script('lws-nvd3');
+            wp_enqueue_script('lws-colorbrewer');
+            wp_enqueue_script('lws-spin');
+            $cpt = str_replace('s', '', $items[1]['line_mode']);
+            if (!is_null($values) && isset($values['extras']) && array_key_exists(0, $values['extras'])) {
+                $unit = $values['extras'][0]['unit']['unit'];
+            }
+            else {
+                $unit = '';
+            }
+            $legendColors = array();
+            if ($color == 'self') {
+                $col = new ColorsManipulation($prop['fg_color']);
+                $col_array = $col->makeSteppedGradient($cpt, 50);
+                foreach ($col_array as $c) {
+                    $legendColors[] = '"#' . $c . '"';
+                }
+            }
+            $result .= '<style type="text/css">' . PHP_EOL;
+            if ($prop['text'] != '') {
+                $result .= '#' . $svg . ' .nvd3 text {' . $prop['text'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axis-domain'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis path.domain {' . $prop['nv-axis-domain'] . '}' . PHP_EOL;
+            }
+
+            if ($prop['nv-axis-line'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis line {' . $prop['nv-axis-line'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axislabel'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis text.nv-axislabel {' . $prop['nv-axislabel'] . '}' . PHP_EOL;
+            }
+            if ($fixed_timescale) {
+                $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:first-of-type text {text-anchor: start !important;}' . PHP_EOL;
+                $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:last-of-type text {text-anchor: end !important;}' . PHP_EOL;
+            }
+            $result .= '</style>' . PHP_EOL;
+
+            // BEGIN MAIN BODY
+            $body .= '      var shift' . $uniq . ' = new Date();' . PHP_EOL;
+            $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
+            if ($color != 'self') {
+                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+            }
+            else {
+                $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
+            }
+            if ($inverted) {
+                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
+            }
+            $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
+            $body .= '      nv.addGraph(function() {' . PHP_EOL;
+            $body .= '         chart'.$uniq.' = nv.models.stackedAreaChart()' . PHP_EOL;
+            $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
+            $body .= '               .y(function(d) {return d[1]})' . PHP_EOL;
+            $body .= '               .clipEdge(true)' . PHP_EOL;
+            $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
+            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
+            $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
+            $body .= '               .showControls(false);' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            if ($timescale == 'none') {
+                $body .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
+            }
+            if ($label != 'none') {
+                $body .= '      chart'.$uniq.'.xAxis.axisLabelDistance(6);' . PHP_EOL;
+            }
+            $body .= '      chart'.$uniq.'.yAxis.showMaxMin(false);';
+            $body .= '      chart'.$uniq.'.style("stream");' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.tooltip.enabled(false);' . PHP_EOL;
+            $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+            $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+            $body .= '      return chart'.$uniq.';' . PHP_EOL;
+            $body .= '    });'.PHP_EOL;
+            // END MAIN BODY
+        }
 
         if ($type == 'sareas') {
             $ticks = $this->graph_ticks($domain, $valuescale, $measurement1, $height);
@@ -2604,8 +2972,8 @@ trait Output {
     /**
      * Get value for lcd.
      *
-     * @return  array  $attributes The value queryed.
-     * @since    1.0.0
+     * @return array $attributes The value queryed.
+     * @since 1.0.0
      */
     public function lcd_value($attributes) {
         $fingerprint = md5(json_encode($attributes));
@@ -2648,7 +3016,7 @@ trait Output {
             $measure['title'] = __( 'Error code ' , 'live-weather-station').$raw_datas['condition']['value'];
             if ($raw_datas['condition']['value'] == 3 || $raw_datas['condition']['value'] == 4) {
                 $save_locale = setlocale(LC_ALL,'');
-                setlocale(LC_ALL, get_display_locale());
+                setlocale(LC_ALL, lws_get_display_locale());
                 $measure['title'] = iconv('UTF-8', 'ASCII//TRANSLIT', __('No data', 'live-weather-station'));
                 setlocale(LC_ALL, $save_locale);
             }
@@ -2673,7 +3041,7 @@ trait Output {
                 $measure['title'] = __( 'Error code ' , 'live-weather-station').$datas['condition']['value'];
                 if ($datas['condition']['value'] == 3 || $datas['condition']['value'] == 4) {
                     $save_locale = setlocale(LC_ALL,'');
-                    setlocale(LC_ALL, get_display_locale());
+                    setlocale(LC_ALL, lws_get_display_locale());
                     $measure['title'] = iconv('UTF-8', 'ASCII//TRANSLIT', __('No data', 'live-weather-station'));
                     setlocale(LC_ALL, $save_locale);
                 }
@@ -5830,7 +6198,7 @@ trait Output {
      * @since    2.0.0
      */
     protected function get_country_name($value) {
-        return \Locale::getDisplayRegion('-'.$value, get_display_locale());
+        return \Locale::getDisplayRegion('-'.$value, lws_get_display_locale());
     }
 
     /**
@@ -5850,7 +6218,7 @@ trait Output {
         $result = [];
         $letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $continue = array('BU', 'CS', 'DD', 'DY', 'EU', 'HV', 'FX', 'NH', 'QO', 'RH', 'SU', 'TP', 'UK', 'VD', 'YD', 'YU', 'ZR', 'ZZ');
-        $locale = get_display_locale();
+        $locale = lws_get_display_locale();
         for ($i=0; $i<26; $i++) {
             for ($j=0; $j<26; $j++) {
                 $s = $letters[$i].$letters[$j];
@@ -6488,7 +6856,7 @@ trait Output {
      */
     protected function format_lcd_datas($datas, $measure_type, $computed=false) {
         $save_locale = setlocale(LC_ALL,'');
-        setlocale(LC_ALL, get_display_locale());
+        setlocale(LC_ALL, lws_get_display_locale());
         $result = array();
         $response = array ();
         $battery = array();
@@ -7614,7 +7982,7 @@ trait Output {
             $result[$set] = $this->get_operation_name($set);
         }
         if (class_exists('\Collator')) {
-            $collator = new \Collator(get_display_locale());
+            $collator = new \Collator(lws_get_display_locale());
             $collator->asort($result);
         }
         else {
@@ -7667,7 +8035,7 @@ trait Output {
             $measurements[$measurement]['extended'] = $this->get_all_historical_operations($history->get_measurements_operations_type($measurement, '', true));
         }
         if (class_exists('\Collator')) {
-            $collator = new \Collator(get_display_locale());
+            $collator = new \Collator(lws_get_display_locale());
             $collator->asort($names);
         }
         else {

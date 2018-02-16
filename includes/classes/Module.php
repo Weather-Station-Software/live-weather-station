@@ -245,7 +245,7 @@ abstract class Maintainer {
      * @since 3.4.0
      */
     public function get_parent_url() {
-        return re_get_admin_page_url(array('action'=>'shortcode', 'tab'=>$this->module_type(), 'service'=>'station'));
+        return lws_re_get_admin_page_url(array('action'=>'shortcode', 'tab'=>$this->module_type(), 'service'=>'station'));
     }
 
     /**
@@ -255,7 +255,7 @@ abstract class Maintainer {
      * @since 3.4.0
      */
     public function get_module_url() {
-        return re_get_admin_page_url(array('action'=>'shortcode', 'tab'=>$this->module_type(), 'service'=>$this->module_id));
+        return lws_re_get_admin_page_url(array('action'=>'shortcode', 'tab'=>$this->module_type(), 'service'=>$this->module_id));
     }
 
     /**
@@ -387,10 +387,12 @@ abstract class Maintainer {
      * @param string $id The control id.
      * @param string $title The control title.
      * @return string The control ready to print.
+     * @param boolean $hidden Optional. Hide the select option.
+     * @param boolean $displayed Optional. Display the select option.
      * @since 3.4.0
      */
-    protected function get_neutral_option_select($id, $title) {
-        return $this->get_option_select($id, $title);
+    protected function get_neutral_option_select($id, $title, $hidden=false, $displayed=true) {
+        return $this->get_option_select($id, $title, '', true, $hidden, $displayed);
     }
 
     /**
@@ -549,7 +551,7 @@ abstract class Maintainer {
      */
     private function get_no_collect_box() {
         $title = __('No data compilation', 'live-weather-station');
-        $url = get_admin_page_url('lws-settings', null, 'history');
+        $url = lws_get_admin_page_url('lws-settings', null, 'history');
         $s = sprintf('<a href="%s">%s</a>', $url, __('right option', 'live-weather-station'));
         $content = sprintf(__('%s is not set to compile daily data and, for this reason, it is not possible to generate shortcodes for these data. To compile daily data, please set the %s.', 'live-weather-station' ), LWS_PLUGIN_NAME, $s);
         return $this->get_box('lws-error-id', $title, $content);
@@ -563,7 +565,7 @@ abstract class Maintainer {
      */
     private function get_no_build_box() {
         $title = __('No data compilation', 'live-weather-station');
-        $url = get_admin_page_url('lws-settings', null, 'history');
+        $url = lws_get_admin_page_url('lws-settings', null, 'history');
         $s = sprintf('<a href="%s">%s</a>', $url, __('right option', 'live-weather-station'));
         $content = sprintf(__('%s is not set to compile historical data and, for this reason, it is not possible to generate shortcodes for these data. To compile historical data, please set the %s.', 'live-weather-station' ), LWS_PLUGIN_NAME, $s);
         return $this->get_box('lws-error-id', $title, $content);
@@ -742,7 +744,7 @@ abstract class Maintainer {
             $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").change(function() {';
             $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '" ).change();});';
         }
-        if ($this->module_type == 'lines' || $this->module_type == 'bars' || $this->module_type == 'sareas') {
+        if ($this->module_type == 'lines' || $this->module_type == 'bars' || $this->module_type == 'sareas' || $this->module_type == 'astream') {
             $content .= '$("#' . $name . '-datas-dimension-' .$this->station_guid . '").change(function() {';
             for ($i=1; $i<=$this->series_number; $i++) {
                 $content .= '$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . ' option[value=\'0\']").attr("selected", true);';
@@ -754,7 +756,7 @@ abstract class Maintainer {
             $content .= 'var js_array_' . $js_name . '_measurement_' . $this->station_guid . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$(this).val()][2];';
             $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").html("");';
             $content .= '$(js_array_' . $js_name . '_measurement_' . $this->station_guid . ').each(function (i) {';
-            if ($this->module_type == 'lines' || $this->module_type == 'bars' || $this->module_type == 'sareas') {
+            if ($this->module_type == 'lines' || $this->module_type == 'bars' || $this->module_type == 'sareas'|| ($this->module_type == 'astream' && $i == 1)) {
                 $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+" "+((js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] != $("#' . $name . '-datas-dimension-' . $this->station_guid . '").val() && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none") ? "disabled" : "")+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
             }
             else {

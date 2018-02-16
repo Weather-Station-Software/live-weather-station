@@ -40,7 +40,7 @@ class Handling {
      * @since 3.0.0
      */
     public function __construct() {
-        $this->locale = get_display_locale();
+        $this->locale = lws_get_display_locale();
         if ('en_US' === $this->locale) {
             if (is_admin() || is_blog_admin()) {
                 update_option('live_weather_station_partial_translation', 0);
@@ -67,7 +67,7 @@ class Handling {
            return false;
        }
        else {
-           return (((EnvManager::is_plugin_in_production_mode() && $this->percent_translated < $this->percent_min) || !EnvManager::is_plugin_in_production_mode()) && (get_display_locale() == get_locale()));
+           return (((EnvManager::is_plugin_in_production_mode() && $this->percent_translated < $this->percent_min) || !EnvManager::is_plugin_in_production_mode()) && (lws_get_display_locale() == get_locale()));
        }
     }
 
@@ -99,7 +99,7 @@ class Handling {
         if (!EnvManager::is_plugin_in_production_mode()) {
             $branch = 'dev';
         }
-        return LWS_LANGUAGES_DIR . LWS_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . get_display_locale() . '.mo';
+        return LWS_LANGUAGES_DIR . LWS_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . lws_get_display_locale() . '.mo';
     }
 
     /**
@@ -333,6 +333,6 @@ class Handling {
      */
     public static function get_language_id()
     {
-        return get_display_language_id();
+        return lws_get_display_language_id();
     }
 }

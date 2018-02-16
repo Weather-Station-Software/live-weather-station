@@ -117,6 +117,9 @@ trait PublicClient {
                 } elseif (array_key_exists('station_name', $weather)) {
                     $station['station_name'] = $weather['station_name'];
                 }
+                if ($station['station_name'] == '') {
+                    $station['station_name'] = '< NO NAME >';
+                }
                 if (array_key_exists('timestamp', $observation)) {
                     try {
                         $timestamp = date('Y-m-d H:i:s', $observation['timestamp']);

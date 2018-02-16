@@ -8,7 +8,7 @@
 
 use WeatherStation\System\Logs\Logger;
 
-$link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), get_admin_page_url('lws-analytics', null, 'event'), __('detailed analytics', 'live-weather-station'));
+$link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), lws_get_admin_page_url('lws-analytics', null, 'event'), __('detailed analytics', 'live-weather-station'));
 
 ?>
 <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">

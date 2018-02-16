@@ -75,7 +75,7 @@ class Bars extends \WeatherStation\Engine\Module\Maintainer {
             $group = $this->get_assoc_option_select('yearly-bars-datas-module-' . $i . '-' . $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
             $group .= $this->get_neutral_option_select('yearly-bars-datas-measurement-' . $i . '-' . $this->station_guid, __('Measurement', 'live-weather-station'));
             $group .= $this->get_neutral_option_select('yearly-bars-datas-set-'. $i . '-' . $this->station_guid, __('Dataset', 'live-weather-station'));
-            $group .= $this->get_key_value_option_select('yearly-bars-datas-line-mode-' . $i . '-' . $this->station_guid, __('Behaviour', 'live-weather-station'), $this->get_stackable_mode_js_array(), true, 'single');
+            $group .= $this->get_key_value_option_select('yearly-bars-datas-line-mode-' . $i . '-' . $this->station_guid, __('Behavior', 'live-weather-station'), $this->get_stackable_mode_js_array(), true, 'single');
             $group .= $this->get_key_value_option_select('yearly-bars-datas-dot-style-' . $i . '-' . $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none', true, false);
             $group .= $this->get_key_value_option_select('yearly-bars-datas-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid', true, false);
             $group .= $this->get_key_value_option_select('yearly-bars-datas-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular', true, false);
@@ -100,7 +100,7 @@ class Bars extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_key_value_option_select('yearly-bars-datas-guideline-'. $this->station_guid, __('Control', 'live-weather-station'), $this->get_bar_group_js_array(), true, 'free');
         $content .= $this->get_key_value_option_select('yearly-bars-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
         $content .= $this->get_key_value_option_select('yearly-bars-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(true), true, 'auto');
-        $content .= $this->get_key_value_option_select('yearly-bars-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(), true, 'auto');
+        $content .= $this->get_key_value_option_select('yearly-bars-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true), true, 'auto');
         $content .= $this->get_key_value_option_select('yearly-bars-datas-interpolation-'. $this->station_guid, __('Start', 'live-weather-station'), $this->get_stacking_js_array(), true, 'grouped', true, false);
         $content .= $this->get_key_value_option_select('yearly-bars-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
         $content .= '</tbody></table>';

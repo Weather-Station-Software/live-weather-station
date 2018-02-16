@@ -28,7 +28,7 @@ if (!isset($station['station_model'])) {
     <?php if ($station['guid'] != 0) { ?>
         <h1><?php _e('Edit a station via <em>clientraw</em> file', 'live-weather-station');?></h1>
     <?php } ?>
-    <form method="post" name="add-edit-raw-form" id="add-edit-raw-form" action="<?php echo esc_url(get_admin_page_url($url)); ?>">
+    <form method="post" name="add-edit-raw-form" id="add-edit-raw-form" action="<?php echo esc_url(lws_get_admin_page_url($url)); ?>">
         <input name="station_id" type="hidden" value="<?php echo $station['station_id']; ?>" />
         <input name="guid" type="hidden" value="<?php echo $station['guid']; ?>" />
         <input name="service" type="hidden" value="Clientraw" />
@@ -124,18 +124,18 @@ if (!isset($station['station_model'])) {
         <?php if ($station['guid'] == 0) { ?>
             <p class="submit"><input type="submit" name="add-edit-raw" id="add-edit-raw" class="button button-primary" value="<?php esc_html_e( 'Add This Station', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;
                 <?php if ($dashboard) { ?>
-                    <a href="<?php echo esc_url(get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                    <a href="<?php echo esc_url(lws_get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } else { ?>
-                    <a href="<?php echo esc_url(get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                    <a href="<?php echo esc_url(lws_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } ?>
                 <span id="span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo $message;?>&hellip;</strong></span></p>
         <?php } ?>
         <?php if ($station['guid'] != 0) { ?>
             <p class="submit"><input type="submit" name="add-edit-raw" id="add-edit-raw" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;
                 <?php if ($dashboard) { ?>
-                    <a href="<?php echo esc_url(get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                    <a href="<?php echo esc_url(lws_get_admin_page_url('lws-dashboard')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } else { ?>
-                    <a href="<?php echo esc_url(get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+                    <a href="<?php echo esc_url(lws_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
                 <?php } ?>
                 <span id="span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Updating this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
         <?php } ?>

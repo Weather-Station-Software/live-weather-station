@@ -108,7 +108,7 @@ class Stats
                 $body = json_decode($body);
                 $this->cpt = 0;
                 if (isset($body)) {
-                    $result = object_to_array($body);
+                    $result = lws_object_to_array($body);
                     $result['timestamp'] = time();
                     update_option('live_weather_station_translation_stat', $result);
                 }

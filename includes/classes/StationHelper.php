@@ -17,8 +17,10 @@ use WeatherStation\Engine\Module\Current\Gauge;
 use WeatherStation\Engine\Module\Current\Lcd;
 use WeatherStation\Engine\Module\Current\Meter;
 use WeatherStation\Engine\Module\Current\Textual;
+use WeatherStation\Engine\Module\Daily\AStream as DailyAStream;
 use WeatherStation\Engine\Module\Daily\Line as DailyLine;
 use WeatherStation\Engine\Module\Daily\Lines as DailyLines;
+use WeatherStation\Engine\Module\Yearly\AStream as YearlyAStream;
 use WeatherStation\Engine\Module\Yearly\Line as YearlyLine;
 use WeatherStation\Engine\Module\Yearly\Bar as YearlyBar;
 use WeatherStation\Engine\Module\Yearly\Bars as YearlyBars;
@@ -78,6 +80,7 @@ class Handling {
         Meter::register_module('current');
         DailyLine::register_module('daily');
         DailyLines::register_module('daily');
+        //DailyAStream::register_module('daily');
         YearlyLine::register_module('yearly');
         //YearlyBar::register_module('yearly');
         YearlyLines::register_module('yearly');
@@ -85,6 +88,7 @@ class Handling {
         YearlyBCLine::register_module('yearly');
         YearlyCalendarHM::register_module('yearly');
         //YearlyStackedAreas::register_module('yearly');
+        //YearlyAStream::register_module('yearly');
     }
 
     /**

@@ -385,6 +385,10 @@ class Admin {
             array($this, 'lws_display_windsemantics_callback'), 'lws_display', 'lws_display_section',
             array(__('Semantics of the icon representing the wind direction in widgets.', 'live-weather-station')));
         register_setting('lws_display', 'lws_display_windsemantics');
+        add_settings_field('lws_display_anglesemantics', __('Angle semantics', 'live-weather-station'),
+            array($this, 'lws_display_anglesemantics_callback'), 'lws_display', 'lws_display_section',
+            array(__('Semantics of the angle direction in graphs and charts.', 'live-weather-station')));
+        register_setting('lws_display', 'lws_display_anglesemantics');
         add_settings_field('lws_display_moonicons', __('Moon icon set', 'live-weather-station'),
             array($this, 'lws_display_moonicons_callback'), 'lws_display', 'lws_display_section',
             array(__('Type of icons to illustrate moon age and phase in widgets.', 'live-weather-station')));
@@ -842,6 +846,16 @@ class Admin {
      * Renders the interface elements for the corresponding field.
      *
      * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.5.0
+     */
+    public function lws_display_anglesemantics_callback($args) {
+        echo $this->field_radio($this->get_windsemantics_array(), get_option('live_weather_station_angle_semantics'), 'lws_display_anglesemantics', $args[0]);
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
      * @since 3.0.0
      */
     public function lws_display_moonicons_callback($args) {
@@ -895,6 +909,7 @@ class Admin {
                 update_option('live_weather_station_unit_rain_snow', (integer)$_POST['lws_display_rain_snow_unit']);
                 update_option('live_weather_station_measure_only', (!array_key_exists('lws_display_viewing_options', $_POST) ? 1 : 0));
                 update_option('live_weather_station_wind_semantics', (integer)$_POST['lws_display_windsemantics']);
+                update_option('live_weather_station_angle_semantics', (integer)$_POST['lws_display_anglesemantics']);
                 update_option('live_weather_station_moon_icons', (integer)$_POST['lws_display_moonicons']);
                 update_option('live_weather_station_min_max_mode', (array_key_exists('lws_display_minmax', $_POST) ? 1 : 0));
                 update_option('live_weather_station_obsolescence', (integer)$_POST['lws_display_obsolescence']);
@@ -1078,7 +1093,7 @@ class Admin {
                     $message = __('%s have been correctly updated.', 'live-weather-station');
                     $message = sprintf($message, '<em>' . ucfirst($settings_string) . '</em>');
                     if ($this->reload) {
-                        $current_url = get_admin_page_url('lws-settings', null, $section);
+                        $current_url = lws_get_admin_page_url('lws-settings', null, $section);
                         $submessage = __('In order for the main menu to reflect the updated settings, please <a href="%s">refresh</a> the page', 'live-weather-station').'&hellip;';
                         $message .= '<br/>' . sprintf($submessage, $current_url);
                         $this->reload = false;

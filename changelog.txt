@@ -1,5 +1,12 @@
 
 
+#3.4.4 / February 16th, 2018
+
+* Bug fix: LCD display preview can be inaccurate (thanks to John Schauer for detecting it).
+* Bug fix: in some rare cases, a WeatherFlow station may be unnamed and, therefore, be inaccessible in stations list view.
+* Bug fix: function name collision with WPML plugin results in blank screen when Weather Station & WPML are both active (thanks to David Garcia Watkins for reporting it).
+
+
 #3.4.3 / January 25th, 2018
 
 * Improvement: better name handling for multiline charts.
