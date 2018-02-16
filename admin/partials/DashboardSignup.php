@@ -12,7 +12,7 @@ $email = get_option('admin_email');
 
 
 
-<form name="subscribe-form" id="subscribe-form" action="<?php echo esc_url(get_admin_page_url()); ?>" method="POST" style="margin:0px;padding:0px;">
+<form name="subscribe-form" id="subscribe-form" action="<?php echo esc_url(lws_get_admin_page_url()); ?>" method="POST" style="margin:0px;padding:0px;">
     <input type="hidden" name="action" value="subscribe" />
     <?php wp_nonce_field('subscribe', '_wpnonce', false ); ?>
     <p>

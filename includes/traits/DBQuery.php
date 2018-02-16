@@ -1197,7 +1197,7 @@ trait Query {
     protected function get_loc_station($guid=0) {
         if ($guid == 0) {
             $ccs = '';
-            $cc = explode ('_', get_display_locale());
+            $cc = explode ('_', lws_get_display_locale());
             if (count($cc) > 1) {
                 $ccs = strtoupper($cc[1][0].$cc[1][1]);
             }
@@ -1242,7 +1242,7 @@ trait Query {
     protected function get_raw_station($guid=0) {
         if ($guid == 0) {
             $ccs = '';
-            $cc = explode ('_', get_display_locale());
+            $cc = explode ('_', lws_get_display_locale());
             if (count($cc) > 1) {
                 $ccs = strtoupper($cc[1][0].$cc[1][1]);
             }
@@ -1289,7 +1289,7 @@ trait Query {
     protected function get_real_station($guid=0) {
         if ($guid == 0) {
             $ccs = '';
-            $cc = explode ('_', get_display_locale());
+            $cc = explode ('_', lws_get_display_locale());
             if (count($cc) > 1) {
                 $ccs = strtoupper($cc[1][0].$cc[1][1]);
             }
@@ -1336,7 +1336,7 @@ trait Query {
     protected function get_wflw_station($guid=0) {
         if ($guid == 0) {
             $ccs = '';
-            $cc = explode ('_', get_display_locale());
+            $cc = explode ('_', lws_get_display_locale());
             if (count($cc) > 1) {
                 $ccs = strtoupper($cc[1][0].$cc[1][1]);
             }
@@ -1382,7 +1382,7 @@ trait Query {
     protected function get_txt_station($guid=0) {
         if ($guid == 0) {
             $ccs = '';
-            $cc = explode ('_', get_display_locale());
+            $cc = explode ('_', lws_get_display_locale());
             if (count($cc) > 1) {
                 $ccs = strtoupper($cc[1][0].$cc[1][1]);
             }

@@ -22,7 +22,7 @@ $warning = sprintf(__('All stations associated to this service will be removed f
 
 ?>
 
-<form action="<?php echo esc_url(get_admin_page_url('lws-settings', null, 'services')); ?>" method="POST">
+<form action="<?php echo esc_url(lws_get_admin_page_url('lws-settings', null, 'services')); ?>" method="POST">
     <input type="hidden" name="action" value="manage-connection" />
     <input type="hidden" name="service" value="WeatherUnderground" />
     <input type="hidden" name="option_page" value="services" />
@@ -56,7 +56,7 @@ $warning = sprintf(__('All stations associated to this service will be removed f
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('Status', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(get_admin_page_url('lws-events', null, null, 'Weather Underground')); ?>"<?php echo $target; ?>><?php echo strtolower(__('See events log', 'live-weather-station')); ?></a>)</span>
+                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(lws_get_admin_page_url('lws-events', null, null, 'Weather Underground')); ?>"<?php echo $target; ?>><?php echo strtolower(__('See events log', 'live-weather-station')); ?></a>)</span>
                     </td>
                 </tr>
                 <tr>

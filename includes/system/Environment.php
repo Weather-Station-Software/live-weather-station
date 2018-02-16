@@ -531,20 +531,20 @@ class Manager {
      */
     private static function locale_name($id) {
         switch ($id) {
-            case 'arq': $result = (get_display_language_id() == 'fr') ? 'Arabe (Algérie)' : 'Arabic (Algeria)' ; break;
-            case 'ary': $result = (get_display_language_id() == 'fr') ? 'Arabe (Maroc)' : 'Arabic (Morocco)' ; break;
-            case 'azb': $result = (get_display_language_id() == 'fr') ? 'Azerbaïdjanais du Sud' : 'South Azerbaijani' ; break;
-            case 'bcc': $result = (get_display_language_id() == 'fr') ? 'Balochi du Sud' : 'Southern Balochi' ; break;
-            case 'frp': $result = (get_display_language_id() == 'fr') ? 'Arpitan' : 'Arpitan' ; break;
-            case 'fuc': $result = (get_display_language_id() == 'fr') ? 'Pulaar' : 'Pulaar' ; break;
-            case 'haz': $result = (get_display_language_id() == 'fr') ? 'Hazaragi' : 'Hazaragi' ; break;
-            case 'kin': $result = (get_display_language_id() == 'fr') ? 'Kinyarwanda' : 'Kinyarwanda' ; break;
-            case 'kmr': $result = (get_display_language_id() == 'fr') ? 'Kurde du Nord' : 'Northern Kurdish' ; break;
-            case 'ory': $result = (get_display_language_id() == 'fr') ? 'Oriya' : 'Oriya' ; break;
-            case 'rhg': $result = (get_display_language_id() == 'fr') ? 'Rohingya' : 'Rohingya' ; break;
-            case 'szl': $result = (get_display_language_id() == 'fr') ? 'Silésien' : 'Silesian' ; break;
-            case 'twd': $result = (get_display_language_id() == 'fr') ? 'Twents' : 'Twents' ; break;
-            default: $result = \Locale::getDisplayName($id, get_display_language_id());
+            case 'arq': $result = (lws_get_display_language_id() == 'fr') ? 'Arabe (Algérie)' : 'Arabic (Algeria)' ; break;
+            case 'ary': $result = (lws_get_display_language_id() == 'fr') ? 'Arabe (Maroc)' : 'Arabic (Morocco)' ; break;
+            case 'azb': $result = (lws_get_display_language_id() == 'fr') ? 'Azerbaïdjanais du Sud' : 'South Azerbaijani' ; break;
+            case 'bcc': $result = (lws_get_display_language_id() == 'fr') ? 'Balochi du Sud' : 'Southern Balochi' ; break;
+            case 'frp': $result = (lws_get_display_language_id() == 'fr') ? 'Arpitan' : 'Arpitan' ; break;
+            case 'fuc': $result = (lws_get_display_language_id() == 'fr') ? 'Pulaar' : 'Pulaar' ; break;
+            case 'haz': $result = (lws_get_display_language_id() == 'fr') ? 'Hazaragi' : 'Hazaragi' ; break;
+            case 'kin': $result = (lws_get_display_language_id() == 'fr') ? 'Kinyarwanda' : 'Kinyarwanda' ; break;
+            case 'kmr': $result = (lws_get_display_language_id() == 'fr') ? 'Kurde du Nord' : 'Northern Kurdish' ; break;
+            case 'ory': $result = (lws_get_display_language_id() == 'fr') ? 'Oriya' : 'Oriya' ; break;
+            case 'rhg': $result = (lws_get_display_language_id() == 'fr') ? 'Rohingya' : 'Rohingya' ; break;
+            case 'szl': $result = (lws_get_display_language_id() == 'fr') ? 'Silésien' : 'Silesian' ; break;
+            case 'twd': $result = (lws_get_display_language_id() == 'fr') ? 'Twents' : 'Twents' ; break;
+            default: $result = \Locale::getDisplayName($id, lws_get_display_language_id());
 
         }
         return $result;
@@ -624,7 +624,7 @@ class Manager {
             $result = '-';
         }
         else {
-            $result = \Locale::getDisplayRegion('-'.$id, get_display_locale());
+            $result = \Locale::getDisplayRegion('-'.$id, lws_get_display_locale());
         }
         return $result;
     }
@@ -646,11 +646,11 @@ class Manager {
             $name = mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
             if ($translation['slug'] != 'default') {
                 $slug = $translation['slug'];
-                if (get_display_language_id() == 'en') {
+                if (lws_get_display_language_id() == 'en') {
                     $name = '%s ' . $name;
                     $slug = ucfirst($slug);
                 }
-                if (get_display_language_id() == 'fr') {
+                if (lws_get_display_language_id() == 'fr') {
                     if (strpos($name, ' (') > 0) {
                         $name = str_replace(' (', ' %s (', $name);
                     }
@@ -669,7 +669,7 @@ class Manager {
             $set[$id] = $name;
         }
         if (class_exists('\Collator')) {
-            $collator = new \Collator(get_display_locale());
+            $collator = new \Collator(lws_get_display_locale());
             $collator->asort($set);
         }
         else {
@@ -930,7 +930,7 @@ class Manager {
         global $_wp_admin_css_colors;
         $key = get_user_meta(get_current_user_id(), 'admin_color', true);
         if (array_key_exists($key, $_wp_admin_css_colors)) {
-            $c = object_to_array($_wp_admin_css_colors[$key]);
+            $c = lws_object_to_array($_wp_admin_css_colors[$key]);
             $c['key'] = $key;
             return $c;
         }

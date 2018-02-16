@@ -23,7 +23,7 @@ $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
 <div class="wrap">
     <h2><?php esc_html_e('Add a Netatmo station', 'live-weather-station');?></h2>
     <?php if ($can_add) { ?>
-    <form method="post" name="add-netatmo" id="add-netatmo" action="<?php echo esc_url(get_admin_page_url($url)); ?>">
+    <form method="post" name="add-netatmo" id="add-netatmo" action="<?php echo esc_url(lws_get_admin_page_url($url)); ?>">
         <input name="service" type="hidden" value="Netatmo" />
         <input name="tab" type="hidden" value="add" />
         <input name="action" type="hidden" value="do" />
@@ -52,9 +52,9 @@ $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
     <?php } else { ?>
         <p><?php esc_html_e( 'All Netatmo stations have been already added!', 'live-weather-station' );?></p>
         <?php if ($dashboard) { ?>
-            <p class="submit"><a href="<?php echo esc_url(get_admin_page_url('lws-dashboard')); ?>" class="button button-primary" ><?php esc_html_e( 'Back', 'live-weather-station' );?></a></p>
+            <p class="submit"><a href="<?php echo esc_url(lws_get_admin_page_url('lws-dashboard')); ?>" class="button button-primary" ><?php esc_html_e( 'Back', 'live-weather-station' );?></a></p>
         <?php } else { ?>
-            <p class="submit"><a href="<?php echo esc_url(get_admin_page_url('lws-stations')); ?>" class="button button-primary" ><?php esc_html_e( 'Back', 'live-weather-station' );?></a></p>
+            <p class="submit"><a href="<?php echo esc_url(lws_get_admin_page_url('lws-stations')); ?>" class="button button-primary" ><?php esc_html_e( 'Back', 'live-weather-station' );?></a></p>
         <?php } ?>
     <?php } ?>
 </div>

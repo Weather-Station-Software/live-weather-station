@@ -1617,7 +1617,7 @@ trait Generator {
         foreach ($this->get_comparable_dimensions() as $dimension) {
             $result[] = array($dimension, $this->get_dimension_name($dimension, true));
         }
-        usort($result, 'array_compare_1');
+        usort($result, 'lws_array_compare_1');
         return $result;
     }
 
@@ -1767,10 +1767,13 @@ trait Generator {
      * @return array An array containing the time scale options ready to convert to a JS array.
      * @since 3.4.0
      */
-    protected function get_y_scale_js_array() {
+    protected function get_y_scale_js_array($time_consistent=false) {
         $result = array();
         $result[] = array('auto',  __('Automatic', 'live-weather-station'));
         $result[] = array('adaptative',  __('Adaptative', 'live-weather-station'));
+        if ($time_consistent) {
+            $result[] = array('consistent',  __('Time consistent', 'live-weather-station'));
+        }
         $result[] = array('fixed',  __('Fixed', 'live-weather-station'));
         $result[] = array('boundaries',  __('Thresholds limits', 'live-weather-station'));
         $result[] = array('alarm',  __('Thresholds alarms', 'live-weather-station'));
@@ -1835,6 +1838,20 @@ trait Generator {
         $result = array();
         $result[] = array('single',  __('Single', 'live-weather-station'));
         $result[] = array('stackable',  __('Stackable', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get allotment  array.
+     *
+     * @return array An array containing the allotment ready to convert to a JS array.
+     * @since 3.5.0
+     */
+    protected function get_allotment_js_array() {
+        $result = array();
+        $result[] = array('4s',  __('4 sectors', 'live-weather-station'));
+        $result[] = array('8s',  __('8 sectors', 'live-weather-station'));
+        //$result[] = array('16s',  __('16 sectors', 'live-weather-station'));
         return $result;
     }
 
@@ -2088,7 +2105,7 @@ trait Generator {
         $country_codes = [];
         $letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         $continue = array('BU', 'CS', 'DY', 'EU', 'HV', 'FX', 'NH', 'QO', 'RH', 'SU', 'TP', 'YU', 'ZR', 'ZZ');
-        $locale = get_display_locale();
+        $locale = lws_get_display_locale();
         for ($i=0; $i<26; $i++) {
             for ($j=0; $j<26; $j++) {
                 $s = $letters[$i].$letters[$j];

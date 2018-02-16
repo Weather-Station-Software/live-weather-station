@@ -33,8 +33,10 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Module\Current\Lcd': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentLcd.php'; break;
         case 'WeatherStation\Engine\Module\Current\Meter': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentMeter.php'; break;
         case 'WeatherStation\Engine\Module\Current\Textual': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentTextual.php'; break;
+        case 'WeatherStation\Engine\Module\Daily\AStream': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyAStream.php'; break;
         case 'WeatherStation\Engine\Module\Daily\Line': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyLine.php'; break;
         case 'WeatherStation\Engine\Module\Daily\Lines': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyLines.php'; break;
+        case 'WeatherStation\Engine\Module\Yearly\AStream': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyAStream.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Bar': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyBar.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Bars': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyBars.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\BCLine': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyBCLine.php'; break;

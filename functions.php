@@ -18,7 +18,7 @@
  * @return string The full url of the admin page.
  * @since 3.0.0
  */
-function get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $service=null, $dashboard=false, $id=null) {
+function lws_get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $service=null, $dashboard=false, $id=null) {
     $args = array('page' => $page);
     if (isset($tab)) {
         $args['tab'] = $tab;
@@ -44,7 +44,7 @@ function get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $ser
  * @return string The full url of the admin page.
  * @since 3.4.0
  */
-function re_get_admin_page_url($params) {
+function lws_re_get_admin_page_url($params) {
     $set = array('page', 'tab', 'action', 'service', 'id');
     $args = array();
     foreach ($set as $arg) {
@@ -69,7 +69,7 @@ function re_get_admin_page_url($params) {
  * @return string The locale of the user.
  * @since 3.0.8
  */
-function get_display_locale($user_id = 0) {
+function lws_get_display_locale($user_id = 0) {
     /*
     * @fixme how to manage ajax calls made from frontend?
     */
@@ -88,11 +88,11 @@ function get_display_locale($user_id = 0) {
  *
  * @since 3.3.0
  */
-function get_display_language_id()
+function lws_get_display_language_id()
 {
     $lang = 'en';
     $extra_language = array('fr');
-    $l = strtolower(get_display_locale());
+    $l = strtolower(lws_get_display_locale());
     foreach ($extra_language as $extra) {
         if (strpos($l, $extra) === 0) {
             $lang = $extra;
@@ -109,11 +109,11 @@ function get_display_language_id()
  * @return array The converted array.
  * @since 3.4.0
  */
-function object_to_array($obj) {
+function lws_object_to_array($obj) {
     $arr = array();
     $_arr = is_object($obj) ? get_object_vars($obj) : $obj;
     foreach ($_arr as $key => $val) {
-        $val = (is_array($val) || is_object($val)) ? object_to_array($val) : $val;
+        $val = (is_array($val) || is_object($val)) ? lws_object_to_array($val) : $val;
         $arr[$key] = $val;
     }
     return $arr;
@@ -125,7 +125,7 @@ function object_to_array($obj) {
  * @return array The sorted array.
  * @since 3.4.0
  */
-function array_orderby(){
+function lws_array_orderby(){
     $args = func_get_args();
     $data = array_shift($args);
     foreach ($args as $n => $field) {
@@ -147,7 +147,7 @@ function array_orderby(){
  * @return boolean Result of the comparison.
  * @since 3.4.0
  */
-function array_compare_1($a, $b){
+function lws_array_compare_1($a, $b){
     $a = (array)$a;
     $b = (array)$b;
     return strcasecmp($a[1], $b[1]);
@@ -161,7 +161,7 @@ function array_compare_1($a, $b){
  * @return array The uniquified array.
  * @since 3.4.0
  */
-function array_super_unique($array, $key){
+function lws_array_super_unique($array, $key){
     $temp_array = array();
     foreach ($array as &$v) {
         if (!isset($temp_array[$v[$key]]))

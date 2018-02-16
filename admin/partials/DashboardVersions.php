@@ -57,6 +57,6 @@ $autoupdate .= '.';
 </div>
 
 <div class="activity-block" style="padding-bottom: 0px;">
-    <i style="color:#999" class="fa fa-lg fa-fw fa-info"></i>&nbsp;&nbsp;<a href="<?php echo get_admin_page_url('lws-dashboard', 'changelog'); ?>"><?php echo ucfirst(__('changelog', 'live-weather-station')); ?></a>, <a href="<?php echo get_admin_page_url('lws-dashboard', 'configuration'); ?>"><?php echo __('server configuration details', 'live-weather-station'); ?>.</a>
+    <i style="color:#999" class="fa fa-lg fa-fw fa-info"></i>&nbsp;&nbsp;<a href="<?php echo lws_get_admin_page_url('lws-dashboard', 'changelog'); ?>"><?php echo ucfirst(__('changelog', 'live-weather-station')); ?></a>, <a href="<?php echo lws_get_admin_page_url('lws-dashboard', 'configuration'); ?>"><?php echo __('server configuration details', 'live-weather-station'); ?>.</a>
 </div>
 

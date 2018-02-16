@@ -32,7 +32,7 @@ $buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; '
         <?php } ?>
     </h2>
 
-    <form action="<?php echo esc_url(get_admin_page_url('lws-settings', null, $active_tab)); ?>" method="POST">
+    <form action="<?php echo esc_url(lws_get_admin_page_url('lws-settings', null, $active_tab)); ?>" method="POST">
         <?php do_settings_sections('lws_'.$active_tab); ?>
         <?php if ($active_tab != 'general' && $active_tab != 'services' && $active_tab != 'maintenance' && $active_tab != 'tasks') { ?>
             <?php settings_fields($active_tab);?>

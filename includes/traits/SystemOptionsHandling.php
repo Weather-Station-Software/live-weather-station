@@ -79,6 +79,7 @@ trait Handling {
     private static $live_weather_station_obsolescence = 0;
     private static $live_weather_station_min_max_mode = 0;
     private static $live_weather_station_wind_semantics = 0;
+    private static $live_weather_station_angle_semantics = 0;
     private static $live_weather_station_moon_icons = 0;
 
     private static $live_weather_station_collect_history = false;
@@ -457,6 +458,7 @@ trait Handling {
         delete_option('live_weather_station_obsolescence');
         delete_option('live_weather_station_min_max_mode');
         delete_option('live_weather_station_wind_semantics');
+        delete_option('live_weather_station_angle_semantics');
         delete_option('live_weather_station_moon_icons');
         delete_option('live_weather_station_logger_installed');
         delete_option('live_weather_station_advanced_mode');
@@ -610,6 +612,7 @@ trait Handling {
         update_option('live_weather_station_obsolescence', self::$live_weather_station_obsolescence);
         update_option('live_weather_station_min_max_mode', self::$live_weather_station_min_max_mode);
         update_option('live_weather_station_wind_semantics', self::$live_weather_station_wind_semantics);
+        update_option('live_weather_station_angle_semantics', self::$live_weather_station_angle_semantics);
         update_option('live_weather_station_moon_icons', self::$live_weather_station_moon_icons);
         update_option('live_weather_station_unit_gas', self::$live_weather_station_unit_gas);
     }
@@ -825,6 +828,7 @@ trait Handling {
         self::verify_option_integer('live_weather_station_obsolescence', self::$live_weather_station_obsolescence);
         self::verify_option_integer('live_weather_station_min_max_mode', self::$live_weather_station_min_max_mode);
         self::verify_option_integer('live_weather_station_wind_semantics', self::$live_weather_station_wind_semantics);
+        self::verify_option_integer('live_weather_station_angle_semantics', self::$live_weather_station_angle_semantics);
         self::verify_option_integer('live_weather_station_moon_icons', self::$live_weather_station_moon_icons);
         self::verify_option_integer('live_weather_station_logger_rotate', self::$live_weather_station_logger_rotate);
         self::verify_option_boolean('live_weather_station_collect_history', self::$live_weather_station_collect_history);

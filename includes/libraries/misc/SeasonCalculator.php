@@ -138,7 +138,7 @@ class Calculator {
             $end = self::getMeteorologicalSeasonEndDate($e[0], $e[1], $tz);
             $seasons[] = array($start.':'.$end, $e[0] . ', ' . self::meteorologicalSeasonName($e[1], $north_hemisphere).$suf);
         }
-        return array_reverse(array_super_unique($seasons, 0));
+        return array_reverse(lws_array_super_unique($seasons, 0));
     }
 
     /**

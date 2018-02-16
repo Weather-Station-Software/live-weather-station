@@ -16,7 +16,7 @@ $histo_icn = $this->output_iconic_value(0, 'historical', false, false, 'style="c
 
 <div class="wrap">
     <h1><?php echo sprintf(__('Remove from %s', 'live-weather-station'), LWS_PLUGIN_NAME);?></h1>
-    <form method="post" name="remove-station" id="remove-station" action="<?php echo esc_url(get_admin_page_url('lws-stations')); ?>">
+    <form method="post" name="remove-station" id="remove-station" action="<?php echo esc_url(lws_get_admin_page_url('lws-stations')); ?>">
         <input name="service" type="hidden" value="station" />
         <input name="tab" type="hidden" value="delete" />
         <input name="action" type="hidden" value="do" />
