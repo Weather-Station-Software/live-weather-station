@@ -9,3 +9,27 @@
     font-weight: normal;
     font-style: normal;
 }
+
+.nvtooltip  {
+    padding: 8px !important;
+}
+
+.nvtooltip table {
+    margin: 2px !important;
+    border-spacing:0 !important;
+    background: transparent !important;
+    border: none !important;
+}
+
+.nvtooltip table thead,
+.nvtooltip table thead th,
+.nvtooltip table thead tr,
+.nvtooltip table thead td,
+.nvtooltip table tbody,
+.nvtooltip table tbody tr,
+.nvtooltip table tbody td {
+    border: none !important;
+    border-spacing:0 !important;
+    background: transparent !important;
+    border-width: 0px !important;
+}
