@@ -1718,8 +1718,9 @@ trait Output {
             if ($label != 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.axisLabelDistance(6);' . PHP_EOL;
             }
+            $body .= '      chart'.$uniq.'.yAxis.tickValues([]);' . PHP_EOL;
             $body .= '      chart'.$uniq.'.yAxis.showMaxMin(false);';
-            $body .= '      chart'.$uniq.'.style("stream");' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.style("stream-center");' . PHP_EOL;
             $body .= '      chart'.$uniq.'.tooltip.enabled(false);' . PHP_EOL;
             $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
             $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;

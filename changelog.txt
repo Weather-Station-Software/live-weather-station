@@ -1,5 +1,13 @@
 
 
+#3.5.0 / April xxxxxth, 2018
+
+* New: new single and stackable multi bars chart for historical graph (month, meteorological season and year) with tons of options and settings.
+* New: new stackable areas chart for historical graph (month, meteorological season and year) with tons of options and settings.
+* New: new angular stream chart for daily graph with tons of options and settings.
+* New: new angular stream chart for historical graph (month, meteorological season and year) with tons of options and settings.
+* Improvement: new value scale for time consistent boundaries in all historical graphs (thanks to Ralf Karpa for the suggestion).
+
 #3.4.4 / February 16th, 2018
 
 * Bug fix: LCD display preview can be inaccurate (thanks to John Schauer for detecting it).

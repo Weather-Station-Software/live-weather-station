@@ -95,7 +95,7 @@ class CalendarHM extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_multi_2_label_js_array(), true, 'simple');
         $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-guideline-'. $this->station_guid, __('Legend', 'live-weather-station'), $this->get_legend_position_js_array(), true, 'center');
         $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '200px');
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(), true, 'adaptative');
+        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true), true, 'adaptative');
         $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);

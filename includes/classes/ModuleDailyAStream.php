@@ -106,7 +106,7 @@ class AStream extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_key_value_option_select('daily-astream-datas-guideline-'. $this->station_guid, __('Control', 'live-weather-station'), $this->get_sareas_group_js_array(), true, 'stacked', true, false);
         $content .= $this->get_key_value_option_select('daily-astream-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
         $content .= $this->get_key_value_option_select('daily-astream-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(false), true, 'auto');
-        $content .= $this->get_key_value_option_select('daily-astream-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true), true, 'auto', true, false);
+        $content .= $this->get_key_value_option_select('daily-astream-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(), true, 'auto', true, false);
         $content .= $this->get_key_value_option_select('daily-astream-datas-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_interpolation_js_array(), true, 'linear');
         $content .= $this->get_key_value_option_select('daily-astream-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
         $content .= '</tbody></table>';
