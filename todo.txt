@@ -94,8 +94,3 @@ Station compatibility list
 
 $timeconsistent for all yearly graphs + verify sareas . daily ?
 
-* New: new single and multi stackable bars chart for historical graph (month, meteorological season and year) with tons of options and settings.
-* New: new stackable areas chart for historical graph (month, meteorological season and year) with tons of options and settings.
-* New: new angular stream chart for daily graph with tons of options and settings.
-* New: new angular stream chart for historical graph (month, meteorological season and year) with tons of options and settings.
-* Improvement: new value scale for time consistent boundaries in all historical graphs (thanks to Ralf Karpa for the suggestion).

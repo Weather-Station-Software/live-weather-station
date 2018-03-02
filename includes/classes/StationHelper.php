@@ -80,15 +80,15 @@ class Handling {
         Meter::register_module('current');
         DailyLine::register_module('daily');
         DailyLines::register_module('daily');
-        //DailyAStream::register_module('daily');
+        DailyAStream::register_module('daily');
         YearlyLine::register_module('yearly');
-        //YearlyBar::register_module('yearly');
+        YearlyBar::register_module('yearly');
         YearlyLines::register_module('yearly');
-        //YearlyBars::register_module('yearly');
+        YearlyBars::register_module('yearly');
         YearlyBCLine::register_module('yearly');
         YearlyCalendarHM::register_module('yearly');
-        //YearlyStackedAreas::register_module('yearly');
-        //YearlyAStream::register_module('yearly');
+        YearlyStackedAreas::register_module('yearly');
+        YearlyAStream::register_module('yearly');
     }
 
     /**
