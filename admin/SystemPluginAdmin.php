@@ -1333,6 +1333,8 @@ class Admin {
                             $error = array();
                             $args = compact('station', 'error');
                             break;
+
+
                         case 'weatherunderground':
                             if ($id) {
                                 $station = $this->get_station_informations_by_guid($id);

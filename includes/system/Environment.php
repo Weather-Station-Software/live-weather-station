@@ -1043,7 +1043,7 @@ class Manager {
      * @since 3.4.0
      */
     public static function is_opcache_installed() {
-        if (function_exists('opcache_get_status')) {
+        if (function_exists('opcache_get_status') && version_compare(PHP_VERSION, '5.6.0') >= 0) {
             return opcache_get_status()['opcache_enabled'];
 
         }

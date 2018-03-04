@@ -116,6 +116,14 @@ trait Storage {
     }
 
     /**
+     *
+     * @since 3.5.0
+     */
+    public static function live_weather_station_module_detail_table() {
+        return 'live_weather_station_module_detail';
+    }
+
+    /**
      * Performs a safe add column.
      *
      * @since    2.5.0
@@ -201,6 +209,25 @@ trait Storage {
 		$sql .= " measure_value varchar(50) DEFAULT '' NOT NULL,";
 		$sql .= " UNIQUE KEY dmm (device_id,module_id,measure_type)";
 		$sql .= ") $charset_collate;";
+        $wpdb->query($sql);
+    }
+
+    /**
+     * Creates table for the plugin.
+     *
+     * @since 3.5.0
+     */
+    private static function create_live_weather_station_module_detail_table() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        $table_name = $wpdb->prefix.self::live_weather_station_module_detail_table();
+        $sql = "CREATE TABLE IF NOT EXISTS ".$table_name;
+        $sql .= " (`device_id` varchar(17) NOT NULL,";
+        $sql .= " `module_id` varchar(17) NOT NULL,";
+        $sql .= " `module_name` varchar(60) DEFAULT '' NOT NULL,";
+        $sql .= " `hidden` boolean DEFAULT 0 NOT NULL,";
+        $sql .= " UNIQUE KEY mdl (`device_id`, `module_id`)";
+        $sql .= ") $charset_collate;";
         $wpdb->query($sql);
     }
 
@@ -456,6 +483,7 @@ trait Storage {
         self::create_live_weather_station_histo_daily_table();
         self::create_live_weather_station_histo_yearly_table();
         self::create_live_weather_station_stations_table();
+        self::create_live_weather_station_module_detail_table();
         self::create_live_weather_station_performance_cache_table();
         self::create_live_weather_station_performance_cron_table();
         self::create_live_weather_station_quota_day_table();
@@ -540,6 +568,10 @@ trait Storage {
                 self::safe_add_column($table_name, 'ygraph_miss_count', "ALTER TABLE " . $table_name . " ADD ygraph_miss_count int(11) NOT NULL DEFAULT '0';");
                 self::safe_add_column($table_name, 'ygraph_miss_time', "ALTER TABLE " . $table_name . " ADD ygraph_miss_time int(11) NOT NULL DEFAULT '0';");
             }
+
+
+            // VERSION 3.5.0
+            self::create_live_weather_station_module_detail_table();
 
         }
     }

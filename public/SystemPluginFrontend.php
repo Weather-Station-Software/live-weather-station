@@ -198,6 +198,9 @@ class Frontend {
         $_attributes['subtitle'] = wp_kses($_POST['subtitle'], array());
         $_attributes['unit'] = wp_kses($_POST['unit'], array());
         $_attributes['size'] = wp_kses($_POST['size'], array());
+        if (array_key_exists('force', $_POST)) {
+            $_attributes['force'] = wp_kses($_POST['force'], array());
+        }
         $response = $this->justgage_attributes($_attributes);
         exit (json_encode ($response));
     }

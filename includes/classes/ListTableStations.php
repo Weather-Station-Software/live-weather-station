@@ -193,7 +193,10 @@ class Stations extends Base {
         else {
             $result = $result . '.';
         }
-        return $result;
+        $actions = array(
+            sprintf('<a href="?page=lws-stations&action=form&tab=module-manage&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Manage modules', 'live-weather-station').'</a>', $item['guid']),
+        );
+        return sprintf('%1$s %2$s', $result, $this->row_actions($actions));
     }
 
     protected function column_data($item){
