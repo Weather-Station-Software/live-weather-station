@@ -73,7 +73,7 @@ class AStream extends \WeatherStation\Engine\Module\Maintainer {
             $group = $this->get_assoc_option_select('daily-astream-datas-module-' . $i . '-' . $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
             $group .= $this->get_neutral_option_select('daily-astream-datas-measurement-' . $i . '-' . $this->station_guid, __('Measurement', 'live-weather-station'));
             $group .= $this->get_key_value_option_select('daily-astream-datas-line-mode-' . $i . '-' . $this->station_guid, __('Allotment', 'live-weather-station'), $this->get_allotment_js_array(), true, 'single', $i != 1);
-            $group .= $this->get_key_value_option_select('daily-astream-datas-dot-style-' . $i . '-' . $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none', true, false);
+            $group .= $this->get_key_value_option_select('daily-astream-datas-dot-style-' . $i . '-' . $this->station_guid, __('Resolution', 'live-weather-station'), $this->get_stream_resolution_js_array(), true, 'res-10', $i != 1);
             $group .= $this->get_key_value_option_select('daily-astream-datas-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid', true, false);
             $group .= $this->get_key_value_option_select('daily-astream-datas-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular', true, false);
             if ($i == 1) {
@@ -85,7 +85,6 @@ class AStream extends \WeatherStation\Engine\Module\Maintainer {
 
         }
         $content .= $this->get_group('daily-astream-datas-measure-group-', $a_group);
-        $content .= $this->get_placeholder_option_select();
         $content .= $this->get_placeholder_option_select();
         $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';

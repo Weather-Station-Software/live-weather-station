@@ -307,6 +307,50 @@ abstract class Maintainer {
     }
 
     /**
+     * Get color picker control.
+     *
+     * @param string $id The control id.
+     * @param string $title The control title.
+     * @param string $value Optional. The value of the control.
+     * @param boolean $label Optional. Display the th of the table.
+     * @param boolean $hidden Optional. Hide the select option.
+     * @param boolean $displayed Optional. Display the select option.
+     * @return string The control ready to print.
+     * @since 3.5.0
+     */
+    protected function get_color_picker($id, $title, $value='', $label=true, $hidden=false, $displayed=true) {
+        $visibility = '';
+        if ($id == '') {
+            $visibility = ' class="lws-placeholder" style="visibility:hidden;"';
+            $id = 'o' . md5(random_bytes(20));
+            $title = '';
+        }
+        $style = array();
+        if ($hidden) {
+            $style[] = 'visibility:hidden';
+        }
+        if (!$displayed) {
+            $style[] = 'display:none';
+        }
+        if (count($style) > 0) {
+            $visibility .= ' style="' . implode(';', $style) . '"';
+        }
+        $result = '';
+        $result .= '<tr' . $visibility .'>';
+        if ($label) {
+            $result .= '<th class="lws-option" width="35%" align="left" scope="row">' . $title . '</th>';
+            $result .= '<td width="2%"/>';
+        }
+        $result .= '<td align="left">';
+        $result .= '<span class="color-picker">';
+        $result .= '<input class="widefat wp-color-picker" id="' . $id .'" type="text" value="' . $value .'" />';
+        $result .= '</span>';
+        $result .= '</td>';
+        $result .= '</tr>';
+        return $result;
+    }
+
+    /**
      * Get an option group.
      *
      * @param string $id The control id.
@@ -764,10 +808,17 @@ abstract class Maintainer {
             }
             $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '" ).change();});';
             $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").change(function() {';
-            if ($this->module_type == 'lines' || $this->module_type == 'bars' || $this->module_type == 'sareas') {
+            if ($this->module_type == 'lines' || $this->module_type == 'bars') {
                 $content .= 'if ($("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").val() == 0) {';
                 $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . ' option[value=\'line\']").attr("selected", true);';
                 $content .= '$("#' . $name . '-datas-dot-style-' . $i . '-' . $this->station_guid . ' option[value=\'none\']").attr("selected", true);';
+                $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . ' option[value=\'solid\']").attr("selected", true);';
+                $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . ' option[value=\'regular\']").attr("selected", true);};';
+            }
+            if ($this->module_type == 'sareas') {
+                $content .= 'if ($("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").val() == 0) {';
+                $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . ' option[value=\'line\']").attr("selected", true);';
+                $content .= '$("#' . $name . '-datas-dot-style-' . $i . '-' . $this->station_guid . ' option[value=\'res-10\']").attr("selected", true);';
                 $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . ' option[value=\'solid\']").attr("selected", true);';
                 $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . ' option[value=\'regular\']").attr("selected", true);};';
             }

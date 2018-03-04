@@ -10,7 +10,7 @@ use WeatherStation\System\Cache\Cache;
 use WeatherStation\Data\Type\Description;
 
 /**
- * This class is responsible for device management.
+ * This class is responsible for device & modules management.
  *
  * @package Includes\Classes
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
@@ -29,6 +29,64 @@ class Manager
     private $facility = 'Device Manager';
     private $stations = array();
 
+    /**
+     * Indicates whether a module is hidden or visible.
+     *
+     * @param string $device_id The device id.
+     * @param string $module_id The module id.
+     * @return boolean False is module is hidden, true otherwise.
+     *
+     * @since 3.5.0
+     */
+    public static function is_visible($device_id, $module_id) {
+
+
+        return true;
+    }
+
+    /**
+     * Returns the module name.
+     *
+     * @param string $device_id The device id.
+     * @param string $module_id The module id.
+     * @param string $module_name The original name of the module.
+     * @return string The module name.
+     *
+     * @since 3.5.0
+     */
+    public static function get_module_name($device_id, $module_id, $module_name) {
+
+
+        return $module_name;
+    }
+
+    /**
+     * Get a detailed array about modules.
+     *
+     * @param string $device_id The device id.
+     * @return array An array of the modules details (same structure as set_modules_details).
+     *
+     * @since 3.5.0
+     */
+    public static function get_modules_details($device_id) {
+
+
+        return array();
+    }
+
+    /**
+     * Set a detailed array about modules.
+     *
+     * @param array $details Details about the modules (same structure as get_modules_details).
+     * @return boolean True if operation was successful, false otherwise.
+     *
+     * @since 3.5.0
+     */
+    public static function set_modules_details($details) {
+
+
+        return false;
+    }
 
     /**
      * Initialize the class and set its properties.

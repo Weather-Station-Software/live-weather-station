@@ -1787,6 +1787,21 @@ trait Generator {
      * Get dot style array.
      *
      * @return array An array containing the dot style ready to convert to a JS array.
+     * @since 3.5.0
+     */
+    protected function get_stream_resolution_js_array() {
+        $result = array();
+        $time = array (5, 10, 15, 20, 25, 30);
+        foreach ($time as $t) {
+            $result[] = array('res-'.$t,  sprintf(__('%s minutes', 'live-weather-station'), $t));
+        }
+        return $result;
+    }
+
+    /**
+     * Get stream resolution array.
+     *
+     * @return array An array containing the stream resolution ready to convert to a JS array.
      * @since 3.4.0
      */
     protected function get_dot_style_js_array() {

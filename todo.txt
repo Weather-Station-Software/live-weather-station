@@ -73,6 +73,13 @@ Fully delete a station in fast collect mode
 
 
 ***********************
+* TRADUCTION          *
+***********************
+
+utiliser UNE cdn.
+
+
+***********************
 * DOCUMENTATION       *
 ***********************
 
@@ -84,7 +91,7 @@ Psychrometry
 
 History collection
 
-Station compatibility list
+
 
 
 
@@ -93,4 +100,6 @@ Station compatibility list
 ***********************
 
 $timeconsistent for all yearly graphs + verify sareas . daily ?
+
+Station compatibility list
 

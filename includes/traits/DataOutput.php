@@ -313,6 +313,23 @@ trait Output {
                     }
                     if ($type == 'astream') {
                         if (count($args) == 2) {
+                            $subymin = 0;
+                            $subymax = 0;
+                            $subydmin = 0;
+                            $subydmax = 0;
+                            $subyamin = 0;
+                            $subyamax = 0;
+                            if (strpos($args[1]['dot_style'], 'res-') !== false) {
+                                $resolution = substr($args[1]['dot_style'], 4);
+                                try {
+                                    $resolution = (int)$resolution;
+                                } catch (\Exception $ex) {
+                                    $resolution = 10;
+                                }
+                            }
+                            else {
+                                $resolution = 10;
+                            }
                             $sects = str_replace('s', '', $args[1]['line_mode']);
                             $angle_val = (int)(360 / $sects);
                             $sectors = array();
@@ -324,7 +341,7 @@ trait Output {
                             if ($mode == 'yearly') {
                                 $timeshift = 86400;
                             } else {
-                                $timeshift = 600;
+                                $timeshift = (int)(60 * $resolution);
                             }
                             $dummy='0';
                             $val0 = '`measure_value`';
@@ -366,14 +383,17 @@ trait Output {
                                     $module_type = 'NAMain';
                                 }
                                 $t = array();
+                                for ($i = 0; $i < $sects; $i++) {
+                                    $t[$i] = array();
+                                }
                                 foreach ($angles as $angle) {
                                     $v = $angle['measure_value'];
-                                    if (get_option('live_weather_station_angle_semantics') == 1) {
+                                    /*if (get_option('live_weather_station_angle_semantics') == 1) {
                                         $v = $v + 180;
                                         if ($v > 360) {
                                             $v = $v - 360;
                                         }
-                                    }
+                                    }*/
                                     $ts = $angle['timestamp'];
                                     if (array_key_exists($ts, $measures)) {
                                         if (array_key_exists('measure_value', $measures[$ts])) {
@@ -512,7 +532,7 @@ trait Output {
                                             }
                                             $period_range = 3;
                                         }
-                                        $extra['set_name'] = ucfirst($this->get_operation_name($arg['set'], true));
+                                        $extra['set_name'] = ucfirst($this->get_operation_name($args[2]['set'], true));
                                     }
                                     $extra['ydomain']['min'] = $subymin;
                                     $extra['ydomain']['max'] = $subymax;
@@ -523,8 +543,8 @@ trait Output {
                                     $extra['period_name'] = $period_name;
                                     $extra['info_key'] = $info['key'];
                                     $extra['period_range'] = $period_range;
-                                    $extra['raw_measurement_type'] = $arg['measurement'];
-                                    $extra['measurement_type'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                                    $extra['raw_measurement_type'] = $args[2]['measurement'];
+                                    $extra['measurement_type'] = $this->get_measurement_type($args[2]['measurement'], false, $module_type);
                                     $extra['module_type'] = $module_type;
                                     $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
                                     $extra['module_name'] = $module_name;
@@ -533,11 +553,11 @@ trait Output {
                                     $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
                                     $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
                                     $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
-                                    $extra['unit'] = $this->output_unit($arg['measurement'], $module_type);
+                                    $extra['unit'] = $this->output_unit($args[2]['measurement'], $module_type);
                                     $result['extras'][] = $extra;
-                                    $result['legend']['unit'] = $this->output_unit($arg['measurement'], $module_type);
+                                    $result['legend']['unit'] = $this->output_unit($args[2]['measurement'], $module_type);
                                     $classes = array();
-                                    $classes[] = 'lws-serie-' . $i;
+                                    $classes[] = 'lws-serie-' . $key;
                                     if (count($classes) > 0) {
                                         $info['classed'] = implode(' ', $classes);
                                     }
@@ -549,7 +569,7 @@ trait Output {
                                     }
                                 }
                             } catch (\Exception $ex) {
-                                error_log($ex->getMessage());
+                                error_log('Oh, no: ' . $ex->getMessage());
                                 $result = array();
                             }
                         }
@@ -1692,6 +1712,32 @@ trait Output {
             // BEGIN MAIN BODY
             $body .= '      var shift' . $uniq . ' = new Date();' . PHP_EOL;
             $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
+            if (isset($values) && array_key_exists('xdomain', $values)) {
+                if ($fixed_timescale && $mode == 'daily') {
+                    $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                    $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+                }
+                if ($fixed_timescale && $mode == 'yearly') {
+                    $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                    $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+                }
+                if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
+                    $body .= '    var h00Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                    $body .= '    var h04Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['04'] . ');' . PHP_EOL;
+                    $body .= '    var h08Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['08'] . ');' . PHP_EOL;
+                    $body .= '    var h12Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['12'] . ');' . PHP_EOL;
+                    $body .= '    var h16Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['16'] . ');' . PHP_EOL;
+                    $body .= '    var h20Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['20'] . ');' . PHP_EOL;
+                    $body .= '    var h24Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+                }
+                if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
+                    $body .= '    var h00Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                    $body .= '    var h01Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['01'] . ');' . PHP_EOL;
+                    $body .= '    var h02Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['02'] . ');' . PHP_EOL;
+                    $body .= '    var h03Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
+                    $body .= '    var h04Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+                }
+            }
             if ($color != 'self') {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
             }
@@ -1714,6 +1760,17 @@ trait Output {
             $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
             if ($timescale == 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
+            }
+            if (isset($values) && array_key_exists('xdomain', $values)) {
+                if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
+                    $body .= '      chart' . $uniq . '.xAxis.tickValues([h00Tick' . $uniq . ', h04Tick' . $uniq . ', h08Tick' . $uniq . ', h12Tick' . $uniq . ', h16Tick' . $uniq . ', h20Tick' . $uniq . ', h24Tick' . $uniq . ']);' . PHP_EOL;
+                }
+                if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
+                    $body .= '      chart' . $uniq . '.xAxis.tickValues([h00Tick' . $uniq . ', h01Tick' . $uniq . ', h02Tick' . $uniq . ', h03Tick' . $uniq . ', h04Tick' . $uniq . ']);' . PHP_EOL;
+                }
+                if ($fixed_timescale) {
+                    $body .= '      chart' . $uniq . '.xDomain([minDomain' . $uniq . ', maxDomain' . $uniq . '])' . PHP_EOL;
+                }
             }
             if ($label != 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.axisLabelDistance(6);' . PHP_EOL;
@@ -3255,8 +3312,8 @@ trait Output {
     /**
      * Get attributes for clean gauge shortcodes.
      *
-     * @return  string  $attributes The attributes of the value queryed by the shortcode.
-     * @since    2.1.0
+     * @return array The attributes of the value queryed by the shortcode.
+     * @since 2.1.0
      */
     public function justgage_attributes($attributes) {
         $result = array();
@@ -3490,6 +3547,31 @@ trait Output {
         if (in_array('drk', $color) && $attributes['pointer'] == 'external' && in_array('pie', $design)) {
             $pointerOptions['color'] = '#FEFEFE' ;
         }
+
+        // FORCED COLORS
+        if (array_key_exists('force', $attributes)) {
+            if ($attributes['force'] != '') {
+                $forced = explode('-',$attributes['force']);
+                foreach ($forced as $f) {
+                    $col = explode(':',$f);
+                    switch ($col[0]) {
+                        case 'ptr':
+                            $pointerOptions['color'] = $col[1] ;
+                            break;
+                        case 'ttl':
+                            $result['titleFontColor'] = $col[1] ;
+                            break;
+                        case 'lbl':
+                            $result['labelFontColor'] = $col[1] ;
+                            break;
+                        case 'val':
+                            $result['valueFontColor'] = $col[1] ;
+                            break;
+                    }
+                }
+            }
+        }
+
         $values = $this->justgage_value($attributes, true);
 
         // DATAS
@@ -3530,7 +3612,7 @@ trait Output {
         $fingerprint = uniqid('', true);
         $uniq = 'jgg'.substr ($fingerprint, count($fingerprint)-6, 80);
         $time = 1000 * (120 + rand(-20, 20));
-        $_attributes = shortcode_atts( array('id' => $uniq,'device_id' => '','module_id' => '','measure_type' => '','design' => '','color' => '','pointer' => '','title' => '','subtitle' => '','unit' => '','size' => ''), $attributes );
+        $_attributes = shortcode_atts( array('id' => $uniq,'device_id' => '','module_id' => '','measure_type' => '','design' => '','color' => '','force' => '','pointer' => '','title' => '','subtitle' => '','unit' => '','size' => ''), $attributes );
         $sc_device = $_attributes['device_id'];
         $sc_module = $_attributes['module_id'];
         $sc_measurement = $_attributes['measure_type'];
