@@ -224,7 +224,9 @@ trait Storage {
         $sql = "CREATE TABLE IF NOT EXISTS ".$table_name;
         $sql .= " (`device_id` varchar(17) NOT NULL,";
         $sql .= " `module_id` varchar(17) NOT NULL,";
-        $sql .= " `module_name` varchar(60) DEFAULT '' NOT NULL,";
+        $sql .= " `module_name` varchar(60) DEFAULT '<unnamed>' NOT NULL,";
+        $sql .= " `module_type` varchar(12) DEFAULT '<unknown>' NOT NULL,";
+        $sql .= " `screen_name` varchar(60) DEFAULT '' NOT NULL,";
         $sql .= " `hidden` boolean DEFAULT 0 NOT NULL,";
         $sql .= " UNIQUE KEY mdl (`device_id`, `module_id`)";
         $sql .= ") $charset_collate;";

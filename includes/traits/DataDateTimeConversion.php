@@ -230,7 +230,7 @@ trait Conversion {
             $month -= 12;
             $year += 1;
         }
-        while ($month < 0) {
+        while ($month <= 0) {
             $month += 12;
             $year -= 1;
         }

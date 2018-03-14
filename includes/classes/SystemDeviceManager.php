@@ -55,9 +55,15 @@ class Manager
      * @since 3.5.0
      */
     public static function get_module_name($device_id, $module_id, $module_name) {
-
-
-        return $module_name;
+        $result = $module_name;
+        $list = self::get_modules_details($device_id);
+        foreach ($list as $module) {
+            if ($module['module_id'] == $module_id) {
+                $result = $module['module_name'];
+                break;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -69,9 +75,7 @@ class Manager
      * @since 3.5.0
      */
     public static function get_modules_details($device_id) {
-
-
-        return array();
+        return self::get_modules_informations($device_id);
     }
 
     /**
