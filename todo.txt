@@ -103,3 +103,5 @@ $timeconsistent for all yearly graphs + verify sareas . daily ?
 
 Station compatibility list
 
+charts: two-lines, candlestick, windrose
+

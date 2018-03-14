@@ -199,6 +199,13 @@ class Stations extends Base {
         return sprintf('%1$s %2$s', $result, $this->row_actions($actions));
     }
 
+    protected function column_shortcode($item){
+        $c = sprintf('<a href="?page=lws-stations&action=shortcode&tab=current&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Current records', 'live-weather-station').'</a>', $item['guid']);
+        $d = sprintf('<a href="?page=lws-stations&action=shortcode&tab=daily&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.lcfirst(__('Daily data', 'live-weather-station')).'</a>', $item['guid']);
+        $y = sprintf('<a href="?page=lws-stations&action=shortcode&tab=yearly&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.lcfirst(__('Historical data', 'live-weather-station')).'</a>', $item['guid']);
+        return $c . ', ' . $d . ', ' . $y . '.';
+    }
+
     protected function column_data($item){
         $result = '';
         $share = implode(', ', $this->get_sharing_details($item));
@@ -236,6 +243,7 @@ class Stations extends Base {
         $columns = array('title' => __('Station', 'live-weather-station'),
             'location' => __('Location', 'live-weather-station'),
             'composition' => __('Composition', 'live-weather-station'),
+            'shortcode' => __('Shortcodes', 'live-weather-station'),
             'data' => __('Data', 'live-weather-station'));
         if ($this->show_time) {
             $columns['time'] = __('Freshness', 'live-weather-station');
