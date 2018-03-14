@@ -1313,7 +1313,7 @@ trait Output {
                 $prop['nv-axis-line'] = 'stroke: #2D2C40;';
                 $prop['nv-axis-domain'] = 'stroke: #4b4888;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
-                $prop['text'] = 'font:normal 12px \'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif;fill: #4b4888;';
+                $prop['text'] = 'font:normal 10px \'Lucida Sans Unicode\', \'Lucida Grande\', sans-serif;fill: #4b4888;';
                 $prop['spinner'] = '#FFFFFF';
                 $prop['separator'] = '  ●  ';
                 break;
@@ -1324,7 +1324,7 @@ trait Output {
                 $prop['nv-axis-line'] = 'stroke: #DDDDDD;';
                 $prop['nv-axis-domain'] = 'stroke: #666666;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
-                $prop['text'] = 'font:normal 12px Verdana, Geneva, sans-serif;fill: #666666;';
+                $prop['text'] = 'font:normal 10px Verdana, Geneva, sans-serif;fill: #666666;';
                 $prop['spinner'] = '#666666';
                 $prop['separator'] = '  ●  ';
                 break;
@@ -1335,7 +1335,7 @@ trait Output {
                 $prop['nv-axis-line'] = 'stroke: #F0F0F0;';
                 $prop['nv-axis-domain'] = 'stroke: #D0D0D0;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
-                $prop['text'] = 'font:normal 12px Verdana, Geneva, sans-serif;fill: #909090;';
+                $prop['text'] = 'font:normal 10px Verdana, Geneva, sans-serif;fill: #909090;';
                 $prop['spinner'] = '#909090';
                 $prop['separator'] = '  ●  ';
                 break;
@@ -1346,7 +1346,7 @@ trait Output {
                 $prop['nv-axis-line'] = 'stroke: #666666;';
                 $prop['nv-axis-domain'] = 'stroke: #F8DC65;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
-                $prop['text'] = 'font:normal 12px Verdana, Geneva, sans-serif;fill: #F8DC65;';
+                $prop['text'] = 'font:normal 10px Verdana, Geneva, sans-serif;fill: #F8DC65;';
                 $prop['spinner'] = '#F8DC65';
                 $prop['separator'] = '  ●  ';
                 break;
@@ -1357,7 +1357,7 @@ trait Output {
                 $prop['nv-axis-line'] = 'stroke: #515B69;';
                 $prop['nv-axis-domain'] = 'stroke: #8792A2;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
-                $prop['text'] = 'font:normal 12px Verdana, Geneva, sans-serif;fill: #878A9A;';
+                $prop['text'] = 'font:normal 10px Verdana, Geneva, sans-serif;fill: #878A9A;';
                 $prop['spinner'] = '#878A9A';
                 $prop['separator'] = '  ●  ';
                 break;
@@ -1368,7 +1368,7 @@ trait Output {
                 $prop['nv-axis-line'] = 'stroke: #A09280;';
                 $prop['nv-axis-domain'] = 'stroke: #897458;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
-                $prop['text'] = 'font:normal 12px \'Palatino Linotype\', \'Book Antiqua\', Palatino, serif;fill: #9B7543;';
+                $prop['text'] = 'font:normal 11px \'Palatino Linotype\', \'Book Antiqua\', Palatino, serif;fill: #9B7543;';
                 $prop['spinner'] = '#9B7543';
                 $prop['separator'] = '  ●  ';
                 break;
@@ -1379,7 +1379,7 @@ trait Output {
                 $prop['nv-axis-line'] = 'stroke: #A3B293;';
                 $prop['nv-axis-domain'] = 'stroke: #506040;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
-                $prop['text'] = 'font:normal 12px Georgia, serif;fill: #605D40;';
+                $prop['text'] = 'font:normal 11px Georgia, serif;fill: #605D40;';
                 $prop['spinner'] = '#605D40';
                 $prop['separator'] = '  ●  ';
                 break;
@@ -1390,7 +1390,7 @@ trait Output {
                 $prop['nv-axis-line'] = 'stroke: #7A8890;';
                 $prop['nv-axis-domain'] = 'stroke: #506040;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;font-variant: small-caps;letter-spacing:2px;';
-                $prop['text'] = 'font:normal 12px \'Trebuchet MS\', Helvetica, sans-serif;fill: #494D5F;';
+                $prop['text'] = 'font:normal 11px \'Trebuchet MS\', Helvetica, sans-serif;fill: #494D5F;';
                 $prop['spinner'] = '#494D5F';
                 $prop['separator'] = '  ●  ';
                 break;
@@ -1423,7 +1423,7 @@ trait Output {
                 $prop['nv-axis-line'] = 'stroke: #AAAAAA;';
                 $prop['nv-axis-domain'] = 'stroke: #0000AA;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;';
-                $prop['text'] = 'font:normal 12px \'Courier New\', Courier, monospace;fill: #0000AA;';
+                $prop['text'] = 'font:normal 10px \'Courier New\', Courier, monospace;fill: #0000AA;';
                 $prop['spinner'] = '#0000AA';
                 $prop['separator'] = ' / ';
                 break;
@@ -1434,7 +1434,7 @@ trait Output {
                 $prop['nv-axis-line'] = 'stroke: #0099CC;';
                 $prop['nv-axis-domain'] = 'stroke: #0099CC;stroke-opacity: 1;';
                 $prop['nv-axislabel'] = 'font-size: 15px;letter-spacing:1px;';
-                $prop['text'] = 'font:normal 12px \'Lucida Console\', Monaco, monospace;fill: #0099CC;';
+                $prop['text'] = 'font:normal 10px \'Lucida Console\', Monaco, monospace;fill: #0099CC;';
                 $prop['spinner'] = '#0099CC';
                 $prop['separator'] = ' - ';
                 break;
@@ -1445,7 +1445,7 @@ trait Output {
                 $prop['nv-axis-line'] = '';
                 $prop['nv-axis-domain'] = 'stroke-opacity: .75;';
                 $prop['nv-axislabel'] = 'font-size: 15px;letter-spacing:1px;';
-                $prop['text'] = 'font:normal 12px Arial, Helvetica, sans-serif;';
+                $prop['text'] = 'font:normal 11px Arial, Helvetica, sans-serif;';
                 $prop['spinner'] = '#000000';
                 $prop['separator'] = '  ●  ';
         }
@@ -2134,9 +2134,7 @@ trait Output {
             if ($label != 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.axisLabelDistance(6);' . PHP_EOL;
             }
-
             $body .= '      chart'.$uniq.'.interactiveLayer.tooltip.gravity("s");' . PHP_EOL;
-
             if ($_attributes['valuescale'] == 'adaptative') {
                 $body .= '      chart'.$uniq.'.yAxis.showMaxMin(true)';
             }
@@ -2147,7 +2145,7 @@ trait Output {
             $body .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
             $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
             $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
-            //$body .= '      return chart'.$uniq.';' . PHP_EOL;
+            $body .= '      return chart'.$uniq.';' . PHP_EOL;
             $body .= '    });'.PHP_EOL;
             // END MAIN BODY
         }

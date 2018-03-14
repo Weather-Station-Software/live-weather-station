@@ -7,9 +7,13 @@
 * New: new angular stream chart for daily graph with tons of options and settings.
 * New: new angular stream chart for historical graph (month, meteorological season and year) with tons of options and settings.
 * Improvement: new value scale for time consistent boundaries in all historical graphs (thanks to Ralf Karpa for the suggestion).
-* Improvement: in clean gauges, it's now possible to override standard colors for pointer, label, unit and value.
+* Improvement: with clean gauges, it's now possible to override standard colors for pointer, label, unit and value.
+* Improvement: the station list view have now a new column for direct access to shortcodes wizard.
+* Improvement: font sizes for scales in charts have been adapted for improving display (thanks to Gerhard Witteveen for the suggestion).
+* Improvement: interactive hint (in lines charts) is improved for small screens and finger pointing (thanks to Damien Maillet for the suggestion).
 * Bug fix: in some old PHP versions, opcache detection may produce unwanted warnings.
 * Bug fix: the meteorological winter dates may be wrong in some conditions while using sliding seasons as period for historical charts.
+* Bug fix: in some cases and in some timezones the time scale of the daily charts is wrong.
 
 #3.4.4 / February 16th, 2018
 
