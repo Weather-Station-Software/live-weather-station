@@ -9,6 +9,7 @@
 * Improvement: new value scale for time consistent boundaries in all historical graphs (thanks to Ralf Karpa for the suggestion).
 * Improvement: in clean gauges, it's now possible to override standard colors for pointer, label, unit and value.
 * Bug fix: in some old PHP versions, opcache detection may produce unwanted warnings.
+* Bug fix: the meteorological winter dates may be wrong in some conditions while using sliding seasons as period for historical charts.
 
 #3.4.4 / February 16th, 2018
 

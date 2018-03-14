@@ -16,7 +16,7 @@ $histo_icn = $this->output_iconic_value(0, 'historical', false, false, 'style="c
 
 <div class="wrap">
     <h1><?php echo sprintf(__('Manage modules', 'live-weather-station'), LWS_PLUGIN_NAME);?></h1>
-    <form method="post" name="remove-station" id="remove-station" action="<?php echo esc_url(lws_get_admin_page_url('lws-stations')); ?>">
+    <form method="post" name="manage-moduke" id="manage-module" action="<?php echo esc_url(lws_get_admin_page_url('lws-stations')); ?>">
         <input name="service" type="hidden" value="station" />
         <input name="tab" type="hidden" value="delete" />
         <input name="action" type="hidden" value="do" />
@@ -35,6 +35,13 @@ $histo_icn = $this->output_iconic_value(0, 'historical', false, false, 'style="c
                 </div>
             </div>
         </div>
+
+
+
+
+
+
+
         <div style="width: 100%;clear: both;">
             <p><?php echo sprintf(__('Are your sure you want to remove this station, and all its data, from %s?', 'live-weather-station'), LWS_PLUGIN_NAME);?></p>
             <p class="submit"><input type="submit" name="manage-module" id="manage-module" class="button button-primary" value="<?php esc_html_e( 'Confirm Removal', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp; <input type="submit" name="donot-delete-station" id="donot-delete-station" class="button" value="<?php esc_html_e( 'Cancel Removal', 'live-weather-station' );?>"  />

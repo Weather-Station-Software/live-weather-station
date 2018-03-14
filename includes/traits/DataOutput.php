@@ -265,19 +265,17 @@ trait Output {
                         $is_month = $attributes['periodduration'] == 'month';
                         $is_mseason = $attributes['periodduration'] == 'mseason';
                         $is_year = $attributes['periodduration'] == 'year';
+                        $v = explode('-', $attributes['periodvalue']);
                         if (strpos($attributes['periodtype'], 'ixed-') > 0) {
                             $d = explode(':', $attributes['periodvalue']);
                         }
                         elseif ($is_month) {
-                            $v = explode('-', $attributes['periodvalue']);
                             $d = explode(':', $this->get_shifted_month(-$v[1], $station['loc_timezone']));
                         }
                         elseif ($is_year) {
-                            $v = explode('-', $attributes['periodvalue']);
                             $d = explode(':', $this->get_shifted_year(-$v[1], $station['loc_timezone']));
                         }
                         elseif ($is_mseason) {
-                            $v = explode('-', $attributes['periodvalue']);
                             $d = explode(':', $this->get_shifted_meteorological_season(-$v[1], $station['loc_timezone']));
                         }
                         $min = $d[0];

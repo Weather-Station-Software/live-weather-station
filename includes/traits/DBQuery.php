@@ -1070,6 +1070,40 @@ trait Query {
     }
 
     /**
+     * Get modules informations.
+     *
+     * @param string $devide_id The station device id.
+     * @return array An array containing the modules details.
+     * @since  3.5.0
+     */
+    protected static function get_modules_informations($devide_id) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_module_detail_table();
+        $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $devide_id."'";
+        try {
+            $cache_id = 'get_modules'.$devide_id;
+            $query = Cache::get_query($cache_id);
+            if ($query === false) {
+                $query = (array)$wpdb->get_results($sql);
+                Cache::set_query($cache_id, $query);
+            }
+            $query_a = (array)$query;
+            $result = array();
+            foreach ($query_a as $val) {
+                $result[] = (array)$val;
+            }
+            if (is_array($result) && !empty($result)) {
+                return $result[0];
+            }
+            else {
+                return array();
+            }
+        } catch (\Exception $ex) {
+            return array();
+        }
+    }
+
+    /**
      * Get station informations.
      *
      * @param integer $guid The station guid.

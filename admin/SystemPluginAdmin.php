@@ -1333,8 +1333,15 @@ class Admin {
                             $error = array();
                             $args = compact('station', 'error');
                             break;
-
-
+                        case 'modules':
+                            $station = $this->get_station_informations_by_guid($id);
+                            $station['txt_location'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
+                            $station['txt_timezone'] = $this->output_timezone($station['loc_timezone']);
+                            $station['oldest_data_txt'] = __('Oldest data from', 'live-weather-station') . ' ' .$this->output_value($station['oldest_data'], 'oldest_data', false, false, 'NAMain', $station['loc_timezone']);
+                            $station['oldest_data_diff_txt'] = self::get_positive_time_diff_from_mysql_utc($station['oldest_data']);
+                            $error = array();
+                            $args = compact('station', 'error');
+                            break;
                         case 'weatherunderground':
                             if ($id) {
                                 $station = $this->get_station_informations_by_guid($id);
