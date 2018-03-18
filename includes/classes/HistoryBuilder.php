@@ -141,30 +141,53 @@ class Builder
      *
      * @param string $measure_type The type of measurements.
      * @param string $module_type The type of the module.
-     * @param bool $full_mode True if it's in full mode.
+     * @param bool $full_mode Optional. True if it's in full mode.
+     * @param boolean $comparison Optional. The array must contain only the comparison set.
      * @return array An array of SQL operators and names.
      * @since 3.3.2
      */
-    public function get_measurements_operations_type($measure_type, $module_type='', $full_mode=false) {
+    public function get_measurements_operations_type($measure_type, $module_type='', $full_mode=false, $comparison=false) {
         $result = array();
         if (in_array($measure_type, $this->standard_measurements)) {
-            if ($full_mode) {
-                $result = array('MAX' => 'max', 'MIN' => 'min', 'AVG' => 'avg', 'STD' => 'dev', 'MID' => 'mid', 'MED' => 'med', 'AMP' => 'amp');
+            if ($comparison) {
+                if ($full_mode) {
+                    $result = array('AVG' => 'avg', 'MID' => 'mid', 'MED' => 'med');
+                }
+                else {
+                    $result = array('AVG' => 'avg');
+                }
+                if ($measure_type == 'rain_day_aggregated') {
+                    $result = array();
+                }
+                if ($measure_type == 'rain') {
+                    $result = array();
+                }
+                if ($measure_type == 'rain' && $module_type != 'NACurrent' && $full_mode) {
+                    $result = array('AVG' => 'avg', 'MID' => 'mid', 'MED' => 'med');
+                }
+                if ($measure_type == 'weather') {
+                    $result = array();
+                }
             }
             else {
-                $result = array('MAX' => 'max', 'MIN' => 'min', 'AVG' => 'avg');
-            }
-            if ($measure_type == 'rain_day_aggregated') {
-                $result = array('MAX'=>'agg');
-            }
-            if ($measure_type == 'rain') {
-                $result = array();
-            }
-            if ($measure_type == 'rain' && $module_type != 'NACurrent' && $full_mode) {
-                $result = array('MAX' => 'max', 'MIN' => 'min', 'AVG' => 'avg', 'STD' => 'dev', 'MID' => 'mid', 'MED' => 'med', 'AMP' => 'amp');
-            }
-            if ($measure_type == 'weather') {
-                $result = array('FQC_MAX'=>'dom');
+                if ($full_mode) {
+                    $result = array('MAX' => 'max', 'MIN' => 'min', 'AVG' => 'avg', 'STD' => 'dev', 'MID' => 'mid', 'MED' => 'med', 'AMP' => 'amp');
+                }
+                else {
+                    $result = array('MAX' => 'max', 'MIN' => 'min', 'AVG' => 'avg');
+                }
+                if ($measure_type == 'rain_day_aggregated') {
+                    $result = array('MAX'=>'agg');
+                }
+                if ($measure_type == 'rain') {
+                    $result = array();
+                }
+                if ($measure_type == 'rain' && $module_type != 'NACurrent' && $full_mode) {
+                    $result = array('MAX' => 'max', 'MIN' => 'min', 'AVG' => 'avg', 'STD' => 'dev', 'MID' => 'mid', 'MED' => 'med', 'AMP' => 'amp');
+                }
+                if ($measure_type == 'weather') {
+                    $result = array('FQC_MAX'=>'dom');
+                }
             }
         }
         if (in_array($measure_type, $this->extended_measurements) && $full_mode) {

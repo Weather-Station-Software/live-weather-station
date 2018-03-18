@@ -1666,6 +1666,137 @@ trait Output {
         $result = '';
         $body = '';
 
+        if ($type == 'cstick') {
+            $ticks = $this->graph_ticks($domain, $valuescale, $measurement1, $height);
+            wp_enqueue_style('lws-nvd3');
+            wp_enqueue_script('lws-nvd3');
+            wp_enqueue_script('lws-colorbrewer');
+            wp_enqueue_script('lws-spin');
+            $legendColors = array();
+            if ($type == 'lines' && $color == 'self') {
+                $col = new ColorsManipulation($prop['fg_color']);
+                $col_array = $col->makeSteppedGradient($cpt, 50);
+                foreach ($col_array as $c) {
+                    $legendColors[] = '"#' . $c . '"';
+                }
+            }
+            $result .= '<style type="text/css">' . PHP_EOL;
+            if ($prop['text'] != '') {
+                $result .= '#' . $svg . ' .nvd3 text {' . $prop['text'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axis-domain'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis path.domain {' . $prop['nv-axis-domain'] . '}' . PHP_EOL;
+            }
+
+            if ($prop['nv-axis-line'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis line {' . $prop['nv-axis-line'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axislabel'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis text.nv-axislabel {' . $prop['nv-axislabel'] . '}' . PHP_EOL;
+            }
+            if ($fixed_timescale) {
+                $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:first-of-type text {text-anchor: start !important;}' . PHP_EOL;
+                $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:last-of-type text {text-anchor: end !important;}' . PHP_EOL;
+            }
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dashed-line {stroke-dasharray:10,10 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dotted-line {stroke-dasharray:2,2 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-thin-line {stroke-width: 1 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-regular-line {stroke-width: 2 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-thick-line {stroke-width: 3 !important;}' . PHP_EOL;
+            $result .= '</style>' . PHP_EOL;
+
+            // BEGIN MAIN BODY
+            $body .= '      var shift' . $uniq . ' = new Date();' . PHP_EOL;
+            $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
+            if ($fixed_timescale) {
+                $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+            }
+            if ($fixed_timescale && $timescale != 'none') {
+                $body .= '    var h00Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $body .= '    var h01Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['01'] . ');' . PHP_EOL;
+                $body .= '    var h02Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['02'] . ');' . PHP_EOL;
+                $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
+                $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+            }
+            if ($color != 'self') {
+                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+            }
+            elseif ($type == 'lines') {
+                $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
+            }
+            if ($inverted) {
+                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
+            }
+            $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
+            $body .= '    nv.addGraph(function() {' . PHP_EOL;
+            $body .= '       chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
+            $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
+            $body .= '               .y(function(d) {return d[1]})' . PHP_EOL;
+            $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
+            if ($focus) {
+                $body .= '               .focusEnable(true)' . PHP_EOL;
+                $body .= '               .focusShowAxisX(false)' . PHP_EOL;
+            }
+            else {
+                $body .= '               .focusEnable(false)' . PHP_EOL;
+            }
+            $body .= '               .showLegend(' . ($type == 'lines'?'true':'false') . ')' . PHP_EOL;
+            if ($fixed_timescale) {
+                $body .= '               .xDomain([minDomain'.$uniq.', maxDomain'.$uniq.'])' . PHP_EOL;
+            }
+            if ($fixed_valuescale) {
+                $body .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
+            }
+            if ($color == 'self' && $type == 'line') {
+                // DONE BY COLOR KEY
+            }
+            else {
+                $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
+            }
+            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
+            if ($guideline) {
+                $body .= '               .useInteractiveGuideline(true);' . PHP_EOL;
+            }
+            else {
+                $body .= '               .useInteractiveGuideline(false);' . PHP_EOL;
+            }
+            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
+                $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h04Tick'.$uniq.', h08Tick'.$uniq.', h12Tick'.$uniq.', h16Tick'.$uniq.', h20Tick'.$uniq.', h24Tick'.$uniq.']);' . PHP_EOL;
+            }
+            if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
+                $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h01Tick'.$uniq.', h02Tick'.$uniq.', h03Tick'.$uniq.', h04Tick'.$uniq.']);' . PHP_EOL;
+            }
+            if ($timescale == 'none') {
+                $body .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
+            }
+            if ($mode == 'daily') {
+                $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d %H:%M")(new Date(d));});' . PHP_EOL;
+                $body .= '      chart' . $uniq . '.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d %H:%M")(new Date(d));});' . PHP_EOL;
+            }
+            if ($mode == 'yearly') {
+                $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
+                $body .= '      chart' . $uniq . '.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
+            }
+            if ($label != 'none') {
+                $body .= '      chart'.$uniq.'.xAxis.axisLabelDistance(6);' . PHP_EOL;
+            }
+            $body .= '      chart'.$uniq.'.interactiveLayer.tooltip.gravity("s");' . PHP_EOL;
+            if ($_attributes['valuescale'] == 'adaptative') {
+                $body .= '      chart'.$uniq.'.yAxis.showMaxMin(true)';
+            }
+            else {
+                $body .= '      chart'.$uniq.'.yAxis.showMaxMin(false)';
+            }
+            $body .= '.tickFormat(function(d) { return d + " ' . $values['legend']['unit']['unit'] . '"; });' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
+            $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+            $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+            $body .= '      return chart'.$uniq.';' . PHP_EOL;
+            $body .= '    });'.PHP_EOL;
+            // END MAIN BODY
+        }
 
         if ($type == 'astream') {
             wp_enqueue_style('lws-nvd3');
@@ -1876,6 +2007,7 @@ trait Output {
             if ($type_guideline == 'expanded') {
                 $body .= '      chart'.$uniq.'.style("expand");' . PHP_EOL;
             }
+            $body .= '      chart'.$uniq.'.interactiveLayer.tooltip.gravity("s");' . PHP_EOL;
             $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
             $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
             $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
@@ -2499,10 +2631,27 @@ trait Output {
             }
             if ($type != 'calendarhm') {
                 $result .= 'if (observer' . $uniq . ' === null) { ' . PHP_EOL;
-                $result .= 'var targetNode' . $uniq . ' = document.getElementById("' . $uniq . '").parentElement.parentElement.parentElement.parentElement;' . PHP_EOL;
+                $result .= '  var target' . $uniq . ' = document.getElementById("' . $uniq . '");' . PHP_EOL;
+                $result .= '  var targetNode' . $uniq . ' = target' . $uniq . '.parentElement.parentElement.parentElement.parentElement;' . PHP_EOL;
+                $result .= '  var modeStandard = true;' . PHP_EOL;
+                $result .= '  var modeElementorPopbox = false;' . PHP_EOL;
+                // Is the chart in elementor popup box ?
+                $result .= '  var test' . $uniq . ' = target' . $uniq . '.closest(".modal-body");' . PHP_EOL;
+                $result .= '    if (test' . $uniq . ' != null) {' . PHP_EOL;
+                $result .= '      test' . $uniq . ' = test' . $uniq . '.closest(".modal-content");' . PHP_EOL;
+                $result .= '      if (test' . $uniq . ' != null) {' . PHP_EOL;
+                $result .= '        test' . $uniq . ' = test' . $uniq . '.closest(".modal");' . PHP_EOL;
+                $result .= '        if (test' . $uniq . ' != null) {' . PHP_EOL;
+                $result .= '          targetNode' . $uniq . ' = test' . $uniq . ';'. PHP_EOL;
+                $result .= '          modeStandard = false;' . PHP_EOL;
+                $result .= '          modeElementorPopbox = true;' . PHP_EOL;
+                $result .= '        }' . PHP_EOL;
+                $result .= '      }' . PHP_EOL;
+                $result .= '    }' . PHP_EOL;
                 $result .= 'var callback' . $uniq . ' = function(mutationsList) {' . PHP_EOL;
                 $result .= '    for(var mutation of mutationsList) {' . PHP_EOL;
-                $result .= '        if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display != "none") { if (mutation.oldValue !== null) {if (mutation.oldValue.indexOf("display: none") != -1) {chart'.$uniq.'.update();}}}}}' . PHP_EOL;
+                $result .= '        if (modeStandard) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display != "none") {if (mutation.oldValue !== null) {if (mutation.oldValue.indexOf("display: none") != -1) {chart'.$uniq.'.update();}}}}}}' . PHP_EOL;
+                $result .= '        if (modeElementorPopbox) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display == "block") {chart'.$uniq.'.update();}}}}' . PHP_EOL;
                 $result .= '    }' . PHP_EOL;
                 $result .= '};' . PHP_EOL;
                 $result .= 'observer' . $uniq . ' = new MutationObserver(callback' . $uniq . ');' . PHP_EOL;
@@ -2516,15 +2665,31 @@ trait Output {
             $result .= '});' . PHP_EOL;
         }
         if ($type != 'calendarhm' && $data != 'ajax' && $data != 'ajax_refresh') {
-            $result .= 'var targetNode' . $uniq . ' = document.getElementById("' . $uniq . '").parentElement.parentElement.parentElement.parentElement;' . PHP_EOL;
+            $result .= 'var target' . $uniq . ' = document.getElementById("' . $uniq . '");' . PHP_EOL;
+            $result .= 'var targetNode' . $uniq . ' = target' . $uniq . '.parentElement.parentElement.parentElement.parentElement;' . PHP_EOL;
+            $result .= 'var modeStandard = true;' . PHP_EOL;
+            $result .= 'var modeElementorPopbox = false;' . PHP_EOL;
+            // Is the chart in elementor popup box ?
+            $result .= 'var test' . $uniq . ' = target' . $uniq . '.closest(".modal-body");' . PHP_EOL;
+            $result .= '  if (test' . $uniq . ' != null) {' . PHP_EOL;
+            $result .= '    test' . $uniq . ' = test' . $uniq . '.closest(".modal-content");' . PHP_EOL;
+            $result .= '    if (test' . $uniq . ' != null) {' . PHP_EOL;
+            $result .= '      test' . $uniq . ' = test' . $uniq . '.closest(".modal");' . PHP_EOL;
+            $result .= '      if (test' . $uniq . ' != null) {' . PHP_EOL;
+            $result .= '        targetNode' . $uniq . ' = test' . $uniq . ';'. PHP_EOL;
+            $result .= '        modeStandard = false;' . PHP_EOL;
+            $result .= '        modeElementorPopbox = true;' . PHP_EOL;
+            $result .= '      }' . PHP_EOL;
+            $result .= '    }' . PHP_EOL;
+            $result .= '  }' . PHP_EOL;
             $result .= 'var callback' . $uniq . ' = function(mutationsList) {' . PHP_EOL;
             $result .= '    for(var mutation of mutationsList) {' . PHP_EOL;
-            $result .= '        if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display != "none") { if (mutation.oldValue !== null) {if (mutation.oldValue.indexOf("display: none") != -1) {chart'.$uniq.'.update();}}}}}' . PHP_EOL;
+            $result .= '        if (modeStandard) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display != "none") {if (mutation.oldValue !== null) {if (mutation.oldValue.indexOf("display: none") != -1) {chart'.$uniq.'.update();}}}}}}' . PHP_EOL;
+            $result .= '        if (modeElementorPopbox) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display == "block") {chart'.$uniq.'.update();}}}}' . PHP_EOL;
             $result .= '    }' . PHP_EOL;
             $result .= '};' . PHP_EOL;
             $result .= 'var observer' . $uniq . ' = new MutationObserver(callback' . $uniq . ');' . PHP_EOL;
             $result .= 'observer' . $uniq . '.observe(targetNode' . $uniq . ',{attributes: true, subtree: true, attributeOldValue: true});' . PHP_EOL;
-            //$result .= 'console.log("' . $uniq . '");' . PHP_EOL;
             $result .= '' . PHP_EOL;
             $result .= '' . PHP_EOL;
         }
@@ -3173,8 +3338,8 @@ trait Output {
                 $result['unit'] = $this->output_unit($_attributes['measure_type'])['unit'];
                 $_attributes['measure_type'] = 'sos';
                 $_result = $this->get_line_datas($_attributes, false, true);
-                $master = $_result[0];
                 if (count($_result) > 0) {
+                    $master = $_result[0];
                     $result['station'] = $master['device_name'];
                     $result['module'] = $master['module_name'];
                 } else {
@@ -8079,14 +8244,15 @@ trait Output {
      *
      * @param string $measurement_type The type of measurement.
      * @param string $module_type Optional. The type of the module.
+     * @param boolean $comparison Optional. The array must contain only the comparison set.
      * @return array An array containing the available operations.
      * @since 3.4.0
      */
-    public function get_available_operations($measurement_type, $module_type='NAMain') {
+    public function get_available_operations($measurement_type, $module_type='NAMain', $comparison=false) {
         $result = array();
         if ((bool)get_option('live_weather_station_collect_history') && (bool)get_option('live_weather_station_build_history')) {
             $history = new History(LWS_PLUGIN_NAME, LWS_VERSION);
-            $operations = $history->get_measurements_operations_type($measurement_type, $module_type, (bool)get_option('live_weather_station_full_history'));
+            $operations = $history->get_measurements_operations_type($measurement_type, $module_type, (bool)get_option('live_weather_station_full_history'), $comparison);
             $set = array();
             foreach ($operations as $operation) {
                 $set[] = $operation;

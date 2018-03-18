@@ -12,6 +12,7 @@
 
 .nvtooltip  {
     padding: 8px !important;
+    max-width: 350px;
 }
 
 .nvtooltip table {
@@ -32,4 +33,19 @@
     border-spacing:0 !important;
     background: transparent !important;
     border-width: 0px !important;
+    text-align: left;
+}
+
+td.legend-color-guide {
+    max-width: 20px;
+    width: 20px;
+    display: inline-block;
+}
+
+td.key {
+    display: inline-block;
+}
+
+td.value {
+    display: inline-block;
 }
