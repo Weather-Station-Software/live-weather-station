@@ -388,12 +388,19 @@ trait Generator {
      * @param boolean $reduced The array is reduced. i.e. contains only modules and measures.
      * @param string $module_type The type of the module.
      * @param string $measurement_type The type of the measurement.
-     * @return array An array containing a single module measure line.
+     * @param boolean $comparison Optional. The line must contain only the comparison set.
+     * @return array|null An array containing a single module measure line.
      * @since 3.4.0
      */
-    private function get_line_array($ref, $data, $reduced, $module_type, $measurement_type) {
+    private function get_line_array($ref, $data, $reduced, $module_type, $measurement_type, $comparison=false) {
         $unit = $this->output_unit($measurement_type, $module_type);
-        return array($this->get_measurement_type($measurement_type, false, $module_type), $measurement_type, ($reduced ? array() : $this->get_measure_array($ref, $data, $measurement_type)), $unit['dimension'], $this->get_available_operations($measurement_type, $module_type));
+        $available_operations = $this->get_available_operations($measurement_type, $module_type, $comparison);
+        if (count($available_operations) > 0) {
+            return array($this->get_measurement_type($measurement_type, false, $module_type), $measurement_type, ($reduced ? array() : $this->get_measure_array($ref, $data, $measurement_type)), $unit['dimension'], $available_operations);
+        }
+        else {
+            return null;
+        }
     }
 
 
@@ -410,10 +417,11 @@ trait Generator {
      * @param boolean $daily Optional. The array must contain daily data types only.
      * @param boolean $historical Optional. The array must contain historical data types only.
      * @param boolean $noned Optional. The array must contain, for each module, a "none" measurement type.
+     * @param boolean $comparison Optional. The array must contain, for each module, only the comparison set (if $historical is true).
      * @return array An array containing the module measure lines.
      * @since 3.0.0
      */
-    private function get_module_array($ref, $data, $full=false, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $noned=false) {
+    private function get_module_array($ref, $data, $full=false, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $noned=false, $comparison=false) {
         $result = array();
         $netatmo = OWM_Base_Collector::is_netatmo_station($ref['device_id']);
         $wug = OWM_Base_Collector::is_wug_station($ref['device_id']);
@@ -427,371 +435,371 @@ trait Generator {
         switch (strtolower($ref['module_type'])) {
             case 'namain':
                 if ($aggregated) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'aggregated');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'aggregated', $comparison);
                 }
                 if ($full && $netatmo) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'battery');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'signal');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'first_setup');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_setup');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_upgrade');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'battery', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'signal', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'first_setup', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_setup', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_upgrade', $comparison);
                 }
                 if ($full && ($wug || $wflw)) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison);
                 }
                 if ($full && ($raw || $real)) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'battery');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'signal');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'battery', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'signal', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison);
                 }
                 if ($full) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'loc_timezone');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'loc_altitude');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'loc_latitude');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'loc_longitude');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'loc_timezone', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'loc_altitude', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'loc_latitude', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'loc_longitude', $comparison);
                 }
                 if ($netatmo) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'co2');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'noise');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'health_idx');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'co2', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'noise', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'health_idx', $comparison);
                 }
                 if ($wug || $real || $raw || $txt || $wflw) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure', $comparison);
                 }
                 if ($full && ($netatmo || $real || $raw || $txt)) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_trend');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_trend', $comparison);
                 }
                 if (($full || $mono) && ($real || $raw)) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_max');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_min');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_max', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_min', $comparison);
                 }
                 if ($netatmo) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature', $comparison);
                 }
                 if (($full || $mono) && $netatmo) {
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_max');
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_min');
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_max', $comparison);
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_min', $comparison);
                 }
                 if ($full && $netatmo) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_trend');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_trend', $comparison);
                 }
                 break;
             case 'namodule1': // Outdoor module
                 if ($aggregated) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated', $comparison);
                 }
                 if ($full && $netatmo) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'battery');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'signal');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_setup');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'battery', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'signal', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_setup', $comparison);
                 }
                 if ($full && ($wug || $real || $raw || $txt || $wflw)) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison);
                 }
                 if ($full) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison);
                 }
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity');
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity', $comparison);
                 if (($full || $mono) && $raw) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity_max');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity_min');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity_max', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity_min', $comparison);
                 }
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature');
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature', $comparison);
                 if (($full || $mono) && !$wug && !$wflw) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_max');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_min');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_max', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_min', $comparison);
                 }
                 if ($full && $netatmo) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_trend');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_trend', $comparison);
                 }
                 break;
             case 'namodule2': // Wind gauge
                 if ($aggregated) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated', $comparison);
                 }
                 if ($full && $netatmo) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'battery');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'signal');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_setup');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'battery', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'signal', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_setup', $comparison);
                 }
                 if ($full && ($wug || $real || $raw || $txt || $wflw)) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison);
                 }
                 if ($full) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison);
                 }
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'gustangle');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'guststrength');
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'gustangle', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'guststrength', $comparison);
                 if ($netatmo) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle_hour_max');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength_hour_max');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle_day_max');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength_day_max');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle_hour_max', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength_hour_max', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle_day_max', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength_day_max', $comparison);
                 }
                 break;
             case 'namodule3': // Rain gauge
                 if ($aggregated) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated', $comparison);
                 }
                 if ($full && $netatmo) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'battery');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'signal');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_setup');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'battery', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'signal', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_setup', $comparison);
                 }
                 if ($full && ($wug || $real || $raw || $txt || $wflw)) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison);
                 }
                 if ($full) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison);
                 }
                 if ($netatmo || $raw || $real || $wflw) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain', $comparison);
                 }
                 if (!$raw) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_hour_aggregated');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_hour_aggregated', $comparison);
                 }
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_day_aggregated');
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_day_aggregated', $comparison);
                 if ($raw || $real) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_yesterday_aggregated');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_month_aggregated');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_year_aggregated');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_yesterday_aggregated', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_month_aggregated', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_year_aggregated', $comparison);
                 }
                 break;
             case 'namodule4': // Additional indoor module
                 if ($aggregated) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated', $comparison);
                 }
                 if ($full && $netatmo) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'battery');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'signal');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_setup');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'battery', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'signal', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_setup', $comparison);
                 }
                 if ($full && ($wug || $real || $raw)) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison);
                 }
                 if ($full) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison);
                 }
                 if ($netatmo) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'co2');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'co2', $comparison);
                 }
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'health_idx');
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'health_idx', $comparison);
                 if (($full || $mono) && ($netatmo || $raw)) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_max');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_min');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_max', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_min', $comparison);
                 }
                 if ($full && $netatmo) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_trend');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_trend', $comparison);
                 }
                 break;
             case 'namodule5': // Solar module
                 if ($aggregated) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated', $comparison);
                 }
                 if ($full) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison);
                 }
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'uv_index');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'irradiance');
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'uv_index', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'irradiance', $comparison);
                 if ($wflw) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'illuminance');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'illuminance', $comparison);
                 }
                 break;
             case 'namodule6': // Soil module
                 if ($aggregated) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated', $comparison);
                 }
                 if ($full) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison);
                 }
                 if ($raw) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'soil_temperature');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'leaf_wetness');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moisture_tension');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'soil_temperature', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'leaf_wetness', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moisture_tension', $comparison);
                 }
                 if ($real) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'evapotranspiration');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'evapotranspiration', $comparison);
                 }
                 break;
             case 'namodule7': // Thunderstorm module
                 if ($aggregated) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated', $comparison);
                 }
                 if ($full) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison);
                 }
                 if ($raw) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'strike_count');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'strike_instant');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'strike_distance');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'strike_bearing');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'strike_count', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'strike_instant', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'strike_distance', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'strike_bearing', $comparison);
                 }
                 if ($wflw) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'strike_count');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'strike_distance');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'strike_count', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'strike_distance', $comparison);
                 }
                 break;
 
             case 'namodule9': // Additional indoor module
                 if ($aggregated) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated', $comparison);
                 }
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'health_idx');
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'health_idx', $comparison);
                 break;
             case 'aggregated': // All modules aggregated in one
                 if ($aggregated) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'outdoor');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'psychrometric');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'outdoor', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'psychrometric', $comparison);
                 }
                 if ($full) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison);
                 }
                 if ($netatmo) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'co2');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'co2', $comparison);
                 }
                 if ($netatmo || $raw || $real) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'health_idx');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'health_idx', $comparison);
                 }
                 break;
             case 'nacomputed': // Virtual module for computed values
                 if ($computed) {
                     if ($aggregated) {
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated');
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated', $comparison);
                     }
                     if ($full) {
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh');
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison);
                     }
                     if ($full) {
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware');
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_ref');
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity_ref');
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'wind_ref');
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware', $comparison);
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_ref', $comparison);
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity_ref', $comparison);
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'wind_ref', $comparison);
 
                     }
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'dew_point');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'frost_point');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'heat_index');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidex');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'wind_chill');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'cloud_ceiling');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'cbi');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'air_density');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'wet_bulb');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'wood_emc');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'specific_enthalpy');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'equivalent_temperature');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'potential_temperature');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'equivalent_potential_temperature');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'partial_vapor_pressure');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'saturation_vapor_pressure');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'partial_absolute_humidity');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'saturation_absolute_humidity');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'dew_point', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'frost_point', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'heat_index', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidex', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'wind_chill', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'cloud_ceiling', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'cbi', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'air_density', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'wet_bulb', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'wood_emc', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'specific_enthalpy', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'equivalent_temperature', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'potential_temperature', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'equivalent_potential_temperature', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'partial_vapor_pressure', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'saturation_vapor_pressure', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'partial_absolute_humidity', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'saturation_absolute_humidity', $comparison);
                 }
                 break;
             case 'nacurrent': // Virtual module for current values from OpenWeatherMap.org
                 if ($aggregated) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated', $comparison);
                 }
                 if ($full) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison);
                 }
                 if ($full) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware', $comparison);
                 }
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature');
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature', $comparison);
                 if (!$historical) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain', $comparison);
                 }
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'visibility');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'snow');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength');
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'cloudiness');
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'visibility', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'snow', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength', $comparison);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'cloudiness', $comparison);
                 break;
            case 'naephemer': // Virtual module for ephemeris
                 if ($computed) {
                     if ($full) {
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh');
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison);
                     }
                     if ($full) {
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware');
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware', $comparison);
                     }
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunrise');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunrise_c');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunrise_n');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunrise_a');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'dawn_length_c');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'dawn_length_n');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'dawn_length_a');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunset');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunset_c');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunset_n');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunset_a');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'dusk_length_c');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'dusk_length_n');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'dusk_length_a');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'day_length');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'day_length_c');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'day_length_n');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'day_length_a');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sun_distance');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sun_diameter');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moonrise');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moonset');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moon_phase');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moon_age');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moon_illumination');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moon_distance');
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moon_diameter');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunrise', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunrise_c', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunrise_n', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunrise_a', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'dawn_length_c', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'dawn_length_n', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'dawn_length_a', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunset', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunset_c', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunset_n', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunset_a', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'dusk_length_c', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'dusk_length_n', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'dusk_length_a', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'day_length', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'day_length_c', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'day_length_n', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'day_length_a', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sun_distance', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sun_diameter', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moonrise', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moonset', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moon_phase', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moon_age', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moon_illumination', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moon_distance', $comparison);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'moon_diameter', $comparison);
                 }
                 break;
             case 'napollution': // Virtual module for pollution
                 if ($aggregated) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'aggregated');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'aggregated', $comparison);
                 }
                 if ($full) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'last_refresh');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'last_refresh', $comparison);
                 }
                 if ($full) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'firmware');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'firmware', $comparison);
                 }
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'o3');
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'o3', $comparison);
                 if ($full) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'o3_distance');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'o3_distance', $comparison);
                 }
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'co');
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'co', $comparison);
                 if ($full) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'co_distance');
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'co_distance', $comparison);
                 }
                 break;
         }
@@ -825,10 +833,11 @@ trait Generator {
      * @param boolean $daily Optional. The array must contain daily data types only.
      * @param boolean $historical Optional. The array must contain historical data types only.
      * @param boolean $noned Optional. The array must contain, for each module, a "none" measurement type.
+     * @param boolean $comparison Optional. The array must contain, for each module, only the comparison set (if $historical is true).
      * @return array An array containing the available station's datas ready to convert to a JS array.
      * @since 3.0.0
      */
-    protected function get_station_array($guid, $full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $noned=false) {
+    protected function get_station_array($guid, $full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $noned=false, $comparison=false) {
         $data = $this->get_all_formated_datas($guid, false, true);
         $result = array();
         $modules = array();
@@ -871,7 +880,7 @@ trait Generator {
                 $ref['module_type'] = 'aggregated';
                 $ref['module_name'] = __('[all modules]', 'live-weather-station');
                 $ref['loc_timezone'] = $data['station']['loc_timezone'];
-                $m = $this->get_module_array($ref, $mainbase, $full, $aggregated, $reduced, $computed, $mono, $daily, $historical, $noned);
+                $m = $this->get_module_array($ref, $mainbase, $full, $aggregated, $reduced, $computed, $mono, $daily, $historical, $noned, $comparison);
                 if (!empty($m)){
                     $modules[] = $m;
                 }
@@ -896,7 +905,7 @@ trait Generator {
                 if (($module['module_type'] == 'NAPollution') && ($daily || $historical)) {
                     continue;
                 }
-                $m = $this->get_module_array($ref, $module, $full, $aggregated, $reduced, $computed, $mono, $daily, $historical, $noned);
+                $m = $this->get_module_array($ref, $module, $full, $aggregated, $reduced, $computed, $mono, $daily, $historical, $noned, $comparison);
                 if (!empty($m)){
                     $modules[] = $m;
                 }
@@ -918,10 +927,11 @@ trait Generator {
      * @param boolean $historical Optional. The array must contain historical data types only.
      * @param boolean $noned Optional. The array must contain, for each module, a "none" measurement type.
      * @param array $guids Optional. An array of guids to get. Get data for all guids if not provided.
+     * @param boolean $comparison Optional. The array must contain, for each module, only the comparison set (if $historical is true).
      * @return array An array containing the available station's datas ready to convert to a JS array.
      * @since 3.0.0
      */
-    protected function get_all_stations_array($full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $noned=false, $guids=array()) {
+    protected function get_all_stations_array($full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $noned=false, $guids=array(), $comparison=false) {
         $result = array();
         $stations = $this->get_stations_list();
         if (count($stations) > 0) {
@@ -933,7 +943,7 @@ trait Generator {
                     $todo = true;
                 }
                 if ($todo && ($station['comp_bas'] + $station['comp_ext'] + $station['comp_int'] + $station['comp_xtd'] + $station['comp_vrt']) > 0) {
-                    $result[$station['guid']] = $this->get_station_array($station['guid'], $full, $aggregated, $reduced, $computed, $mono, $daily, $historical, $noned);
+                    $result[$station['guid']] = $this->get_station_array($station['guid'], $full, $aggregated, $reduced, $computed, $mono, $daily, $historical, $noned, $comparison);
                 }
             }
         }

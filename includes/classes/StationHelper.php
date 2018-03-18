@@ -21,6 +21,7 @@ use WeatherStation\Engine\Module\Daily\AStream as DailyAStream;
 use WeatherStation\Engine\Module\Daily\Line as DailyLine;
 use WeatherStation\Engine\Module\Daily\Lines as DailyLines;
 use WeatherStation\Engine\Module\Yearly\AStream as YearlyAStream;
+use WeatherStation\Engine\Module\Yearly\CStick as YearlyCStick;
 use WeatherStation\Engine\Module\Yearly\Line as YearlyLine;
 use WeatherStation\Engine\Module\Yearly\Bar as YearlyBar;
 use WeatherStation\Engine\Module\Yearly\Bars as YearlyBars;
@@ -83,6 +84,7 @@ class Handling {
         DailyAStream::register_module('daily');
         YearlyLine::register_module('yearly');
         YearlyBar::register_module('yearly');
+        YearlyCStick::register_module('yearly');
         YearlyLines::register_module('yearly');
         YearlyBars::register_module('yearly');
         YearlyBCLine::register_module('yearly');

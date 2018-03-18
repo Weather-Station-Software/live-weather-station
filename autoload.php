@@ -41,6 +41,7 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Module\Yearly\Bars': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyBars.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\BCLine': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyBCLine.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\CalendarHM': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyCalendarHM.php'; break;
+        case 'WeatherStation\Engine\Module\Yearly\CStick': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyCStick.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Line': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyLine.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Lines': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyLines.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\StackedAreas': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyStackedAreas.php'; break;
