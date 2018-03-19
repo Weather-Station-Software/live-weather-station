@@ -575,6 +575,47 @@ trait Output {
                             $result = array();
                         }
                     }
+                    elseif ($type == 'cstick') {
+                        $select = " AND (`measure_set`='min' OR `measure_set`='max' OR `measure_set`='avg' OR `measure_set`='med')";
+                        $sql = "SELECT `timestamp`, `module_type`, `measure_set`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $select . " ORDER BY `timestamp` ASC;";
+                        $rows = $wpdb->get_results($sql, ARRAY_A);
+                        $values = array();
+                        try {
+                            if (count($rows) > 0) {
+                                foreach ($rows as $row) {
+                                    $values[$row['timestamp']][$row['measure_set']] = $this->output_value($row['measure_value'], $arg['measurement'], false, false, $row['module_type']);
+                                }
+                                $module_type = $row['module_type'];
+                                foreach ($values as $key=>$row) {
+                                    $values[$key]['mid'] = $this->output_value($row['min'] + (($row['max'] - $row['min']) / 2), $arg['measurement'], false, false, $module_type);
+                                }
+                            }
+                            $set = array();
+                            foreach ($values as $key=>$row) {
+
+
+                            }
+                            $info = array();
+
+
+
+
+
+
+
+
+                            if ($json) {
+                                $result['values'][] = $this->jsonify($info, $set, $raw_json);
+                            } else {
+                                $info['values'] = $set;
+                                $result['values'][] = $info;
+                            }
+
+                        } catch (\Exception $ex) {
+                            error_log('Oh, no: ' . $ex->getMessage());
+                            $result = array();
+                        }
+                    }
                     else {
                         $i = 1;
                         foreach ($args as $arg) {
