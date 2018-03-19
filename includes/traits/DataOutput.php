@@ -115,11 +115,16 @@ trait Output {
      * @return string The values jsonified.
      * @since 3.4.0
      */
-    private function jsonify($info, $values, $raw=false) {
+    private function jsonify($info, $values, $raw=false, $multi=false) {
         $val = array();
         $inf = array();
         foreach ($values as $value) {
-            $val[] = array($value['timestamp'], $value['measure_value']);
+            if ($multi) {
+                $val[] = $value;
+            }
+            else {
+                $val[] = array($value['timestamp'], $value['measure_value']);
+            }
         }
         if ($raw) {
             foreach ($values as $value) {
@@ -130,7 +135,15 @@ trait Output {
             foreach ($info as $key=>$field) {
                 $inf[] = '"' . $key . '":"' . $field . '"';
             }
-            $inf[] = '"values":' . str_replace('"', '', json_encode($val));
+            if ($multi) {
+                $s = str_replace(':"', ':', json_encode($val));
+                $s = str_replace('",', ',', $s);
+                $s = str_replace('"}', '}', $s);
+                $inf[] = '"values":' . $s;
+            }
+            else {
+                $inf[] = '"values":' . str_replace('"', '', json_encode($val));
+            }
         }
         return '{' . implode(', ', $inf) . '}';
     }
@@ -576,6 +589,18 @@ trait Output {
                         }
                     }
                     elseif ($type == 'cstick') {
+                        if (strpos($args[1]['set'], '|') > 0) {
+                            $op = explode('|', $args[1]['set']);
+                        }
+                        else {
+                            $op = array('avg', 'mid');
+                        }
+                        $subymin = 0;
+                        $subymax = 0;
+                        $subydmin = 0;
+                        $subydmax = 0;
+                        $subyamin = 0;
+                        $subyamax = 0;
                         $select = " AND (`measure_set`='min' OR `measure_set`='max' OR `measure_set`='avg' OR `measure_set`='med')";
                         $sql = "SELECT `timestamp`, `module_type`, `measure_set`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $select . " ORDER BY `timestamp` ASC;";
                         $rows = $wpdb->get_results($sql, ARRAY_A);
@@ -587,17 +612,131 @@ trait Output {
                                 }
                                 $module_type = $row['module_type'];
                                 foreach ($values as $key=>$row) {
-                                    $values[$key]['mid'] = $this->output_value($row['min'] + (($row['max'] - $row['min']) / 2), $arg['measurement'], false, false, $module_type);
+                                    if (array_key_exists('max', $row) && array_key_exists('min', $row)) {
+                                        $values[$key]['mid'] = $this->output_value($row['min'] + (($row['max'] - $row['min']) / 2), $arg['measurement'], false, false, $module_type);
+                                    }
                                 }
                             }
                             $set = array();
+                            $start = true;
                             foreach ($values as $key=>$row) {
+                                $date = self::get_js_datetime_from_mysql_utc($key, $station['loc_timezone'], $end_date);
+                                if (array_key_exists('max', $row) && array_key_exists('min', $row) && array_key_exists($op[0], $row) && array_key_exists($op[1], $row)) {
+                                    $high = $row['max'];
+                                    $low = $row['min'];
+                                    $close = $row[$op[1]];
+                                    $open = $row[$op[0]];
+                                    $set[] = array('date'=>$date, 'open'=>$open, 'high'=>$high, 'low'=>$low, 'close'=>$close);
+                                    if ($start) {
+                                        $ymin = $low;
+                                        $ymax = $high;
+                                        $ydmin = $this->get_measurement_min($arg['measurement'], $module_type);
+                                        $ydmax = $this->get_measurement_max($arg['measurement'], $module_type);
+                                        $yamax = $this->get_measurement_alarm_max($arg['measurement'], $module_type);
+                                        $yamin = $this->get_measurement_alarm_min($arg['measurement'], $module_type);
+                                        $start = false;
+                                    }
+                                    if ($high > $ymax) {
+                                        $ymax = $high;
+                                    }
+                                    if ($low < $ymin) {
+                                        $ymin = $low;
+                                    }
+                                    if ($high > $subymax) {
+                                        $subymax = $high;
+                                    }
+                                    if ($low < $subymin) {
+                                        $subymin = $low;
+                                    }
+                                }
+
+
+
 
 
                             }
                             $info = array();
 
 
+                            if (array_key_exists($arg['module_id'], $station['modules_names'])) {
+                                $module_name = str_replace(array('[', ']'), array('', ''), $station['modules_names'][$arg['module_id']]);
+                            } else {
+                                $module_name = $this->get_module_type($module_type, false, true);
+                            }
+                            $extra = array();
+                            $period_name = '';
+                            $period_range = 0;
+                            if ($mode == 'yearly') {
+                                if ($is_month) {
+                                    $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                    $now->setDate($year, $month, 1);
+                                    $period_name = date_i18n('F Y', $now->getTimestamp());
+                                    $period_range = 1;
+                                } elseif ($is_year) {
+                                    $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
+                                    $period_range = 12;
+                                } elseif ($is_mseason) {
+                                    $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
+                                    if ($month == 12) {
+                                        $period_name .= '~' . (string)($year + 1);
+                                    }
+                                    $period_range = 3;
+                                }
+                                $extra['set_name'] = ucfirst($this->get_operation_name($arg['set'], true));
+                            }
+
+                            $subydmin = $this->get_measurement_min($arg['measurement'], $module_type);
+                            $subydmax = $this->get_measurement_max($arg['measurement'], $module_type);
+                            $subyamax = $this->get_measurement_alarm_max($arg['measurement'], $module_type);
+                            $subyamin = $this->get_measurement_alarm_min($arg['measurement'], $module_type);
+                            if ($this->get_measurement_max($arg['measurement'], $module_type) > $ydmax) {
+                                $ydmax = $this->get_measurement_max($arg['measurement'], $module_type);
+                            }
+                            if ($this->get_measurement_min($arg['measurement'], $module_type) < $ydmin) {
+                                $ydmin = $this->get_measurement_min($arg['measurement'], $module_type);
+                            }
+                            if ($this->get_measurement_alarm_max($arg['measurement'], $module_type) > $yamax) {
+                                $yamax = $this->get_measurement_alarm_max($arg['measurement'], $module_type);
+                            }
+                            if ($this->get_measurement_alarm_min($arg['measurement'], $module_type) < $yamin) {
+                                $yamin = $this->get_measurement_alarm_min($arg['measurement'], $module_type);
+                            }
+                            if ($this->get_measurement_max($arg['measurement'], $module_type) > $subydmax) {
+                                $subydmax = $this->get_measurement_max($arg['measurement'], $module_type);
+                            }
+                            if ($this->get_measurement_min($arg['measurement'], $module_type) < $subydmin) {
+                                $subydmin = $this->get_measurement_min($arg['measurement'], $module_type);
+                            }
+                            if ($this->get_measurement_alarm_max($arg['measurement'], $module_type) > $subyamax) {
+                                $subyamax = $this->get_measurement_alarm_max($arg['measurement'], $module_type);
+                            }
+                            if ($this->get_measurement_alarm_min($arg['measurement'], $module_type) < $subyamin) {
+                                $subyamin = $this->get_measurement_alarm_min($arg['measurement'], $module_type);
+                            }
+
+                            $extra['ydomain']['min'] = $subymin;
+                            $extra['ydomain']['max'] = $subymax;
+                            $extra['ydomain']['dmin'] = $subydmin;
+                            $extra['ydomain']['dmax'] = $subydmax;
+                            $extra['ydomain']['amin'] = $subyamin;
+                            $extra['ydomain']['amax'] = $subyamax;
+                            $extra['period_name'] = $period_name;
+                            $extra['open'] = $this->get_operation_name($op[0]);
+                            $extra['close'] = $this->get_operation_name($op[1]);
+                            $extra['period_range'] = $period_range;
+                            $extra['raw_measurement_type'] = $arg['measurement'];
+                            $extra['measurement_type'] = $this->get_measurement_type($arg['measurement'], false, $module_type);
+                            $extra['module_type'] = $module_type;
+                            $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
+                            $extra['module_name'] = $module_name;
+                            $extra['station_name'] = $station['station_name'];
+                            $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
+                            $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
+                            $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
+                            $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
+                            $extra['unit'] = $this->output_unit($arg['measurement'], $module_type);
+                            $result['extras'][] = $extra;
+                            $result['legend']['unit'] = $this->output_unit($arg['measurement'], $module_type);
 
 
 
@@ -605,7 +744,7 @@ trait Output {
 
 
                             if ($json) {
-                                $result['values'][] = $this->jsonify($info, $set, $raw_json);
+                                $result['values'][] = $this->jsonify($info, $set, false, true);
                             } else {
                                 $info['values'] = $set;
                                 $result['values'][] = $info;
@@ -1714,13 +1853,17 @@ trait Output {
             wp_enqueue_script('lws-colorbrewer');
             wp_enqueue_script('lws-spin');
             $legendColors = array();
-            if ($type == 'lines' && $color == 'self') {
+            if ($color == 'self') {
                 $col = new ColorsManipulation($prop['fg_color']);
-                $col_array = $col->makeSteppedGradient($cpt, 50);
+                $col_array = $col->makeSteppedGradient(3, 50);
                 foreach ($col_array as $c) {
                     $legendColors[] = '"#' . $c . '"';
                 }
             }
+            else {
+
+            }
+
             $result .= '<style type="text/css">' . PHP_EOL;
             if ($prop['text'] != '') {
                 $result .= '#' . $svg . ' .nvd3 text {' . $prop['text'] . '}' . PHP_EOL;
@@ -1728,7 +1871,6 @@ trait Output {
             if ($prop['nv-axis-domain'] != '') {
                 $result .= '#' . $svg . ' .nvd3 .nv-axis path.domain {' . $prop['nv-axis-domain'] . '}' . PHP_EOL;
             }
-
             if ($prop['nv-axis-line'] != '') {
                 $result .= '#' . $svg . ' .nvd3 .nv-axis line {' . $prop['nv-axis-line'] . '}' . PHP_EOL;
             }
@@ -1739,18 +1881,19 @@ trait Output {
                 $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:first-of-type text {text-anchor: start !important;}' . PHP_EOL;
                 $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:last-of-type text {text-anchor: end !important;}' . PHP_EOL;
             }
-            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dashed-line {stroke-dasharray:10,10 !important;}' . PHP_EOL;
-            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dotted-line {stroke-dasharray:2,2 !important;}' . PHP_EOL;
-            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-thin-line {stroke-width: 1 !important;}' . PHP_EOL;
-            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-regular-line {stroke-width: 2 !important;}' . PHP_EOL;
-            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-thick-line {stroke-width: 3 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-ticks .negative rect {stroke:' . str_replace('"', '', $legendColors[0]) . ' !important;fill:' . str_replace('"', '', $legendColors[0]) . ' !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-ticks .positive rect {stroke:' . str_replace('"', '', $legendColors[2]) . ' !important;fill:' . str_replace('"', '', $legendColors[2]) . '  !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-ticks line {stroke:' . str_replace('"', '', $legendColors[1]) . ' !important;}' . PHP_EOL;
             $result .= '</style>' . PHP_EOL;
 
             // BEGIN MAIN BODY
+
+            $body .= '      function sprintf(format){for( var i=1; i < arguments.length; i++ ) {format = format.replace( /%s/, arguments[i] );}return format;}' . PHP_EOL;
+
             $body .= '      var shift' . $uniq . ' = new Date();' . PHP_EOL;
             $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
             if ($fixed_timescale) {
-                $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . (string)($values['xdomain']['min']- 43200000) . ');' . PHP_EOL;
                 $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
             if ($fixed_timescale && $timescale != 'none') {
@@ -1760,65 +1903,43 @@ trait Output {
                 $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
+
+
             if ($color != 'self') {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
             }
-            elseif ($type == 'lines') {
+            elseif ($type != 'lines') {
                 $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
             }
             if ($inverted) {
                 $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
             }
+
+
+
+
+
             $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '    nv.addGraph(function() {' . PHP_EOL;
-            $body .= '       chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
-            $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
-            $body .= '               .y(function(d) {return d[1]})' . PHP_EOL;
-            $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
-            if ($focus) {
-                $body .= '               .focusEnable(true)' . PHP_EOL;
-                $body .= '               .focusShowAxisX(false)' . PHP_EOL;
-            }
-            else {
-                $body .= '               .focusEnable(false)' . PHP_EOL;
-            }
-            $body .= '               .showLegend(' . ($type == 'lines'?'true':'false') . ')' . PHP_EOL;
+            $body .= '       chart'.$uniq.' = nv.models.candlestickBarChart()' . PHP_EOL;
+            $body .= '               .x(function(d) {return x' . $uniq . ' + d["date"]})' . PHP_EOL;
+            $body .= '               .y(function(d) {return d["close"]})' . PHP_EOL;
+            $body .= '               .showLegend(false)' . PHP_EOL;
             if ($fixed_timescale) {
                 $body .= '               .xDomain([minDomain'.$uniq.', maxDomain'.$uniq.'])' . PHP_EOL;
             }
             if ($fixed_valuescale) {
                 $body .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
             }
-            if ($color == 'self' && $type == 'line') {
-                // DONE BY COLOR KEY
-            }
-            else {
-                $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
-            }
+            $body .= '               .padData(true)' . PHP_EOL;
             $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
-            if ($guideline) {
-                $body .= '               .useInteractiveGuideline(true);' . PHP_EOL;
-            }
-            else {
-                $body .= '               .useInteractiveGuideline(false);' . PHP_EOL;
-            }
+            $body .= '               .useInteractiveGuideline(true);' . PHP_EOL;
             $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
-            if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
-                $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h04Tick'.$uniq.', h08Tick'.$uniq.', h12Tick'.$uniq.', h16Tick'.$uniq.', h20Tick'.$uniq.', h24Tick'.$uniq.']);' . PHP_EOL;
-            }
-            if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
+            if ($fixed_timescale && $timescale != 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h01Tick'.$uniq.', h02Tick'.$uniq.', h03Tick'.$uniq.', h04Tick'.$uniq.']);' . PHP_EOL;
             }
             if ($timescale == 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
-            }
-            if ($mode == 'daily') {
-                $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d %H:%M")(new Date(d));});' . PHP_EOL;
-                $body .= '      chart' . $uniq . '.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d %H:%M")(new Date(d));});' . PHP_EOL;
-            }
-            if ($mode == 'yearly') {
-                $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
-                $body .= '      chart' . $uniq . '.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
             }
             if ($label != 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.axisLabelDistance(6);' . PHP_EOL;
@@ -1831,6 +1952,29 @@ trait Output {
                 $body .= '      chart'.$uniq.'.yAxis.showMaxMin(false)';
             }
             $body .= '.tickFormat(function(d) { return d + " ' . $values['legend']['unit']['unit'] . '"; });' . PHP_EOL;
+            if (!is_null($values) && isset($values['extras']) && array_key_exists(0, $values['extras'])) {
+                $close = ucfirst($values['extras'][0]['close']);
+                $open = ucfirst($values['extras'][0]['open']);
+            }
+            else {
+                $close = '';
+                $open = '';
+            }
+            $high = ucfirst($this->get_operation_name('max'));
+            $low = ucfirst($this->get_operation_name('min'));
+            $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.contentGenerator(function(d) {';
+            $body .= '      var c=d.series[0].data;' . PHP_EOL;
+            $body .= '      var e=c.open<c.close?' . $legendColors[2] . ':' . $legendColors[0] . ';' . PHP_EOL;
+            $body .= '      var close = chart' . $uniq . '.yAxis.tickFormat()(c.close);' . PHP_EOL;
+            $body .= '      var open = chart' . $uniq . '.yAxis.tickFormat()(c.open);' . PHP_EOL;
+            $body .= '      var low = chart' . $uniq . '.yAxis.tickFormat()(c.low);' . PHP_EOL;
+            $body .= '      var high = chart' . $uniq . '.yAxis.tickFormat()(c.high);' . PHP_EOL;
+            $body .= '      var sth=\'<table><thead><tr><td colspan="3"><strong class="x-value">%s</strong></td></tr></thead><tbody>%s</tbody></table>\';' . PHP_EOL;
+            $body .= '      var str1=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $high . '</td><td class="value">%s</td></tr>\', ' . $legendColors[1] . ', high);' . PHP_EOL;
+            $body .= '      var str3=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $open . '</td><td class="value">%s</td></tr>\', e, open);' . PHP_EOL;
+            $body .= '      var str2=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $close . '</td><td class="value">%s</td></tr>\', e, close);' . PHP_EOL;
+            $body .= '      var str4=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $low . '</td><td class="value">%s</td></tr>\', ' . $legendColors[1] . ', low);' . PHP_EOL;
+            $body .= '      return sprintf(sth, d.value, str1+str2+str3+str4)});' . PHP_EOL;
             $body .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
             $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
             $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
@@ -2614,7 +2758,7 @@ trait Output {
         // FINAL RENDER
 
         if ($type == 'calendarhm') {
-            $result .= '<div class="module-' . $mode . '-' . $type . '" ><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:14px 14px 14px 14px;height: ' . $height . ';text-align: center;line-height: 1em;/*overflow: hidden;*/"><div id="' . $calendar . '" style="display: inline-block;/*height: ' . $inner_height . ';*/"></div>' . $label_txt . '</div></div>' . PHP_EOL;
+            $result .= '<div class="module-' . $mode . '-' . $type . '" ><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:14px 14px 14px 14px;height: ' . $height . ';text-align: center;line-height: 1em;"><div id="' . $calendar . '" style="display: inline-block;/*height: ' . $inner_height . ';*/"></div>' . $label_txt . '</div></div>' . PHP_EOL;
             $targetNode = $calendar;
         }
         else {

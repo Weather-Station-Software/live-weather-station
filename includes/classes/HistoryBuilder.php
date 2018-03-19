@@ -151,10 +151,10 @@ class Builder
         if (in_array($measure_type, $this->standard_measurements)) {
             if ($comparison) {
                 if ($full_mode) {
-                    $result = array('AVG' => 'avg', 'MID' => 'mid', 'MED' => 'med');
+                    $result = array('AVG|MED' => 'avg|med', 'AVG|MID' => 'avg|mid', 'MED|AVG' => 'med|avg', 'MED|MID' => 'med|mid', 'MID|AVG' => 'mid|avg', 'MID|MED' => 'mid|med');
                 }
                 else {
-                    $result = array('AVG' => 'avg');
+                    $result = array('AVG|MID' => 'avg|mid', 'MID|AVG' => 'mid|avg');
                 }
                 if ($measure_type == 'rain_day_aggregated') {
                     $result = array();
@@ -163,7 +163,7 @@ class Builder
                     $result = array();
                 }
                 if ($measure_type == 'rain' && $module_type != 'NACurrent' && $full_mode) {
-                    $result = array('AVG' => 'avg', 'MID' => 'mid', 'MED' => 'med');
+                    $result = array('AVG|MED' => 'avg|med', 'AVG|MID' => 'avg|mid', 'MED|AVG' => 'med|avg', 'MED|MID' => 'med|mid', 'MID|AVG' => 'mid|avg', 'MID|MED' => 'mid|med');
                 }
                 if ($measure_type == 'weather') {
                     $result = array();
@@ -174,7 +174,7 @@ class Builder
                     $result = array('MAX' => 'max', 'MIN' => 'min', 'AVG' => 'avg', 'STD' => 'dev', 'MID' => 'mid', 'MED' => 'med', 'AMP' => 'amp');
                 }
                 else {
-                    $result = array('MAX' => 'max', 'MIN' => 'min', 'AVG' => 'avg');
+                    $result = array('MAX' => 'max', 'MIN' => 'min', 'AVG' => 'avg', 'MID' => 'mid');
                 }
                 if ($measure_type == 'rain_day_aggregated') {
                     $result = array('MAX'=>'agg');
