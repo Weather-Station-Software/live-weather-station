@@ -385,10 +385,10 @@ class Admin {
             array($this, 'lws_display_windsemantics_callback'), 'lws_display', 'lws_display_section',
             array(__('Semantics of the icon representing the wind direction in widgets.', 'live-weather-station')));
         register_setting('lws_display', 'lws_display_windsemantics');
-        add_settings_field('lws_display_anglesemantics', __('Angle semantics', 'live-weather-station'),
+        /*add_settings_field('lws_display_anglesemantics', __('Angle semantics', 'live-weather-station'),
             array($this, 'lws_display_anglesemantics_callback'), 'lws_display', 'lws_display_section',
             array(__('Semantics of the angle direction in graphs and charts.', 'live-weather-station')));
-        register_setting('lws_display', 'lws_display_anglesemantics');
+        register_setting('lws_display', 'lws_display_anglesemantics');*/
         add_settings_field('lws_display_moonicons', __('Moon icon set', 'live-weather-station'),
             array($this, 'lws_display_moonicons_callback'), 'lws_display', 'lws_display_section',
             array(__('Type of icons to illustrate moon age and phase in widgets.', 'live-weather-station')));

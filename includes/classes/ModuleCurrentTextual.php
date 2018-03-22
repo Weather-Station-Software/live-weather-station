@@ -58,6 +58,7 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function prepare() {
         $js_array_textual = $this->get_all_stations_array(true, false, false, true, false, false, false, false, array($this->station_guid));
+        error_log(print_r($js_array_textual, true));
         if (array_key_exists($this->station_guid, $js_array_textual)) {
             if (array_key_exists(2, $js_array_textual[$this->station_guid])) {
                 $this->data = $js_array_textual[$this->station_guid][2];

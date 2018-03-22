@@ -617,6 +617,9 @@ trait Output {
                                     }
                                 }
                             }
+                            else {
+                                $module_type = 'NAMain';
+                            }
                             $set = array();
                             $start = true;
                             foreach ($values as $key=>$row) {
@@ -649,15 +652,8 @@ trait Output {
                                         $subymin = $low;
                                     }
                                 }
-
-
-
-
-
                             }
                             $info = array();
-
-
                             if (array_key_exists($arg['module_id'], $station['modules_names'])) {
                                 $module_name = str_replace(array('[', ']'), array('', ''), $station['modules_names'][$arg['module_id']]);
                             } else {
@@ -684,7 +680,6 @@ trait Output {
                                 }
                                 $extra['set_name'] = ucfirst($this->get_operation_name($arg['set'], true));
                             }
-
                             $subydmin = $this->get_measurement_min($arg['measurement'], $module_type);
                             $subydmax = $this->get_measurement_max($arg['measurement'], $module_type);
                             $subyamax = $this->get_measurement_alarm_max($arg['measurement'], $module_type);
@@ -1044,33 +1039,44 @@ trait Output {
                 }
             }
             if ($valuescale == 'consistent' && $mode == 'yearly') {
-                foreach ($args as $arg) {
-                    if (strpos($arg['module_id'], ':') == 2) {
-                        $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val, MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='" . $arg['set'] . "';";
-                        try {
-                            $query = $wpdb->get_results($sql, ARRAY_A);
-                            $min = $query[0]['min_val'];
-                            $max = $query[0]['max_val'];
-                            if ($min < $ymin) {
-                                $ymin = $min;
+                if ($type == 'cstick') {
+                    $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='min';";
+                    $query = $wpdb->get_results($sql, ARRAY_A);
+                    $ymin = $query[0]['min_val'];
+                    $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='min';";
+                    $query = $wpdb->get_results($sql, ARRAY_A);
+                    $ymax = $query[0]['max_val'];
+                }
+                else {
+                    foreach ($args as $arg) {
+                        if (strpos($arg['module_id'], ':') == 2) {
+                            $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val, MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='" . $arg['set'] . "';";
+                            try {
+                                $query = $wpdb->get_results($sql, ARRAY_A);
+                                $min = $query[0]['min_val'];
+                                $max = $query[0]['max_val'];
+                                if ($min < $ymin) {
+                                    $ymin = $min;
+                                }
+                                if ($min < $cmin) {
+                                    $cmin = $min;
+                                }
+                                if ($max > $ymax) {
+                                    $ymax = $max;
+                                }
+                                if ($max > $cmax) {
+                                    $cmax = $max;
+                                }
                             }
-                            if ($min < $cmin) {
-                                $cmin = $min;
+                            catch (\Exception $ex) {
+                                // keep $y and $c min and max
                             }
-                            if ($max > $ymax) {
-                                $ymax = $max;
-                            }
-                            if ($max > $cmax) {
-                                $cmax = $max;
-                            }
-                        }
-                        catch (\Exception $ex) {
-                            // keep $y and $c min and max
                         }
                     }
+                    $cmin *= count($args);
+                    $cmax *= count($args);
                 }
-                $cmin *= count($args);
-                $cmax *= count($args);
+
             }
             $result['ydomain']['min'] = $ymin;
             $result['ydomain']['max'] = $ymax;
@@ -1146,6 +1152,7 @@ trait Output {
             case 'bars':
             case 'sareas':
             case 'astream':
+            case 'cstick':
                 if (is_null($values)) {
                     return $result;
                 }
@@ -1272,8 +1279,8 @@ trait Output {
         $ymax = $values['ydomain']['max'];
         switch ($valuescale) {
             case 'fixed':
-                $ymin = $ymin - (($ymax-$ymin)/4);
-                $ymax = $ymax + (($ymax-$ymin)/4);
+                $ymin = $ymin - (($ymax-$ymin)/6);
+                $ymax = $ymax + (($ymax-$ymin)/6);
                 break;
             case 'boundaries':
                 $ymin = $values['ydomain']['dmin'];
@@ -1855,15 +1862,23 @@ trait Output {
             $legendColors = array();
             if ($color == 'self') {
                 $col = new ColorsManipulation($prop['fg_color']);
-                $col_array = $col->makeSteppedGradient(3, 50);
+                $col_array = $col->makeSteppedGradient(4, 50);
                 foreach ($col_array as $c) {
                     $legendColors[] = '"#' . $c . '"';
                 }
             }
             else {
-
+                if ($inverted) {
+                    $legendColors[2] = '"' . ColorBrewer::get($color, 3, 0) . '"';
+                    $legendColors[1] = '"' . ColorBrewer::get($color, 3, 1) . '"';
+                    $legendColors[0] = '"' . ColorBrewer::get($color, 3, 2) . '"';
+                }
+                else {
+                    $legendColors[0] = '"' . ColorBrewer::get($color, 3, 0) . '"';
+                    $legendColors[1] = '"' . ColorBrewer::get($color, 3, 1) . '"';
+                    $legendColors[2] = '"' . ColorBrewer::get($color, 3, 2) . '"';
+                }
             }
-
             $result .= '<style type="text/css">' . PHP_EOL;
             if ($prop['text'] != '') {
                 $result .= '#' . $svg . ' .nvd3 text {' . $prop['text'] . '}' . PHP_EOL;
@@ -1887,13 +1902,11 @@ trait Output {
             $result .= '</style>' . PHP_EOL;
 
             // BEGIN MAIN BODY
-
             $body .= '      function sprintf(format){for( var i=1; i < arguments.length; i++ ) {format = format.replace( /%s/, arguments[i] );}return format;}' . PHP_EOL;
-
             $body .= '      var shift' . $uniq . ' = new Date();' . PHP_EOL;
             $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
             if ($fixed_timescale) {
-                $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . (string)($values['xdomain']['min']- 43200000) . ');' . PHP_EOL;
+                $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
                 $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
             if ($fixed_timescale && $timescale != 'none') {
@@ -1903,35 +1916,18 @@ trait Output {
                 $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
-
-
-            if ($color != 'self') {
-                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
-            }
-            elseif ($type != 'lines') {
-                $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
-            }
-            if ($inverted) {
-                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
-            }
-
-
-
-
-
             $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '    nv.addGraph(function() {' . PHP_EOL;
             $body .= '       chart'.$uniq.' = nv.models.candlestickBarChart()' . PHP_EOL;
-            $body .= '               .x(function(d) {return x' . $uniq . ' + d["date"]})' . PHP_EOL;
+            $body .= '               .x(function(d) {return x' . $uniq . ' + d["date"] + 43200000})' . PHP_EOL;
             $body .= '               .y(function(d) {return d["close"]})' . PHP_EOL;
             $body .= '               .showLegend(false)' . PHP_EOL;
             if ($fixed_timescale) {
-                $body .= '               .xDomain([minDomain'.$uniq.', maxDomain'.$uniq.'])' . PHP_EOL;
+                $body .= '               .xDomain([minDomain'.$uniq.'-00000000, maxDomain'.$uniq.'-00000000])' . PHP_EOL;
             }
             if ($fixed_valuescale) {
                 $body .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
             }
-            $body .= '               .padData(true)' . PHP_EOL;
             $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
             $body .= '               .useInteractiveGuideline(true);' . PHP_EOL;
             $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
