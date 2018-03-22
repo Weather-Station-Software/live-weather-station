@@ -813,6 +813,7 @@ trait Generator {
             }
             $result = $temp;
         }
+        $result = array_values(array_filter($result));
         if (!empty($result)) {
             return array ($ref['module_name'], $ref['module_id'], $result);
         }
