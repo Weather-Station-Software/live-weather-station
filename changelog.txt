@@ -5,6 +5,8 @@
 * New: new single and multi stackable bars chart for historical graph (month, meteorological season and year) with tons of options and settings.
 * New: new stackable areas chart for historical graph (month, meteorological season and year) with tons of options and settings.
 * New: new candlestick chart for historical graph (month, meteorological season and year) with tons of options and settings.
+* New: new distribution radar chart for daily graph with tons of options and settings.
+* New: new distribution radar chart for historical graph (month, meteorological season and year) with tons of options and settings.
 * New: new angular stream chart for daily graph with tons of options and settings.
 * New: new angular stream chart for historical graph (month, meteorological season and year) with tons of options and settings.
 * Improvement: new value scale for time consistent boundaries in all historical graphs (thanks to Ralf Karpa for the suggestion).
@@ -16,6 +18,7 @@
 * Improvement: all graphs and charts are now compatible with Elementor builder (thanks to Carlos Pedrola for the suggestion).
 * Improvement: for measurements types which doesn't support it, dataset is now hidden in chart select boxes.
 * Improvement: pollution module is now hidden in select boxes when it have no consistent data to show.
+* Improvement: height of calendar heatmap is now optimal regarding the container size.
 * Bug fix: in some old PHP versions, opcache detection may produce unwanted warnings.
 * Bug fix: the meteorological winter dates may be wrong in some conditions while using sliding seasons as period for historical charts.
 * Bug fix: in some cases and in some timezones the time scale of the daily charts is wrong.

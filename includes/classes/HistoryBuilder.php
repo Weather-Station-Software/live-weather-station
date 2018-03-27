@@ -143,10 +143,11 @@ class Builder
      * @param string $module_type The type of the module.
      * @param bool $full_mode Optional. True if it's in full mode.
      * @param boolean $comparison Optional. The array must contain only the comparison set.
+     * @param boolean $distribution Optional. The line must contain only the distribution set.
      * @return array An array of SQL operators and names.
      * @since 3.3.2
      */
-    public function get_measurements_operations_type($measure_type, $module_type='', $full_mode=false, $comparison=false) {
+    public function get_measurements_operations_type($measure_type, $module_type='', $full_mode=false, $comparison=false, $distribution=false) {
         $result = array();
         if (in_array($measure_type, $this->standard_measurements)) {
             if ($comparison) {
@@ -164,6 +165,26 @@ class Builder
                 }
                 if ($measure_type == 'rain' && $module_type != 'NACurrent' && $full_mode) {
                     $result = array('AVG|MED' => 'avg|med', 'AVG|MID' => 'avg|mid', 'MED|AVG' => 'med|avg', 'MED|MID' => 'med|mid', 'MID|AVG' => 'mid|avg', 'MID|MED' => 'mid|med');
+                }
+                if ($measure_type == 'weather') {
+                    $result = array();
+                }
+            }
+            elseif ($distribution) {
+                if ($full_mode) {
+                    $result = array('AVG' => 'avg', 'MID' => 'mid', 'MED' => 'med');
+                }
+                else {
+                    $result = array('AVG' => 'avg', 'MID' => 'mid');
+                }
+                if ($measure_type == 'rain_day_aggregated') {
+                    $result = array();
+                }
+                if ($measure_type == 'rain') {
+                    $result = array();
+                }
+                if ($measure_type == 'rain' && $module_type != 'NACurrent' && $full_mode) {
+                    $result = array('AVG' => 'avg', 'MID' => 'mid', 'MED' => 'med');
                 }
                 if ($measure_type == 'weather') {
                     $result = array();
@@ -191,10 +212,43 @@ class Builder
             }
         }
         if (in_array($measure_type, $this->extended_measurements) && $full_mode) {
-            $result = array('MAX' => 'max', 'MIN' => 'min', 'AVG' => 'avg', 'STD' => 'dev', 'MID' => 'mid', 'MED' => 'med', 'AMP' => 'amp');
-            if ($measure_type == 'strike_count') {
-                $result = array('HR_MAX'=>'maxhr');
+            if ($comparison) {
+                $result = array('AVG|MED' => 'avg|med', 'AVG|MID' => 'avg|mid', 'MED|AVG' => 'med|avg', 'MED|MID' => 'med|mid', 'MID|AVG' => 'mid|avg', 'MID|MED' => 'mid|med');
+                if ($measure_type == 'rain_day_aggregated') {
+                    $result = array();
+                }
+                if ($measure_type == 'rain') {
+                    $result = array();
+                }
+                if ($measure_type == 'rain' && $module_type != 'NACurrent' && $full_mode) {
+                    $result = array('AVG|MED' => 'avg|med', 'AVG|MID' => 'avg|mid', 'MED|AVG' => 'med|avg', 'MED|MID' => 'med|mid', 'MID|AVG' => 'mid|avg', 'MID|MED' => 'mid|med');
+                }
+                if ($measure_type == 'weather') {
+                    $result = array();
+                }
             }
+            elseif ($distribution) {
+                $result = array('AVG' => 'avg', 'MID' => 'mid', 'MED' => 'med');
+                if ($measure_type == 'rain_day_aggregated') {
+                    $result = array();
+                }
+                if ($measure_type == 'rain') {
+                    $result = array();
+                }
+                if ($measure_type == 'rain' && $module_type != 'NACurrent' && $full_mode) {
+                    $result = array('AVG' => 'avg', 'MID' => 'mid', 'MED' => 'med');
+                }
+                if ($measure_type == 'weather') {
+                    $result = array();
+                }
+            }
+            else {
+                $result = array('MAX' => 'max', 'MIN' => 'min', 'AVG' => 'avg', 'STD' => 'dev', 'MID' => 'mid', 'MED' => 'med', 'AMP' => 'amp');
+                if ($measure_type == 'strike_count') {
+                    $result = array('HR_MAX'=>'maxhr');
+                }
+            }
+
         }
         return $result;
     }

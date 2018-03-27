@@ -22,7 +22,7 @@ class AStream extends \WeatherStation\Engine\Module\Maintainer {
         self::$module_mode = 'yearly';
         $this->module_type = 'astream';
         $this->module_name = ucfirst(__('angular stream', 'live-weather-station'));
-        $this->module_hint = __('Display historical data as an angular stream chart. Particularly suitable for wind data, this graph allows to view a data according to an angle.', 'live-weather-station');
+        $this->module_hint = __('Display historical data as an angular stream chart. Particularly suitable for wind data, this graph allows to view a measurement according to an angle.', 'live-weather-station');
         $this->module_icon = 'fa fa-fw fa-rotate-90 fa-hourglass';
         $this->layout = '12-3-4';
         $this->series_number = 2;
@@ -75,7 +75,7 @@ class AStream extends \WeatherStation\Engine\Module\Maintainer {
             $group = $this->get_assoc_option_select('yearly-astream-datas-module-' . $i . '-' . $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
             $group .= $this->get_neutral_option_select('yearly-astream-datas-measurement-' . $i . '-' . $this->station_guid, __('Measurement', 'live-weather-station'));
             $group .= $this->get_neutral_option_select('yearly-astream-datas-set-'. $i . '-' . $this->station_guid, __('Dataset', 'live-weather-station'));
-            $group .= $this->get_key_value_option_select('yearly-astream-datas-line-mode-' . $i . '-' . $this->station_guid, __('Allotment', 'live-weather-station'), $this->get_allotment_js_array(), true, 'single', $i != 1);
+            $group .= $this->get_key_value_option_select('yearly-astream-datas-line-mode-' . $i . '-' . $this->station_guid, __('Allotment', 'live-weather-station'), $this->get_allotment_js_array(), true, '8s', $i != 1);
             $group .= $this->get_key_value_option_select('yearly-astream-datas-dot-style-' . $i . '-' . $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none', true, false);
             $group .= $this->get_key_value_option_select('yearly-astream-datas-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid', true, false);
             $group .= $this->get_key_value_option_select('yearly-astream-datas-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular', true, false);
