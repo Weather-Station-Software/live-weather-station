@@ -34,6 +34,7 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Module\Current\Meter': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentMeter.php'; break;
         case 'WeatherStation\Engine\Module\Current\Textual': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentTextual.php'; break;
         case 'WeatherStation\Engine\Module\Daily\AStream': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyAStream.php'; break;
+        case 'WeatherStation\Engine\Module\Daily\DistributionRC': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyDistributionRC.php'; break;
         case 'WeatherStation\Engine\Module\Daily\Line': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyLine.php'; break;
         case 'WeatherStation\Engine\Module\Daily\Lines': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyLines.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\AStream': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyAStream.php'; break;
@@ -42,9 +43,11 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Module\Yearly\BCLine': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyBCLine.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\CalendarHM': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyCalendarHM.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\CStick': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyCStick.php'; break;
+        case 'WeatherStation\Engine\Module\Yearly\DistributionRC': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyDistributionRC.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Line': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyLine.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Lines': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyLines.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\StackedAreas': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyStackedAreas.php'; break;
+        case 'WeatherStation\Engine\Module\Yearly\ValueRC': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyValueRC.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\TXTGenerator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneAbstractTXTGenerator.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Framework': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneFramework.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Generator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneGenerator.php'; break;
