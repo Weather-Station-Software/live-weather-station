@@ -11,7 +11,7 @@ function RadarChart() {
 
         resize: false,
 
-        valFormat: '%',
+        valFormat: '',
         valUnit: '',
 
         width: window.innerWidth,
