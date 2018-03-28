@@ -32,6 +32,7 @@ abstract class Maintainer {
     protected $module_hint = '';
     protected $module_icon = 'fa fa-lg fa-fw fa-question';
     protected $module_icon_color = '#777777';
+    protected $module_icon_index = '';
     protected $selected = false;
     protected $station_guid = 0;
     protected $station_id = '';
@@ -191,6 +192,16 @@ abstract class Maintainer {
      */
     public function get_icon_color() {
         return $this->module_icon_color;
+    }
+
+    /**
+     * Get the module icon index.
+     *
+     * @return string The module icon index.
+     * @since 3.5.0
+     */
+    public function get_icon_index() {
+        return strtolower($this->module_icon_index);
     }
 
     /**
@@ -805,6 +816,9 @@ abstract class Maintainer {
             }
             elseif (($this->module_type == 'astream' && $i == 1) || ($this->module_type == 'valuerc' && $i == 1) || $this->module_type == 'distributionrc') {
                 $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+" "+((js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] != "angle" && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none") ? "disabled" : "")+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+            }
+            elseif (($this->module_type == 'astream' && $i != 1) || ($this->module_type == 'valuerc' && $i != 1)) {
+                $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+" "+((js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] == "angle" && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none") ? "disabled" : "")+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
             }
             else {
                 $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';

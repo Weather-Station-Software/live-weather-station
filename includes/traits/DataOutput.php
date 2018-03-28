@@ -430,10 +430,11 @@ trait Output {
                                 $t = array();
                                 $values = array();
                                 $final = array();
+                                $ranges = array();
                                 for ($i = 0; $i < $sects; $i++) {
                                     $t[$i] = array();
                                     $values[$i] = array();
-                                    $final[$i] = array();
+                                    $final[$i] = array('min'=>null, 'avg'=>null, 'max'=>null);
                                 }
                                 foreach ($angles as $angle) {
                                     $v = $angle['measure_value'];
@@ -523,17 +524,58 @@ trait Output {
                                 $vmin = array();
                                 $vmax = array();
                                 $vavg = array();
+                                $start = true;
+                                $rmin = 0;
+                                $rmax = 0;
                                 for ($i = 0; $i < $sects; $i++) {
+                                    if ($start && !is_null($final[$i]['min']) && !is_null($final[$i]['max'])) {
+                                        $rmin = $final[$i]['min'];
+                                        $rmax = $final[$i]['max'];
+                                        $start = false;
+                                    }
+                                    if (!is_null($final[$i]['min'])) {
+                                        if ($rmin > $final[$i]['min']) {
+                                            $rmin = $final[$i]['min'];
+                                        }
+                                    }
+                                    if (!is_null($final[$i]['max'])) {
+                                        if ($rmax < $final[$i]['max']) {
+                                            $rmax = $final[$i]['max'];
+                                        }
+                                    }
                                     $anglename = $this->get_angle_text($i * $angle_val);
                                     $a = array();
                                     $a['axis'] = $anglename;
                                     $a['value'] = $final[$i]['min'];
                                     $vmin[] = $a;
+                                    $a = array();
+                                    $a['axis'] = $anglename;
                                     $a['value'] = $final[$i]['max'];
                                     $vmax[] = $a;
+                                    $a = array();
+                                    $a['axis'] = $anglename;
                                     $a['value'] = $final[$i]['avg'];
                                     $vavg[] = $a;
                                 }
+                                $d = $this->decimal_for_output($args[2]['measurement'], $rmin);
+                                if ($d > 0 && $rmax > 6) {
+                                    $d -= 1;
+                                }
+                                //$delta = $rmax * 0.01;
+                                /*foreach ($vmin as &$v) {
+                                    if (isset($v['value'])) {
+                                        if ($v['value'] == $rmin) {
+                                            $v['value'] = $v['value'] + $delta;
+                                        }
+                                    }
+                                }*/
+
+                                //$rmin=;
+
+                                for ($i = 0; $i < $sects; $i++) {
+                                    $ranges[$i] = '"' . $this->get_angle_text($i * $angle_val) . '":[' . $this->output_value($rmin, $args[2]['measurement'], false, false, $module_type) . ',' . $this->output_value($rmax, $args[2]['measurement'], false, false, $module_type) . ']';
+                                }
+                                $range= implode(',', $ranges);
                                 $modulename = DeviceManager::get_module_name($args[2]['device_id'], $args[2]['module_id'], 'unknown');
                                 $l = array();
                                 if ($mode == 'yearly') {
@@ -552,8 +594,6 @@ trait Output {
                                     $l['values'] = $vavg;
                                     $res[] = $l;
                                 }
-
-
                                 $set = array_values($res);;
                                 $extra = array();
                                 $period_name = '';
@@ -581,6 +621,9 @@ trait Output {
                                 $extra['ydomain']['dmax'] = 0;
                                 $extra['ydomain']['amin'] = 0;
                                 $extra['ydomain']['amax'] = 0;
+                                $extra['range'] = $range;
+                                $extra['correctadd'] = $this->output_value($rmin, $args[2]['measurement'], false, false, $module_type);
+                                $extra['correctmul'] = $this->output_value($rmax - $rmin, $args[2]['measurement'], false, false, $module_type);
                                 $extra['period_name'] = $period_name;
                                 $extra['period_range'] = $period_range;
                                 $extra['measurement_type'] = $args[2]['measurement'];
@@ -590,7 +633,7 @@ trait Output {
                                 $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
                                 $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
                                 $extra['unit'] = $this->output_unit($args[2]['measurement'], $module_type)['unit'];
-                                $extra['format'] = '%';
+                                $extra['format'] = '.' . $d . 'f';
                                 $result['extras'][] = $extra;
                                 if ($json) {
                                     $result['values'][] = $this->jsonify(null, $set, $raw_json, true);
@@ -1577,6 +1620,7 @@ trait Output {
             case 'sareas':
             case 'astream':
             case 'cstick':
+            case 'valuerc':
                 if (is_null($values)) {
                     return $result;
                 }
@@ -1613,7 +1657,7 @@ trait Output {
                         $name = __('Wind', 'live-weather-station');
                     }
                 }
-                if ($mode == 'yearly') {
+                if ($mode == 'yearly' && $type != 'valuerc') {
                     $rain = false;
                     if ($values['legend']['unit']['dimension'] == 'length') {
                         $rain = true;
@@ -2406,9 +2450,18 @@ trait Output {
             $body .= '            heightMax: ' . $size . ',' . PHP_EOL;
             $body .= '            valFormat: "' . $values['extras'][0]['format'] . '",' . PHP_EOL;
             $body .= '            valUnit: "' . $values['extras'][0]['unit'] . '",' . PHP_EOL;
+            if ($type == 'valuerc') {
+                $body .= '            correctAdd: ' . $values['extras'][0]['correctadd'] . ',' . PHP_EOL;
+                $body .= '            correctMul: ' . $values['extras'][0]['correctmul'] . ',' . PHP_EOL;
+            }
             $body .= '            margins: {top: ' . $tmargin . ',right: 0,bottom: 0,left: 0},' . PHP_EOL;
             $body .= '            circles: {levels: ' . $clevel . ',maxValue: 0,labelFactor: 1.25,opacity: 0.1,fill: "' . $linecolor . '",color: "' . $linecolor . '"},' . PHP_EOL;
-            $body .= '            axes: {display: true,threshold: 90,lineColor: "' . $prop['bg_color'] . '",lineWidth: "' . $linewidth . 'px",wrapWidth: 60,filter: [],invert: [],ranges: {}},' . PHP_EOL;
+            if ($type == 'valuerc') {
+                $body .= '            axes: {display: true,threshold: 90,lineColor: "' . $prop['bg_color'] . '",lineWidth: "' . $linewidth . 'px",wrapWidth: 60,filter: [],invert: [],ranges: {' . $values['extras'][0]['range'] . '}},' . PHP_EOL;
+            }
+            else {
+                $body .= '            axes: {display: true,threshold: 90,lineColor: "' . $prop['bg_color'] . '",lineWidth: "' . $linewidth . 'px",wrapWidth: 60,filter: [],invert: [],ranges: {}},' . PHP_EOL;
+            }
             $body .= '            areas: {colors: {},opacity: 0.35,borderWidth: ' . (string)($linewidth+1) . ',rounded: ' . $interpolation . ',dotRadius:' . (string)($linewidth+1) . ',sort: true,topfilter: []},' . PHP_EOL;
             if ($type_guideline == 'standard') {
                 $body .= '               filter_id: false,' . PHP_EOL;

@@ -20,6 +20,9 @@ function RadarChart() {
         height: window.innerHeight,
         heightMax: window.innerHeight,
 
+        correctAdd: 0,
+        correctMul: 1,
+
         minRadius: 80,
 
         // Margins for the SVG
@@ -156,6 +159,8 @@ function RadarChart() {
 
                 var duration = transition_time;
 
+                Format = d3.format(options.valFormat);
+
                 dataCalcs();
                 radialCalcs();
 
@@ -231,7 +236,7 @@ function RadarChart() {
                     .transition().duration(duration / 2)
                     .style('opacity', 1) // don't change to 0 if there has been no change in dimensions! possible??
                     .transition().duration(duration / 2)
-                    .text(function(d, i) { if (radial_calcs.maxValue) return Format(radial_calcs.maxValue * d / options.circles.levels) + options.valUnit; })
+                    .text(function(d, i) { if (radial_calcs.maxValue) return Format(options.correctAdd + (options.correctMul * radial_calcs.maxValue * d / options.circles.levels)) + options.valUnit; })
                     .attr("y", function(d) { return -d * radial_calcs.radius / options.circles.levels; })
                     .style('opacity', 1)
 
@@ -245,7 +250,7 @@ function RadarChart() {
                     .attr("fill", "#737373")
                     .on('mouseover', function(d, i) { if (events.axisLabel.mouseover) events.axisLabel.mouseover(d, i); })
                     .on('mouseout', function(d, i) { if (events.axisLabel.mouseout) events.axisLabel.mouseout(d, i); })
-                    .text(function(d, i) { if (radial_calcs.maxValue) return Format(radial_calcs.maxValue * d / options.circles.levels) + options.valUnit; });
+                    .text(function(d, i) { if (radial_calcs.maxValue) return Format(options.correctAdd + (options.correctMul * radial_calcs.maxValue * d / options.circles.levels)) + options.valUnit; });
 
                 update_axisLabels.exit()
                     .transition().duration(duration * .5)
@@ -328,7 +333,7 @@ function RadarChart() {
                         "cardinal-closed" :
                         "linear-closed" )
                     .radius(function(d) { return radial_calcs.rScale(d.value); })
-                    .angle(function(d,i) {	return i * radial_calcs.angleSlice; });
+                    .angle(function(d,i) { return i * radial_calcs.angleSlice; });
 
                 var update_blobWrapper = chart_node.selectAll("." + options.classed + "RadarWrapper")
                     .data(_data, get_key)
@@ -529,7 +534,7 @@ function RadarChart() {
 
         // convert all axes to range [0,1] (procrustean)
         _data.forEach( function(e) { e.values.forEach (function(d, i) {
-            if (ranges[axes[i]][0] != 0 && ranges[axes[i]][1] != 1) {
+            if (ranges[axes[i]][0] !== 0 && ranges[axes[i]][1] !== 1) {
                 var range = ranges[axes[i]];
                 d.original_value = Number(d.value);
                 d.value = (d.value - range[0]) / (range[1] - range[0]);
