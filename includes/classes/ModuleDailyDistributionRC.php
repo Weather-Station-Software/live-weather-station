@@ -24,6 +24,7 @@ class DistributionRC extends \WeatherStation\Engine\Module\Maintainer {
         $this->module_name = ucfirst(__('distribution radar chart', 'live-weather-station'));
         $this->module_hint = __('Display daily angular data as a distribution radar chart. Particularly suitable for wind data, this graph allows to view the distribution of a variable angle.', 'live-weather-station');
         $this->module_icon = 'ch fa-lg fa-fw ch-pie-chart-9';
+        $this->module_icon_index = 'd';
         $this->layout = '12-3-4';
         $this->series_number = 4;
         parent::__construct($station_information);
