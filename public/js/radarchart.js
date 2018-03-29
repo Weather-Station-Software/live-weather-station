@@ -149,7 +149,7 @@ function RadarChart() {
                 feMergeNode_2 = feMerge.append('feMergeNode').attr('in','SourceGraphic');
 
             tooltip = tooltip_node.append('foreignObject')
-                .attr("class", 'nvtooltip')
+                .attr('class', options.classed + 'Tooltip')
                 .style("opacity", 0)
                 .style("width", "200")
                 .style("height", "200");
