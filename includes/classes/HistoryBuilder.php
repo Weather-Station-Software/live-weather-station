@@ -217,6 +217,9 @@ class Builder
                 if ($measure_type == 'rain_day_aggregated') {
                     $result = array();
                 }
+                if ($measure_type == 'rain_day_aggregated') {
+                    $result = array();
+                }
                 if ($measure_type == 'rain') {
                     $result = array();
                 }
@@ -229,6 +232,9 @@ class Builder
             }
             elseif ($distribution) {
                 $result = array('AVG' => 'avg', 'MID' => 'mid', 'MED' => 'med');
+                if ($measure_type == 'rain_day_aggregated') {
+                    $result = array();
+                }
                 if ($measure_type == 'rain_day_aggregated') {
                     $result = array();
                 }

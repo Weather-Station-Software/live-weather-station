@@ -438,12 +438,6 @@ trait Output {
                                 }
                                 foreach ($angles as $angle) {
                                     $v = $angle['measure_value'];
-                                    /*if (get_option('live_weather_station_angle_semantics') == 1) {
-                                        $v = $v + 180;
-                                        if ($v > 360) {
-                                            $v = $v - 360;
-                                        }
-                                    }*/
                                     $ts = $angle['timestamp'];
                                     $m = null;
                                     if (array_key_exists($ts, $measures)) {
@@ -558,22 +552,14 @@ trait Output {
                                     $vavg[] = $a;
                                 }
                                 $d = $this->decimal_for_output($args[2]['measurement'], $rmin);
-                                if ($d > 0 && $rmax > 6) {
+                                if ($d > 0 && $rmax - $rmin > 6) {
                                     $d -= 1;
                                 }
-                                //$delta = $rmax * 0.01;
-                                /*foreach ($vmin as &$v) {
-                                    if (isset($v['value'])) {
-                                        if ($v['value'] == $rmin) {
-                                            $v['value'] = $v['value'] + $delta;
-                                        }
-                                    }
-                                }*/
-
-                                //$rmin=;
-
+                                if ($rmin == 0 && $rmax > 6) {
+                                    $rmin = -1;
+                                }
                                 for ($i = 0; $i < $sects; $i++) {
-                                    $ranges[$i] = '"' . $this->get_angle_text($i * $angle_val) . '":[' . $this->output_value($rmin, $args[2]['measurement'], false, false, $module_type) . ',' . $this->output_value($rmax, $args[2]['measurement'], false, false, $module_type) . ']';
+                                    $ranges[$i] = '"' . $this->get_angle_text($i * $angle_val) . '":[' . (float)$rmin . ',' . (float)$rmax . ']';
                                 }
                                 $range= implode(',', $ranges);
                                 $modulename = DeviceManager::get_module_name($args[2]['device_id'], $args[2]['module_id'], 'unknown');
@@ -622,17 +608,17 @@ trait Output {
                                 $extra['ydomain']['amin'] = 0;
                                 $extra['ydomain']['amax'] = 0;
                                 $extra['range'] = $range;
-                                $extra['correctadd'] = $this->output_value($rmin, $args[2]['measurement'], false, false, $module_type);
-                                $extra['correctmul'] = $this->output_value($rmax - $rmin, $args[2]['measurement'], false, false, $module_type);
+                                $extra['correctadd'] = (float)$rmin;
+                                $extra['correctmul'] = (float)($rmax - $rmin);
                                 $extra['period_name'] = $period_name;
                                 $extra['period_range'] = $period_range;
-                                $extra['measurement_type'] = $args[2]['measurement'];
+                                $extra['measurement_type'] = $this->get_measurement_type($args[2]['measurement'], false, $module_type);
                                 $extra['station_name'] = $station['station_name'];
                                 $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
                                 $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
                                 $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
                                 $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
-                                $extra['unit'] = $this->output_unit($args[2]['measurement'], $module_type)['unit'];
+                                $extra['unit'] = ' ' . $this->output_unit($args[2]['measurement'], $module_type)['unit'];
                                 $extra['format'] = '.' . $d . 'f';
                                 $result['extras'][] = $extra;
                                 if ($json) {
@@ -728,12 +714,6 @@ trait Output {
                                 }
                                 foreach ($angles as $angle) {
                                     $v = $angle['measure_value'];
-                                    /*if (get_option('live_weather_station_angle_semantics') == 1) {
-                                        $v = $v + 180;
-                                        if ($v > 360) {
-                                            $v = $v - 360;
-                                        }
-                                    }*/
                                     $ts = $angle['timestamp'];
                                     if (array_key_exists($ts, $measures)) {
                                         if (array_key_exists('measure_value', $measures[$ts])) {
@@ -2450,13 +2430,13 @@ trait Output {
             $body .= '            heightMax: ' . $size . ',' . PHP_EOL;
             $body .= '            valFormat: "' . $values['extras'][0]['format'] . '",' . PHP_EOL;
             $body .= '            valUnit: "' . $values['extras'][0]['unit'] . '",' . PHP_EOL;
-            if ($type == 'valuerc') {
+            if ($type == 'valuerc' && isset($values)) {
                 $body .= '            correctAdd: ' . $values['extras'][0]['correctadd'] . ',' . PHP_EOL;
                 $body .= '            correctMul: ' . $values['extras'][0]['correctmul'] . ',' . PHP_EOL;
             }
             $body .= '            margins: {top: ' . $tmargin . ',right: 0,bottom: 0,left: 0},' . PHP_EOL;
             $body .= '            circles: {levels: ' . $clevel . ',maxValue: 0,labelFactor: 1.25,opacity: 0.1,fill: "' . $linecolor . '",color: "' . $linecolor . '"},' . PHP_EOL;
-            if ($type == 'valuerc') {
+            if ($type == 'valuerc' && isset($values)) {
                 $body .= '            axes: {display: true,threshold: 90,lineColor: "' . $prop['bg_color'] . '",lineWidth: "' . $linewidth . 'px",wrapWidth: 60,filter: [],invert: [],ranges: {' . $values['extras'][0]['range'] . '}},' . PHP_EOL;
             }
             else {
@@ -3379,7 +3359,7 @@ trait Output {
             $targetNode = $calendar;
         }
         elseif ($type == 'distributionrc' || $type == 'valuerc') {
-            $result .= '<div class="module-' . $mode . '-' . $type . '" style="display:inline-block"><span id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';width: ' . $height . ';display:inline-block;overflow: hidden;' . $atitlestyle . '"><span id="' . $svg . '"></span><div id="' . $titl . '">' . $label_txt . '</div></div></div>' . PHP_EOL;
+            $result .= '<div class="module-' . $mode . '-' . $type . '" style="display:inline-block; text-align:center"><span id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';width: ' . $height . ';display:inline-block;overflow: hidden;' . $atitlestyle . '"><span id="' . $svg . '"></span><div id="' . $titl . '">' . $label_txt . '</div></div></div>' . PHP_EOL;
             $targetNode = $svg;
         }
         else {
