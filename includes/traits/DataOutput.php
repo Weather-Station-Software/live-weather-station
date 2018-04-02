@@ -346,12 +346,6 @@ trait Output {
                     }
                     if ($type == 'valuerc') {
                         if (count($args) == 2) {
-                            $subymin = 0;
-                            $subymax = 0;
-                            $subydmin = 0;
-                            $subydmax = 0;
-                            $subyamin = 0;
-                            $subyamax = 0;
                             if (strpos($args[1]['dot_style'], 'res-') !== false) {
                                 $resolution = substr($args[1]['dot_style'], 4);
                                 try {
@@ -522,19 +516,36 @@ trait Output {
                                 $rmin = 0;
                                 $rmax = 0;
                                 for ($i = 0; $i < $sects; $i++) {
-                                    if ($start && !is_null($final[$i]['min']) && !is_null($final[$i]['max'])) {
-                                        $rmin = $final[$i]['min'];
-                                        $rmax = $final[$i]['max'];
-                                        $start = false;
-                                    }
-                                    if (!is_null($final[$i]['min'])) {
-                                        if ($rmin > $final[$i]['min']) {
+                                    if ($mode == 'yearly') {
+                                        if ($start && !is_null($final[$i]['min']) && !is_null($final[$i]['max'])) {
                                             $rmin = $final[$i]['min'];
+                                            $rmax = $final[$i]['max'];
+                                            $start = false;
+                                        }
+                                        if (!is_null($final[$i]['min'])) {
+                                            if ($rmin > $final[$i]['min']) {
+                                                $rmin = $final[$i]['min'];
+                                            }
+                                        }
+                                        if (!is_null($final[$i]['max'])) {
+                                            if ($rmax < $final[$i]['max']) {
+                                                $rmax = $final[$i]['max'];
+                                            }
                                         }
                                     }
-                                    if (!is_null($final[$i]['max'])) {
-                                        if ($rmax < $final[$i]['max']) {
-                                            $rmax = $final[$i]['max'];
+                                    else {
+                                        if ($start && !is_null($final[$i]['avg'])) {
+                                            $rmin = $final[$i]['avg'];
+                                            $rmax = $final[$i]['avg'];
+                                            $start = false;
+                                        }
+                                        if (!is_null($final[$i]['avg'])) {
+                                            if ($rmin > $final[$i]['avg']) {
+                                                $rmin = $final[$i]['avg'];
+                                            }
+                                            if ($rmax < $final[$i]['avg']) {
+                                                $rmax = $final[$i]['avg'];
+                                            }
                                         }
                                     }
                                     $anglename = $this->get_angle_text($i * $angle_val);
@@ -612,6 +623,7 @@ trait Output {
                                 $extra['correctmul'] = (float)($rmax - $rmin);
                                 $extra['period_name'] = $period_name;
                                 $extra['period_range'] = $period_range;
+                                $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
                                 $extra['measurement_type'] = $this->get_measurement_type($args[2]['measurement'], false, $module_type);
                                 $extra['station_name'] = $station['station_name'];
                                 $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
@@ -1026,6 +1038,7 @@ trait Output {
                             $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
                             $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
                             $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
+                            $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
                             $extra['unit'] = '';
                             $extra['format'] = '%';
                             $result['extras'][] = $extra;
@@ -1358,11 +1371,46 @@ trait Output {
                                 if ($type == 'bcline' && $i == 1) {
                                     $info['bar'] = true;
                                 }
+                                if ($type == 'doubleline') {
+                                    $info['yAxis'] = $i;
+                                    $info['type'] = 'line';
+                                    $info['unit'] = $this->output_unit($arg['measurement'], $module_type)['unit'];
+                                }
+                                if ($self_color && $type == 'bcline') {
+                                    if ($i == 1) {
+                                        $info['color'] = $prop['fg_color'];
+                                    }
+                                    else {
+                                        $col = new ColorsManipulation($prop['fg_color']);
+                                        if ($col->isLight()) {
+                                            $info['color'] = '#' . $col->darken(10);
+                                        }
+                                        else {
+                                            $info['color'] = '#' . $col->lighten(30);
+                                        }
+
+                                    }
+                                }
+                                if ($self_color && $type == 'doubleline') {
+                                    if ($i == 1) {
+                                        $info['color'] = $prop['fg_color'];
+                                    }
+                                    else {
+                                        $col = new ColorsManipulation($prop['fg_color']);
+                                        if ($col->isLight()) {
+                                            $info['color'] = '#' . $col->darken(20);
+                                        }
+                                        else {
+                                            $info['color'] = '#' . $col->lighten(20);
+                                        }
+                                    }
+                                }
+                                if ($self_color && $type != 'lines' && $type != 'bars' && $type != 'sareas' && $type != 'doubleline' && $type != 'bcline') {
+                                    $info['color'] = $prop['fg_color'];
+                                }
+
                                 if (($type == 'bars' || $type == 'sareas') && $arg['line_mode'] == 'single') {
                                     $info['nonStackable'] = true;
-                                }
-                                if ($self_color && $type != 'lines' && $type != 'bars' && $type != 'sareas') {
-                                    $info['color'] = $prop['fg_color'];
                                 }
                                 if (array_key_exists($arg['module_id'], $station['modules_names'])) {
                                     $module_name = str_replace(array('[', ']'), array('', ''), $station['modules_names'][$arg['module_id']]);
@@ -1607,6 +1655,7 @@ trait Output {
                 $name = '';
                 if (!is_null($values) && isset($values['extras'][0]['measurement_type'])) {
                     $name = $values['extras'][0]['measurement_type'];
+
                 }
                 if ($type == 'lines' || $type == 'bars' || $type == 'sareas') {
                     $name = $this->get_dimension_name($values['legend']['unit']['dimension'], false, true);
@@ -1667,6 +1716,7 @@ trait Output {
                 }
                 break;
             case 'bcline':
+            case 'doubleline':
                 $name = $values['extras'][0]['measurement_type'];
                 if (array_key_exists(1, $values['extras'])) {
                     $name .= ' ~ ' . $values['extras'][1]['measurement_type'];
@@ -1681,6 +1731,9 @@ trait Output {
                     break;
                 case 'generic':
                     $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name_generic']);
+                    if ($type == 'valuerc' || $type == 'distributionrc') {
+                        $result = ucwords($name) . $sep . ucwords(__('Today', 'live-weather-station'));
+                    }
                     break;
                 case 'named':
                     $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name']);
@@ -2230,6 +2283,7 @@ trait Output {
         $height = $_attributes['height'];
         $fingerprint = uniqid('', true);
         $uniq = 'graph' . substr ($fingerprint, strlen($fingerprint)-6, 80);
+        $container = 'lws-container-' . substr ($fingerprint, strlen($fingerprint)-6, 80);
         $svg = 'svg' . substr ($fingerprint, strlen($fingerprint)-6, 80);
         $titl = 'titl' . substr ($fingerprint, strlen($fingerprint)-6, 80);
         $calendar = 'calendar' . substr ($fingerprint, strlen($fingerprint)-6, 80);
@@ -2360,7 +2414,7 @@ trait Output {
                         $tmargin = 38;
                     }
                     else {
-                        $titlestyle .= 'padding-top:40px;';
+                        $titlestyle .= 'padding-top:36px;';
                         $size = 236;
                         $tmargin = 36;
                     }
@@ -2374,7 +2428,7 @@ trait Output {
                         $tmargin = 44;
                     }
                     else {
-                        $titlestyle .= 'padding-top:54px;';
+                        $titlestyle .= 'padding-top:42px;';
                         $size = 320;
                         $tmargin = 42;
                     }
@@ -2388,7 +2442,7 @@ trait Output {
                         $tmargin = 60;
                     }
                     else {
-                        $titlestyle .= 'padding-top:76px;';
+                        $titlestyle .= 'padding-top:60px;';
                         $size = 450;
                         $tmargin = 60;
                     }
@@ -2423,34 +2477,35 @@ trait Output {
             if ($inverted) {
                 $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
             }
-            $body .= '      var chartOption'.$uniq.' = {' . PHP_EOL;
-            $body .= '            width: ' . $size . ',' . PHP_EOL;
-            $body .= '            widthMax: ' . $size . ',' . PHP_EOL;
-            $body .= '            height: ' . $size . ',' . PHP_EOL;
-            $body .= '            heightMax: ' . $size . ',' . PHP_EOL;
-            $body .= '            valFormat: "' . $values['extras'][0]['format'] . '",' . PHP_EOL;
-            $body .= '            valUnit: "' . $values['extras'][0]['unit'] . '",' . PHP_EOL;
-            if ($type == 'valuerc' && isset($values)) {
-                $body .= '            correctAdd: ' . $values['extras'][0]['correctadd'] . ',' . PHP_EOL;
-                $body .= '            correctMul: ' . $values['extras'][0]['correctmul'] . ',' . PHP_EOL;
+            if (isset($values) && isset($values['extras']) && isset($values['extras'][0])) {
+                $body .= '      var chartOption' . $uniq . ' = {' . PHP_EOL;
+                $body .= '            width: ' . $size . ',' . PHP_EOL;
+                $body .= '            widthMax: ' . $size . ',' . PHP_EOL;
+                $body .= '            height: ' . $size . ',' . PHP_EOL;
+                $body .= '            heightMax: ' . $size . ',' . PHP_EOL;
+                $body .= '            valFormat: "' . $values['extras'][0]['format'] . '",' . PHP_EOL;
+                $body .= '            valUnit: "' . $values['extras'][0]['unit'] . '",' . PHP_EOL;
+                if ($type == 'valuerc') {
+                    $body .= '            correctAdd: ' . $values['extras'][0]['correctadd'] . ',' . PHP_EOL;
+                    $body .= '            correctMul: ' . $values['extras'][0]['correctmul'] . ',' . PHP_EOL;
+                }
+                $body .= '            margins: {top: ' . $tmargin . ',right: 0,bottom: 0,left: 0},' . PHP_EOL;
+                $body .= '            circles: {levels: ' . $clevel . ',maxValue: 0,labelFactor: 1.25,opacity: 0.1,fill: "' . $linecolor . '",color: "' . $linecolor . '"},' . PHP_EOL;
+                if ($type == 'valuerc') {
+                    $body .= '            axes: {display: true,threshold: 90,lineColor: "' . $prop['bg_color'] . '",lineWidth: "' . $linewidth . 'px",wrapWidth: 60,filter: [],invert: [],ranges: {' . $values['extras'][0]['range'] . '}},' . PHP_EOL;
+                } else {
+                    $body .= '            axes: {display: true,threshold: 90,lineColor: "' . $prop['bg_color'] . '",lineWidth: "' . $linewidth . 'px",wrapWidth: 60,filter: [],invert: [],ranges: {}},' . PHP_EOL;
+                }
+                $body .= '            areas: {colors: {},opacity: 0.35,borderWidth: ' . (string)($linewidth + 1) . ',rounded: ' . $interpolation . ',dotRadius:' . (string)($linewidth + 1) . ',sort: true,topfilter: []},' . PHP_EOL;
+                if ($type_guideline == 'standard') {
+                    $body .= '               filter_id: false,' . PHP_EOL;
+                    $body .= '               filter: false,' . PHP_EOL;
+                }
+                $body .= '            color: color' . $uniq . '}' . PHP_EOL;
+                $body .= '      var chart' . $uniq . ' = RadarChart();' . PHP_EOL;
+                $body .= '        d3.select("#' . $svg . '").call(chart' . $uniq . ');' . PHP_EOL;
+                $body .= '        chart' . $uniq . '.options(chartOption' . $uniq . ').data(data' . $uniq . ').update();' . PHP_EOL;
             }
-            $body .= '            margins: {top: ' . $tmargin . ',right: 0,bottom: 0,left: 0},' . PHP_EOL;
-            $body .= '            circles: {levels: ' . $clevel . ',maxValue: 0,labelFactor: 1.25,opacity: 0.1,fill: "' . $linecolor . '",color: "' . $linecolor . '"},' . PHP_EOL;
-            if ($type == 'valuerc' && isset($values)) {
-                $body .= '            axes: {display: true,threshold: 90,lineColor: "' . $prop['bg_color'] . '",lineWidth: "' . $linewidth . 'px",wrapWidth: 60,filter: [],invert: [],ranges: {' . $values['extras'][0]['range'] . '}},' . PHP_EOL;
-            }
-            else {
-                $body .= '            axes: {display: true,threshold: 90,lineColor: "' . $prop['bg_color'] . '",lineWidth: "' . $linewidth . 'px",wrapWidth: 60,filter: [],invert: [],ranges: {}},' . PHP_EOL;
-            }
-            $body .= '            areas: {colors: {},opacity: 0.35,borderWidth: ' . (string)($linewidth+1) . ',rounded: ' . $interpolation . ',dotRadius:' . (string)($linewidth+1) . ',sort: true,topfilter: []},' . PHP_EOL;
-            if ($type_guideline == 'standard') {
-                $body .= '               filter_id: false,' . PHP_EOL;
-                $body .= '               filter: false,' . PHP_EOL;
-            }
-            $body .= '            color: color' . $uniq . '}' . PHP_EOL;
-            $body .= '      var chart'.$uniq.' = RadarChart();' . PHP_EOL;
-            $body .= '        d3.select("#'.$uniq.' span").call(chart'.$uniq.');' . PHP_EOL;
-            $body .= '        chart'.$uniq.'.options(chartOption'.$uniq.').data(data'.$uniq.').update();' . PHP_EOL;
             /// END MAIN BODY
         }
 
@@ -3064,11 +3119,182 @@ trait Output {
             // END MAIN BODY
         }
 
+        if ($type == 'doubleline') {
+            wp_enqueue_style('lws-nvd3');
+            wp_enqueue_script('lws-nvd3');
+            wp_enqueue_script('lws-colorbrewer');
+            wp_enqueue_script('lws-spin');
+            wp_enqueue_script('lws-bilinechart');
+            $legendColors = array();
+            if ($color == 'self') {
+                $col = new ColorsManipulation($prop['fg_color']);
+                $col_array = $col->makeSteppedGradient(10, 50);
+                foreach ($col_array as $c) {
+                    $legendColors[] = '"#' . $c . '"';
+                }
+            }
+            if ($mode == 'daily') {
+                $specialtimeformat = '%Y-%m-%d %H:%M';
+            }
+            else {
+                $specialtimeformat = '%Y-%m-%d';
+            }
+            if (array_key_exists(1, $values['extras'])) {
+                $unit = $values['extras'][1]['unit']['unit'];
+            }
+            else {
+                $unit = '';
+            }
+            $result .= '<style type="text/css">' . PHP_EOL;
+            if ($prop['text'] != '') {
+                $result .= '#' . $svg . ' .nvd3 text {' . $prop['text'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axis-domain'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis path.domain {' . $prop['nv-axis-domain'] . '}' . PHP_EOL;
+            }
+
+            if ($prop['nv-axis-line'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis line {' . $prop['nv-axis-line'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axislabel'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis text.nv-axislabel {' . $prop['nv-axislabel'] . '}' . PHP_EOL;
+            }
+            if ($fixed_timescale) {
+                $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:first-of-type text {text-anchor: start !important;}' . PHP_EOL;
+                $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:last-of-type text {text-anchor: end !important;}' . PHP_EOL;
+            }
+            $result .= '#' . $svg . ' .nvd3 .nv-y2 .nv-axisMax-y text {text-anchor: end !important;dominant-baseline:text-before-edge !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-y2 .nv-axisMin-y text {text-anchor: end !important;dominant-baseline:text-after-edge !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dashed-line {stroke-dasharray:10,10 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dotted-line {stroke-dasharray:2,2 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-thin-line {stroke-width: 1 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-regular-line {stroke-width: 2 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-thick-line {stroke-width: 3 !important;}' . PHP_EOL;
+            $i = 1;
+            foreach ($items as $item) {
+                if ($item['dot_style'] == 'small-dot') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
+                }
+                if ($item['dot_style'] == 'large-dot') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:3;}' . PHP_EOL;
+                }
+                if ($item['dot_style'] == 'small-circle') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:12;}' . PHP_EOL;
+                }
+                if ($item['dot_style'] == 'large-circle') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
+                }
+                if ($item['line_mode'] == 'transparent' || $item['line_mode'] == 'area') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-area {stroke-opacity:0;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-line {stroke-opacity:0;}' . PHP_EOL;
+                }
+                $i += 1;
+            }
+            $result .= '</style>' . PHP_EOL;
+
+            // BEGIN MAIN BODY
+            $body .= '      function sprintf(format){for( var i=1; i < arguments.length; i++ ) {format = format.replace( /%s/, arguments[i] );}return format;}' . PHP_EOL;
+            $body .= '      var shift' . $uniq . ' = new Date();' . PHP_EOL;
+            $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
+            if ($fixed_timescale && $mode == 'daily') {
+                $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+            }
+            if ($fixed_timescale && $mode == 'yearly') {
+                $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+            }
+            if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
+                $body .= '    var h00Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['04'] . ');' . PHP_EOL;
+                $body .= '    var h08Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['08'] . ');' . PHP_EOL;
+                $body .= '    var h12Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['12'] . ');' . PHP_EOL;
+                $body .= '    var h16Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['16'] . ');' . PHP_EOL;
+                $body .= '    var h20Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['20'] . ');' . PHP_EOL;
+                $body .= '    var h24Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+            }
+            if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
+                $body .= '    var h00Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $body .= '    var h01Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['01'] . ');' . PHP_EOL;
+                $body .= '    var h02Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['02'] . ');' . PHP_EOL;
+                $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
+                $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+            }
+            $refcolor = $prop['fg_color'];
+            if ($color != 'self') {
+                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+                $refcolor = ColorBrewer::get($color, 3, 0);
+            }
+            if ($inverted) {
+                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
+                $refcolor = ColorBrewer::get($color, 3, 0, true);
+            }
+            $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
+            $body .= '      nv.addGraph(function() {' . PHP_EOL;
+            $body .= '        chart'.$uniq.' = nv.models.bilineChart()' . PHP_EOL;
+            $body .= '               .x(function(d,i) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
+            $body .= '               .y(function(d,i) {return d[1]})' . PHP_EOL;
+            if ($fixed_timescale) {
+                $body .= '           .xDomain([minDomain'.$uniq.', maxDomain'.$uniq.'])' . PHP_EOL;
+            }
+            $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
+            if ($color != 'self') {
+                $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
+            }
+            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'");' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
+                $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h04Tick'.$uniq.', h08Tick'.$uniq.', h12Tick'.$uniq.', h16Tick'.$uniq.', h20Tick'.$uniq.', h24Tick'.$uniq.']);' . PHP_EOL;
+            }
+            if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
+                $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h01Tick'.$uniq.', h02Tick'.$uniq.', h03Tick'.$uniq.', h04Tick'.$uniq.']);' . PHP_EOL;
+            }
+            if ($timescale == 'none') {
+                $body .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
+            }
+            $body .= '      chart' . $uniq . '.tooltip.contentGenerator(function(d) {';
+            $body .= '      var s=\'<table><thead><tr><td colspan="3"><strong class="x-value">%s</strong></td></tr></thead><tbody><tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">%s</td><td class="value">%s</td></tr></tbody></table>\';' . PHP_EOL;
+            $body .= '      var _date = "";' . PHP_EOL;
+            $body .= '      var _color = "";' . PHP_EOL;
+            $body .= '      var _key = "";' . PHP_EOL;
+            $body .= '      var _value = "";' . PHP_EOL;
+            $body .= '      if (d.series[0].color=="' . $refcolor . '"){' . PHP_EOL;
+            $body .= '        _color = d.series[0].color;' . PHP_EOL;
+            $body .= '        _key = d.series[0].key;' . PHP_EOL;
+            $body .= '        _value = d.series[0].value+" ' . $values['extras'][0]['unit']['unit'] . '";' . PHP_EOL;
+            $body .= '      }' . PHP_EOL;
+            $body .= '      else{' . PHP_EOL;
+            $body .= '        _color = d.series[0].color;' . PHP_EOL;
+            $body .= '        _key = d.series[0].key;' . PHP_EOL;
+            $body .= '        _value = d.series[0].value+" ' . $unit . '";' . PHP_EOL;
+            $body .= '      }' . PHP_EOL;
+            $body .= '      _date = d3.time.format("' . $specialtimeformat . '")(new Date(d.value));' . PHP_EOL;
+            $body .= '      return sprintf(s, _date, _color, _key, _value)});' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.legendRightAxisHint("");' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.yAxis1.tickFormat(function(d) { return d + " ' . $values['extras'][0]['unit']['unit'] . '"; });' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.yAxis1.showMaxMin(false);';
+            $body .= '      chart'.$uniq.'.yAxis2.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.yAxis2.tickPadding(-6);' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.yAxis2.showMaxMin(true);';
+            $body .= '      chart'.$uniq.'.yAxis2.tickValues([]);' . PHP_EOL;
+            $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+            $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+            $body .= '      return chart'.$uniq.';' . PHP_EOL;
+            $body .= '    });'.PHP_EOL;
+            // END MAIN BODY
+        }
+
         if ($type == 'bcline') {
             wp_enqueue_style('lws-nvd3');
             wp_enqueue_script('lws-nvd3');
             wp_enqueue_script('lws-colorbrewer');
             wp_enqueue_script('lws-spin');
+            if ($mode == 'daily') {
+                $specialtimeformat = '%Y-%m-%d %H:%M';
+            }
+            else {
+                $specialtimeformat = '%Y-%m-%d';
+            }
             if (array_key_exists(1, $values['extras'])) {
                 $unit = $values['extras'][1]['unit']['unit'];
             }
@@ -3194,7 +3420,7 @@ trait Output {
             $body .= '        _key = "' . $values['extras'][0]['info_key'] . '";' . PHP_EOL;
             $body .= '        _value = d.series[0].value+" ' . $values['extras'][0]['unit']['unit'] . '";' . PHP_EOL;
             $body .= '      }' . PHP_EOL;
-            $body .= '      _date = d3.time.format("' . $time_format . '")(new Date(x' . $uniq . ' + d.value));' . PHP_EOL;
+            $body .= '      _date = d3.time.format("' . $specialtimeformat . '")(new Date(d.value));' . PHP_EOL;
             $body .= '      return sprintf(s, _date, _color, _key, _value)});' . PHP_EOL;
             if ($focus) {
                 $body .= '      chart' . $uniq . '.focusMargin({"top":20, "bottom":-10});' . PHP_EOL;
@@ -3354,18 +3580,17 @@ trait Output {
 
         // FINAL RENDER
 
+        $result .= '<div class="lws-module-chart module-' . $mode . '-' . $type . '" id="' . $container . '">' . PHP_EOL;
         if ($type == 'calendarhm') {
-            $result .= '<div class="module-' . $mode . '-' . $type . '" ><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:14px 14px 14px 14px;height: ' . $height . ';text-align: center;line-height: 1em;"><div id="' . $calendar . '" style="display: inline-block;"></div>' . $label_txt . '</div></div>' . PHP_EOL;
-            $targetNode = $calendar;
+            $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:14px 14px 14px 14px;height: ' . $height . ';text-align: center;line-height: 1em;"><div id="' . $calendar . '" style="display: inline-block;"></div>' . $label_txt . '</div>' . PHP_EOL;
         }
         elseif ($type == 'distributionrc' || $type == 'valuerc') {
-            $result .= '<div class="module-' . $mode . '-' . $type . '" style="display:inline-block; text-align:center"><span id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';width: ' . $height . ';display:inline-block;overflow: hidden;' . $atitlestyle . '"><span id="' . $svg . '"></span><div id="' . $titl . '">' . $label_txt . '</div></div></div>' . PHP_EOL;
-            $targetNode = $svg;
+            $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';width: ' . $height . ';display:inline-block;text-align:center;overflow: hidden;' . $atitlestyle . '"><div id="' . $svg . '"></div><div id="' . $titl . '">' . $label_txt . '</div></div>' . PHP_EOL;
         }
         else {
-            $result .= '<div class="module-' . $mode . '-' . $type . '" ><div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';"><svg id="' . $svg . '" style="overflow:hidden;"></svg></div></div>' . PHP_EOL;
-            $targetNode = $svg;
+            $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';"><svg id="' . $svg . '" style="overflow:hidden;"></svg></div>' . PHP_EOL;
         }
+        $result .= '</div>' . PHP_EOL;
         $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         if ($data == 'inline') {

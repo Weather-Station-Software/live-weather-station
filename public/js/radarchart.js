@@ -151,6 +151,8 @@ function RadarChart() {
             tooltip = tooltip_node.append('foreignObject')
                 .attr('class', options.classed + 'Tooltip')
                 .style("opacity", 0)
+                .style("padding-top", '10px')
+                .style("padding-left", '20px')
                 .style("width", "200")
                 .style("height", "200");
 

@@ -22,7 +22,7 @@ class ValueRC extends \WeatherStation\Engine\Module\Maintainer {
         self::$module_mode = 'yearly';
         $this->module_type = 'valuerc';
         $this->module_name = ucfirst(__('value radar chart', 'live-weather-station'));
-        $this->module_hint = __('Display historical data as radar chart. Particularly suitable for wind data, this graph allows to view the average, maximum and minimum of a measurement according to an angle..', 'live-weather-station');
+        $this->module_hint = __('Display historical data as radar chart. Particularly suitable for wind data, this graph allows to view the average, maximum and minimum of a single measurement according to an angle..', 'live-weather-station');
         $this->module_icon = 'ch fa-lg fa-fw ch-pie-chart-9';
         $this->module_icon_index = 'v';
         $this->layout = '12-3-4';
@@ -86,7 +86,6 @@ class ValueRC extends \WeatherStation\Engine\Module\Maintainer {
             else {
                 $a_group[] = array('content' => $group, 'name' => sprintf(__('Measurement', 'live-weather-station'), $i));
             }
-
         }
         $content .= $this->get_group('yearly-valuerc-datas-measure-group-', $a_group);
         $content .= '</tbody></table>';

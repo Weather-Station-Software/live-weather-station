@@ -5,10 +5,12 @@
 * New: new single and multi stackable bars chart for historical graph (month, meteorological season and year) with tons of options and settings.
 * New: new stackable areas chart for historical graph (month, meteorological season and year) with tons of options and settings.
 * New: new candlestick chart for historical graph (month, meteorological season and year) with tons of options and settings.
-* New: new distribution radar chart for daily graph with tons of options and settings.
-* New: new distribution radar chart for historical graph (month, meteorological season and year) with tons of options and settings.
+* New: new distribution radar chart and value radar chart for daily graph with tons of options and settings.
+* New: new distribution radar chart and value radar chart for historical graph (month, meteorological season and year) with tons of options and settings.
 * New: new angular stream chart for daily graph with tons of options and settings.
 * New: new angular stream chart for historical graph (month, meteorological season and year) with tons of options and settings.
+* New: new bi-line chart for daily graph with tons of options and settings.
+* New: new bi-line chart for historical graph (month, meteorological season and year) with tons of options and settings.
 * Improvement: new value scale for time consistent boundaries in all historical graphs (thanks to Ralf Karpa for the suggestion).
 * Improvement: for historical data compiled in standard mode, middle values are now available .
 * Improvement: with clean gauges, it's now possible to override standard colors for pointer, label, unit and value.
@@ -18,12 +20,14 @@
 * Improvement: all graphs and charts are now compatible with Elementor builder (thanks to Carlos Pedrola for the suggestion).
 * Improvement: for measurements types which doesn't support it, dataset is now hidden in chart select boxes.
 * Improvement: pollution module is now hidden in select boxes when it have no consistent data to show.
-* Improvement: height of calendar heatmap is now optimal regarding the container size.
-* Bug fix: in some old PHP versions, opcache detection may produce unwanted warnings.
+* Improvement: height of calendar heatmap is now optimized regarding the container size.
+* Improvement: popup hint for bar & lines chart now displays dates with a consistent format.
+* Improvement: new colorization method for bar & line chart to improve readability.
+* Bug fix: in some old PHP versions, _opcache_ detection may produce unwanted warnings.
 * Bug fix: the meteorological winter dates may be wrong in some conditions while using sliding seasons as period for historical charts.
 * Bug fix: in some cases and in some timezones the time scale of the daily charts is wrong.
 * Bug fix: gauge is ugly when it references a non-existent module (after replacement or powered-off module).
-* Bug fix: wrong reference to a file (nv.d3.min.js.map) was causing silent errors in the browser when displaying charts without CDN.
+* Bug fix: wrong reference to a file (nv.d3.min.js.map) causes silent errors in the browser when displaying charts without CDN.
 * Bug fix: with some themes, the popup hint may be at a wrong position or have a wrong width.
 * Bug fix: due to the unmaintained OpenWeatherMap API for pollution, the module collection may generate many warnings in the events log.
 
