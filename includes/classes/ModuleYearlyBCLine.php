@@ -22,7 +22,7 @@ class BCLine extends \WeatherStation\Engine\Module\Maintainer {
         self::$module_mode = 'yearly';
         $this->module_type = 'bcline';
         $this->module_name = ucfirst(__('line & bar chart', 'live-weather-station'));
-        $this->module_hint = __('Display historical data as single line and bar chart. Allows to view, side by side on the same graph, two types of measurement.', 'live-weather-station');
+        $this->module_hint = __('Display historical data as single line and bar chart. Allows to view, side by side on the same graph, two types of measurement having different physical dimensions.', 'live-weather-station');
         $this->module_icon = 'ch fa-lg fa-fw ch-bar-chart-7';
         $this->layout = '12-3-4';
         $this->series_number = 2;

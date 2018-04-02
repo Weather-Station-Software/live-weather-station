@@ -35,7 +35,9 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Module\Current\Textual': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentTextual.php'; break;
         case 'WeatherStation\Engine\Module\Daily\AStream': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyAStream.php'; break;
         case 'WeatherStation\Engine\Module\Daily\DistributionRC': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyDistributionRC.php'; break;
+        case 'WeatherStation\Engine\Module\Daily\ValueRC': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyValueRC.php'; break;
         case 'WeatherStation\Engine\Module\Daily\Line': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyLine.php'; break;
+        case 'WeatherStation\Engine\Module\Daily\DoubleLine': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyDoubleLine.php'; break;
         case 'WeatherStation\Engine\Module\Daily\Lines': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyLines.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\AStream': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyAStream.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Bar': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyBar.php'; break;
@@ -45,6 +47,7 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Module\Yearly\CStick': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyCStick.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\DistributionRC': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyDistributionRC.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Line': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyLine.php'; break;
+        case 'WeatherStation\Engine\Module\Yearly\DoubleLine': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyDoubleLine.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Lines': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyLines.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\StackedAreas': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyStackedAreas.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\ValueRC': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyValueRC.php'; break;

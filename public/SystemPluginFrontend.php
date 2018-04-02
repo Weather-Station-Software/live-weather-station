@@ -94,6 +94,7 @@ class Frontend {
         wp_register_script('lws-tween', LWS_PUBLIC_URL.'js/tween.min.js', array(), $this->version, (bool)get_option('live_weather_station_footer_scripts', false));
         wp_register_script('lws-steelseries', LWS_PUBLIC_URL.'js/steelseries.min.js', array('lws-tween'), $this->version, (bool)get_option('live_weather_station_footer_scripts', false));
         wp_register_script('lws-radarchart', LWS_PUBLIC_URL.'js/radarchart.min.js', array('lws-d3'), $this->version, (bool)get_option('live_weather_station_footer_scripts', false));
+        wp_register_script('lws-bilinechart', LWS_PUBLIC_URL.'js/bilinechart.min.js', array('lws-nvd3'), $this->version, (bool)get_option('live_weather_station_footer_scripts', false));
         if ((bool)get_option('live_weather_station_use_cdn')) {
             wp_register_script('lws-clipboard', '//cdn.jsdelivr.net/npm/clipboard@1.5.2/dist/clipboard.min.js', array('jquery'), (bool)get_option('live_weather_station_footer_scripts', false));
             wp_register_script('lws-raphael', '//cdn.jsdelivr.net/npm/raphael@2.1.4/raphael-min.js', array('jquery'), false, (bool)get_option('live_weather_station_footer_scripts', false));

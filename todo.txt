@@ -105,5 +105,5 @@ Verify stackable bar charts errors
 
 Station compatibility list
 
-charts: two-lines, candlestick, windrose
+charts: two-lines, windrose
 
