@@ -1,27 +1,18 @@
 function Windrose() {
 
-    // options which should be accessible via ACCESSORS
     var data = [];
     var options = {
-        margins: {top: 40, right: 80, bottom: 40, left: 40},
-        width: window.innerWidth,
-        widthMax: window.innerWidth,
-        height: window.innerHeight,
-        heightMax: window.innerHeight,
-        innerRadius: 20,
-        resize: false,
+        size: 600,
         scale: 'linear',
-        classed: "lws",
-        color: null,
-        valFormat: '%'
+        classed: 'lws',
+        color: false
     }
 
-    // nodes layered such that radarInvisibleCircles always on top of radarAreas
-    // and tooltip layer is at topmost layer
-    var chart_node;           // parent node for this instance of radarChart
-    var hover_node;           // parent node for invisibleRadarCircles
-    var tooltip_node;         // parent node for tooltip, to keep on top
-    var legend_node;          // parent node for tooltip, to keep on top
+    var chart_node;
+    var hover_node;
+    var tooltip_node;
+    var legend_node;
+    var axisGrid;
 
     // DEFINABLE EVENTS
     // Define with ACCESSOR function chart.events()
@@ -36,6 +27,17 @@ function Windrose() {
         'radarInvisibleCircle': { 'mouseover': tooltip_show, 'mouseout': tooltip_hide, 'mouseclick': null }
     };*/
 
+    var events = {
+        'update': { 'begin': null, 'end': null },
+        'gridCircle': { 'mouseover': null, 'mouseout': null, 'mouseclick': null },
+        'axisLabel': { 'mouseover': null, 'mouseout': null, 'mouseclick': null },
+        'line': { 'mouseover': null, 'mouseout': null, 'mouseclick': null },
+        'legend': { 'mouseover': null, 'mouseout': null, 'mouseclick': null },
+        'axisLegend': { 'mouseover': null, 'mouseout': null, 'mouseclick': null },
+        'radarArea': { 'mouseover': null, 'mouseout': null, 'mouseclick': null },
+        'radarInvisibleCircle': { 'mouseover': null, 'mouseout': null, 'mouseclick': null }
+    };
+
     // functions which should be accessible via ACCESSORS
     var update;
 
@@ -45,16 +47,15 @@ function Windrose() {
 
     // programmatic
     var _data = [];
-    var chartWidth = options.width - options.margins.left - options.margins.right;
-    var chartHeight = options.height - options.margins.top - options.margins.bottom;
-    var outerRadius = (Math.min(chartWidth, chartHeight)/2);
+    var chartSize = options.size - 40;
+    var innerRadius = options.size/30;
+    var outerRadius = (chartSize/2);
     var angle = d4.scaleLinear().range([0, 2 * Math.PI]);
-    var radius = d4.scaleLinear().range([options.innerRadius, outerRadius]);
+    var radius = d4.scaleLinear().range([innerRadius, outerRadius]);
     var x = d4.scaleBand().range([0, 2 * Math.PI]).align(0);
-    var y = d4.scaleLinear().range([options.innerRadius, outerRadius]);
-    var z = d3.scaleOrdinal().range(["#4242f4", "#42c5f4", "#42f4ce", "#42f456", "#adf442", "#f4e242", "#f4a142", "#f44242"]);
+    var y = d4.scaleLinear().range([innerRadius, outerRadius]);
+    var z = d4.scaleOrdinal().range(["#4242f4", "#42c5f4", "#42f4ce", "#42f456", "#adf442", "#f4e242", "#f4a142", "#f44242"]);
     var dom_parent;
-    var Format = d4.format(options.valFormat);
     var transition_time = 0;
 
 
@@ -67,37 +68,23 @@ function Windrose() {
 
 
     if (options.scale != 'linear') {
-        y = d4.scaleRadial().range([options.innerRadius, outerRadius]);
+        y = d4.scaleRadial().range([innerRadius, outerRadius]);
     }
 
     function chart(selection) {
         selection.each(function () {
             dom_parent = d4.select(this);
-            scaleChart();
-
-            //////////// Create the container SVG and children g /////////////
             var svg = dom_parent.append('svg')
                 .attr('overflow', 'visible')
-                .attr('width', options.width)
-                .attr('height', options.height);
+                .attr('width', options.size)
+                .attr('height', options.size)
+                .attr('transform', 'translate(' + options.size / 2 + ',' + options.size / 2 + ')');
 
-
-            //g = svg.append("g").attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
-
-
-            // append parent g for chart
             chart_node = svg.append('g').attr('class', options.classed + 'WindroseNode');
             hover_node = svg.append('g').attr('class', options.classed + 'HoverNode');
             tooltip_node = svg.append('g').attr('class', options.classed + 'TooltipNode');
             legend_node = svg.append("g").attr("class", options.classed + "Legend");
-
-
-
-
-            // Wrapper for the grid & axes
-            //var axisGrid = chart_node.append("g").attr("class", options.classed + "AxisWrapper");
-
-
+            axisGrid = chart_node.append("g").attr("class", options.classed + "AxisWrapper");
 
             tooltip = tooltip_node.append('foreignObject')
                 .attr('class', options.classed + 'Tooltip')
@@ -110,12 +97,102 @@ function Windrose() {
             // update
             update = function() {
 
-                var duration = transition_time;
+                chartSize = options.size - 40;
+                innerRadius = options.size/30;
+                outerRadius = (chartSize/2);
+                angle = d4.scaleLinear().range([0, 2 * Math.PI]);
+                radius = d4.scaleLinear().range([innerRadius, outerRadius]);
+                x = d4.scaleBand().range([0, 2 * Math.PI]).align(0);
+                y = d4.scaleLinear().range([innerRadius, outerRadius]);
+                z = d4.scaleOrdinal().range(["#4242f4", "#42c5f4", "#42f4ce", "#42f456", "#adf442", "#f4e242", "#f4a142", "#f44242"]);
 
-                Format = d4.format(options.valFormat);
+                x.domain(data.map(function(d) { return d.axis; }));
+                y.domain([0, 1]);
+                z.domain(data);
+                angle.domain([0, d4.max(data, function(d,i) { return i + 1; })]);
+                radius.domain([0, d4.max(data, function(d) { return d.y0 + d.y; })]);
+                angleOffset = -360.0/data.length/2.0;
+
+                svg .attr('width', options.size)
+                    .attr('height', options.size)
+                    .attr('transform', 'translate(' + options.size / 2 + ',' + options.size / 2 + ')');
+
+                // Axis
+                axisGrid.selectAll('.axis')
+                    .data(d4.range(angle.domain()[1]))
+                    .enter().append('g')
+                    .attr('class', options.classed + 'Axis')
+                    .attr('transform', function(d) { return 'rotate(' + angle(d) * 180 / Math.PI + ')'; })
+                    .call(d4.axisLeft().tickSize(options.size/75).scale(radius.copy().range([-innerRadius, -(outerRadius+8)])));
+
+                var yAxis = axisGrid.append('g')
+                    .attr('text-anchor', 'middle');
+
+                var yTick = yAxis
+                    .selectAll('g')
+                    .data(y.ticks(5))
+                    .enter().append('g');
+
+                yTick.append('circle')
+                    .attr('fill', 'none')
+                    .attr('stroke-dasharray', '4,4')
+                    .attr('r', y);
+
+                // Labels
+                var label = legend_node.append('g')
+                    .selectAll('g')
+                    .data(data)
+                    .enter().append('g')
+                    .attr('text-anchor', 'middle')
+                    .attr('transform', function(d) { return 'rotate(' + ((x(d.axis) + x.bandwidth() / 2) * 180 / Math.PI - (90-angleOffset)) + ')translate(' + (outerRadius+30) + ',0)'; });
+
+                label.append('text')
+                    .attr('transform', function(d) { return (x(d.axis) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI ? 'rotate(90)translate(0,16)' : 'rotate(-90)translate(0,-9)'; })
+                    .attr('alignment-baseline', 'baseline')
+                    .text(function(d) { return d.axis; });
 
 
 
+                // Sectors
+                chart_node.append("g")
+                    .selectAll("g")
+                    .data(data)
+                    .enter().append("g")
+                    .attr("fill", function(d) { console.log(d);return z(d.values[0]); })
+                    .selectAll("path")
+                    .data(function(d) { return d.values; })
+                    .enter().append("path")
+                    .attr("d", d4.arc()
+                        .innerRadius(function(d) { return y(d[0]); })
+                        .outerRadius(function(d) { return y(d[1]); })
+                        .startAngle(function(d) { return x(d.data[0]); })
+                        .endAngle(function(d) { return x(d.data[0]) + x.bandwidth(); })
+                        .padAngle(0.01)
+                        .padRadius(innerRadius))
+                    .attr("transform", function() {return "rotate("+ angleOffset + ")"});
+
+
+
+
+
+
+                   /*var legend = legend_node.append("g")
+                       .selectAll("g")
+                       .data(data.slice(1).reverse())
+                       .enter().append("g")
+                       .attr("transform", function(d, i) { return "translate(" + (outerRadius+0) + "," + (-outerRadius + 40 +(i - (data.length - 1) / 2) * 20) + ")"; });
+
+                   legend.append("rect")
+                       .attr("width", 18)
+                       .attr("height", 18)
+                       .attr("fill", z);
+
+                   legend.append("text")
+                       .attr("x", 24)
+                       .attr("y", 9)
+                       .attr("dy", "0.35em")
+                       .text(function(d) { return d; })
+                       .style("font-size",12);*/
 
 
 /*
@@ -466,7 +543,7 @@ function Windrose() {
     // ------------------
     // calculate average for sorting, add unique indices for color
     // accounts for data updates and assigns unique colors when possible
-
+/*
     function getAxisLabels(dataArray) {
         return dataArray.length ?
             dataArray[0].values.map(function(i, j) { return i.axis;})
@@ -530,7 +607,7 @@ function Windrose() {
         return options.areas.colors[key] ? options.areas.colors[key] : options.color[index];
     }
     // END REUSABLE FUNCTIONS
-
+*/
     // ACCESSORS
     // ---------
     chart.nodes = function() {
