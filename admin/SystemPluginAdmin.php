@@ -95,25 +95,16 @@ class Admin {
      * @since 3.4.0
      */
     public function register_styles() {
-        wp_register_style('lws-admin', LWS_ADMIN_URL.'css/live-weather-station-admin.min.css', array(), $this->version);
-        wp_register_style('lws-public', LWS_PUBLIC_URL.'css/live-weather-station-public.min.css', array(), $this->version);
-        wp_register_style('lws-font-chart-icons', LWS_PUBLIC_URL.'css/font-chart-icons.min.css', array(), $this->version);
-        wp_register_style('lws-table', LWS_PUBLIC_URL.'css/live-weather-station-table.min.css', array(), $this->version);
-        wp_register_style('lws-lcd', LWS_PUBLIC_URL.'css/lws-lcd.min.css', array(), $this->version);
-        if ((bool)get_option('live_weather_station_use_cdn')) {
-            wp_register_style('lws-font-awesome', '//cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css', array());
-            wp_register_style('lws-weather-icons', '//cdn.jsdelivr.net/npm/weathericons@2.1.0/css/weather-icons.min.css', array());
-            wp_register_style('lws-weather-icons-wind', '//cdn.jsdelivr.net/npm/weathericons@2.1.0/css/weather-icons-wind.min.css', array());
-            wp_register_style('lws-nvd3', '//cdn.jsdelivr.net/npm/nvd3@1.8.6/build/nv.d3.min.css', array());
-            wp_register_style('lws-cal-heatmap', '//cdn.jsdelivr.net/npm/cal-heatmap@3.6.2/cal-heatmap.css', array());
-        }
-        else {
-            wp_register_style('lws-font-awesome', LWS_PUBLIC_URL.'css/font-awesome.min.css', array(), $this->version);
-            wp_register_style('lws-weather-icons', LWS_PUBLIC_URL . 'css/weather-icons.min.css', array(), $this->version);
-            wp_register_style('lws-weather-icons-wind', LWS_PUBLIC_URL . 'css/weather-icons-wind.min.css', array(), $this->version);
-            wp_register_style('lws-nvd3', LWS_PUBLIC_URL.'css/nv.d3.min.css', array(), $this->version);
-            wp_register_style('lws-cal-heatmap', LWS_PUBLIC_URL.'css/cal-heatmap.min.css', array(), $this->version);
-        }
+        lws_register_style('lws-admin', LWS_ADMIN_URL, 'css/live-weather-station-admin.min.css');
+        lws_register_style('lws-public', LWS_PUBLIC_URL, 'css/live-weather-station-public.min.css');
+        lws_register_style('lws-font-chart-icons', LWS_PUBLIC_URL, 'css/font-chart-icons.min.css');
+        lws_register_style('lws-lcd', LWS_PUBLIC_URL, 'css/lws-lcd.min.css');
+        lws_register_style('lws-table', LWS_PUBLIC_URL, 'css/live-weather-station-table.min.css');
+        lws_register_style('lws-font-awesome', LWS_PUBLIC_URL, 'css/font-awesome.min.css');
+        lws_register_style('lws-weather-icons', LWS_PUBLIC_URL, 'css/weather-icons.min.css');
+        lws_register_style('lws-weather-icons-wind', LWS_PUBLIC_URL, 'css/weather-icons-wind.min.css');
+        lws_register_style('lws-nvd3', LWS_PUBLIC_URL, 'css/nv.d3.min.css');
+        lws_register_style('lws-cal-heatmap', LWS_PUBLIC_URL, 'css/cal-heatmap.min.css');
     }
 
     /**
@@ -138,32 +129,23 @@ class Admin {
      * @since 3.4.0
      */
     public function register_scripts() {
-        wp_register_script('lws-admin', LWS_ADMIN_URL.'js/live-weather-station-admin.min.js', array('jquery', 'postbox', 'thickbox'), $this->version);
-        wp_register_script('lws-lcd', LWS_PUBLIC_URL.'js/lws-lcd.min.js', array('jquery'), $this->version);
-        wp_register_script('lws-tween', LWS_PUBLIC_URL.'js/tween.min.js', array(), $this->version);
-        wp_register_script('lws-steelseries', LWS_PUBLIC_URL.'js/steelseries.min.js', array('lws-tween'), $this->version);
-        wp_register_script('lws-radarchart', LWS_PUBLIC_URL.'js/radarchart.min.js', array('lws-d3'), $this->version);
-        wp_register_script('lws-bilinechart', LWS_PUBLIC_URL.'js/bilinechart.min.js', array('lws-nvd3'), $this->version);
-        if ((bool)get_option('live_weather_station_use_cdn')) {
-            wp_register_script('lws-clipboard', '//cdn.jsdelivr.net/npm/clipboard@1.5.2/dist/clipboard.min.js', array('jquery'));
-            wp_register_script('lws-raphael', '//cdn.jsdelivr.net/npm/raphael@2.1.4/raphael-min.js', array('jquery'));
-            wp_register_script('lws-justgage', '//cdn.jsdelivr.net/npm/justgage@1.2.2/justgage.js', array('lws-raphael'));
-            wp_register_script('lws-d3', '//cdn.jsdelivr.net/npm/d3@3.5.17/d3.min.js', array('jquery'));
-            wp_register_script('lws-nvd3', '//cdn.jsdelivr.net/npm/nvd3@1.8.6/build/nv.d3.min.js', array('lws-d3'));
-            wp_register_script('lws-cal-heatmap', '//cdn.jsdelivr.net/npm/cal-heatmap@3.6.2/cal-heatmap.min.js', array('lws-d3'));
-            wp_register_script('lws-colorbrewer', '//cdn.jsdelivr.net/npm/colorbrewer@1.0.0/colorbrewer.js', array());
-            wp_register_script('lws-spin', '//cdn.jsdelivr.net/npm/spin.js@2.3.2/spin.min.js', array());
-        }
-        else {
-            wp_register_script('lws-clipboard', LWS_ADMIN_URL.'js/clipboard.min.js', array('jquery'), $this->version);
-            wp_register_script('lws-raphael', LWS_PUBLIC_URL.'js/raphael.min.js', array('jquery'), $this->version);
-            wp_register_script('lws-justgage', LWS_PUBLIC_URL.'js/justgage.min.js', array('lws-raphael'), $this->version);
-            wp_register_script('lws-d3', LWS_PUBLIC_URL.'js/d3.v3.min.js', array('jquery'), $this->version);
-            wp_register_script('lws-nvd3', LWS_PUBLIC_URL.'js/nv.d3.v3.min.js', array('lws-d3'), $this->version);
-            wp_register_script('lws-cal-heatmap', LWS_PUBLIC_URL.'js/cal-heatmap.min.js', array('lws-d3'), $this->version);
-            wp_register_script('lws-colorbrewer', LWS_PUBLIC_URL.'js/colorbrewer.min.js', array(), $this->version);
-            wp_register_script('lws-spin', LWS_PUBLIC_URL.'js/spin.min.js', array(), $this->version);
-        }
+        lws_register_script('lws-admin', LWS_ADMIN_URL, 'js/live-weather-station-admin.min.js');
+        lws_register_script('lws-lcd', LWS_PUBLIC_URL, 'js/lws-lcd.min.js', array('jquery'));
+        lws_register_script('lws-tween', LWS_PUBLIC_URL, 'js/tween.min.js');
+        lws_register_script('lws-steelseries', LWS_PUBLIC_URL, 'js/steelseries.min.js', array('lws-tween'));
+        lws_register_script('lws-radarchart', LWS_PUBLIC_URL, 'js/radarchart.min.js', array('lws-d3'));
+        lws_register_script('lws-bilinechart', LWS_PUBLIC_URL, 'js/bilinechart.min.js', array('lws-nvd3'));
+        lws_register_script('lws-scale-radial', LWS_PUBLIC_URL, 'js/d3-scale-radial.min.js');
+        lws_register_script('lws-windrose', LWS_PUBLIC_URL, 'js/windrose.min.js', array('lws-d3', 'lws-scale-radial'));
+        lws_register_script('lws-clipboard', LWS_ADMIN_URL , 'js/clipboard.min.js', array('jquery'));
+        lws_register_script('lws-raphael', LWS_PUBLIC_URL , 'js/raphael.min.js', array('jquery'));
+        lws_register_script('lws-justgage', LWS_PUBLIC_URL , 'js/justgage.min.js', array('lws-raphael'));
+        lws_register_script('lws-d3', LWS_PUBLIC_URL , 'js/d3.v3.min.js', array('jquery'));
+        lws_register_script('lws-d4', LWS_PUBLIC_URL , 'js/d3.v4.min.js', array('jquery'));
+        lws_register_script('lws-nvd3', LWS_PUBLIC_URL , 'js/nv.d3.v3.min.js', array('lws-d3'));
+        lws_register_script('lws-cal-heatmap', LWS_PUBLIC_URL , 'js/cal-heatmap.min.js', array('lws-d3'));
+        lws_register_script('lws-colorbrewer', LWS_PUBLIC_URL , 'js/colorbrewer.min.js');
+        lws_register_script('lws-spin', LWS_PUBLIC_URL , 'js/spin.min.js');
     }
 
     /**

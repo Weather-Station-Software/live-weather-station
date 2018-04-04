@@ -99,11 +99,12 @@ History collection
 * 3.5.0               *
 ***********************
 
-$timeconsistent for all yearly graphs + verify sareas . daily ?
-
 Verify stackable bar charts errors
 
 Station compatibility list
 
-charts: two-lines, windrose
+charts: windrose
+verify label in value radar chart
+verify tooltip on mobile
+Undefined index: "set" on line 1569
 

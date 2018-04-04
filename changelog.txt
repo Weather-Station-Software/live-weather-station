@@ -11,7 +11,7 @@
 * New: new angular stream chart for historical graph (month, meteorological season and year) with tons of options and settings.
 * New: new bi-line chart for daily graph with tons of options and settings.
 * New: new bi-line chart for historical graph (month, meteorological season and year) with tons of options and settings.
-* Improvement: new value scale for time consistent boundaries in all historical graphs (thanks to Ralf Karpa for the suggestion).
+* Improvement: new value scale for time consistent boundaries in all daily and historical graphs supporting it (thanks to Ralf Karpa for the suggestion).
 * Improvement: for historical data compiled in standard mode, middle values are now available .
 * Improvement: with clean gauges, it's now possible to override standard colors for pointer, label, unit and value.
 * Improvement: the station list view have now a new column for direct access to shortcodes wizard.
@@ -19,10 +19,12 @@
 * Improvement: interactive hint (in lines charts) is improved for small screens and finger pointing (thanks to Damien Maillet for the suggestion).
 * Improvement: all graphs and charts are now compatible with Elementor builder (thanks to Carlos Pedrola for the suggestion).
 * Improvement: for measurements types which doesn't support it, dataset is now hidden in chart select boxes.
+* Improvement: the bar & line chart now supports value scale parameter (only for line, for bar it's always automatic).
 * Improvement: pollution module is now hidden in select boxes when it have no consistent data to show.
 * Improvement: height of calendar heatmap is now optimized regarding the container size.
 * Improvement: popup hint for bar & lines chart now displays dates with a consistent format.
 * Improvement: new colorization method for bar & line chart to improve readability.
+* Improvement: all scripts and stylesheets (including own plugin assets) can now be loaded from external CDN (settings in *system* tab).
 * Bug fix: in some old PHP versions, _opcache_ detection may produce unwanted warnings.
 * Bug fix: the meteorological winter dates may be wrong in some conditions while using sliding seasons as period for historical charts.
 * Bug fix: in some cases and in some timezones the time scale of the daily charts is wrong.

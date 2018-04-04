@@ -799,7 +799,7 @@ abstract class Maintainer {
             $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").change(function() {';
             $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '" ).change();});';
         }
-        if ($this->module_type == 'lines' || $this->module_type == 'bars' || $this->module_type == 'sareas' || $this->module_type == 'astream' || $this->module_type == 'distributionrc' || $this->module_type == 'valuerc') {
+        if ($this->module_type == 'lines' || $this->module_type == 'bars' || $this->module_type == 'sareas' || $this->module_type == 'windrose' || $this->module_type == 'astream' || $this->module_type == 'distributionrc' || $this->module_type == 'valuerc') {
             $content .= '$("#' . $name . '-datas-dimension-' .$this->station_guid . '").change(function() {';
             for ($i=1; $i<=$this->series_number; $i++) {
                 $content .= '$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . ' option[value=\'0\']").attr("selected", true);';
@@ -814,10 +814,10 @@ abstract class Maintainer {
             if ($this->module_type == 'lines' || $this->module_type == 'bars' || $this->module_type == 'sareas') {
                 $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+" "+((js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] != $("#' . $name . '-datas-dimension-' . $this->station_guid . '").val() && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none") ? "disabled" : "")+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
             }
-            elseif (($this->module_type == 'astream' && $i == 1) || ($this->module_type == 'valuerc' && $i == 1) || $this->module_type == 'distributionrc') {
+            elseif (($this->module_type == 'windrose' && $i == 1) || ($this->module_type == 'astream' && $i == 1) || ($this->module_type == 'valuerc' && $i == 1) || $this->module_type == 'distributionrc') {
                 $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+" "+((js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] != "angle" && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none") ? "disabled" : "")+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
             }
-            elseif (($this->module_type == 'astream' && $i != 1) || ($this->module_type == 'valuerc' && $i != 1)) {
+            elseif (($this->module_type == 'windrose' && $i != 1) || ($this->module_type == 'astream' && $i != 1) || ($this->module_type == 'valuerc' && $i != 1)) {
                 $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+" "+(((js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] == "angle" || js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] == "rain_day_aggregated" || js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] == "strike_count") && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none") ? "disabled" : "")+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
             }
             else {
