@@ -3015,7 +3015,6 @@ trait Output {
             if ($prop['nv-axis-domain'] != '') {
                 $result .= '#' . $svg . ' .nvd3 .nv-axis path.domain {' . $prop['nv-axis-domain'] . '}' . PHP_EOL;
             }
-
             if ($prop['nv-axis-line'] != '') {
                 $result .= '#' . $svg . ' .nvd3 .nv-axis line {' . $prop['nv-axis-line'] . '}' . PHP_EOL;
             }
@@ -3669,66 +3668,48 @@ trait Output {
             switch ($height) {
                 case '150px':
                     $titlestyle = 'display:none;';
-                    $clevel=2;
-                    $size = 140;
-                    $tmargin = 10;
-                    $linewidth = 1;
+                    $size = 150;
                     break;
                 case '200px':
                     $clevel=3;
                     if ($label == 'none') {
                         $titlestyle = 'display:none;';
-                        $size = 190;
-                        $tmargin = 10;
+                        $size = 200;
                     }
                     else {
-                        $titlestyle .= 'padding-top:10px;';
-                        $size = 170;
-                        $tmargin = 10;
+                        $titlestyle .= 'padding-top:4px;';
+                        $size = 180;
                     }
-                    $linewidth = 1;
                     break;
                 case '300px':
-                    $clevel=4;
                     if ($label == 'none') {
                         $titlestyle = 'display:none;';
-                        $size = 260;
-                        $tmargin = 38;
+                        $size = 300;
                     }
                     else {
-                        $titlestyle .= 'padding-top:36px;';
-                        $size = 236;
-                        $tmargin = 36;
+                        $titlestyle .= 'padding-top:6px;';
+                        $size = 274;
                     }
-                    $linewidth = 2;
                     break;
                 case '400px':
-                    $clevel=5;
                     if ($label == 'none') {
                         $titlestyle = 'display:none;';
-                        $size = 350;
-                        $tmargin = 44;
+                        $size = 400;
                     }
                     else {
-                        $titlestyle .= 'padding-top:42px;';
-                        $size = 320;
-                        $tmargin = 42;
+                        $titlestyle .= 'padding-top:8px;';
+                        $size = 370;
                     }
-                    $linewidth = 2;
                     break;
                 case '555px':
-                    $clevel=6;
                     if ($label == 'none') {
                         $titlestyle = 'display:none;';
-                        $size = 490;
-                        $tmargin = 60;
+                        $size = 550;
                     }
                     else {
-                        $titlestyle .= 'padding-top:60px;';
-                        $size = 450;
-                        $tmargin = 60;
+                        $titlestyle .= 'padding-top:9px;';
+                        $size = 526;
                     }
-                    $linewidth = 2;
                     break;
                 default:
                     $titlestyle = '';
@@ -3746,7 +3727,16 @@ trait Output {
             $result .= '<style type="text/css">' . PHP_EOL;
             $result .= '#' . $titl . ' {' . $titlestyle . '}' . PHP_EOL;
             if ($prop['text'] != '') {
-                $result .= '#' . $svg . ' text {' . $prop['text'] . '}' . PHP_EOL;
+                $result .= '#' . $svg . ' .lwsLegend text {' . $prop['text'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axis-domain'] != '') {
+                $result .= '#' . $svg . ' .lwsAxis path.domain {' . $prop['nv-axis-domain'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axis-line'] != '') {
+                $result .= '#' . $svg . ' .lwsAxisWrapper circle {' . $prop['nv-axis-line'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axislabel'] != '') {
+                $result .= '#' . $svg . ' .lwsAxisWrapper text {' . $prop['nv-axislabel'] . '}' . PHP_EOL;
             }
             $result .= '</style>' . PHP_EOL;
             // BEGIN MAIN BODY
@@ -3761,11 +3751,8 @@ trait Output {
             }
             if (isset($values) && isset($values['extras']) && isset($values['extras'][0])) {
                 $body .= '      var chartOption' . $uniq . ' = {' . PHP_EOL;
-                $body .= '            width: ' . $size . ',' . PHP_EOL;
-                $body .= '            widthMax: ' . $size . ',' . PHP_EOL;
-                $body .= '            height: ' . $size . ',' . PHP_EOL;
-                $body .= '            heightMax: ' . $size . ',' . PHP_EOL;
-                $body .= '            valFormat: "' . $values['extras'][0]['format'] . '",' . PHP_EOL;
+                $body .= '            size: ' . $size . ',' . PHP_EOL;
+                //$body .= '            valFormat: "' . $values['extras'][0]['format'] . '",' . PHP_EOL;
                 //$body .= '            valUnit: "' . $values['extras'][0]['unit'] . '",' . PHP_EOL;
                 //$body .= '            margins: {top: ' . $tmargin . ',right: 0,bottom: 0,left: 0},' . PHP_EOL;
                 //$body .= '            circles: {levels: ' . $clevel . ',maxValue: 0,labelFactor: 1.25,opacity: 0.1,fill: "' . $linecolor . '",color: "' . $linecolor . '"},' . PHP_EOL;
@@ -3804,7 +3791,39 @@ trait Output {
         $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         if ($data == 'inline') {
-            $result .= '    var data'.$uniq.' =' . $values['values'] . ';' . PHP_EOL;
+            if ($type == 'windrose') {
+                $result .= '    var data'.$uniq.' =[{"axis":"N","values":[0.1,0.2,0]},{"axis":"NE","values":[0.1,0.2,0]},{"axis":"E","values":[0.1,0.2,0]},{"axis":"SE","values":[0.1,0.2,0]},{"axis":"S","values":[0.1,0.2,0]},{"axis":"SW","values":[0.1,0.2,0]},{"axis":"W","values":[0.1,0.2,0]},{"axis":"NW","values":[0.1,0.2,0]}];' . PHP_EOL;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            }
+            else {
+                $result .= '    var data'.$uniq.' =' . $values['values'] . ';' . PHP_EOL;
+            }
             $result .= $body;
         }
         elseif ($data == 'ajax' || $data == 'ajax_refresh') {
