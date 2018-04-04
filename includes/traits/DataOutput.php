@@ -952,6 +952,12 @@ trait Output {
                                 }
                                 $sql_angle = "SELECT `timestamp`, `module_type`, " . $val . " FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $set . " ORDER BY `timestamp` ASC;";
                                 $angles = $wpdb->get_results($sql_angle, ARRAY_A);
+                                if (count($angles) > 0) {
+                                    $module_type = $angles[0]['module_type'];
+                                }
+                                else {
+                                    $module_type = 'NAMain';
+                                }
                                 $arg['line'] = array();
                                 foreach ($angles as $angle) {
                                     $v = 0;
@@ -1533,22 +1539,39 @@ trait Output {
                     }
                 }
             }
-            if ($valuescale == 'consistent' && $mode == 'yearly') {
+            if ($valuescale == 'consistent') {
+                $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
                 if ($type == 'cstick') {
                     $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='min';";
                     $query = $wpdb->get_results($sql, ARRAY_A);
                     $ymin = $query[0]['min_val'];
-                    $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='min';";
+                    $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='max';";
                     $query = $wpdb->get_results($sql, ARRAY_A);
                     $ymax = $query[0]['max_val'];
+                }
+                elseif ($type == 'doubleline' || $type == 'bcline') {
+                    $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND `measure_set`='min';";
+                    $query = $wpdb->get_results($sql, ARRAY_A);
+                    $result['extras'][0]['ydomain']['min'] = $query[0]['min_val'];
+                    $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND `measure_set`='max';";
+                    $query = $wpdb->get_results($sql, ARRAY_A);
+                    $result['extras'][0]['ydomain']['max'] = $query[0]['max_val'];
+                    $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND `measure_set`='min';";
+                    $query = $wpdb->get_results($sql, ARRAY_A);
+                    $result['extras'][1]['ydomain']['min'] = $query[0]['min_val'];
+                    $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND `measure_set`='max';";
+                    $query = $wpdb->get_results($sql, ARRAY_A);
+                    $result['extras'][1]['ydomain']['max'] = $query[0]['max_val'];
                 }
                 else {
                     foreach ($args as $arg) {
                         if (strpos($arg['module_id'], ':') == 2) {
-                            $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val, MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='" . $arg['set'] . "';";
                             try {
+                                $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='min';";
                                 $query = $wpdb->get_results($sql, ARRAY_A);
                                 $min = $query[0]['min_val'];
+                                $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='max';";
+                                $query = $wpdb->get_results($sql, ARRAY_A);
                                 $max = $query[0]['max_val'];
                                 if ($min < $ymin) {
                                     $ymin = $min;
@@ -1571,7 +1594,6 @@ trait Output {
                     $cmin *= count($args);
                     $cmax *= count($args);
                 }
-
             }
             $result['ydomain']['min'] = $ymin;
             $result['ydomain']['max'] = $ymax;
@@ -1783,26 +1805,26 @@ trait Output {
     /**
      * Get the Y domain boundaries.
      *
-     * @param array $values The values.
+     * @param array $domain The values domain.
      * @param string $valuescale The type of scale.
      * @return array The domain boundaries.
-     * @since 3.4.0
+     * @since 3.5.0
      */
-    private function graph_domain($values, $valuescale) {
-        $ymin = $values['ydomain']['min'];
-        $ymax = $values['ydomain']['max'];
+    private function graph_domain_per_domain($domain, $valuescale) {
+        $ymin = $domain['min'];
+        $ymax = $domain['max'];
         switch ($valuescale) {
             case 'fixed':
                 $ymin = $ymin - (($ymax-$ymin)/6);
                 $ymax = $ymax + (($ymax-$ymin)/6);
                 break;
             case 'boundaries':
-                $ymin = $values['ydomain']['dmin'];
-                $ymax = $values['ydomain']['dmax'];
+                $ymin = $domain['dmin'];
+                $ymax = $domain['dmax'];
                 break;
             case 'alarm':
-                $ymin = $values['ydomain']['amin'];
-                $ymax = $values['ydomain']['amax'];
+                $ymin = $domain['amin'];
+                $ymax = $domain['amax'];
                 break;
             case 'percentage':
                 $ymin = 0;
@@ -1829,6 +1851,18 @@ trait Output {
         $result['min'] = $ymin;
         $result['max'] = $ymax;
         return $result;
+    }
+
+    /**
+     * Get the Y domain boundaries.
+     *
+     * @param array $values The values.
+     * @param string $valuescale The type of scale.
+     * @return array The domain boundaries.
+     * @since 3.4.0
+     */
+    private function graph_domain($values, $valuescale) {
+        return $this->graph_domain_per_domain($values['ydomain'], $valuescale);
     }
 
     /**
@@ -1864,10 +1898,11 @@ trait Output {
      * @param string $valuescale The type of scale.
      * @param string $measurement The measurement.
      * @param string $height The height of the graph.
+     * @param int $forcefactor Optional. Forces ticks number.
      * @return array The Y ticks.
      * @since 3.4.0
      */
-    private function graph_ticks($domain, $valuescale, $measurement, $height) {
+    private function graph_ticks($domain, $valuescale, $measurement, $height, $forcefactor=0) {
         $amplitude = $domain['max'] - $domain['min'];
         $size = $this->graph_size($height);
         $small = $size == 'small';
@@ -1893,6 +1928,9 @@ trait Output {
             }
             if ($large) {
                 $factor = 10 ;
+            }
+            if ($forcefactor > 0) {
+                $factor = $forcefactor;
             }
             $step = (int)(floor($amplitude/$factor));
             if ($step == 0) {
@@ -2322,7 +2360,7 @@ trait Output {
         }
         $measurement1 = '';
         $measurement2 = '';
-        if ($type != 'distributionrc' && $type != 'valuerc') {
+        if ($type != 'distributionrc' && $type != 'valuerc' && $type != 'doubleline') {
             if (array_key_exists('measurement', $items[1])) {
                 $measurement1 = $items[1]['measurement'];
             } else {
@@ -2351,8 +2389,10 @@ trait Output {
         }
         $fixed_timescale = ($timescale != 'adaptative');
         $valuescale = $_attributes['valuescale'];
+        $valuescale2 = $valuescale;
         if ($valuescale == 'auto') {
             $valuescale = $this->graph_valuescale($measurement1);
+            $valuescale2 = $this->graph_valuescale($measurement2);
         }
         $fixed_valuescale = ($valuescale != 'adaptative');
 
@@ -3125,6 +3165,22 @@ trait Output {
             wp_enqueue_script('lws-colorbrewer');
             wp_enqueue_script('lws-spin');
             wp_enqueue_script('lws-bilinechart');
+            $forcefactor = 2;
+            if ($height > 300) {
+                $forcefactor = 3;
+            }
+            if ($height > 400) {
+                $forcefactor = 4;
+            }
+            $domain1 = $this->graph_domain_per_domain($values['extras'][0]['ydomain'],$valuescale);
+            if (array_key_exists(1, $values['extras'])) {
+                $domain2 = $this->graph_domain_per_domain($values['extras'][1]['ydomain'],$valuescale2);
+            }
+            else {
+                $domain2 = $domain1;
+            }
+            $ticks1 = $this->graph_ticks($domain1, $valuescale, $measurement1, $height, $forcefactor);
+            $ticks2 = $this->graph_ticks($domain2, $valuescale2, $measurement2, $height, $forcefactor);
             $legendColors = array();
             if ($color == 'self') {
                 $col = new ColorsManipulation($prop['fg_color']);
@@ -3163,8 +3219,7 @@ trait Output {
                 $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:first-of-type text {text-anchor: start !important;}' . PHP_EOL;
                 $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:last-of-type text {text-anchor: end !important;}' . PHP_EOL;
             }
-            $result .= '#' . $svg . ' .nvd3 .nv-y2 .nv-axisMax-y text {text-anchor: end !important;dominant-baseline:text-before-edge !important;}' . PHP_EOL;
-            $result .= '#' . $svg . ' .nvd3 .nv-y2 .nv-axisMin-y text {text-anchor: end !important;dominant-baseline:text-after-edge !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-y2 .nv-wrap g .tick text {text-anchor: end !important;}' . PHP_EOL;
             $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dashed-line {stroke-dasharray:10,10 !important;}' . PHP_EOL;
             $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dotted-line {stroke-dasharray:2,2 !important;}' . PHP_EOL;
             $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-thin-line {stroke-width: 1 !important;}' . PHP_EOL;
@@ -3237,6 +3292,8 @@ trait Output {
             if ($fixed_timescale) {
                 $body .= '           .xDomain([minDomain'.$uniq.', maxDomain'.$uniq.'])' . PHP_EOL;
             }
+            $body .= '      .yDomain1([' . $domain1['min'] . ',' . $domain1['max'].'])' . PHP_EOL;
+            $body .= '      .yDomain2([' . $domain2['min'] . ',' . $domain2['max'].'])' . PHP_EOL;
             $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
             if ($color != 'self') {
                 $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
@@ -3273,10 +3330,11 @@ trait Output {
             $body .= '      chart'.$uniq.'.legendRightAxisHint("");' . PHP_EOL;
             $body .= '      chart'.$uniq.'.yAxis1.tickFormat(function(d) { return d + " ' . $values['extras'][0]['unit']['unit'] . '"; });' . PHP_EOL;
             $body .= '      chart'.$uniq.'.yAxis1.showMaxMin(false);';
+            $body .= '      chart'.$uniq.'.yAxis1.tickValues([' . implode(', ', $ticks1).']);' . PHP_EOL;
             $body .= '      chart'.$uniq.'.yAxis2.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
             $body .= '      chart'.$uniq.'.yAxis2.tickPadding(-6);' . PHP_EOL;
-            $body .= '      chart'.$uniq.'.yAxis2.showMaxMin(true);';
-            $body .= '      chart'.$uniq.'.yAxis2.tickValues([]);' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.yAxis2.showMaxMin(false);';
+            $body .= '      chart'.$uniq.'.yAxis2.tickValues([' . implode(', ', $ticks2).']);' . PHP_EOL;
             $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
             $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
             $body .= '      return chart'.$uniq.';' . PHP_EOL;
@@ -3289,6 +3347,22 @@ trait Output {
             wp_enqueue_script('lws-nvd3');
             wp_enqueue_script('lws-colorbrewer');
             wp_enqueue_script('lws-spin');
+            $forcefactor = 2;
+            if ($height > 300) {
+                $forcefactor = 3;
+            }
+            if ($height > 400) {
+                $forcefactor = 4;
+            }
+            $domain1 = $this->graph_domain_per_domain($values['extras'][0]['ydomain'],$valuescale);
+            if (array_key_exists(1, $values['extras'])) {
+                $domain2 = $this->graph_domain_per_domain($values['extras'][1]['ydomain'],$valuescale2);
+            }
+            else {
+                $domain2 = $domain1;
+            }
+            //$ticks1 = $this->graph_ticks($domain1, $valuescale, $measurement1, $height, $forcefactor);
+            $ticks2 = $this->graph_ticks($domain2, $valuescale2, $measurement2, $height, $forcefactor);
             if ($mode == 'daily') {
                 $specialtimeformat = '%Y-%m-%d %H:%M';
             }
@@ -3390,6 +3464,7 @@ trait Output {
             if ($fixed_timescale) {
                 $body .= '               .xDomain([minDomain'.$uniq.', maxDomain'.$uniq.'])' . PHP_EOL;
             }
+            $body .= '      .yDomain([' . $domain2['min'] . ',' . $domain2['max'].'])' . PHP_EOL;
             if ($color == 'self') {
                 // DONE BY COLOR KEY
             }
@@ -3430,6 +3505,7 @@ trait Output {
             $body .= '      chart'.$uniq.'.y2Axis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
             $body .= '      chart'.$uniq.'.y2Axis.tickPadding(-6);' . PHP_EOL;
             $body .= '      chart'.$uniq.'.y2Axis.showMaxMin(false);';
+            $body .= '      chart'.$uniq.'.y2Axis.tickValues([' . implode(', ', $ticks2).']);' . PHP_EOL;
             $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
             $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
             $body .= '      return chart'.$uniq.';' . PHP_EOL;
@@ -3577,6 +3653,140 @@ trait Output {
             // END MAIN BODY
         }
 
+        if ($type == 'windrose') {
+            wp_enqueue_script('lws-d3');
+            wp_enqueue_script('lws-scale-radial');
+            wp_enqueue_script('lws-windrose');
+            wp_enqueue_script('lws-colorbrewer');
+            wp_enqueue_script('lws-spin');
+            $titlestyle = $prop['nv-axislabel'];
+            $atitlestyle = $prop['text'];
+            $atitlestyle = str_replace(';fill:', ';color:', $atitlestyle);
+            $linecolor = $prop['nv-axis-line'];
+            $linecolor = str_replace('stroke: ', '', $linecolor);
+            $linecolor = str_replace(';', '', $linecolor);
+            $inner_height = (int)$height;
+            switch ($height) {
+                case '150px':
+                    $titlestyle = 'display:none;';
+                    $clevel=2;
+                    $size = 140;
+                    $tmargin = 10;
+                    $linewidth = 1;
+                    break;
+                case '200px':
+                    $clevel=3;
+                    if ($label == 'none') {
+                        $titlestyle = 'display:none;';
+                        $size = 190;
+                        $tmargin = 10;
+                    }
+                    else {
+                        $titlestyle .= 'padding-top:10px;';
+                        $size = 170;
+                        $tmargin = 10;
+                    }
+                    $linewidth = 1;
+                    break;
+                case '300px':
+                    $clevel=4;
+                    if ($label == 'none') {
+                        $titlestyle = 'display:none;';
+                        $size = 260;
+                        $tmargin = 38;
+                    }
+                    else {
+                        $titlestyle .= 'padding-top:36px;';
+                        $size = 236;
+                        $tmargin = 36;
+                    }
+                    $linewidth = 2;
+                    break;
+                case '400px':
+                    $clevel=5;
+                    if ($label == 'none') {
+                        $titlestyle = 'display:none;';
+                        $size = 350;
+                        $tmargin = 44;
+                    }
+                    else {
+                        $titlestyle .= 'padding-top:42px;';
+                        $size = 320;
+                        $tmargin = 42;
+                    }
+                    $linewidth = 2;
+                    break;
+                case '555px':
+                    $clevel=6;
+                    if ($label == 'none') {
+                        $titlestyle = 'display:none;';
+                        $size = 490;
+                        $tmargin = 60;
+                    }
+                    else {
+                        $titlestyle .= 'padding-top:60px;';
+                        $size = 450;
+                        $tmargin = 60;
+                    }
+                    $linewidth = 2;
+                    break;
+                default:
+                    $titlestyle = '';
+                    $clevel=6;
+            }
+            $inner_height = $inner_height . 'px';
+            $legendColors = array();
+            if ($color == 'self') {
+                $col = new ColorsManipulation($prop['fg_color']);
+                $col_array = $col->makeSteppedGradient($cpt, 50);
+                foreach ($col_array as $c) {
+                    $legendColors[] = '"#' . $c . '"';
+                }
+            }
+            $result .= '<style type="text/css">' . PHP_EOL;
+            $result .= '#' . $titl . ' {' . $titlestyle . '}' . PHP_EOL;
+            if ($prop['text'] != '') {
+                $result .= '#' . $svg . ' text {' . $prop['text'] . '}' . PHP_EOL;
+            }
+            $result .= '</style>' . PHP_EOL;
+            // BEGIN MAIN BODY
+            if ($color != 'self') {
+                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+            }
+            else {
+                $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
+            }
+            if ($inverted) {
+                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
+            }
+            if (isset($values) && isset($values['extras']) && isset($values['extras'][0])) {
+                $body .= '      var chartOption' . $uniq . ' = {' . PHP_EOL;
+                $body .= '            width: ' . $size . ',' . PHP_EOL;
+                $body .= '            widthMax: ' . $size . ',' . PHP_EOL;
+                $body .= '            height: ' . $size . ',' . PHP_EOL;
+                $body .= '            heightMax: ' . $size . ',' . PHP_EOL;
+                $body .= '            valFormat: "' . $values['extras'][0]['format'] . '",' . PHP_EOL;
+                //$body .= '            valUnit: "' . $values['extras'][0]['unit'] . '",' . PHP_EOL;
+                //$body .= '            margins: {top: ' . $tmargin . ',right: 0,bottom: 0,left: 0},' . PHP_EOL;
+                //$body .= '            circles: {levels: ' . $clevel . ',maxValue: 0,labelFactor: 1.25,opacity: 0.1,fill: "' . $linecolor . '",color: "' . $linecolor . '"},' . PHP_EOL;
+                if ($type == 'valuerc') {
+                    //$body .= '            axes: {display: true,threshold: 90,lineColor: "' . $prop['bg_color'] . '",lineWidth: "' . $linewidth . 'px",wrapWidth: 60,filter: [],invert: [],ranges: {' . $values['extras'][0]['range'] . '}},' . PHP_EOL;
+                } else {
+                    //$body .= '            axes: {display: true,threshold: 90,lineColor: "' . $prop['bg_color'] . '",lineWidth: "' . $linewidth . 'px",wrapWidth: 60,filter: [],invert: [],ranges: {}},' . PHP_EOL;
+                }
+                //$body .= '            areas: {colors: {},opacity: 0.35,borderWidth: ' . (string)($linewidth + 1) . ',rounded: ' . $interpolation . ',dotRadius:' . (string)($linewidth + 1) . ',sort: true,topfilter: []},' . PHP_EOL;
+                if ($type_guideline == 'standard') {
+                    //$body .= '               filter_id: false,' . PHP_EOL;
+                    //$body .= '               filter: false,' . PHP_EOL;
+                }
+                $body .= '            color: color' . $uniq . '}' . PHP_EOL;
+                $body .= '      var chart' . $uniq . ' = Windrose();' . PHP_EOL;
+                $body .= '        d3.select("#' . $svg . '").call(chart' . $uniq . ');' . PHP_EOL;
+                $body .= '        chart' . $uniq . '.options(chartOption' . $uniq . ').data(data' . $uniq . ').update();' . PHP_EOL;
+            }
+            /// END MAIN BODY
+        }
+
 
         // FINAL RENDER
 
@@ -3584,7 +3794,7 @@ trait Output {
         if ($type == 'calendarhm') {
             $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:14px 14px 14px 14px;height: ' . $height . ';text-align: center;line-height: 1em;"><div id="' . $calendar . '" style="display: inline-block;"></div>' . $label_txt . '</div>' . PHP_EOL;
         }
-        elseif ($type == 'distributionrc' || $type == 'valuerc') {
+        elseif ($type == 'distributionrc' || $type == 'valuerc' || $type == 'windrose') {
             $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';width: ' . $height . ';display:inline-block;text-align:center;overflow: hidden;' . $atitlestyle . '"><div id="' . $svg . '"></div><div id="' . $titl . '">' . $label_txt . '</div></div>' . PHP_EOL;
         }
         else {

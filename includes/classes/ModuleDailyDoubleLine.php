@@ -81,6 +81,7 @@ class DoubleLine extends \WeatherStation\Engine\Module\Maintainer {
             }
         }
         $content .= $this->get_group('daily-doubleline-datas-measure-group-', $a_group);
+        $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
         return $this->get_box('lws-datasource-id', $this->datasource_title, $content);
     }
@@ -99,7 +100,7 @@ class DoubleLine extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_key_value_option_select('daily-doubleline-datas-guideline-'. $this->station_guid, __('Hint', 'live-weather-station'), $this->get_guideline_js_array(), true, 'standard', false, false);
         $content .= $this->get_key_value_option_select('daily-doubleline-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
         $content .= $this->get_key_value_option_select('daily-doubleline-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(), true, 'auto');
-        $content .= $this->get_key_value_option_select('daily-doubleline-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true), true, 'auto', false, false);
+        $content .= $this->get_key_value_option_select('daily-doubleline-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true), true, 'auto');
         $content .= $this->get_key_value_option_select('daily-doubleline-datas-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_interpolation_js_array(), true, 'none');
         $content .= $this->get_key_value_option_select('daily-doubleline-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
         $content .= '</tbody></table>';

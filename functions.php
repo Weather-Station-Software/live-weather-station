@@ -170,3 +170,47 @@ function lws_array_super_unique($array, $key){
     $array = array_values($temp_array);
     return $array;
 }
+
+/**
+ * Registers (but don't enqueues) a style asset of the plugin.
+ *
+ * Regarding user's option, asset is ready to enqueue from local plugin dir or from CDN (jsDelivr)
+ *
+ * @since 3.5.0
+ */
+function lws_register_style($handle, $source, $file, $deps = array()) {
+    if ((bool)get_option('live_weather_station_use_cdn')) {
+        if ($source == LWS_ADMIN_URL) {
+            $file = '//cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/admin/' . $file;
+        }
+        else {
+            $file = '//cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/public/' . $file;
+        }
+        wp_register_style($handle, $file, $deps);
+    }
+    else {
+        wp_register_style($handle, $source . $file, $deps, LWS_VERSION);
+    }
+}
+
+/**
+ * Registers (but don't enqueues) a script asset of the plugin.
+ *
+ * Regarding user's option, asset is ready to enqueue from local plugin dir or from CDN (jsDelivr)
+ *
+ * @since 3.5.0
+ */
+function lws_register_script($handle, $source, $file, $deps = array()) {
+    if ((bool)get_option('live_weather_station_use_cdn')) {
+        if ($source == LWS_ADMIN_URL) {
+            $file = '//cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/admin/' . $file;
+        }
+        else {
+            $file = '//cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/public/' . $file;
+        }
+        wp_register_script($handle, $file, $deps, false, (bool)get_option('live_weather_station_footer_scripts', false));
+    }
+    else {
+        wp_register_script($handle, $source . $file, $deps, LWS_VERSION, (bool)get_option('live_weather_station_footer_scripts', false));
+    }
+}

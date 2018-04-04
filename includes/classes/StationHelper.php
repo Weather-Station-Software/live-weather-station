@@ -23,6 +23,7 @@ use WeatherStation\Engine\Module\Daily\ValueRC as DailyValueRC;
 use WeatherStation\Engine\Module\Daily\Line as DailyLine;
 use WeatherStation\Engine\Module\Daily\DoubleLine as DailyDoubleLine;
 use WeatherStation\Engine\Module\Daily\Lines as DailyLines;
+use WeatherStation\Engine\Module\Daily\Windrose as DailyWindrose;
 use WeatherStation\Engine\Module\Yearly\AStream as YearlyAStream;
 use WeatherStation\Engine\Module\Yearly\CStick as YearlyCStick;
 use WeatherStation\Engine\Module\Yearly\Line as YearlyLine;
@@ -35,6 +36,7 @@ use WeatherStation\Engine\Module\Yearly\DistributionRC as YearlyDistributionRC;
 use WeatherStation\Engine\Module\Yearly\ValueRC as YearlyValueRC;
 use WeatherStation\Engine\Module\Yearly\Lines as YearlyLines;
 use WeatherStation\Engine\Module\Yearly\StackedAreas as YearlyStackedAreas;
+use WeatherStation\Engine\Module\Yearly\Windrose as YearlyWindrose;
 
 
 
@@ -88,6 +90,7 @@ class Handling {
         DailyLine::register_module('daily');
         DailyLines::register_module('daily');
         DailyDoubleLine::register_module('daily');
+        DailyWindrose::register_module('daily');
         DailyDistributionRC::register_module('daily');
         DailyValueRC::register_module('daily');
         DailyAStream::register_module('daily');
@@ -100,6 +103,7 @@ class Handling {
         YearlyBCLine::register_module('yearly');
         YearlyCalendarHM::register_module('yearly');
         YearlyStackedAreas::register_module('yearly');
+        YearlyWindrose::register_module('yearly');
         YearlyDistributionRC::register_module('yearly');
         YearlyValueRC::register_module('yearly');
         YearlyAStream::register_module('yearly');

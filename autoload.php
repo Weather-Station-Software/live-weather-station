@@ -39,6 +39,7 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Module\Daily\Line': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyLine.php'; break;
         case 'WeatherStation\Engine\Module\Daily\DoubleLine': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyDoubleLine.php'; break;
         case 'WeatherStation\Engine\Module\Daily\Lines': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyLines.php'; break;
+        case 'WeatherStation\Engine\Module\Daily\Windrose': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyWindrose.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\AStream': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyAStream.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Bar': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyBar.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Bars': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyBars.php'; break;
@@ -51,6 +52,7 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Module\Yearly\Lines': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyLines.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\StackedAreas': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyStackedAreas.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\ValueRC': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyValueRC.php'; break;
+        case 'WeatherStation\Engine\Module\Yearly\Windrose': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyWindrose.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\TXTGenerator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneAbstractTXTGenerator.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Framework': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneFramework.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Generator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneGenerator.php'; break;
