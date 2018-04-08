@@ -1650,6 +1650,19 @@ trait Generator {
     }
 
     /**
+     * Get guideline array.
+     *
+     * @return array An array containing the guideline ready to convert to a JS array.
+     * @since 3.4.0
+     */
+    protected function get_legend_js_array() {
+        $result = array();
+        $result[] = array('standard',  __('Not displayed', 'live-weather-station'));
+        $result[] = array('interactive',  __('Displayed', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
      * Get bar group array.
      *
      * @return array An array containing the groups ready to convert to a JS array.
@@ -1678,6 +1691,20 @@ trait Generator {
     }
 
     /**
+     * Get legend array.
+     *
+     * @return array An array containing the groups ready to convert to a JS array.
+     * @since 3.5.0
+     */
+    protected function get_legend_group_js_array() {
+        $result = array();
+        $result[] = array('stacked',  __('Stacked', 'live-weather-station'));
+        //$result[] = array('stream',  __('Stream', 'live-weather-station'));
+        $result[] = array('expanded',  __('Expanded', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
      * Get stacked areas group array.
      *
      * @return array An array containing the groups ready to convert to a JS array.
@@ -1691,9 +1718,9 @@ trait Generator {
     }
 
     /**
-     * Get guideline array.
+     * Get  array.
      *
-     * @return array An array containing the guideline ready to convert to a JS array.
+     * @return array An array containing the  ready to convert to a JS array.
      * @since 3.4.0
      */
     protected function get_legend_position_js_array() {
@@ -1790,12 +1817,12 @@ trait Generator {
     }
 
     /**
-     * Get time scale array.
+     * Get value scale array.
      *
-     * @return array An array containing the time scale options ready to convert to a JS array.
+     * @return array An array containing the value scale options ready to convert to a JS array.
      * @since 3.4.0
      */
-    protected function get_y_scale_js_array($time_consistent=false) {
+    protected function get_y_scale_js_array($time_consistent=false, $windrose=false) {
         $result = array();
         $result[] = array('auto',  __('Automatic', 'live-weather-station'));
         $result[] = array('adaptative',  __('Adaptative', 'live-weather-station'));
@@ -1803,11 +1830,26 @@ trait Generator {
             $result[] = array('consistent',  __('Time consistent', 'live-weather-station'));
         }
         $result[] = array('fixed',  __('Fixed', 'live-weather-station'));
-        $result[] = array('boundaries',  __('Thresholds limits', 'live-weather-station'));
-        $result[] = array('alarm',  __('Thresholds alarms', 'live-weather-station'));
-        $result[] = array('top',  __('0-based - top', 'live-weather-station'));
-        $result[] = array('bottom',  __('0-based - bottom', 'live-weather-station'));
-        $result[] = array('none',  __('None', 'live-weather-station'));
+        if (!$windrose) {
+            $result[] = array('boundaries',  __('Thresholds limits', 'live-weather-station'));
+            $result[] = array('alarm',  __('Thresholds alarms', 'live-weather-station'));
+            $result[] = array('top',  __('0-based - top', 'live-weather-station'));
+            $result[] = array('bottom',  __('0-based - bottom', 'live-weather-station'));
+            $result[] = array('none',  __('None', 'live-weather-station'));
+        }
+        return $result;
+    }
+
+    /**
+     * Get windrose scale array.
+     *
+     * @return array An array containing the windrose scale options ready to convert to a JS array.
+     * @since 3.5.0
+     */
+    protected function get_windrose_scale_js_array() {
+        $result = array();
+        $result[] = array('linear',  __('Linear', 'live-weather-station'));
+        $result[] = array('radial',  __('Radial', 'live-weather-station'));
         return $result;
     }
 
@@ -2036,7 +2078,7 @@ trait Generator {
      * @return array An array containing ColorBrewer options ready to convert to a JS array.
      * @since 3.4.0
      */
-    protected function get_colorbrewer_js_array($self=false, $sequential=true, $diverging=true, $qualitative=true, $inverted=true) {
+    protected function get_colorbrewer_js_array($self=false, $sequential=true, $diverging=true, $qualitative=true, $inverted=true, $standard=false) {
         $result = array();
         $sep = '-';
         $dsq =  __('sequential', 'live-weather-station');
@@ -2055,10 +2097,13 @@ trait Generator {
         $gr =  __('Grey', 'live-weather-station');
         $pi =  __('Pink', 'live-weather-station');
         $sp =  __('Spectral', 'live-weather-station');
+        if ($standard) {
+            $result[] = array('std', '- ' . __('International wind standard', 'live-weather-station') . ' -');
+        }
         if ($self) {
-            $result[] = array('self', ' -' . __('Template color', 'live-weather-station') . ' -');
-            if (!$qualitative) {
-                $result[] = array('i_self', ' -' . __('Template color', 'live-weather-station') . ' (' . $r . ') -');
+            $result[] = array('self', '- ' . __('Template color', 'live-weather-station') . ' -');
+            if ($inverted) {
+                $result[] = array('i_self', '- ' . __('Template color', 'live-weather-station') . ' (' . $r . ') -');
             }
         }
         if ($sequential) {

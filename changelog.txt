@@ -19,12 +19,15 @@
 * Improvement: interactive hint (in lines charts) is improved for small screens and finger pointing (thanks to Damien Maillet for the suggestion).
 * Improvement: all graphs and charts are now compatible with Elementor builder (thanks to Carlos Pedrola for the suggestion).
 * Improvement: for measurements types which doesn't support it, dataset is now hidden in chart select boxes.
+* Improvement: charts now support the inversion of the "template color" scheme.
 * Improvement: the bar & line chart now supports value scale parameter (only for line, for bar it's always automatic).
 * Improvement: pollution module is now hidden in select boxes when it have no consistent data to show.
 * Improvement: height of calendar heatmap is now optimized regarding the container size.
 * Improvement: popup hint for bar & lines chart now displays dates with a consistent format.
 * Improvement: new colorization method for bar & line chart to improve readability.
 * Improvement: all scripts and stylesheets (including own plugin assets) can now be loaded from external CDN (settings in *system* tab).
+* Improvement: streamlined color management for graph with a single time serie.
+* Improvement: consistency in color inversion for graphs with more than one time serie.
 * Bug fix: in some old PHP versions, _opcache_ detection may produce unwanted warnings.
 * Bug fix: the meteorological winter dates may be wrong in some conditions while using sliding seasons as period for historical charts.
 * Bug fix: in some cases and in some timezones the time scale of the daily charts is wrong.

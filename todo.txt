@@ -103,6 +103,8 @@ Verify stackable bar charts errors
 
 Station compatibility list
 
+Chart for station comparison
+
 charts: windrose
 verify label in value radar chart
 verify tooltip on mobile

@@ -3,6 +3,8 @@ function Windrose() {
     var data = [];
     var options = {
         size: 600,
+        legend: false,
+        fixed: false,
         scale: 'linear',
         classed: 'lws',
         color: false
@@ -47,6 +49,10 @@ function Windrose() {
 
     // programmatic
     var _data = [];
+    var standard = ["#4242f4", "#42c5f4", "#42f4ce", "#42f456", "#adf442", "#f4e242", "#f4a142", "#f44242"];
+    var series = [];
+    var legend = [];
+    var showLegend = options.legend;
     var chartSize = options.size - 40;
     var innerRadius = options.size/30;
     var outerRadius = (chartSize/2);
@@ -54,7 +60,7 @@ function Windrose() {
     var radius = d4.scaleLinear().range([innerRadius, outerRadius]);
     var x = d4.scaleBand().range([0, 2 * Math.PI]).align(0);
     var y = d4.scaleLinear().range([innerRadius, outerRadius]);
-    var z = d4.scaleOrdinal().range(["#4242f4", "#42c5f4", "#42f4ce", "#42f456", "#adf442", "#f4e242", "#f4a142", "#f44242"]);
+    var z = d4.scaleOrdinal().range(standard);
     var dom_parent;
     var transition_time = 0;
 
@@ -74,6 +80,8 @@ function Windrose() {
     function chart(selection) {
         selection.each(function () {
             dom_parent = d4.select(this);
+            series = data.series;
+            legend = data.legend;
             var svg = dom_parent.append('svg')
                 .attr('overflow', 'visible')
                 .attr('width', options.size)
@@ -81,10 +89,13 @@ function Windrose() {
                 .attr('transform', 'translate(' + options.size / 2 + ',' + options.size / 2 + ')');
 
             chart_node = svg.append('g').attr('class', options.classed + 'WindroseNode');
+            axisGrid = svg.append("g").attr("class", options.classed + "AxisWrapper");
+            legend_node = svg.append("g").attr("class", options.classed + "Legend");
             hover_node = svg.append('g').attr('class', options.classed + 'HoverNode');
             tooltip_node = svg.append('g').attr('class', options.classed + 'TooltipNode');
-            legend_node = svg.append("g").attr("class", options.classed + "Legend");
-            axisGrid = chart_node.append("g").attr("class", options.classed + "AxisWrapper");
+
+
+
 
             tooltip = tooltip_node.append('foreignObject')
                 .attr('class', options.classed + 'Tooltip')
@@ -97,6 +108,9 @@ function Windrose() {
             // update
             update = function() {
 
+                series = data.series;
+                legend = data.legend;
+                showLegend = options.legend;
                 chartSize = options.size - 40;
                 innerRadius = options.size/30;
                 outerRadius = (chartSize/2);
@@ -104,14 +118,37 @@ function Windrose() {
                 radius = d4.scaleLinear().range([innerRadius, outerRadius]);
                 x = d4.scaleBand().range([0, 2 * Math.PI]).align(0);
                 y = d4.scaleLinear().range([innerRadius, outerRadius]);
-                z = d4.scaleOrdinal().range(["#4242f4", "#42c5f4", "#42f4ce", "#42f456", "#adf442", "#f4e242", "#f4a142", "#f44242"]);
+                if (options.scale != 'linear') {
+                    y = d4.scaleRadial().range([innerRadius, outerRadius]);
+                }
+                if (options.color) {
+                    z = d4.scaleOrdinal().range(options.color);
+                }
+                else {
+                    z = d4.scaleOrdinal().range(standard.slice(0, series[0].values.length));
+                }
+                x.domain(series.map(function(d) { return d.axis; }));
+                z.domain(legend);
+                if (options.fixed) {
+                    y.domain([0, 0.5]);
+                }
+                else {
+                    max=0;
+                    series.forEach(function(serie) {
+                        m = 0;
+                        serie.values.forEach(function(value) {
+                            m += value;
+                        });
+                        if (m > max) {
+                            max = m;
+                        }
+                    });
+                    y.domain([0, max]);
+                }
 
-                x.domain(data.map(function(d) { return d.axis; }));
-                y.domain([0, 1]);
-                z.domain(data);
-                angle.domain([0, d4.max(data, function(d,i) { return i + 1; })]);
-                radius.domain([0, d4.max(data, function(d) { return d.y0 + d.y; })]);
-                angleOffset = -360.0/data.length/2.0;
+                angle.domain([0, d4.max(series, function(d,i) { return i + 1; })]);
+                radius.domain([0, d4.max(series, function(d) { return d.y0 + d.y; })]);
+                angleOffset = -360.0/series.length/2.0;
 
                 svg .attr('width', options.size)
                     .attr('height', options.size)
@@ -141,7 +178,7 @@ function Windrose() {
                 // Labels
                 var label = legend_node.append('g')
                     .selectAll('g')
-                    .data(data)
+                    .data(series)
                     .enter().append('g')
                     .attr('text-anchor', 'middle')
                     .attr('transform', function(d) { return 'rotate(' + ((x(d.axis) + x.bandwidth() / 2) * 180 / Math.PI - (90-angleOffset)) + ')translate(' + (outerRadius+30) + ',0)'; });
@@ -151,390 +188,73 @@ function Windrose() {
                     .attr('alignment-baseline', 'baseline')
                     .text(function(d) { return d.axis; });
 
+                // Legend
+                if (showLegend) {
+                    var rect = outerRadius/30;
+                    var shift = rect + 4;
+                    var font = rect + 2;
+                    var fontx = rect * 1.7 ;
+                    var fonty = fontx / 3.4 ;
+                    var line = legend_node.append('g')
+                        .selectAll('g')
+                        .data(legend)
+                        .enter().append('g')
+                        .attr('transform', function(d, i) { return 'translate(' + (-outerRadius - 30) + ',' + (outerRadius + 18 - i * shift) + ')'; });
 
+                    line.append('rect')
+                        .attr('width', rect)
+                        .attr('height', rect)
+                        .attr('fill', z);
+
+                    line.append('text')
+                        .attr('x', fontx)
+                        .attr('y', fonty)
+                        .attr('dy', '0.35em')
+                        .text(function(d) { return d; })
+                        .style('font-size', font);
+                }
 
                 // Sectors
-                chart_node.append("g")
-                    .selectAll("g")
-                    .data(data)
-                    .enter().append("g")
-                    .attr("fill", function(d) { console.log(d);return z(d.values[0]); })
-                    .selectAll("path")
-                    .data(function(d) { return d.values; })
-                    .enter().append("path")
-                    .attr("d", d4.arc()
-                        .innerRadius(function(d) { return y(d[0]); })
-                        .outerRadius(function(d) { return y(d[1]); })
-                        .startAngle(function(d) { return x(d.data[0]); })
-                        .endAngle(function(d) { return x(d.data[0]) + x.bandwidth(); })
-                        .padAngle(0.01)
-                        .padRadius(innerRadius))
-                    .attr("transform", function() {return "rotate("+ angleOffset + ")"});
+
+                var root = chart_node.append("g")
+                    .attr('class', options.classed + 'PieWrapper');
 
 
+                for (var index = 0; index < series[0].values.length; index++) {
+                    var pie = root.append('g')
+                        .attr('class', options.classed + 'Pie');
+
+                    for (var ang = 0; ang < series.length; ang++) {
+                        if (index === 0) {
+                            innerY = y(0);
+                            outerY = y(series[ang].values[0]);
+                        }
+                        else {
+                            var cpt = 0;
+                            for (var i = 0; i < index; i++) {
+                                cpt = cpt + series[ang].values[i]
+                            }
+                            innerY = y(cpt);
+                            cpt = 0;
+                            for (var j = 0; j <= index; j++) {
+                                cpt = cpt + series[ang].values[j]
+                            }
+                            outerY = y(cpt);
+                        }
+                        pie.append("path")
+                            .attr("fill", z(index))
+                            .attr("d", d4.arc()
+                                .innerRadius(innerY)
+                                .outerRadius(outerY)
+                                .startAngle(x(series[ang].axis))
+                                .endAngle(x(series[ang].axis) + x.bandwidth())
+                                .padAngle(0.01)
+                                .padRadius(innerRadius))
 
 
-
-
-                   /*var legend = legend_node.append("g")
-                       .selectAll("g")
-                       .data(data.slice(1).reverse())
-                       .enter().append("g")
-                       .attr("transform", function(d, i) { return "translate(" + (outerRadius+0) + "," + (-outerRadius + 40 +(i - (data.length - 1) / 2) * 20) + ")"; });
-
-                   legend.append("rect")
-                       .attr("width", 18)
-                       .attr("height", 18)
-                       .attr("fill", z);
-
-                   legend.append("text")
-                       .attr("x", 24)
-                       .attr("y", 9)
-                       .attr("dy", "0.35em")
-                       .text(function(d) { return d; })
-                       .style("font-size",12);*/
-
-
-/*
-                keys = _data.map(function(m) { return m.key; });
-                keyScale = d4.scale.ordinal()
-                    .domain(_data.map(function(m) { return m._i; }))
-                    .range(_data.map(function(m) { return m.key; }));
-                colorScale = d4.scale.ordinal()
-                    .domain(_data.map(function(m) {
-                        return options.areas.colors[keyScale(m._i)] ?
-                            keyScale(m._i)
-                            : m._i.toString();
-                    }))
-                    .range(_data.map(function(m) { return setColor(m); }));
-
-                svg.transition().delay(delay).duration(duration)
-                    .attr('width', options.width)
-                    .attr('height', options.height)
-
-                chart_node.transition().delay(delay).duration(duration)
-                    .attr('width', options.width)
-                    .attr('height', options.height)
-                    .attr("transform",
-                        "translate(" + ((options.width - (options.margins.left + options.margins.right)) / 2 + options.margins.left) + ","
-                        + ((options.height - (options.margins.top + options.margins.bottom)) / 2 + options.margins.top) + ")")
-                hover_node.transition().delay(delay).duration(duration)
-                    .attr('width', options.width)
-                    .attr('height', options.height)
-                    .attr("transform",
-                        "translate(" + ((options.width - (options.margins.left + options.margins.right)) / 2 + options.margins.left) + ","
-                        + ((options.height - (options.margins.top + options.margins.bottom)) / 2 + options.margins.top) + ")")
-                tooltip_node.transition().delay(delay).duration(duration)
-                    .attr('width', options.width)
-                    .attr('height', options.height)
-                    .attr("transform",
-                        "translate(" + ((options.width - (options.margins.left + options.margins.right)) / 2 + options.margins.left) + ","
-                        + ((options.height - (options.margins.top + options.margins.bottom)) / 2 + options.margins.top) + ")")
-
-                legend_node
-                    .attr("transform", "translate(" + options.legend.position.x + "," + options.legend.position.y + ")");
-
-                var update_gridCircles = axisGrid.selectAll("." + options.classed + "GridCircle")
-                    .data(d4.range(1, (options.circles.levels + 1)).reverse())
-
-                update_gridCircles
-                    .transition().duration(duration)
-                    .attr("r", function(d, i) { return radial_calcs.radius / options.circles.levels * d; })
-                    .style("fill", options.circles.fill)
-                    .style("fill-opacity", options.circles.opacity)
-                    .style("stroke", options.circles.color)
-                    .style("filter" , function() { if (options.filter) return "url(#" + options.filter + ")" });
-
-                update_gridCircles.enter()
-                    .append("circle")
-                    .attr("class", options.classed + "GridCircle")
-                    .attr("r", function(d, i) { return radial_calcs.radius / options.circles.levels * d; })
-                    .on('mouseover', function(d, i) { if (events.gridCircle.mouseover) events.gridCircle.mouseover(d, i); })
-                    .on('mouseout', function(d, i) { if (events.gridCircle.mouseout) events.gridCircle.mouseout(d, i); })
-                    .style("fill", options.circles.fill)
-                    .style("fill-opacity", options.circles.opacity)
-                    .style("stroke", options.circles.color)
-                    .style("filter" , function() { if (options.filter) return "url(#" + options.filter + ")" });
-
-                update_gridCircles.exit()
-                    .transition().duration(duration * .5)
-                    .delay(function(d, i) { return 0; })
-                    .remove();
-
-                var update_axisLabels = axisGrid.selectAll("." + options.classed + "AxisLabel")
-                    .data(d4.range(1, (options.circles.levels + 1)).reverse())
-
-                update_axisLabels
-                    .transition().duration(duration / 2)
-                    .style('opacity', 1) // don't change to 0 if there has been no change in dimensions! possible??
-                    .transition().duration(duration / 2)
-                    .text(function(d, i) { if (radial_calcs.maxValue) return Format(options.correctAdd + (options.correctMul * radial_calcs.maxValue * d / options.circles.levels)) + options.valUnit; })
-                    .attr("y", function(d) { return -d * radial_calcs.radius / options.circles.levels; })
-                    .style('opacity', 1)
-
-                update_axisLabels.enter()
-                    .append("text")
-                    .attr("class", options.classed + "AxisLabel")
-                    .attr("x", 4)
-                    .attr("y", function(d) { return -d * radial_calcs.radius / options.circles.levels; })
-                    .attr("dy", "0.4em")
-                    .style("font-size", "10px")
-                    .attr("fill", "#737373")
-                    .on('mouseover', function(d, i) { if (events.axisLabel.mouseover) events.axisLabel.mouseover(d, i); })
-                    .on('mouseout', function(d, i) { if (events.axisLabel.mouseout) events.axisLabel.mouseout(d, i); })
-                    .text(function(d, i) { if (radial_calcs.maxValue) return Format(options.correctAdd + (options.correctMul * radial_calcs.maxValue * d / options.circles.levels)) + options.valUnit; });
-
-                update_axisLabels.exit()
-                    .transition().duration(duration * .5)
-                    .remove();
-
-                var update_axes = axisGrid.selectAll("." + options.classed + "Axis")
-                    .data(radial_calcs.axes, get_axis)
-
-                update_axes
-                    .enter().append("g")
-                    .attr("class", options.classed + "Axis")
-                    .attr("key", function(d) { return d.axis; });
-
-                update_axes.exit()
-                    .transition().duration(duration)
-                    .style('opacity', 0)
-                    .remove()
-
-                var update_lines = update_axes.selectAll("." + options.classed + "Line")
-                    .data(function(d) { return [d]; }, get_axis)
-
-                update_lines.enter()
-                    .append("line")
-                    .attr("class", options.classed + "Line")
-                    .attr("x1", 0)
-                    .attr("y1", 0)
-                    .attr("x2", function(d, i, j) { return calcX(null, 1.1, j); })
-                    .attr("y2", function(d, i, j) { return calcY(null, 1.1, j); })
-                    .on('mouseover', function(d, i, j) { if (events.line.mouseover) events.line.mouseover(d, j); })
-                    .on('mouseout', function(d, i, j) { if (events.line.mouseout) events.line.mouseout(d, j); })
-                    .style("stroke", options.axes.lineColor)
-                    .style("stroke-width", "2px")
-
-                update_lines.exit()
-                    .transition().duration(duration * .5)
-                    .delay(function(d, i) { return 0; })
-                    .remove();
-
-                update_lines
-                    .transition().duration(duration)
-                    .style("stroke", options.axes.lineColor)
-                    .style("stroke-width", options.axes.lineWidth)
-                    .attr("x2", function(d, i, j) { return calcX(null, 1.1, j); })
-                    .attr("y2", function(d, i, j) { return calcY(null, 1.1, j); })
-
-                var update_axis_legends = update_axes.selectAll("." + options.classed + "AxisLegend")
-                    .data(function(d) { return [d]; }, get_axis)
-
-                update_axis_legends.enter()
-                    .append("text")
-                    .attr("class", options.classed + "AxisLegend")
-                    .style("font-size", options.axes.fontWidth)
-                    .attr("text-anchor", "middle")
-                    .attr("dy", "0.35em")
-                    .attr("x", function(d, i, j) { return calcX(null, options.circles.labelFactor, j); })
-                    .attr("y", function(d, i, j) { return calcY(null, options.circles.labelFactor, j); })
-                    .style('opacity', function(d, i) { return options.axes.display ? 1 : 0})
-                    .on('mouseover', function(d, i, j) { if (events.axisLegend.mouseover) events.axisLegend.mouseover(d, i, j); })
-                    .on('mouseout', function(d, i, j) { if (events.axisLegend.mouseout) events.axisLegend.mouseout(d, i, j); })
-                    .call(wrap, options.axes.wrapWidth)
-
-                update_axis_legends.exit()
-                    .transition().duration(duration * .5)
-                    .delay(function(d, i) { return 0; })
-                    .remove();
-
-                update_axis_legends
-                    .transition().duration(duration)
-                    .style('opacity', function(d, i) {
-                        return options.axes.display && radial_calcs.radius > options.axes.threshold ? 1 : 0
-                    })
-                    .attr("x", function(d, i, j) { return calcX(null, options.circles.labelFactor, j); })
-                    .attr("y", function(d, i, j) { return calcY(null, options.circles.labelFactor, j); })
-                    .selectAll('tspan')
-                    .attr("x", function(d, i, j) { return calcX(null, options.circles.labelFactor, j); })
-                    .attr("y", function(d, i, j) { return calcY(null, options.circles.labelFactor, j); })
-
-                var radarLine = d4.svg.line.radial()
-                    .interpolate( options.areas.rounded ?
-                        "cardinal-closed" :
-                        "linear-closed" )
-                    .radius(function(d) { return radial_calcs.rScale(d.value); })
-                    .angle(function(d,i) { return i * radial_calcs.angleSlice; });
-
-                var update_blobWrapper = chart_node.selectAll("." + options.classed + "RadarWrapper")
-                    .data(_data, get_key)
-
-                update_blobWrapper.enter()
-                    .append("g")
-                    .attr("class", options.classed + "RadarWrapper")
-                    .attr("key", function(d) { return d.key; });
-
-                update_blobWrapper.exit()
-                    .transition().duration(duration)
-                    .style('opacity', 0)
-                    .remove()
-
-                update_blobWrapper
-                    .style("fill-opacity", function(d, i) {
-                        return options.areas.filter.indexOf(d.key) >= 0 ? 0 : options.areas.opacity;
-                    })
-
-                var update_radarArea = update_blobWrapper.selectAll('.' + options.classed + 'RadarArea')
-                    .data(function(d) { return [d]; }, get_key);
-
-                update_radarArea.enter()
-                    .append("path")
-                    .attr("class", function(d) { return options.classed + "RadarArea " + d.key.replace(/\s+/g, '') })
-                    .attr("d", function(d, i) { return radarLine(d.values); })
-                    .style("fill", function(d, i, j) { return setColor(d); })
-                    .style("fill-opacity", 0)
-                    .on('mouseover', function(d, i) { if (events.radarArea.mouseover) events.radarArea.mouseover(d, i, this); })
-                    .on('mouseout', function(d, i) { if (events.radarArea.mouseout) events.radarArea.mouseout(d, i, this); })
-
-                update_radarArea.exit().remove()
-
-                update_radarArea
-                    .transition().duration(duration)
-                    .style("fill", function(d, i, j) { return setColor(d); })
-                    .attr("d", function(d, i) { return radarLine(d.values); })
-                    .style("fill-opacity", function(d, i) {
-                        return options.areas.filter.indexOf(d.key) >= 0 ? 0 : options.areas.opacity;
-                    })
-
-                var update_radarStroke = update_blobWrapper.selectAll('.' + options.classed + 'RadarStroke')
-                    .data(function(d) { return [d]; }, get_key);
-
-                update_radarStroke.enter()
-                    .append("path")
-                    .attr("class", options.classed + "RadarStroke")
-                    .attr("d", function(d, i) { return radarLine(d.values); })
-                    .style("opacity", 0)
-                    .style("stroke-width", options.areas.borderWidth + "px")
-                    .style("stroke", function(d, i, j) { return setColor(d); })
-                    .style("fill", "none")
-                    .style("filter" , function() { if (options.filter) return "url(#" + options.filter + ")" });
-
-                update_radarStroke.exit().remove();
-
-                update_radarStroke
-                    .transition().duration(duration)
-                    .style("stroke", function(d, i, j) { return setColor(d); })
-                    .attr("d", function(d, i) { return radarLine(d.values); })
-                    .style("filter" , function() { if (options.filter) return "url(#" + options.filter + ")" })
-                    .style("opacity", function(d, i) {
-                        return options.areas.filter.indexOf(d.key) >= 0 ? 0 : 1;
-                    });
-
-                update_radarCircle = update_blobWrapper.selectAll('.' + options.classed + 'RadarCircle')
-                    .data(function(d, i) { return add_index(d._i, d.key, d.values) });
-
-                update_radarCircle.enter()
-                    .append("circle")
-                    .attr("class", options.classed + "RadarCircle")
-                    .attr("r", options.areas.dotRadius)
-                    .attr("cx", function(d, i, j){ return calcX(0, 0, i); })
-                    .attr("cy", function(d, i, j){ return calcY(0, 0, i); })
-                    .style("fill", function(d, i, j) { return setColor(d, d._i, _data[j].key); })
-                    .style("fill-opacity", function(d, i) { return 0; })
-                    .transition().duration(duration)
-                    .attr("cx", function(d, i, j){ return calcX(d.value, 0, i); })
-                    .attr("cy", function(d, i, j){ return calcY(d.value, 0, i); })
-
-                update_radarCircle.exit().remove();
-
-                update_radarCircle
-                    .transition().duration(duration)
-                    .style("fill", function(d, i, j) { return setColor(d, d._i, _data[j].key); })
-                    .style("fill-opacity", function(d, i, j) {
-                        var key = _data.map(function(m) {return m.key})[j];
-                        return options.areas.filter.indexOf(key) >= 0 ? 0 : 0.8;
-                    })
-                    .attr("r", options.areas.dotRadius)
-                    .attr("cx", function(d, i){ return calcX(d.value, 0, i); })
-                    .attr("cy", function(d, i){ return calcY(d.value, 0, i); })
-
-                var update_blobCircleWrapper = hover_node.selectAll("." + options.classed + "RadarCircleWrapper")
-                    .data(_data, get_key)
-
-                update_blobCircleWrapper.enter()
-                    .append("g")
-                    .attr("class", options.classed + "RadarCircleWrapper")
-                    .attr("key", function(d) { return d.key; });
-
-                update_blobCircleWrapper.exit()
-                    .transition().duration(duration)
-                    .style('opacity', 0)
-                    .remove()
-
-                update_radarInvisibleCircle = update_blobCircleWrapper.selectAll("." + options.classed + "RadarInvisibleCircle")
-                    .data(function(d, i) { return add_index(d._i, d.key, d.values); });
-
-                update_radarInvisibleCircle.enter()
-                    .append("circle")
-                    .attr("class", options.classed + "RadarInvisibleCircle")
-                    .attr("r", options.areas.dotRadius * 1.5)
-                    .attr("cx", function(d, i){ return calcX(d.value, 0, i); })
-                    .attr("cy", function(d, i){ return calcY(d.value, 0, i); })
-                    .style("fill", "none")
-                    .style("pointer-events", "all")
-                    .on('mouseover', function(d, i) {
-                        if (events.radarInvisibleCircle.mouseover) events.radarInvisibleCircle.mouseover(d, i, this);
-                    })
-                    .on("mouseout", function(d, i) {
-                        if (events.radarInvisibleCircle.mouseout) events.radarInvisibleCircle.mouseout(d, i, this);
-                    })
-
-                update_radarInvisibleCircle.exit().remove();
-
-                update_radarInvisibleCircle
-                    .attr("cx", function(d, i){ return calcX(d.value, 0, i); })
-                    .attr("cy", function(d, i){ return calcY(d.value, 0, i); })
-
-                if (options.legend.display) {
-                    var shape = d4.svg.symbol().type(options.legend.symbol).size(150)();
-                    var colorScale = d4.scale.ordinal()
-                        .domain(_data.map(function(m) { return m._i; }))
-                        .range(_data.map(function(m) { return setColor(m); }));
-
-                    if (d4.legend) {
-                        var legendOrdinal = d4.legend.color()
-                            .shape("path", shape)
-                            .shapePadding(10)
-                            .scale(colorScale)
-                            .labels(colorScale.domain().map(function(m) { return keyScale(m); } ))
-                            .on("cellclick", function(d, i) {
-                                if (events.legend.mouseclick) events.legend.mouseclick(d, i, this);
-                            })
-                            .on("cellover", function(d, i) {
-                                if (events.legend.mouseover) events.legend.mouseover(d, i, this);
-                            })
-                            .on("cellout", function(d, i) {
-                                if (events.legend.mouseout) events.legend.mouseout(d, i, this);
-                            });
-
-                        legend_node
-                            .call(legendOrdinal);
-
-                        legend_node.selectAll('.cell')
-                            .attr('gen', function(d, i) {
-                                if (legend_toggles[d] == true) {
-                                    var shape = d4.svg.symbol().type(options.legend.toggle).size(150)()
-                                } else {
-                                    var shape = d4.svg.symbol().type(options.legend.symbol).size(150)()
-                                }
-                                d4.select(this).select('path').attr('d', function() { return shape; });
-                                return legend_toggles[d];
-                            });
-
+                            .attr("transform", "rotate("+ angleOffset + ")");
                     }
                 }
-*/
             }
         });
     }
@@ -610,7 +330,7 @@ function Windrose() {
 */
     // ACCESSORS
     // ---------
-    chart.nodes = function() {
+  /*  chart.nodes = function() {
         return { svg: svg, chart: chart_node, hover: hover_node, tooltip: tooltip_node, legend: legend_node };
     }
 
@@ -651,7 +371,7 @@ function Windrose() {
         transition_time = value;
         return chart;
     }
-
+*/
     chart.update = function() {
         if (events.update.begin) events.update.begin(_data);
         if (typeof update === 'function') update();
@@ -670,7 +390,7 @@ function Windrose() {
         data = value;
         return chart;
     };
-
+/*
     chart.pop = function() {
         var row = data.pop()
         if (typeof update === 'function') update();
@@ -721,7 +441,7 @@ function Windrose() {
 
     chart.slice = function(begin, end) {
         return data.slice(begin, end);
-    };
+    };*/
 
     // allows updating individual options and suboptions
     // while preserving state of other options
@@ -746,7 +466,7 @@ function Windrose() {
         }
         return chart;
     }
-
+/*
     chart.margins = function(value) {
         if (!arguments.length) return options.margins;
         var vKeys = Object.keys(values);
@@ -868,7 +588,7 @@ function Windrose() {
         }
 
         return chart;
-    }
+    }*/
     // END ACCESSORS
 
     // DEFAULT EVENTS
@@ -957,7 +677,7 @@ function Windrose() {
     // Helper Functions
     // ----------------
 
-    function add_index(index, key, values) {
+ /*   function add_index(index, key, values) {
         for (var v=0; v<values.length; v++) {
             values[v]['_i'] = index;
             values[v]['key'] = key;
@@ -1007,7 +727,7 @@ function Windrose() {
         options.height = height;
         options.width = width;
         chart.update();
-    }
+    }*/
 
     return chart;
 

@@ -1,7 +1,7 @@
 (function(global, factory) {
     typeof exports === "object" && typeof module !== "undefined" ? factory(exports, require("d3-scale")) :
         typeof define === "function" && define.amd ? define(["exports", "d3-scale"], factory) :
-            (factory(global.d3 = global.d3 || {}, global.d3));
+            (factory(global.d4 = global.d4 || {}, global.d4));
 }(this, function(exports, d3Scale) {
     'use strict';
 
