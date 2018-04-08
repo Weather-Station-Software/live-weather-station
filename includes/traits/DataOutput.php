@@ -649,7 +649,7 @@ trait Output {
                             $result = array();
                         }
                     }
-                    elseif ($type == 'astream') {
+                    elseif ($type == 'astream' || $type == 'windrose') {
                         if (count($args) == 2) {
                             $subymin = 0;
                             $subymax = 0;
@@ -657,6 +657,8 @@ trait Output {
                             $subydmax = 0;
                             $subyamin = 0;
                             $subyamax = 0;
+                            $minbreakdown = 0;
+                            $maxbreakdown = 0;
                             if (strpos($args[1]['dot_style'], 'res-') !== false) {
                                 $resolution = substr($args[1]['dot_style'], 4);
                                 try {
@@ -667,6 +669,10 @@ trait Output {
                             }
                             else {
                                 $resolution = 10;
+                            }
+                            $steps = $args[2]['line_mode'];
+                            if (strpos($steps, 'olor-step-') > 0) {
+                                $steps = str_replace('color-step-', '', $steps);
                             }
                             $sects = str_replace('s', '', $args[1]['line_mode']);
                             $angle_val = (int)(360 / $sects);
@@ -682,6 +688,9 @@ trait Output {
                                 $timeshift = (int)(60 * $resolution);
                             }
                             $dummy='0';
+                            if ($type == 'windrose') {
+                                $dummy='0.0123456789';
+                            }
                             $val0 = '`measure_value`';
                             $val1 = '`measure_value`';
                             $set0 = '';
@@ -724,15 +733,48 @@ trait Output {
                                 for ($i = 0; $i < $sects; $i++) {
                                     $t[$i] = array();
                                 }
+                                $start = true;
                                 foreach ($angles as $angle) {
                                     $v = $angle['measure_value'];
                                     $ts = $angle['timestamp'];
                                     if (array_key_exists($ts, $measures)) {
                                         if (array_key_exists('measure_value', $measures[$ts])) {
                                             $m = $measures[$ts]['measure_value'];
+                                            if ($start) {
+                                                if ($this->can_be_negative($args[2]['measurement'])) {
+                                                    $minbreakdown = $m;
+                                                }
+                                                else {
+                                                    $minbreakdown = 0;
+                                                }
+                                                $maxbreakdown = $m;
+                                                $start = false;
+                                            }
+                                            if ($m < $minbreakdown) {
+                                                $minbreakdown = $m;
+                                            }
+                                            if ($m > $maxbreakdown) {
+                                                $maxbreakdown = $m;
+                                            }
                                         }
                                         elseif (array_key_exists('computed_value', $measures[$ts])) {
                                             $m = $measures[$ts]['computed_value'];
+                                            if ($start) {
+                                                if ($this->can_be_negative($args[2]['measurement'])) {
+                                                    $minbreakdown = $m;
+                                                }
+                                                else {
+                                                    $minbreakdown = 0;
+                                                }
+                                                $maxbreakdown = $m;
+                                                $start = false;
+                                            }
+                                            if ($m < $minbreakdown) {
+                                                $minbreakdown = $m;
+                                            }
+                                            if ($m > $maxbreakdown) {
+                                                $maxbreakdown = $m;
+                                            }
                                         }
                                         else {
                                             $m = $dummy;
@@ -797,107 +839,263 @@ trait Output {
                                 for ($i = 0; $i < $sects; $i++) {
                                     ksort($t[$i]);
                                 }
-                                foreach ($t as $key => $s) {
-                                    $set = array();
-                                    $substart = true;
-                                    foreach ($s as $a) {
-                                        $module_type = $a['module_type'];
-                                        if ($mode == 'daily') {
-                                            $a['timestamp'] = self::get_js_datetime_from_mysql_utc($a['timestamp'], $station['loc_timezone'], $end_date);
+                                if ($type == 'windrose') {
+                                    $mes_typ = $args[2]['measurement'];
+                                    $stepval = ($maxbreakdown - $minbreakdown) / $steps;
+                                    $step = $this->output_value($stepval, $mes_typ, false, false, $module_type);
+                                    $unit = $this->output_unit($mes_typ, $module_type)['unit'];
+                                    $adjust = ($step > 4);
+                                    $breakdown = array();
+                                    $breakdownlegend = array();
+                                    $last = $minbreakdown;
+                                    for ($i = 1; $i <=$steps; $i++) {
+                                        $val = $this->output_value($minbreakdown + ($i * $stepval), $mes_typ, false, false, $module_type);
+                                        if ($adjust) {
+                                            $val = round($val, 0);
                                         }
-                                        if ($mode == 'yearly') {
-                                            $a['timestamp'] = self::get_js_date_from_mysql_utc($a['timestamp'], $station['loc_timezone'], $end_date);
+                                        $origin = $this->convert_value($val, $this->output_unit($mes_typ, $module_type)['ref']);
+                                        $breakdown[] = $origin;
+                                        if ($i == 1) {
+                                            $breakdownlegend[] = '< ' . $val . $unit;
+                                            $last = $val;
                                         }
-                                        $mes_typ = $args[2]['measurement'];
-                                        $a['measure_value'] = $this->output_value($a['measure_value'], $mes_typ, false, false, $a['module_type']);
-                                        if ($start) {
-                                            $ymin = $a['measure_value'];
-                                            $ymax = $a['measure_value'];
-                                            $ydmin = $this->get_measurement_min($mes_typ, $module_type);
-                                            $ydmax = $this->get_measurement_max($mes_typ, $module_type);
-                                            $yamax = $this->get_measurement_alarm_max($mes_typ, $module_type);
-                                            $yamin = $this->get_measurement_alarm_min($mes_typ, $module_type);
-                                            $start = false;
+                                        elseif ($i == $steps) {
+                                            $breakdownlegend[] = '> ' . $last . $unit;
                                         }
-                                        if ($a['measure_value'] > $ymax) {
-                                            $ymax = $a['measure_value'];
+                                        else {
+                                            $breakdownlegend[] = $last . '~' . $val . $unit;
+                                            $last = $val;
                                         }
-                                        if ($a['measure_value'] < $ymin) {
-                                            $ymin = $a['measure_value'];
-                                        }
-                                        if ($substart) {
-                                            $subymin = $a['measure_value'];
-                                            $subymax = $a['measure_value'];
-                                            $subydmin = $this->get_measurement_min($mes_typ, $module_type);
-                                            $subydmax = $this->get_measurement_max($mes_typ, $module_type);
-                                            $subyamax = $this->get_measurement_alarm_max($mes_typ, $module_type);
-                                            $subyamin = $this->get_measurement_alarm_min($mes_typ, $module_type);
-                                            $substart = false;
-                                        }
-                                        if ($a['measure_value'] > $subymax) {
-                                            $subymax = $a['measure_value'];
-                                        }
-                                        if ($a['measure_value'] < $subymin) {
-                                            $subymin = $a['measure_value'];
-                                        }
-                                        $set[] = $a;
                                     }
-                                    $info = array();
-                                    $module_name = $this->get_angle_full_text($key * $angle_val);
-                                    $info['key'] = $module_name;
-                                    $extra = array();
-                                    $period_name = '';
-                                    $period_range = 0;
-                                    if ($mode == 'yearly') {
-                                        if ($is_month) {
-                                            $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
-                                            $now->setDate($year, $month, 1);
-                                            $period_name = date_i18n('F Y', $now->getTimestamp());
-                                            $period_range = 1;
-                                        } elseif ($is_year) {
-                                            $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
-                                            $period_range = 12;
-                                        } elseif ($is_mseason) {
-                                            $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
-                                            if ($month == 12) {
-                                                $period_name .= '~' . (string)($year + 1);
+
+                                    //error_log(print_r($breakdown, true));
+                                    //error_log(print_r($breakdownlegend, true));
+                                    //error_log('min=>' . $minbreakdown . ' / max=>'.$maxbreakdown);
+
+
+
+                                    ///////////// DEBUG
+                                    $prout = '    var data ={"legend":["< 5 km/h", "5-10 km/h", "10-15 km/h", "15-20 km/h"],"series":[{"axis":"N","values":[0.05,0.1,0.1,0.02]},{"axis":"NE","values":[0.02,0.02,0.3,0.8]},{"axis":"E","values":[0.01,0.2,0.3,0.02]},{"axis":"SE","values":[0.15,0.02,0.1,0]},{"axis":"S","values":[0.1,0.2,0.1,0.2]},{"axis":"SW","values":[0.01,0.06,0.1,0.05]},{"axis":"W","values":[0.4,0.05,0.05,0.1]},{"axis":"NW","values":[0,0.1,0.2,0.3]}]};' . PHP_EOL;
+                                    $d =                   '{"legend":["< 5km\/h","5~9km\/h","9~14km\/h","> 14km\/h"],      "series":]{"axis":"North","values":[0,0,0,0]},{"axis":"Northeast","values":[0,0,0.064516129032258,0.096774193548387]},{"axis":"East","values":[0,0.032258064516129,0,0]},{"axis":"Southeast","values":[0,0,0,0.032258064516129]},{"axis":"South","values":[0,0.19354838709677,0.32258064516129,0.096774193548387]},{"axis":"Southwest","values":[0,0.096774193548387,0.064516129032258,0]},{"axis":"West","values":[0,0,0,0]},{"axis":"Northwest","values":[0,0,0,0]}]};';
+                                    //                        {"legend":"Array", "values":[{"axis":North,"values":[0,0,0,0]},{"axis":East,"values":[0,0.038461538461538,0,0]},{"axis":South,"values":[0,0.26923076923077,0.42307692307692,0.15384615384615]},{"axis":West,"values":[0,0.076923076923077,0.038461538461538,0]}]}
+                                    ///////////// DEBUG
+
+
+
+                                    $values = array();
+                                    $cpt = 0;
+                                    foreach ($t as $key => $s) {
+                                        $sub = array();
+                                        foreach ($breakdown as $b) {
+                                            $sub[] = 0;
+                                        }
+                                        foreach ($s as $rec) {
+                                            $a = $rec['measure_value'];
+                                            if ($a != $dummy) {
+                                                $done = false;
+                                                foreach ($breakdown as $k=>$b) {
+                                                    if ($a <= $b) {
+                                                        $sub[$k] += 1;
+                                                        $cpt += 1;
+                                                        $done = true;
+                                                        break;
+                                                    }
+                                                }
+                                                if (!$done) {
+                                                    $sub[count($sub)-1] += 1;
+                                                    $cpt += 1;
+                                                }
                                             }
-                                            $period_range = 3;
                                         }
-                                        $extra['set_name'] = ucfirst($this->get_operation_name($args[2]['set'], true));
+                                        $values[] = array('axis'=>'"' . $this->get_angle_text($key * $angle_val) . '"', 'values'=>$sub);
                                     }
-                                    $extra['ydomain']['min'] = $subymin;
-                                    $extra['ydomain']['max'] = $subymax;
-                                    $extra['ydomain']['dmin'] = $subydmin;
-                                    $extra['ydomain']['dmax'] = $subydmax;
-                                    $extra['ydomain']['amin'] = $subyamin;
-                                    $extra['ydomain']['amax'] = $subyamax;
-                                    $extra['period_name'] = $period_name;
-                                    $extra['info_key'] = $info['key'];
-                                    $extra['period_range'] = $period_range;
-                                    $extra['raw_measurement_type'] = $args[2]['measurement'];
-                                    $extra['measurement_type'] = $this->get_measurement_type($args[2]['measurement'], false, $module_type);
-                                    $extra['module_type'] = $module_type;
-                                    $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
-                                    $extra['module_name'] = $module_name;
-                                    $extra['station_name'] = $station['station_name'];
-                                    $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
-                                    $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
-                                    $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
-                                    $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
-                                    $extra['unit'] = $this->output_unit($args[2]['measurement'], $module_type);
-                                    $result['extras'][] = $extra;
-                                    $result['legend']['unit'] = $this->output_unit($args[2]['measurement'], $module_type);
-                                    $classes = array();
-                                    $classes[] = 'lws-serie-' . $key;
-                                    if (count($classes) > 0) {
-                                        $info['classed'] = implode(' ', $classes);
+                                    $set = array();
+                                    foreach ($values as $key => $val) {
+                                        $sub = array();
+                                        foreach ($val['values'] as $v) {
+                                            $sub[] = $v / $cpt;
+                                        }
+                                        $set[] = array('axis' => $val['axis'], 'values' => $sub);
                                     }
-                                    if ($json) {
-                                        $result['values'][] = $this->jsonify($info, $set, $raw_json);
-                                    } else {
-                                        $info['values'] = $set;
-                                        $result['values'][] = $info;
+                                    $jset = str_replace('\"', '', $this->jsonify(null, $set, $raw_json, true));
+                                    $jlegend = str_replace('\/', '/', $this->jsonify(null, $breakdownlegend, $raw_json, true));
+                                    $final = '{' . '"legend":[' . $jlegend . '], ' . '"series":[' . $jset . ']};';
+
+                                    error_log($final);
+
+
+
+
+
+
+                                    /*foreach ($t as $key => $s) {
+                                        $info = array();
+                                        $module_name = $this->get_angle_full_text($key * $angle_val);
+                                        $info['key'] = $module_name;
+                                        $extra = array();
+                                        $period_name = '';
+                                        $period_range = 0;
+                                        if ($mode == 'yearly') {
+                                            if ($is_month) {
+                                                $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                                $now->setDate($year, $month, 1);
+                                                $period_name = date_i18n('F Y', $now->getTimestamp());
+                                                $period_range = 1;
+                                            } elseif ($is_year) {
+                                                $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
+                                                $period_range = 12;
+                                            } elseif ($is_mseason) {
+                                                $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
+                                                if ($month == 12) {
+                                                    $period_name .= '~' . (string)($year + 1);
+                                                }
+                                                $period_range = 3;
+                                            }
+                                            $extra['set_name'] = ucfirst($this->get_operation_name($args[2]['set'], true));
+                                        }
+                                        $extra['ydomain']['min'] = $subymin;
+                                        $extra['ydomain']['max'] = $subymax;
+                                        $extra['ydomain']['dmin'] = $subydmin;
+                                        $extra['ydomain']['dmax'] = $subydmax;
+                                        $extra['ydomain']['amin'] = $subyamin;
+                                        $extra['ydomain']['amax'] = $subyamax;
+                                        $extra['period_name'] = $period_name;
+                                        $extra['info_key'] = $info['key'];
+                                        $extra['period_range'] = $period_range;
+                                        $extra['raw_measurement_type'] = $args[2]['measurement'];
+                                        $extra['measurement_type'] = $this->get_measurement_type($args[2]['measurement'], false, $module_type);
+                                        $extra['module_type'] = $module_type;
+                                        $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
+                                        $extra['module_name'] = $module_name;
+                                        $extra['station_name'] = $station['station_name'];
+                                        $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
+                                        $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
+                                        $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
+                                        $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
+                                        $extra['unit'] = $this->output_unit($args[2]['measurement'], $module_type);
+                                        $result['extras'][] = $extra;
+                                        $result['legend']['unit'] = $this->output_unit($args[2]['measurement'], $module_type);
+                                        $classes = array();
+                                        $classes[] = 'lws-serie-' . $key;
+                                        if (count($classes) > 0) {
+                                            $info['classed'] = implode(' ', $classes);
+                                        }
+                                        if ($json) {
+                                            $result['values'][] = $this->jsonify($info, $set, $raw_json);
+                                        } else {
+                                            $info['values'] = $set;
+                                            $result['values'][] = $info;
+                                        }
+                                    }*/
+                                }
+
+
+
+
+
+                                if ($type == 'astream') {
+                                    foreach ($t as $key => $s) {
+                                        $set = array();
+                                        $substart = true;
+                                        foreach ($s as $a) {
+                                            $module_type = $a['module_type'];
+                                            if ($mode == 'daily') {
+                                                $a['timestamp'] = self::get_js_datetime_from_mysql_utc($a['timestamp'], $station['loc_timezone'], $end_date);
+                                            }
+                                            if ($mode == 'yearly') {
+                                                $a['timestamp'] = self::get_js_date_from_mysql_utc($a['timestamp'], $station['loc_timezone'], $end_date);
+                                            }
+                                            $mes_typ = $args[2]['measurement'];
+                                            $a['measure_value'] = $this->output_value($a['measure_value'], $mes_typ, false, false, $a['module_type']);
+                                            if ($start) {
+                                                $ymin = $a['measure_value'];
+                                                $ymax = $a['measure_value'];
+                                                $ydmin = $this->get_measurement_min($mes_typ, $module_type);
+                                                $ydmax = $this->get_measurement_max($mes_typ, $module_type);
+                                                $yamax = $this->get_measurement_alarm_max($mes_typ, $module_type);
+                                                $yamin = $this->get_measurement_alarm_min($mes_typ, $module_type);
+                                                $start = false;
+                                            }
+                                            if ($a['measure_value'] > $ymax) {
+                                                $ymax = $a['measure_value'];
+                                            }
+                                            if ($a['measure_value'] < $ymin) {
+                                                $ymin = $a['measure_value'];
+                                            }
+                                            if ($substart) {
+                                                $subymin = $a['measure_value'];
+                                                $subymax = $a['measure_value'];
+                                                $subydmin = $this->get_measurement_min($mes_typ, $module_type);
+                                                $subydmax = $this->get_measurement_max($mes_typ, $module_type);
+                                                $subyamax = $this->get_measurement_alarm_max($mes_typ, $module_type);
+                                                $subyamin = $this->get_measurement_alarm_min($mes_typ, $module_type);
+                                                $substart = false;
+                                            }
+                                            if ($a['measure_value'] > $subymax) {
+                                                $subymax = $a['measure_value'];
+                                            }
+                                            if ($a['measure_value'] < $subymin) {
+                                                $subymin = $a['measure_value'];
+                                            }
+                                            $set[] = $a;
+                                        }
+                                        $info = array();
+                                        $module_name = $this->get_angle_full_text($key * $angle_val);
+                                        $info['key'] = $module_name;
+                                        $extra = array();
+                                        $period_name = '';
+                                        $period_range = 0;
+                                        if ($mode == 'yearly') {
+                                            if ($is_month) {
+                                                $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                                $now->setDate($year, $month, 1);
+                                                $period_name = date_i18n('F Y', $now->getTimestamp());
+                                                $period_range = 1;
+                                            } elseif ($is_year) {
+                                                $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
+                                                $period_range = 12;
+                                            } elseif ($is_mseason) {
+                                                $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
+                                                if ($month == 12) {
+                                                    $period_name .= '~' . (string)($year + 1);
+                                                }
+                                                $period_range = 3;
+                                            }
+                                            $extra['set_name'] = ucfirst($this->get_operation_name($args[2]['set'], true));
+                                        }
+                                        $extra['ydomain']['min'] = $subymin;
+                                        $extra['ydomain']['max'] = $subymax;
+                                        $extra['ydomain']['dmin'] = $subydmin;
+                                        $extra['ydomain']['dmax'] = $subydmax;
+                                        $extra['ydomain']['amin'] = $subyamin;
+                                        $extra['ydomain']['amax'] = $subyamax;
+                                        $extra['period_name'] = $period_name;
+                                        $extra['info_key'] = $info['key'];
+                                        $extra['period_range'] = $period_range;
+                                        $extra['raw_measurement_type'] = $args[2]['measurement'];
+                                        $extra['measurement_type'] = $this->get_measurement_type($args[2]['measurement'], false, $module_type);
+                                        $extra['module_type'] = $module_type;
+                                        $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
+                                        $extra['module_name'] = $module_name;
+                                        $extra['station_name'] = $station['station_name'];
+                                        $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
+                                        $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
+                                        $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
+                                        $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
+                                        $extra['unit'] = $this->output_unit($args[2]['measurement'], $module_type);
+                                        $result['extras'][] = $extra;
+                                        $result['legend']['unit'] = $this->output_unit($args[2]['measurement'], $module_type);
+                                        $classes = array();
+                                        $classes[] = 'lws-serie-' . $key;
+                                        if (count($classes) > 0) {
+                                            $info['classed'] = implode(' ', $classes);
+                                        }
+                                        if ($json) {
+                                            $result['values'][] = $this->jsonify($info, $set, $raw_json);
+                                        } else {
+                                            $info['values'] = $set;
+                                            $result['values'][] = $info;
+                                        }
                                     }
                                 }
                             } catch (\Exception $ex) {
@@ -1382,7 +1580,7 @@ trait Output {
                                     $info['type'] = 'line';
                                     $info['unit'] = $this->output_unit($arg['measurement'], $module_type)['unit'];
                                 }
-                                if ($self_color && $type == 'bcline') {
+                                /*if ($self_color && $type == 'bcline') {
                                     if ($i == 1) {
                                         $info['color'] = $prop['fg_color'];
                                     }
@@ -1410,9 +1608,9 @@ trait Output {
                                             $info['color'] = '#' . $col->lighten(20);
                                         }
                                     }
-                                }
+                                }*/
                                 if ($self_color && $type != 'lines' && $type != 'bars' && $type != 'sareas' && $type != 'doubleline' && $type != 'bcline') {
-                                    $info['color'] = $prop['fg_color'];
+                                    //$info['color'] = $prop['fg_color'];
                                 }
 
                                 if (($type == 'bars' || $type == 'sareas') && $arg['line_mode'] == 'single') {
@@ -2344,6 +2542,7 @@ trait Output {
                 $cpt += 1;
             }
         }
+        $full_cpt = $cpt;
         if ($cpt == 0) {
             if ($value_params['noned']) {
                 return __('No Data To Display', 'live-weather-station');
@@ -2510,13 +2709,19 @@ trait Output {
             // BEGIN MAIN BODY
             if ($color != 'self') {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+                if ($inverted) {
+                    $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
+                }
             }
             else {
-                $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
+                if ($inverted) {
+                    $body .= '    var color' . $uniq . ' = [' . implode(', ', array_reverse($legendColors)) . '];' . PHP_EOL;
+                }
+                else {
+                    $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
+                }
             }
-            if ($inverted) {
-                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
-            }
+
             if (isset($values) && isset($values['extras']) && isset($values['extras'][0])) {
                 $body .= '      var chartOption' . $uniq . ' = {' . PHP_EOL;
                 $body .= '            width: ' . $size . ',' . PHP_EOL;
@@ -2559,8 +2764,15 @@ trait Output {
             if ($color == 'self') {
                 $col = new ColorsManipulation($prop['fg_color']);
                 $col_array = $col->makeSteppedGradient(4, 50);
+                $i = 0;
                 foreach ($col_array as $c) {
+                    if ($i++ > 2) {
+                        break;
+                    }
                     $legendColors[] = '"#' . $c . '"';
+                }
+                if ($inverted) {
+                    $legendColors = array_reverse($legendColors);
                 }
             }
             else {
@@ -2690,7 +2902,7 @@ trait Output {
             $legendColors = array();
             if ($color == 'self') {
                 $col = new ColorsManipulation($prop['fg_color']);
-                $col_array = $col->makeSteppedGradient($cpt, 50);
+                $col_array = $col->makeSteppedGradient($cpt-1, 50);
                 foreach ($col_array as $c) {
                     $legendColors[] = '"#' . $c . '"';
                 }
@@ -2746,13 +2958,19 @@ trait Output {
             }
             if ($color != 'self') {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+                if ($inverted) {
+                    $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
+                }
             }
             else {
-                $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
+                if ($inverted) {
+                    $body .= '    var color' . $uniq . ' = [' . implode(', ', array_reverse($legendColors)) . '];' . PHP_EOL;
+                }
+                else {
+                    $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
+                }
             }
-            if ($inverted) {
-                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
-            }
+
             $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '      nv.addGraph(function() {' . PHP_EOL;
             $body .= '         chart'.$uniq.' = nv.models.stackedAreaChart()' . PHP_EOL;
@@ -2808,7 +3026,11 @@ trait Output {
             if ($color == 'self') {
                 $col = new ColorsManipulation($prop['fg_color']);
                 $col_array = $col->makeSteppedGradient($cpt, 50);
+                $i = 0;
                 foreach ($col_array as $c) {
+                    if ($i++ == $full_cpt) {
+                        break;
+                    }
                     $legendColors[] = '"#' . $c . '"';
                 }
             }
@@ -2837,12 +3059,17 @@ trait Output {
             $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
             if ($color != 'self') {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+                if ($inverted) {
+                    $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . ' = color' . $uniq . '.reverse().slice(' . (string)($cpt - $full_cpt) . ');}' . PHP_EOL;
+                }
             }
             else {
-                $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
-            }
-            if ($inverted) {
-                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
+                if ($inverted) {
+                    $body .= '    var color' . $uniq . ' = [' . implode(', ', array_reverse($legendColors)) . '];' . PHP_EOL;
+                }
+                else {
+                    $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
+                }
             }
             $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '      nv.addGraph(function() {' . PHP_EOL;
@@ -2906,11 +3133,18 @@ trait Output {
                 $unit = '';
             }
             $legendColors = array();
-            if ($type == 'bars' && $color == 'self') {
+            if ($color == 'self') {
                 $col = new ColorsManipulation($prop['fg_color']);
                 $col_array = $col->makeSteppedGradient($cpt, 50);
+                $i = 0;
                 foreach ($col_array as $c) {
+                    if ($i++ == $full_cpt) {
+                        break;
+                    }
                     $legendColors[] = '"#' . $c . '"';
+                }
+                if ($inverted) {
+                    $legendColors = array_reverse($legendColors);
                 }
             }
             $result .= '<style type="text/css">' . PHP_EOL;
@@ -2938,13 +3172,14 @@ trait Output {
             $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
             if ($color != 'self') {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+                if ($inverted) {
+                    $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . ' = color' . $uniq . '.reverse().slice(' . (string)($cpt - $full_cpt) . ');}' . PHP_EOL;
+                }
             }
-            elseif ($type == 'bars') {
+            else{
                 $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
             }
-            if ($inverted) {
-                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
-            }
+
             $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '      nv.addGraph(function() {' . PHP_EOL;
             $body .= '         chart'.$uniq.' = nv.models.multiBarChart()' . PHP_EOL;
@@ -2959,12 +3194,7 @@ trait Output {
             }
             $body .= '               .showLegend(' . ($type == 'bars'?'true':'false') . ')' . PHP_EOL;
             $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
-            if ($color == 'self' && $type == 'bar') {
-                // DONE BY COLOR KEY
-            }
-            else {
-                $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
-            }
+            $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
             if ($type == 'bars') {
                 $body .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","grouped":"' . __('Grouped', 'live-weather-station') . '"}).showControls(' . ($type_guideline == 'free'?'true':'false') . ');' . PHP_EOL;
             }
@@ -3001,11 +3231,18 @@ trait Output {
             wp_enqueue_script('lws-colorbrewer');
             wp_enqueue_script('lws-spin');
             $legendColors = array();
-            if ($type == 'lines' && $color == 'self') {
+            if ($color == 'self') {
                 $col = new ColorsManipulation($prop['fg_color']);
                 $col_array = $col->makeSteppedGradient($cpt, 50);
+                $i = 0;
                 foreach ($col_array as $c) {
+                    if ($i++ == $full_cpt) {
+                        break;
+                    }
                     $legendColors[] = '"#' . $c . '"';
+                }
+                if ($inverted) {
+                    $legendColors = array_reverse($legendColors);
                 }
             }
             $result .= '<style type="text/css">' . PHP_EOL;
@@ -3081,12 +3318,12 @@ trait Output {
             }
             if ($color != 'self') {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+                if ($inverted) {
+                    $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . ' = color' . $uniq . '.reverse().slice(' . (string)($cpt - $full_cpt) . ');}' . PHP_EOL;
+                }
             }
-            elseif ($type == 'lines') {
+            else {
                 $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
-            }
-            if ($inverted) {
-                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
             }
             $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -3108,12 +3345,7 @@ trait Output {
             if ($fixed_valuescale) {
                 $body .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
             }
-            if ($color == 'self' && $type == 'line') {
-                // DONE BY COLOR KEY
-            }
-            else {
-                $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
-            }
+            $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
             $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
             if ($guideline) {
                 $body .= '               .useInteractiveGuideline(true);' . PHP_EOL;
@@ -3183,9 +3415,16 @@ trait Output {
             $legendColors = array();
             if ($color == 'self') {
                 $col = new ColorsManipulation($prop['fg_color']);
-                $col_array = $col->makeSteppedGradient(10, 50);
+                $col_array = $col->makeSteppedGradient(8, 50);
+                $i = 0;
                 foreach ($col_array as $c) {
+                    if ($i++ == $full_cpt) {
+                        break;
+                    }
                     $legendColors[] = '"#' . $c . '"';
+                }
+                if ($inverted) {
+                    $legendColors = array_reverse($legendColors);
                 }
             }
             if ($mode == 'daily') {
@@ -3274,14 +3513,17 @@ trait Output {
                 $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
-            $refcolor = $prop['fg_color'];
             if ($color != 'self') {
-                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[3].slice(0);' . PHP_EOL;
                 $refcolor = ColorBrewer::get($color, 3, 0);
+                if ($inverted) {
+                    $body .= '    if (colorbrewer.' . $color . '[3][0] == color' . $uniq . '[0]) {color' . $uniq . ' = color' . $uniq . '.reverse().slice(' . (string)(1) . ');}' . PHP_EOL;
+                    $refcolor = ColorBrewer::get($color, 3, 0, true);
+                }
             }
-            if ($inverted) {
-                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
-                $refcolor = ColorBrewer::get($color, 3, 0, true);
+            else{
+                $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
+                $refcolor = str_replace('"', '', $legendColors[0]);
             }
             $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '      nv.addGraph(function() {' . PHP_EOL;
@@ -3294,9 +3536,7 @@ trait Output {
             $body .= '      .yDomain1([' . $domain1['min'] . ',' . $domain1['max'].'])' . PHP_EOL;
             $body .= '      .yDomain2([' . $domain2['min'] . ',' . $domain2['max'].'])' . PHP_EOL;
             $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
-            if ($color != 'self') {
-                $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
-            }
+            $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
             $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'");' . PHP_EOL;
             $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
             if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
@@ -3346,6 +3586,21 @@ trait Output {
             wp_enqueue_script('lws-nvd3');
             wp_enqueue_script('lws-colorbrewer');
             wp_enqueue_script('lws-spin');
+            $legendColors = array();
+            if ($color == 'self') {
+                $col = new ColorsManipulation($prop['fg_color']);
+                $col_array = $col->makeSteppedGradient(8, 50);
+                $i = 0;
+                foreach ($col_array as $c) {
+                    if ($i++ == $full_cpt) {
+                        break;
+                    }
+                    $legendColors[] = '"#' . $c . '"';
+                }
+                if ($inverted) {
+                    $legendColors = array_reverse($legendColors);
+                }
+            }
             $forcefactor = 2;
             if ($height > 300) {
                 $forcefactor = 3;
@@ -3360,7 +3615,6 @@ trait Output {
             else {
                 $domain2 = $domain1;
             }
-            //$ticks1 = $this->graph_ticks($domain1, $valuescale, $measurement1, $height, $forcefactor);
             $ticks2 = $this->graph_ticks($domain2, $valuescale2, $measurement2, $height, $forcefactor);
             if ($mode == 'daily') {
                 $specialtimeformat = '%Y-%m-%d %H:%M';
@@ -3434,10 +3688,13 @@ trait Output {
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
             if ($color != 'self') {
-                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[3].slice(0);' . PHP_EOL;
+                if ($inverted) {
+                    $body .= '    if (colorbrewer.' . $color . '[3][0] == color' . $uniq . '[0]) {color' . $uniq . ' = color' . $uniq . '.reverse().slice(' . (string)(1) . ');}' . PHP_EOL;
+                }
             }
-            if ($inverted) {
-                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
+            else{
+                $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
             }
             $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '      nv.addGraph(function() {' . PHP_EOL;
@@ -3464,12 +3721,7 @@ trait Output {
                 $body .= '               .xDomain([minDomain'.$uniq.', maxDomain'.$uniq.'])' . PHP_EOL;
             }
             $body .= '      .yDomain([' . $domain2['min'] . ',' . $domain2['max'].'])' . PHP_EOL;
-            if ($color == 'self') {
-                // DONE BY COLOR KEY
-            }
-            else {
-                $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
-            }
+            $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
             $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'");' . PHP_EOL;
             $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
             if ($fixed_timescale && $timescale != 'none') {
@@ -3653,75 +3905,86 @@ trait Output {
         }
 
         if ($type == 'windrose') {
-            wp_enqueue_script('lws-d3');
+            wp_enqueue_script('lws-d4');
             wp_enqueue_script('lws-scale-radial');
             wp_enqueue_script('lws-windrose');
             wp_enqueue_script('lws-colorbrewer');
             wp_enqueue_script('lws-spin');
+            $steps = 4;
+            if (array_key_exists(2, $value_params['args'])) {
+                if (array_key_exists('line_mode', $value_params['args'][2])) {
+                    $steps = $value_params['args'][2]['line_mode'];
+                    if (strpos($steps, 'olor-step-') > 0) {
+                        $steps = str_replace('color-step-', '', $steps);
+                    }
+                }
+            }
+            if ($valuescale == 'auto') {
+                $valuescale = 'adaptative';
+            }
+
             $titlestyle = $prop['nv-axislabel'];
             $atitlestyle = $prop['text'];
             $atitlestyle = str_replace(';fill:', ';color:', $atitlestyle);
-            $linecolor = $prop['nv-axis-line'];
-            $linecolor = str_replace('stroke: ', '', $linecolor);
-            $linecolor = str_replace(';', '', $linecolor);
-            $inner_height = (int)$height;
             switch ($height) {
                 case '150px':
                     $titlestyle = 'display:none;';
-                    $size = 150;
+                    $size = 140;
                     break;
                 case '200px':
                     $clevel=3;
                     if ($label == 'none') {
                         $titlestyle = 'display:none;';
-                        $size = 200;
+                        $size = 184;
                     }
                     else {
-                        $titlestyle .= 'padding-top:4px;';
-                        $size = 180;
+                        $titlestyle .= 'padding-top:2px;';
+                        $size = 164;
                     }
                     break;
                 case '300px':
                     if ($label == 'none') {
                         $titlestyle = 'display:none;';
-                        $size = 300;
+                        $size = 284;
                     }
                     else {
-                        $titlestyle .= 'padding-top:6px;';
-                        $size = 274;
+                        $titlestyle .= 'padding-top:4px;';
+                        $size = 258;
                     }
                     break;
                 case '400px':
                     if ($label == 'none') {
                         $titlestyle = 'display:none;';
-                        $size = 400;
+                        $size = 384;
                     }
                     else {
-                        $titlestyle .= 'padding-top:8px;';
-                        $size = 370;
+                        $titlestyle .= 'padding-top:6px;';
+                        $size = 354;
                     }
                     break;
                 case '555px':
                     if ($label == 'none') {
                         $titlestyle = 'display:none;';
-                        $size = 550;
+                        $size = 534;
                     }
                     else {
-                        $titlestyle .= 'padding-top:9px;';
-                        $size = 526;
+                        $titlestyle .= 'padding-top:6px;';
+                        $size = 510;
                     }
                     break;
                 default:
                     $titlestyle = '';
-                    $clevel=6;
             }
-            $inner_height = $inner_height . 'px';
+            //$inner_height = $inner_height . 'px';
             $legendColors = array();
             if ($color == 'self') {
                 $col = new ColorsManipulation($prop['fg_color']);
-                $col_array = $col->makeSteppedGradient($cpt, 50);
+                $col_array = $col->makeSteppedGradient($steps-1, 50);
                 foreach ($col_array as $c) {
                     $legendColors[] = '"#' . $c . '"';
+                }
+                if ($inverted) {
+                    $legendColors = array_reverse($legendColors);
                 }
             }
             $result .= '<style type="text/css">' . PHP_EOL;
@@ -3740,33 +4003,31 @@ trait Output {
             }
             $result .= '</style>' . PHP_EOL;
             // BEGIN MAIN BODY
-            if ($color != 'self') {
-                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+            if ($color != 'self' && $color != 'std') {
+                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $steps . '].slice(0);' . PHP_EOL;
+                if ($inverted) {
+                    $body .= '    if (colorbrewer.' . $color . '[' . $steps . '][0] == color' . $uniq . '[0]) {color' . $uniq . ' = color' . $uniq . '.reverse().slice(0);}' . PHP_EOL;
+                }
             }
             else {
                 $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
             }
-            if ($inverted) {
-                $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
-            }
             if (isset($values) && isset($values['extras']) && isset($values['extras'][0])) {
                 $body .= '      var chartOption' . $uniq . ' = {' . PHP_EOL;
-                $body .= '            size: ' . $size . ',' . PHP_EOL;
-                //$body .= '            valFormat: "' . $values['extras'][0]['format'] . '",' . PHP_EOL;
-                //$body .= '            valUnit: "' . $values['extras'][0]['unit'] . '",' . PHP_EOL;
-                //$body .= '            margins: {top: ' . $tmargin . ',right: 0,bottom: 0,left: 0},' . PHP_EOL;
-                //$body .= '            circles: {levels: ' . $clevel . ',maxValue: 0,labelFactor: 1.25,opacity: 0.1,fill: "' . $linecolor . '",color: "' . $linecolor . '"},' . PHP_EOL;
-                if ($type == 'valuerc') {
-                    //$body .= '            axes: {display: true,threshold: 90,lineColor: "' . $prop['bg_color'] . '",lineWidth: "' . $linewidth . 'px",wrapWidth: 60,filter: [],invert: [],ranges: {' . $values['extras'][0]['range'] . '}},' . PHP_EOL;
-                } else {
-                    //$body .= '            axes: {display: true,threshold: 90,lineColor: "' . $prop['bg_color'] . '",lineWidth: "' . $linewidth . 'px",wrapWidth: 60,filter: [],invert: [],ranges: {}},' . PHP_EOL;
+                if ($timescale != 'linear') {
+                    $body .= '            scale: "radial",' . PHP_EOL;
                 }
-                //$body .= '            areas: {colors: {},opacity: 0.35,borderWidth: ' . (string)($linewidth + 1) . ',rounded: ' . $interpolation . ',dotRadius:' . (string)($linewidth + 1) . ',sort: true,topfilter: []},' . PHP_EOL;
-                if ($type_guideline == 'standard') {
-                    //$body .= '               filter_id: false,' . PHP_EOL;
-                    //$body .= '               filter: false,' . PHP_EOL;
+                //$body .= '            scale: "radial",' . PHP_EOL;
+                if ($type_guideline == 'interactive') {
+                    $body .= '            legend: true,' . PHP_EOL;
                 }
-                $body .= '            color: color' . $uniq . '}' . PHP_EOL;
+                if ($valuescale == 'fixed') {
+                    $body .= '            fixed: true,' . PHP_EOL;
+                }
+                if ($color != 'std') {
+                    $body .= '            color: color' . $uniq . ',' . PHP_EOL;
+                }
+                $body .= '            size: ' . $size . '}' . PHP_EOL;
                 $body .= '      var chart' . $uniq . ' = Windrose();' . PHP_EOL;
                 $body .= '        d3.select("#' . $svg . '").call(chart' . $uniq . ');' . PHP_EOL;
                 $body .= '        chart' . $uniq . '.options(chartOption' . $uniq . ').data(data' . $uniq . ').update();' . PHP_EOL;
@@ -3792,7 +4053,10 @@ trait Output {
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         if ($data == 'inline') {
             if ($type == 'windrose') {
-                $result .= '    var data'.$uniq.' =[{"axis":"N","values":[0.1,0.2,0]},{"axis":"NE","values":[0.1,0.2,0]},{"axis":"E","values":[0.1,0.2,0]},{"axis":"SE","values":[0.1,0.2,0]},{"axis":"S","values":[0.1,0.2,0]},{"axis":"SW","values":[0.1,0.2,0]},{"axis":"W","values":[0.1,0.2,0]},{"axis":"NW","values":[0.1,0.2,0]}];' . PHP_EOL;
+                $result .= '    var data'.$uniq.' ={"legend":["< 5 km/h", "5-10 km/h", "10-15 km/h", "15-20 km/h"],"series":[{"axis":"N","values":[0.05,0.1,0.1,0.02]},{"axis":"NE","values":[0.02,0.02,0.3,0.8]},{"axis":"E","values":[0.01,0.2,0.3,0.02]},{"axis":"SE","values":[0.15,0.02,0.1,0]},{"axis":"S","values":[0.1,0.2,0.1,0.2]},{"axis":"SW","values":[0.01,0.06,0.1,0.05]},{"axis":"W","values":[0.4,0.05,0.05,0.1]},{"axis":"NW","values":[0,0.1,0.2,0.3]}]};' . PHP_EOL;
+
+
+                //$result .= '    var data'.$uniq.' ={"legend":["< 5 km/h", "5-10 km/h", "10-15 km/h", "15-20 km/h", "20-25 km/h", "25-30 km/h", "30-35 km/h", "> 35 km/h"],"series":[{"axis":"N","values":[0.1,0.2,0]},{"axis":"NE","values":[0.1,0.2,0]},{"axis":"E","values":[0.1,0.2,0]},{"axis":"SE","values":[0.1,0.2,0]},{"axis":"S","values":[0.1,0.2,0]},{"axis":"SW","values":[0.1,0.2,0]},{"axis":"W","values":[0.1,0.2,0]},{"axis":"NW","values":[0.1,0.2,0]}]};' . PHP_EOL;
 
 
 
@@ -6009,6 +6273,34 @@ trait Output {
     }
 
     /**
+     * Indicates if a measurement can have a negative value.
+     *
+     * @param string $type The type of the value.
+     * @return boolean Return whether this type of measurement can be negative (in meteorology).
+     * @since 3.5.0
+     */
+
+    protected function can_be_negative($type) {
+        $result = false;
+        switch (strtolower($type)) {
+            case 'temperature':
+            case 'tempint':
+            case 'tempext':
+            case 'temperature_min':
+            case 'temperature_max':
+            case 'temperature_ref':
+            case 'dew_point':
+            case 'frost_point':
+            case 'heat_index':
+            case 'humidex':
+            case 'wind_chill':
+            case 'soil_temperature':
+                $result = true;
+        }
+        return $result;
+    }
+
+    /**
      * Output a value with user's unit.
      *
      * @param   mixed       $value          The value to output.
@@ -6867,7 +7159,8 @@ trait Output {
      * @access   protected
      */
     protected function output_unit($type, $module_type='NAMain', $force_ref=0) {
-        $result = array('unit'=>'', 'comp'=>'', 'full'=>'', 'long'=>'', 'dimension'=>'unknown');
+        $result = array('unit'=>'', 'comp'=>'', 'full'=>'', 'long'=>'', 'dimension'=>'unknown', 'ref'=>-1);
+        $ref = -1;
         switch ($type) {
             case 'loc_altitude':
             case 'cloud_ceiling':
@@ -7403,6 +7696,7 @@ trait Output {
         else {
             $result['full'] = $result['unit'].' ('.$result['comp'].')';
         }
+        $result['ref'] = $ref;
         return $result;
     }
 
