@@ -105,7 +105,10 @@ Station compatibility list
 
 Chart for station comparison
 
-charts: windrose
+interactive windrose
+
+
+
 verify label in value radar chart
 verify tooltip on mobile
 Undefined index: "set" on line 1569

@@ -93,6 +93,7 @@ class Windrose extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_group('daily-windrose-datas-measure-group-', $a_group);
         $content .= $this->get_placeholder_option_select();
         $content .= $this->get_placeholder_option_select();
+        $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
         return $this->get_box('lws-datasource-id', $this->datasource_title, $content);
     }
@@ -108,11 +109,11 @@ class Windrose extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_key_value_option_select('daily-windrose-datas-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
         $content .= $this->get_key_value_option_select('daily-windrose-datas-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array(true, true, true, false, true, true), true, 'self');
         $content .= $this->get_key_value_option_select('daily-windrose-datas-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_multi_2_label_js_array(), true, 'simple');
-        $content .= $this->get_key_value_option_select('daily-windrose-datas-guideline-'. $this->station_guid, __('Control', 'live-weather-station'), $this->get_sareas_group_js_array(), true, 'stacked', true, false);
+        $content .= $this->get_key_value_option_select('daily-windrose-datas-guideline-'. $this->station_guid, __('Legend', 'live-weather-station'), $this->get_legend_js_array(), true, 'interactive');
         $content .= $this->get_key_value_option_select('daily-windrose-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
-        $content .= $this->get_key_value_option_select('daily-windrose-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(false), true, 'auto');
+        $content .= $this->get_key_value_option_select('daily-windrose-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(false), true, 'auto', true, false);
         $content .= $this->get_key_value_option_select('daily-windrose-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(false, true), true, 'auto');
-        $content .= $this->get_key_value_option_select('daily-windrose-datas-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_color_threshold_js_array(), true, 'color-step-5');
+        $content .= $this->get_key_value_option_select('daily-windrose-datas-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_color_threshold_js_array(), true, 'color-step-4', true, false);
         $content .= $this->get_key_value_option_select('daily-windrose-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
