@@ -49,12 +49,12 @@ class Manager
      *
      * @param string $device_id The device id.
      * @param string $module_id The module id.
-     * @param string $module_name The original name of the module.
+     * @param string $module_name Optional. The original name of the module.
      * @return string The module name.
      *
      * @since 3.5.0
      */
-    public static function get_module_name($device_id, $module_id, $module_name) {
+    public static function get_module_name($device_id, $module_id, $module_name = 'unknown') {
         $result = $module_name;
         $list = self::get_modules_details($device_id);
         foreach ($list as $module) {

@@ -77,7 +77,7 @@ class Windrose extends \WeatherStation\Engine\Module\Maintainer {
             $group .= $this->get_neutral_option_select('yearly-windrose-datas-measurement-' . $i . '-' . $this->station_guid, __('Measurement', 'live-weather-station'));
             $group .= $this->get_neutral_option_select('yearly-windrose-datas-set-'. $i . '-' . $this->station_guid, __('Dataset', 'live-weather-station'));
             if ($i == 1) {
-                $group .= $this->get_key_value_option_select('yearly-windrose-datas-line-mode-' . $i . '-' . $this->station_guid, __('Allotment', 'live-weather-station'), $this->get_allotment_js_array(3), true, 'single');
+                $group .= $this->get_key_value_option_select('yearly-windrose-datas-line-mode-' . $i . '-' . $this->station_guid, __('Allotment', 'live-weather-station'), $this->get_allotment_js_array(3), true, '8s');
             }
             else {
                 $group .= $this->get_key_value_option_select('yearly-windrose-datas-line-mode-' . $i . '-' . $this->station_guid, __('Breakdown', 'live-weather-station'), $this->get_color_threshold_js_array(), true, 'color-step-4');

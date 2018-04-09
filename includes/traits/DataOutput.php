@@ -10,6 +10,7 @@ use WeatherStation\Data\Unit\Conversion as Unit_Conversion;
 use WeatherStation\SDK\Generic\Plugin\Season\Calculator;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector;
 use WeatherStation\System\Cache\Cache;
+use WeatherStation\System\Device\Manager;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Utilities\ColorsManipulation;
 use WeatherStation\DB\Query;
@@ -867,21 +868,6 @@ trait Output {
                                             $last = $val;
                                         }
                                     }
-
-                                    //error_log(print_r($breakdown, true));
-                                    //error_log(print_r($breakdownlegend, true));
-                                    //error_log('min=>' . $minbreakdown . ' / max=>'.$maxbreakdown);
-
-
-
-                                    ///////////// DEBUG
-                                    $prout = '    var data ={"legend":["< 5 km/h", "5-10 km/h", "10-15 km/h", "15-20 km/h"],"series":[{"axis":"N","values":[0.05,0.1,0.1,0.02]},{"axis":"NE","values":[0.02,0.02,0.3,0.8]},{"axis":"E","values":[0.01,0.2,0.3,0.02]},{"axis":"SE","values":[0.15,0.02,0.1,0]},{"axis":"S","values":[0.1,0.2,0.1,0.2]},{"axis":"SW","values":[0.01,0.06,0.1,0.05]},{"axis":"W","values":[0.4,0.05,0.05,0.1]},{"axis":"NW","values":[0,0.1,0.2,0.3]}]};' . PHP_EOL;
-                                    $d =                   '{"legend":["< 5km\/h","5~9km\/h","9~14km\/h","> 14km\/h"],      "series":]{"axis":"North","values":[0,0,0,0]},{"axis":"Northeast","values":[0,0,0.064516129032258,0.096774193548387]},{"axis":"East","values":[0,0.032258064516129,0,0]},{"axis":"Southeast","values":[0,0,0,0.032258064516129]},{"axis":"South","values":[0,0.19354838709677,0.32258064516129,0.096774193548387]},{"axis":"Southwest","values":[0,0.096774193548387,0.064516129032258,0]},{"axis":"West","values":[0,0,0,0]},{"axis":"Northwest","values":[0,0,0,0]}]};';
-                                    //                        {"legend":"Array", "values":[{"axis":North,"values":[0,0,0,0]},{"axis":East,"values":[0,0.038461538461538,0,0]},{"axis":South,"values":[0,0.26923076923077,0.42307692307692,0.15384615384615]},{"axis":West,"values":[0,0.076923076923077,0.038461538461538,0]}]}
-                                    ///////////// DEBUG
-
-
-
                                     $values = array();
                                     $cpt = 0;
                                     foreach ($t as $key => $s) {
@@ -920,79 +906,59 @@ trait Output {
                                     $jset = str_replace('\"', '', $this->jsonify(null, $set, $raw_json, true));
                                     $jlegend = str_replace('\/', '/', $this->jsonify(null, $breakdownlegend, $raw_json, true));
                                     $final = '{' . '"legend":[' . $jlegend . '], ' . '"series":[' . $jset . ']};';
-
-                                    error_log($final);
-
-
-
-
-
-
-                                    /*foreach ($t as $key => $s) {
-                                        $info = array();
-                                        $module_name = $this->get_angle_full_text($key * $angle_val);
-                                        $info['key'] = $module_name;
-                                        $extra = array();
-                                        $period_name = '';
-                                        $period_range = 0;
-                                        if ($mode == 'yearly') {
-                                            if ($is_month) {
-                                                $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
-                                                $now->setDate($year, $month, 1);
-                                                $period_name = date_i18n('F Y', $now->getTimestamp());
-                                                $period_range = 1;
-                                            } elseif ($is_year) {
-                                                $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
-                                                $period_range = 12;
-                                            } elseif ($is_mseason) {
-                                                $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
-                                                if ($month == 12) {
-                                                    $period_name .= '~' . (string)($year + 1);
-                                                }
-                                                $period_range = 3;
+                                    $info = array();
+                                    $module_name = Manager::get_module_name($args[2]['device_id'], $args[2]['module_id']);
+                                    $info['key'] = $module_name;
+                                    $extra = array();
+                                    $period_name = '';
+                                    $period_range = 0;
+                                    if ($mode == 'yearly') {
+                                        if ($is_month) {
+                                            $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                            $now->setDate($year, $month, 1);
+                                            $period_name = date_i18n('F Y', $now->getTimestamp());
+                                            $period_range = 1;
+                                        } elseif ($is_year) {
+                                            $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
+                                            $period_range = 12;
+                                        } elseif ($is_mseason) {
+                                            $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
+                                            if ($month == 12) {
+                                                $period_name .= '~' . (string)($year + 1);
                                             }
-                                            $extra['set_name'] = ucfirst($this->get_operation_name($args[2]['set'], true));
+                                            $period_range = 3;
                                         }
-                                        $extra['ydomain']['min'] = $subymin;
-                                        $extra['ydomain']['max'] = $subymax;
-                                        $extra['ydomain']['dmin'] = $subydmin;
-                                        $extra['ydomain']['dmax'] = $subydmax;
-                                        $extra['ydomain']['amin'] = $subyamin;
-                                        $extra['ydomain']['amax'] = $subyamax;
-                                        $extra['period_name'] = $period_name;
-                                        $extra['info_key'] = $info['key'];
-                                        $extra['period_range'] = $period_range;
-                                        $extra['raw_measurement_type'] = $args[2]['measurement'];
-                                        $extra['measurement_type'] = $this->get_measurement_type($args[2]['measurement'], false, $module_type);
-                                        $extra['module_type'] = $module_type;
-                                        $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
-                                        $extra['module_name'] = $module_name;
-                                        $extra['station_name'] = $station['station_name'];
-                                        $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
-                                        $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
-                                        $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
-                                        $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
-                                        $extra['unit'] = $this->output_unit($args[2]['measurement'], $module_type);
-                                        $result['extras'][] = $extra;
-                                        $result['legend']['unit'] = $this->output_unit($args[2]['measurement'], $module_type);
-                                        $classes = array();
-                                        $classes[] = 'lws-serie-' . $key;
-                                        if (count($classes) > 0) {
-                                            $info['classed'] = implode(' ', $classes);
-                                        }
-                                        if ($json) {
-                                            $result['values'][] = $this->jsonify($info, $set, $raw_json);
-                                        } else {
-                                            $info['values'] = $set;
-                                            $result['values'][] = $info;
-                                        }
-                                    }*/
+                                        $extra['set_name'] = ucfirst($this->get_operation_name($args[2]['set'], true));
+                                    }
+                                    $extra['ydomain']['min'] = $subymin;
+                                    $extra['ydomain']['max'] = $subymax;
+                                    $extra['ydomain']['dmin'] = $subydmin;
+                                    $extra['ydomain']['dmax'] = $subydmax;
+                                    $extra['ydomain']['amin'] = $subyamin;
+                                    $extra['ydomain']['amax'] = $subyamax;
+                                    $extra['period_name'] = $period_name;
+                                    $extra['info_key'] = $info['key'];
+                                    $extra['period_range'] = $period_range;
+                                    $extra['raw_measurement_type'] = $args[2]['measurement'];
+                                    $extra['measurement_type'] = $this->get_measurement_type($args[2]['measurement'], false, $module_type);
+                                    $extra['module_type'] = $module_type;
+                                    $extra['module_name_generic'] = $this->get_module_type($module_type, false, true);
+                                    $extra['module_name'] = $module_name;
+                                    $extra['station_name'] = $station['station_name'];
+                                    $extra['station_loc'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
+                                    $extra['station_coord'] = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6) . ' ⁛ ';
+                                    $extra['station_coord'] .= $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
+                                    $extra['station_alt'] = str_replace('&nbsp;', ' ', $this->output_value($station['loc_altitude'], 'loc_altitude', true));
+                                    $extra['unit'] = $this->output_unit($args[2]['measurement'], $module_type);
+                                    $result['extras'][] = $extra;
+                                    $result['legend']['unit'] = $this->output_unit($args[2]['measurement'], $module_type);
+                                    if ($json) {
+                                        $result['values'] = $final;
+                                    } else {
+                                        $info['values'] = $set;
+                                        $result['values'][] = $breakdownlegend;
+                                    }
                                 }
-
-
-
-
-
                                 if ($type == 'astream') {
                                     foreach ($t as $key => $s) {
                                         $set = array();
@@ -1580,39 +1546,6 @@ trait Output {
                                     $info['type'] = 'line';
                                     $info['unit'] = $this->output_unit($arg['measurement'], $module_type)['unit'];
                                 }
-                                /*if ($self_color && $type == 'bcline') {
-                                    if ($i == 1) {
-                                        $info['color'] = $prop['fg_color'];
-                                    }
-                                    else {
-                                        $col = new ColorsManipulation($prop['fg_color']);
-                                        if ($col->isLight()) {
-                                            $info['color'] = '#' . $col->darken(10);
-                                        }
-                                        else {
-                                            $info['color'] = '#' . $col->lighten(30);
-                                        }
-
-                                    }
-                                }
-                                if ($self_color && $type == 'doubleline') {
-                                    if ($i == 1) {
-                                        $info['color'] = $prop['fg_color'];
-                                    }
-                                    else {
-                                        $col = new ColorsManipulation($prop['fg_color']);
-                                        if ($col->isLight()) {
-                                            $info['color'] = '#' . $col->darken(20);
-                                        }
-                                        else {
-                                            $info['color'] = '#' . $col->lighten(20);
-                                        }
-                                    }
-                                }*/
-                                if ($self_color && $type != 'lines' && $type != 'bars' && $type != 'sareas' && $type != 'doubleline' && $type != 'bcline') {
-                                    //$info['color'] = $prop['fg_color'];
-                                }
-
                                 if (($type == 'bars' || $type == 'sareas') && $arg['line_mode'] == 'single') {
                                     $info['nonStackable'] = true;
                                 }
@@ -1808,10 +1741,10 @@ trait Output {
             }
         }
         if ($json) {
-            if ($raw_json) {
+            if ($raw_json && $type != 'windrose') {
                 $result['values'] = implode(', ', $result['values']);
             }
-            else {
+            elseif ($type != 'windrose') {
                 if (!is_null($result) && isset($result['values']) && count($result['values']) > 0) {
                     $result['values'] = '[' . implode(', ', $result['values']) . ']';
                 }
@@ -1869,6 +1802,7 @@ trait Output {
             case 'astream':
             case 'cstick':
             case 'valuerc':
+            case 'windrose':
                 if (is_null($values)) {
                     return $result;
                 }
@@ -4052,42 +3986,7 @@ trait Output {
         $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         if ($data == 'inline') {
-            if ($type == 'windrose') {
-                $result .= '    var data'.$uniq.' ={"legend":["< 5 km/h", "5-10 km/h", "10-15 km/h", "15-20 km/h"],"series":[{"axis":"N","values":[0.05,0.1,0.1,0.02]},{"axis":"NE","values":[0.02,0.02,0.3,0.8]},{"axis":"E","values":[0.01,0.2,0.3,0.02]},{"axis":"SE","values":[0.15,0.02,0.1,0]},{"axis":"S","values":[0.1,0.2,0.1,0.2]},{"axis":"SW","values":[0.01,0.06,0.1,0.05]},{"axis":"W","values":[0.4,0.05,0.05,0.1]},{"axis":"NW","values":[0,0.1,0.2,0.3]}]};' . PHP_EOL;
-
-
-                //$result .= '    var data'.$uniq.' ={"legend":["< 5 km/h", "5-10 km/h", "10-15 km/h", "15-20 km/h", "20-25 km/h", "25-30 km/h", "30-35 km/h", "> 35 km/h"],"series":[{"axis":"N","values":[0.1,0.2,0]},{"axis":"NE","values":[0.1,0.2,0]},{"axis":"E","values":[0.1,0.2,0]},{"axis":"SE","values":[0.1,0.2,0]},{"axis":"S","values":[0.1,0.2,0]},{"axis":"SW","values":[0.1,0.2,0]},{"axis":"W","values":[0.1,0.2,0]},{"axis":"NW","values":[0.1,0.2,0]}]};' . PHP_EOL;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-            }
-            else {
-                $result .= '    var data'.$uniq.' =' . $values['values'] . ';' . PHP_EOL;
-            }
+            $result .= '    var data'.$uniq.' =' . $values['values'] . ';' . PHP_EOL;
             $result .= $body;
         }
         elseif ($data == 'ajax' || $data == 'ajax_refresh') {
