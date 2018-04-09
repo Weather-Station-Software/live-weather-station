@@ -864,7 +864,7 @@ trait Output {
                                             $breakdownlegend[] = '> ' . $last . $unit;
                                         }
                                         else {
-                                            $breakdownlegend[] = $last . '~' . $val . $unit;
+                                            $breakdownlegend[] = $last . ' / ' . $val . $unit;
                                             $last = $val;
                                         }
                                     }
@@ -899,13 +899,19 @@ trait Output {
                                     foreach ($values as $key => $val) {
                                         $sub = array();
                                         foreach ($val['values'] as $v) {
-                                            $sub[] = $v / $cpt;
+                                            if ($cpt > 0) {
+                                                $sub[] = $v / $cpt;
+                                            }
+                                            else {
+                                                $sub[] = 0;
+                                            }
+
                                         }
                                         $set[] = array('axis' => $val['axis'], 'values' => $sub);
                                     }
                                     $jset = str_replace('\"', '', $this->jsonify(null, $set, $raw_json, true));
                                     $jlegend = str_replace('\/', '/', $this->jsonify(null, $breakdownlegend, $raw_json, true));
-                                    $final = '{' . '"legend":[' . $jlegend . '], ' . '"series":[' . $jset . ']};';
+                                    $final = '{' . '"legend":[' . $jlegend . '], ' . '"series":[' . $jset . ']}';
                                     $info = array();
                                     $module_name = Manager::get_module_name($args[2]['device_id'], $args[2]['module_id']);
                                     $info['key'] = $module_name;
@@ -1066,11 +1072,19 @@ trait Output {
                                 }
                             } catch (\Exception $ex) {
                                 error_log('Oh, no: ' . $ex->getMessage());
-                                $result = array();
+                                if ($type == 'windrose') {
+                                    $result = '[]';
+                                }
+                                else {
+                                    $result = array();
+                                }
                             }
                         }
                         else {
                             $result = array();
+                            if ($type == 'windrose') {
+                                $result['values'] = '[]';
+                            }
                         }
                     }
                     elseif ($type == 'distributionrc') {
@@ -1842,7 +1856,7 @@ trait Output {
                 }
                 if ($mode == 'yearly' && $type != 'valuerc') {
                     $rain = false;
-                    if ($values['legend']['unit']['dimension'] == 'length') {
+                    if (array_key_exists('legend', $values) &&  $values['legend']['unit']['dimension'] == 'length') {
                         $rain = true;
                         foreach ($values['extras'] as $w) {
                             if (strpos($w['raw_measurement_type'], 'rain_') === false) {
@@ -3909,7 +3923,6 @@ trait Output {
                 default:
                     $titlestyle = '';
             }
-            //$inner_height = $inner_height . 'px';
             $legendColors = array();
             if ($color == 'self') {
                 $col = new ColorsManipulation($prop['fg_color']);
@@ -3951,7 +3964,6 @@ trait Output {
                 if ($timescale != 'linear') {
                     $body .= '            scale: "radial",' . PHP_EOL;
                 }
-                //$body .= '            scale: "radial",' . PHP_EOL;
                 if ($type_guideline == 'interactive') {
                     $body .= '            legend: true,' . PHP_EOL;
                 }

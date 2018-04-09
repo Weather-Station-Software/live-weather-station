@@ -4,6 +4,8 @@
 
 * New: new single and multi stackable bars chart for historical graph (month, meteorological season and year) with tons of options and settings.
 * New: new stackable areas chart for historical graph (month, meteorological season and year) with tons of options and settings.
+* New: new radial bar chart for daily graph with tons of options and settings.
+* New: new radial bar chart for historical graph (month, meteorological season and year) with tons of options and settings.
 * New: new candlestick chart for historical graph (month, meteorological season and year) with tons of options and settings.
 * New: new distribution radar chart and value radar chart for daily graph with tons of options and settings.
 * New: new distribution radar chart and value radar chart for historical graph (month, meteorological season and year) with tons of options and settings.
