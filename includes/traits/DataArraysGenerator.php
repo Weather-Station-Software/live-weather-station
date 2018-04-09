@@ -2437,6 +2437,8 @@ trait Generator {
         $result[] = 'Peet Bros - Ultimeter 100 Series';
         $result[] = 'Peet Bros - Ultimeter 800 Series';
         $result[] = 'Peet Bros - Ultimeter 2000 Series';
+        $result[] = 'Pioupiou V1';
+        $result[] = 'Pioupiou V2';
         $result[] = 'Radioshack - Wireless';
         $result[] = 'Radioshack - WX200';
         $result[] = 'RainWise - AgroMET';

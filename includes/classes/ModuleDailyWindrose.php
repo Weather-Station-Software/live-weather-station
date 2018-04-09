@@ -74,12 +74,12 @@ class Windrose extends \WeatherStation\Engine\Module\Maintainer {
             $group = $this->get_assoc_option_select('daily-windrose-datas-module-' . $i . '-' . $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
             $group .= $this->get_neutral_option_select('daily-windrose-datas-measurement-' . $i . '-' . $this->station_guid, __('Measurement', 'live-weather-station'));
             if ($i == 1) {
-                $group .= $this->get_key_value_option_select('daily-windrose-datas-line-mode-' . $i . '-' . $this->station_guid, __('Allotment', 'live-weather-station'), $this->get_allotment_js_array(3), true, 'single');
+                $group .= $this->get_key_value_option_select('daily-windrose-datas-line-mode-' . $i . '-' . $this->station_guid, __('Allotment', 'live-weather-station'), $this->get_allotment_js_array(3), true, '8s');
             }
             else {
                 $group .= $this->get_key_value_option_select('daily-windrose-datas-line-mode-' . $i . '-' . $this->station_guid, __('Breakdown', 'live-weather-station'), $this->get_color_threshold_js_array(), true, 'color-step-4');
             }
-            $group .= $this->get_key_value_option_select('daily-windrose-datas-dot-style-' . $i . '-' . $this->station_guid, __('Resolution', 'live-weather-station'), $this->get_stream_resolution_js_array(), true, 'res-10', $i != 1);
+            $group .= $this->get_key_value_option_select('daily-windrose-datas-dot-style-' . $i . '-' . $this->station_guid, __('Resolution', 'live-weather-station'), $this->get_stream_resolution_js_array(), true, 'res-10', true, false);
             $group .= $this->get_key_value_option_select('daily-windrose-datas-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid', true, false);
             $group .= $this->get_key_value_option_select('daily-windrose-datas-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular', true, false);
             if ($i == 1) {
