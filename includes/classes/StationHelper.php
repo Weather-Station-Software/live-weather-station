@@ -37,7 +37,8 @@ use WeatherStation\Engine\Module\Yearly\ValueRC as YearlyValueRC;
 use WeatherStation\Engine\Module\Yearly\Lines as YearlyLines;
 use WeatherStation\Engine\Module\Yearly\StackedAreas as YearlyStackedAreas;
 use WeatherStation\Engine\Module\Yearly\Windrose as YearlyWindrose;
-
+use WeatherStation\System\Plugin\Deactivator;
+use WeatherStation\System\Device\Manager as DeviceManager;
 
 
 /**
@@ -287,6 +288,42 @@ class Handling {
                                     $station['wug_sync'] = 1;
                                     $wug = true;
                                     $connect = true;
+                                }
+                            }
+                            if (array_key_exists('do-manage-modules', $_POST)) {
+                                $m = array();
+                                $modules = array();
+                                foreach ($_POST as $key => $p) {
+                                    if (strpos($key, 'lws-name-') === 0) {
+                                        $k = str_replace('lws-name-', '', $key);
+                                        if (!array_key_exists($k, $m)) {
+                                            $m[$k] = array();
+                                        }
+                                        $m[$k]['screen_name'] = (string)stripslashes(htmlspecialchars_decode($p));
+                                    }
+                                    if (strpos($key, 'lws-hidden-') === 0) {
+                                        $k = str_replace('lws-hidden-', '', $key);
+                                        if (!array_key_exists($k, $m)) {
+                                            $m[$k] = array();
+                                        }
+                                        $m[$k]['hidden'] = (integer)stripslashes(htmlspecialchars_decode($p));
+                                    }
+                                }
+                                if (count($m) > 0) {
+                                    foreach ($m as $k => $module) {
+                                        $add = array();
+                                        $add['device_id'] = $station['station_id'];
+                                        $add['module_id'] = $k;
+                                        if ($module['screen_name'] != '') {
+                                            $add['screen_name'] = $module['screen_name'];
+                                        }
+                                        $add['hidden'] = $module['hidden'];
+                                        $modules[] = $add;
+                                    }
+                                    if (count($modules) > 0) {
+                                        DeviceManager::set_modules_details($modules);
+                                        $save = true;
+                                    }
                                 }
                             }
                             if ($connect) {
@@ -556,6 +593,7 @@ class Handling {
             // Left column
             add_meta_box('lws-station', __('Station', 'live-weather-station' ), array($this, 'station_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
             add_meta_box('lws-location', __('Location', 'live-weather-station' ), array($this, 'location_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
+            add_meta_box('lws-tools', __('Tools', 'live-weather-station' ), array($this, 'tools_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
             if (in_array($station['station_type'], $this->publishable)) {
                 add_meta_box('lws-datapublishing', __('Data publishing', 'live-weather-station' ), array($this, 'publishing_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
             }
@@ -618,6 +656,17 @@ class Handling {
         $location_icn = $this->output_iconic_value(0, 'location', false, false, 'style="color:#999"', 'fa-lg');
         $altitude_icn = $this->output_iconic_value(0, 'altitude', false, false, 'style="color:#999"', 'fa-lg');
         include(LWS_ADMIN_DIR.'partials/StationLocation.php');
+    }
+
+    /**
+     * Get content of the tools widget box.
+     *
+     * @since 3.5.0
+     */
+    public function tools_widget($n, $args) {
+        $manage_link_icn = $this->output_iconic_value(0, 'module', false, false, 'style="color:#999"', 'fa-lg');
+        $manage_link = sprintf('<a href="?page=lws-stations&action=form&tab=manage&service=modules&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Manage modules', 'live-weather-station').'</a>', $this->station_guid);
+        include(LWS_ADMIN_DIR.'partials/StationTools.php');
     }
 
     /**
@@ -687,6 +736,7 @@ class Handling {
         $firmware_icn = $this->output_iconic_value(0, 'firmware', false, false, 'style="color:#999"', 'fa-lg');
         $setup_icn = $this->output_iconic_value(0, 'first_setup', false, false, 'style="color:#999"', 'fa-lg');
         $refresh_icn = $this->output_iconic_value(0, 'refresh', false, false, 'style="color:#999"', 'fa-lg');
+        $static_display = true;
         include(LWS_ADMIN_DIR.'partials/StationModule.php');
     }
 }

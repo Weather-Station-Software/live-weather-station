@@ -651,6 +651,32 @@ trait Storage {
     }
 
     /**
+     * Update  table with current value line.
+     *
+     * @param array $value The values to update or insert in the table
+     * @since 3.5.0
+     */
+    protected static function insert_update_table($table_name, $value) {
+        $field_insert = array();
+        $value_insert = array();
+        $value_update = array();
+        foreach ($value as $k => $v) {
+            $field_insert[] = '`' . $k . '`';
+            $value_insert[] = "'" . $v . "'";
+            $value_update[] = '`' . $k . '`=' . "'" . $v . "'";
+        }
+        if (count($field_insert) > 0) {
+            global $wpdb;
+            $sql = "INSERT INTO `" . $wpdb->prefix . $table_name . "` ";
+            $sql .= "(" . implode(',', $field_insert) . ") ";
+            $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
+            $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
+            error_log($sql);
+            $wpdb->query($sql);
+        }
+    }
+
+    /**
      * Update table with current value line.
      *
      * @param string $table_name The table to update.

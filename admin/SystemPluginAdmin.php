@@ -38,6 +38,7 @@ use WeatherStation\SDK\Clientraw\Plugin\StationInitiator as Clientraw_Station_In
 use WeatherStation\SDK\Realtime\Plugin\StationInitiator as Realtime_Station_Initiator;
 use WeatherStation\SDK\Stickertags\Plugin\StationInitiator as Stickertags_Station_Initiator;
 use WeatherStation\SDK\WeatherFlow\Plugin\StationInitiator as WeatherFlow_Station_Initiator;
+use WeatherStation\System\Device\Manager as DeviceManager;
 
 
 
@@ -115,7 +116,7 @@ class Admin {
     public function enqueue_styles() {
         wp_enqueue_style('lws-admin');
         wp_enqueue_style('lws-public');
-        wp_enqueue_style('thickbox');
+        //wp_enqueue_style('thickbox');
         wp_enqueue_style('lws-font-awesome');
         wp_enqueue_style('lws-weather-icons');
         wp_enqueue_style('lws-weather-icons-wind');
@@ -129,7 +130,7 @@ class Admin {
      * @since 3.4.0
      */
     public function register_scripts() {
-        lws_register_script('lws-admin', LWS_ADMIN_URL, 'js/live-weather-station-admin.min.js');
+        lws_register_script('lws-admin', LWS_ADMIN_URL, 'js/live-weather-station-admin.min.js', array('jquery', 'postbox', 'thickbox'));
         lws_register_script('lws-lcd', LWS_PUBLIC_URL, 'js/lws-lcd.min.js', array('jquery'));
         lws_register_script('lws-tween', LWS_PUBLIC_URL, 'js/tween.min.js');
         lws_register_script('lws-steelseries', LWS_PUBLIC_URL, 'js/steelseries.min.js', array('lws-tween'));
@@ -156,6 +157,7 @@ class Admin {
      */
     public function enqueue_scripts() {
         wp_enqueue_script('lws-admin');
+        //wp_enqueue_script('thickbox');
     }
 
     /**
@@ -1319,11 +1321,13 @@ class Admin {
                             $args = compact('station', 'error');
                             break;
                         case 'modules':
+                            DeviceManager::synchronize_modules();
                             $station = $this->get_station_informations_by_guid($id);
                             $station['txt_location'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
                             $station['txt_timezone'] = $this->output_timezone($station['loc_timezone']);
                             $station['oldest_data_txt'] = __('Oldest data from', 'live-weather-station') . ' ' .$this->output_value($station['oldest_data'], 'oldest_data', false, false, 'NAMain', $station['loc_timezone']);
                             $station['oldest_data_diff_txt'] = self::get_positive_time_diff_from_mysql_utc($station['oldest_data']);
+                            $station['module_detail'] = DeviceManager::get_modules_details($station['station_id']);
                             $error = array();
                             $args = compact('station', 'error');
                             break;
