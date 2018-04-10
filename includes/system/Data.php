@@ -4,6 +4,7 @@ namespace WeatherStation\System\Data;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\DB\Storage;
 use WeatherStation\System\Schedules\Watchdog;
+use WeatherStation\System\Device\Manager as DeviceManager;
 
 /**
  * The class to manage data integrity.
@@ -59,6 +60,7 @@ class Data {
     private function __full_check(){
         $this->delete_orphaned_stations();
         $this->delete_orphaned_modules();
+        DeviceManager::synchronize_modules();
         Logger::info($this->facility,null,null,null,null,null,null,'Data integrity fully checked.');
     }
 

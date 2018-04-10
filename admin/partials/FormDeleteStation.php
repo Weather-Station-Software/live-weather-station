@@ -36,7 +36,7 @@ $histo_icn = $this->output_iconic_value(0, 'historical', false, false, 'style="c
             </div>
         </div>
         <div style="width: 100%;clear: both;">
-            <p><?php echo sprintf(__('Are your sure you want to remove this station, and all its data, from %s?', 'live-weather-station'), LWS_PLUGIN_NAME);?></p>
+            <p><?php echo sprintf(__('Are you sure you want to remove this station, and all its data, from %s?', 'live-weather-station'), LWS_PLUGIN_NAME);?></p>
             <p class="submit"><input type="submit" name="delete-station" id="delete-station" class="button button-primary" value="<?php esc_html_e( 'Confirm Removal', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp; <input type="submit" name="donot-delete-station" id="donot-delete-station" class="button" value="<?php esc_html_e( 'Cancel Removal', 'live-weather-station' );?>"  />
                 <span id="span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Removing this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
         </div>

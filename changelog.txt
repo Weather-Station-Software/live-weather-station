@@ -30,6 +30,7 @@
 * Improvement: all scripts and stylesheets (including own plugin assets) can now be loaded from external CDN (settings in *system* tab).
 * Improvement: streamlined color management for graph with a single time serie.
 * Improvement: consistency in color inversion for graphs with more than one time serie.
+* Improvement: new actions labels in stations list view for better understanding.
 * Bug fix: in some old PHP versions, _opcache_ detection may produce unwanted warnings.
 * Bug fix: the meteorological winter dates may be wrong in some conditions while using sliding seasons as period for historical charts.
 * Bug fix: in some cases and in some timezones the time scale of the daily charts is wrong.

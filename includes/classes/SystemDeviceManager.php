@@ -30,6 +30,31 @@ class Manager
     private $stations = array();
 
     /**
+     * Synchronize the module details table.
+     *
+     * @return boolean False if operation fails, true otherwise.
+     *
+     * @since 3.5.0
+     */
+    public static function synchronize_modules() {
+        $result = true;
+        try {
+            global $wpdb;
+            $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+            $sql = "SELECT device_id, module_id, module_name, module_type FROM `" . $table_name . "` WHERE module_id in (SELECT DISTINCT module_id FROM `" . $table_name . "`) GROUP BY device_id, module_id;" ;
+            $devices = $wpdb->get_results($sql, ARRAY_A);
+            foreach ($devices as $device) {
+                self::insert_update_table(self::live_weather_station_module_detail_table(), $device);
+            }
+            Cache::flush_query();
+        }
+        catch (\Exception $ex) {
+            $result = false;
+        }
+        return $result;
+    }
+
+    /**
      * Indicates whether a module is hidden or visible.
      *
      * @param string $device_id The device id.
@@ -39,9 +64,15 @@ class Manager
      * @since 3.5.0
      */
     public static function is_visible($device_id, $module_id) {
-
-
-        return true;
+        $result = true;
+        $list = self::get_modules_details($device_id);
+        foreach ($list as $module) {
+            if ($module['module_id'] == $module_id) {
+                $result = (boolean)$module['hidden'];
+                break;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -59,7 +90,7 @@ class Manager
         $list = self::get_modules_details($device_id);
         foreach ($list as $module) {
             if ($module['module_id'] == $module_id) {
-                $result = $module['module_name'];
+                $result = $module['screen_name'];
                 break;
             }
         }
@@ -75,21 +106,47 @@ class Manager
      * @since 3.5.0
      */
     public static function get_modules_details($device_id) {
-        return self::get_modules_informations($device_id);
+        $cache_id = 'module-detail-' . $device_id;
+        $result = Cache::get_query($cache_id) ;
+        if ($result === false) {
+            try {
+                global $wpdb;
+                $table_name = $wpdb->prefix . self::live_weather_station_module_detail_table();
+                $sql = "SELECT * FROM `" . $table_name . "` WHERE device_id = '" . $device_id . "';";
+                $result = $wpdb->get_results($sql, ARRAY_A);
+                Cache::set_query($cache_id, $result);
+            } catch (\Exception $ex) {
+                $result = array();
+            }
+        }
+        return $result;
     }
 
     /**
      * Set a detailed array about modules.
      *
-     * @param array $details Details about the modules (same structure as get_modules_details).
+     * @param array $modules Details about the modules (same structure as get_modules_details).
      * @return boolean True if operation was successful, false otherwise.
      *
      * @since 3.5.0
      */
-    public static function set_modules_details($details) {
-
-
-        return false;
+    public static function set_modules_details($modules) {
+        $device_id = '';
+        if (count($modules) > 0) {
+            $device_id = $modules[0]['device_id'];
+        }
+        $cache_id = 'module-detail-' . $device_id;
+        $result = true;
+        try {
+            foreach ($modules as $module) {
+                self::insert_update_table(self::live_weather_station_module_detail_table(), $module);
+            }
+            Cache::invalidate_query($cache_id);
+        }
+        catch (\Exception $ex) {
+            $result = false;
+        }
+        return $result;
     }
 
     /**

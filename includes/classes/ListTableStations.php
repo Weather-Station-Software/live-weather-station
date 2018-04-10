@@ -37,7 +37,7 @@ class Stations extends Base {
 
     public function __construct(){
         global $status, $page;
-        parent::__construct(array('singular' => 'event', 'plural' => 'events', 'ajax' => true));
+        parent::__construct(array('singular' => 'station', 'plural' => 'stations', 'ajax' => true));
     }
 
     protected function column_default($item, $column_name){
@@ -77,6 +77,7 @@ class Stations extends Base {
     }
 
     protected function column_title($item){
+        $actions['see'] = sprintf('<a href="?page=lws-stations&action=manage&tab=view&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('View', 'live-weather-station').'</a>', rawurlencode($item['station_id']));
         switch ($item['station_type']) {
             case LWS_NETATMO_SID :
             case LWS_NETATMOHC_SID :
@@ -85,36 +86,36 @@ class Stations extends Base {
                 }
                 break;
             case LWS_LOC_SID :
-                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=Location&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
+                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=Location&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
             case LWS_OWM_SID :
-                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=OpenWeatherMap&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
+                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=OpenWeatherMap&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
             case LWS_WUG_SID :
-                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=WeatherUnderground&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
+                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=WeatherUnderground&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
             case LWS_RAW_SID :
-                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=clientraw&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
+                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=clientraw&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
             case LWS_REAL_SID :
-                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=realtime&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
+                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=realtime&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
             case LWS_TXT_SID :
-                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=stickertags&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
+                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=stickertags&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
             case LWS_WFLW_SID :
-                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=weatherflow&id=%s">'.__('Edit', 'live-weather-station').'</a>', $item['guid']);
+                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=weatherflow&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
         }
         $name = sprintf('<a class="row-title" href="?page=lws-stations&action=manage&tab=view&service=station&id=%s"' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>' . $item['station_name'] . '</a>', $item['guid']);
-        $actions['log'] = sprintf('<a href="?page=lws-events&station=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('See events log', 'live-weather-station').'</a>', rawurlencode($item['station_id']));
+        $actions['log'] = sprintf('<a href="?page=lws-events&station=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Browse events', 'live-weather-station').'</a>', rawurlencode($item['station_id']));
         return $this->get_icon($item['station_type']) . '&nbsp;' . sprintf('%1$s <br /><span style="color:silver">&nbsp;%2$s, %3$s</span>%4$s', $name, $item['loc_city'], $item['country'], $this->row_actions($actions));
     }
 
