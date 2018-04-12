@@ -23,6 +23,7 @@ define('LWS_REAL_SID', 5);
 define('LWS_NETATMOHC_SID', 6);
 define('LWS_TXT_SID', 7);
 define('LWS_WFLW_SID', 8);
+define('LWS_PIOU_SID', 9);
 
 trait Storage {
 
@@ -671,7 +672,6 @@ trait Storage {
             $sql .= "(" . implode(',', $field_insert) . ") ";
             $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
-            error_log($sql);
             $wpdb->query($sql);
         }
     }

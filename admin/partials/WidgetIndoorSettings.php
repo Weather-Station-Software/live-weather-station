@@ -7,13 +7,16 @@
  */
 
 use WeatherStation\System\Help\InlineHelp;
+use WeatherStation\System\Device\Manager as DeviceManager;
 
 ?>
 <p>
     <label for="<?php echo $this->get_field_id('module'); ?>"><?php esc_html_e('Module to display', 'live-weather-station'); ?></label>
     <select class="widefat" id="<?php echo $this->get_field_id('module'); ?>" name="<?php echo $this->get_field_name('module'); ?>">
         <?php foreach ($modules as $mod) { ?>
-            <option value="<?php echo $mod['module_id'] . '-' . $mod['module_id'] ?>"<?php if ($mod['module_id'] . '-' . $mod['module_id']==$module):?> selected="selected"<?php endif;?>><?php echo $mod['device_name'] . ' - ' .$mod['module_name'] ?></option>;
+            <?php if (DeviceManager::is_visible($mod['device_id'], $mod['module_id'])) { ?>
+                <option value="<?php echo $mod['module_id'] . '-' . $mod['module_id'] ?>"<?php if ($mod['module_id'] . '-' . $mod['module_id']==$module):?> selected="selected"<?php endif;?>><?php echo $mod['device_name'] . ' - ' .DeviceManager::get_module_name($mod['device_id'], $mod['module_id']); ?></option>;
+            <?php } ?>
         <?php } ?>
     </select>
 </p>
