@@ -111,7 +111,7 @@ spl_autoload_register(
         case 'WeatherStation\SDK\Stickertags\Plugin\StationCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentStickertagsStationCollector.php'; break;
         case 'WeatherStation\SDK\Stickertags\Plugin\StationInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentStickertagsStationInitiator.php'; break;
         case 'WeatherStation\SDK\Stickertags\Plugin\StationUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentStickertagsStationUpdater.php'; break;
-        case 'WeatherStation\SDK\WeatherFlow\WFLWApiClient': $file = LWS_INCLUDES_DIR.'libraries/wflw/autoload.php'; break;
+        case 'WeatherStation\SDK\WeatherFlow\PIOUApiClient': $file = LWS_INCLUDES_DIR.'libraries/wflw/autoload.php'; break;
         case 'WeatherStation\SDK\WeatherFlow\Plugin\BaseClient': $file = LWS_INCLUDES_DIR.'traits/WeatherFlowPluginBaseClient.php'; break;
         case 'WeatherStation\SDK\WeatherFlow\Plugin\PublicClient': $file = LWS_INCLUDES_DIR.'traits/WeatherFlowPluginPublicClient.php'; break;
         case 'WeatherStation\SDK\WeatherFlow\Plugin\StationCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentWeatherFlowStationCollector.php'; break;

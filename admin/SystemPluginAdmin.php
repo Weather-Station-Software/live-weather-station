@@ -1269,6 +1269,20 @@ class Admin {
                             $error_message = '';
                             $args = compact('station', 'countries', 'timezones', 'error', 'error_message', 'servertypes', 'models', 'dashboard');
                             break;
+                        case 'pioupiou':
+                            if ($id) {
+                                $station = $this->get_station_informations_by_guid($id);
+                            }
+                            else {
+                                $station = $this->get_piou_station();
+                            }
+                            $countries = $this->get_country_names();
+                            $timezones = $this->get_timezones_js_array();
+                            $models = $this->get_models_array(array('Pioupiou'));
+                            $error = 0;
+                            $error_message = '';
+                            $args = compact('station', 'countries', 'timezones', 'error', 'error_message', 'models', 'dashboard');
+                            break;
                         case 'realtime':
                             if ($id) {
                                 $station = $this->get_station_informations_by_guid($id);
@@ -1406,6 +1420,32 @@ class Admin {
                                 else {
                                     $view = 'form-add-edit-clientraw' ;
                                     $args = compact('station', 'countries', 'timezones', 'error', 'error_message', 'servertypes', 'models', 'dashboard');
+                                }
+                            }
+                            break;
+                        case 'pioupiou':
+                            if (array_key_exists('add-edit-piou', $_POST)) {
+                                $station = $this->add_piou();
+                                $error = 0;
+                                $countries = $this->get_country_names();
+                                $timezones = $this->get_timezones_js_array();
+                                $models = $this->get_models_array(array('Pioupiou'));
+                                if (array_key_exists('error', $station)) {
+                                    $error = $station['error'];
+                                    unset($station['error']);
+                                }
+                                if (array_key_exists('message', $station)) {
+                                    $error_message = $station['message'];
+                                    unset($station['message']);
+                                }
+                                if ($error == 0) {
+                                    if ($dashboard) {
+                                        $view = 'dashboard' ;
+                                    }
+                                }
+                                else {
+                                    $view = 'form-add-edit-clientraw' ;
+                                    $args = compact('station', 'countries', 'timezones', 'error', 'error_message', 'models', 'dashboard');
                                 }
                             }
                             break;
@@ -2542,6 +2582,136 @@ class Admin {
                 }
             }
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-raw')) {
+                if ($guid = $this->update_stations_table($station, true)) {
+                    $st = $this->get_station_informations_by_guid($guid);
+                    $station_id = $st['station_id'];
+                    $station_name = $st['station_name'];
+                    if ($update) {
+                        $message = __('The station %s has been correctly updated.', 'live-weather-station');
+                        $log = 'Station updated.';
+                    }
+                    else {
+                        $message = __('The station %s has been correctly added.', 'live-weather-station');
+                        $log = 'Station added.';
+                    }
+                    $message = sprintf($message, '<em>' . $station_name . '</em>');
+                    add_settings_error('lws_nonce_success', 200, $message, 'updated');
+                    Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
+                    $this->get_raw();
+                    $st = $this->get_station_informations_by_guid($guid);
+                    $this->modify_table(self::live_weather_station_log_table(), 'device_id', $station_id, $st['station_id']);
+                }
+                else {
+                    if ($update) {
+                        $message = $message = __('Unable to update the station %s.', 'live-weather-station');
+                        $log = 'Unable to update this station.';
+                        $station_id = $station['station_id'];
+                        $station_name = $station['station_name'];
+                    }
+                    else {
+                        $message = $message = __('Unable to add the station %s.', 'live-weather-station');
+                        $log = 'Unable to add this station.';
+                        $station_id = null;
+                        $station_name = null;
+                    }
+                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    add_settings_error('lws_nonce_error', 403, $message, 'error');
+                    Logger::error($this->service, null, $station_id, $station_name, null, null, null, $log);
+                }
+            }
+            else {
+                if ($update) {
+                    $message = $message = __('Unable to update the station %s.', 'live-weather-station');
+                    $station_id = $station['station_id'];
+                    $station_name = $station['station_name'];
+                }
+                else {
+                    $message = $message = __('Unable to add the station %s.', 'live-weather-station');
+                    $station_id = null;
+                    $station_name = null;
+                }
+                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                add_settings_error('lws_nonce_error', 403, $message, 'error');
+                Logger::critical('Security', null, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
+                Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It had not been possible to securely add or update this station.');
+            }
+        }
+        else {
+            $result['error'] = $error;
+        }
+        if (!array_key_exists('guid', $station)) {
+            $station['guid'] = 0;
+        }
+        $station['error'] = $error;
+        $station['message'] = $message;
+        return $station;
+    }
+
+    /**
+     * Add a Pioupiou station.
+     *
+     * @since 3.5.0
+     */
+    public function add_piou() {
+        $station = array();
+        $error = 0;
+        $message = '';
+        if (array_key_exists('guid', $_POST) &&
+            array_key_exists('station_id', $_POST) &&
+            array_key_exists('loc_city', $_POST) &&
+            array_key_exists('loc_country_code', $_POST) &&
+            array_key_exists('loc_tz', $_POST) &&
+            array_key_exists('service_id', $_POST) &&
+            array_key_exists('station_model', $_POST) &&
+            array_key_exists('loc_altitude', $_POST)) {
+            $station['station_type'] = LWS_PIOU_SID;
+            if (array_key_exists('guid', $_POST)) {
+                $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+            }
+            if (array_key_exists('station_id', $_POST)) {
+                $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
+            }
+            if (array_key_exists('loc_city', $_POST)) {
+                $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+            }
+            if (array_key_exists('loc_country_code', $_POST)) {
+                $station['loc_country_code'] = $_POST['loc_country_code'];
+            }
+            if (array_key_exists('loc_tz', $_POST)) {
+                $station['loc_timezone'] = $_POST['loc_tz'];
+            }
+            if (array_key_exists('service_id', $_POST)) {
+                $station['service_id'] = $_POST['service_id'];
+            }
+            if (array_key_exists('loc_altitude', $_POST)) {
+                $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
+            }
+            $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
+
+
+
+
+            $collector = new ClientrawCollector();
+            if ($message = $collector->test($station['connection_type'], $station['service_id'])) {
+                $error = 1;
+            }
+
+
+
+
+        }
+        else {
+            $error = 3;
+        }
+        if ($error == 0) {
+            $update = true;
+            if (array_key_exists('guid', $station)) {
+                if ($station['guid'] == 0) {
+                    unset($station['guid']);
+                    $update = false;
+                }
+            }
+            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-piou')) {
                 if ($guid = $this->update_stations_table($station, true)) {
                     $st = $this->get_station_informations_by_guid($guid);
                     $station_id = $st['station_id'];
