@@ -42,6 +42,9 @@ trait Description {
             case 8:
                 $result = 'WeatherFlow';
                 break;
+            case 9:
+                $result = 'Pioupiou';
+                break;
             default:
                 $result = null;
         }

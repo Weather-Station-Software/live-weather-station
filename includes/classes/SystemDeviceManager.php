@@ -68,7 +68,7 @@ class Manager
         $list = self::get_modules_details($device_id);
         foreach ($list as $module) {
             if ($module['module_id'] == $module_id) {
-                $result = (boolean)$module['hidden'];
+                $result = !(boolean)$module['hidden'];
                 break;
             }
         }
@@ -91,6 +91,9 @@ class Manager
         foreach ($list as $module) {
             if ($module['module_id'] == $module_id) {
                 $result = $module['screen_name'];
+                if ($result == '') {
+                    $result = $module['module_name'];
+                }
                 break;
             }
         }

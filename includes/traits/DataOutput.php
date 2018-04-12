@@ -10,7 +10,6 @@ use WeatherStation\Data\Unit\Conversion as Unit_Conversion;
 use WeatherStation\SDK\Generic\Plugin\Season\Calculator;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector;
 use WeatherStation\System\Cache\Cache;
-use WeatherStation\System\Device\Manager;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Utilities\ColorsManipulation;
 use WeatherStation\DB\Query;
@@ -913,7 +912,7 @@ trait Output {
                                     $jlegend = str_replace('\/', '/', $this->jsonify(null, $breakdownlegend, $raw_json, true));
                                     $final = '{' . '"legend":[' . $jlegend . '], ' . '"series":[' . $jset . ']}';
                                     $info = array();
-                                    $module_name = Manager::get_module_name($args[2]['device_id'], $args[2]['module_id']);
+                                    $module_name = DeviceManager::get_module_name($args[2]['device_id'], $args[2]['module_id']);
                                     $info['key'] = $module_name;
                                     $extra = array();
                                     $period_name = '';
@@ -2177,6 +2176,9 @@ trait Output {
                 $result = 'top';
                 break;
         }
+        if ($measurement == 'noise') {
+            $result = 'top';
+        }
         return $result;
     }
 
@@ -2508,7 +2510,7 @@ trait Output {
         $measurement1 = '';
         $measurement2 = '';
         if ($type != 'distributionrc' && $type != 'valuerc' && $type != 'doubleline') {
-            if (array_key_exists('measurement', $items[1])) {
+            if (isset($items[1]) && array_key_exists('measurement', $items[1])) {
                 $measurement1 = $items[1]['measurement'];
             } else {
                 $measurement1 = '';
@@ -4759,7 +4761,7 @@ trait Output {
                 if (count($_result) > 0) {
                     $master = $_result[0];
                     $result['station'] = $master['device_name'];
-                    $result['module'] = $master['module_name'];
+                    $result['module'] = DeviceManager::get_module_name($master['device_id'], $master['module_id']);// $master['module_name'];
                 } else {
                     $result['station'] = '';
                     $result['module'] = '';
@@ -4870,7 +4872,7 @@ trait Output {
             }
             if ($full) {
                 $result['station'] = $master['device_name'];
-                $result['module'] = $master['module_name'];
+                $result['module'] = DeviceManager::get_module_name($master['device_id'], $master['module_id']);
                 $result['type'] = $this->get_measurement_type($measure_type, false, $module_type);
                 $result['shorttype'] = $this->get_measurement_type($measure_type, true, $module_type);
                 $result['unit'] = $this->output_unit($measure_type, $module_type)['unit'];
@@ -8431,7 +8433,7 @@ trait Output {
                     }
                     $key = $data['module_id'];
                     $sub = array();
-                    $sub['name'] = $data['module_name'];
+                    $sub['name'] = DeviceManager::get_module_name($data['device_id'], $data['module_id']);
                     $sub['type'] = $data['module_type'];
                     $sub['id'] = $data['module_id'];
                     $sub['datas'] = array();
@@ -8672,7 +8674,7 @@ trait Output {
                         $measure['title'] = iconv('UTF-8','ASCII//TRANSLIT',__('O/DR', 'live-weather-station') . ':' .$this->output_abbreviation($data['measure_type']));
                     }
                     else {
-                        $measure['title'] = iconv('UTF-8', 'ASCII//TRANSLIT', $data['module_name']);
+                        $measure['title'] = iconv('UTF-8', 'ASCII//TRANSLIT', DeviceManager::get_module_name($data['device_id'], $data['module_id']));
                     }
                 }
                 if (array_key_exists($data['module_id'], $battery)) {

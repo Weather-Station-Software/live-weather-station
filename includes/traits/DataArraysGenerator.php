@@ -7,6 +7,7 @@ use WeatherStation\Data\Type\Description as Type_Description;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector;
 use WeatherStation\Data\History\Builder as History;
 use WeatherStation\SDK\Generic\Plugin\Season\Calculator as Season;
+use WeatherStation\System\Device\Manager as DeviceManager;
 
 /**
  * Arrays generator for javascript conversion.
@@ -330,8 +331,8 @@ trait Generator {
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_trend_format(array($mvalue, $this->output_value($mvalue, $mtype, false, true, $ref['module_type']))));
                 break;
             case 'aggregated':
-                /*    $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_aggregated_value_format(array($mvalue, $this->output_value($mvalue, $mtype))));
-                    break;*/
+                    $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_aggregated_value_format(array($mvalue, $this->output_value($mvalue, $mtype))));
+                    break;
             case 'outdoor':
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_aggregated_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']))));
                 break;
@@ -396,7 +397,7 @@ trait Generator {
     private function get_line_array($ref, $data, $reduced, $module_type, $measurement_type, $comparison=false, $distribution=false) {
         $unit = $this->output_unit($measurement_type, $module_type);
         $available_operations = $this->get_available_operations($measurement_type, $module_type, $comparison, $distribution);
-        if (count($available_operations) > 0) {
+        if (count($available_operations) > 0 || $measurement_type == 'aggregated' || $measurement_type == 'outdoor' || $measurement_type == 'aggregated' || $measurement_type == 'psychrometric') {
             return array($this->get_measurement_type($measurement_type, false, $module_type), $measurement_type, ($reduced ? array() : $this->get_measure_array($ref, $data, $measurement_type)), $unit['dimension'], $available_operations);
         }
         else {
@@ -895,7 +896,7 @@ trait Generator {
                 $ref['device_name'] = $data['station']['station_name'];
                 $ref['module_id'] = $module['module_id'];
                 $ref['module_type'] = $module['module_type'];
-                $ref['module_name'] = $module['module_name'];
+                $ref['module_name'] = DeviceManager::get_module_name($ref['device_id'], $ref['module_id']);
                 $ref['loc_timezone'] = $data['station']['loc_timezone'];
                 if (($module['module_type'] == 'NAMain') && ($data['station']['station_type'] == 1) && !$full) {
                     continue;
@@ -909,9 +910,11 @@ trait Generator {
                 if (($module['module_type'] == 'NAPollution') && ($daily || $historical)) {
                     continue;
                 }
-                $m = $this->get_module_array($ref, $module, $full, $aggregated, $reduced, $computed, $mono, $daily, $historical, $noned, $comparison, $distribution);
-                if (!empty($m)){
-                    $modules[] = $m;
+                if (DeviceManager::is_visible($ref['device_id'], $ref['module_id'])) {
+                    $m = $this->get_module_array($ref, $module, $full, $aggregated, $reduced, $computed, $mono, $daily, $historical, $noned, $comparison, $distribution);
+                    if (!empty($m)){
+                        $modules[] = $m;
+                    }
                 }
             }
         }
@@ -1935,15 +1938,11 @@ trait Generator {
      */
     protected function get_allotment_js_array($level=2) {
         $result = array();
-        $result[] = array('4s',  __('4 sectors', 'live-weather-station'));
-        if ($level >1) {
-            $result[] = array('8s',  __('8 sectors', 'live-weather-station'));
-        }
-        if ($level >2) {
-            $result[] = array('16s',  __('16 sectors', 'live-weather-station'));
-        }
-        if ($level >3) {
-            $result[] = array('32s',  __('32 sectors', 'live-weather-station'));
+        for ($i = 0; $i < 5; $i++) {
+            if ($level > $i) {
+                $n = pow(2, $i + 2) ;
+                $result[] = array($n . 's',  sprintf(_n('%s sector', '%s sectors', $n,  'live-weather-station'), $n));
+            }
         }
         return $result;
     }
@@ -2365,100 +2364,114 @@ trait Generator {
      * @return array An array containing the available models.
      * @since 3.0.0
      */
-    public function get_models_array() {
+    public function get_models_array($force = array()) {
         $result = array();
-        $result[] = 'N/A';
-        $result[] = '1-Wire - Weather Station';
-        $result[] = 'AcuRite - 3-in-1 Pro';
-        $result[] = 'AcuRite - 5-in-1 Pro';
-        $result[] = 'Airmar - 150WX';
-        $result[] = 'Airmar - PB100';
-        $result[] = 'Argent Data Systems - WS1';
-        $result[] = 'Ambient Weather - WS-1000 Series';
-        $result[] = 'Ambient Weather - WS-2000 Series';
-        $result[] = 'Campbell Scientific - CR1000 Series';
-        $result[] = 'Campbell Scientific - CR200X Series';
-        $result[] = 'Campbell Scientific - CR3000 Series';
-        $result[] = 'Campbell Scientific - CR800 Series';
-        $result[] = 'Columbia - Capricorn';
-        $result[] = 'Columbia - Capricorn FLX';
-        $result[] = 'Columbia - Magellan';
-        $result[] = 'Columbia - Magellan MX';
-        $result[] = 'Columbia - Orion';
-        $result[] = 'Columbia - Pulsar';
-        $result[] = 'Davis Instruments - Vantage Pro';
-        $result[] = 'Davis Instruments - Vantage Pro Plus';
-        $result[] = 'Davis Instruments - Vantage Pro2';
-        $result[] = 'Davis Instruments - Vantage Pro2 Plus';
-        $result[] = 'Davis Instruments - Vantage Vue';
-        $result[] = 'Davis Instruments - Weather Monitor II';
-        $result[] = 'Dyacon - MS-100';
-        $result[] = 'EnvironData - Weather Maestro';
-        $result[] = 'Fine Offset - HP Series';
-        $result[] = 'Fine Offset - WA Series';
-        $result[] = 'Fine Offset - WH Series';
-        $result[] = 'Fine Offset - WS Series';
-        $result[] = 'Hideki - TE923';
-        $result[] = 'Honeywell Meade - TFA / TE Series';
-        $result[] = 'Honeywell Meade - TN Series';
-        $result[] = 'La Crosse - C84612';
-        $result[] = 'La Crosse - WS-1500 Series';
-        $result[] = 'La Crosse - WS-1600 Series';
-        $result[] = 'La Crosse - WS-1900 Series';
-        $result[] = 'La Crosse - WS-2000 Series';
-        $result[] = 'Maximum Inc. - Blackwatch';
-        $result[] = 'Maximum Inc. - Catalina';
-        $result[] = 'Maximum Inc. - Executive';
-        $result[] = 'Maximum Inc. - Hatteras';
-        $result[] = 'Maximum Inc. - Marconi';
-        $result[] = 'Maximum Inc. - Montauk';
-        $result[] = 'Maximum Inc. - Newport';
-        $result[] = 'Maximum Inc. - Observer';
-        $result[] = 'Maximum Inc. - Portland';
-        $result[] = 'Maximum Inc. - Professional';
-        $result[] = 'Maximum Inc. - Sorcerer';
-        $result[] = 'Maximum Inc. - WeatherMaster';
-        $result[] = 'MEA - ETO Weather Station';
-        $result[] = 'MEA - Feedlot Weather Station';
-        $result[] = 'MEA - Junior Weather Station';
-        $result[] = 'MEA - Portable Weather Station';
-        $result[] = 'MEA - Premium Weather Station';
-        $result[] = 'MEA - Spray Drift Weather Station';
-        $result[] = 'Netatmo - Personal Weather Station';
-        $result[] = 'Netatmo - Healthy Home Coach';
-        $result[] = 'New Mountain Innovations - NM100';
-        $result[] = 'New Mountain Innovations - NM150';
-        $result[] = 'Onset - HOBO';
-        $result[] = 'Oregon Scientific - LW301';
-        $result[] = 'Oregon Scientific - WMR100 Series';
-        $result[] = 'Oregon Scientific - WMR200 Series';
-        $result[] = 'Oregon Scientific - WMR300 Series';
-        $result[] = 'Oregon Scientific - WMR900 Series';
-        $result[] = 'Peet Bros - Ultimeter 100 Series';
-        $result[] = 'Peet Bros - Ultimeter 800 Series';
-        $result[] = 'Peet Bros - Ultimeter 2000 Series';
-        $result[] = 'Pioupiou V1';
-        $result[] = 'Pioupiou V2';
-        $result[] = 'Radioshack - Wireless';
-        $result[] = 'Radioshack - WX200';
-        $result[] = 'RainWise - AgroMET';
-        $result[] = 'RainWise - CC3000';
-        $result[] = 'RainWise - MKIII';
-        $result[] = 'RainWise - System 12 WeatherLog';
-        $result[] = 'RainWise - WS-1000CC';
-        $result[] = 'RainWise - WS-2000';
-        $result[] = 'Reinhardt - 5MVH';
-        $result[] = 'Texas Weather Instruments - OneWire';
-        $result[] = 'Texas Weather Instruments - WLS';
-        $result[] = 'Texas Weather Instruments - WPS';
-        $result[] = 'Texas Weather Instruments - WRx';
-        $result[] = 'TFA-Dostmann - KlimaLogg Pro';
-        $result[] = 'Ventus - W800 Series';
-        $result[] = 'Wario - ME11/12';
-        $result[] = 'Weather Hawk - 500 Series';
-        $result[] = 'Weather Hawk - 600 Series';
-        $result[] = 'Weather Hawk - Signature Series';
-        $result[] = 'WeatherFlow - Smart Weather Station';
+        $models = array();
+        $models[] = 'N/A';
+        $models[] = '1-Wire - Weather Station';
+        $models[] = 'AcuRite - 3-in-1 Pro';
+        $models[] = 'AcuRite - 5-in-1 Pro';
+        $models[] = 'Airmar - 150WX';
+        $models[] = 'Airmar - PB100';
+        $models[] = 'Argent Data Systems - WS1';
+        $models[] = 'Ambient Weather - WS-1000 Series';
+        $models[] = 'Ambient Weather - WS-2000 Series';
+        $models[] = 'Campbell Scientific - CR1000 Series';
+        $models[] = 'Campbell Scientific - CR200X Series';
+        $models[] = 'Campbell Scientific - CR3000 Series';
+        $models[] = 'Campbell Scientific - CR800 Series';
+        $models[] = 'Columbia - Capricorn';
+        $models[] = 'Columbia - Capricorn FLX';
+        $models[] = 'Columbia - Magellan';
+        $models[] = 'Columbia - Magellan MX';
+        $models[] = 'Columbia - Orion';
+        $models[] = 'Columbia - Pulsar';
+        $models[] = 'Davis Instruments - Vantage Pro';
+        $models[] = 'Davis Instruments - Vantage Pro Plus';
+        $models[] = 'Davis Instruments - Vantage Pro2';
+        $models[] = 'Davis Instruments - Vantage Pro2 Plus';
+        $models[] = 'Davis Instruments - Vantage Vue';
+        $models[] = 'Davis Instruments - Weather Monitor II';
+        $models[] = 'Dyacon - MS-100';
+        $models[] = 'EnvironData - Weather Maestro';
+        $models[] = 'Fine Offset - HP Series';
+        $models[] = 'Fine Offset - WA Series';
+        $models[] = 'Fine Offset - WH Series';
+        $models[] = 'Fine Offset - WS Series';
+        $models[] = 'Hideki - TE923';
+        $models[] = 'Honeywell Meade - TFA / TE Series';
+        $models[] = 'Honeywell Meade - TN Series';
+        $models[] = 'La Crosse - C84612';
+        $models[] = 'La Crosse - WS-1500 Series';
+        $models[] = 'La Crosse - WS-1600 Series';
+        $models[] = 'La Crosse - WS-1900 Series';
+        $models[] = 'La Crosse - WS-2000 Series';
+        $models[] = 'Maximum Inc. - Blackwatch';
+        $models[] = 'Maximum Inc. - Catalina';
+        $models[] = 'Maximum Inc. - Executive';
+        $models[] = 'Maximum Inc. - Hatteras';
+        $models[] = 'Maximum Inc. - Marconi';
+        $models[] = 'Maximum Inc. - Montauk';
+        $models[] = 'Maximum Inc. - Newport';
+        $models[] = 'Maximum Inc. - Observer';
+        $models[] = 'Maximum Inc. - Portland';
+        $models[] = 'Maximum Inc. - Professional';
+        $models[] = 'Maximum Inc. - Sorcerer';
+        $models[] = 'Maximum Inc. - WeatherMaster';
+        $models[] = 'MEA - ETO Weather Station';
+        $models[] = 'MEA - Feedlot Weather Station';
+        $models[] = 'MEA - Junior Weather Station';
+        $models[] = 'MEA - Portable Weather Station';
+        $models[] = 'MEA - Premium Weather Station';
+        $models[] = 'MEA - Spray Drift Weather Station';
+        $models[] = 'Netatmo - Personal Weather Station';
+        $models[] = 'Netatmo - Healthy Home Coach';
+        $models[] = 'New Mountain Innovations - NM100';
+        $models[] = 'New Mountain Innovations - NM150';
+        $models[] = 'Onset - HOBO';
+        $models[] = 'Oregon Scientific - LW301';
+        $models[] = 'Oregon Scientific - WMR100 Series';
+        $models[] = 'Oregon Scientific - WMR200 Series';
+        $models[] = 'Oregon Scientific - WMR300 Series';
+        $models[] = 'Oregon Scientific - WMR900 Series';
+        $models[] = 'Peet Bros - Ultimeter 100 Series';
+        $models[] = 'Peet Bros - Ultimeter 800 Series';
+        $models[] = 'Peet Bros - Ultimeter 2000 Series';
+        $models[] = 'Pioupiou V1';
+        $models[] = 'Pioupiou V2';
+        $models[] = 'Radioshack - Wireless';
+        $models[] = 'Radioshack - WX200';
+        $models[] = 'RainWise - AgroMET';
+        $models[] = 'RainWise - CC3000';
+        $models[] = 'RainWise - MKIII';
+        $models[] = 'RainWise - System 12 WeatherLog';
+        $models[] = 'RainWise - WS-1000CC';
+        $models[] = 'RainWise - WS-2000';
+        $models[] = 'Reinhardt - 5MVH';
+        $models[] = 'Texas Weather Instruments - OneWire';
+        $models[] = 'Texas Weather Instruments - WLS';
+        $models[] = 'Texas Weather Instruments - WPS';
+        $models[] = 'Texas Weather Instruments - WRx';
+        $models[] = 'TFA-Dostmann - KlimaLogg Pro';
+        $models[] = 'Ventus - W800 Series';
+        $models[] = 'Wario - ME11/12';
+        $models[] = 'Weather Hawk - 500 Series';
+        $models[] = 'Weather Hawk - 600 Series';
+        $models[] = 'Weather Hawk - Signature Series';
+        $models[] = 'WeatherFlow - Smart Weather Station';
+        foreach ($models as $model) {
+            if (empty($force)) {
+                $result[] = $model;
+            }
+            else {
+                foreach ($force as $f) {
+                    if (strpos($model, $f) !== false) {
+                        $result[] = $model;
+                        break;
+                    }
+                }
+            }
+        }
         return $result;
     }
 
