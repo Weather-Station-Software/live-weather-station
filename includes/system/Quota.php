@@ -334,6 +334,13 @@ class Quota {
                         break;
                 }
                 break;
+            case 'Pioupiou':
+                switch ($verb) {
+                    case 'GET' :
+                        $quota = 10;
+                        break;
+                }
+                break;
             case 'ip-API':
                 switch ($verb) {
                     case 'GET' :

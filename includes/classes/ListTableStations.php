@@ -72,6 +72,9 @@ class Stations extends Base {
             case LWS_WFLW_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_weatherflow_icon('#666666')) . '" />';
                 break;
+            case LWS_PIOU_SID :
+                $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_piou_icon('#666666')) . '" />';
+                break;
         }
         return $result;
     }
@@ -111,6 +114,10 @@ class Stations extends Base {
                 break;
             case LWS_WFLW_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=weatherflow&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['guid']);
+                $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
+                break;
+            case LWS_PIOU_SID :
+                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=pioupiou&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
         }

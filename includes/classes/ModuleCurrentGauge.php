@@ -58,7 +58,7 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.4.0
      */
     protected function prepare() {
-        $js_array_justgage = $this->get_all_stations_array(false, false, true, true, true, false, false, false, array($this->station_guid));
+        $js_array_justgage = $this->get_all_stations_array(false, false, true, true, true, false, false, false, array($this->station_guid), false, false, true);
         if (array_key_exists($this->station_guid, $js_array_justgage)) {
             if (array_key_exists(2, $js_array_justgage[$this->station_guid])) {
                 $this->data = $js_array_justgage[$this->station_guid][2];

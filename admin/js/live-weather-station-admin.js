@@ -163,6 +163,33 @@ jQuery(document).ready( function($) {
         }
     });
 
+    $('#add-edit-piou').click( function() {
+        var form_data=$('#add-edit-piou-form').serializeArray();
+        var error_free=true;
+        for (var input in form_data){
+            if (form_data[input]['name'] == 'loc_city') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'service_id') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'loc_altitude') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+        }
+        if (error_free) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#span-sync').show();
+        }
+    });
+
     $('#add-edit-real').click( function() {
         var form_data=$('#add-edit-real-form').serializeArray();
         var error_free=true;

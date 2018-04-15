@@ -125,6 +125,14 @@ trait Storage {
     }
 
     /**
+     *
+     * @since 3.5.0
+     */
+    public static function live_weather_station_data_year_table() {
+        return 'live_weather_station_data_year';
+    }
+
+    /**
      * Performs a safe add column.
      *
      * @since    2.5.0
@@ -477,6 +485,26 @@ trait Storage {
     }
 
     /**
+     * Creates yearly table for the data statistics.
+     *
+     * @since 3.5.0
+     */
+    private static function create_live_weather_station_data_year_table() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        $table_name = $wpdb->prefix . self::live_weather_station_data_year_table();
+        $sql = "CREATE TABLE IF NOT EXISTS " . $table_name;
+        $sql .= " (`timestamp` date NOT NULL DEFAULT '0000-00-00',";
+        $sql .= " `table_name` varchar(60) NOT NULL DEFAULT 'N/A',";
+        $sql .= " `table_size` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `row_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `row_size` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " UNIQUE KEY perf (timestamp, table_name)";
+        $sql .= ") $charset_collate;";
+        $wpdb->query($sql);
+    }
+
+    /**
      * Creates tables for the plugin.
      *
      * @since 1.0.0
@@ -491,6 +519,7 @@ trait Storage {
         self::create_live_weather_station_performance_cron_table();
         self::create_live_weather_station_quota_day_table();
         self::create_live_weather_station_quota_year_table();
+        self::create_live_weather_station_data_year_table();
     }
 
     /**
@@ -575,6 +604,7 @@ trait Storage {
 
             // VERSION 3.5.0
             self::create_live_weather_station_module_detail_table();
+            self::create_live_weather_station_data_year_table();
 
         }
     }
@@ -637,7 +667,70 @@ trait Storage {
         $table_name = $wpdb->prefix.self::live_weather_station_histo_yearly_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
+        $table_name = $wpdb->prefix.self::live_weather_station_module_detail_table();
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        $wpdb->query($sql);
+        $table_name = $wpdb->prefix.self::live_weather_station_data_year_table();
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        $wpdb->query($sql);
     }
+
+    /**
+     * Count the number of records in a table.
+     *
+     * @param string $table_name The table to count.
+     * @return integer Count of records.
+     * @since 3.5.0
+     */
+    private function count_table($table_name) {
+        $result = -1;
+        global $wpdb;
+        $sql = "SELECT COUNT(*) as CNT FROM `" . $wpdb->prefix . $table_name . "`;";
+        $cnt = $wpdb->get_results($sql, ARRAY_A);
+        if (count($cnt) > 0) {
+            if (array_key_exists('CNT', $cnt[0])) {
+                $result = $cnt[0]['CNT'];
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get the stats of a table.
+     *
+     * @param string $table_name The table to get the stats.
+     * @return array The stats of the table.
+     * @since 3.5.0
+     */
+    private function stats_table($table_name) {
+        $result = array();
+        $row_count = 0;
+        $row_size = 0;
+        $table_size = 0;
+        global $wpdb;
+        $sql = "SELECT * FROM information_schema.tables WHERE table_schema='" . $wpdb->dbname . "' and table_name='" . $wpdb->prefix . $table_name . "';";
+        $line = $wpdb->get_results($sql, ARRAY_A);
+        if (count($line) > 0) {
+            if (array_key_exists('TABLE_ROWS', $line[0])) {
+                $row_count = $line[0]['TABLE_ROWS'];
+            }
+            if (array_key_exists('AVG_ROW_LENGTH', $line[0])) {
+                $row_size = $line[0]['AVG_ROW_LENGTH'];
+            }
+            if (array_key_exists('DATA_LENGTH', $line[0])) {
+                $table_size += $line[0]['DATA_LENGTH'];
+            }
+            if (array_key_exists('INDEX_LENGTH', $line[0])) {
+                $table_size += $line[0]['INDEX_LENGTH'];
+            }
+        }
+        $result['table_name'] = $table_name;
+        $result['table_size'] = $table_size;
+        $result['row_count'] = $row_count;
+        $result['row_size'] = $row_size;
+        return $result;
+    }
+
 
     /**
      * Update table with current value line.
@@ -966,6 +1059,20 @@ trait Storage {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
         $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zy:%' AND device_id NOT IN ( '" . implode($values, "', '") . "' )";
+        return $wpdb->query($sql);
+    }
+
+    /**
+     * Delete some Pioupiou stations.
+     *
+     * @param array $values The values NOT to delete from the table
+     * @return int|false The number of rows deleted, or false on error.
+     * @since 3.0.0
+     */
+    protected function clean_piou_from_table($values) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zz:%' AND device_id NOT IN ( '" . implode($values, "', '") . "' )";
         return $wpdb->query($sql);
     }
 

@@ -1723,6 +1723,16 @@ trait Query {
     }
 
     /**
+     * Get a list of all Pioupiou (by Id) stations.
+     *
+     * @return array An array containing the details of all stations.
+     * @since 3.3.0
+     */
+    protected function get_all_piou_id_stations() {
+        return $this->get_all_stations_by_type(LWS_PIOU_SID);
+    }
+
+    /**
      * Delete all WeatherFlow (by Id) stations.
      *
      * @since 3.3.0

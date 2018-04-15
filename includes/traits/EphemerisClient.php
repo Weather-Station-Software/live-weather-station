@@ -37,8 +37,14 @@ trait Client {
         $result = array();
         $stations = $this->get_located_operational_stations_list($station_type);
         foreach ($stations as $id => $station) {
-            $lat = $station['loc_latitude'];
-            $lon = $station['loc_longitude'];
+            if (array_key_exists('loc_longitude', $station) && array_key_exists('loc_latitude', $station)) {
+                $lat = $station['loc_latitude'];
+                $lon = $station['loc_longitude'];
+            }
+            else {
+                Logger::warning($this->facility, $this->service_name, $id, $station['device_name'], null, null, 135, 'Can\'t compute ephemeris for a station without coordinates.');
+                continue;
+            }
             $tz = $station['loc_timezone'];
             $place = array();
             $place['country'] = $station['loc_country'];
