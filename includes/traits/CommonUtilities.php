@@ -94,6 +94,9 @@ trait Utilities {
      * @since 3.3.0
      */
     protected function compute_air_density($t, $p, $h) {
+        if ($p == 0) {
+            return 0;
+        }
         $Ps = $this->compute_saturation_vapor_pressure($t) / $p;
         $Rh = 287.06 / (1 - (($h / 100 ) * $Ps * (1 - (287.06 / 461))));
         return round($p / ($Rh * ($t+273.15)), 5);

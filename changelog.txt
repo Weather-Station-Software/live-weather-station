@@ -1,8 +1,9 @@
 
 
-#3.5.0 / April xxxxxxxxth, 2018
+#3.5.0 / May xxxxxxxxth, 2018
 
-* New: a new module manager allowing, on a per station basis, to rename and/or hide modules.
+* New: Weather Station is now compatible with the ***Pioupiou Wind Station*** from the Pioupiou network.
+* New: a new module manager allows, on a per station basis, to rename and/or hide modules.
 * New: new single and multi stackable bars chart for historical graph (month, meteorological season and year) with tons of options and settings.
 * New: new stackable areas chart for historical graph (month, meteorological season and year) with tons of options and settings.
 * New: new radial bar chart for daily graph with tons of options and settings.
@@ -33,6 +34,9 @@
 * Improvement: consistency in color inversion for graphs with more than one time serie.
 * Improvement: new actions labels in stations list view for better understanding.
 * Improvement: automatic value scale for noise level is now a "0-based - top" scale.
+* Improvement: Weather Station now supports stations without coordinates.
+* Improvement: analytics have a new tab to display database statistics.
+* Improvement: analytics graphs have better timescale readability.
 * Bug fix: in some old PHP versions, _opcache_ detection may produce unwanted warnings.
 * Bug fix: the meteorological winter dates may be wrong in some conditions while using sliding seasons as period for historical charts.
 * Bug fix: in some cases and in some timezones the time scale of the daily charts is wrong.

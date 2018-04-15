@@ -56,7 +56,9 @@ trait Client {
             $place['city'] = $data['loc_city'];
             $place['altitude'] = $data['loc_altitude'];
             $place['timezone'] = $data['loc_timezone'];
-            $place['location'] = array($data['loc_longitude'], $data['loc_latitude']);
+            if (array_key_exists('loc_longitude', $datas) && array_key_exists('loc_latitude', $datas)) {
+                $place['location'] = array($data['loc_longitude'], $data['loc_latitude']);
+            }
             $nm = array();
             $nm['place'] = $place;
             $nm['device_id'] = $id;

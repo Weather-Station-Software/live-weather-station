@@ -29,7 +29,7 @@ if (!isset($station['station_model'])) {
     <form method="post" name="add-edit-piou-form" id="add-edit-piou-form" action="<?php echo esc_url(lws_get_admin_page_url($url)); ?>">
         <input name="station_id" type="hidden" value="<?php echo $station['station_id']; ?>" />
         <input name="guid" type="hidden" value="<?php echo $station['guid']; ?>" />
-        <input name="service" type="hidden" value="Clientpiou" />
+        <input name="service" type="hidden" value="pioupiou" />
         <input name="tab" type="hidden" value="add-edit" />
         <input name="action" type="hidden" value="do" />
         <?php if ($dashboard) { ?>

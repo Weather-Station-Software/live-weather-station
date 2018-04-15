@@ -3,7 +3,7 @@
 namespace WeatherStation\SDK\Pioupiou;
 
 use WeatherStation\SDK\Pioupiou\AbstractCache;
-use WeatherStation\SDK\Pioupiou\Exception as WFLWException;
+use WeatherStation\SDK\Pioupiou\Exception as PIOUException;
 use WeatherStation\SDK\Pioupiou\Fetcher\CurlFetcher;
 use WeatherStation\SDK\Pioupiou\Fetcher\FetcherInterface;
 use WeatherStation\SDK\Pioupiou\Fetcher\FileGetContentsFetcher;
@@ -25,7 +25,7 @@ class PIOUApiClient
     /**
      * @var string $mainnUrl The api url to fetch data from.
      */
-    private $mainnUrl = "https://swd.Pioupiou.com/swd/rest/{command}/{params}";
+    private $mainnUrl = "https://api.pioupiou.fr/v1/live/{sensor_id}";
 
     
     /**
@@ -53,7 +53,7 @@ class PIOUApiClient
      *                                          extending AbstractCache. Defaults to false.
      * @param int                   $seconds    How long weather data shall be cached. Default 10 minutes.
      *
-     * @throws \Exception If $cache is neither false nor a valid callable extending wflw\Pioupiou\Util\Cache.
+     * @throws \Exception If $cache is neither false nor a valid callable extending piou\Util\Cache.
      * @api
      */
     public function __construct($fetcher = null, $cacheClass = false, $seconds = 600)
@@ -78,22 +78,15 @@ class PIOUApiClient
     /**
      * Build the url to fetch weather data from.
      *
-     * @param string $command The features to execute.
-     * @param array $params The parameters to add.
+     * @param string $sensor_id The sensor to query.
      *
      * @return string The url, ready to fetch.
      * @since 3.5.0
      *
      */
-    private function buildUrl($command, $params = array()) {
+    private function buildUrl($sensor_id) {
         $result = $this->mainnUrl;
-        $result = str_replace('{command}', $command, $result);
-        if (count($params) > 0) {
-            $result = str_replace('{params}', '?' . implode('&', $params), $result);
-        }
-        else {
-            $result = str_replace('{params}', '', $result);
-        }
+        $result = str_replace('{sensor_id}', $sensor_id, $result);
         return $result;
     }
 
@@ -101,29 +94,12 @@ class PIOUApiClient
      * Get the string returned by Pioupiou for a specific public station.
      *
      * @param string $id The station id to get weather information for.
-     * @param string $key The API key.
      *
      * @return bool|string Returns false on failure and the fetched data in the format you specified on success.
      * @since 3.5.0
      */
-    public function getRawPublicStationData($id, $key) {
-        $command = 'observations/station/' . $id;
-        $url = $this->buildUrl($command, array('api_key='.$key));
-        return $this->cacheOrFetchResult($url);
-    }
-
-    /**
-     * Get the string returned by Pioupiou for a specific private station.
-     *
-     * @param string $id The station id to get weather information for.
-     * @param string $key The API key.
-     *
-     * @return bool|string Returns false on failure and the fetched data in the format you specified on success.
-     * @since 3.5.0
-     */
-    public function getRawPrivateStationData($id, $key) {
-        $command = 'observations/station/' . $id;
-        $url = $this->buildUrl($command, array('token='.$key));
+    public function getRawPublicStationData($id) {
+        $url = $this->buildUrl($id);
         return $this->cacheOrFetchResult($url);
     }
 

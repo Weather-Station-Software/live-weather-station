@@ -6,6 +6,7 @@ use WeatherStation\System\Environment\Manager as EnvManager;
 use WeatherStation\SDK\Clientraw\Plugin\StationCollector as ClientrawCollector;
 use WeatherStation\SDK\Realtime\Plugin\StationCollector as RealtimeCollector;
 use WeatherStation\SDK\WeatherFlow\Plugin\StationCollector as WeatherFlowCollector;
+use WeatherStation\SDK\Pioupiou\Plugin\StationCollector as PioupiouCollector;
 use WeatherStation\SDK\Stickertags\Plugin\StationCollector as StickertagsCollector;
 use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Environment\Manager;
@@ -38,6 +39,7 @@ use WeatherStation\SDK\Clientraw\Plugin\StationInitiator as Clientraw_Station_In
 use WeatherStation\SDK\Realtime\Plugin\StationInitiator as Realtime_Station_Initiator;
 use WeatherStation\SDK\Stickertags\Plugin\StationInitiator as Stickertags_Station_Initiator;
 use WeatherStation\SDK\WeatherFlow\Plugin\StationInitiator as WeatherFlow_Station_Initiator;
+use WeatherStation\SDK\Pioupiou\Plugin\StationInitiator as Pioupiou_Station_Initiator;
 use WeatherStation\System\Device\Manager as DeviceManager;
 
 
@@ -1444,7 +1446,7 @@ class Admin {
                                     }
                                 }
                                 else {
-                                    $view = 'form-add-edit-clientraw' ;
+                                    $view = 'form-add-edit-pioupiou' ;
                                     $args = compact('station', 'countries', 'timezones', 'error', 'error_message', 'models', 'dashboard');
                                 }
                             }
@@ -1536,6 +1538,7 @@ class Admin {
                             }
                             break;
                     }
+                    DeviceManager::synchronize_modules();
                 }
                 if ($service == 'station' && $tab == 'delete' && $action == 'do') {
                     if (array_key_exists('delete-station', $_POST)) {
@@ -2120,6 +2123,17 @@ class Admin {
     }
 
     /**
+     * First getting of data for Pioupiou station.
+     *
+     * @since 3.5.0
+     */
+    private function get_piou() {
+        $n = new Pioupiou_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run();
+        $this->get_current_and_pollution();
+    }
+
+    /**
      * First getting of data for Realtime station.
      *
      * @since 3.0.0
@@ -2687,18 +2701,10 @@ class Admin {
                 $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
             }
             $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
-
-
-
-
-            $collector = new ClientrawCollector();
-            if ($message = $collector->test($station['connection_type'], $station['service_id'])) {
+            $collector = new PioupiouCollector();
+            if ($message = $collector->test_station($station['service_id'])) {
                 $error = 1;
             }
-
-
-
-
         }
         else {
             $error = 3;
@@ -2727,7 +2733,7 @@ class Admin {
                     $message = sprintf($message, '<em>' . $station_name . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
-                    $this->get_raw();
+                    $this->get_piou();
                     $st = $this->get_station_informations_by_guid($guid);
                     $this->modify_table(self::live_weather_station_log_table(), 'device_id', $station_id, $st['station_id']);
                 }

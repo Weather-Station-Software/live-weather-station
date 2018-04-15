@@ -213,6 +213,9 @@ class InlineHelp {
         if ($number == -25) {
             $result = sprintf($message, '<a href="https://wordpress.org/support/topic/howto-translate-this-plugin-in-your-own-language/"' . $target . '>' . $anchor . '</a>');
         }
+        if ($number == -26) {
+            $result = '<a href="http://developers.pioupiou.fr/data-licensing/"' . $target . '>Open Data</a>';
+        }
         return $result;
     }
 
@@ -669,21 +672,22 @@ class InlineHelp {
             $s2 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_netatmo_color_logo()) . '" /><strong>' . __('Netatmo', 'live-weather-station') . '</strong> &mdash; ' . __('a Netatmo station to which you have access to.', 'live-weather-station') . '</p>';
             $s3 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_netatmo_hc_color_logo()) . '" /><strong>' . __('Netatmo "Healthy Home Coach"', 'live-weather-station') . '</strong> &mdash; ' . __('a Netatmo "Healthy Home Coach" device to which you have access to.', 'live-weather-station') . '</p>';
             $s4 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_weatherflow_color_logo()) . '" /><strong>' . __('WeatherFlow', 'live-weather-station') . '</strong> &mdash; ' . __('a public WeatherFlow station.', 'live-weather-station') . '</p>';
-            $s5 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_loc_color_logo()) . '" /><strong>' . __('Virtual', 'live-weather-station') . '</strong> &mdash; ' . __('a "virtual" weather station whose you only know the city or its coordinates.', 'live-weather-station') . '</p>';
+            $s5 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_piou_color_logo()) . '" /><strong>' . __('Pioupiou', 'live-weather-station') . '</strong> &mdash; ' . __('a Pioupiou sensor as a station.', 'live-weather-station') . '</p>';
+            $s6 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_loc_color_logo()) . '" /><strong>' . __('Virtual', 'live-weather-station') . '</strong> &mdash; ' . __('a "virtual" weather station whose you only know the city or its coordinates.', 'live-weather-station') . '</p>';
             if (LWS_OWM_READY) {
-                $s6 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_owm_color_logo()) . '" /><strong>' . __('OpenWeatherMap', 'live-weather-station') . '</strong> &mdash; ' . __('a personal weather station published on OpenWeatherMap.', 'live-weather-station') . '</p>';
+                $s7 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_owm_color_logo()) . '" /><strong>' . __('OpenWeatherMap', 'live-weather-station') . '</strong> &mdash; ' . __('a personal weather station published on OpenWeatherMap.', 'live-weather-station') . '</p>';
             }
             else {
-                $s6 = '';
+                $s7 = '';
             }
-            $s7 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_wug_color_logo()) . '" /><strong>' . __('Weather Undergroung', 'live-weather-station') . '</strong> &mdash; ' . __('a personal weather station published on Weather Underground.', 'live-weather-station') . '</p>';
-            $s8 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_real_color_logo()) . '" /><strong>' . __('Realtime File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>realtime.txt</em> file (Cumulus, etc.).', 'live-weather-station') . '</p>';
-            $s9 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_raw_color_logo()) . '" /><strong>' . __('Clientraw File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>clientraw.txt</em> file (Weather Display, WeeWX, etc.).', 'live-weather-station') . '</p>';
-            $s10 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_txt_color_logo()) . '" /><strong>' . __('Stickertags File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a stickertags file (WeatherLink, WsWin32, MeteoBridge, etc.).', 'live-weather-station') . '</p>';
+            $s8 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_wug_color_logo()) . '" /><strong>' . __('Weather Undergroung', 'live-weather-station') . '</strong> &mdash; ' . __('a personal weather station published on Weather Underground.', 'live-weather-station') . '</p>';
+            $s9 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_real_color_logo()) . '" /><strong>' . __('Realtime File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>realtime.txt</em> file (Cumulus, etc.).', 'live-weather-station') . '</p>';
+            $s10 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_raw_color_logo()) . '" /><strong>' . __('Clientraw File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>clientraw.txt</em> file (Weather Display, WeeWX, etc.).', 'live-weather-station') . '</p>';
+            $s11 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_txt_color_logo()) . '" /><strong>' . __('Stickertags File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a stickertags file (WeatherLink, WsWin32, MeteoBridge, etc.).', 'live-weather-station') . '</p>';
             $tabs[] = array(
                 'title'    => __('Stations types', 'live-weather-station'),
                 'id'       => 'lws-contextual-stations-types',
-                'content'  => $s1 . $s2 . $s3 . $s4 . $s5 . $s6 . $s7 . $s8 . $s9 . $s10);
+                'content'  => $s1 . $s2 . $s3 . $s4 . $s5 . $s6 . $s7 . $s8 . $s9 . $s10 . $s11);
 
             $s1 = __('Depending of the type of the station, you can access to these features:', 'live-weather-station');
             $s2 = '<strong>' . __('Edit', 'live-weather-station') . '</strong> &mdash; ' . __('To modify or update the properties of the station (city, country, coordinates, etc.).', 'live-weather-station');

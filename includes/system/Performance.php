@@ -7,6 +7,7 @@ use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\DB\Storage;
 use WeatherStation\System\Schedules\Handling as Schedules;
+use WeatherStation\System\Data\Data;
 
 /**
  * The class to compute and maintain consistency of performance statistics.
@@ -444,6 +445,63 @@ class Performance {
                 $data['time_for_'.$field] = '[]';
             }
             $result = array('agr24' => $sum24, 'agr30' => $sum30,  'dat' => $data);
+        }
+        return $result;
+    }
+
+    /**
+     * Get all stats values for database.
+     *
+     * @since 3.5.0
+     */
+    public static function get_database_values() {
+        if ($result = Cache::get_backend(Cache::$db_stat_perf_database)) {
+            return $result;
+        }
+        global $wpdb;
+        $sql = "SELECT * FROM " . $wpdb->prefix.Cache::live_weather_station_data_year_table() . " ;";
+        $cutoff = time() - (get_option('live_weather_station_analytics_cutoff', 7)*DAY_IN_SECONDS);
+        $values = array();
+        $raw = array();
+        $jsonable = array();
+        $jsoned = array();
+        $database = new Data(LWS_PLUGIN_NAME, LWS_VERSION);
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            foreach ($query_a as $val) {
+                $detail = (array)$val;
+                $tablename = $database->get_table_name($detail['table_name']);
+                if (strtotime($detail['timestamp']) > $cutoff) {
+                    $datetime = new \DateTime($detail['timestamp']);
+                    $ts = $datetime->getTimestamp() . '000';
+                    $values['table_size'][$ts][$tablename] = $detail['table_size'];
+                    $values['row_size'][$ts][$tablename] = $detail['row_size'];
+                    $values['row_count'][$ts][$tablename] = $detail['row_count'];
+                }
+            }
+            $data = array();
+            $data_r = array();
+            foreach ($values as $type=>$tabledetail) {
+                foreach ($tabledetail as $ts=>$table) {
+                    foreach ($table as $t=>$v) {
+                        $jsoned[$type][$t][] = str_replace('"', '', json_encode(array($ts,$v)));
+                    }
+                    foreach ($jsoned[$type] as $t=>$v) {
+                        $data_r[$type][] = '{"key":"' . $t . '", "values":[' . implode(',', $jsoned[$type][$t]) . ']}';
+                    }
+                }
+                $data[$type] = '[' . implode(',', $data_r[$type]) . ']';
+            }
+            $result = array('dat' => $data);
+            Cache::set_backend(Cache::$db_stat_perf_cron, $result);
+        }
+        catch(\Exception $ex) {
+            $data = array();
+            $data['table_size'] = '[]';
+            $data['row_size'] = '[]';
+            $data['row_count'] = '[]';
+            $result = array('dat' => $data);
         }
         return $result;
     }

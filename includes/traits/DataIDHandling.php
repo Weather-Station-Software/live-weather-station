@@ -19,6 +19,7 @@ trait Handling {
     private static $realtime_id ='yy';
     private static $txt_id ='zx';
     private static $wflw_id ='zy';
+    private static $piou_id ='zz';
 
     private static $owm_current_id ='wm';
     private static $owm_pollution_id ='po';
@@ -121,6 +122,19 @@ trait Handling {
     }
 
     /**
+     * Generate a unique id for a Pioupiou station.
+     *
+     * @param integer $guid The numeric guid of the station.
+     * @return string The unique id of the station.
+     * @since 3.5.0
+     */
+    public static function get_unique_piou_id($guid) {
+        $st = self::$piou_id.str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
+        $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
+        return strtolower($result);
+    }
+
+    /**
      * Indicates if the id is the id of an OWM station.
      *
      * @param integer $station_id The numeric id of the station.
@@ -198,6 +212,17 @@ trait Handling {
     }
 
     /**
+     * Indicates if the id is the id of a Pioupiou station.
+     *
+     * @param integer $station_id The numeric id of the station.
+     * @return boolean True if it's an WUG station, false otherwise.
+     * @since 3.3.0
+     */
+    public static function is_piou_station($station_id) {
+        return (substr($station_id, 0, 2) == self::$piou_id);
+    }
+
+    /**
      * Indicates if the id is the id of an Netatmo station.
      *
      * @param integer $station_id The numeric id of the station.
@@ -207,7 +232,8 @@ trait Handling {
     public static function is_netatmo_station($station_id) {
         return (!self::is_owm_station($station_id) && !self::is_wug_station($station_id) &&
                 !self::is_raw_station($station_id) && !self::is_real_station($station_id) &&
-                !self::is_txt_station($station_id) && !self::is_wflw_station($station_id));
+                !self::is_txt_station($station_id) && !self::is_wflw_station($station_id) &&
+                !self::is_piou_station($station_id));
     }
 
     /**

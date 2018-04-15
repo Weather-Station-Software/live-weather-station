@@ -183,7 +183,13 @@ trait CurrentClient {
             $device_name = $station['device_name'];
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
-                    $raw_data = $owm->getRawWeatherData(array('lat' => $station['loc_latitude'], 'lon' => $station['loc_longitude']), 'metric', 'en', get_option('live_weather_station_owm_apikey'), 'json');
+                    if (array_key_exists('loc_longitude', $station) && array_key_exists('loc_latitude', $station)) {
+                        $raw_data = $owm->getRawWeatherData(array('lat' => $station['loc_latitude'], 'lon' => $station['loc_longitude']), 'metric', 'en', get_option('live_weather_station_owm_apikey'), 'json');
+                    }
+                    else {
+                        Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 135, 'Can\'t get current weather for a station without coordinates.');
+                        continue;
+                    }
                     $values = $this->get_owm_datas_array($raw_data, $station, $key);
                     $place = array();
                     $place['country'] = $station['loc_country'];

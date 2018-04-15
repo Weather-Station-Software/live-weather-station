@@ -103,6 +103,12 @@ spl_autoload_register(
         case 'WeatherStation\SDK\OpenWeatherMap\Plugin\StationInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentOpenWeatherMapStationInitiator.php'; break;
         case 'WeatherStation\SDK\OpenWeatherMap\Plugin\StationUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentOpenWeatherMapStationUpdater.php'; break;
         case 'WeatherStation\SDK\OpenWeatherMap\OWMApiClient': $file = LWS_INCLUDES_DIR.'libraries/owm/autoload.php'; break;
+        case 'WeatherStation\SDK\Pioupiou\PIOUApiClient': $file = LWS_INCLUDES_DIR.'libraries/piou/autoload.php'; break;
+        case 'WeatherStation\SDK\Pioupiou\Plugin\BaseClient': $file = LWS_INCLUDES_DIR.'traits/PioupiouPluginBaseClient.php'; break;
+        case 'WeatherStation\SDK\Pioupiou\Plugin\PublicClient': $file = LWS_INCLUDES_DIR.'traits/PioupiouPluginPublicClient.php'; break;
+        case 'WeatherStation\SDK\Pioupiou\Plugin\StationCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentPioupiouStationCollector.php'; break;
+        case 'WeatherStation\SDK\Pioupiou\Plugin\StationInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentPioupiouStationInitiator.php'; break;
+        case 'WeatherStation\SDK\Pioupiou\Plugin\StationUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentPioupiouStationUpdater.php'; break;
         case 'WeatherStation\SDK\Realtime\Plugin\StationClient': $file = LWS_INCLUDES_DIR.'traits/RealtimePluginStationClient.php'; break;
         case 'WeatherStation\SDK\Realtime\Plugin\StationCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentRealtimeStationCollector.php'; break;
         case 'WeatherStation\SDK\Realtime\Plugin\StationInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentRealtimeStationInitiator.php'; break;
@@ -111,7 +117,7 @@ spl_autoload_register(
         case 'WeatherStation\SDK\Stickertags\Plugin\StationCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentStickertagsStationCollector.php'; break;
         case 'WeatherStation\SDK\Stickertags\Plugin\StationInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentStickertagsStationInitiator.php'; break;
         case 'WeatherStation\SDK\Stickertags\Plugin\StationUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentStickertagsStationUpdater.php'; break;
-        case 'WeatherStation\SDK\WeatherFlow\PIOUApiClient': $file = LWS_INCLUDES_DIR.'libraries/wflw/autoload.php'; break;
+        case 'WeatherStation\SDK\WeatherFlow\WFLWApiClient': $file = LWS_INCLUDES_DIR.'libraries/wflw/autoload.php'; break;
         case 'WeatherStation\SDK\WeatherFlow\Plugin\BaseClient': $file = LWS_INCLUDES_DIR.'traits/WeatherFlowPluginBaseClient.php'; break;
         case 'WeatherStation\SDK\WeatherFlow\Plugin\PublicClient': $file = LWS_INCLUDES_DIR.'traits/WeatherFlowPluginPublicClient.php'; break;
         case 'WeatherStation\SDK\WeatherFlow\Plugin\StationCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentWeatherFlowStationCollector.php'; break;

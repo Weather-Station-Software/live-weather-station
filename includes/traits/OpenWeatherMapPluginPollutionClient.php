@@ -180,7 +180,13 @@ trait PollutionClient {
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
                     foreach ($this->indexes as $index) {
-                        $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index, 2), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
+                        if (array_key_exists('loc_longitude', $station) && array_key_exists('loc_latitude', $station)) {
+                            $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index, 2), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
+                        }
+                        else {
+                            Logger::warning($this->facility, $this->service_name, $st['device_id'], $st['device_name'], null, null, 135, 'Can\'t get pollution records for a station without coordinates.');
+                            continue(2);
+                        }
                         if (empty($values)) {
                             Quota::verify($this->service_name, 'GET');
                             $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index, 1), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
