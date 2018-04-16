@@ -7242,17 +7242,6 @@ var steelseries = ( function () {
                 ctx.fill();
             });
         colorData = lookupBuffer.getContext('2d').getImageData(0, 0, 2, 2).data;
-
-        /*
-         for (var i = 0; i < data.length; i += 4) {
-         var red = data[i];       // red
-         var green = data[i + 1]; // green
-         var blue = data[i + 2];  // blue
-         //var alpha = data[i + 3]; // alpha
-         console.log(red + ', ' + green + ', ' + blue);
-         }
-         */
-
         return [colorData[0], colorData[1], colorData[2], colorData[3]];
     }
 

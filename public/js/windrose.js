@@ -348,7 +348,7 @@ function Windrose() {
     // DEFAULT EVENTS
     // --------------
     function areaMouseover(d, i, self) {
-        console.log('areaMouseover');
+        //console.log('areaMouseover');
         if (legend_toggles[d._i]) return;
         //Dim all blobs
         chart_node.selectAll("." + options.classed + "PieArea")
@@ -366,7 +366,7 @@ function Windrose() {
     }
 
     function areaMouseout(d, i, self) {
-        console.log('areaMouseout');
+        //console.log('areaMouseout');
         //Bring back all blobs
         chart_node.selectAll("." + options.classed + "PieArea")
             .transition().duration(200)
@@ -377,7 +377,7 @@ function Windrose() {
     }
 
     function tooltip_show(d, i, self) {
-        console.log('tooltip_show');
+        //console.log('tooltip_show');
         if (legend_toggles[d._i]) return;
         if (options.width > 200) {
             var labels = getAxisLabels(_data);
@@ -397,7 +397,7 @@ function Windrose() {
     }
 
     function tooltip_hide(d, i, self) {
-        console.log('tooltip_hide');
+        //console.log('tooltip_hide');
         chart_node.select('[key="'+d.axis+'"]').select('foreignObject')
             .style('opacity', options.axes.display && radial_calcs.radius > options.axes.threshold ? 1 : 0);
         tooltip
