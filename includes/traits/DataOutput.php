@@ -4132,7 +4132,7 @@ trait Output {
             return '';
         }
         $fingerprint = uniqid('', true);
-        $uniq = $_attributes['item'].$_attributes['metric'].substr ($fingerprint, count($fingerprint)-6, 80);
+        $uniq = $_attributes['item'] . '_' . $_attributes['metric'] . '_' . substr ($fingerprint, count($fingerprint)-6, 80);
 
         // QUOTA STATISTICS
         if ($_attributes['item'] == 'quota') {
@@ -4579,70 +4579,46 @@ trait Output {
             wp_enqueue_style('lws-nvd3');
             wp_enqueue_script('lws-nvd3');
             $perf = Performance::get_database_values();
-            if ($_attributes['metric'] == 'table_size') {
-                $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
-                $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
-                $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
-                $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '    var data'.$uniq.' =' . $perf['dat']['table_size'] . ';' . PHP_EOL;
-                $result .= '    nv.addGraph(function() {' . PHP_EOL;
-                $result .= '      var chart'.$uniq.' = nv.models.stackedAreaChart()' . PHP_EOL;
-                $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
-                $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
-                $result .= '               .clipEdge(true)' . PHP_EOL;
-                $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","stream":"' . __('Stream', 'live-weather-station') . '","expanded":"' . __('Expanded', 'live-weather-station') . '"})' . PHP_EOL;
-                $result .= '               .interpolate("cardinal")' . PHP_EOL;
-                $result .= '               .color(d3.scale.category10().range())' . PHP_EOL;
-                $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
-                $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
-                $result .= '                 .showMaxMin(false)' . PHP_EOL;
-                $result .= '                 .ticks(3)' . PHP_EOL;
-                $result .= '                 .tickFormat(function(d) { return d3.time.format("%Y-%m-%d")(new Date(d)) });' . PHP_EOL;
-                $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
-                $result .= '                 .showMaxMin(false)' . PHP_EOL;
-                $result .= '                 .tickFormat(d3.format(".3s"));' . PHP_EOL;
-                $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
-                $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
-                $result .= '      return chart'.$uniq.';' . PHP_EOL;
-                $result .= '    });'.PHP_EOL;
-                $result .= '  });' . PHP_EOL;
-                $result .= '</script>' . PHP_EOL;
-            }
-            if ($_attributes['metric'] == 'row_count') {
-                $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
-                $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
-                $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
-                $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '    var data'.$uniq.' =' . $perf['dat']['row_count'] . ';' . PHP_EOL;
-                $result .= '    nv.addGraph(function() {' . PHP_EOL;
-                $result .= '      var chart'.$uniq.' = nv.models.stackedAreaChart()' . PHP_EOL;
-                $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
-                $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
-                $result .= '               .clipEdge(true)' . PHP_EOL;
-                $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","stream":"' . __('Stream', 'live-weather-station') . '","expanded":"' . __('Expanded', 'live-weather-station') . '"})' . PHP_EOL;
-                $result .= '               .interpolate("cardinal")' . PHP_EOL;
-                $result .= '               .color(d3.scale.category10().range())' . PHP_EOL;
-                $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
-                $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
-                $result .= '                 .showMaxMin(false)' . PHP_EOL;
-                $result .= '                 .ticks(3)' . PHP_EOL;
-                $result .= '                 .tickFormat(function(d) { return d3.time.format("%Y-%m-%d")(new Date(d)) });' . PHP_EOL;
-                $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
-                $result .= '                 .showMaxMin(false)' . PHP_EOL;
-                $result .= '                 .tickFormat(d3.format(".0"));' . PHP_EOL;
-                $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
-                $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
-                $result .= '      return chart'.$uniq.';' . PHP_EOL;
-                $result .= '    });'.PHP_EOL;
-                $result .= '  });' . PHP_EOL;
-                $result .= '</script>' . PHP_EOL;
-            }
 
+
+
+
+            if ($_attributes['metric'] == 'table_size' || $_attributes['metric'] == 'row_count') {
+                $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
+                $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
+                $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
+                $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . $perf['dat'][$_attributes['metric']] . ';' . PHP_EOL;
+                $result .= '    nv.addGraph(function() {' . PHP_EOL;
+                $result .= '      var chart'.$uniq.' = nv.models.stackedAreaChart()' . PHP_EOL;
+                $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
+                $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
+                $result .= '               .clipEdge(true)' . PHP_EOL;
+                $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","stream":"' . __('Stream', 'live-weather-station') . '","expanded":"' . __('Expanded', 'live-weather-station') . '"})' . PHP_EOL;
+                $result .= '               .interpolate("cardinal")' . PHP_EOL;
+                $result .= '               .color(d3.scale.category10().range())' . PHP_EOL;
+                $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                $result .= '                 .ticks(3)' . PHP_EOL;
+                $result .= '                 .tickFormat(function(d) { return d3.time.format("%Y-%m-%d")(new Date(d)) });' . PHP_EOL;
+                $result .= '      chart'.$uniq.'.yAxis' . PHP_EOL;
+                $result .= '                 .showMaxMin(false)' . PHP_EOL;
+                if ($_attributes['metric'] == 'table_size') {
+                    $result .= '                 .tickFormat(d3.format(".3s"));' . PHP_EOL;
+                }
+                if ($_attributes['metric'] == 'row_count') {
+                    $result .= '                 .tickFormat(d3.format(".0"));' . PHP_EOL;
+                }
+                $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+                $result .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+                $result .= '      return chart'.$uniq.';' . PHP_EOL;
+                $result .= '    });'.PHP_EOL;
+                $result .= '  });' . PHP_EOL;
+                $result .= '</script>' . PHP_EOL;
+            }
         }
-
-
         return $result;
-
     }
 
     /**

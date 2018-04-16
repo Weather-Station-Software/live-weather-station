@@ -462,8 +462,6 @@ class Performance {
         $sql = "SELECT * FROM " . $wpdb->prefix.Cache::live_weather_station_data_year_table() . " ;";
         $cutoff = time() - (get_option('live_weather_station_analytics_cutoff', 7)*DAY_IN_SECONDS);
         $values = array();
-        $raw = array();
-        $jsonable = array();
         $jsoned = array();
         $database = new Data(LWS_PLUGIN_NAME, LWS_VERSION);
         try {
@@ -487,9 +485,9 @@ class Performance {
                     foreach ($table as $t=>$v) {
                         $jsoned[$type][$t][] = str_replace('"', '', json_encode(array($ts,$v)));
                     }
-                    foreach ($jsoned[$type] as $t=>$v) {
-                        $data_r[$type][] = '{"key":"' . $t . '", "values":[' . implode(',', $jsoned[$type][$t]) . ']}';
-                    }
+                }
+                foreach ($jsoned[$type] as $t=>$v) {
+                    $data_r[$type][] = '{"key":"' . $t . '", "values":[' . implode(',', $jsoned[$type][$t]) . ']}';
                 }
                 $data[$type] = '[' . implode(',', $data_r[$type]) . ']';
             }

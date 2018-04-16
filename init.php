@@ -24,10 +24,10 @@ use WeatherStation\System\Environment\Manager as EnvManager;
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.5.0-dev23');
-define('LWS_CODENAME', '"Louise Attaque"');
-define('LWS_WATSNEW_EN', 'https://weather.station.software/en/weather-station-3-4-louiseattaque/');
-define('LWS_WATSNEW_FR', 'https://weather.station.software/fr/weather-station-3-4-louise-attaque/');
+define('LWS_VERSION', '3.5.0-rc1');
+define('LWS_CODENAME', '"Les Wampas"');
+define('LWS_WATSNEW_EN', 'https://weather.station.software/en/weather-station-3-5-leswampas/');
+define('LWS_WATSNEW_FR', 'https://weather.station.software/fr/weather-station-3-5-les-wampas/');
 
 
 //---------------------------------------------------------------------------------------------------
