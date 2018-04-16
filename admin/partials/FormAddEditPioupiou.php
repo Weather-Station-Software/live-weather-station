@@ -15,7 +15,7 @@ else {
     $errmsg = __('Unable to access this station:', 'live-weather-station' ) . ' ' . $error_message;
 }
 if (!isset($station['station_model'])) {
-    $station['station_model'] = __('Pioupiou V1', 'live-weather-station');
+    $station['station_model'] = 'Pioupiou V1';
 }
 ?>
 
