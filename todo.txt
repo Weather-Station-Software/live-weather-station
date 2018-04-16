@@ -76,8 +76,6 @@ Fully delete a station in fast collect mode
 * TRADUCTION          *
 ***********************
 
-utiliser UNE cdn.
-
 
 ***********************
 * DOCUMENTATION       *
