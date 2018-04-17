@@ -4579,10 +4579,6 @@ trait Output {
             wp_enqueue_style('lws-nvd3');
             wp_enqueue_script('lws-nvd3');
             $perf = Performance::get_database_values();
-
-
-
-
             if ($_attributes['metric'] == 'table_size' || $_attributes['metric'] == 'row_count') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;

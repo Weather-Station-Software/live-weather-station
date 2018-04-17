@@ -31,20 +31,21 @@ class Cache {
     public static $wp_expiry = 7200;       // 2 hours
     public static $i18n_expiry = 43200;    // 12 hours
 
-    public static $db_stat = 'lws_cache_db_stat';
-    public static $db_stat_log = 'lws_cache_db_stat_log';
-    public static $db_stat_quota = 'lws_cache_db_stat_quota';
-    public static $db_stat_perf = 'lws_cache_db_stat_perf';
-    public static $db_stat_perf_cache = 'lws_cache_db_stat_perf_cache';
-    public static $db_stat_perf_cron = 'lws_cache_db_stat_perf_cron';
-    public static $db_stat_perf_database = 'lws_cache_db_stat_perf_database';
-    public static $db_stat_perf_event = 'lws_cache_db_stat_perf_event';
-    public static $db_stat_perf_quota = 'lws_cache_db_stat_perf_quota';
-    public static $db_stat_operational = 'lws_cache_db_stat_operational';
+    public static $db_stat = 'stat';
+    public static $db_stat_log = 'stat_log';
+    public static $db_stat_quota = 'stat_quota';
+    public static $db_stat_perf = 'stat_perf';
+    public static $db_stat_perf_cache = 'stat_perf_cache';
+    public static $db_stat_perf_cron = 'stat_perf_cron';
+    public static $db_stat_perf_database = 'stat_perf_database';
+    public static $db_stat_perf_event = 'stat_perf_event';
+    public static $db_stat_perf_quota = 'stat_perf_quota';
+    public static $db_stat_operational = 'stat_operational';
     public static $widget = 'lws_cache_widget';
     public static $dgraph = 'lws_cache_dgraph';
     public static $ygraph = 'lws_cache_ygraph';
     public static $frontend = 'lws_cache_control';
+    public static $backend = 'lws_cache_backend';
     public static $i18n = 'lws_i18n';
 
     /**
@@ -119,7 +120,7 @@ class Cache {
                 else {
                     $pref = 'miss_';
                 }
-                if ((strpos($cache_id, self::$i18n)!==false) || (strpos($cache_id, self::$db_stat)!==false)) {
+                if ((strpos($cache_id, self::$i18n)!==false) || (strpos($cache_id, self::$backend)!==false)) {
                     $key = 'backend';
                 }
                 if (strpos($cache_id, self::$widget)!==false) {
@@ -159,13 +160,13 @@ class Cache {
      */
     public static function get_backend($cache_id) {
         $cache_id = Env::get_cache_prefix() . $cache_id;
-        self::_init_chrono($cache_id);
+        self::_init_chrono(self::$backend.'_'.$cache_id);
         if (!(bool)get_option('live_weather_station_backend_cache')) {
             return false;
         }
         else {
-            if ($r = get_transient($cache_id)) {
-                self::_stop_chrono($cache_id);
+            if ($r = get_transient(self::$backend.'_'.$cache_id)) {
+                self::_stop_chrono(self::$backend.'_'.$cache_id);
             }
             return $r;
         }
@@ -189,8 +190,8 @@ class Cache {
             return false;
         }
         else {
-            $r = set_transient($cache_id, $value, self::$backend_expiry);
-            self::_stop_chrono($cache_id, false);
+            $r = set_transient(self::$backend.'_'.$cache_id, $value, self::$backend_expiry);
+            self::_stop_chrono(self::$backend.'_'.$cache_id, false);
             return $r;
         }
     }
@@ -209,7 +210,7 @@ class Cache {
             return false;
         }
         else {
-            return delete_transient($cache_id);
+            return delete_transient(self::$backend.'_'.$cache_id);
         }
     }
 
@@ -222,7 +223,7 @@ class Cache {
      *
      */
     public static function flush_backend($expired=true) {
-        return self::_flush(self::$db_stat, $expired);
+        return self::_flush(self::$backend.'_'.self::$db_stat, $expired);
     }
 
     /**
@@ -234,7 +235,7 @@ class Cache {
      *
      */
     public static function flush_performance($expired=true) {
-        return self::_flush(self::$db_stat_perf, $expired);
+        return self::_flush(self::$backend.'_'.self::$db_stat_perf, $expired);
     }
 
     /**
@@ -653,6 +654,7 @@ class Cache {
         $result = 0;
         $result += self::flush_backend($expired);
         $result += self::flush_frontend($expired);
+        $result += self::flush_performance($expired);
         $result += self::flush_widget($expired);
         $result += self::flush_graph($expired);
         if (!$expired) {
