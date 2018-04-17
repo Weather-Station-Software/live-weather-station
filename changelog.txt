@@ -37,6 +37,7 @@
 * Improvement: Weather Station now supports stations without coordinates.
 * Improvement: analytics have a new tab to display database statistics.
 * Improvement: analytics graphs have better timescale readability.
+* Improvement: cache operations optimization for backend.
 * Bug fix: in some old PHP versions, _opcache_ detection may produce unwanted warnings.
 * Bug fix: the meteorological winter dates may be wrong in some conditions while using sliding seasons as period for historical charts.
 * Bug fix: in some cases and in some timezones the time scale of the daily charts is wrong.

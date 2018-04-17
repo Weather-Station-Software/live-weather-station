@@ -492,7 +492,7 @@ class Performance {
                 $data[$type] = '[' . implode(',', $data_r[$type]) . ']';
             }
             $result = array('dat' => $data);
-            Cache::set_backend(Cache::$db_stat_perf_cron, $result);
+            Cache::set_backend(Cache::$db_stat_perf_database, $result);
         }
         catch(\Exception $ex) {
             $data = array();
