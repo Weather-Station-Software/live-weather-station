@@ -65,13 +65,6 @@ function RadarChart() {
             ranges: {}           // { axisname: [min, max], axisname: [min, max]  }
         },
 
-        legend: {
-            display: true,
-            symbol: 'diamond', // 'circle', 'cross', 'diamond', 'triangle-up', 'triangle-down'
-            toggle: 'circle',
-            position: { x: 25, y: 25 }
-        },
-
         classed: "lws",
 
         color: d3.scale.category10().range()	   //Color
@@ -82,7 +75,6 @@ function RadarChart() {
     var chart_node;           // parent node for this instance of radarChart
     var hover_node;           // parent node for invisibleRadarCircles
     var tooltip_node;         // parent node for tooltip, to keep on top
-    var legend_node;          // parent node for tooltip, to keep on top
 
     // DEFINABLE EVENTS
     // Define with ACCESSOR function chart.events()
@@ -135,8 +127,7 @@ function RadarChart() {
             // append parent g for chart
             chart_node = svg.append('g').attr('class', options.classed + 'RadarNode');
             hover_node = svg.append('g').attr('class', options.classed + 'HoverNode');
-            tooltip_node = svg.append('g').attr('class', options.classed + 'TooltipNode');
-            legend_node = svg.append("g").attr("class", options.classed + "Legend");
+            tooltip_node = svg.append('foreignObject').attr('class', options.classed + 'TooltipNode');
 
             // Wrapper for the grid & axes
             var axisGrid = chart_node.append("g").attr("class", options.classed + "AxisWrapper");
@@ -148,13 +139,10 @@ function RadarChart() {
                 feMergeNode_1 = feMerge.append('feMergeNode').attr('in','coloredBlur'),
                 feMergeNode_2 = feMerge.append('feMergeNode').attr('in','SourceGraphic');
 
-            tooltip = tooltip_node.append('foreignObject')
-                .attr('class', options.classed + 'Tooltip')
-                .style("opacity", 1)
-                .style("padding-top", '10px')
-                .style("padding-left", '20px')
-                .style("width", "200px")
-                .style("height", "200px");
+            tooltip = tooltip_node.append('xhtml:div')
+                .style('opacity', '0')
+                .style('text-align', 'left')
+                .style('float', 'left');
 
             // update
             update = function() {
@@ -195,14 +183,13 @@ function RadarChart() {
                         "translate(" + ((options.width - (options.margins.left + options.margins.right)) / 2 + options.margins.left) + ","
                         + ((options.height - (options.margins.top + options.margins.bottom)) / 2 + options.margins.top) + ")")
                 tooltip_node.transition().delay(delay).duration(duration)
-                    .attr('width', options.width)
-                    .attr('height', options.height)
-                    .attr("transform",
-                        "translate(" + ((options.width - (options.margins.left + options.margins.right)) / 2 + options.margins.left) + ","
-                        + ((options.height - (options.margins.top + options.margins.bottom)) / 2 + options.margins.top) + ")")
+                    .attr('width', options.width / 2)
+                    .attr('height', options.height / 4)
+                    .attr("transform", "translate(" + (10 - options.margins.top) + ",0)")
 
-                legend_node
-                    .attr("transform", "translate(" + options.legend.position.x + "," + options.legend.position.y + ")");
+                tooltip.transition().delay(delay).duration(duration)
+                    .attr('width', options.width / 2)
+                    .attr('height', options.height / 4)
 
                 var update_gridCircles = axisGrid.selectAll("." + options.classed + "GridCircle")
                     .data(d3.range(1, (options.circles.levels + 1)).reverse())
@@ -466,45 +453,6 @@ function RadarChart() {
                     .attr("cx", function(d, i){ return calcX(d.value, 0, i); })
                     .attr("cy", function(d, i){ return calcY(d.value, 0, i); })
 
-                if (options.legend.display) {
-                    var shape = d3.svg.symbol().type(options.legend.symbol).size(150)();
-                    var colorScale = d3.scale.ordinal()
-                        .domain(_data.map(function(m) { return m._i; }))
-                        .range(_data.map(function(m) { return setColor(m); }));
-
-                    if (d3.legend) {
-                        var legendOrdinal = d3.legend.color()
-                            .shape("path", shape)
-                            .shapePadding(10)
-                            .scale(colorScale)
-                            .labels(colorScale.domain().map(function(m) { return keyScale(m); } ))
-                            .on("cellclick", function(d, i) {
-                                if (events.legend.mouseclick) events.legend.mouseclick(d, i, this);
-                            })
-                            .on("cellover", function(d, i) {
-                                if (events.legend.mouseover) events.legend.mouseover(d, i, this);
-                            })
-                            .on("cellout", function(d, i) {
-                                if (events.legend.mouseout) events.legend.mouseout(d, i, this);
-                            });
-
-                        legend_node
-                            .call(legendOrdinal);
-
-                        legend_node.selectAll('.cell')
-                            .attr('gen', function(d, i) {
-                                if (legend_toggles[d] == true) {
-                                    var shape = d3.svg.symbol().type(options.legend.toggle).size(150)()
-                                } else {
-                                    var shape = d3.svg.symbol().type(options.legend.symbol).size(150)()
-                                }
-                                d3.select(this).select('path').attr('d', function() { return shape; });
-                                return legend_toggles[d];
-                            });
-
-                    }
-                }
-
             }
         });
     }
@@ -673,7 +621,7 @@ function RadarChart() {
     // ACCESSORS
     // ---------
     chart.nodes = function() {
-        return { svg: svg, chart: chart_node, hover: hover_node, tooltip: tooltip_node, legend: legend_node };
+        return { svg: svg, chart: chart_node, hover: hover_node, tooltip: tooltip_node};
     }
 
     chart.events = function(functions) {
@@ -991,28 +939,18 @@ function RadarChart() {
     function tooltip_show(d, i, self) {
         if (legend_toggles[d._i]) return;
         if (options.width > 200) {
-            var labels = getAxisLabels(_data);
-            chart_node.select('[key="'+d.axis+'"]').select('foreignObject').style('opacity', 1);
-
-            newX =  - ((options.width-250) / 10) - 40 - (options.width / 2);
-            newY =  ((options.height-250) / 20) - (options.height / 10) - (options.height / 2);
             var val = d.key.replace(/ - /gi, '<br/>');
-
             tooltip
-                .attr('x', newX)
-                .attr('y', newY)
-                .html('<body xmlns="http://www.w3.org/1999/xhtml"><div style="float:left;text-align:left;width:200px;height:200px;">' + val + '</div></body> ')
+                .html(val)
                 .transition().duration(200)
-                .style('opacity', 1);
+                .style('opacity', '1');
         }
     }
 
     function tooltip_hide(d, i, self) {
-        chart_node.select('[key="'+d.axis+'"]').select('foreignObject')
-            .style('opacity', options.axes.display && radial_calcs.radius > options.axes.threshold ? 1 : 0);
         tooltip
             .transition().duration(200)
-            .style('opacity', 0);
+            .style('opacity', '0');
     }
 
 

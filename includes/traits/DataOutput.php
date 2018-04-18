@@ -2468,13 +2468,14 @@ trait Output {
         $guideline = ($type_guideline != 'standard' && $type_guideline != 'none');
         $height = $_attributes['height'];
         $fingerprint = uniqid('', true);
-        $uniq = 'graph' . substr ($fingerprint, strlen($fingerprint)-6, 80);
-        $container = 'lws-container-' . substr ($fingerprint, strlen($fingerprint)-6, 80);
-        $svg = 'svg' . substr ($fingerprint, strlen($fingerprint)-6, 80);
-        $titl = 'titl' . substr ($fingerprint, strlen($fingerprint)-6, 80);
-        $calendar = 'calendar' . substr ($fingerprint, strlen($fingerprint)-6, 80);
-        $spinner = 'spinner' . substr ($fingerprint, strlen($fingerprint)-6, 80);
-        $inter = 'inter' . substr ($fingerprint, strlen($fingerprint)-6, 80);
+        $uuid = substr ($fingerprint, strlen($fingerprint)-6, 80);
+        $uniq = 'graph' . $uuid;
+        $container = 'lws-container-' . $uuid;
+        $svg = 'svg' . $uuid;
+        $titl = 'titl' . $uuid;
+        $calendar = 'calendar' . $uuid;
+        $spinner = 'spinner' . $uuid;
+        $inter = 'inter' . $uuid;
         if ($mode == 'daily') {
             $refresh = 120000 + random_int(-30000, 30000);
         }
