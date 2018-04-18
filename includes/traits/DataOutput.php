@@ -180,6 +180,9 @@ trait Output {
      */
     public function graph_query($attributes, $json=false) {
         $result = null;
+        $mode = $attributes['mode'];
+        $type = $attributes['type'];
+        $args = $attributes['args'];
         $fingerprint = md5(json_encode($attributes));
         if ($attributes['cache'] != 'no_cache') {
             $result = Cache::get_graph($fingerprint, $attributes['mode']);
@@ -190,9 +193,6 @@ trait Output {
         }
         if (!$result) {
             $result = array();
-            $mode = $attributes['mode'];
-            $type = $attributes['type'];
-            $args = $attributes['args'];
             $timescale = $attributes['timescale'];
             $valuescale = $attributes['valuescale'];
             $self_color = $attributes['color'] == 'self';

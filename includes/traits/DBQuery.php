@@ -956,10 +956,16 @@ trait Query {
      */
     protected function get_extended_station_informations_by_station_id($station_id) {
         $result = $this->get_station_informations_by_station_id($station_id);
-        $devices = DeviceManager::get_modules_details($station_id);
+        $modules = DeviceManager::get_modules_details($station_id);
         $result['modules_names'] = array();
-        foreach ($devices as $device) {
-            $result['modules_names'][$device['module_id']] = $device['screen_name'];
+        foreach ($modules as $module) {
+            if ($module['screen_name'] == '') {
+                $result['modules_names'][$module['module_id']] = $module['module_name'];
+            }
+            else {
+                $result['modules_names'][$module['module_id']] = $module['screen_name'];
+            }
+
         }
         return $result ;
     }
