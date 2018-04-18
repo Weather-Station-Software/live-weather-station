@@ -150,11 +150,11 @@ function RadarChart() {
 
             tooltip = tooltip_node.append('foreignObject')
                 .attr('class', options.classed + 'Tooltip')
-                .style("opacity", 0)
+                .style("opacity", 1)
                 .style("padding-top", '10px')
                 .style("padding-left", '20px')
-                .style("width", "200")
-                .style("height", "200");
+                .style("width", "200px")
+                .style("height", "200px");
 
             // update
             update = function() {
@@ -1001,7 +1001,7 @@ function RadarChart() {
             tooltip
                 .attr('x', newX)
                 .attr('y', newY)
-                .html('<span style="float:left;text-align:left;">' + val + '</span>')
+                .html('<body xmlns="http://www.w3.org/1999/xhtml"><div style="float:left;text-align:left;width:200px;height:200px;">' + val + '</div></body> ')
                 .transition().duration(200)
                 .style('opacity', 1);
         }

@@ -2,7 +2,7 @@ function Windrose() {
 
     var data = [];
     var options = {
-        size: 600,
+        size: 0,
         legend: false,
         fixed: false,
         scale: 'linear',
@@ -65,30 +65,7 @@ function Windrose() {
     function chart(selection) {
         selection.each(function () {
             dom_parent = d4.select(this);
-            series = data.series;
-            legend = data.legend;
-            var svg = dom_parent.append('svg')
-                .attr('overflow', 'visible')
-                .attr('width', options.size)
-                .attr('height', options.size)
-                .attr('transform', 'translate(' + options.size / 2 + ',' + options.size / 2 + ')');
 
-            chart_node = svg.append('g').attr('class', options.classed + 'WindroseNode');
-            axisGrid = svg.append("g").attr("class", options.classed + "AxisWrapper");
-            legend_node = svg.append("g").attr("class", options.classed + "Legend");
-            hover_node = svg.append('g').attr('class', options.classed + 'HoverNode');
-            tooltip_node = svg.append('g').attr('class', options.classed + 'TooltipNode');
-
-
-
-
-            tooltip = tooltip_node.append('foreignObject')
-                .attr('class', options.classed + 'Tooltip')
-                .style("opacity", 0)
-                .style("padding-top", '10px')
-                .style("padding-left", '20px')
-                .style("width", "200")
-                .style("height", "200");
 
             // update
             update = function() {
@@ -139,9 +116,29 @@ function Windrose() {
                 radius.domain([0, d4.max(series, function(d) { return d.y0 + d.y; })]);
                 angleOffset = -360.0/series.length/2.0;
 
-                svg .attr('width', options.size)
+                var masterRoot = dom_parent.append('svg')
+                    .attr('overflow', 'visible')
+                    .attr('width', options.size)
+                    .attr('height', options.size);
+                var svg = masterRoot.append('g')
+                    .attr('overflow', 'visible')
+                    .attr('width', options.size)
                     .attr('height', options.size)
                     .attr('transform', 'translate(' + options.size / 2 + ',' + options.size / 2 + ')');
+
+                chart_node = svg.append('g').attr('class', options.classed + 'WindroseNode');
+                axisGrid = svg.append("g").attr("class", options.classed + "AxisWrapper");
+                legend_node = svg.append("g").attr("class", options.classed + "Legend");
+                hover_node = svg.append('g').attr('class', options.classed + 'HoverNode');
+                tooltip_node = svg.append('g').attr('class', options.classed + 'TooltipNode');
+
+                tooltip = tooltip_node.append('foreignObject')
+                    .attr('class', options.classed + 'Tooltip')
+                    .style("opacity", 0)
+                    .style("padding-top", '10px')
+                    .style("padding-left", '20px')
+                    .style("width", "200")
+                    .style("height", "200");
 
                 // Axis
                 axisGrid.selectAll('.axis')
@@ -174,7 +171,7 @@ function Windrose() {
 
                 label.append('text')
                     .attr('transform', function(d) { return (x(d.axis) + x.bandwidth() / 2 + Math.PI / 2) % (2 * Math.PI) < Math.PI ? 'rotate(90)translate(0,16)' : 'rotate(-90)translate(0,-9)'; })
-                    .attr('alignment-baseline', 'baseline')
+                    //.attr('alignment-baseline', 'baseline')
                     .text(function(d) { return d.axis; });
 
                 // Legend
