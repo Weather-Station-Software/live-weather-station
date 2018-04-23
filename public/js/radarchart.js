@@ -83,7 +83,6 @@ function RadarChart() {
         'gridCircle': { 'mouseover': null, 'mouseout': null, 'mouseclick': null },
         'axisLabel': { 'mouseover': null, 'mouseout': null, 'mouseclick': null },
         'line': { 'mouseover': null, 'mouseout': null, 'mouseclick': null },
-        'legend': { 'mouseover': legendMouseover, 'mouseout': areaMouseout, 'mouseclick': legendClick },
         'axisLegend': { 'mouseover': null, 'mouseout': null, 'mouseclick': null },
         'radarArea': { 'mouseover': areaMouseover, 'mouseout': areaMouseout, 'mouseclick': null },
         'radarInvisibleCircle': { 'mouseover': tooltip_show, 'mouseout': tooltip_hide, 'mouseclick': null }
@@ -98,7 +97,6 @@ function RadarChart() {
 
     // programmatic
     var _data = [];
-    var legend_toggles = [];
     var radial_calcs = {};
     var Format = d3.format(options.valFormat);
     var transition_time = 0;
@@ -132,15 +130,16 @@ function RadarChart() {
             // Wrapper for the grid & axes
             var axisGrid = chart_node.append("g").attr("class", options.classed + "AxisWrapper");
 
-            ////////// Glow filter for some extra pizzazz ///////////
+            // Glow filter
             var filter = chart_node.append('defs').append('filter').attr('id', options.filter_id),
                 feGaussianBlur = filter.append('feGaussianBlur').attr('stdDeviation','2.5').attr('result','coloredBlur'),
                 feMerge = filter.append('feMerge'),
                 feMergeNode_1 = feMerge.append('feMergeNode').attr('in','coloredBlur'),
                 feMergeNode_2 = feMerge.append('feMergeNode').attr('in','SourceGraphic');
 
+            // HTML tooltip
             tooltip = tooltip_node.append('xhtml:div')
-                .style('opacity', '0')
+                .style('opacity', '0.00001')
                 .style('text-align', 'left')
                 .style('float', 'left');
 
@@ -148,6 +147,10 @@ function RadarChart() {
             update = function() {
 
                 var duration = transition_time;
+                var tooltipShift = 10 - options.margins.top;
+                if (options.width > 400) {
+                    tooltipShift = 20 - options.margins.top;
+                }
 
                 Format = d3.format(options.valFormat);
 
@@ -185,7 +188,7 @@ function RadarChart() {
                 tooltip_node.transition().delay(delay).duration(duration)
                     .attr('width', options.width / 2)
                     .attr('height', options.height / 4)
-                    .attr("transform", "translate(" + (10 - options.margins.top) + ",0)")
+                    .attr("transform", "translate(" + tooltipShift + ",0)")
 
                 tooltip.transition().delay(delay).duration(duration)
                     .attr('width', options.width / 2)
@@ -672,11 +675,6 @@ function RadarChart() {
 
     chart.data = function(value) {
         if (!arguments.length) return data;
-        if (legend_toggles.length) {
-            var keys = _data.map(function(m) {return m.key});
-            legend_toggles.forEach(function (e, i) { chart.filterAreas(keys[i]); })
-        }
-        legend_toggles = [];
         data = value;
         return chart;
     };
@@ -884,16 +882,15 @@ function RadarChart() {
     // DEFAULT EVENTS
     // --------------
     function areaMouseover(d, i, self) {
-        if (legend_toggles[d._i]) return;
         //Dim all blobs
         chart_node.selectAll("." + options.classed + "RadarArea")
-            .transition().duration(200)
+            //.transition().duration(200)
             .style("fill-opacity", function(d, i, j) {
                 return options.areas.filter.indexOf(d.key) >= 0 ? 0 : 0.1;
             })
         //Bring back the hovered over blob
         d3.select(self)
-            .transition().duration(200)
+            //.transition().duration(200)
             .style("fill-opacity", function(d, i, j) {
                 return options.areas.filter.indexOf(d.key) >= 0 ? 0 : 0.7;
             });
@@ -903,54 +900,26 @@ function RadarChart() {
     function areaMouseout(d, i, self) {
         //Bring back all blobs
         chart_node.selectAll("." + options.classed + "RadarArea")
-            .transition().duration(200)
+            //.transition().duration(200)
             .style("fill-opacity", function(d, i, j) {
                 return options.areas.filter.indexOf(d.key) >= 0 ? 0 : options.areas.opacity;
             });
         tooltip_hide(d, i, self);
     }
 
-    // on mouseover for the legend symbol
-    function legendMouseover(d, i, self) {
-        if (legend_toggles[d]) return;
-        var area = keys.indexOf(d) >= 0 ? d : keyScale(d);
-
-        //Dim all blobs
-        chart_node.selectAll("." + options.classed + "RadarArea")
-            .transition().duration(200)
-            .style("fill-opacity", function(d, i, j) {
-                return options.areas.filter.indexOf(d.key) >= 0 ? 0 : 0.1;
-            });
-        //Bring back the hovered over blob
-        chart_node.selectAll("." + options.classed + "RadarArea." + area.replace(/\s+/g, ''))
-            .transition().duration(200)
-            .style("fill-opacity", function(d, i, j) {
-                return options.areas.filter.indexOf(d.key) >= 0 ? 0 : 0.7;
-            });
-    }
-
-    function legendClick(d, i, self) {
-        var keys = _data.map(function(m) {return m.key});
-        modifyList(options.areas.filter, keys[d], keys);
-        legend_toggles[d] = legend_toggles[d] ? false : true;
-        update();
-    }
-
     function tooltip_show(d, i, self) {
-        if (legend_toggles[d._i]) return;
+        //if (legend_toggles[d._i]) return;
         if (options.width > 200) {
             var val = d.key.replace(/ - /gi, '<br/>');
             tooltip
                 .html(val)
-                .transition().duration(200)
                 .style('opacity', '1');
         }
     }
 
     function tooltip_hide(d, i, self) {
         tooltip
-            .transition().duration(200)
-            .style('opacity', '0');
+            .style('opacity', '0.00001');
     }
 
 

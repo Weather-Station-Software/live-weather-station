@@ -1,6 +1,6 @@
 
 
-#3.5.0 / May xxxxxxxxth, 2018
+#3.5.0 / April 24th, 2018
 
 * New: Weather Station is now compatible with the ***Pioupiou Wind Station*** from the Pioupiou network.
 * New: a new module manager allows, on a per station basis, to rename and/or hide modules.

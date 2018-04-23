@@ -70,17 +70,17 @@ class Data {
      */
     private function ws_tables_construct(){
         $n = 20;
-        $this->ws_tables[self::live_weather_station_datas_table()] = array('name' => __('Current records', 'live-weather-station'), 'item' => _n('record', 'records', $n, 'live-weather-station'));
-        $this->ws_tables[self::live_weather_station_histo_daily_table()] = array('name' => __('Daily data', 'live-weather-station'), 'item' => _n('record', 'records', $n, 'live-weather-station'));
-        $this->ws_tables[self::live_weather_station_histo_yearly_table()] = array('name' => __('Historical data', 'live-weather-station'), 'item' => _n('record', 'records', $n, 'live-weather-station'));
         $this->ws_tables[self::live_weather_station_stations_table()] = array('name' => __('Stations details', 'live-weather-station'), 'item' => _n('station', 'stations', $n, 'live-weather-station'));
         $this->ws_tables[self::live_weather_station_module_detail_table()] = array('name' => __('Modules details', 'live-weather-station'), 'item' => _n('module', 'modules', $n, 'live-weather-station'));
+        $this->ws_tables[self::live_weather_station_datas_table()] = array('name' => __('Current records', 'live-weather-station'), 'item' => _n('record', 'records', $n, 'live-weather-station'));
         $this->ws_tables[self::live_weather_station_log_table()] = array('name' => __('Events log', 'live-weather-station'), 'item' => _n('event', 'events', $n, 'live-weather-station'));
+        $this->ws_tables[self::live_weather_station_histo_daily_table()] = array('name' => __('Daily data', 'live-weather-station'), 'item' => _n('record', 'records', $n, 'live-weather-station'));
+        $this->ws_tables[self::live_weather_station_histo_yearly_table()] = array('name' => __('Historical data', 'live-weather-station'), 'item' => _n('record', 'records', $n, 'live-weather-station'));
+        $this->ws_tables[self::live_weather_station_quota_day_table()] = array('name' => __('Daily API usage', 'live-weather-station'), 'item' => _n('entry', 'entries', $n, 'live-weather-station'));
+        $this->ws_tables[self::live_weather_station_quota_year_table()] = array('name' => __('Yearly API usage', 'live-weather-station'), 'item' => _n('entry', 'entries', $n, 'live-weather-station'));
         $this->ws_tables[self::live_weather_station_performance_cache_table()] = array('name' => __('Cache statistics', 'live-weather-station'), 'item' => _n('entry', 'entries', $n, 'live-weather-station'));
         $this->ws_tables[self::live_weather_station_performance_cron_table()] = array('name' => __('Cron statistics', 'live-weather-station'), 'item' => _n('entry', 'entries', $n, 'live-weather-station'));
         $this->ws_tables[self::live_weather_station_data_year_table()] = array('name' => __('Database statistics', 'live-weather-station'), 'item' => _n('entry', 'entries', $n, 'live-weather-station'));
-        $this->ws_tables[self::live_weather_station_quota_day_table()] = array('name' => __('Daily API usage', 'live-weather-station'), 'item' => _n('entry', 'entries', $n, 'live-weather-station'));
-        $this->ws_tables[self::live_weather_station_quota_year_table()] = array('name' => __('Yearly API usage', 'live-weather-station'), 'item' => _n('entry', 'entries', $n, 'live-weather-station'));
     }
 
     /**

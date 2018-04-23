@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: weather, openweathermap, netatmo, weatherflow, wunderground
 Requires at least: 4.0
 Tested up to: 4.9
-Stable tag: 3.4.4
+Stable tag: 3.5.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://support.laquadrature.net/
@@ -33,6 +33,7 @@ Weather Station supports:
 * the Netatmo station (all modules)
 * the Netatmo *Healthy Home Coach*
 * the WeatherFlow station (Sky & Air modules)
+* the Pioupiou wind stations (V1 & V2)
 * all stations supported by softwares like Cumulus, Weather Display, WeeWX, etc. (so, yes, stations from Davis, La Crosse, Oregon Scientific, RainWise, etc. are supported)
 * all stations supported by softwares like WeatherLink, WsWin32, MeteoBridge (with stickertags export) 
 * all stations published on Weather Underground (regardless which model it is)
