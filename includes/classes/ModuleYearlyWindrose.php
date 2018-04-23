@@ -37,7 +37,7 @@ class Windrose extends \WeatherStation\Engine\Module\Maintainer {
     protected function enqueue_resources() {
         wp_enqueue_script('lws-d4');
         wp_enqueue_script('lws-scale-radial');
-        wp_enqueue_script('lws-windrose-debug');
+        wp_enqueue_script('lws-windrose');
         wp_enqueue_script('lws-colorbrewer');
         wp_enqueue_script('lws-spin');
     }

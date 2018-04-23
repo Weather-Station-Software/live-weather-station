@@ -16,7 +16,7 @@
  * 4.x - Agricultural indexes (EMC for grains)
  * 4.x - 4 hours forecasting
  * 4.x - 5 days forecasting
- * 4.x - Buttons and config windows in TinyMCE
+ * 4.x - Gutenberg blocks
  * 5.x - Pushing data to MQTT broker
  * 5.x - Textual historical shortcodes
 
@@ -40,9 +40,6 @@
 ***********************
 * FUTURE IMPROVEMENTS *
 ***********************
-
- * 3.x - Ability to change text color in clean gauges
-
 
 
 ***********************
@@ -81,33 +78,13 @@ Fully delete a station in fast collect mode
 * DOCUMENTATION       *
 ***********************
 
-Data Visualization tool.
-
-All modules: solar, thunderstorm, soil
-
-Psychrometry
-
-History collection
-
-
-
-
 
 ***********************
-* 3.5.0               *
+* 3.5.x               *
 ***********************
-
-Verify stackable bar charts errors
 
 Station compatibility list
 
 Chart for station comparison
 
-interactive windrose
-
-
-
-verify label in value radar chart
-verify tooltip on mobile
-Undefined index: "set" on line 1569
 
