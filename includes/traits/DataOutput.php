@@ -2,7 +2,6 @@
 
 namespace WeatherStation\Data;
 
-use function Sodium\randombytes_buf;
 use WeatherStation\Data\DateTime\Conversion as Datetime_Conversion;
 use WeatherStation\Data\Type\Description as Type_Description;
 use WeatherStation\Data\Unit\Description as Unit_Description;
