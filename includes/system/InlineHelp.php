@@ -100,7 +100,7 @@ class InlineHelp {
         if ($lang == 'fr') {
             $url = LWS_WATSNEW_FR;
         }
-        if (Manager::patch_version() != 0) {
+        if (Manager::patch_version() != 0 && LWS_SHOW_CHANGELOG) {
             $url = LWS_CHANGELOG_EN;
             if ($lang == 'fr') {
                 $url = LWS_CHANGELOG_FR;

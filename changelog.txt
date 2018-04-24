@@ -1,4 +1,8 @@
 
+#3.5.1 / April 24th, 2018
+
+* Improvement: optimized logic for the update message box.
+* Bug fix: with some PHP versions, there could be an error in a wrongly cleaned portion of code.
 
 #3.5.0 / April 24th, 2018
 
