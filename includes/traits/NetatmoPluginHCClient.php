@@ -29,6 +29,7 @@ trait HCClient {
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
     protected $netatmo_scope = 'read_homecoach';
+    protected $netatmo_type = LWS_NETATMOHC_SID;
 
 
     /**
