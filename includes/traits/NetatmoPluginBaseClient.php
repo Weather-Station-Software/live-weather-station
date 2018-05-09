@@ -112,32 +112,44 @@ trait BaseClient {
             }
             if (!isset($device['_id']) || !isset($device['dashboard_data']) || !is_array($device['dashboard_data'])) {
                 unset($device);
+                Logger::warning($this->facility, $this->service_name, null, null, null, null, 9, 'Station not found.');
                 continue;
             }
-            foreach($device['modules'] as &$module)
-            {
-                if (!isset($module['module_name'])) {
-                    $module['module_name'] = '?';
-                }
-                if (!isset($module['type'])) {
-                    $module['type'] = 'unknown';
-                }
-                if (!isset($module['data_type'])) {
-                    $module['data_type'] = 'unknown';
-                }
-                if (!isset($module['rf_status'])) {
-                    $module['rf_status'] = 0;
-                }
-                if (!isset($module['firmware'])) {
-                    $module['firmware'] = 0;
-                }
-                if (!isset($module['battery_vp'])) {
-                    $module['battery_vp'] = 0;
-                }
-                if (!isset($module['_id']) || !isset($module['dashboard_data']) || !is_array($module['dashboard_data'])) {
-                    unset($module);
+            if (!isset($device['modules'])) {
+                $device['modules'] = array();
+            }
+            if (count($device['modules']) > 0) {
+                foreach($device['modules'] as &$module)
+                {
+                    if (!isset($module['module_name'])) {
+                        $module['module_name'] = '?';
+                    }
+                    if (!isset($module['type'])) {
+                        $module['type'] = 'unknown';
+                    }
+                    if (!isset($module['data_type'])) {
+                        $module['data_type'] = 'unknown';
+                    }
+                    if (!isset($module['rf_status'])) {
+                        $module['rf_status'] = 0;
+                    }
+                    if (!isset($module['firmware'])) {
+                        $module['firmware'] = 0;
+                    }
+                    if (!isset($module['battery_vp'])) {
+                        $module['battery_vp'] = 0;
+                    }
+                    if (!isset($module['_id']) || !isset($module['dashboard_data']) || !is_array($module['dashboard_data'])) {
+                        unset($module);
+                    }
                 }
             }
+            else {
+                if ($this->netatmo_type == LWS_NETATMO_SID) {
+                    Logger::warning($this->facility, $this->service_name, $device['_id'], $device['station_name'], null, null, 900, 'No module found for this station.');
+                }
+            }
+
         }
         $this->netatmo_datas = $datas;
     }
