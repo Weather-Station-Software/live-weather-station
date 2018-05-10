@@ -1867,6 +1867,9 @@ class Admin {
         if (array_key_exists('disconnect', $_POST)) {
             $action = 'disconnect';
         }
+        if (array_key_exists('reconnect', $_POST)) {
+            $action = 'reconnect';
+        }
         $login = '';
         if (array_key_exists('login', $_POST)) {
             $login = $_POST['login'];
@@ -1970,7 +1973,38 @@ class Admin {
                     add_settings_error('lws_nonce_error', 200, $message, 'error');
                     Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to correctly disconnect ' . LWS_PLUGIN_NAME . ' from '. $service . '.');
                 }
+            }
 
+            if ($action == 'reconnect') {
+                if ($service == 'Netatmo') {
+                    $this->disconnect_netatmo(false);
+                    $result = true;
+                }
+                if ($service == 'NetatmoHC') {
+                    $this->disconnect_netatmohc(false);
+                    $result = true;
+                }
+                if ($service == 'OpenWeatherMap') {
+                    $this->disconnect_owm(false);
+                    $result = true;
+                }
+                if ($service == 'WeatherUnderground') {
+                    $this->disconnect_wug(false);
+                    $result = true;
+                }
+                if ($result) {
+                    $message = __('%s is now disconnected from %s.', 'live-weather-station');
+                    $message .= ' ' . __('You can set your new credentials.', 'live-weather-station');
+                    $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . $service . '</em>');
+                    add_settings_error('lws_nonce_success', 200, $message, 'updated');
+                    Logger::info($this->service, null, null, null, null, null, 0, 'Disconnection from '. $service . ' has been correctly done by an admin.');
+                }
+                else {
+                    $message = __('Unable to disconnect %s from %s. Please try again.', 'live-weather-station');
+                    $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . $service . '</em>');
+                    add_settings_error('lws_nonce_error', 200, $message, 'error');
+                    Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to correctly disconnect ' . LWS_PLUGIN_NAME . ' from '. $service . '.');
+                }
             }
         }
         else {
@@ -2208,11 +2242,13 @@ class Admin {
      *
      * @since    2.0.0
      */
-    protected function disconnect_netatmo() {
+    protected function disconnect_netatmo($delete=true) {
         self::init_netatmo_options();
         Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly disconnected from service.');
-        $this->clear_all_netatmo_stations();
-        Logger::notice('Backend', 'Netatmo', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
+        if ($delete) {
+            $this->clear_all_netatmo_stations();
+            Logger::notice('Backend', 'Netatmo', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
+        }
     }
 
     /**
@@ -2243,11 +2279,13 @@ class Admin {
      *
      * @since 3.1.0
      */
-    protected function disconnect_netatmohc() {
+    protected function disconnect_netatmohc($delete=true) {
         self::init_netatmohc_options();
         Logger::notice('Authentication', 'Netatmo', null, null, null, null, null, 'Correctly disconnected from service.');
-        $this->clear_all_netatmo_hc_stations();
-        Logger::notice('Backend', 'Netatmo', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
+        if ($delete) {
+            $this->clear_all_netatmo_hc_stations();
+            Logger::notice('Backend', 'Netatmo', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
+        }
     }
 
     /**
@@ -2276,12 +2314,14 @@ class Admin {
      *
      * @since    2.0.0
      */
-    protected function disconnect_owm() {
+    protected function disconnect_owm($delete=true) {
         self::init_owm_options();
         Logger::notice('Authentication', 'OpenWeatherMap', null, null, null, null, null, 'Correctly disconnected from service.');
-        $this->clear_all_owm_stations();
-        $this->clear_all_owm_id_stations();
-        Logger::notice('Backend', 'OpenWeatherMap', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
+        if ($delete) {
+            $this->clear_all_owm_stations();
+            $this->clear_all_owm_id_stations();
+            Logger::notice('Backend', 'OpenWeatherMap', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
+        }
     }
 
     /**
@@ -2310,11 +2350,13 @@ class Admin {
      *
      * @since 3.0.0
      */
-    protected function disconnect_wug() {
+    protected function disconnect_wug($delete=true) {
         self::init_wug_options();
         Logger::notice('Authentication', 'Weather Underground', null, null, null, null, null, 'Correctly disconnected from service.');
-        $this->clear_all_wug_id_stations();
-        Logger::notice('Backend', 'Weather Underground', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
+        if ($delete) {
+            $this->clear_all_wug_id_stations();
+            Logger::notice('Backend', 'Weather Underground', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
+        }
     }
 
     /**

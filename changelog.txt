@@ -1,4 +1,13 @@
 
+#3.5.2 / May 10th, 2018
+
+* Improvement: removed query string from resource name when using CDN.
+* Improvement: it's now possible to change credentials of a service (Netatmo, OpenWeatherMap or Weather Undergroung) without deleting associated stations (thanks to Fred Contat for the suggestion).
+* Improvement: better Netatmo Healthy Home Coach error handling.
+* Bug fix: a wrong value may be displayed in textual shortcode for last seen, last refresh, first setup and last setup measurement types (thanks to Fred Contat for detecting it).
+* Bug fix: a PHP notice may appears when accessing the server configuration details page.
+
+
 #3.5.1 / April 24th, 2018
 
 * Improvement: optimized logic for the update message box.

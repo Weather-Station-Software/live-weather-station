@@ -59,6 +59,7 @@ $warning = sprintf(__('All Healthy Home Coaches associated to this service will 
     <?php } else {?>
         <div id="major-publishing-actions">
             <div id="publishing-action">
+                <input type="submit" name="reconnect" id="netatmohc-reconnect" class="button button-primary" value="<?php esc_attr_e('Change', 'live-weather-station');?>">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
                     <span id="netatmohc-span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
