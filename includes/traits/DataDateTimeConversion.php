@@ -315,6 +315,9 @@ trait Conversion {
      * @since    1.0.0
      */
     public static function get_time_diff_from_utc($from) {
+        if (!is_numeric($from)) {
+            return self::get_time_diff_from_mysql_utc($from);
+        }
         if ($from == -1) {
             return __('N/A', 'live-weather-station');
         }

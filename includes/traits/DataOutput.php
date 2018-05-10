@@ -5996,7 +5996,7 @@ trait Output {
             return $err;
         }
         $tz = '';
-        if (($_attributes['format'] == 'local-date') || ($_attributes['format'] == 'local-time')) {
+        if (($_attributes['format'] == 'local-date') || ($_attributes['format'] == 'local-time') || ($_attributes['format'] == 'local-diff')) {
             $_att = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => ''), $attributes );
             $_att['module_id'] = $_attributes['device_id'];
             $_att['measure_type'] = 'loc_timezone';
@@ -6067,11 +6067,16 @@ trait Output {
                 break;
             case 'local-date':
                 try {
-                    if ($_attributes['element'] == 'measure_timestamp') {
+                    if ((strpos($_attributes['measure_type'], 'last_') === 0) || (strpos($_attributes['measure_type'], 'first_') === 0)) {
                         $result = $this->get_date_from_mysql_utc($result, $tz) ;
                     }
-                    if ($_attributes['element'] == 'measure_value') {
-                        $result = $this->get_date_from_utc($result, $tz) ;
+                    else {
+                        if ($_attributes['element'] == 'measure_timestamp') {
+                            $result = $this->get_date_from_mysql_utc($result, $tz) ;
+                        }
+                        if ($_attributes['element'] == 'measure_value') {
+                            $result = $this->get_date_from_utc($result, $tz) ;
+                        }
                     }
                 }
                 catch(\Exception $ex) {
@@ -6080,11 +6085,16 @@ trait Output {
                 break;
             case 'local-time':
                 try {
-                    if ($_attributes['element'] == 'measure_timestamp') {
+                    if ((strpos($_attributes['measure_type'], 'last_') === 0) || (strpos($_attributes['measure_type'], 'first_') === 0)) {
                         $result = $this->get_time_from_mysql_utc($result, $tz) ;
                     }
-                    if ($_attributes['element'] == 'measure_value') {
-                        $result = $this->get_time_from_utc($result, $tz) ;
+                    else {
+                        if ($_attributes['element'] == 'measure_timestamp') {
+                            $result = $this->get_time_from_mysql_utc($result, $tz) ;
+                        }
+                        if ($_attributes['element'] == 'measure_value') {
+                            $result = $this->get_time_from_utc($result, $tz) ;
+                        }
                     }
                 }
                 catch(\Exception $ex) {
@@ -6093,11 +6103,16 @@ trait Output {
                 break;
             case 'local-diff':
                 try {
-                    if ($_attributes['element'] == 'measure_timestamp') {
+                    if ((strpos($_attributes['measure_type'], 'last_') === 0) || (strpos($_attributes['measure_type'], 'first_') === 0)) {
                         $result = $this->get_time_diff_from_mysql_utc($result) ;
                     }
-                    if ($_attributes['element'] == 'measure_value') {
-                        $result = $this->get_time_diff_from_utc($result) ;
+                    else {
+                        if ($_attributes['element'] == 'measure_timestamp') {
+                            $result = $this->get_time_diff_from_mysql_utc($result) ;
+                        }
+                        if ($_attributes['element'] == 'measure_value') {
+                            $result = $this->get_time_diff_from_utc($result) ;
+                        }
                     }
                 }
                 catch(\Exception $ex) {

@@ -189,7 +189,7 @@ function lws_register_style($handle, $source, $file, $deps = array()) {
         wp_register_style($handle, $file, $deps);
     }
     else {
-        wp_register_style($handle, $source . $file, $deps, LWS_VERSION);
+        wp_register_style($handle, $source . $file, $deps, (bool)get_option('live_weather_station_use_cdn') ? false : LWS_VERSION);
     }
 }
 
@@ -211,6 +211,6 @@ function lws_register_script($handle, $source, $file, $deps = array()) {
         wp_register_script($handle, $file, $deps, false, (bool)get_option('live_weather_station_footer_scripts', false));
     }
     else {
-        wp_register_script($handle, $source . $file, $deps, LWS_VERSION, (bool)get_option('live_weather_station_footer_scripts', false));
+        wp_register_script($handle, $source . $file, $deps, (bool)get_option('live_weather_station_use_cdn') ? false : LWS_VERSION, (bool)get_option('live_weather_station_footer_scripts', false));
     }
 }
