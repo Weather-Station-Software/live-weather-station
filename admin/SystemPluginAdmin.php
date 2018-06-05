@@ -113,15 +113,32 @@ class Admin {
     /**
      * Enqueues the stylesheets for the admin area.
      *
-     * @since1.0.0
+     * @since 1.0.0
      */
     public function enqueue_styles() {
         wp_enqueue_style('lws-admin');
         wp_enqueue_style('lws-public');
         //wp_enqueue_style('thickbox');
-        wp_enqueue_style('lws-font-awesome');
+        lws_font_awesome(true);
         wp_enqueue_style('lws-weather-icons');
         wp_enqueue_style('lws-weather-icons-wind');
+    }
+
+    /**
+     * Modify the tags when rendering scripts.
+     *
+     * For now, only "defer" tag is supported.
+     *
+     * @since 3.5.3
+     */
+    public function modify_scripts($tag, $handle) {
+        $scripts_to_defer = array('lws-fa-brands', 'lws-fa-regular', 'lws-fa-solid');
+        foreach($scripts_to_defer as $defer_script) {
+            if ($defer_script === $handle) {
+                return str_replace(' src', ' defer src', $tag);
+            }
+        }
+        return $tag;
     }
 
     /**
@@ -150,6 +167,11 @@ class Admin {
         lws_register_script('lws-cal-heatmap', LWS_PUBLIC_URL , 'js/cal-heatmap.min.js', array('lws-d3'));
         lws_register_script('lws-colorbrewer', LWS_PUBLIC_URL , 'js/colorbrewer.min.js');
         lws_register_script('lws-spin', LWS_PUBLIC_URL , 'js/spin.min.js');
+        lws_register_script('lws-fa-loader', LWS_PUBLIC_URL , 'js/fontawesome.min.js');
+        lws_register_script('lws-fa-all', LWS_PUBLIC_URL , 'js/fontawesome-all.min.js');
+        lws_register_script('lws-fa-brands', LWS_PUBLIC_URL , 'js/fa-brands.min.js', array('lws-fa-loader'));
+        lws_register_script('lws-fa-regular', LWS_PUBLIC_URL , 'js/fa-regular.min.js', array('lws-fa-loader'));
+        lws_register_script('lws-fa-solid', LWS_PUBLIC_URL , 'js/fa-solid.min.js', array('lws-fa-loader'));
     }
 
     /**
@@ -159,6 +181,7 @@ class Admin {
      */
     public function enqueue_scripts() {
         wp_enqueue_script('lws-admin');
+        lws_font_awesome(true);
         //wp_enqueue_script('thickbox');
     }
 

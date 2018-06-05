@@ -35,7 +35,7 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
             </table>
         <?php } else {?>
             <div style="margin-bottom: 10px;">
-                <span><i style="color:#999" class="fa fa-lg fa-fw fa-share-alt" aria-hidden="true"></i>&nbsp;<?php echo $shared; ?></span>
+                <span><i style="color:#999" class="<?php echo LWS_FAS;?> fa-lg fa-fw fa-share-alt" aria-hidden="true"></i>&nbsp;<?php echo $shared; ?></span>
             </div>
         <?php } ?>
     </div>
@@ -43,7 +43,7 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
         <div id="major-publishing-actions">
             <div id="publishing-action">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="<?php echo $service; ?>-span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Activating data sharing, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="<?php echo $service; ?>-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Activating data sharing, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
                 <input type="submit" name="<?php echo $service; ?>-share" id="<?php echo $service; ?>-share" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
             </div>
@@ -53,7 +53,7 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
         <div id="major-publishing-actions">
             <div id="publishing-action">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="<?php echo $service; ?>-span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Deactivating data sharing, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="<?php echo $service; ?>-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Deactivating data sharing, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
                 <input type="submit" name="<?php echo $service; ?>-unshare" id="<?php echo $service; ?>-unshare" class="button button-primary" onclick="lws_<?php echo $service; ?>_confirmation = confirm('<?php echo $warning; ?>'); return lws_<?php echo $service; ?>_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>

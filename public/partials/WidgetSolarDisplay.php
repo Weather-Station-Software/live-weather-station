@@ -5,6 +5,12 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
+if ($shadows) {
+    $sh = 'filter:drop-shadow(1px 1px 1px rgba(0,0,0,.1));';
+}
+else {
+    $sh = '';
+}
 ?>
 <div class="lws-widget-container lws-widget-container-<?php echo $id ?>">
     <div class="lws-widget-outer-solar lws-widget-outer-solar-<?php echo $id ?>">
@@ -42,7 +48,7 @@
                 <!-- IRRADIANCE -->
                 <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('UV', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="fa wi-x26-<?php echo $id ?> fa-arrow-down"></i>
+                        <i class="<?php echo LWS_FAS;?> wi-x32-<?php echo $id ?> fa-rotate-90 fa-<?php echo LWS_FA5?'sign-in-alt':'sign-in';?>" <?php echo LWS_FA5?'style="font-size:42px!important;' . $sh . '"':'';?>></i>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
@@ -59,7 +65,7 @@
                 <!-- ILLUMINANCE -->
                 <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('UV', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="fa wi-x26-<?php echo $id ?> fa-long-arrow-down fa-rotate-30"></i>
+                        <i class="<?php echo LWS_FAS;?> wi-x26-<?php echo $id ?> fa-rotate-30 fa-<?php echo LWS_FA5?'long-arrow-alt-down':'long-arrow-down';?>" <?php echo LWS_FA5?'style="font-size:42px!important;' . $sh . '"':'';?>></i>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">

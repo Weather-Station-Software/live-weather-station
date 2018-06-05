@@ -5,7 +5,12 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
-
+if ($shadows) {
+    $sh = 'filter:drop-shadow(1px 1px 1px rgba(0,0,0,.1));';
+}
+else {
+    $sh = '';
+}
 ?>
 <div class="lws-widget-container lws-widget-container-<?php echo $id ?>">
     <div class="lws-widget-outer-thunderstorm lws-widget-outer-thunderstorm-<?php echo $id ?>">
@@ -49,7 +54,7 @@
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"></div>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="fa wi-x42-<?php echo $id ?> fa-flash"  style="font-size:32px;"></i>
+                        <i class="<?php echo LWS_FAS;?> wi-x32-<?php echo $id ?> fa-bolt" <?php echo LWS_FA5?'style="font-size:42px!important;' . $sh . '"':'';?>></i>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
@@ -91,7 +96,7 @@
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"><?php echo $datas['strikedistance']['unit']; ?></div>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="fa wi-x42-<?php echo $id ?> fa-long-arrow-left"  style="font-size:32px;"></i>
+                        <i class="<?php echo LWS_FAS;?> wi-x26-<?php echo $id ?> fa-<?php echo LWS_FA5?'long-arrow-alt-left':'long-arrow-left';?>" <?php echo LWS_FA5?'style="font-size:36px!important;' . $sh . '"':'';?>></i>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
@@ -108,3 +113,5 @@
         </div>
     </div>
 </div>
+
+

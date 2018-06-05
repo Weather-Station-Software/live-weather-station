@@ -87,10 +87,10 @@ trait Output {
             $result = str_replace('</ul>', '', $result);
             $result = str_replace('<li>', '', $result);
             $result = str_replace('</li>', '<br/>', $result);
-            $result = str_replace('New: ', '<i class="fa fa-fw fa-plus-square-o" aria-hidden="true">&nbsp;</i>', $result);
-            $result = str_replace('New language: ', '<i class="fa fa-fw fa-language" aria-hidden="true">&nbsp;</i>new translation: ', $result);
-            $result = str_replace('Improvement: ', '<i class="fa fa-fw fa-check-square-o" aria-hidden="true">&nbsp;</i>', $result);
-            $result = str_replace('Bug fix: ', '<i class="fa fa-fw fa-bug" aria-hidden="true">&nbsp;</i>fixed: ', $result);
+            $result = str_replace('New: ', '<i class="'. LWS_FAS . ' fa-fw fa-plus-square" aria-hidden="true">&nbsp;</i>&nbsp;', $result);
+            $result = str_replace('New language: ', '<i class="'. LWS_FAS . ' fa-fw fa-language" aria-hidden="true">&nbsp;</i>&nbsp;new translation: ', $result);
+            $result = str_replace('Improvement: ', '<i class="'. LWS_FAS . ' fa-fw fa-check-square" aria-hidden="true">&nbsp;</i>&nbsp;', $result);
+            $result = str_replace('Bug fix: ', '<i class="'. LWS_FAS . '-fw fa-bug" aria-hidden="true">&nbsp;</i>&nbsp;fixed: ', $result);
         }
 
         if ($style == 'divi_accordion') {
@@ -3650,10 +3650,10 @@ trait Output {
             $body .= '      nv.addGraph(function() {' . PHP_EOL;
             $body .= '        chart'.$uniq.' = nv.models.linePlusBarChart()' . PHP_EOL;
             if ($label == 'none') {
-                $body .= '               .height(' . (integer)($height-14) . ')' . PHP_EOL;
+                $body .= '               .height(' . ((integer)(str_replace('px', '', $height))-14) . ')' . PHP_EOL;
             }
             else {
-                $body .= '               .height(' . (integer)($height-34) . ')' . PHP_EOL;
+                $body .= '               .height(' . ((integer)(str_replace('px', '', $height))-34) . ')' . PHP_EOL;
             }
             $body .= '               .x(function(d,i) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
             $body .= '               .y(function(d,i) {return d[1]})' . PHP_EOL;
@@ -3795,9 +3795,9 @@ trait Output {
             }
             if ($design == 'round') {$cRadius = (int)round($cSize/2);}
             if ($design == 'square') {$cRadius = 0;}
-            $inner_height = $height - 50;
+            $inner_height = ((integer)(str_replace('px', '', $height))-50);
             if ($label == 'none') {
-                $inner_height = (int)$height;
+                $inner_height = ((integer)(str_replace('px', '', $height))+0);
             }
             $inner_height = $inner_height . 'px';
             if ($label_txt != '') {
@@ -4315,8 +4315,8 @@ trait Output {
                 }
                 $legend = '[' . implode(',', $legend) . ']';
                 $result = '<div id="selectors-'.$uniq.'" class="wp-core-ui">' . PHP_EOL;
-                $result .= '  <div id="previous-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;"><i class="fa fa-caret-left"></i></div>' . PHP_EOL;
-                $result .= '  <div id="next-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;"><i class="fa fa-caret-right"></i></div>' . PHP_EOL;
+                $result .= '  <div id="previous-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;"><i class="'. LWS_FAS . ' fa-caret-left"></i></div>' . PHP_EOL;
+                $result .= '  <div id="next-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;"><i class="'. LWS_FAS . ' fa-caret-right"></i></div>' . PHP_EOL;
                 $result .= '</div>' . PHP_EOL;
                 $result .= '<div id="' . $uniq . '" ></div>' . PHP_EOL;
                 $result .= '<script language="javascript" type="text/javascript">' . PHP_EOL;
@@ -6666,6 +6666,7 @@ trait Output {
      * @since 3.0.0
      */
     protected function output_iconic_value($value, $type, $module_type='NAMain', $show_value=false, $style='', $extra='') {
+        lws_font_awesome();
         switch (strtolower($type)) {
             case 'weather':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-day-cloudy" aria-hidden="true"></i>';
@@ -6675,53 +6676,53 @@ trait Output {
                 switch ($level) {
                     case 4:
                         if ($show_value) {
-                            $result ='<i %1$s class="fa fa-fw %2$s fa-battery-empty" aria-hidden="true"></i>';
+                            $result ='<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-empty" aria-hidden="true"></i>';
                         }
                         else  {
-                            $result = '<i %1$s class="fa fa-fw %2$s fa-battery-full" aria-hidden="true"></i>';
+                            $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-full" aria-hidden="true"></i>';
                         }
                         break;
                     case 3:
                         if ($show_value) {
-                            $result ='<i %1$s class="fa fa-fw %2$s fa-battery-quarter" aria-hidden="true"></i>';
+                            $result ='<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-quarter" aria-hidden="true"></i>';
                         }
                         else  {
-                            $result = '<i %1$s class="fa fa-fw %2$s fa-battery-full" aria-hidden="true"></i>';
+                            $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-full" aria-hidden="true"></i>';
                         }
                         break;
                     case 2:
                         if ($show_value) {
-                            $result ='<i %1$s class="fa fa-fw %2$s fa-battery-half" aria-hidden="true"></i>';
+                            $result ='<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-half" aria-hidden="true"></i>';
                         }
                         else  {
-                            $result = '<i %1$s class="fa fa-fw %2$s fa-battery-full" aria-hidden="true"></i>';
+                            $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-full" aria-hidden="true"></i>';
                         }
                         break;
                     case 1:
                         if ($show_value) {
-                            $result ='<i %1$s class="fa fa-fw %2$s fa-battery-three-quarters" aria-hidden="true"></i>';
+                            $result ='<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-three-quarters" aria-hidden="true"></i>';
                         }
                         else  {
-                            $result = '<i %1$s class="fa fa-fw %2$s fa-battery-full" aria-hidden="true"></i>';
+                            $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-full" aria-hidden="true"></i>';
                         }
                         break;
                     case 0:
-                        $result = '<i %1$s class="fa fa-fw %2$s fa-battery-full" aria-hidden="true"></i>';
+                        $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-full" aria-hidden="true"></i>';
                         break;
                     default:
-                        $result = '<i %1$s class="fa fa-fw %2$s fa-plug" aria-hidden="true"></i>';
+                        $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-plug" aria-hidden="true"></i>';
                 }
                 break;
             case 'signal':
                 if (strtolower($module_type) == 'namain') {
-                    $result ='<i %1$s class="fa fa-fw %2$s fa-wifi" aria-hidden="true"></i>';
+                    $result ='<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-wifi" aria-hidden="true"></i>';
                 }
                 else  {
-                    $result = '<i %1$s class="fa fa-fw %2$s fa-signal" aria-hidden="true"></i>';
+                    $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-signal" aria-hidden="true"></i>';
                 }
                 break;
             case 'health_idx':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-heartbeat" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-heartbeat" aria-hidden="true"></i>';
                 break;
             case 'cbi':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-fire" aria-hidden="true"></i>';
@@ -6733,7 +6734,7 @@ trait Output {
                 $result = '<i %1$s class="wi wi-fw %2$s wi-smoke" aria-hidden="true"></i>';
                 break;
             case 'o3':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-circle-o-notch" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-' . (LWS_FA5?'circle-notch':'circle-o-notch') . '" aria-hidden="true"></i>';
                 break;
             case 'humidity':
             case 'humint':
@@ -6742,20 +6743,35 @@ trait Output {
                 $result = '<i %1$s class="wi wi-fw %2$s wi-humidity" aria-hidden="true"></i>';
                 break;
             case 'noise':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-volume-down" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-volume-down" aria-hidden="true"></i>';
                 break;
             case 'pressure':
             case 'pressure_ref':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-barometer" aria-hidden="true"></i>';
                 break;
             case 'pressure_trend':
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+                if (LWS_FA5) {
+                    $result = '<i %1$s class="wi wi-barometer %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v ':'fa-arrows-v') . ' %2$s"></i>';
+                }
+                else {
+                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+                }
                 break;
             case 'pressure_max':
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-long-arrow-up"></i></span>';
+                if (LWS_FA5) {
+                    $result = '<i %1$s class="wi wi-barometer %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-up ':'fa-long-arrow-up') . ' %2$s"></i>';
+                }
+                else {
+                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-long-arrow-up"></i></span>';
+                }
                 break;
             case 'pressure_min':
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-long-arrow-down"></i></span>';
+                if (LWS_FA5) {
+                    $result = '<i %1$s class="wi wi-barometer %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down ':'fa-long-arrow-down') . ' %2$s"></i>';
+                }
+                else {
+                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-long-arrow-down"></i></span>';
+                }
                 break;
             case 'temperature':
             case 'tempint':
@@ -6764,22 +6780,52 @@ trait Output {
                 $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer" aria-hidden="true"></i>';
                 break;
             case 'temperature_trend':
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-thermometer"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+                if (LWS_FA5) {
+                    $result = '<i %1$s class="wi wi-thermometer %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v ':'fa-arrows-v') . ' %2$s"></i>';
+                }
+                else {
+                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-thermometer"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+                }
                 break;
             case 'temperature_max':
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-thermometer"></i><i %1$s class="fa fa-long-arrow-up"></i></span>';
+                if (LWS_FA5) {
+                    $result = '<i %1$s class="wi wi-thermometer %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-up ':'fa-long-arrow-up') . ' %2$s"></i>';
+                }
+                else {
+                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-thermometer"></i><i %1$s class="fa fa-long-arrow-up"></i></span>';
+                }
                 break;
             case 'temperature_min':
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-thermometer"></i><i %1$s class="fa fa-long-arrow-down"></i></span>';
+                if (LWS_FA5) {
+                    $result = '<i %1$s class="wi wi-thermometer %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down ':'fa-long-arrow-down') . ' %2$s"></i>';
+                }
+                else {
+                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-thermometer"></i><i %1$s class="fa fa-long-arrow-down"></i></span>';
+                }
                 break;
             case 'humidity_trend':
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-humidity"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+                if (LWS_FA5) {
+                    $result = '<i %1$s class="wi wi-humidity %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v ':'fa-arrows-v') . ' %2$s"></i>';
+                }
+                else {
+                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-humidity"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+                }
                 break;
             case 'humidity_max':
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-humidity"></i><i %1$s class="fa fa-long-arrow-up"></i></span>';
+                if (LWS_FA5) {
+                    $result = '<i %1$s class="wi wi-humidity %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-up ':'fa-long-arrow-up') . ' %2$s"></i>';
+                }
+                else {
+                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-humidity"></i><i %1$s class="fa fa-long-arrow-up"></i></span>';
+                }
                 break;
             case 'humidity_min':
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-humidity"></i><i %1$s class="fa fa-long-arrow-down"></i></span>';
+                if (LWS_FA5) {
+                    $result = '<i %1$s class="wi wi-humidity %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down ':'fa-long-arrow-down') . ' %2$s"></i>';
+                }
+                else {
+                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-humidity "></i><i %1$s class="fa fa-long-arrow-down"></i></span>';
+                }
                 break;
             case 'cloudiness':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-cloud" aria-hidden="true"></i>';
@@ -6815,42 +6861,42 @@ trait Output {
                 break;
             case 'o3_distance':
             case 'co_distance':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-crosshairs" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-crosshairs" aria-hidden="true"></i>';
                 break;
             case 'loc_timezone':
             case 'timezone':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-clock-o" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAR . ' ' . (LWS_FA5?'fa-clock ':'fa-clock-o') . ' %2$s" aria-hidden="true"></i>';
                 break;
             case 'city':
             case 'country':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-globe" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-globe" aria-hidden="true"></i>';
                 break;
             case 'station_name':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-tags" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-tags" aria-hidden="true"></i>';
                 break;
             case 'module':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-database" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-database" aria-hidden="true"></i>';
                 break;
             case 'location':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-map-marker" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-map-marker-alt':'fa-map-marker') . ' %2$s" aria-hidden="true"></i>';
                 break;
             case 'altitude':
             case 'loc_altitude':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-rotate-315 fa-location-arrow" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-rotate-315 fa-location-arrow" aria-hidden="true"></i>';
                 break;
             case 'last_seen':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-eye" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAR . ' fa-fw %2$s fa-eye" aria-hidden="true"></i>';
                 break;
             case 'refresh':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-refresh" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-sync-alt':'fa-refresh') . ' %2$s" aria-hidden="true"></i>';
                 break;
             case 'last_upgrade':
             case 'firmware':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-cog" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-cog" aria-hidden="true"></i>';
                 break;
             case 'last_setup':
             case 'first_setup':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-wrench" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-wrench" aria-hidden="true"></i>';
                 break;
             case 'windstrength':
             case 'guststrength':
@@ -6953,28 +6999,43 @@ trait Output {
             case 'day_length_c':
             case 'day_length_n':
             case 'day_length_a':
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-day-sunny"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+                if (LWS_FA5) {
+                    $result = '<i %1$s class="wi wi-day-sunny %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v ':'fa-arrows-v') . ' %2$s"></i>';
+                }
+                else {
+                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-day-sunny"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+                }
                 break;
             case 'dawn_length_a':
             case 'dawn_length_n':
             case 'dawn_length_c':
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-sunrise"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+                if (LWS_FA5) {
+                    $result = '<i %1$s class="wi wi-sunrise %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v ':'fa-arrows-v') . ' %2$s"></i>';
+                }
+                else {
+                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-sunrise"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+                }
                 break;
             case 'dusk_length_a':
             case 'dusk_length_n':
             case 'dusk_length_c':
+            if (LWS_FA5) {
+                $result = '<i %1$s class="wi wi-sunset %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v ':'fa-arrows-v') . ' %2$s"></i>';
+            }
+            else {
                 $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-sunset"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+            }
                 break;
             // PSYCHROMETRIC
             case 'air_density':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-adjust" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-adjust" aria-hidden="true"></i>';
                 break;
             case 'wet_bulb':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer" aria-hidden="true"></i>';
                 break;
             case 'wood_emc':
             case 'emc':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-tree" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-tree" aria-hidden="true"></i>';
                 break;
             case 'specific_enthalpy':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-refresh-alt" aria-hidden="true"></i>';
@@ -6987,7 +7048,12 @@ trait Output {
             case 'partial_vapor_pressure':
             case 'saturation_vapor_pressure':
             case 'vapor_pressure':
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-ellipsis-v"></i></span>';
+                if (LWS_FA5) {
+                    $result = '<i %1$s class="wi wi-barometer %2$s"></i><i %1$s class="' . LWS_FAS . ' fa-ellipsis-v %2$s"></i>';
+                }
+                else {
+                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-ellipsis-v"></i></span>';
+                }
                 break;
             case 'partial_absolute_humidity':
             case 'saturation_absolute_humidity':
@@ -6996,26 +7062,38 @@ trait Output {
                 break;
             // SOLAR
             case 'irradiance':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-arrow-down" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'sign-in-alt':'sign-in') . ' %2$s fa-rotate-90" aria-hidden="true"></i>';
                 break;
             case 'uv_index':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-horizon-alt" aria-hidden="true"></i>';
                 break;
             case 'illuminance':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-long-arrow-down fa-rotate-30" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down':'fa-long-arrow-down') . ' %2$s fa-rotate-30" aria-hidden="true"></i>';
                 break;
             // SOIL
             case 'soil_temperature':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer" aria-hidden="true"></i>';
                 break;
             case 'leaf_wetness':
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="fa fa-envira"></i><i %1$s class="wi wi-degrees"></i></span>';
+                if (LWS_FA5) {
+                    $result = '<i %1$s class="' . LWS_FAS . ' fa-leaf %2$s"></i><i %1$s class="wi wi-degrees %2$s"></i>';
+                }
+                else {
+                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="fa fa-envira"></i><i %1$s class="wi wi-degrees"></i></span>';
+                }
+                break;
                 break;
             case 'moisture_content':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-humidity" aria-hidden="true"></i>';
                 break;
             case 'moisture_tension':
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="wi wi-degrees"></i></span>';
+                if (LWS_FA5) {
+                    $result = '<i %1$s class="wi wi-barometer %2$s"></i><i %1$s class="wi wi-degrees %2$s"></i>';
+                }
+                else {
+                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="wi wi-degrees"></i></span>';
+                }
+                break;
                 break;
             case 'evapotranspiration':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-flood" aria-hidden="true"></i>';
@@ -7026,10 +7104,10 @@ trait Output {
                 $result = '<i %1$s class="wi wi-fw %2$s wi-lightning" aria-hidden="true"></i>';
                 break;
             case 'strike_distance':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-crosshairs" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-crosshairs" aria-hidden="true"></i>';
                 break;
             case 'visibility':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-eye-slash" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAR . ' fa-fw %2$s fa-eye" aria-hidden="true"></i>';
                 break;
             case 'strike_bearing':
                 if ($show_value) {
@@ -7041,10 +7119,10 @@ trait Output {
                 }
                 break;
             case 'historical':
-                $result = '<i %1$s class="fa fa-fw %2$s fa-history" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-history" aria-hidden="true"></i>';
                 break;
             default:
-                $result = '<i %s class="fa fa-fw %s fa-sun-o" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAR . ' ' . (LWS_FA5?'fa-sun':'fa-sun-o') . ' %2$s" aria-hidden="true"></i>';
     }
         return sprintf($result, $style, $extra);
 }
@@ -7987,7 +8065,7 @@ trait Output {
                     continue;
                 }
                 $t = \Locale::getDisplayRegion('-'.$s, $locale);
-                if ($s != $t) {
+                if ($s != $t || !EnvManager::is_locale_operational()) {
                     $result[$s] = ucfirst($t);
                 }
             }
@@ -9852,7 +9930,7 @@ trait Output {
      */
     public function admin_historical_capabilities_shortcodes($attributes) {
         $result = '';
-        $_attributes = shortcode_atts( array('item' => 'daily', 'mode' => 'current', 'style' => 'icon', 'column' => 3, 'border_color' => '#D9D9D9', 'background_color' => '#F4F4F4', 'font_color' => '#FFFFFF'), $attributes );
+        $_attributes = shortcode_atts( array('item' => 'daily', 'mode' => 'current', 'style' => 'icon', 'column' => 3, 'border_color' => '#2D7DD2', 'background_color' => 'rgba(45,125,210,0.1)', 'font_color' => '#FFFFFF'), $attributes );
         $item = $_attributes['item'];
         $column = $_attributes['column'];
         $style = $_attributes['style'];
@@ -9884,10 +9962,10 @@ trait Output {
                     }
                     elseif ($style=='check') {
                         if ($measurements[$itr]['compiled']) {
-                            $result .= '<span style="vertical-align:middle"><i style="color:limegreen;" class="fa fa-fw fa-check-circle" aria-hidden="true"></i>';
+                            $result .= '<span style="vertical-align:middle"><i style="color:#104e8C;" class="'. LWS_FAS . ' fas fa-fw fa-check-circle" aria-hidden="true"></i>';
                         }
                         else {
-                            $result .= '<span style="vertical-align:middle"><i style="color:red;"  class="fa fa-fw fa-times-circle" aria-hidden="true"></i>';
+                            $result .= '<span style="vertical-align:middle"><i style="color:#ed254e;"  class="'. LWS_FAS . ' fas fa-fw fa-times-circle" aria-hidden="true"></i>';
                         }
                     }
                     $result .= '&nbsp;' . $measurements[$itr]['name'].'</span>';
@@ -9918,9 +9996,9 @@ trait Output {
                             $result .= '<span style="vertical-align:middle">' . $measurements[$itr]['icon'];
                         } elseif ($style == 'check') {
                             if ($measurements[$itr]['aggregated']) {
-                                $result .= '<span style="vertical-align:middle"><i style="color:limegreen;" class="fa fa-fw fa-check-circle" aria-hidden="true"></i>';
+                                $result .= '<span style="vertical-align:middle"><i style="color:#104e8C;" class="'. LWS_FAS . ' fas fa-fw fa-check-circle" aria-hidden="true"></i>';
                             } else {
-                                $result .= '<span style="vertical-align:middle"><i style="color:red;"  class="fa fa-fw fa-times-circle" aria-hidden="true"></i>';
+                                $result .= '<span style="vertical-align:middle"><i style="color:#ed254e;"  class="'. LWS_FAS . ' fas fa-fw fa-times-circle" aria-hidden="true"></i>';
                             }
                         }
                         $cap = '';
@@ -9969,9 +10047,9 @@ trait Output {
                             $result .= '<span style="vertical-align:middle">' . $measurement['icon'];
                         } elseif ($style == 'check') {
                             if ($measurement['aggregated']) {
-                                $result .= '<span style="vertical-align:middle"><i style="color:limegreen;" class="fa fa-fw fa-check-circle" aria-hidden="true"></i>';
+                                $result .= '<span style="vertical-align:middle"><i style="color:#104e8C;" class="'. LWS_FAS . ' fa-fw fa-check-circle" aria-hidden="true"></i>';
                             } else {
-                                $result .= '<span style="vertical-align:middle"><i style="color:red;"  class="fa fa-fw fa-times-circle" aria-hidden="true"></i>';
+                                $result .= '<span style="vertical-align:middle"><i style="color:#ed254e;"  class="'. LWS_FAS . ' fa-fw fa-times-circle" aria-hidden="true"></i>';
                             }
                         }
                         $result .= '&nbsp;' . $measurement['name']. '</span>';
@@ -10016,7 +10094,7 @@ trait Output {
         }
         wp_enqueue_style('lws-weather-icons');
         wp_enqueue_style('lws-weather-icons-wind');
-        wp_enqueue_style('lws-font-awesome');
+        lws_font_awesome();
         wp_enqueue_style('lws-table');
         return $result;
     }
@@ -10047,7 +10125,7 @@ trait Output {
                 $shadow = 'box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.18), 0 6px 20px 0 rgba(0, 0, 0, 0.15);';
                 $result .= '<a href="' . $link . '" style="' . $shadow . 'margin-right:16px; width:80px;" class="flag-icon ' . $langs[$itr]['svg-class'] . '"></a>';
                 $result .= '<span>' . $langs[$itr]['name'].'<br/>';
-                $result .= '<span style="color:#999">' . __('Translation:', 'live-weather-station') . ' ' . $langs[$itr]['translated'] . '%</span></span>';
+                $result .= '<span style="color:#63748a">' . __('Translation:', 'live-weather-station') . ' ' . $langs[$itr]['translated'] . '%</span></span>';
             }
             elseif ($style == 'icon') {
                 $result .= '<a href="' . $link . '" style="margin-right:10px;" class="flag-icon ' . $langs[$itr]['svg-class'] . '"></a>';

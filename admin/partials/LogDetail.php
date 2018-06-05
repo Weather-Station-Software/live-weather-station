@@ -13,7 +13,7 @@ $color = Logger::get_color($log['level']);
 if ($color != '') {
     $color = 'style="color:' . $color . '"';
 }
-$title = '<i ' . $color . ' class="fa fa-fw ' . Logger::get_icon($log['level']) . '"></i>&nbsp;' . Logger::get_name($log['level']) . ' (#' . $log['id'] . ')';
+$title = '<i ' . $color . ' class="' . LWS_FAS . ' fa-fw ' . Logger::get_icon($log['level']) . '"></i>&nbsp;' . Logger::get_name($log['level']) . ' (#' . $log['id'] . ')';
 
 ?>
 

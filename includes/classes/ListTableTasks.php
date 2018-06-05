@@ -35,23 +35,23 @@ class Tasks extends Base {
         $result = '';
         switch ($pool) {
             case 'system' :
-                $result = '<i style="color:#999" class="fa fa-lg fa-fw fa-cog"></i>&nbsp;';
+                $result = '<i style="color:#999" class="' . LWS_FAS . ' fa-lg fa-fw fa-cog"></i>&nbsp;';
                 break;
             case 'pull' :
-                $result = '<i style="color:#999" class="fa fa-lg fa-fw fa-cloud-download"></i>&nbsp;';
+                $result = '<i style="color:#999" class="' . LWS_FAS . ' fa-' . (LWS_FA5?'cloud-download-alt':'cloud-download') . '"></i>&nbsp;';
                 break;
             case 'push' :
-                $result = '<i style="color:#999" class="fa fa-lg fa-fw fa-share-alt"></i>&nbsp;';
+                $result = '<i style="color:#999" class="' . LWS_FAS . ' fa-lg fa-fw fa-share-alt"></i>&nbsp;';
                 break;
             case 'history' :
-                $result = '<i style="color:#999" class="fa fa-lg fa-fw fa-history"></i>&nbsp;';
+                $result = '<i style="color:#999" class="' . LWS_FAS . ' fa-lg fa-fw fa-history"></i>&nbsp;';
                 break;
             default :
-                $result = '<i style="color:#999" class="fa fa-lg fa-fw fa-random"></i>&nbsp;';
+                $result = '<i style="color:#999" class="' . LWS_FAS . ' fa-lg fa-fw fa-random"></i>&nbsp;';
                 break;
         }
         if ($cron == self::$watchdog_name) {
-            $result = '<i style="color:#999" class="fa fa-lg fa-fw fa-cogs"></i>&nbsp;';
+            $result = '<i style="color:#999" class="' . LWS_FAS . ' fa-lg fa-fw fa-cogs"></i>&nbsp;';
         }
         return $result;
     }

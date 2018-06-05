@@ -123,6 +123,7 @@ class Core {
         $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'register_styles', 1);
         $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
         $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
+        $this->loader->add_action('script_loader_tag', $plugin_admin, 'modify_scripts', 10, 2);
         $this->loader->add_action('admin_menu', $plugin_admin, 'lws_admin_menu' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Outdoor', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Psychrometry', 'widget_registering' );
@@ -153,6 +154,7 @@ class Core {
         $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'register_styles', 1);
         $this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles');
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts');
+        $this->loader->add_action('script_loader_tag', $plugin_public, 'modify_scripts', 10, 2);
 		$this->loader->add_action( 'wp_ajax_lws_query_lcd_datas', $plugin_public, 'lws_query_lcd_datas_callback');
 		$this->loader->add_action( 'wp_ajax_nopriv_lws_query_lcd_datas', $plugin_public, 'lws_query_lcd_datas_callback');
 		$this->loader->add_action( 'wp_ajax_lws_query_justgage_config', $plugin_public, 'lws_query_justgage_config_callback');

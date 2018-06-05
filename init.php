@@ -24,7 +24,7 @@ use WeatherStation\System\Environment\Manager as EnvManager;
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.5.2');
+define('LWS_VERSION', '3.5.3');
 define('LWS_CODENAME', '"Les Wampas"');
 define('LWS_WATSNEW_EN', 'https://weather.station.software/en/weather-station-3-5-leswampas/');
 define('LWS_WATSNEW_FR', 'https://weather.station.software/fr/weather-station-35-les-wampas/');
@@ -64,6 +64,7 @@ define('LWS_IC_WPSC', EnvManager::is_wp_super_cache_installed());
 define('LWS_IC_W3TC', EnvManager::is_w3_total_cache_installed());
 define('LWS_IC_AUTOPTIMIZE', EnvManager::is_autoptimize_installed());
 define('LWS_IC_HC', EnvManager::is_hyper_cache_installed());
+define('LWS_FONT_AWESOME', 0);
 
 
 

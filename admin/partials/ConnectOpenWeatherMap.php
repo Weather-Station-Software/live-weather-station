@@ -74,7 +74,7 @@ $warning = sprintf(__('All stations associated to this service will be removed f
         <div id="major-publishing-actions">
             <div id="publishing-action">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="owm-span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="owm-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
                 <input type="submit" name="connect" id="owm-connect" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
             </div>
@@ -85,7 +85,7 @@ $warning = sprintf(__('All stations associated to this service will be removed f
             <div id="publishing-action">
                 <input type="submit" name="reconnect" id="owm-reconnect" class="button button-primary" value="<?php esc_attr_e('Change', 'live-weather-station');?>">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="owm-span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="owm-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
                 <input type="submit" name="disconnect" id="owm-disconnect" class="button button-primary" onclick="lws_owm_confirmation = confirm('<?php echo $warning; ?>'); return lws_owm_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>

@@ -422,7 +422,12 @@ class Performance {
             $data['count_by_pool'] = '[' . implode(',', $data_r['by_pool']['count']) . ']';
             $data['time_by_pool'] = '[' . implode(',', $data_r['by_pool']['time']) . ']';
             foreach ($fields as $field) {
-                $data['time_for_'.$field] = '[' . implode(',', $data_r['by_cron'][$field]) . ']';
+                if (array_key_exists($field, $data_r['by_cron'])) {
+                    $data['time_for_'.$field] = '[' . implode(',', $data_r['by_cron'][$field]) . ']';
+                }
+                else {
+                    $data['time_for_'.$field] = '[]';
+                }
             }
             $result = array('agr24' => $sum24, 'agr30' => $sum30, 'raw' => $raw, 'dat' => $data);
             Cache::set_backend(Cache::$db_stat_perf_cron, $result);

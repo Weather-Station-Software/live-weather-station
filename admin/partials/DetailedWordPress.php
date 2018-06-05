@@ -17,24 +17,24 @@ use WeatherStation\System\Environment\Manager as EnvManager;
             <table cellspacing="10" width="99%">
                 <tbody>
                 <tr>
-                    <td width="10%"/><td width="20px"><i style="color:#999999" class="fa fa-lg fa-wordpress"></i></td>
+                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAB;?> fa-lg fa-wordpress"></i></td>
                     <td><?php echo EnvManager::wordpress_version_text() . ' / ' . EnvManager::php_version_text(); ?></td>
                 </tr>
                 <tr>
-                    <td width="10%"/><td width="20px"><i style="color:#999999" class="fa fa-lg fa-microchip"></i></td>
+                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-lg fa-microchip"></i></td>
                     <td><?php echo WP_MAX_MEMORY_LIMIT . ' / ' . WP_MEMORY_LIMIT; ?></td>
                 </tr>
                 <tr>
-                    <td width="10%"/><td width="20px"><i style="color:#999999" class="fa fa-lg fa-compress"></i></td>
+                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-lg fa-compress"></i></td>
                     <td><?php echo EnvManager::wordpress_cache_text(); ?></td>
                 </tr>
                 <tr>
-                    <td width="10%"/><td width="20px"><i style="color:#999999" class="fa fa-lg fa-bug"></i></td>
+                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-lg fa-bug"></i></td>
                     <td><?php echo EnvManager::wordpress_debug_text(); ?></td>
                 </tr>
                 <?php if (EnvManager::is_multilang_installed()) { ?>
                     <tr>
-                        <td width="10%"/><td width="20px"><i style="color:#999999" class="fa fa-lg fa-language"></i></td>
+                        <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-lg fa-language"></i></td>
                         <td><?php echo EnvManager::get_installed_multilang_name(); ?></td>
                     </tr>
                 <?php } ?>

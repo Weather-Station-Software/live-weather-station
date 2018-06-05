@@ -73,6 +73,23 @@ class Frontend {
 	}
 
     /**
+     * Modify the tags when rendering scripts.
+     *
+     * For now, only "defer" tag is supported.
+     *
+     * @since 3.5.3
+     */
+    public function modify_scripts($tag, $handle) {
+        $scripts_to_defer = array('lws-fa-brands', 'lws-fa-regular', 'lws-fa-solid');
+        foreach($scripts_to_defer as $defer_script) {
+            if ($defer_script === $handle) {
+                return str_replace(' src', ' defer src', $tag);
+            }
+        }
+        return $tag;
+    }
+
+    /**
      * Registers (but don't enqueues) the scripts for the public-front side of the site.
      *
      * In doing this way, we can enqueue the needed scripts only when rendering shortcodes...
@@ -97,6 +114,11 @@ class Frontend {
         lws_register_script('lws-cal-heatmap', LWS_PUBLIC_URL , 'js/cal-heatmap.min.js', array('lws-d3'));
         lws_register_script('lws-colorbrewer', LWS_PUBLIC_URL , 'js/colorbrewer.min.js');
         lws_register_script('lws-spin', LWS_PUBLIC_URL , 'js/spin.min.js');
+        lws_register_script('lws-fa-loader', LWS_PUBLIC_URL , 'js/fontawesome.min.js');
+        lws_register_script('lws-fa-all', LWS_PUBLIC_URL , 'js/fontawesome-all.min.js');
+        lws_register_script('lws-fa-brands', LWS_PUBLIC_URL , 'js/fa-brands.min.js', array('lws-fa-loader'));
+        lws_register_script('lws-fa-regular', LWS_PUBLIC_URL , 'js/fa-regular.min.js', array('lws-fa-loader'));
+        lws_register_script('lws-fa-solid', LWS_PUBLIC_URL , 'js/fa-solid.min.js', array('lws-fa-loader'));
     }
 
 	/**

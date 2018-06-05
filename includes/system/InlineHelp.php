@@ -751,7 +751,7 @@ class InlineHelp {
                 'unknown' => __('The event is not typed, this can\'t be a good news.', 'live-weather-station')
             );
             foreach ($event_types as $key => $event_type) {
-                $s .= '<p><i style="color:' . Logger::get_color($key) . '" class="fa fa-fw fa-lg ' . Logger::get_icon($key) . '"></i>&nbsp;';
+                $s .= '<p><i style="color:' . Logger::get_color($key) . '" class="' . LWS_FAS . ' fa-fw fa-lg ' . Logger::get_icon($key) . '"></i>&nbsp;';
                 $s .= '<strong>' . Logger::get_name($key) . '</strong> &mdash; ' . $event_type . '</p>';
             }
             $tabs[] = array(

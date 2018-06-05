@@ -292,6 +292,7 @@ class Pollution extends \WP_Widget {
         $show_no2 = (bool)$instance['show_no2'] ;
         $show_wind = (bool)$instance['show_wind'] ;
         $flat_design = (bool)$instance['flat_design'] ;
+        $shadows = !$flat_design;
         $follow_quality = (bool)$instance['follow_quality'] ;
         $fixed_background = (bool)$instance['fixed_background'] ;
         $background_attachment = 'local';

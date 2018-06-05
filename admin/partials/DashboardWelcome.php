@@ -30,17 +30,17 @@ $welcome = true;
             <div class="welcome-panel-column" style="padding-left: 23px;margin-right: -50px;">
                 <h3><?php _e('Next steps', 'live-weather-station'); ?></h3>
                 <ul>
-                    <li><i class="fa fa-lg fa-fw fa-plus" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<a href="#" class="add-trigger"><?php echo __('Add a new station', 'live-weather-station');?></a></li>
-                    <li><i class="fa fa-lg fa-fw fa-list-ul" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<a href="<?php echo lws_get_admin_page_url('lws-stations'); ?>"><?php echo __('Manage stations', 'live-weather-station');?></a></li>
+                    <li><i class="<?php echo LWS_FAS;?> fa-lg fa-fw fa-plus" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<a href="#" class="add-trigger"><?php echo __('Add a new station', 'live-weather-station');?></a></li>
+                    <li><i class="<?php echo LWS_FAS;?> fa-lg fa-fw fa-list-ul" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<a href="<?php echo lws_get_admin_page_url('lws-stations'); ?>"><?php echo __('Manage stations', 'live-weather-station');?></a></li>
                 </ul>
             </div>
             <div class="welcome-panel-column welcome-panel-last" style="padding-left: 23px;margin-right: -23px;">
                 <h3><?php _e('Go Further', 'live-weather-station'); ?></h3>
                 <ul>
                     <ul>
-                        <li><i class="fa fa-lg fa-fw fa-cogs" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<a href="<?php echo lws_get_admin_page_url('lws-settings'); ?>"><?php echo __('Adjust settings', 'live-weather-station');?></a></li>
-                        <li><i class="fa fa-lg fa-fw fa-newspaper-o" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<a href="<?php echo lws_get_admin_page_url('lws-events'); ?>"><?php echo __('Browse events log', 'live-weather-station');?></a></li>
-                        <li><i class="fa fa-lg fa-fw fa-graduation-cap" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<?php echo Help::get(14, '%s', __('Learn more about getting started', 'live-weather-station'));?></li>
+                        <li><i class="<?php echo LWS_FAS;?> fa-lg fa-fw fa-cogs" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<a href="<?php echo lws_get_admin_page_url('lws-settings'); ?>"><?php echo __('Adjust settings', 'live-weather-station');?></a></li>
+                        <li><i class="<?php echo LWS_FAR;?> fa-<?php echo LWS_FA5?'newspaper':'newspaper-o';?>" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<a href="<?php echo lws_get_admin_page_url('lws-events'); ?>"><?php echo __('Browse events log', 'live-weather-station');?></a></li>
+                        <li><i class="<?php echo LWS_FAS;?> fa-lg fa-fw fa-graduation-cap" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<?php echo Help::get(14, '%s', __('Learn more about getting started', 'live-weather-station'));?></li>
                     </ul>
                 </ul>
             </div>

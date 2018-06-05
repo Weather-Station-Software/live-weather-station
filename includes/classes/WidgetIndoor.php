@@ -279,7 +279,7 @@ class Indoor extends \WP_Widget {
     public function widget($args, $instance) {
         wp_enqueue_style('lws-weather-icons');
         wp_enqueue_style('lws-weather-icons-wind');
-        wp_enqueue_style('lws-font-awesome');
+        lws_font_awesome();
         $instance = $this->_get_instance($instance);
         $title = $instance['title'];
         $show_title = !($title=='');
@@ -298,6 +298,7 @@ class Indoor extends \WP_Widget {
         $show_co2 = (bool)$instance['show_co2'] ;
         $show_noise = (bool)$instance['show_noise'] ;
         $flat_design = (bool)$instance['flat_design'] ;
+        $shadows = !$flat_design;
         $follow_quality = (bool)$instance['follow_quality'] ;
         $fixed_background = (bool)$instance['fixed_background'] ;
         $background_attachment = 'local';

@@ -8,6 +8,7 @@ use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector
 use WeatherStation\Data\History\Builder as History;
 use WeatherStation\SDK\Generic\Plugin\Season\Calculator as Season;
 use WeatherStation\System\Device\Manager as DeviceManager;
+use WeatherStation\System\Environment\Manager as EnvManager;
 
 /**
  * Arrays generator for javascript conversion.
@@ -2224,7 +2225,7 @@ trait Generator {
                     continue;
                 }
                 $t = \Locale::getDisplayRegion('-'.$s, $locale);
-                if ($s != $t) {
+                if ($s != $t || !EnvManager::is_locale_operational()) {
                     $country_codes[] = $s;
                 }
             }

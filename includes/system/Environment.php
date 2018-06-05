@@ -630,6 +630,16 @@ class Manager {
     }
 
     /**
+     * Verify if class "Locale" is correctly installed.
+     *
+     * @since 3.5.3
+     */
+    public static function is_locale_operational() {
+        $t = \Locale::getDisplayRegion('-FR', lws_get_display_locale());
+        return $t != 'FR';
+    }
+
+    /**
      * Get translations stats sorted by locale names.
      *
      * @param integer $min Min value of percent translated.
