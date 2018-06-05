@@ -46,7 +46,7 @@ class Log extends Base {
             $color = 'style="color:' . $color . '"';
         }
         $s = sprintf('?page=%s&view=log-detail&log-entry=%s',$_REQUEST['page'],$item['id']);
-        $result = '<i ' . $color . ' class="fa fa-fw fa-lg ' . Logger::get_icon($item['level']) . '"></i>&nbsp;';
+        $result = '<i ' . $color . ' class="' . LWS_FAS . ' fa-fw fa-lg ' . Logger::get_icon($item['level']) . '"></i>&nbsp;';
         $result .= '&nbsp;<a class="row-title" href="' . $s . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . 'title="'. ucfirst(__('see details', 'live-weather-station')) . '">' . $item['system'] . ' ' . $item['version'] . '</a>';
         $result .= '<br /><span style="color:silver">Event ' . $item['id'] . ', ' . Logger::get_name($item['level']) . ' ' . __('code', 'live-weather-station') . ' ' . $item['code'] . '</span>';
         return $result;

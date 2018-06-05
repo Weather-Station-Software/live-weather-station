@@ -43,13 +43,13 @@ $i18n = new i18n();
             <?php echo sprintf(__('Currently, %s use a partial translation of your language. If you do not like half finished things, click the button below:', 'live-weather-station'), LWS_PLUGIN_NAME);?>
         </p>
         <p><a id="partial-translation" class="button button-primary" href="<?php echo esc_url(lws_get_admin_page_url('lws-settings', 'switch-full-translation')); ?>"><?php echo __('Use Only Full Translation', 'live-weather-station');?></a>
-            <span id="span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Deactivating partial translation, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+            <span id="span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Deactivating partial translation, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
     <?php } else { ?>
         <p>
             <?php echo sprintf(__('Currently, %s is not displayed in your language. But, there is a partial translation that can be used!', 'live-weather-station'), LWS_PLUGIN_NAME);?>
         </p>
         <p><a id="partial-translation" class="button button-primary" href="<?php echo esc_url(lws_get_admin_page_url('lws-settings', 'switch-partial-translation')); ?>"><?php echo __('Use Partial Translation', 'live-weather-station');?></a>
-            <span id="span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Activating partial translation, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+            <span id="span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Activating partial translation, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
     <?php } ?>
 <?php } ?>
 

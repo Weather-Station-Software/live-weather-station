@@ -16,13 +16,13 @@ $link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), lws
         <ul>
             <?php foreach ($val as $k=>$v) { ?>
             <?php if ($show_link && $v==0) { continue; }?>
-                <li><i style="color:<?php echo Logger::get_color($k); ?>" class="fa fa-lg fa-fw <?php echo Logger::get_icon($k) ?>"></i>&nbsp;&nbsp;<?php echo ($v==0?__('no event typed', 'live-weather-station'):sprintf(_n('%s event typed','%s events typed', $v, 'live-weather-station'), $v)); ?> <em><?php echo lcfirst(Logger::get_name($k)); ?></em>.</li>
+                <li><i style="color:<?php echo Logger::get_color($k); ?>" class="<?php echo LWS_FAS;?> fa-lg fa-fw <?php echo Logger::get_icon($k) ?>"></i>&nbsp;&nbsp;<?php echo ($v==0?__('no event typed', 'live-weather-station'):sprintf(_n('%s event typed','%s events typed', $v, 'live-weather-station'), $v)); ?> <em><?php echo lcfirst(Logger::get_name($k)); ?></em>.</li>
             <?php } ?>
         </ul>
     </div>
     <?php if ((bool)get_option('live_weather_station_show_analytics') && $show_link) { ?>
         <div class="activity-block" style="padding-bottom: 0px;">
-            <i style="color:#999;" class="fa fa-lg fa-fw fa-bar-chart"></i>&nbsp;&nbsp;<?php echo $link ?>
+            <i style="color:#999;" class="<?php echo LWS_FAR;?> fa-<?php echo LWS_FA5?'chart-bar':'bar-chart';?>"></i>&nbsp;&nbsp;<?php echo $link ?>
         </div>
     <?php } ?>
 </div>

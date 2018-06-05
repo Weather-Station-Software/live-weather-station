@@ -308,6 +308,7 @@ class Fire extends \WP_Widget {
         $show_rain = (bool)$instance['show_rain'] ;
         $show_wind = (bool)$instance['show_wind'] ;
         $flat = (bool)$instance['flat_design'] ;
+        $shadows = !$flat;
         $follow_risk = (bool)$instance['follow_risk'] ;
         $fixed_background = (bool)$instance['fixed_background'] ;
         $background_attachment = 'local';

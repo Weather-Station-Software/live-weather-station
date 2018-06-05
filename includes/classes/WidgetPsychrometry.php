@@ -291,6 +291,7 @@ class Psychrometry extends \WP_Widget {
     public function widget($args, $instance) {
         wp_enqueue_style('lws-weather-icons');
         wp_enqueue_style('lws-weather-icons-wind');
+        lws_font_awesome();
         $instance = $this->_get_instance($instance);
         $title = $instance['title'];
         $subtitle = $instance['subtitle'];
@@ -310,6 +311,7 @@ class Psychrometry extends \WP_Widget {
         $show_enthalpy = (bool)$instance['show_enthalpy'] ;
         $show_location = (bool)$instance['show_location'] ;
         $flat = (bool)$instance['flat_design'] ;
+        $shadows = !$flat;
         $follow_light = (bool)$instance['follow_light'] ;
         $fixed_background = (bool)$instance['fixed_background'] ;
         $background_attachment = 'local';

@@ -27,14 +27,14 @@ $link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), lws
             <ul>
                 <?php foreach ($fields as $key=>$field) { ?>
                     <?php if ((bool)get_option('live_weather_station_' . $field . '_cache')) { ?>
-                        <li><i style="color:<?php echo $values[$field]['clr']; ?>" class="fa fa-lg fa-fw fa-circle"></i>&nbsp;&nbsp;<?php echo $values[$field]['txt']; ?></li>
+                        <li><i style="color:<?php echo $values[$field]['clr']; ?>" class="<?php echo LWS_FAS;?> fa-lg fa-fw fa-circle"></i>&nbsp;&nbsp;<?php echo $values[$field]['txt']; ?></li>
                     <?php } ?>
                 <?php } ?>
             </ul>
         </div>
     <?php if ((bool)get_option('live_weather_station_show_analytics') && $show_link) { ?>
         <div class="activity-block" style="padding-bottom: 0px;">
-            <i style="color:#999;" class="fa fa-lg fa-fw fa-bar-chart"></i>&nbsp;&nbsp;<?php echo $link ?>
+            <i style="color:#999;" class="f<?php echo LWS_FAR;?> fa-<?php echo LWS_FA5?'chart-bar':'bar-chart';?>"></i>&nbsp;&nbsp;<?php echo $link ?>
         </div>
     <?php } ?>
 </div>

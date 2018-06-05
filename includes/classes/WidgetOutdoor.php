@@ -342,6 +342,7 @@ class Outdoor extends \WP_Widget {
         $show_strike = (bool)$instance['show_strike'] ;
         $show_uv = (bool)$instance['show_uv'] ;
         $flat = (bool)$instance['flat_design'] ;
+        $shadows = !$flat;
         $follow_light = (bool)$instance['follow_light'] ;
         $fixed_background = (bool)$instance['fixed_background'] ;
         $background_attachment = 'local';

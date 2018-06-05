@@ -16,7 +16,7 @@ $email = get_option('admin_email');
     <input type="hidden" name="action" value="subscribe" />
     <?php wp_nonce_field('subscribe', '_wpnonce', false ); ?>
     <p>
-        <i style="color:#999;" class="fa fa-lg fa-fw fa-envelope-o"></i>&nbsp;&nbsp;
+        <i style="color:#999;" class="<?php echo LWS_FAR;?> fa-<?php echo LWS_FA5?'envelope':'envelope-o';?>"></i>&nbsp;&nbsp;
         <?php echo sprintf(esc_attr__('Receive the latest news and updates from %s.', 'live-weather-station'), LWS_PLUGIN_NAME);?>&nbsp;&nbsp;
     </p>
     <p>

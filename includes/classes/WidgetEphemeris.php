@@ -257,6 +257,7 @@ class Ephemeris extends \WP_Widget {
         $show_tooltip = (bool)$instance['show_tooltip'];
         $show_borders =  (bool)$instance['show_borders'];
         $flat = (bool)$instance['flat_design'] ;
+        $shadows = !$flat;
         $follow_light = (bool)$instance['follow_light'] ;
         $fixed_background = (bool)$instance['fixed_background'] ;
         $background_attachment = 'local';

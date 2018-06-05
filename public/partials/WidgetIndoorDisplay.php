@@ -5,6 +5,13 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.1.0
  */
+
+if ($shadows) {
+    $sh = 'filter:drop-shadow(1px 1px 1px rgba(0,0,0,.1));';
+}
+else {
+    $sh = '';
+}
 ?>
 <div class="lws-widget-container lws-widget-container-<?php echo $id ?>">
     <div class="lws-widget-outer-indoor lws-widget-outer-indoor-<?php echo $id ?>">
@@ -12,7 +19,7 @@
             <?php if ( $show_current ):?>
                 <!-- HEALTH INDEX -->
                 <div class="lws-widget-header lws-widget-header-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Health index', 'live-weather-station').'"' : ''); ?>>
-                    <i class="fa fa-leaf health-idx-<?php echo $id ?>"></i>
+                    <i class="<?php echo LWS_FAS;?> fa-leaf health-idx-<?php echo $id ?>" <?php echo LWS_FA5?'style="' . $sh . '"':'';?>></i>
                 </div>
                 <?php if (($show_title || $show_status || $subtitle != 0) || $show_co2 || $show_noise || $show_humidity || $show_temperature):?>
                     <div class="lws-widget-bevel lws-widget-bevel-<?php echo $id ?>"></div>
@@ -117,7 +124,7 @@
                 <!-- NOISE -->
                 <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Noise level', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="fa wi-x26-<?php echo $id ?> fa-volume-down"></i>
+                        <i class="<?php echo LWS_FAS;?> fa-volume-down wi-x26" <?php echo LWS_FA5?'style="font-size:32px!important;' . $sh . '"':'style="font-size:32px!important;"';?>>&nbsp;</i>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">

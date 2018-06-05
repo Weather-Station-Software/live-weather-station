@@ -20,7 +20,7 @@ $cache_warning = sprintf(__('The %s events log will be purged. Is it really what
 <p>&nbsp;</p>
 <p><?php echo sprintf(__('You can delete all data collected for the stations added in %s and wait for scheduled resynchronization, or you can force resynchronization just after deletion.', 'live-weather-station'), LWS_PLUGIN_NAME);?><br/><em><?php echo __('To do it, just click on the corresponding button:', 'live-weather-station'); ?></em></p>
 <p><a class="button button-primary" href="<?php echo esc_url(lws_get_admin_page_url('lws-settings', 'purge-data', 'maintenance')); ?>"><?php echo __('Purge Only', 'live-weather-station');?></a> &nbsp;&nbsp;&nbsp; <a id="link-sync" class="button button-primary" href="<?php echo esc_url(lws_get_admin_page_url('lws-settings', 'sync-data', 'maintenance')); ?>"><?php echo __('Purge & Resynchronize', 'live-weather-station');?></a> &nbsp;&nbsp;&nbsp;
-    <span id="span-sync" style="display: none;"><i class="fa fa-refresh fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Synchronization in progress, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+    <span id="span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Synchronization in progress, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
 
 <p>&nbsp;</p>
 <p><?php echo sprintf(__('At last, you can reset some subsystems of %s if something is going wrong.', 'live-weather-station'), LWS_PLUGIN_NAME);?><br/><em><?php echo __('To do it, just click on the corresponding button:', 'live-weather-station'); ?></em></p>
