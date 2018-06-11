@@ -58,9 +58,11 @@ class Performance {
      * @since 3.2.0
      */
     public static function store() {
-        Cache::write_stats();
-        Watchdog::write_stats();
-        Quota::write_stats();
+        if (is_lws_active()) {
+            Cache::write_stats();
+            Watchdog::write_stats();
+            Quota::write_stats();
+        }
     }
 
     /**
