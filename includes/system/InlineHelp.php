@@ -46,7 +46,7 @@ class InlineHelp {
             'support', //18 main support page
             'handbook/controls', //19 shortcodes
             ),
-        'fr' => array (
+        /*'fr' => array (
             'documentation/reglages', //0  source: settings - general tab
             'documentation/reglages/historiques', //1  source: settings - history tab
             'documentation/reglages/services', //2  source: settings - service tab
@@ -67,7 +67,7 @@ class InlineHelp {
             'documentation', //17 main documentation
             'assistance', //18 main support page
             'documentation/controles', //19 Controles
-            ),
+            ),*/
     );
 
     /**
@@ -91,20 +91,13 @@ class InlineHelp {
      * @since 3.3.0
      */
     public static function whats_new() {
-        $lang = Intl::get_language_id();
         $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
             $target = ' target="_blank" ';
         }
-        $url = LWS_WATSNEW_EN;
-        if ($lang == 'fr') {
-            $url = LWS_WATSNEW_FR;
-        }
+        $url = LWS_WHATSNEW;
         if (Manager::patch_version() != 0 && LWS_SHOW_CHANGELOG) {
-            $url = LWS_CHANGELOG_EN;
-            if ($lang == 'fr') {
-                $url = LWS_CHANGELOG_FR;
-            }
+            $url = LWS_CHANGELOG;
         }
         if (Manager::is_plugin_in_production_mode()) {
             return '<a href="' . $url . '"' . $target . '>' . __('See what\'s new', 'live-weather-station') . '&hellip;</a>';
@@ -127,13 +120,13 @@ class InlineHelp {
     public static function get($number, $message='%s', $anchor='') {
         $result = '';
         $path = '';
-        $lang = Intl::get_language_id();
+        $lang = 'en';
         $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
             $target = ' target="_blank" ';
         }
         if ($number >= 0) {
-            $path = self::$links[$lang][$number];
+            $path = self::$links['en'][$number];
         }
         if ($path != '') {
             $result = sprintf($message, '<a href="https://weather.station.software/' . $lang . '/' . $path . '"' . $target . '>' . $anchor . '</a>');
@@ -228,7 +221,7 @@ class InlineHelp {
      * @since 3.3.0
      */
     public static function article($number) {
-        $lang = Intl::get_language_id();
+        $lang = 'en';
         $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
             $target = ' target="_blank" ';
@@ -751,7 +744,7 @@ class InlineHelp {
                 'unknown' => __('The event is not typed, this can\'t be a good news.', 'live-weather-station')
             );
             foreach ($event_types as $key => $event_type) {
-                $s .= '<p><i style="color:' . Logger::get_color($key) . '" class="' . LWS_FAS . ' fa-fw fa-lg ' . Logger::get_icon($key) . '"></i>&nbsp;';
+                $s .= '<p><i style="color:' . Logger::get_color($key) . '" class="fa fa-fw fa-lg ' . Logger::get_icon($key) . '"></i>&nbsp;';
                 $s .= '<strong>' . Logger::get_name($key) . '</strong> &mdash; ' . $event_type . '</p>';
             }
             $tabs[] = array(

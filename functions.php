@@ -261,3 +261,43 @@ function lws_font_awesome($all=false) {
             }
     }
 }
+
+/**
+ * Check whether Weather Station is active.
+ *
+ * Only plugins installed in the plugins/ folder can be active.
+ *
+ * Plugins in the mu-plugins/ folder can't be "activated," so this function will
+ * return false for those plugins.
+ *
+ * @since 3.5.3
+ *
+ * @return bool True, if Weather Station is in the active plugins list. False, otherwise.
+ */
+
+function is_lws_active() {
+    return in_array( 'live-weather-station/live-weather-station.php', (array) get_option( 'active_plugins', array() ) ) || is_lws_active_for_network();
+}
+
+/**
+ * Check whether Weather Station is active.
+ *
+ * Only plugins installed in the plugins/ folder can be active.
+ *
+ * Plugins in the mu-plugins/ folder can't be "activated," so this function will
+ * return false for those plugins.
+ *
+ * @since 3.5.3
+ *
+ * @return bool True, if Weather Station is in the active plugins list. False, otherwise.
+ */
+function is_lws_active_for_network() {
+    if ( !is_multisite() )
+        return false;
+
+    $plugins = get_site_option( 'active_sitewide_plugins');
+    if ( isset($plugins['live-weather-station/live-weather-station.php']) )
+        return true;
+
+    return false;
+}

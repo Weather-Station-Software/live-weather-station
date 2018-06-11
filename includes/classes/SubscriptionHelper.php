@@ -28,23 +28,12 @@ class Handling {
      * Class constructor
      *
      * @param string $email The email to subscribe.
-     * @param string $lang Optional. The language to wich subscribe.
      *
      * @since 3.3.0
      */
-    public function __construct($email, $lang=null) {
-        if (!isset($lang)) {
-            $lang = Intl::get_language_id();
-        }
-        switch (strtolower($lang)) {
-            case 'fr':
-                $this->list_url = '47e5f06905b5efac6d5e76057';
-                $this->list_id = '30544cf55b';
-                break;
-            default :
-                $this->list_url = '47e5f06905b5efac6d5e76057';
-                $this->list_id = '94aea1c726';
-        }
+    public function __construct($email) {
+        $this->list_url = '47e5f06905b5efac6d5e76057';
+        $this->list_id = '94aea1c726';
         $this->subscribe_done = $this->_subscribe($email);
     }
 

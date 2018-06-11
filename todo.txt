@@ -59,8 +59,6 @@
 * IMPROVEMENTS TO DO  *
 ***********************
 
-headers for stickertags...
-Smoke test pass
 FontAwesome 5
 
 Warning box (locale, php version, WP version)

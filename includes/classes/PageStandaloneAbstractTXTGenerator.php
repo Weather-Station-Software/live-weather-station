@@ -15,6 +15,7 @@ use WeatherStation\Data\Output;
 abstract class TXTGenerator {
 
     protected $content_type = 'Content-type: text/plain; charset=utf-8';
+    protected $timestamp = 0;
 
     /**
      * Send headers.
@@ -23,12 +24,12 @@ abstract class TXTGenerator {
      * @since 3.0.0
      */
     private function send_header($filename=false) {
+        $tsstring = gmdate('D, d M Y H:i:s ', $this->timestamp) . 'GMT';
+        header('Last-Modified: '. $tsstring);
         if ((bool)get_option('live_weather_station_txt_cache_bypass')) {
-            $tsstring = gmdate('D, d M Y H:i:s ') . 'GMT';
             $etag = md5($tsstring);
             header('Pragma: no-cache');
             header('Cache-Control: private, no-cache, no-store, max-age=0, must-revalidate, proxy-revalidate');
-            header('Last-Modified: '. $tsstring);
             header('Expires: '. $tsstring);
             header('ETag: "{' . $etag . '}"');
         }
