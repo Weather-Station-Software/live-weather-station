@@ -301,3 +301,37 @@ function is_lws_active_for_network() {
 
     return false;
 }
+
+/**
+ * Returns an appropriately localized display name for the input locale
+ *
+ * @since 3.5.4
+ *
+ * @param string $locale The locale to return a display name for.
+ * @param string $in_locale Optional. Format locale.
+ * @return string Display name of the locale in the format appropriate for $in_locale.
+ */
+function lws_get_locale_name($locale, $in_locale = null) {
+    $result = $locale;
+    if (LWS_I18N_LOADED) {
+        $result = \Locale::getDisplayName($locale, $in_locale);
+    }
+    return $result;
+}
+
+/**
+ * Returns an appropriately localized display name for region of the input locale
+ *
+ * @since 3.5.4
+ *
+ * @param string $locale The locale to return a display region for.
+ * @param string $in_locale Optional. Format locale.
+ * @return string Display name of the region for the $locale in the format appropriate for $in_locale.
+ */
+function lws_get_region_name($locale, $in_locale = null) {
+    $result = $locale;
+    if (LWS_I18N_LOADED) {
+        $result = \Locale::getDisplayRegion($locale, $in_locale);
+    }
+    return $result;
+}

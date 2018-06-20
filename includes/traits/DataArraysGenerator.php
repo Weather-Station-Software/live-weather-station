@@ -2224,7 +2224,7 @@ trait Generator {
                 if (in_array($s, $continue)) {
                     continue;
                 }
-                $t = \Locale::getDisplayRegion('-'.$s, $locale);
+                $t = lws_get_region_name('-'.$s, $locale);
                 if ($s != $t || !EnvManager::is_locale_operational()) {
                     $country_codes[] = $s;
                 }

@@ -544,7 +544,7 @@ class Manager {
             case 'rhg': $result = (lws_get_display_language_id() == 'fr') ? 'Rohingya' : 'Rohingya' ; break;
             case 'szl': $result = (lws_get_display_language_id() == 'fr') ? 'Silésien' : 'Silesian' ; break;
             case 'twd': $result = (lws_get_display_language_id() == 'fr') ? 'Twents' : 'Twents' ; break;
-            default: $result = \Locale::getDisplayName($id, lws_get_display_language_id());
+            default: $result = lws_get_locale_name($id, lws_get_display_language_id());
 
         }
         return $result;
@@ -624,7 +624,7 @@ class Manager {
             $result = '-';
         }
         else {
-            $result = \Locale::getDisplayRegion('-'.$id, lws_get_display_locale());
+            $result = lws_get_region_name('-'.$id, lws_get_display_locale());
         }
         return $result;
     }
@@ -635,7 +635,7 @@ class Manager {
      * @since 3.5.3
      */
     public static function is_locale_operational() {
-        $t = \Locale::getDisplayRegion('-FR', lws_get_display_locale());
+        $t = lws_get_region_name('-FR', lws_get_display_locale());
         return $t != 'FR';
     }
 
