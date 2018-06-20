@@ -1,10 +1,15 @@
 
+#3.5.4 / xxx, 2018
+
+* Improvement: full compatibility with PHP 7.2.
+* Bug fix: some icons are missing in the dashboard.
+
 #3.5.3 / June 11th, 2018
 
 * Improvement: generated files (stickertags and YoWindow) have now an accurate HTTP header for the Last-Modified field (thanks to Ken True for pointing it).
 * Improvement: icon sizes are now standardized in widgets.
 * Improvement: Weather Station now takes care of wrongly configurated PHP Internationalization Support.
-* Removed: links to french documentation when plugin is used in french ([read why - in french](https://weather.station.software/fr/grand-menage-de-printemps/)).
+* Removed: links to french documentation when plugin is used in french.
 * Bug fix: a PHP notice may appears when recording performance counters.
 * Bug fix: a PHP notice may appears when displaying historical Line & Bar charts or Calendar Heatmaps.
 * Bug fix: a MySQL warning at plugin deactivation gives an error in smoke test.

@@ -132,7 +132,7 @@ class Watchdog {
      */
     public static function init_chrono($cron_id) {
         $fingerprint = uniqid('', true);
-        $cron_id .= '*' . substr($fingerprint, count($fingerprint)-6, 80);
+        $cron_id .= '*' . substr($fingerprint, strlen($fingerprint)-6, 80);
         self::$chrono[$cron_id] = microtime(true);
         return $cron_id;
     }

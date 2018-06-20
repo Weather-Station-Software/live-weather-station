@@ -4134,7 +4134,7 @@ trait Output {
             return '';
         }
         $fingerprint = uniqid('', true);
-        $uniq = $_attributes['item'] . '_' . $_attributes['metric'] . '_' . substr ($fingerprint, count($fingerprint)-6, 80);
+        $uniq = $_attributes['item'] . '_' . $_attributes['metric'] . '_' . substr ($fingerprint, strlen($fingerprint)-6, 80);
 
         // QUOTA STATISTICS
         if ($_attributes['item'] == 'quota') {
@@ -4628,7 +4628,7 @@ trait Output {
     public function lcd_shortcodes($attributes) {
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','design' => '','size' => '','speed' => ''), $attributes );
         $fingerprint = uniqid('', true);
-        $uniq = 'lcd'.substr ($fingerprint, count($fingerprint)-6, 80);
+        $uniq = 'lcd'.substr ($fingerprint, strlen($fingerprint)-6, 80);
         $name = $this->get_operational_station_name($_attributes['device_id']);
         $scalable='false';
         if ($_attributes['size'] == 'scalable') {
@@ -5241,7 +5241,7 @@ trait Output {
      */
     public function justgage_shortcodes($attributes) {
         $fingerprint = uniqid('', true);
-        $uniq = 'jgg'.substr ($fingerprint, count($fingerprint)-6, 80);
+        $uniq = 'jgg'.substr ($fingerprint, strlen($fingerprint)-6, 80);
         $time = 1000 * (120 + rand(-20, 20));
         $_attributes = shortcode_atts( array('id' => $uniq,'device_id' => '','module_id' => '','measure_type' => '','design' => '','color' => '','force' => '','pointer' => '','title' => '','subtitle' => '','unit' => '','size' => ''), $attributes );
         $sc_device = $_attributes['device_id'];
@@ -5815,7 +5815,7 @@ trait Output {
     public function steelmeter_shortcodes($attributes) {
         $result = '';
         $fingerprint = uniqid('', true);
-        $uniq = 'ssm'.substr ($fingerprint, count($fingerprint)-6, 80);
+        $uniq = 'ssm'.substr ($fingerprint, strlen($fingerprint)-6, 80);
         $time = 1000 * (120 + rand(-20, 20));
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','design' => '',
             'frame' => '','background' => '','orientation' => '','main_pointer_type' => '','main_pointer_color' => '',
@@ -8039,7 +8039,7 @@ trait Output {
      * @since    2.0.0
      */
     protected function get_country_name($value) {
-        return \Locale::getDisplayRegion('-'.$value, lws_get_display_locale());
+        return lws_get_region_name('-'.$value, lws_get_display_locale());
     }
 
     /**
@@ -8066,7 +8066,7 @@ trait Output {
                 if (in_array($s, $continue)) {
                     continue;
                 }
-                $t = \Locale::getDisplayRegion('-'.$s, $locale);
+                $t = lws_get_region_name('-'.$s, $locale);
                 if ($s != $t || !EnvManager::is_locale_operational()) {
                     $result[$s] = ucfirst($t);
                 }

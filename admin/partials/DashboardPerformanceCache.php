@@ -34,7 +34,7 @@ $link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), lws
         </div>
     <?php if ((bool)get_option('live_weather_station_show_analytics') && $show_link) { ?>
         <div class="activity-block" style="padding-bottom: 0px;">
-            <i style="color:#999;" class="f<?php echo LWS_FAR;?> fa-<?php echo LWS_FA5?'chart-bar':'bar-chart';?>"></i>&nbsp;&nbsp;<?php echo $link ?>
+            <i style="color:#999;" class="<?php echo LWS_FAR;?> fa-<?php echo LWS_FA5?'chart-bar':'bar-chart';?>"></i>&nbsp;&nbsp;<?php echo $link ?>
         </div>
     <?php } ?>
 </div>

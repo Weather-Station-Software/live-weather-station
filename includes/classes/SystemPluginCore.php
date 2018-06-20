@@ -57,7 +57,7 @@ class Core {
 	 * @since 3.0.0
 	 */
 	private function verify_requirements() {
-	    if (LWS_PHPVERSION_OK && LWS_ICONV_LOADED && LWS_JSON_LOADED && LWS_CURL_LOADED && LWS_I18N_LOADED) {
+	    if (LWS_PHPVERSION_OK && LWS_ICONV_LOADED && LWS_JSON_LOADED && LWS_CURL_LOADED ){//&& LWS_I18N_LOADED) {
             if (!defined('REQUIREMENTS_OK')) {
                 define('REQUIREMENTS_OK', true);
             }
