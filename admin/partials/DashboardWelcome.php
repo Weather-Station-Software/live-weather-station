@@ -22,7 +22,10 @@ $welcome = true;
         <p style="padding: 0 23px 0;" class="about-description"><?php _e( 'We\'ve assembled some links to get you started:', 'live-weather-station'); ?></p>
         <div class="welcome-panel-column-container" style="overflow: hidden;">
             <div class="welcome-panel-column" style="padding-left: 23px;margin-right: -23px;">
-                <img style="width:120px;float:left;margin-top:16px;margin-bottom:20px;" src="<?php echo set_url_scheme(SVG::get_base64_lws_icon()); ?>" />
+                <div class="lws-brandicon" >
+                    <img style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_lws_icon()); ?>" />
+
+                </div>
                 <h3><?php _e('Connect!', 'live-weather-station'); ?></h3>
                 <a class="button button-primary button-hero" href="<?php echo LWS_ADMIN_PHP_URL; ?>?page=lws-settings&tab=services"><?php _e('Services Settings', 'live-weather-station'); ?></a>
                 <br/>&nbsp;<br/>&nbsp;<br/>
@@ -39,7 +42,7 @@ $welcome = true;
                 <ul>
                     <ul>
                         <li><i class="<?php echo LWS_FAS;?> fa-lg fa-fw fa-cogs" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<a href="<?php echo lws_get_admin_page_url('lws-settings'); ?>"><?php echo __('Adjust settings', 'live-weather-station');?></a></li>
-                        <li><i class="<?php echo LWS_FAR;?> fa-<?php echo LWS_FA5?'newspaper':'newspaper-o';?>" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<a href="<?php echo lws_get_admin_page_url('lws-events'); ?>"><?php echo __('Browse events log', 'live-weather-station');?></a></li>
+                        <li><i class="<?php echo LWS_FAR;?> fa-lg fa-fw fa-<?php echo LWS_FA5?'newspaper':'newspaper-o';?>" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<a href="<?php echo lws_get_admin_page_url('lws-events'); ?>"><?php echo __('Browse events log', 'live-weather-station');?></a></li>
                         <li><i class="<?php echo LWS_FAS;?> fa-lg fa-fw fa-graduation-cap" style="color:#888;" aria-hidden="true"></i>&nbsp;&nbsp;<?php echo Help::get(14, '%s', __('Learn more about getting started', 'live-weather-station'));?></li>
                     </ul>
                 </ul>

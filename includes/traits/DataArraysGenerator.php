@@ -2290,6 +2290,22 @@ trait Generator {
     }
 
     /**
+     * Get the available history modes.
+     *
+     * @return array An array containing the history modes.
+     * @since 3.2.0
+     */
+    protected function get_fa_mode_js_array() {
+        $theme = wp_get_theme();
+        $result = array();
+        $result[] = array(0, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), LWS_PLUGIN_NAME, 4));
+        $result[] = array(1, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), LWS_PLUGIN_NAME, 5));
+        $result[] = array(3, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), $theme->name, 4));
+        $result[] = array(4, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), $theme->name, 5));
+        return $result;
+    }
+
+    /**
      * Get the standard/scientific modes.
      *
      * @return array An array containing the standard/scientific modes.

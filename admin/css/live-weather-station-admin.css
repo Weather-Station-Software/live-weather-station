@@ -221,3 +221,19 @@ span.lws-group-option-unselected {
 span.lws-group-separator {
     display:block;
 }
+
+div.lws-brandicon {
+    text-align: center !important;
+    padding-top: 10px !important;
+    width:100px !important;
+    height:90px !important;
+    float:left !important;
+    margin-top:16px !important;
+    margin-bottom:20px !important;
+    margin-right: 20px !important;
+    background-color: #2d7dd2 !important;
+    border: none !important;
+    border-radius: 4px !important;
+    background-image: radial-gradient(circle at top left,#2d7dd2 10%,#104e8c 100%) !important;
+    box-shadow: 4px 4px 12px 0px rgba(0,0,0,0.3) !important;
+}

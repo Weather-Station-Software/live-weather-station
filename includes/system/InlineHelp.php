@@ -32,18 +32,18 @@ class InlineHelp {
             'handbook/settings/thresholds', //4  source: settings - thresholds tab
             'handbook/settings/system', //5  source: settings - system tab
             'handbook/data-historization/', //6  source: settings - history tab
-            'support/frequently-asked-questions', //7  faq section
-            'handbook/dashboard', //8  dashboard
-            'handbook/stations-management', //9  stations
+            'frequently-asked-questions/', //7  faq section
+            'handbook/dashboard/', //8  dashboard
+            'handbook/stations-management/', //9  stations
             'handbook/events', //10 events
-            'handbook/requirements', //11 requirements
-            'support/languages-translation', //12 translation help
-            'blog', //13 Blog
-            'handbook/getting-started', //14 Starting guide
-            'handbook/settings/maintenance-operations', //15 source: settings - maintenance tab
-            'handbook/technical-specifications#url', //16 stickertags documentation
-            'handbook', //17 main documentation
-            'support', //18 main support page
+            'handbook/requirements/', //11 requirements
+            'languages-translation/', //12 translation help
+            'blog/', //13 Blog
+            'handbook/', //14 Starting guide
+            'handbook/settings/maintenance-operations/', //15 source: settings - maintenance tab
+            'handbook/technical-specifications/#url', //16 stickertags documentation
+            'handbook/', //17 main documentation
+            'community/', //18 main support page
             'handbook/controls', //19 shortcodes
             ),
         /*'fr' => array (
@@ -120,7 +120,6 @@ class InlineHelp {
     public static function get($number, $message='%s', $anchor='') {
         $result = '';
         $path = '';
-        $lang = 'en';
         $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
             $target = ' target="_blank" ';
@@ -129,85 +128,89 @@ class InlineHelp {
             $path = self::$links['en'][$number];
         }
         if ($path != '') {
-            $result = sprintf($message, '<a href="https://weather.station.software/' . $lang . '/' . $path . '"' . $target . '>' . $anchor . '</a>');
+            $lang = array('en');
+            if (strpos($path, 'community/') !== false) {
+                $lang = array('en', 'fr');
+            }
+            $result = sprintf($message, '<a href="https://weather.station.software/' . $path . '"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup($lang));
         }
         if ($number == -1) {
-            $result = sprintf($message, '<a href="https://weather.station.software/' . '"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://weather.station.software/' . '"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -2) {
-            $result = sprintf($message, '<a href="https://wordpress.org/support/plugin/live-weather-station"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://wordpress.org/support/plugin/live-weather-station"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -3) {
-            $result = sprintf($message, '<a href="http://openweathermap.org/price"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="http://openweathermap.org/price"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -4) {
-            $result = 'https://weather.station.software/' . $lang . '/feed/';
+            $result = 'https://weather.station.software/feed/';
         }
         if ($number == -5) {
             $result = sprintf($message, '<a href="https://wordpress.org/support/plugin/live-weather-station/reviews/"' . $target . '>' . $anchor . '</a>');
         }
         if ($number == -6) {
-            $result = '<a href="https://twitter.com/cyril_lakech"' . $target . '>Cyril Lakech</a>';
+            $result = '<a href="https://twitter.com/cyril_lakech"' . $target . '>Cyril Lakech</a>'. Intl::get_language_markup(array('fr'));
         }
         if ($number == -7) {
-            $result = '<a href="http://www.punz.info/"' . $target . '>Martin Punz</a>';
+            $result = '<a href="http://www.punz.info/"' . $target . '>Martin Punz</a>'. Intl::get_language_markup(array('de'));
         }
         if ($number == -8) {
-            $result = '<a href="http://reseaumeteofrance.fr/"' . $target . '>Patrice Corre</a>';
+            $result = '<a href="http://reseaumeteofrance.fr/"' . $target . '>Patrice Corre</a>'. Intl::get_language_markup(array('fr'));
         }
         if ($number == -9) {
-            $result = '<a href="http://creativecommons.org/licenses/by-sa/4.0/"' . $target . '>' . __('Creative Commons CC:BY-SA 4.0 license', 'live-weather-station') . '</a>';
+            $result = '<a href="http://creativecommons.org/licenses/by-sa/4.0/"' . $target . '>' . __('Creative Commons CC:BY-SA 4.0 license', 'live-weather-station') . '</a>' . Intl::get_language_markup(array('en'));
         }
         if ($number == -10) {
-            $result = sprintf($message, '<a href="https://weather.station.software/en/support/languages-translation/"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://weather.station.software/languages-translation/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -11) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/weather/api/d/pricing.html?apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://www.wunderground.com/weather/api/d/pricing.html?apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -12) {
-            $result = sprintf($message, '<a href="https://register.metoffice.gov.uk/WaveRegistrationClient/public/register.do?service=weatherobservations"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://register.metoffice.gov.uk/WaveRegistrationClient/public/register.do?service=weatherobservations"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -13) {
-            $result = sprintf($message, '<a href="http://wow.metoffice.gov.uk/sites/create"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="http://wow.metoffice.gov.uk/sites/create"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -14) {
-            $result = sprintf($message, '<a href="http://wow.metoffice.gov.uk/weather/view?siteID=966476001"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="http://wow.metoffice.gov.uk/weather/view?siteID=966476001"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -15) {
-            $result = sprintf($message, '<a href="http://www.pwsweather.com/register.php"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="http://www.pwsweather.com/register.php"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -16) {
-            $result = sprintf($message, '<a href="http://www.pwsweather.com/station.php"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="http://www.pwsweather.com/station.php"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -17) {
-            $result = sprintf($message, '<a href="http://www.pwsweather.com/obs/MOUVAUX.html"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="http://www.pwsweather.com/obs/MOUVAUX.html"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -18) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/personal-weather-station/signup"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://www.wunderground.com/personal-weather-station/signup"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -19) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/personal-weather-station/signup?new=1"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://www.wunderground.com/personal-weather-station/signup?new=1"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -20) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/personal-weather-station/dashboard?ID=INORDPAS92&apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://www.wunderground.com/personal-weather-station/dashboard?ID=INORDPAS92&apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -21) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/member/registration?apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://www.wunderground.com/member/registration?apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -22) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/weather/api/d/pricing.html?apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://www.wunderground.com/weather/api/d/pricing.html?apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -23) {
-            $result = sprintf($message, '<a href="https://home.openweathermap.org/users/sign_up"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://home.openweathermap.org/users/sign_up"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -24) {
-            $result = sprintf($message, '<a href="https://home.openweathermap.org/api_keys"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://home.openweathermap.org/api_keys"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -25) {
-            $result = sprintf($message, '<a href="https://wordpress.org/support/topic/howto-translate-this-plugin-in-your-own-language/"' . $target . '>' . $anchor . '</a>');
+            $result = sprintf($message, '<a href="https://wordpress.org/support/topic/howto-translate-this-plugin-in-your-own-language/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -26) {
-            $result = '<a href="http://developers.pioupiou.fr/data-licensing/"' . $target . '>Open Data</a>';
+            $result = '<a href="http://developers.pioupiou.fr/data-licensing/"' . $target . '>Open Data</a>'. Intl::get_language_markup(array('en'));
         }
         return $result;
     }
@@ -221,7 +224,6 @@ class InlineHelp {
      * @since 3.3.0
      */
     public static function article($number) {
-        $lang = 'en';
         $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
             $target = ' target="_blank" ';
@@ -229,62 +231,38 @@ class InlineHelp {
         $url = '';
         switch ($number) {
             case 0 :
-                $url = 'https://weather.station.software/en/how-to-get-up-to-date-weather-data/';
-                if ($lang == 'fr') {
-                    $url = 'https://weather.station.software/fr/comment-sassurer-de-la-fraicheur-des-donnees-meteo/';
-                }
+                $url = 'https://weather.station.software/blog/how-to-get-up-to-date-weather-data/';
                 break;
             case 1 :
-                $url = 'https://weather.station.software/en/how-to-update/';
-                if ($lang == 'fr') {
-                    $url = 'https://weather.station.software/fr/comment-mettre-jour/';
-                }
+                $url = 'https://weather.station.software/blog/how-to-update/';
                 break;
             case 2 :
-                $url = 'https://weather.station.software/en/find-nearest-weather-station/';
-                if ($lang == 'fr') {
-                    $url = 'https://weather.station.software/fr/trouvez-la-station-meteorologique-la-plus-proche/';
-                }
+                $url = 'https://weather.station.software/blog/find-nearest-weather-station/';
                 break;
             case 3 :
-                $url = 'https://weather.station.software/en/what-are-dew-and-frost-points/';
-                if ($lang == 'fr') {
-                    $url = 'https://weather.station.software/fr/que-sont-les-points-de-rosee-et-de-givre/';
-                }
+                $url = 'https://weather.station.software/blog/what-are-dew-and-frost-points/';
                 break;
             case 4 :
-                $url = 'https://weather.station.software/en/heat-index-humidex/';
-                if ($lang == 'fr') {
-                    $url = 'https://weather.station.software/fr/heat-index-et-humidex/';
-                }
+                $url = 'https://weather.station.software/blog/heat-index-humidex/';
                 break;
             case 5 :
-                $url = 'https://weather.station.software/en/wind-chill/';
-                if ($lang == 'fr') {
-                    $url = 'https://weather.station.software/fr/refroidissement-eolien/';
-                }
+                $url = 'https://weather.station.software/blog/wind-chill/';
                 break;
             // todo 6 : cloud ceiling
             // todo 7 : health index + description + aggravating factor
             case 8 :
-                $url = 'https://weather.station.software/en/dawn-dusk-story-angles/';
-                if ($lang == 'fr') {
-                    $url = 'https://weather.station.software/fr/aube-crepuscule/';
-                }
+                $url = 'https://weather.station.software/blog/dawn-dusk-story-angles/';
                 break;
             // todo 9 : CBI + others
             case 10 :
-                $url = 'https://weather.station.software/en/scheduled-task-interface/';
-                if ($lang == 'fr') {
-                    $url = 'https://weather.station.software/fr/utiliser-linterface-des-taches-planifiees/';
-                }
+                $url = 'https://weather.station.software/blog/scheduled-task-interface/';
                 break;
             // todo 11 : analytics
             // todo 12 : humidity relative or absolute
             // todo 13 : temperatures + wet bulb
             // todo 14 : vapor pressure, density, enthalpy
             // todo 15 : emc
-            // todo 16 : athmospheric pressure
+            // todo 16 : atmospheric pressure
 
             default:
                 return '';
