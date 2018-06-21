@@ -325,6 +325,10 @@ class Admin {
             array($this, 'lws_system_show_technical_callback'), 'lws_system', 'lws_system_section',
             array(__('If you check this, stations views will display detailed technical information for each module.', 'live-weather-station')));
         register_setting('lws_system', 'lws_system_show_technical');
+        add_settings_field('lws_system_fa_mode', __('Font Awesome', 'live-weather-station'),
+            array($this, 'lws_system_fa_mode_callback'), 'lws_system', 'lws_system_section',
+            array(__('How Font Awesome (used by Weather Station) is enqueued, and which version.', 'live-weather-station')));
+        register_setting('lws_system', 'lws_system_fa_mode');
         add_settings_field('lws_system_redirect_links', __('Links', 'live-weather-station'),
             array($this, 'lws_system_redirect_links_callback'), 'lws_system', 'lws_system_section',
             array());
@@ -481,6 +485,16 @@ class Admin {
      */
     public function lws_history_retention_callback($args) {
         echo $this->field_input_number(get_option('live_weather_station_retention_history'), 'lws_history_retention', 0, 600, 1, $args[0], __('weeks', 'live-weather-station'));
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.5.3
+     */
+    public function lws_system_fa_mode_callback($args) {
+        echo $this->field_select($this->get_fa_mode_js_array(), get_option('live_weather_station_fa_mode'), 'lws_system_fa_mode', $args[0]);
     }
 
     /**
@@ -976,6 +990,7 @@ class Admin {
             $override = get_option('live_weather_station_overload_hc');
             if (array_key_exists('submit', $_POST)) {
                 update_option('live_weather_station_logger_level', (integer)$_POST['lws_system_log_level']);
+                update_option('live_weather_station_fa_mode', (integer)$_POST['lws_system_fa_mode']);
                 update_option('live_weather_station_logger_rotate', (integer)$_POST['lws_system_log_rotate']);
                 update_option('live_weather_station_logger_retention', (integer)$_POST['lws_system_log_retention']);
                 update_option('live_weather_station_use_cdn', (array_key_exists('lws_system_use_cdn', $_POST) ? 1 : 0));

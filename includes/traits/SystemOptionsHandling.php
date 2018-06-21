@@ -29,6 +29,7 @@ trait Handling {
 
     private static $live_weather_station_use_cdn = false;
     private static $live_weather_station_footer_scripts = true;
+    private static $live_weather_station_fa_mode = 0;
     private static $live_weather_station_advanced_mode = false;
     private static $live_weather_station_txt_cache_bypass = false;
     private static $live_weather_station_backend_cache = true;
@@ -86,6 +87,7 @@ trait Handling {
     private static $live_weather_station_build_history = false;
     private static $live_weather_station_full_history = false;
     private static $live_weather_station_retention_history = 5;
+
 
 
     /**
@@ -431,6 +433,7 @@ trait Handling {
     protected static function delete_options() {
         delete_option('live_weather_station_use_cdn');
         delete_option('live_weather_station_footer_scripts');
+        delete_option('live_weather_station_fa_mode');
         delete_option('live_weather_station_partial_translation');
         delete_option('live_weather_station_version');
         delete_option('live_weather_station_logger_level');
@@ -549,6 +552,7 @@ trait Handling {
     protected static function init_system_options() {
         update_option('live_weather_station_use_cdn', self::$live_weather_station_use_cdn);
         update_option('live_weather_station_footer_scripts', self::$live_weather_station_footer_scripts);
+        update_option('live_weather_station_fa_mode', self::$live_weather_station_fa_mode);
         update_option('live_weather_station_logger_level', self::$live_weather_station_logger_level);
         update_option('live_weather_station_logger_rotate', self::$live_weather_station_logger_rotate);
         update_option('live_weather_station_logger_retention', self::$live_weather_station_logger_retention);
@@ -775,6 +779,7 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_txt_cache_bypass', self::$live_weather_station_txt_cache_bypass);
         self::verify_option_boolean('live_weather_station_use_cdn', self::$live_weather_station_use_cdn);
         self::verify_option_boolean('live_weather_station_footer_scripts', self::$live_weather_station_footer_scripts);
+        self::verify_option_integer('live_weather_station_fa_mode', self::$live_weather_station_fa_mode);
         self::verify_option_boolean('live_weather_station_frontend_cache', self::$live_weather_station_frontend_cache);
         self::verify_option_boolean('live_weather_station_widget_cache', self::$live_weather_station_widget_cache);
         self::verify_option_boolean('live_weather_station_dgraph_cache', self::$live_weather_station_dgraph_cache);

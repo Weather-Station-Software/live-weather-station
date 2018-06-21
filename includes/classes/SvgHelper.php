@@ -51,7 +51,7 @@ class Handling {
      * @since 3.0.0
      */
     public static function get_base64_lws_icon() {
-        return self::get_base64_menu_icon($color1='#666', $color2='#ffde3a');
+        return self::get_base64_menu_icon($color1='#FFFFFF', $color2='#ffd200');
     }
 
     /**

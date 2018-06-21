@@ -2,7 +2,10 @@
 #3.5.4 / xxx, 2018
 
 * Improvement: full compatibility with PHP 7.2.
-* Bug fix: some icons are missing in the dashboard.
+* Improvement: links to external websites (documentation, support, etc.) are now marked with a language mark.
+* Improvement: the new Weather Station icon is now visible in the welcome panel.
+* Bug fix: some icons are missing or misaligned in the dashboard.
+* Bug fix: some online documentation links are wrong due to website redesign.
 
 #3.5.3 / June 11th, 2018
 

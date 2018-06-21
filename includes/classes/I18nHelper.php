@@ -335,4 +335,16 @@ class Handling {
     {
         return lws_get_display_language_id();
     }
+
+    /**
+     * Get the language markup for links.
+     *
+     * @param array $langs Optional. Indicates the language in which the link is available.
+     * @return string The html string of the markup.
+     *
+     * @since 3.5.4
+     */
+    public static function get_language_markup($langs=array()){
+        return '<span style="font-size:65%;vertical-align: super;line-height: 1em;">&nbsp;(' . implode('/', $langs) . ')</span>';
+    }
 }

@@ -222,7 +222,7 @@ function lws_register_script($handle, $source, $file, $deps = array()) {
  * @since 3.5.3
  */
 function lws_font_awesome($all=false) {
-    switch (LWS_FONT_AWESOME) {
+    switch (get_option('live_weather_station_fa_mode')) {
         case 1:
             if ($all) {
                 wp_enqueue_script('lws-fa-all');
@@ -232,6 +232,34 @@ function lws_font_awesome($all=false) {
                 wp_enqueue_script('lws-fa-regular');
                 wp_enqueue_script('lws-fa-solid');
             }
+            if (!defined('LWS_FAR')) {
+                define('LWS_FAR', 'far');
+            }
+            if (!defined('LWS_FAB')) {
+                define('LWS_FAB', 'fab');
+            }
+            if (!defined('LWS_FAS')) {
+                define('LWS_FAS', 'fas');
+            }
+            if (!defined('LWS_FA5')) {
+                define('LWS_FA5', true);
+            }
+            break;
+        case 2:
+            if (!defined('LWS_FAR')) {
+                define('LWS_FAR', 'fa');
+            }
+            if (!defined('LWS_FAB')) {
+                define('LWS_FAB', 'fa');
+            }
+            if (!defined('LWS_FAS')) {
+                define('LWS_FAS', 'fa');
+            }
+            if (!defined('LWS_FA5')) {
+                define('LWS_FA5', false);
+            }
+            break;
+        case 3:
             if (!defined('LWS_FAR')) {
                 define('LWS_FAR', 'far');
             }
