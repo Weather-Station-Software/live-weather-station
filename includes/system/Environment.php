@@ -780,6 +780,15 @@ class Manager {
     }
 
     /**
+     * Verify if PHP is up to date.
+     *
+     * @since 3.5.4
+     */
+    public static function is_php_version_uptodate() {
+        return (version_compare(PHP_VERSION, LWS_MINIMUM_PHP_VERSION) >= 0);
+    }
+
+    /**
      * Get the MYSQL version.
      *
      * @since 3.0.0
@@ -929,6 +938,16 @@ class Manager {
             }
         }
         return ($debug ? __('Debug enabled', 'live-weather-station') .($s != '' ? ' (' . $s . ')' : '') :  __('Debug disabled', 'live-weather-station'));
+    }
+
+    /**
+     * Verify if WP is up to date.
+     *
+     * @since 3.5.4
+     */
+    public static function is_wp_version_uptodate() {
+        global $wp_version;
+        return (version_compare($wp_version, LWS_MINIMUM_WP_VERSION) >= 0);
     }
 
     /**
