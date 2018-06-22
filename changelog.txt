@@ -1,8 +1,11 @@
 
-#3.5.4 / xxx, 2018
+#3.5.4 / June 22nd, 2018
 
+* Improvement: it's now possible to choose which version of Font Awesome is used and how it is enqueued.
 * Improvement: full compatibility with PHP 7.2.
-* Improvement: links to external websites (documentation, support, etc.) are now marked with a language mark.
+* Improvement: old versions of WordPress or PHP now generate warnings in events log.
+* Improvement: Weather Station can now run (in degraded mode) without PHP internationalization support.
+* Improvement: links to external websites (documentation, support, etc.) are now identified with a language mark.
 * Improvement: the new Weather Station icon is now visible in the welcome panel.
 * Bug fix: some icons are missing or misaligned in the dashboard.
 * Bug fix: some online documentation links are wrong due to website redesign.

@@ -9,6 +9,7 @@ use WeatherStation\Data\Type\Description as Type_Description;
 use WeatherStation\Data\Unit\Description as Unit_Description;
 use WeatherStation\Data\Unit\Conversion as Unit_Conversion;
 use WeatherStation\DB\Storage as Storage;
+use WeatherStation\System\Environment\Manager as Env;
 
 /**
  * The core plugin class.
@@ -57,7 +58,9 @@ class Core {
 	 * @since 3.0.0
 	 */
 	private function verify_requirements() {
-	    if (LWS_PHPVERSION_OK && LWS_ICONV_LOADED && LWS_JSON_LOADED && LWS_CURL_LOADED ){//&& LWS_I18N_LOADED) {
+	    $reference = (integer)date('i');
+	    // EMERGENCY
+	    if (LWS_PHPVERSION_OK && LWS_ICONV_LOADED && LWS_JSON_LOADED && LWS_CURL_LOADED ) {
             if (!defined('REQUIREMENTS_OK')) {
                 define('REQUIREMENTS_OK', true);
             }
@@ -79,9 +82,31 @@ class Core {
         if (!LWS_CURL_LOADED) {
             Logger::emergency('Core', null, null, null, null, null, 666, 'cURL support is not installed on your server. ' . LWS_PLUGIN_NAME . ' can not run!');
         }
-        if (!LWS_I18N_LOADED) {
-            Logger::emergency('Core', null, null, null, null, null, 666, 'Internationalization support is not installed on your server. ' . LWS_PLUGIN_NAME . ' can not run!');
+
+        // WARNING
+        if ($reference % 30 == 0) {
+            if (get_transient('lws_warning_reference') != $reference) {
+                if (!Env::is_php_version_uptodate()) {
+                    Logger::warning('Core', null, null, null, null, null, 122, 'Your PHP version is old. It is no longer supported and will not even receive security fixes in a few months. You should seriously consider to update it.');
+                }
+
+                if (!Env::is_wp_version_uptodate()) {
+                    Logger::warning('Core', null, null, null, null, null, 121, 'Your WordPress version is old. You should seriously consider to update it.');
+                }
+                set_transient('lws_warning_reference', $reference);
+            }
         }
+
+        // NOTICE
+        if ($reference % 5 == 0) {
+            if (get_transient('lws_notice_reference') != $reference) {
+                if (!LWS_I18N_LOADED) {
+                    Logger::notice('Core', null, null, null, null, null, 333, 'Internationalization support is not installed on your server. ' . LWS_PLUGIN_NAME . ' runs in degraded mode...');
+                }
+                set_transient('lws_notice_reference', $reference);
+            }
+        }
+
 	}
 
     /**

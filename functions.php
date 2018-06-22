@@ -246,6 +246,7 @@ function lws_font_awesome($all=false) {
             }
             break;
         case 2:
+            wp_dequeue_style('lws-font-awesome');
             if (!defined('LWS_FAR')) {
                 define('LWS_FAR', 'fa');
             }
@@ -260,6 +261,14 @@ function lws_font_awesome($all=false) {
             }
             break;
         case 3:
+            if ($all) {
+                wp_dequeue_script('lws-fa-all');
+            }
+            else {
+                //wp_dequeue_script('lws-fa-brands');
+                wp_dequeue_script('lws-fa-regular');
+                wp_dequeue_script('lws-fa-solid');
+            }
             if (!defined('LWS_FAR')) {
                 define('LWS_FAR', 'far');
             }
