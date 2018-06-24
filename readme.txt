@@ -24,7 +24,7 @@ Just set it, insert (in a page or an article) the provided shortcodes. And it wo
 Once you have connected the plugin to your weather stations (via the dashboard of your WordPress site), the data you have access to is collected regularly and stored in the database of your WordPress site.
 The various controls and viewers now will get their data from this database with the certainty of having fresh and cached data.
 
-To see all available widgets, controls and viewers, please take a look at the [live demo](https://weather.station.software/en/weather-station-in-action/).
+To see all available widgets, controls and viewers, please take a look at the [live demo](https://weather.station.software/weather-station-in-action/).
 
 
 = Supported devices & services =
@@ -46,7 +46,7 @@ If you want, Weather Station can send outdoor data to the following services:
 * [Weather Underground](https://www.wunderground.com/)
 
 = Instructions =
-You can find a more in-depth description and instructions to configure [in the handbook](https://weather.station.software/en/handbook/).
+You can find a more in-depth description and instructions to configure [in the handbook](https://weather.station.software/handbook/).
 
 = Support =
 This plugin is free and provided without warranty of any kind. Use it at your own risk, I'm not responsible for any improper use of this plugin, nor for any damage it might cause to your site. Always backup all your data before installing a new plugin.
@@ -83,7 +83,7 @@ If you like this plugin or find it useful and want to thank me for the work done
 
 = What are the requirements for this plugin to work? =
 
-You need **WordPress 4.X** and at least **PHP 5.4** with internationalisation, curl and json extensions.
+You need **WordPress 4.X** and at least **PHP 5.4** with curl and json extensions.
 
 = Can this plugin work on multisite? =
 
@@ -91,24 +91,24 @@ Yes. You can install it via the network admin plugins page but the plugin **must
 
 = Where can I get support? =
 
-Support is provided via the official [Community Support](https://weather.station.software/en/support/community).
+Support is provided via the official [Community Support](https://weather.station.software/community).
 
 = Where can I find documentation? =
 
-You can find instructions [here](https://weather.station.software/en/handbook/).
+You can find instructions [here](https://weather.station.software/handbook/).
 
 = Where can I report a bug? =
 
-You can report bugs and suggest ideas via the official [Community Support](https://weather.station.software/en/support/community).
+You can report bugs and suggest ideas via the official [Community Support](https://weather.station.software/community).
 
 == Changelog ==
 
-See [full changelog](https://weather.station.software/en/handbook/changelog/).
+See [full changelog](https://weather.station.software/handbook/changelog/).
 
 == Upgrade Notice ==
 
-Please, see [full changelog](https://weather.station.software/en/handbook/changelog/) and [requirements](https://weather.station.software/en/handbook/requirements/).
+Please, see [full changelog](https://weather.station.software/handbook/changelog/) and [requirements](https://weather.station.software/handbook/requirements/).
 
 == Screenshots ==
 
-To see Weather Station in action, please take a look at the [live demo](https://weather.station.software/en/weather-station-in-action/).
+To see Weather Station in action, please take a look at the [live demo](https://weather.station.software/weather-station-in-action/).

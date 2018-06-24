@@ -106,7 +106,7 @@ class Admin {
         lws_register_style('lws-font-awesome', LWS_PUBLIC_URL, 'css/font-awesome.min.css');
         lws_register_style('lws-weather-icons', LWS_PUBLIC_URL, 'css/weather-icons.min.css');
         lws_register_style('lws-weather-icons-wind', LWS_PUBLIC_URL, 'css/weather-icons-wind.min.css');
-        lws_register_style('lws-nvd3', LWS_PUBLIC_URL, 'css/nv.d3.min.css');
+        lws_register_style('lws-nvd3', LWS_PUBLIC_URL, 'css/nv.d3.min.css', array(), false);
         lws_register_style('lws-cal-heatmap', LWS_PUBLIC_URL, 'css/cal-heatmap.min.css');
     }
 

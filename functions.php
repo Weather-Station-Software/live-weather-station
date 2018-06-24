@@ -178,18 +178,18 @@ function lws_array_super_unique($array, $key){
  *
  * @since 3.5.0
  */
-function lws_register_style($handle, $source, $file, $deps = array()) {
-    if ((bool)get_option('live_weather_station_use_cdn')) {
+function lws_register_style($handle, $source, $file, $deps = array(), $cdn_available=true) {
+    if ((bool)get_option('live_weather_station_use_cdn') && $cdn_available) {
         if ($source == LWS_ADMIN_URL) {
-            $file = '//cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/admin/' . $file;
+            $file = 'https://cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/admin/' . $file;
         }
         else {
-            $file = '//cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/public/' . $file;
+            $file = 'https://cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/public/' . $file;
         }
-        wp_register_style($handle, $file, $deps);
+        wp_register_style($handle, $file, $deps, null);
     }
     else {
-        wp_register_style($handle, $source . $file, $deps, (bool)get_option('live_weather_station_use_cdn') ? false : LWS_VERSION);
+        wp_register_style($handle, $source . $file, $deps, LWS_VERSION);
     }
 }
 
@@ -200,18 +200,18 @@ function lws_register_style($handle, $source, $file, $deps = array()) {
  *
  * @since 3.5.0
  */
-function lws_register_script($handle, $source, $file, $deps = array()) {
-    if ((bool)get_option('live_weather_station_use_cdn')) {
+function lws_register_script($handle, $source, $file, $deps = array(), $cdn_available=true) {
+    if ((bool)get_option('live_weather_station_use_cdn') && $cdn_available) {
         if ($source == LWS_ADMIN_URL) {
-            $file = '//cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/admin/' . $file;
+            $file = 'https://cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/admin/' . $file;
         }
         else {
-            $file = '//cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/public/' . $file;
+            $file = 'https://cdn.jsdelivr.net/wp/' . LWS_PLUGIN_SLUG . '/tags/' . LWS_VERSION . '/public/' . $file;
         }
-        wp_register_script($handle, $file, $deps, false, (bool)get_option('live_weather_station_footer_scripts', false));
+        wp_register_script($handle, $file, $deps, null, (bool)get_option('live_weather_station_footer_scripts', false));
     }
     else {
-        wp_register_script($handle, $source . $file, $deps, (bool)get_option('live_weather_station_use_cdn') ? false : LWS_VERSION, (bool)get_option('live_weather_station_footer_scripts', false));
+        wp_register_script($handle, $source . $file, $deps, LWS_VERSION, (bool)get_option('live_weather_station_footer_scripts', false));
     }
 }
 

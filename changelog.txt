@@ -1,4 +1,10 @@
 
+#3.5.5 / June 25th, 2018
+
+* Improvement: links in news feed are now identified with a language mark.
+* Bug fix: CORS error in recent browsers versions when using CND (thanks to Martin Kolárik for his help in detecting the root cause of this issue).
+* Bug fix: the link to "what's new" info box is wrong due to website redesign.
+
 #3.5.4 / June 22nd, 2018
 
 * Improvement: it's now possible to choose which version of Font Awesome is used and how it is enqueued.
