@@ -3,7 +3,7 @@ Contributors: PierreLannoy
 Tags: weather, openweathermap, netatmo, weatherflow, wunderground
 Requires at least: 4.0
 Tested up to: 4.9
-Stable tag: 3.5.4
+Stable tag: 3.5.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://support.laquadrature.net/
@@ -83,7 +83,7 @@ If you like this plugin or find it useful and want to thank me for the work done
 
 = What are the requirements for this plugin to work? =
 
-You need **WordPress 4.X** and at least **PHP 5.4** with curl and json extensions.
+You need **WordPress 4.X** and at least **PHP 5.4**. See full [requirements](https://weather.station.software/handbook/requirements/).
 
 = Can this plugin work on multisite? =
 
@@ -91,7 +91,7 @@ Yes. You can install it via the network admin plugins page but the plugin **must
 
 = Where can I get support? =
 
-Support is provided via the official [Community Support](https://weather.station.software/community).
+Support is provided via the official [Community Support](https://weather.station.software/community/).
 
 = Where can I find documentation? =
 
@@ -99,7 +99,7 @@ You can find instructions [here](https://weather.station.software/handbook/).
 
 = Where can I report a bug? =
 
-You can report bugs and suggest ideas via the official [Community Support](https://weather.station.software/community).
+You can report bugs and suggest ideas via the official [Community Support](https://weather.station.software/community/).
 
 == Changelog ==
 
