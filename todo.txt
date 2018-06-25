@@ -59,8 +59,6 @@
 * IMPROVEMENTS TO DO  *
 ***********************
 
-FontAwesome 5
-
 Warning box (locale, php version, WP version)
 Misc display options (widgets, charts, etc.)
 
