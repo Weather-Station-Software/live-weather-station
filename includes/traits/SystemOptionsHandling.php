@@ -43,6 +43,7 @@ trait Handling {
     private static $live_weather_station_redirect_external_links = true;
     private static $live_weather_station_time_shift_threshold = 30;
     private static $live_weather_station_auto_manage_netatmo = true;
+    private static $live_weather_station_auto_manage_bloomsky = true;
     private static $live_weather_station_overload_hc = false;
     private static $live_weather_station_show_technical = false;
     private static $live_weather_station_show_analytics = false;
@@ -64,6 +65,8 @@ trait Handling {
     private static $live_weather_station_netatmohc_refresh_token = '';
     private static $live_weather_station_netatmohc_access_token = '';
     private static $live_weather_station_netatmohc_connected = false;
+    private static $live_weather_station_bloomsky_key = '';
+    private static $live_weather_station_bloomsky_connected = false;
     private static $live_weather_station_owm_apikey = '';
     private static $live_weather_station_owm_plan = 0;
     private static $live_weather_station_wug_apikey = '';
@@ -445,6 +448,8 @@ trait Handling {
         delete_option('live_weather_station_netatmohc_refresh_token');
         delete_option('live_weather_station_netatmohc_access_token');
         delete_option('live_weather_station_netatmohc_connected');
+        delete_option('live_weather_station_bloomsky_connected');
+        delete_option('live_weather_station_bloomsky_key');
         delete_option('live_weather_station_owm_apikey');
         delete_option('live_weather_station_owm_plan');
         delete_option('live_weather_station_wug_apikey');
@@ -478,6 +483,7 @@ trait Handling {
         delete_option('live_weather_station_map_zoom');
         delete_option('live_weather_station_map_layer');
         delete_option('live_weather_station_auto_manage_netatmo');
+        delete_option('live_weather_station_auto_manage_bloomsky');
         delete_option('live_weather_station_overload_hc');
         delete_option('live_weather_station_show_technical');
         delete_option('live_weather_station_show_analytics');
@@ -510,6 +516,17 @@ trait Handling {
         update_option('live_weather_station_netatmo_refresh_token', self::$live_weather_station_netatmo_refresh_token);
         update_option('live_weather_station_netatmo_access_token', self::$live_weather_station_netatmo_access_token);
         update_option('live_weather_station_netatmo_connected', (self::$live_weather_station_netatmo_connected ? 1 : 0));
+    }
+
+
+    /**
+     * Init the Bloomsky options of the plugin.
+     *
+     * @since 3.6.0
+     */
+    protected static function init_bloomsky_options() {
+        update_option('live_weather_station_bloomsky_key', self::$live_weather_station_bloomsky_key);
+        update_option('live_weather_station_bloomsky_connected', (self::$live_weather_station_bloomsky_connected ? 1 : 0));
     }
 
 
@@ -568,6 +585,7 @@ trait Handling {
         update_option('live_weather_station_redirect_external_links', self::$live_weather_station_redirect_external_links);
         update_option('live_weather_station_time_shift_threshold', self::$live_weather_station_time_shift_threshold);
         update_option('live_weather_station_auto_manage_netatmo', self::$live_weather_station_auto_manage_netatmo);
+        update_option('live_weather_station_auto_manage_bloomsky', self::$live_weather_station_auto_manage_bloomsky);
         update_option('live_weather_station_overload_hc', self::$live_weather_station_overload_hc);
         update_option('live_weather_station_show_technical', self::$live_weather_station_show_technical);
         update_option('live_weather_station_show_analytics', self::$live_weather_station_show_analytics);
@@ -631,6 +649,7 @@ trait Handling {
         self::init_netatmohc_options();
         self::init_owm_options();
         self::init_wug_options();
+        self::init_bloomsky_options();
         self::init_system_options();
         self::init_display_options();
         self::init_thresholds_options();
@@ -798,6 +817,7 @@ trait Handling {
         self::verify_option_integer('live_weather_station_map_zoom', self::$live_weather_station_map_zoom);
         self::verify_option_string('live_weather_station_map_layer', self::$live_weather_station_map_layer);
         self::verify_option_boolean('live_weather_station_auto_manage_netatmo', self::$live_weather_station_auto_manage_netatmo);
+        self::verify_option_boolean('live_weather_station_auto_manage_bloomsky', self::$live_weather_station_auto_manage_bloomsky);
         self::verify_option_boolean('live_weather_station_overload_hc', self::$live_weather_station_overload_hc);
         self::verify_option_boolean('live_weather_station_show_technical', self::$live_weather_station_show_technical);
         self::verify_option_boolean('live_weather_station_show_analytics', self::$live_weather_station_show_analytics);
@@ -814,6 +834,8 @@ trait Handling {
         self::verify_option_string('live_weather_station_netatmo_refresh_token', self::$live_weather_station_netatmo_refresh_token);
         self::verify_option_string('live_weather_station_netatmo_access_token', self::$live_weather_station_netatmo_access_token);
         self::verify_option_boolean('live_weather_station_netatmo_connected', self::$live_weather_station_netatmo_connected);
+        self::verify_option_string('live_weather_station_bloomsky_key', self::$live_weather_station_bloomsky_key);
+        self::verify_option_boolean('live_weather_station_bloomsky_connected', self::$live_weather_station_bloomsky_connected);
         self::verify_option_string('live_weather_station_netatmohc_refresh_token', self::$live_weather_station_netatmohc_refresh_token);
         self::verify_option_string('live_weather_station_netatmohc_access_token', self::$live_weather_station_netatmohc_access_token);
         self::verify_option_boolean('live_weather_station_netatmohc_connected', self::$live_weather_station_netatmohc_connected);

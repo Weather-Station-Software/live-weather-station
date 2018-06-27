@@ -1662,6 +1662,25 @@ trait Query {
     }
 
     /**
+     * Get a list of all BloomSky stations.
+     *
+     * @return array An array containing the details of all stations.
+     * @since 3.6.0
+     */
+    protected function get_all_bsky_stations() {
+        return $this->get_all_stations_by_type(LWS_BSKY_SID);
+    }
+
+    /**
+     * Delete all BloomSky stations.
+     *
+     * @since 3.6.0
+     */
+    protected function clear_all_bsky_stations() {
+        $this->clear_all_stations_by_type(LWS_BSKY_SID);
+    }
+
+    /**
      * Get a list of all OpenWeatherMap (local) stations.
      *
      * @return array An array containing the details of all stations.

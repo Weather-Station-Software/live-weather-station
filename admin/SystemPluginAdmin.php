@@ -7,6 +7,7 @@ use WeatherStation\SDK\Clientraw\Plugin\StationCollector as ClientrawCollector;
 use WeatherStation\SDK\Realtime\Plugin\StationCollector as RealtimeCollector;
 use WeatherStation\SDK\WeatherFlow\Plugin\StationCollector as WeatherFlowCollector;
 use WeatherStation\SDK\Pioupiou\Plugin\StationCollector as PioupiouCollector;
+use WeatherStation\SDK\Bloomsky\Plugin\StationCollector as BloomskyCollector;
 use WeatherStation\SDK\Stickertags\Plugin\StationCollector as StickertagsCollector;
 use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Environment\Manager;
@@ -40,6 +41,7 @@ use WeatherStation\SDK\Realtime\Plugin\StationInitiator as Realtime_Station_Init
 use WeatherStation\SDK\Stickertags\Plugin\StationInitiator as Stickertags_Station_Initiator;
 use WeatherStation\SDK\WeatherFlow\Plugin\StationInitiator as WeatherFlow_Station_Initiator;
 use WeatherStation\SDK\Pioupiou\Plugin\StationInitiator as Pioupiou_Station_Initiator;
+use WeatherStation\SDK\Bloomsky\Plugin\StationInitiator as Bloomsky_Station_Initiator;
 use WeatherStation\System\Device\Manager as DeviceManager;
 
 
@@ -595,6 +597,10 @@ class Admin {
             'id' => 'lws_system_auto_manage_netatmo',
             'checked' => (bool)get_option('live_weather_station_auto_manage_netatmo'),
             'description' => sprintf(__('Check this to let %s manage Netatmo stations for you (add, remove, etc.).', 'live-weather-station'), LWS_PLUGIN_NAME));
+        $cbxs[] = array('text' => __('BloomSky provisioning', 'live-weather-station'),
+            'id' => 'lws_system_auto_manage_bloomsky',
+            'checked' => (bool)get_option('live_weather_station_auto_manage_bloomsky'),
+            'description' => sprintf(__('Check this to let %s manage BloomSky stations for you (add, remove, etc.).', 'live-weather-station'), LWS_PLUGIN_NAME));
         $cbxs[] = array('text' => __('Plugin updates', 'live-weather-station'),
             'id' => 'lws_system_auto_update',
             'checked' => (bool)get_option('live_weather_station_auto_update'),
@@ -1004,6 +1010,7 @@ class Admin {
                 update_option('live_weather_station_redirect_internal_links', (array_key_exists('lws_system_redirect_internal_links', $_POST) ? 1 : 0));
                 update_option('live_weather_station_redirect_external_links', (array_key_exists('lws_system_redirect_external_links', $_POST) ? 1 : 0));
                 update_option('live_weather_station_auto_manage_netatmo', (array_key_exists('lws_system_auto_manage_netatmo', $_POST) ? 1 : 0));
+                update_option('live_weather_station_auto_manage_bloomsky', (array_key_exists('lws_system_auto_manage_bloomsky', $_POST) ? 1 : 0));
                 update_option('live_weather_station_auto_update', (array_key_exists('lws_system_auto_update', $_POST) ? 1 : 0));
                 update_option('live_weather_station_time_shift_threshold', (integer)$_POST['lws_system_time_shift_threshold']);
                 update_option('live_weather_station_show_technical', (array_key_exists('lws_system_show_technical', $_POST) ? 1 : 0));
@@ -1912,6 +1919,10 @@ class Admin {
         if (array_key_exists('login', $_POST)) {
             $login = $_POST['login'];
         }
+        $apikey = '';
+        if (array_key_exists('apikey', $_POST)) {
+            $apikey = $_POST['apikey'];
+        }
         $password = '';
         if (array_key_exists('password', $_POST)) {
             $password = $_POST['password'];
@@ -1935,6 +1946,14 @@ class Admin {
         if ($sec) {
             if ($action == 'connect') {
                 $s = __('Unkonwn service.', 'live-weather-station');
+                if ($service == 'Bloomsky') {
+                    if ($apikey == '') {
+                        $s = __('the API key can not be empty', 'live-weather-station');
+                    }
+                    else {
+                        $s = $this->connect_bloomsky($apikey);
+                    }
+                }
                 if ($service == 'Netatmo') {
                     if ($login == '' || $password == '') {
                         $s = __('the login and password can not be empty', 'live-weather-station');
@@ -2250,6 +2269,28 @@ class Admin {
         $n->run();
         Cache::flush_query();
         Cache::flush_backend();
+    }
+
+    /**
+     * Connect to a BloomSky account.
+     *
+     * @param string $apikey The API key of the account.
+     * @return string The error string if an error occured, empty string if none.
+     *
+     * @since 3.6.0
+     */
+    protected function connect_bloomsky($apikey) {
+        $bloomsky = new BloomskyCollector();
+        if ($bloomsky->authentication($apikey)) {
+            Logger::notice('Authentication', 'Bloomsky', null, null, null, null, null, 'Correctly connected to service.');
+            if (get_option('live_weather_station_auto_manage_bloomsky')) {
+                //$this->get_bloomsky(true);
+            }
+        }
+        else {
+            Logger::error('Authentication', 'Bloomsky', null, null, null, null, null, 'Unable to connect to service.');
+        }
+        return $bloomsky->last_bloomsky_error;
     }
 
     /**
