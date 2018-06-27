@@ -61,6 +61,12 @@ spl_autoload_register(
         case 'WeatherStation\DB\Query': $file = LWS_INCLUDES_DIR.'traits/DBQuery.php'; break;
         case 'WeatherStation\DB\Stats': $file = LWS_INCLUDES_DIR.'classes/DatabaseStats.php'; break;
         case 'WeatherStation\DB\Storage': $file = LWS_INCLUDES_DIR.'traits/DBStorage.php'; break;
+        case 'WeatherStation\SDK\BloomSky\BSKYApiClient': $file = LWS_INCLUDES_DIR.'libraries/bloomsky/autoload.php'; break;
+        case 'WeatherStation\SDK\BloomSky\Plugin\BaseClient': $file = LWS_INCLUDES_DIR.'traits/BloomSkyPluginBaseClient.php'; break;
+        case 'WeatherStation\SDK\BloomSky\Plugin\Client': $file = LWS_INCLUDES_DIR.'traits/BloomSkyPluginClient.php'; break;
+        case 'WeatherStation\SDK\BloomSky\Plugin\StationCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentBloomSkyStationCollector.php'; break;
+        case 'WeatherStation\SDK\BloomSky\Plugin\StationInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentBloomSkyStationInitiator.php'; break;
+        case 'WeatherStation\SDK\BloomSky\Plugin\StationUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentBloomSkyStationUpdater.php'; break;
         case 'WeatherStation\SDK\Clientraw\Plugin\StationClient': $file = LWS_INCLUDES_DIR.'traits/ClientrawPluginStationClient.php'; break;
         case 'WeatherStation\SDK\Clientraw\Plugin\StationCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentClientrawStationCollector.php'; break;
         case 'WeatherStation\SDK\Clientraw\Plugin\StationInitiator': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentClientrawStationInitiator.php'; break;

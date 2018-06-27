@@ -322,6 +322,20 @@ jQuery(document).ready( function($) {
         }
     });
 
+    $('#bloomsky-connect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#bloomsky-span-sync').show();
+    });
+
+    $('#bloomsky-disconnect').click( function() {
+        if (lws_bloomsky_confirmation) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#bloomsky-span-sync').show();
+        }
+    });
+
     $('#netatmohc-connect').click( function() {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });

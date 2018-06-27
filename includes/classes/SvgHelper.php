@@ -129,12 +129,44 @@ class Handling {
     public static function get_base64_piou_color_logo() {
         return self::get_base64_piou_icon('#285291');
     }
-    
-    
-    
-    
-    
-    
+
+
+    /**
+     * Returns a base64 svg resource for the BloomSky icon.
+     *
+     * @param string $color Optional. Color of the icon.
+     * @return string The svg resource as a base64.
+     * @since 3.6.0
+     */
+    public static function get_base64_bloomsky_icon($color='#000') {
+        $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 750 750">';
+        $source .= '<g transform="translate(130,670) scale(0.065,-0.065)">';
+        $source .= '<path style="fill:' . $color . '" d="M3585 8509 c-1085 -63 -2074 -609 -2704 -1494 -356 -500 -579 -1095 -642 -1715 -17 -162 -17 -500 0 -665 83 -835 415 -1558 993 -2160 246 -257 1113 -1010 2217 -1924 l474 -393 51 49 c228 218 540 515 796 758 615 584 1463 1405 1590 1540 530 563 859 1265 957 2040 21 173 24 593 4 765 -95 836 -426 1542 -1001 2134 -546 562 -1253 920 -2045 1035 -117 17 -493 44 -545 39 -8 0 -73 -4 -145 -9z m361 -1808 c279 -58 512 -263 605 -535 32 -92 56 -278 45 -339 l-7 -36 -92 48 c-128 68 -258 118 -390 149 -103 24 -129 27 -322 27 -166 0 -227 -4 -293 -18 -149 -33 -346 -109 -465 -179 -26 -15 -51 -28 -54 -28 -12 0 6 267 22 325 9 33 34 96 55 140 166 341 529 522 896 446z m2084 -2240 c0 -128 -22 -295 -59 -446 -187 -762 -758 -1381 -1497 -1624 -394 -130 -762 -152 -1169 -70 -430 86 -803 281 -1128 589 -419 398 -664 934 -703 1543 l-7 107 2282 0 2281 0 0 -99z"/>';
+        $source .= '</g>';
+        $source .= '</svg>';
+        return 'data:image/svg+xml;base64,' . base64_encode($source);
+    }
+
+    /**
+     * Returns a base64 svg resource for the monochrome BloomSky logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.6.0
+     */
+    public static function get_base64_bloomsky_grey_logo() {
+        return self::get_base64_bloomsky_icon('#666666');
+    }
+
+    /**
+     * Returns a base64 svg resource for the colored BloomSky logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.6.0
+     */
+    public static function get_base64_bloomsky_color_logo() {
+        return self::get_base64_bloomsky_icon('#5DBFDE');
+    }
+
 
     /**
      * Returns a base64 svg resource for the Weather Underground icon.

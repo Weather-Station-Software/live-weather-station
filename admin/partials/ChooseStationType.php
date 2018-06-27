@@ -85,6 +85,20 @@ $piou_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a Pioupiou se
 $piou_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'pioupiou', $dashboard);
 $piou_t = '_self';
 
+
+if (get_option('live_weather_station_bloomsky_connected')) {
+    $bloomsky_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a Bloomsky station to which you have access to.', 'live-weather-station'));
+    $bloomsky_l = lws_get_admin_page_url('lws-stations', 'form', 'add', 'Bloomsky', $dashboard);
+    $bloomsky_t = '_self';
+}
+else {
+    $bloomsky_s = addslashes(sprintf(__('To add a station of this type, you need to connect %s to your Bloomsky account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LWS_PLUGIN_NAME));
+    $bloomsky_l = lws_get_admin_page_url('lws-settings', null, 'services');
+    $bloomsky_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
+}
+
+
+
 ?>
 
 <div id="normal-sortables" class="meta-box-sortables ui-sortable" style="overflow: hidden;">
@@ -101,6 +115,7 @@ $piou_t = '_self';
                 <div style="flex:auto;padding:14px;"><img id="netatmo" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_netatmo_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="netatmohc" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_netatmo_hc_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="weatherflow" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_weatherflow_color_logo());?>" /></div>
+                <div style="flex:auto;padding:14px;"><img id="bloomsky" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_bloomsky_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="pioupiou" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_piou_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="loc" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_loc_color_logo());?>" /></div>
                 <?php if (LWS_OWM_READY) { ?>
@@ -145,6 +160,12 @@ $piou_t = '_self';
             });
             $("#pioupiou").click(function() {
                 window.open('<?php echo $piou_l; ?>', '<?php echo $piou_t; ?>');
+            });
+            $("#bloomsky").mouseover(function() {
+                $("#tip-text").html("<?php echo $bloomsky_s; ?>");
+            });
+            $("#bloomsky").click(function() {
+                window.open('<?php echo $bloomsky_l; ?>', '<?php echo $bloomsky_t; ?>');
             });
             $("#loc").mouseover(function() {
                 $("#tip-text").html("<?php echo $loc_s; ?>");
