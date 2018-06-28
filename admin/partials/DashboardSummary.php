@@ -23,6 +23,9 @@ if (REQUIREMENTS_OK) {
     if ((bool)get_option('live_weather_station_netatmo_connected') || (bool)get_option('live_weather_station_netatmohc_connected')) {
         $services[] = 'Netatmo';
     }
+    if (get_option('live_weather_station_bloomsky_connected')) {
+        $services[] = 'BloomSky';
+    }
     if (get_option('live_weather_station_owm_apikey') != '') {
         $services[] = 'OpenWeatherMap';
     }

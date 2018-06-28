@@ -56,7 +56,7 @@ class BSKYApiClient
      * @throws \Exception If $cache is neither false nor a valid callable extending bloomsky\Util\Cache.
      * @api
      */
-    public function __construct($fetcher = null, $cacheClass = false, $seconds = 600)
+    public function __construct($config=array(), $fetcher = null, $cacheClass = false, $seconds = 600)
     {
         if ($cacheClass !== false && !($cacheClass instanceof AbstractCache)) {
             throw new \Exception("The cache class must implement the FetcherInterface!");
@@ -65,7 +65,7 @@ class BSKYApiClient
             throw new \Exception("\$seconds must be numeric.");
         }
         if (!isset($fetcher)) {
-            $fetcher = (function_exists('curl_version')) ? new CurlFetcher() : new FileGetContentsFetcher();
+            $fetcher = (function_exists('curl_version')) ? new CurlFetcher($config) : new FileGetContentsFetcher();
         }
         if ($seconds == 0) {
             $cacheClass = false;
@@ -93,9 +93,9 @@ class BSKYApiClient
      * @return bool|string Returns false on failure and the fetched data in the format you specified on success.
      * @since 3.5.0
      */
-    public function getRawPublicStationData() {
+    public function getData() {
         $url = $this->buildUrl();
-        return $this->cacheOrFetchResult($url);
+        return json_decode($this->cacheOrFetchResult($url), true);
     }
 
     /**

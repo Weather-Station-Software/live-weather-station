@@ -75,6 +75,9 @@ class Stations extends Base {
             case LWS_PIOU_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_piou_icon('#666666')) . '" />';
                 break;
+            case LWS_BSKY_SID :
+                $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_bloomsky_icon('#666666')) . '" />';
+                break;
         }
         return $result;
     }
@@ -85,6 +88,11 @@ class Stations extends Base {
             case LWS_NETATMO_SID :
             case LWS_NETATMOHC_SID :
                 if (!(bool)get_option('live_weather_station_auto_manage_netatmo')) {
+                    $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
+                }
+                break;
+            case LWS_BSKY_SID :
+                if (!(bool)get_option('live_weather_station_auto_manage_bloomsky')) {
                     $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 }
                 break;

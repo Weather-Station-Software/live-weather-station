@@ -2404,8 +2404,8 @@ trait Generator {
         $models[] = 'Argent Data Systems - WS1';
         $models[] = 'Ambient Weather - WS-1000 Series';
         $models[] = 'Ambient Weather - WS-2000 Series';
-        $models[] = 'BloomSky - Storm';
         $models[] = 'BloomSky - Sky1';
+        $models[] = 'BloomSky - Sky1+Storm';
         $models[] = 'BloomSky - Sky2';
         $models[] = 'BloomSky - Sky2+Storm';
         $models[] = 'Campbell Scientific - CR1000 Series';

@@ -30,11 +30,27 @@ class StationInitiator {
     }
 
     /**
-     * Do the main job.
+     * Detect the BloomSky stations.
+     *
+     * @return array An array containing stations details.
      *
      * @since 3.6.0
      */
-    public function run(){
+    public function detect_stations(){
+        return $this->__get_stations();
+    }
+
+    /**
+     * Do the main job.
+     *
+     * @param boolean $auto_init Optional. Force creation of stations.
+     *
+     * @since 3.6.0
+     */
+    public function run($auto_init=false){
+        if ($auto_init) {
+            $this->__get_stations(true);
+        }
         $this->__run('Backend');
     }
 }

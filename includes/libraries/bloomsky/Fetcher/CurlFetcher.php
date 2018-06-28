@@ -14,17 +14,17 @@ class CurlFetcher implements FetcherInterface
     /**
      * @var array The Curl options to use. 
      */
-    private $curlOptions;
+    private $curlHeader;
 
     /**
      * Create a new CurlFetcher instance.
      * 
-     * @param array $curlOptions The Curl options to use. See http://php.net/manual/de/function.curl-setopt.php
+     * @param array $curlHeader The Curl header to use. See http://php.net/manual/de/function.curl-setopt.php
      * for a list of available options.
      */
-    public function __construct($curlOptions = array())
+    public function __construct($curlHeader = array())
     {
-        $this->curlOptions = $curlOptions;
+        $this->curlHeader = $curlHeader;
     }
     
     /**
@@ -37,11 +37,13 @@ class CurlFetcher implements FetcherInterface
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, get_option('live_weather_station_collection_http_timeout'));
         curl_setopt($ch, CURLOPT_USERAGENT, LWS_PLUGIN_AGENT);
-        curl_setopt_array($ch, $this->curlOptions);
-        
+        curl_setopt($ch, CURLOPT_HTTPHEADER,$this->curlHeader);
         $content = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
-
+        if ($httpcode != 200) {
+            throw new \Exception((string)$content, $httpcode);
+        }
         return $content;
     }
 }

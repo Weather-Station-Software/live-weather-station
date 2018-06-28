@@ -7064,13 +7064,13 @@ trait Output {
                 break;
             // SOLAR
             case 'irradiance':
-                $result = '<i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'sign-in-alt':'sign-in') . ' %2$s fa-rotate-90" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-' . (LWS_FA5?'sign-in-alt':'sign-in') . ' %2$s fa-rotate-90" aria-hidden="true"></i>';
                 break;
             case 'uv_index':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-horizon-alt" aria-hidden="true"></i>';
                 break;
             case 'illuminance':
-                $result = '<i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down':'fa-long-arrow-down') . ' %2$s fa-rotate-30" aria-hidden="true"></i>';
+                $result = '<i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down':'fa-long-arrow-down') . ' %2$s" aria-hidden="true"></i>';
                 break;
             // SOIL
             case 'soil_temperature':

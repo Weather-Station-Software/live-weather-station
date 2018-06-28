@@ -29,6 +29,20 @@ trait Handling {
     private static $fake_modulex_cpt ='cx';
 
     /**
+     * Compute the id for a Bloomsky station.
+     *
+     * @param integer $hdid The hardware id of the station
+     * @return string The unique id of the station.
+     *
+     * @since 3.6.0
+     */
+    public static function compute_unique_bsky_id($hdid) {
+        $st = str_pad($hdid, 12, '0', STR_PAD_LEFT);
+        $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
+        return strtolower($result);
+    }
+
+    /**
      * Generate a unique id for a OWM station.
      *
      * @param integer $guid The numeric id of the station

@@ -1,4 +1,11 @@
 
+#3.6.0 / XXXXXX, 2018
+
+* New: .
+* Improvement: .
+* Bug fix: icons for illuminance and irradiance are wrongly rendered in some screens.
+* Bug fix: when canceling the addition of a Netatmo station or Healthy Home Coach, the message shown is wrong.
+
 #3.5.5 / June 25th, 2018
 
 * Improvement: links in news feed are now identified with a language mark.

@@ -41,13 +41,19 @@ jQuery(document).ready( function($) {
         $('#span-sync').show();
     });
 
-    $('#add-netatmo .button').click( function() {
+    $('#add-netatmo .button-primary').click( function() {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });
         $('#span-sync').show();
     });
 
-    $('#add-netatmohc .button').click( function() {
+    $('#add-bloomsky .button-primary').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#span-sync').show();
+    });
+
+    $('#add-netatmohc .button-primary').click( function() {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });
         $('#span-sync').show();
