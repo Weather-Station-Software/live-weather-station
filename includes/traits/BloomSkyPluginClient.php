@@ -8,6 +8,8 @@ use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
 use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
 use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\Quota\Quota;
+use WeatherStation\System\HTTP\Handling as HTTP;
+use WeatherStation\Data\ID\Handling as IDManager;
 
 /**
  * Netatmo client for Weather Station plugin.
@@ -19,7 +21,7 @@ use WeatherStation\System\Quota\Quota;
  */
 trait Client {
 
-    use BaseClient;
+    use BaseClient, HTTP, IDManager;
 
 
     /**
@@ -28,70 +30,45 @@ trait Client {
      * @since 3.6.0
      */
     public function authentication($apikey) {
-        $this->last_bloomsky_error = '';
-        $result = $this->get_datas(false, $apikey);
-        /*try
-        {
-            Quota::verify($this->service_name, 'GET');
-            $tokens = $this->bloomsky_client->getAccessToken();
+        $this->get_datas(false, $apikey);
+        if ($this->last_bloomsky_error == '') {
             update_option('live_weather_station_bloomsky_key', $apikey);
             update_option('live_weather_station_bloomsky_connected', 1);
-
+            return true;
         }
-        catch (\Exception $ex) {
+        else {
             update_option('live_weather_station_bloomsky_key', '');
             update_option('live_weather_station_bloomsky_connected', 0);
             return false;
-        }*/
-
-        return true;
+        }
     }
 
     /**
      * Get station's datas.
      *
      * @param boolean $store Optional. Store the data.
-     * @param string|boolean Optional. New API key if needed.
+     * @param string|boolean $apikey Optional. New API key if needed.
      *
-     * @return array The netatmo collected datas.
+     * @return array The bloomsky collected datas.
      * @since 3.6.0
      */
     public function get_datas($store=true, $apikey=false) {
-        /*$refresh_token = get_option('live_weather_station_netatmo_refresh_token');
-        $access_token = get_option('live_weather_station_netatmo_access_token');
-        $this->last_netatmo_error = '';
-        $this->last_netatmo_warning = '';
-        if ($refresh_token != '' && $access_token != '') {
-            if (!isset($this->netatmo_client)) {
-                $config = array();
-                $config['client_id'] = $this->client_id;
-                $config['client_secret'] = $this->client_secret;
-                $config['scope'] = $this->netatmo_scope;
-                $config['refresh_token'] = $refresh_token;
-                $config['access_token'] = $access_token;
-                $this->netatmo_client = new NAWSApiClient($config);
+        $currentkey = get_option('live_weather_station_bloomsky_key');
+        $this->last_bloomsky_error = '';
+        $this->bloomsky_datas = array();
+        if ($currentkey != '' || $apikey) {
+            if ($apikey) {
+                $currentkey = $apikey;
             }
+            $header = array();
+            $header[] = 'Authorization: ' . $currentkey;
+            $this->bloomsky_client = new BSKYApiClient($header);
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
-                    $this->netatmo_datas = $this->netatmo_client->getData();
-                    $this->normalize_netatmo_datas();
+                    $this->bloomsky_datas = $this->bloomsky_client->getData();
+                    $this->normalize_bloomsky_datas();
                     if ($store) {
-                        $this->store_netatmo_datas($this->get_all_netatmo_stations());
-                    }
-                    update_option('live_weather_station_netatmo_refresh_token', $this->netatmo_client->getRefreshToken());
-                    update_option('live_weather_station_netatmo_access_token', $this->netatmo_client->getAccessToken()['access_token']);
-                    update_option('live_weather_station_netatmo_connected', 1);
-                    if (isset($config)) {
-                        if (array_key_exists('access_token', $config)) {
-                            if ($config['access_token'] != $this->netatmo_client->getAccessToken()['access_token']) {
-                                Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Access token has been regenerated for following scope: '.$this->netatmo_client->getVariable('scope'));
-                            }
-                        }
-                        if (array_key_exists('refresh_token', $config)) {
-                            if ($config['refresh_token'] != $this->netatmo_client->getRefreshToken()) {
-                                Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Refresh token has been updated for following scope: '.$this->netatmo_client->getVariable('scope'));
-                            }
-                        }
+                        $this->store_bloomsky_datas($this->get_all_bsky_stations());
                     }
                     Logger::notice($this->facility, $this->service_name, null, null, null, null, 0, 'Personal weather stations data retrieved.');
                 }
@@ -102,31 +79,19 @@ trait Client {
             }
             catch (\Exception $ex) {
                 switch ($ex->getCode()) {
-                    case 2:
-                    case 23:
-                    case 32:
-                        $this->last_netatmo_error = __('Wrong credentials. Please, verify your login and password.', 'live-weather-station');
-                        Logger::critical('Authentication', $this->service_name, null, null, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your login and password.');
-                        break;
-                    case 5:
-                    case 22:
-                        $this->last_netatmo_error = __('Application deactivated. Please contact support.', 'live-weather-station');
-                        Logger::alert($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Application deactivated. Please contact support.');
-                        break;
-                    case 20:
-                        $this->last_netatmo_error = __('Too many users with this IP.', 'live-weather-station');
-                        Logger::error($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Too many users with this IP.');
+                    case 401:
+                        $this->last_bloomsky_error = __('Wrong credentials. Please, verify your API key.', 'live-weather-station');
+                        Logger::critical('Authentication', $this->service_name, null, null, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your API key.');
                         break;
                     default:
-                        $this->last_netatmo_warning = __('Temporary unable to contact Netatmo servers. Retry will be done shortly.', 'live-weather-station');
-                        Logger::warning($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Temporary unable to contact Netatmo servers. Retry will be done shortly.');
+                        $this->last_bloomsky_warning = __('Temporary unable to contact BloomSky servers. Retry will be done shortly.', 'live-weather-station');
+                        Logger::warning($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), $ex->getMessage());
                 }
-                Logger::critical($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), $ex->getMessage());
+                Logger::critical($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), self::get_http_status($ex->getCode()) . ' => ' . $ex->getMessage());
                 return array();
             }
         }
-        return $this->netatmo_datas;*/
-        return array();
+        return $this->bloomsky_datas;
     }
 
     /**
@@ -139,11 +104,11 @@ trait Client {
      */
     protected function __get_stations($store=false){
         $result = array();
-        /*try {
+        try {
             $this->get_datas(false);
-            $datas = $this->netatmo_datas ;
-            foreach($datas['devices'] as $device){
-                $result[] = array('device_id' => $device['_id'], 'station_name' => $device['station_name'], 'installed' => false);
+            $datas = $this->bloomsky_datas ;
+            foreach($datas as $station){
+                $result[] = array('device_id' => self::compute_unique_bsky_id($station['DeviceID']), 'station_name' => $station['DeviceName'], 'installed' => false);
             }
             if ($store) {
                 foreach ($result as &$station) {
@@ -157,7 +122,7 @@ trait Client {
                 }
             }
             else {
-                foreach ($this->get_all_netatmo_stations() as $item) {
+                foreach ($this->get_all_bsky_stations() as $item) {
                     foreach ($result as &$station) {
                         if ($item['station_id'] == $station['device_id']) {
                             $station['installed'] = true;
@@ -170,7 +135,7 @@ trait Client {
         catch (\Exception $ex) {
             Logger::critical('Backend', $this->service_name, null, null, null, null, $ex->getCode(), 'Error while detecting stations: ' . $ex->getMessage());
             return array();
-        }*/
+        }
         return $result;
     }
 

@@ -5,6 +5,7 @@ namespace WeatherStation\SDK\BloomSky\Plugin;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\SDK\BloomSky\BSKYApiClient;
 use WeatherStation\Data\Dashboard\Handling as Dashboard_Manipulation;
+use WeatherStation\Data\Unit\Conversion;
 
 
 /**
@@ -17,9 +18,12 @@ use WeatherStation\Data\Dashboard\Handling as Dashboard_Manipulation;
  */
 trait BaseClient {
 
-    use Dashboard_Manipulation;
+    use Dashboard_Manipulation, Conversion;
 
     public $last_bloomsky_error = '';
+
+    protected $bloomsky_client = null;
+    protected $bloomsky_datas = array();
 
 
     protected $facility = 'Weather Collector';
@@ -62,6 +66,105 @@ trait BaseClient {
      * @since 3.6.0
      */
     private function normalize_bloomsky_datas() {
+        $result = array();
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($this->bloomsky_datas, true));
+        foreach($this->bloomsky_datas as $station) {
+            if (is_array($station)) {
+                $dat = array();
+                $device_model = '';
+                if (array_key_exists('DeviceName', $station)) {
+                    $dat['device_name'] = $station['DeviceName'];
+                }
+                else {
+                    $dat['device_name'] = '< NO NAME >';
+                }
+                if (array_key_exists('DeviceID', $station)) {
+                    $dat['device_id'] = $station['DeviceID'];
+                }
+                else {
+                    $dat['device_id'] = '00:00:00:00:00:00';
+                }
+                if (array_key_exists('Data', $station)) {
+                    $data = $station['Data'];
+                    if (array_key_exists('TS', $data)) {
+                        $dat['time_utc'] = $data['TS'];
+                    }
+                    if (array_key_exists('Luminance', $data)) {
+                        $dat['illuminance'] = $data['Luminance'];
+                    }
+                    if (array_key_exists('Temperature', $data)) {
+                        $dat['temperature'] = $data['Temperature'];
+                    }
+                    if (array_key_exists('Humidity', $data)) {
+                        $dat['humidity'] = $data['Humidity'];
+                    }
+                    if (array_key_exists('Pressure', $data)) {
+                        $dat['pressure'] = $data['Pressure'];
+                    }
+                    if (array_key_exists('UVIndex', $data)) {
+                        $dat['uv_index'] = $data['UVIndex'];
+                    }
+                    if (array_key_exists('ImageTS', $data)) {
+                        $dat['TS_image'] = $data['ImageTS'];
+                    }
+                    if (array_key_exists('DeviceType', $data)) {
+                        $device_model = ucfirst($data['DeviceType']);
+                    }
+                }
+                if (array_key_exists('Storm', $station)) {
+                    $data = $station['Storm'];
+                    if ($device_model == '') {
+                        $device_model = 'Storm';
+                    }
+                    else {
+                        $device_model .= '+Storm';
+                    }
+                    if (array_key_exists('UVIndex', $data)) {
+                        $dat['uv_index'] = $data['UVIndex'];
+                    }
+                    if (array_key_exists('WindDirection', $data)) {
+                        $dat['windangle'] = $this->get_reverse_wind_angle_text($data['WindDirection']);
+                        $dat['gustangle'] = $dat['windangle'];
+                    }
+                    if (array_key_exists('SustainedWindSpeed', $data)) {
+                        $dat['windstrength'] = $data['SustainedWindSpeed'];
+                    }
+                    if (array_key_exists('RainDaily', $data)) {
+                        $dat['rain_day_aggregated'] = $data['RainDaily'];
+                    }
+                    if (array_key_exists('WindGust', $data)) {
+                        $dat['guststrength'] = $data['WindGust'];
+                    }
+                    if (array_key_exists('RainRate', $data)) {
+                        $dat['rain'] = $data['RainRate'];
+                    }
+                }
+                if ($device_model != '') {
+                    $dat['device_model'] = $device_model;
+                }
+
+
+
+
+
+
+
+                if (count($dat) > 2) {
+                    $result[] = $dat;
+                }
+                else {
+                    Logger::warning($this->facility, $this->service_name, $dat['device_id'], $dat['device_name'], null, null, 900, 'No module found for this station.');
+                }
+
+            }
+
+
+        }
+
+
+
+
+
         /*$datas = $this->netatmo_datas ;
         $d = $datas;
         unset($d['devices']);
@@ -145,5 +248,9 @@ trait BaseClient {
 
         }
         $this->netatmo_datas = $datas;*/
+
+
+
+        $this->bloomsky_datas = $result;
     }
 }

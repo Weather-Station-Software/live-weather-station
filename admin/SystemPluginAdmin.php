@@ -7,7 +7,7 @@ use WeatherStation\SDK\Clientraw\Plugin\StationCollector as ClientrawCollector;
 use WeatherStation\SDK\Realtime\Plugin\StationCollector as RealtimeCollector;
 use WeatherStation\SDK\WeatherFlow\Plugin\StationCollector as WeatherFlowCollector;
 use WeatherStation\SDK\Pioupiou\Plugin\StationCollector as PioupiouCollector;
-use WeatherStation\SDK\Bloomsky\Plugin\StationCollector as BloomskyCollector;
+use WeatherStation\SDK\BloomSky\Plugin\StationCollector as BloomskyCollector;
 use WeatherStation\SDK\Stickertags\Plugin\StationCollector as StickertagsCollector;
 use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Environment\Manager;
@@ -41,7 +41,7 @@ use WeatherStation\SDK\Realtime\Plugin\StationInitiator as Realtime_Station_Init
 use WeatherStation\SDK\Stickertags\Plugin\StationInitiator as Stickertags_Station_Initiator;
 use WeatherStation\SDK\WeatherFlow\Plugin\StationInitiator as WeatherFlow_Station_Initiator;
 use WeatherStation\SDK\Pioupiou\Plugin\StationInitiator as Pioupiou_Station_Initiator;
-use WeatherStation\SDK\Bloomsky\Plugin\StationInitiator as Bloomsky_Station_Initiator;
+use WeatherStation\SDK\BloomSky\Plugin\StationInitiator as Bloomsky_Station_Initiator;
 use WeatherStation\System\Device\Manager as DeviceManager;
 
 
@@ -72,7 +72,7 @@ class Admin {
 	private $reload = false;
 
     private $settings = array('general', 'services', 'display', 'thresholds', 'history', 'system');
-    private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground');
+    private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground', 'Bloomsky');
     private $service = 'Backend';
 
     private $_station = null;
@@ -990,6 +990,7 @@ class Admin {
         }
         if ($section == 'system') {
             $save_auto = get_option('live_weather_station_auto_manage_netatmo');
+            $save_auto_bsky = get_option('live_weather_station_auto_manage_bloomsky');
             $analytics = get_option('live_weather_station_show_analytics');
             $cutoff = get_option('live_weather_station_analytics_cutoff');
             $cron = get_option('live_weather_station_cron_speed');
@@ -1027,6 +1028,9 @@ class Admin {
                 if (!$save_auto && get_option('live_weather_station_auto_manage_netatmo')) {
                     $this->get_netatmo(true);
                     $this->get_netatmohc(true);
+                }
+                if (!$save_auto_bsky && get_option('live_weather_station_auto_manage_bloomsky')) {
+                    $this->get_bloomsky(true);
                 }
                 if ($analytics != get_option('live_weather_station_show_analytics')) {
                     $this->reload = true;
@@ -1417,6 +1421,14 @@ class Admin {
                             }
                             if (array_key_exists('add-netatmohc', $_POST)) {
                                 $this->add_netatmo($id, true);
+                                if ($dashboard) {
+                                    $view = 'dashboard' ;
+                                }
+                            }
+                            break;
+                        case 'bloomsky':
+                            if (array_key_exists('add-bloomsky', $_POST)) {
+                                $this->add_bloomsky($id);
                                 if ($dashboard) {
                                     $view = 'dashboard' ;
                                 }
@@ -2018,6 +2030,10 @@ class Admin {
                     $this->disconnect_wug();
                     $result = true;
                 }
+                if ($service == 'Bloomsky') {
+                    $this->disconnect_bloomsky();
+                    $result = true;
+                }
                 if ($result) {
                     $message = __('%s is now disconnected from %s.', 'live-weather-station');
                     $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . $service . '</em>');
@@ -2031,7 +2047,6 @@ class Admin {
                     Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to correctly disconnect ' . LWS_PLUGIN_NAME . ' from '. $service . '.');
                 }
             }
-
             if ($action == 'reconnect') {
                 if ($service == 'Netatmo') {
                     $this->disconnect_netatmo(false);
@@ -2047,6 +2062,10 @@ class Admin {
                 }
                 if ($service == 'WeatherUnderground') {
                     $this->disconnect_wug(false);
+                    $result = true;
+                }
+                if ($service == 'Bloomsky') {
+                    $this->disconnect_bloomsky(false);
                     $result = true;
                 }
                 if ($result) {
@@ -2163,6 +2182,8 @@ class Admin {
         $n->run();
         $n = new WeatherFlow_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
         $n->run();
+        $n = new Bloomsky_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run();
         $this->get_current_and_pollution();
     }
 
@@ -2174,6 +2195,18 @@ class Admin {
      */
     private function get_netatmo($auto_init=false) {
         $n = new Netatmo_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run($auto_init);
+        $this->get_current_and_pollution();
+    }
+
+    /**
+     * First getting of data for Netatmo station.
+     *
+     * @param boolean $auto_init Optional. Force creation of stations.
+     * @since 3.0.0
+     */
+    private function get_bloomsky($auto_init=false) {
+        $n = new Bloomsky_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
         $n->run($auto_init);
         $this->get_current_and_pollution();
     }
@@ -2284,13 +2317,27 @@ class Admin {
         if ($bloomsky->authentication($apikey)) {
             Logger::notice('Authentication', 'Bloomsky', null, null, null, null, null, 'Correctly connected to service.');
             if (get_option('live_weather_station_auto_manage_bloomsky')) {
-                //$this->get_bloomsky(true);
+                $this->get_bloomsky(true);
             }
         }
         else {
             Logger::error('Authentication', 'Bloomsky', null, null, null, null, null, 'Unable to connect to service.');
         }
         return $bloomsky->last_bloomsky_error;
+    }
+
+    /**
+     * Disconnect from an Bloomsky API key.
+     *
+     * @since 3.6.0
+     */
+    protected function disconnect_bloomsky($delete=true) {
+        self::init_bloomsky_options();
+        Logger::notice('Authentication', 'BloomSky', null, null, null, null, null, 'Correctly disconnected from service.');
+        if ($delete) {
+            $this->clear_all_bsky_stations();
+            Logger::notice('Backend', 'BloomSky', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
+        }
     }
 
     /**
@@ -2497,6 +2544,55 @@ class Admin {
         else {
             add_settings_error('lws_nonce_error', 403, 'No station to add.', 'error');
             Logger::error('Security', 'Netatmo', null, null, null, null, null, 'An attempt was made to add a station without ID.');
+        }
+    }
+
+    /**
+     * Add a Bloomsky station.
+     *
+     * @param string $device_id The id of the station.
+     * @since 3.0.0
+     */
+    protected function add_bloomsky($device_id=null) {
+        if ($device_id) {
+            $n = new Bloomsky_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+            $nonce = 'add-bloomsky';
+            $station_type = LWS_BSKY_SID;
+            $stations = $n->detect_stations();
+            $station['station_name'] = '<unnamed>';
+            $station['station_type'] = $station_type;
+            $station['station_id'] = $device_id;
+            foreach ($stations as $item) {
+                if ($item['device_id'] == $device_id) {
+                    $station = $item;
+                }
+            }
+            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), $nonce)) {
+                if ($this->insert_ignore_stations_table($device_id, $station_type)) {
+                    $message = __('The station %s has been correctly added.', 'live-weather-station');
+                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    add_settings_error('lws_nonce_success', 200, $message, 'updated');
+                    Logger::notice($this->service, 'Bloomsky', $device_id, $station['station_name'], null, null, null, 'Station added.');
+                    $this->get_bloomsky();
+                }
+                else {
+                    $message = __('Unable to add the station %s.', 'live-weather-station');
+                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    add_settings_error('lws_nonce_error', 403, $message, 'error');
+                    Logger::error($this->service, 'Bloomsky', $device_id, $station['station_name'], null, null, null, 'Unable to add this station.');
+                }
+            }
+            else {
+                $message = __('Unable to add the station %s.', 'live-weather-station');
+                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                add_settings_error('lws_nonce_error', 403, $message, 'error');
+                Logger::critical('Security', 'Bloomsky', $device_id, $station['station_name'], null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
+                Logger::error($this->service, 'Bloomsky', $device_id, $station['station_name'], null, null, 0, 'It had not been possible to securely add this station.');
+            }
+        }
+        else {
+            add_settings_error('lws_nonce_error', 403, 'No station to add.', 'error');
+            Logger::error('Security', 'Bloomsky', null, null, null, null, null, 'An attempt was made to add a station without ID.');
         }
     }
 
