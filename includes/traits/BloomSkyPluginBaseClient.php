@@ -110,6 +110,9 @@ trait BaseClient {
                     if (array_key_exists('DeviceType', $data)) {
                         $device_model = ucfirst($data['DeviceType']);
                     }
+                    if (array_key_exists('Voltage', $data)) {
+                        $dat['battery'] = $data['Voltage'];
+                    }
                 }
                 if (array_key_exists('Storm', $station)) {
                     $data = $station['Storm'];
@@ -142,7 +145,23 @@ trait BaseClient {
                 if ($device_model != '') {
                     $dat['device_model'] = $device_model;
                 }
-
+                if (array_key_exists('FullAddress', $data)) {
+                    if (strlen($data['FullAddress']) > 1) {
+                        $dat['place']['country'] = strtoupper(substr($data['FullAddress'], -2));
+                    }
+                }
+                if (array_key_exists('CityName', $data)) {
+                    $dat['place']['city'] = $data['CityName'];
+                }
+                if (array_key_exists('ALT', $data)) {
+                    $dat['place']['altitude'] = (integer)$data['ALT'];
+                }
+                if (array_key_exists('LON', $data)) {
+                    $dat['place']['location'][0] = (integer)$data['LON'];
+                }
+                if (array_key_exists('LAT', $data)) {
+                    $dat['place']['location'][1] = (integer)$data['LAT'];
+                }
 
 
 
