@@ -71,6 +71,7 @@ trait BaseClient {
     private function normalize_netatmo_datas() {
         $datas = $this->netatmo_datas ;
         $d = $datas;
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($d, true));
         unset($d['devices']);
         Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($d, true));
         $datas['timeshift'] = 0;
