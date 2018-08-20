@@ -144,6 +144,9 @@ class Frontend {
             }
         }
         $result = $this->graph_query($this->graph_prepare($attributes), true);
+        if (!$result) {
+            $result = '[]';
+        }
         exit ($result['values']);
     }
 

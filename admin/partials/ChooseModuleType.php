@@ -29,20 +29,20 @@ foreach ($modules as $module) {
         <?php } else { ?>
             <h3 style="border-bottom: 1px solid #EEE;cursor:default;"><span><?php echo sprintf(__('The type of %s currently selected is %s', 'live-weather-station'), $type, '<em>' . $name . '</em>');?>&hellip;</span></h3>
         <?php } ?>
-        <div style="width: 100%;text-align: center;padding: 0px;" class="inside">
-            <div style="display:flex;flex-direction:row;flex-wrap:wrap;">
+        <div style="width: 100%;text-align: center;padding: 0px;margin-bottom: 0px;" class="inside">
+            <div style="padding: 0px 16px 0px 0px;display:flex;flex-direction:row;flex-wrap:wrap;justify-content: center;align-items: center;align-content: center;">
                 <style>
+                    .container-actionable {flex:auto;margin: 16px;width: 40px;height: 40px;}
+                    .actionable {width:40px;height:40px;padding:10px 10px 13px 10px;font-size:30px;border-radius:6px;cursor:pointer; -moz-transition: all .5s ease-in; -o-transition: all .5s ease-in; -webkit-transition: all .5s ease-in; transition: all .5s ease-in; background: transparent;border:1px solid transparent;}
                     .actionable-selected {border-radius:6px !important;background: <?php echo $colors['background']; ?> !important;border:1px solid <?php echo $colors['border']; ?> !important;}
                     .actionable-selected:hover {border-radius:6px;cursor:pointer; -moz-transition: all .2s ease-in; -o-transition: all .2s ease-in; -webkit-transition: all .2s ease-in; transition: all .2s ease-in; opacity: 0.6 !important;}
                     .actionable:hover {border-radius:6px;cursor:pointer; -moz-transition: all .2s ease-in; -o-transition: all .2s ease-in; -webkit-transition: all .2s ease-in; transition: all .2s ease-in; background: #f5f5f5;border:1px solid #e0e0e0;}
-                    .actionable {width:40px;height:40px;font-size:30px;padding:16px 10px 4px 10px;border-radius:6px;cursor:pointer; -moz-transition: all .5s ease-in; -o-transition: all .5s ease-in; -webkit-transition: all .5s ease-in; transition: all .5s ease-in; background: transparent;border:1px solid transparent;}
+                    <?php if (!LWS_FA5) { ?>
+                    #yearly-astream, #daily-astream {margin-top: 12px !important;}
+                    <?php } ?>
                 </style>
                 <?php foreach ($modules as $module) { ?>
-                    <?php if ($module->is_selected()) { ?>
-                        <div style="flex:auto;"><span style="font-size:30px;color:<?php echo $colors['text']; ?>;" id="<?php echo $module->get_id(); ?>" class="actionable actionable-selected <?php echo $module->get_icon(); ?>"><?php echo $module->get_icon_index() != '' ? '<span style="font-size:12px;">' . $module->get_icon_index() . '</span>':''; ?></span></div>
-                    <?php } else { ?>
-                        <div style="flex:auto;"><span style="font-size:30px;color:<?php echo $module->get_icon_color(); ?>;" id="<?php echo $module->get_id(); ?>" class="actionable <?php echo $module->get_icon(); ?>"><?php echo $module->get_icon_index() != '' ? '<span style="font-size:12px;">' . $module->get_icon_index() . '</span>':''; ?></span></div>
-                    <?php } ?>
+                    <div id="<?php echo $module->get_id(); ?>" class="container-actionable"><span class="actionable<?php echo $module->is_selected()?' actionable-selected':''; ?>"><span style="color:<?php echo $module->is_selected()?$colors['text']:$module->get_icon_color(); ?>;" class="<?php echo $module->get_icon(); ?>"><?php echo $module->get_icon_index() != '' ? '<span style="font-size:12px;">' . $module->get_icon_index() . '</span>':''; ?></span></span></div>
                 <?php } ?>
             </div>
         </div>

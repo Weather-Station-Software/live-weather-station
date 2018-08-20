@@ -301,6 +301,9 @@ trait Query {
                     case 'namodule1': // Outdoor module
                     case 'namodule3': // Rain gauge
                     case 'namodule2': // Wind gauge
+                    case 'namodule5': // Solar module
+                    case 'namodule6': // Soil module
+                    case 'namodule7': // Thunderstorm module
                         $result[$line['device_id']]['comp_ext'] = $result[$line['device_id']]['comp_ext'] + 1;
                         break;
                     case 'namodule4': // Additional indoor module
@@ -956,16 +959,17 @@ trait Query {
      */
     protected function get_extended_station_informations_by_station_id($station_id) {
         $result = $this->get_station_informations_by_station_id($station_id);
-        $modules = DeviceManager::get_modules_details($station_id);
-        $result['modules_names'] = array();
-        foreach ($modules as $module) {
-            if ($module['screen_name'] == '') {
-                $result['modules_names'][$module['module_id']] = $module['module_name'];
+        if (count($result) !== 0) {
+            $modules = DeviceManager::get_modules_details($station_id);
+            $result['modules_names'] = array();
+            foreach ($modules as $module) {
+                if ($module['screen_name'] == '') {
+                    $result['modules_names'][$module['module_id']] = $module['module_name'];
+                }
+                else {
+                    $result['modules_names'][$module['module_id']] = $module['screen_name'];
+                }
             }
-            else {
-                $result['modules_names'][$module['module_id']] = $module['screen_name'];
-            }
-
         }
         return $result ;
     }

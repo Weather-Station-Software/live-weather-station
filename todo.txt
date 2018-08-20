@@ -81,11 +81,17 @@ Fully delete a station in fast collect mode
 
 
 ***********************
-* 3.5.x               *
+* 3.6.x               *
 ***********************
 
 Station compatibility list
 
 Chart for station comparison
+
+Test parser on website
+
+Module names in stations view
+
+style : area and line opacity
 
 

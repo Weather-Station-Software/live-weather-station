@@ -6,32 +6,23 @@
  * @since 3.0.0
  */
 
-$tech = get_option('live_weather_station_show_technical');
-$main = ($module['module_type'] == 'NAMain');
-$hw = (strpos($module['module_type'], 'AModule') == 1);
-$module_icn = $this->output_iconic_value(0, 'module', false, false, 'style="color:#999"', 'fa-lg');
+use WeatherStation\System\Device\Manager as DeviceManager;
 
+$tech = get_option('live_weather_station_show_technical');
+$module_icn = $this->output_iconic_value(0, 'module', false, false, 'style="color:#999"', 'fa-lg');
+$station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, 'style="color:#999"', 'fa-lg');
 
 ?>
 <?php if ($static_display) { ?>
     <div class="activity-block" style="padding-bottom: 0px;padding-top: 0px;">
         <div style="margin-bottom: 10px;">
-            <span style="<?php echo($main||$hw?'width:50%;float: left;':'width:100%;'); ?>;cursor: default;"><?php echo $module_icn; ?>&nbsp;<?php echo $module['module_type_name']; ?></span>
-            <?php if (array_key_exists('battery', $module) && array_key_exists('signal', $module)) { ?>
-                <?php if ($main) { ?>
-                        <span style="width:25%;float: left;cursor: default;"><?php echo $module['battery_icn']; ?>&nbsp;<?php echo $module['battery_txt']; ?></span>
-                        <span style="width:25%;cursor: default;"><?php echo $module['signal_icn']; ?>&nbsp;<?php echo $module['signal_txt']; ?></span>
-                <?php } ?>
-                <?php if ($hw) { ?>
-                    <span style="width:25%;float: left;cursor: default;"><?php echo $module['battery_icn']; ?>&nbsp;<?php echo $module['battery_txt']; ?></span>
-                    <span style="width:25%;cursor: default;"><?php echo $module['signal_icn']; ?>&nbsp;<?php echo $module['signal_txt']; ?></span>
-                <?php } ?>
-            <?php } else { ?>
-                <?php if ($main || $hw) { ?>
-                    <span style="width:25%;float: left;cursor: default;">&nbsp;</span>
-                    <span style="width:25%;cursor: default;">&nbsp;</span>
-                <?php } ?>
-            <?php } ?>
+            <span style="width:50%;float: left;cursor: default;"><?php echo $module_icn; ?>&nbsp;<?php echo $module['module_type_name']; ?></span>
+            <span style="width:25%;float: left;cursor: default;"><?php echo $module['battery_icn']; ?>&nbsp;<?php echo $module['battery_txt']; ?></span>
+            <span style="width:25%;cursor: default;"><?php echo $module['signal_icn']; ?>&nbsp;<?php echo $module['signal_txt']; ?></span>
+        </div>
+        <div style="margin-bottom: 10px;">
+            <span style="width:100%;"><?php echo $station_name_icn; ?>&nbsp;<?php echo $module['self_name']; ?></span>
+            <span style="color:silver"> (<?php echo $module['self_visibility']; ?>)</span>
         </div>
         <?php if (array_key_exists('last_refresh', $module)) { ?>
             <div style="margin-bottom: 10px;">
@@ -40,7 +31,7 @@ $module_icn = $this->output_iconic_value(0, 'module', false, false, 'style="colo
         <?php } ?>
     </div>
 
-    <?php if ($hw && $tech) { ?>
+    <?php if (DeviceManager::is_hardware($module['module_type']) && $tech && ($module['module_type'] !== 'NAMain')) { ?>
     <div class="activity-block" style="padding-bottom: 0px;">
         <?php if (array_key_exists('last_seen', $module)) { ?>
             <div style="margin-bottom: 10px;">
@@ -60,7 +51,7 @@ $module_icn = $this->output_iconic_value(0, 'module', false, false, 'style="colo
     </div>
     <?php } ?>
 
-    <?php if ($main && $tech) { ?>
+    <?php if (($module['module_type'] == 'NAMain') && $tech) { ?>
         <div class="activity-block" style="padding-bottom: 0px;">
             <?php if (array_key_exists('last_seen', $module)) { ?>
                 <div style="margin-bottom: 10px;">

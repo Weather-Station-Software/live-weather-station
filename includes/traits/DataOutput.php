@@ -45,7 +45,7 @@ trait Output {
         'equivalent_temperature', 'potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
         'partial_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 'soil_temperature', 'leaf_wetness',
         'moisture_content', 'moisture_tension', 'evapotranspiration', 'strike_count', 'strike_instant',
-        'strike_distance', 'strike_bearing', 'visibility');
+        'strike_distance', 'strike_bearing', 'visibility', 'picture', 'video');
     private $not_showable_measurements = array('battery', 'firmware', 'signal', 'loc_timezone', 'loc_altitude',
         'loc_latitude', 'loc_longitude', 'last_seen', 'last_refresh', 'first_setup', 'last_upgrade', 'last_setup',
         'sunrise_c','sunrise_n','sunrise_a', 'sunset_c','sunset_n', 'sunset_a', 'day_length_c', 'day_length_n',
@@ -176,7 +176,7 @@ trait Output {
      *
      * @param array $attributes The type of values queried.
      * @param boolean $json The result must json encoded.
-     * @return array The values.
+     * @return boolean|array The values or false if station is not found.
      * @since 3.4.0
      */
     public function graph_query($attributes, $json=false) {
@@ -282,6 +282,9 @@ trait Output {
                     global $wpdb;
                     // Get extended station information
                     $station = $this->get_extended_station_informations_by_station_id($station_id);
+                    if (count($station) === 0) {
+                        return false;
+                    }
 
                     // Compute date limits
                     if ($mode == 'daily') {
@@ -2551,6 +2554,9 @@ trait Output {
 
         // Queries...
         $values = $this->graph_query($value_params, true);
+        if (!$values) {
+            return __('Malformed shortcode. Please verify it!', 'live-weather-station');
+        }
         $domain = $this->graph_domain($values, $valuescale);
         $time_format = $this->graph_format($values, $mode, $period_duration);
         $prop = $this->graph_template($_attributes['template']);
@@ -7123,6 +7129,12 @@ trait Output {
             case 'historical':
                 $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-history" aria-hidden="true"></i>';
                 break;
+            case 'picture':
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-image" aria-hidden="true"></i>';
+                break;
+            case 'video':
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-film" aria-hidden="true"></i>';
+                break;
             default:
                 $result = '<i %1$s class="' . LWS_FAR . ' ' . (LWS_FA5?'fa-sun':'fa-sun-o') . ' %2$s" aria-hidden="true"></i>';
     }
@@ -9673,6 +9685,16 @@ trait Output {
             foreach ($raw_data as $data) {
                 if ($id != $data['module_id']) {
                     if (count($module) > 0) {
+                        if (!array_key_exists('battery_txt', $module)) {
+                            $module['battery'] = '';
+                            $module['battery_txt'] = '';
+                            $module['battery_icn'] = '' ;
+                        }
+                        if (!array_key_exists('signal_txt', $module)) {
+                            $module['signal'] = '';
+                            $module['signal_txt'] = '';
+                            $module['signal_icn'] = '';
+                        }
                         $result['module'][] = $module;
                         $module = array();
                         $module['measure'] = array();
@@ -9680,6 +9702,8 @@ trait Output {
                     $id = $data['module_id'];
                 }
                 $module['module_id'] = $data['module_id'];
+                $module['self_name'] = DeviceManager::get_module_name($station['station_id'], $id, $data['module_name']);
+                $module['self_visibility'] = (DeviceManager::is_visible($station['station_id'], $id)?__('visible', 'live-weather-station'):__('hidden', 'live-weather-station'));
                 $module['module_name'] = $data['module_name'];
                 $module['module_type'] = $data['module_type'];
                 $module['module_type_name'] = $this->get_module_type($data['module_type'], false);
@@ -9714,16 +9738,19 @@ trait Output {
                     $module['last_setup_txt'] = $this->output_value($data['measure_value'], $data['measure_type'], false, false, $module['module_type'], $station['loc_timezone']);
                     $module['last_setup_diff_txt'] = self::get_positive_time_diff_from_mysql_utc($module['last_setup']);
                 }
-                if ($data['measure_type'] == 'battery') {
-                    $module['battery'] = $data['measure_value'];
-                    $module['battery_txt'] = $this->get_battery_level_text($module['battery'], $module['module_type']);
-                    $module['battery_icn'] = $this->output_iconic_value($module['battery'], 'battery', $module['module_type'], false, 'style="color:#999"', 'fa-lg');
+                if ($station['station_type'] == LWS_NETATMO_SID || $station['station_type'] == LWS_NETATMOHC_SID) {
+                    if ($data['measure_type'] == 'battery' && DeviceManager::is_hardware($data['module_type'])) {
+                        $module['battery'] = $data['measure_value'];
+                        $module['battery_txt'] = $this->get_battery_level_text($data['measure_value'], $data['module_type']);
+                        $module['battery_icn'] = $this->output_iconic_value($data['measure_value'], $data['measure_type'], $data['module_type'], false, 'style="color:#999"', 'fa-lg');
+                    }
+                    if ($data['measure_type'] == 'signal' && DeviceManager::is_hardware($data['module_type'])) {
+                        $module['signal'] = $data['measure_value'];
+                        $module['signal_txt'] = $this->get_signal_level_text($data['measure_value'], $data['module_type']);
+                        $module['signal_icn'] = $this->output_iconic_value($data['measure_value'], $data['measure_type'], $data['module_type'], false, 'style="color:#999"', 'fa-lg');
+                    }
                 }
-                if ($data['measure_type'] == 'signal') {
-                    $module['signal'] = $data['measure_value'];
-                    $module['signal_txt'] = $this->get_signal_level_text($module['signal'], $module['module_type']);
-                    $module['signal_icn'] = $this->output_iconic_value($module['signal'], 'signal', $module['module_type'], false, 'style="color:#999"', 'fa-lg');
-                }
+
                 if ((!$full && in_array($data['measure_type'], $this->showable_measurements)) ||
                     ($full && in_array($data['measure_type'], array_merge($this->showable_measurements, $this->not_showable_measurements)))) {
                     $val = array();
@@ -9769,6 +9796,16 @@ trait Output {
                 }
             }
             if (count($module) > 0) {
+                if (!array_key_exists('battery_txt', $module)) {
+                    $module['battery'] = '';
+                    $module['battery_txt'] = '';
+                    $module['battery_icn'] = '' ;
+                }
+                if (!array_key_exists('signal_txt', $module)) {
+                    $module['signal'] = '';
+                    $module['signal_txt'] = '';
+                    $module['signal_icn'] = '';
+                }
                 $result['module'][] = $module;
             }
         }

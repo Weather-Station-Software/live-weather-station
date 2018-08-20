@@ -66,9 +66,11 @@ trait BaseClient {
     /**
      * Corrects station's datas.
      *
+     * @param integer $station_type The station type.
+     *
      * @since 2.3.0
      */
-    private function normalize_netatmo_datas() {
+    private function normalize_netatmo_datas($station_type) {
         $datas = $this->netatmo_datas ;
         $d = $datas;
         Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($d, true));
@@ -86,15 +88,17 @@ trait BaseClient {
 
         }
         foreach($datas['devices'] as &$device){
-            if (!isset($device['module_name'])) {
-                $device['module_name'] = '?';
-            }
             if (!isset($device['station_name'])) {
                 $device['station_name'] = '?';
             }
-            if (isset($device['name'])) {
-                $device['station_name'] = $device['name'];
-                $device['module_name'] = $device['name'];
+            if (!isset($device['module_name'])) {
+                $device['module_name'] = $device['station_name'];
+            }
+            if (!isset($device['device_name'])) {
+                $device['device_name'] = $device['module_name'];
+            }
+            if (!isset($device['name'])) {
+                $device['name'] = $device['device_name'];
             }
             if (!isset($device['type'])) {
                 $device['type'] = 'unknown';
@@ -123,7 +127,7 @@ trait BaseClient {
                 foreach($device['modules'] as &$module)
                 {
                     if (!isset($module['module_name'])) {
-                        $module['module_name'] = '?';
+                        $device['module_name'] = '?';
                     }
                     if (!isset($module['type'])) {
                         $module['type'] = 'unknown';

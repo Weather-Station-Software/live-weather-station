@@ -21,6 +21,7 @@ spl_autoload_register(
         case 'WeatherStation\Data\Arrays\Generator': $file = LWS_INCLUDES_DIR.'traits/DataArraysGenerator.php'; break;
         case 'WeatherStation\Data\Dashboard\Handling': $file = LWS_INCLUDES_DIR.'traits/DataDashboardHandling.php'; break;
         case 'WeatherStation\Data\DateTime\Conversion': $file = LWS_INCLUDES_DIR.'traits/DataDateTimeConversion.php'; break;
+        case 'WeatherStation\Data\DateTime\Handling': $file = LWS_INCLUDES_DIR.'traits/DataDateTimeHandling.php'; break;
         case 'WeatherStation\Data\History\Builder': $file = LWS_INCLUDES_DIR.'classes/HistoryBuilder.php'; break;
         case 'WeatherStation\Data\History\Cleaner': $file = LWS_INCLUDES_DIR.'classes/HistoryCleaner.php'; break;
         case 'WeatherStation\Data\ID\Handling': $file = LWS_INCLUDES_DIR.'traits/DataIDHandling.php'; break;

@@ -22,17 +22,18 @@ trait Handling {
     /**
      * Analyzes dashboard datas for simple collector/computer and store it.
      *
+     * @param   integer $station_type       The station type.
      * @param   string  $device_id          The device id to update.
      * @param   string  $device_name        The device name to update.
      * @param   string  $module_id          The module id to update.
      * @param   string  $module_name        The module name to update.
-     * @param   string  $module_type        The type of the module (NAMain, NAModule1..4).
+     * @param   string  $module_type        The type of the module (NAMain, NAModule1..9, v..p).
      * @param   array   $types              The data types available in the $datas array.
      * @param   array   $datas              The dashboard datas.
      * @param   array   $place              Optional. The place datas.
      * @since    2.0.0
      */
-    private function get_dashboard($device_id, $device_name, $module_id, $module_name, $module_type, $types, $datas, $place=null) {
+    private function get_dashboard($station_type, $device_id, $device_name, $module_id, $module_name, $module_type, $types, $datas, $place=null) {
         foreach($types as $type) {
             if (array_key_exists($type, $datas)) {
                 $updates = array();
@@ -72,7 +73,12 @@ trait Handling {
             $updates['measure_timestamp'] = date('Y-m-d H:i:s');
         }
         $updates['measure_type'] = 'signal';
-        $updates['measure_value'] = 0 ;
+        if (array_key_exists('signal', $datas)){
+            $updates['measure_value'] = $datas['signal'] ;
+        }
+        else {
+            $updates['measure_value'] = 9999;
+        }
         $this->update_data_table($updates);
         $updates = array();
         $updates['device_id'] = $device_id;
@@ -87,7 +93,12 @@ trait Handling {
             $updates['measure_timestamp'] = date('Y-m-d H:i:s');
         }
         $updates['measure_type'] = 'battery';
-        $updates['measure_value'] = 6000 ;
+        if (array_key_exists('battery', $datas)){
+            $updates['measure_value'] = $datas['battery'] ;
+        }
+        else {
+            $updates['measure_value'] = 6000 ;
+        }
         $this->update_data_table($updates);
         $updates = array();
         $updates['device_id'] = $device_id;
@@ -215,6 +226,46 @@ trait Handling {
             }
             $this->update_data_table($updates);
         }
+        if ($module_type === 'NAModuleP') {
+            if (array_key_exists('time_pct', $datas) && array_key_exists('url_pct', $datas)){
+                $updates = array();
+                $updates['device_id'] = $device_id;
+                $updates['device_name'] = $device_name;
+                $updates['module_id'] = $module_id;
+                $updates['module_type'] = $module_type;
+                $updates['module_name'] = $module_name;
+                $updates['measure_timestamp'] = date('Y-m-d H:i:s', $datas['time_pct']);
+                $updates['measure_type'] = 'picture';
+                if ($station_type === LWS_BSKY_SID) {
+                    $updates['measure_value'] = substr(strtolower(__('View from station', 'live-weather-station')), 0, 50);
+                    $this->update_data_table($updates);
+                    $media = array();
+                    $media['timestamp'] = date('Y-m-d H:i:s', $datas['time_pct']);
+                    $media['device_id'] = $device_id;
+                    $media['module_id'] = $module_id;
+                    $media['module_type'] = $module_type;
+                    $media['item_type'] = 'none';
+                    $media['item_url'] = str_replace('http://', 'https://', $datas['url_pct']);
+                    self::insert_update_table(self::live_weather_station_media_table(), $media);
+                }
+            }
+        }
+        /*if ($module_type === 'NAModuleV') {
+            if (array_key_exists('video_imperial', $datas) || array_key_exists('video_metric', $datas)){
+                $updates = array();
+                $updates['device_id'] = $device_id;
+                $updates['device_name'] = $device_name;
+                $updates['module_id'] = $module_id;
+                $updates['module_type'] = $module_type;
+                $updates['module_name'] = $module_name;
+                $updates['measure_timestamp'] = date('Y-m-d H:i:s', $datas['time_pct']);
+                $updates['measure_type'] = 'picture';
+                if ($station_type === LWS_BSKY_SID) {
+                    $updates['measure_value'] = substr(strtolower(__('Timelapse with imperial subtitles', 'live-weather-station')), 0, 50);
+                    $this->update_data_table($updates);
+                }
+            }
+        }*/
     }
 
     /**
