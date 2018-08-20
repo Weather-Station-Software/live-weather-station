@@ -76,6 +76,18 @@ class Manager
     }
 
     /**
+     * Indicates whether a module is hardware or virtual/software.
+     *
+     * @param string $device_type The type of the device.
+     * @return boolean False is module is virtual/software, true otherwise.
+     *
+     * @since 3.6.0
+     */
+    public static function is_hardware($device_type) {
+        return ((strpos(strtolower($device_type), 'amodule') === 1) || (strtolower($device_type) === 'namain'));
+    }
+
+    /**
      * Returns the module name.
      *
      * @param string $device_id The device id.
@@ -142,6 +154,9 @@ class Manager
         $result = true;
         try {
             foreach ($modules as $module) {
+                if (array_key_exists('screen_name', $module)) {
+                    $module['screen_name'] = esc_sql($module['screen_name']);
+                }
                 self::insert_update_table(self::live_weather_station_module_detail_table(), $module);
             }
             Cache::invalidate_query($cache_id);

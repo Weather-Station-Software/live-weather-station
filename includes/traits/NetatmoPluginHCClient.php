@@ -92,7 +92,7 @@ trait HCClient {
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
                     $this->netatmo_datas = $this->netatmo_client->getHCData();
-                    $this->normalize_netatmo_datas();
+                    $this->normalize_netatmo_datas(LWS_NETATMOHC_SID);
                     if ($store) {
                         $this->store_netatmo_datas($this->get_all_netatmo_hc_stations(), true);
                     }

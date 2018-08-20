@@ -6,6 +6,9 @@ use WeatherStation\System\Logs\Logger;
 use WeatherStation\SDK\BloomSky\BSKYApiClient;
 use WeatherStation\Data\Dashboard\Handling as Dashboard_Manipulation;
 use WeatherStation\Data\Unit\Conversion;
+use WeatherStation\Data\DateTime\Handling as DateTimeHandling;
+use WeatherStation\Data\ID\Handling as ID;
+use WeatherStation\Data\Type\Description as Description;
 
 
 /**
@@ -18,7 +21,7 @@ use WeatherStation\Data\Unit\Conversion;
  */
 trait BaseClient {
 
-    use Dashboard_Manipulation, Conversion;
+    use Dashboard_Manipulation, Conversion, Description, DateTimeHandling;
 
     public $last_bloomsky_error = '';
 
@@ -38,26 +41,115 @@ trait BaseClient {
      * @since 3.6.0
      */
     private function store_bloomsky_datas($stations) {
-        /*$datas = $this->netatmo_datas ;
-        foreach($datas['devices'] as $device){
+        $datas = $this->bloomsky_datas ;
+        foreach($datas as $device){
+            if (!array_key_exists('device_id', $device)) {
+                continue;
+            }
             $store = false;
             foreach ($stations as $station) {
-                if ($station['station_id'] == $device['_id']) {
+                if ($station['station_id'] == $device['device_id']) {
+                    $guid = $station['guid'];
                     $store = true;
                 }
             }
             if ($store) {
-                $this->get_netatmo_dashboard($device['_id'], $device['station_name'], $device['_id'], $device['module_name'],
-                    $device['type'], $device['data_type'], $device['dashboard_data'], $device['place'], $device['wifi_status'], $device['firmware'], $device['last_status_store'], 0, $device['date_setup'], $device['last_setup'], $device['last_upgrade'], $is_hc);
-                Logger::debug($this->facility, $this->service_name, $device['_id'], $device['station_name'], $device['_id'], $device['module_name'], 0, 'Success while collecting module records.');
-                foreach($device['modules'] as $module)
-                {
-                    $this->get_netatmo_dashboard($device['_id'], $device['station_name'], $module['_id'], $module['module_name'],
-                        $module['type'], $module['data_type'], $module['dashboard_data'], $device['place'], $module['rf_status'], $module['firmware'], $module['last_seen'], $module['battery_vp'], null, $module['last_setup'], null, $is_hc);
-                    Logger::debug($this->facility, $this->service_name, $device['_id'], $device['station_name'], $module['_id'], $module['module_name'], 0, 'Success while collecting module records.');
+                $place = array();
+                if (array_key_exists('place', $device)) {
+                    $place = $device['place'];
                 }
+                // Main base
+                $module_type = 'NAMain';
+                $types = array('pressure');
+                $module_id = ID::get_fake_modulex_id($guid, 0);
+                $module_name = $this->get_fake_module_name($module_type);
+                $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
+
+                // Outdoor module
+                $module_type = 'NAModule1';
+                $types = array('temperature', 'humidity');
+                $module_id = ID::get_fake_modulex_id($guid, 1);
+                $module_name = $this->get_fake_module_name($module_type);
+                $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
+
+                // Wind gauge
+                if (array_key_exists('windangle', $device)) {
+                    $module_type = 'NAModule2';
+                    $types = array('windangle', 'gustangle', 'windstrength', 'guststrength');
+                    $module_id = ID::get_fake_modulex_id($guid, 2);
+                    $module_name = $this->get_fake_module_name($module_type);
+                    $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                    Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
+                }
+
+                // Rain gauge
+                if (array_key_exists('rain', $device)) {
+                    $module_type = 'NAModule3';
+                    $types = array('rain', 'rain_day_aggregated');
+                    $module_id = ID::get_fake_modulex_id($guid, 3);
+                    $module_name = $this->get_fake_module_name($module_type);
+                    $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                    Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
+                }
+
+                // Solar
+                $module_type = 'NAModule5';
+                $types = array('illuminance', 'uv_index');
+                $module_id = ID::get_fake_modulex_id($guid, 5);
+                $module_name = $this->get_fake_module_name($module_type);
+                $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
+
+                // Picture
+                $module_type = 'NAModuleP';
+                $types = array();
+                $module_id = ID::get_fake_modulex_id($guid, 'p');
+                $module_name = $this->get_fake_module_name($module_type);
+                $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
+
+                // Video
+                $module_type = 'NAModuleV';
+                $types = array();
+                $module_id = ID::get_fake_modulex_id($guid, 'v');
+                $module_name = $this->get_fake_module_name($module_type);
+                $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
+
+                $s = $this->get_station_informations_by_station_id($device['device_id']);
+                if (array_key_exists('device_name', $device)) {
+                    $s['station_name'] = $device['device_name'];
+                }
+                if (array_key_exists('device_model', $device)) {
+                    $s['station_model'] = $device['device_model'];
+                }
+                if (array_key_exists('city', $place)) {
+                    $s['loc_city'] = $place['city'];
+                }
+                if (array_key_exists('country', $place)) {
+                    $s['loc_country_code'] = $place['country'];
+                }
+                if (array_key_exists('timezone', $place)) {
+                    $s['loc_timezone'] = $place['timezone'];
+                }
+                if (array_key_exists('altitude', $place)) {
+                    $s['loc_altitude'] = $place['altitude'];
+                }
+                if (array_key_exists('location', $place)) {
+                    if (count($place['location']) == 2) {
+                        $s['loc_longitude'] = $place['location'][0];
+                        $s['loc_latitude'] = $place['location'][1];
+                    }
+                }
+                $s['last_refresh'] = date('Y-m-d H:i:s');
+                if (array_key_exists('time_utc', $device)) {
+                    $s['last_seen'] = date('Y-m-d H:i:s', $device['time_utc']);
+                }
+                $this->update_stations_table($s);
             }
-        }*/
+        }
     }
 
     /**
@@ -79,11 +171,32 @@ trait BaseClient {
                     $dat['device_name'] = '< NO NAME >';
                 }
                 if (array_key_exists('DeviceID', $station)) {
-                    $dat['device_id'] = $station['DeviceID'];
+                    $dat['device_id'] = self::compute_unique_bsky_id($station['DeviceID']);
                 }
                 else {
                     $dat['device_id'] = '00:00:00:00:00:00';
                 }
+                if (array_key_exists('VideoList', $station)) {
+                    $videos = $station['VideoList'];
+                    if (count($videos) > 0) {
+                        $dat['video_imperial'] = array();
+                        foreach ($videos as $video) {
+                            $dat['video_imperial'][] = $video;
+                        }
+
+                    }
+                }
+                if (array_key_exists('VideoList_C', $station)) {
+                    $videos = $station['VideoList_C'];
+                    if (count($videos) > 0) {
+                        $dat['video_metric'] = array();
+                        foreach ($videos as $video) {
+                            $dat['video_metric'][] = $video;
+                        }
+
+                    }
+                }
+
                 if (array_key_exists('Data', $station)) {
                     $data = $station['Data'];
                     if (array_key_exists('TS', $data)) {
@@ -112,6 +225,12 @@ trait BaseClient {
                     }
                     if (array_key_exists('Voltage', $data)) {
                         $dat['battery'] = $data['Voltage'];
+                    }
+                    if (array_key_exists('ImageTS', $data)) {
+                        $dat['time_pct'] = $data['ImageTS'];
+                    }
+                    if (array_key_exists('ImageURL', $data)) {
+                        $dat['url_pct'] = $data['ImageURL'];
                     }
                 }
                 if (array_key_exists('Storm', $station)) {
@@ -145,131 +264,39 @@ trait BaseClient {
                 if ($device_model != '') {
                     $dat['device_model'] = $device_model;
                 }
-                if (array_key_exists('FullAddress', $data)) {
-                    if (strlen($data['FullAddress']) > 1) {
-                        $dat['place']['country'] = strtoupper(substr($data['FullAddress'], -2));
+                if (array_key_exists('FullAddress', $station)) {
+                    if (strlen($station['FullAddress']) > 1) {
+                        $dat['place']['country'] = strtoupper(substr($station['FullAddress'], -2));
                     }
                 }
-                if (array_key_exists('CityName', $data)) {
-                    $dat['place']['city'] = $data['CityName'];
+                if (array_key_exists('CityName', $station)) {
+                    $dat['place']['city'] = $station['CityName'];
                 }
-                if (array_key_exists('ALT', $data)) {
-                    $dat['place']['altitude'] = (integer)$data['ALT'];
+                if (array_key_exists('ALT', $station)) {
+                    $dat['place']['altitude'] = round($station['ALT']);
                 }
-                if (array_key_exists('LON', $data)) {
-                    $dat['place']['location'][0] = (integer)$data['LON'];
+                if (array_key_exists('LON', $station)) {
+                    $dat['place']['location'][0] = round($station['LON'], 4);
                 }
-                if (array_key_exists('LAT', $data)) {
-                    $dat['place']['location'][1] = (integer)$data['LAT'];
+                if (array_key_exists('LAT', $station)) {
+                    $dat['place']['location'][1] = round($station['LAT'], 4);
                 }
-
-
-
-
-
-
-                if (count($dat) > 2) {
+                if (array_key_exists('place', $dat)) {
+                    if (array_key_exists('UTC', $station) && array_key_exists('country', $dat['place'])) {
+                        $dat['place']['timezone'] = $this->get_probable_timezone($dat['place']['country'], (integer)$station['UTC']);
+                    }
+                    else {
+                        $dat['place']['timezone'] = 'UTC';
+                    }
+                }
+                if (count($dat) > 3) {
                     $result[] = $dat;
                 }
                 else {
                     Logger::warning($this->facility, $this->service_name, $dat['device_id'], $dat['device_name'], null, null, 900, 'No module found for this station.');
                 }
-
             }
-
-
         }
-
-
-
-
-
-        /*$datas = $this->netatmo_datas ;
-        $d = $datas;
-        unset($d['devices']);
-        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($d, true));
-        $datas['timeshift'] = 0;
-        if (array_key_exists('time_server', $datas)) {
-            $datas['timeshift'] = time() - $datas['time_server'];
-            if (abs($datas['timeshift']) > get_option('live_weather_station_time_shift_threshold')) {
-                Logger::warning('API / SDK', $this->service_name, null, null, null, null, 0, 'Server time shift: ' . $datas['timeshift'] . 's.');
-            }
-            else {
-                Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, 'Server time shift: ' . $datas['timeshift'] . 's.');
-            }
-
-        }
-        foreach($datas['devices'] as &$device){
-            if (!isset($device['module_name'])) {
-                $device['module_name'] = '?';
-            }
-            if (!isset($device['station_name'])) {
-                $device['station_name'] = '?';
-            }
-            if (isset($device['name'])) {
-                $device['station_name'] = $device['name'];
-                $device['module_name'] = $device['name'];
-            }
-            if (!isset($device['type'])) {
-                $device['type'] = 'unknown';
-            }
-            if ($device['type'] == 'NHC') {
-                $device['type'] = 'NAMain';
-            }
-            if (!isset($device['data_type'])) {
-                $device['data_type'] = 'unknown';
-            }
-            if (!isset($device['wifi_status'])) {
-                $device['wifi_status'] = 0;
-            }
-            if (!isset($device['firmware'])) {
-                $device['firmware'] = 0;
-            }
-            if (!isset($device['_id']) || !isset($device['dashboard_data']) || !is_array($device['dashboard_data'])) {
-                unset($device);
-                Logger::warning($this->facility, $this->service_name, null, null, null, null, 9, 'Station not found.');
-                continue;
-            }
-            if (!isset($device['modules'])) {
-                $device['modules'] = array();
-            }
-            if (count($device['modules']) > 0) {
-                foreach($device['modules'] as &$module)
-                {
-                    if (!isset($module['module_name'])) {
-                        $module['module_name'] = '?';
-                    }
-                    if (!isset($module['type'])) {
-                        $module['type'] = 'unknown';
-                    }
-                    if (!isset($module['data_type'])) {
-                        $module['data_type'] = 'unknown';
-                    }
-                    if (!isset($module['rf_status'])) {
-                        $module['rf_status'] = 0;
-                    }
-                    if (!isset($module['firmware'])) {
-                        $module['firmware'] = 0;
-                    }
-                    if (!isset($module['battery_vp'])) {
-                        $module['battery_vp'] = 0;
-                    }
-                    if (!isset($module['_id']) || !isset($module['dashboard_data']) || !is_array($module['dashboard_data'])) {
-                        unset($module);
-                    }
-                }
-            }
-            else {
-                if ($this->netatmo_type == LWS_NETATMO_SID) {
-                    Logger::warning($this->facility, $this->service_name, $device['_id'], $device['station_name'], null, null, 900, 'No module found for this station.');
-                }
-            }
-
-        }
-        $this->netatmo_datas = $datas;*/
-
-
-
         $this->bloomsky_datas = $result;
     }
 }

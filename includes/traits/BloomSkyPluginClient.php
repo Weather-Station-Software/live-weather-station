@@ -108,7 +108,7 @@ trait Client {
             $this->get_datas(false);
             $datas = $this->bloomsky_datas ;
             foreach($datas as $station){
-                $result[] = array('device_id' => self::compute_unique_bsky_id($station['DeviceID']), 'station_name' => $station['DeviceName'], 'installed' => false);
+                $result[] = array('device_id' => $station['device_id'], 'station_name' => $station['device_name'], 'installed' => false);
             }
             if ($store) {
                 foreach ($result as &$station) {

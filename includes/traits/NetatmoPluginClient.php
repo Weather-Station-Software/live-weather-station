@@ -92,7 +92,7 @@ trait Client {
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
                     $this->netatmo_datas = $this->netatmo_client->getData();
-                    $this->normalize_netatmo_datas();
+                    $this->normalize_netatmo_datas(LWS_NETATMO_SID);
                     if ($store) {
                         $this->store_netatmo_datas($this->get_all_netatmo_stations());
                     }

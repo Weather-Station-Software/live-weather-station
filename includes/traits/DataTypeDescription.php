@@ -45,6 +45,9 @@ trait Description {
             case 9:
                 $result = 'Pioupiou';
                 break;
+            case 10:
+                $result = 'BloomSky';
+                break;
             default:
                 $result = null;
         }
@@ -119,6 +122,12 @@ trait Description {
                     $result = __('Ephemeris', 'live-weather-station') . ' (' . __('virtual module', 'live-weather-station') . ')';
                 }
                 break;
+            case 'namodulev': // Video module
+                $result = __('Video module', 'live-weather-station');
+                break;
+            case 'namodulep': // Video module
+                $result = __('Picture module', 'live-weather-station');
+                break;
             default:
                 $result = __('Unknown module', 'live-weather-station');
         }
@@ -166,6 +175,12 @@ trait Description {
 
             case 'namodule9': // Extra module
                 $result = __('Extra', 'live-weather-station');
+                break;
+            case 'namodulev': // Video module
+                $result = __('Video', 'live-weather-station');
+                break;
+            case 'namodulep': // Picture module
+                $result = __('Picture', 'live-weather-station');
                 break;
             default:
                 $result = __('Unknown module', 'live-weather-station');
@@ -566,6 +581,12 @@ trait Description {
                 break;
             case 'visibility':
                 $result = ($abbr ? __('Visibility', 'live-weather-station') : __('Visibility', 'live-weather-station'));
+                break;
+            case 'picture':
+                $result = ($abbr ? __('Image', 'live-weather-station') : __('Image', 'live-weather-station'));
+                break;
+            case 'video':
+                $result = ($abbr ? __('Film', 'live-weather-station') : __('Film', 'live-weather-station'));
                 break;
             default:
                 $result = ($abbr ? '?' : __('Unknown measurement', 'live-weather-station'));

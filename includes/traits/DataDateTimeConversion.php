@@ -601,4 +601,5 @@ trait Conversion {
         $result = ($sunset_a - $time) / ($sunset_a - $sunset);
         return round(100*$result, 0);
     }
+
 }

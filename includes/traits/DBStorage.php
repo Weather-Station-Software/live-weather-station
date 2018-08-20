@@ -31,7 +31,7 @@ trait Storage {
 
     /**
      *
-     * @since    1.0.0
+     * @since 1.0.0
      */
     public static function live_weather_station_datas_table() {
         return 'live_weather_station_datas';
@@ -131,6 +131,14 @@ trait Storage {
      */
     public static function live_weather_station_data_year_table() {
         return 'live_weather_station_data_year';
+    }
+
+    /**
+     *
+     * @since 3.6.0
+     */
+    public static function live_weather_station_media_table() {
+        return 'live_weather_station_medias';
     }
 
     /**
@@ -260,6 +268,27 @@ trait Storage {
         $sql .= " `measure_type` varchar(40) DEFAULT '' NOT NULL,";
         $sql .= " `measure_value` decimal(20,10) NOT NULL,";
         $sql .= " UNIQUE KEY dly (`timestamp`, `device_id`, `module_id`, `measure_type`)";
+        $sql .= ") $charset_collate;";
+        $wpdb->query($sql);
+    }
+
+    /**
+     * Creates table for the plugin.
+     *
+     * @since 3.6.0
+     */
+    private static function create_live_weather_station_media_table() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        $table_name = $wpdb->prefix.self::live_weather_station_media_table();
+        $sql = "CREATE TABLE IF NOT EXISTS ".$table_name;
+        $sql .= " (`timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',";
+        $sql .= " `device_id` varchar(17) NOT NULL,";
+        $sql .= " `module_id` varchar(17) NOT NULL,";
+        $sql .= " `module_type` varchar(12) DEFAULT '<unknown>' NOT NULL,";
+        $sql .= " `item_type` varchar(12) DEFAULT 'none' NOT NULL,";
+        $sql .= " `item_url` varchar(2000) DEFAULT '' NOT NULL,";
+        $sql .= " UNIQUE KEY mdia (`timestamp`, `device_id`, `module_id`, `module_type`, `item_type`)";
         $sql .= ") $charset_collate;";
         $wpdb->query($sql);
     }
@@ -521,6 +550,7 @@ trait Storage {
         self::create_live_weather_station_quota_day_table();
         self::create_live_weather_station_quota_year_table();
         self::create_live_weather_station_data_year_table();
+        self::create_live_weather_station_media_table();
     }
 
     /**
@@ -746,7 +776,7 @@ trait Storage {
     }
 
     /**
-     * Update  table with current value line.
+     * Update table with current value line.
      *
      * @param array $value The values to update or insert in the table
      * @since 3.5.0
@@ -902,8 +932,8 @@ trait Storage {
         if (array_key_exists('guid', $value)) {
             $this->update_table(self::live_weather_station_stations_table(), $value);
             $result = $value['guid'];
-            //$cache_id = 'get_station'.$value['guid'];
-            //Cache::invalidate_query($cache_id);
+            $cache_id = 'get_station'.$value['guid'];
+            Cache::invalidate_query($cache_id);
             Cache::flush_query();
         }
         else {

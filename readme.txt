@@ -1,7 +1,8 @@
 === Weather Station ===
 Contributors: PierreLannoy
 Tags: weather, openweathermap, netatmo, weatherflow, wunderground
-Requires at least: 4.0
+Requires at least: 4.9
+Requires PHP: 7.1
 Tested up to: 4.9
 Stable tag: 3.5.5
 License: GPLv2 or later
@@ -83,7 +84,7 @@ If you like this plugin or find it useful and want to thank me for the work done
 
 = What are the requirements for this plugin to work? =
 
-You need **WordPress 4.X** and at least **PHP 5.4**. See full [requirements](https://weather.station.software/handbook/requirements/).
+You need **WordPress 4.9** and at least **PHP 7.1**. See full [requirements](https://weather.station.software/handbook/requirements/).
 
 = Can this plugin work on multisite? =
 

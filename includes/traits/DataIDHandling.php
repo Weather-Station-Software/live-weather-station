@@ -21,6 +21,8 @@ trait Handling {
     private static $wflw_id ='zy';
     private static $piou_id ='zz';
 
+    private static $bsky_id ='94';
+
     private static $owm_current_id ='wm';
     private static $owm_pollution_id ='po';
     private static $computed_id ='00';
@@ -229,11 +231,22 @@ trait Handling {
      * Indicates if the id is the id of a Pioupiou station.
      *
      * @param integer $station_id The numeric id of the station.
-     * @return boolean True if it's an WUG station, false otherwise.
+     * @return boolean True if it's an Pioupiou station, false otherwise.
      * @since 3.3.0
      */
     public static function is_piou_station($station_id) {
         return (substr($station_id, 0, 2) == self::$piou_id);
+    }
+
+    /**
+     * Indicates if the id is the id of a BloomSky station.
+     *
+     * @param integer $station_id The numeric id of the station.
+     * @return boolean True if it's an BloomSky station, false otherwise.
+     * @since 3.3.0
+     */
+    public static function is_bsky_station($station_id) {
+        return (substr($station_id, 0, 2) == self::$bsky_id);
     }
 
     /**
@@ -247,7 +260,7 @@ trait Handling {
         return (!self::is_owm_station($station_id) && !self::is_wug_station($station_id) &&
                 !self::is_raw_station($station_id) && !self::is_real_station($station_id) &&
                 !self::is_txt_station($station_id) && !self::is_wflw_station($station_id) &&
-                !self::is_piou_station($station_id));
+                !self::is_piou_station($station_id) && !self::is_bsky_station($station_id));
     }
 
     /**
@@ -330,7 +343,7 @@ trait Handling {
      * Generate a unique id for a fake module, for a given station.
      *
      * @param integer $guid The numeric guid of the station.
-     * @param integer $id The X number in NAModuleX type.
+     * @param string|integer $id The X in NAModuleX type.
      * @param integer $cpt Optional. The #number of module.
      * @return string The unique id of the module.
      * @since 3.0.0
@@ -345,7 +358,7 @@ trait Handling {
      * Indicates if the id is the id of fake module.
      *
      * @param string $device_id The device ID.
-     * @param integer $id The X number in NAModuleX type.
+     * @param string|integer $id The X in NAModuleX type.
      * @return boolean True if it's an WUG station, false otherwise.
      * @since 3.0.0
      */

@@ -190,6 +190,7 @@ class Admin {
     /**
      * Initializes settings sections and fields.
      *
+     *
      * @since 3.0.0
      */
     public function init_settings() {
