@@ -315,11 +315,11 @@ class Fire extends \WP_Widget {
         if ($fixed_background) {
             $background_attachment = 'fixed';
         }
-        $low_url = $instance['low_url'];
-        $moderate_url = $instance['moderate_url'];
-        $high_url = $instance['high_url'];
-        $very_high_url = $instance['very_high_url'];
-        $extreme_url = $instance['extreme_url'];
+        $low_url = $this->get_picture_url($instance['station'], $instance['low_url']);
+        $moderate_url = $this->get_picture_url($instance['station'], $instance['moderate_url']);
+        $high_url = $this->get_picture_url($instance['station'], $instance['high_url']);
+        $very_high_url = $this->get_picture_url($instance['station'], $instance['very_high_url']);
+        $extreme_url = $this->get_picture_url($instance['station'], $instance['extreme_url']);
         $bg_url = '';
         $cbi = -99999;
         $rain_multipart = false;

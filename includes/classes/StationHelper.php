@@ -74,8 +74,8 @@ class Handling {
     private $arg_tab;
     private $arg_action;
     private $service = 'Backend';
-    private $publishable = array(LWS_NETATMO_SID, LWS_LOC_SID, LWS_OWM_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WUG_SID, LWS_WFLW_SID);
-    private $sharable = array(LWS_NETATMO_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WFLW_SID);
+    private $publishable = array(LWS_NETATMO_SID, LWS_LOC_SID, LWS_OWM_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WUG_SID, LWS_WFLW_SID, LWS_BSKY_SID);
+    private $sharable = array(LWS_NETATMO_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WFLW_SID, LWS_BSKY_SID);
     private $publishing_proto = array('txt', 'raw', 'real', 'yow');
 
     /**

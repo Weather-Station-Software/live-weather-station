@@ -111,6 +111,34 @@ trait Generator {
     }
 
     /**
+     * Get picture formats for javascript.
+     *
+     * @param array $sample An array containing sample data.
+     * @return array An array containing the available picture formats.
+     * @since 3.6.0
+     */
+    private function get_td_picture_format($sample) {
+        $result = array();
+        $result[0] = array (__('Name', 'live-weather-station'), 'raw', $sample[0]);
+        $result[1] = array (__('URL', 'live-weather-station'), 'defered:url', $sample[1]);
+        return $result;
+    }
+
+    /**
+     * Get video formats for javascript.
+     *
+     * @param array $sample An array containing sample data.
+     * @return array An array containing the available video formats.
+     * @since 3.6.0
+     */
+    private function get_td_video_format($sample) {
+        $result = array();
+        $result[0] = array (__('Name', 'live-weather-station'), 'raw', $sample[0]);
+        $result[1] = array (__('URL', 'live-weather-station'), 'defered:url', $sample[1]);
+        return $result;
+    }
+
+    /**
      * Get times formats for javascript.
      *
      * @param   array   $sample An array containing sample data.
@@ -301,6 +329,7 @@ trait Generator {
         $result = array();
         $result[] = array(__('Station ID', 'live-weather-station'), 'device_id', $this->get_td_device_id_format(array($ref['device_id'])));
         $result[] = array(__('Station name', 'live-weather-station'), 'device_name', $this->get_td_device_name_format(array($ref['device_name'])));
+        $result[] = array(__('Station model', 'live-weather-station'), 'device_model', $this->get_td_device_name_format(array($ref['device_model'])));
         $result[] = array(__('Module ID', 'live-weather-station'), 'module_id', $this->get_td_module_id_format(array($ref['module_id'])));
         $result[] = array(__('Module type', 'live-weather-station'), 'module_type', $this->get_td_module_type_format(array($ref['module_type'],$this->get_module_type($ref['module_type']))));
         $result[] = array(__('Module name', 'live-weather-station'), 'module_name', $this->get_td_module_name_format(array($ref['module_name'])));
@@ -376,6 +405,9 @@ trait Generator {
             case 'last_setup':
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_time_format(array($mvalue, $this->get_date_from_mysql_utc($mvalue, $ref['loc_timezone']), $this->get_time_from_mysql_utc($mvalue, $ref['loc_timezone']), $this->get_time_diff_from_mysql_utc($mvalue))));
                 break;
+            case 'picture':
+
+                break;
             default:
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']), $this->output_value($mvalue, $mtype, true, false, $ref['module_type']))));
         }
@@ -436,6 +468,12 @@ trait Generator {
         $txt = OWM_Base_Collector::is_txt_station($ref['device_id']);
         $wflw = OWM_Base_Collector::is_wflw_station($ref['device_id']);
         $piou = OWM_Base_Collector::is_piou_station($ref['device_id']);
+        $bsky = OWM_Base_Collector::is_bsky_station($ref['device_id']);
+        $bstorm = false;
+        if ($bsky) {
+            $bstorm = (strpos($ref['device_model'], '+Storm') !== false);
+            $bsky = false;
+        }
         if ($noned) {
             $result[] = array('- ' . __('None', 'live-weather-station') . ' -', 'none', array(), 'none', array(array('none', '- ' . __('None', 'live-weather-station') . ' -')));
         }
@@ -481,7 +519,7 @@ trait Generator {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure', $comparison, $distribution, $current);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'health_idx', $comparison, $distribution, $current);
                 }
-                if ($wug || $real || $raw || $txt || $wflw) {
+                if ($wug || $real || $raw || $txt || $wflw || $bsky || $bstorm) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure', $comparison, $distribution, $current);
                 }
                 if ($full && ($netatmo || $real || $raw || $txt)) {
@@ -525,7 +563,7 @@ trait Generator {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity_min', $comparison, $distribution, $current);
                 }
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature', $comparison, $distribution, $current);
-                if (($full || $mono) && !$wug && !$wflw) {
+                if (($full || $mono) && !$wug && !$wflw && !$bstorm && !$bsky) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_max', $comparison, $distribution, $current);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_min', $comparison, $distribution, $current);
                 }
@@ -550,10 +588,12 @@ trait Generator {
                 if ($full) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison, $distribution, $current);
                 }
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle', $comparison, $distribution, $current);
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength', $comparison, $distribution, $current);
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'gustangle', $comparison, $distribution, $current);
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'guststrength', $comparison, $distribution, $current);
+                if (!$bsky) {
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'windangle', $comparison, $distribution, $current);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'windstrength', $comparison, $distribution, $current);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'gustangle', $comparison, $distribution, $current);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'guststrength', $comparison, $distribution, $current);
+                }
                 if ($netatmo) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle_hour_max', $comparison, $distribution, $current);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength_hour_max', $comparison, $distribution, $current);
@@ -578,10 +618,10 @@ trait Generator {
                 if ($full) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison, $distribution, $current);
                 }
-                if ($netatmo || $raw || $real || $wflw) {
+                if ($netatmo || $raw || $real || $wflw || $bstorm) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain', $comparison, $distribution, $current);
                 }
-                if (!$raw) {
+                if (!$raw && !$bsky && !$bstorm) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_hour_aggregated', $comparison, $distribution, $current);
                 }
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_day_aggregated', $comparison, $distribution, $current);
@@ -626,13 +666,17 @@ trait Generator {
                 if ($aggregated) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated', $comparison, $distribution, $current);
                 }
-                if ($full) {
+                if ($full && !$bstorm && !$bsky) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_seen', $comparison, $distribution, $current);
+                }
+                if ($full) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison, $distribution, $current);
                 }
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'uv_index', $comparison, $distribution, $current);
-                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'irradiance', $comparison, $distribution, $current);
-                if ($wflw) {
+                if (!$bstorm && !$bsky) {
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'irradiance', $comparison, $distribution, $current);
+                }
+                if ($wflw || $bstorm || $bsky) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'illuminance', $comparison, $distribution, $current);
                 }
                 break;
@@ -683,6 +727,19 @@ trait Generator {
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature', $comparison, $distribution, $current);
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'health_idx', $comparison, $distribution, $current);
                 break;
+            case 'namodulep': // Virtual module for picture
+                if ($full) {
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'last_refresh', $comparison, $distribution, $current);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'picture', $comparison, $distribution, $current);
+                }
+                break;
+            case 'namodulev': // Virtual module for video
+                if ($full) {
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'last_refresh', $comparison, $distribution, $current);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'video_metric', $comparison, $distribution, $current);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'video_imperial', $comparison, $distribution, $current);
+                }
+                break;
             case 'aggregated': // All modules aggregated in one
                 if ($aggregated) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'aggregated', $comparison, $distribution, $current);
@@ -713,6 +770,7 @@ trait Generator {
                         $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware', $comparison, $distribution, $current);
                         $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_ref', $comparison, $distribution, $current);
                         $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity_ref', $comparison, $distribution, $current);
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_ref', $comparison, $distribution, $current);
                         $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'wind_ref', $comparison, $distribution, $current);
 
                     }
@@ -866,6 +924,7 @@ trait Generator {
             $txt = OWM_Base_Collector::is_txt_station($data['station']['station_id']);
             $wflw = OWM_Base_Collector::is_wflw_station($data['station']['station_id']);
             $piou = OWM_Base_Collector::is_piou_station($data['station']['station_id']);
+            $bsky = OWM_Base_Collector::is_bsky_station($data['station']['station_id']);
             $mainbase = array();
             if (count($data['module']) > 0) {
                 foreach ($data['module'] as $module) {
@@ -882,16 +941,18 @@ trait Generator {
                 $ref = array();
                 $ref['device_id'] = $data['station']['station_id'];
                 $ref['device_name'] = $data['station']['station_name'];
+                $ref['device_model'] = $data['station']['station_model'];
                 $ref['module_id'] = 'none';
                 $ref['module_type'] = 'none';
                 $ref['module_name'] = '- ' . __('None', 'live-weather-station') . ' -';
                 $ref['loc_timezone'] = $data['station']['loc_timezone'];
                 $modules[] = array ('- ' . __('None', 'live-weather-station') . ' -', 'none', array(array('- ' . __('None', 'live-weather-station') . ' -', 'none', array(), 'none' , array(array('none', '- ' . __('None', 'live-weather-station') . ' -')))));
             }
-            if ($aggregated  && ($netatmo || $wug || $raw || $real || $txt || $wflw || $piou)) {
+            if ($aggregated  && ($netatmo || $wug || $raw || $real || $txt || $wflw || $piou || $bsky)) {
                 $ref = array();
                 $ref['device_id'] = $data['station']['station_id'];
                 $ref['device_name'] = $data['station']['station_name'];
+                $ref['device_model'] = $data['station']['station_model'];
                 $ref['module_id'] = 'aggregated';
                 $ref['module_type'] = 'aggregated';
                 $ref['module_name'] = __('[all modules]', 'live-weather-station');
@@ -905,6 +966,7 @@ trait Generator {
                 $ref = array();
                 $ref['device_id'] = $data['station']['station_id'];
                 $ref['device_name'] = $data['station']['station_name'];
+                $ref['device_model'] = $data['station']['station_model'];
                 $ref['module_id'] = $module['module_id'];
                 $ref['module_type'] = $module['module_type'];
                 $ref['module_name'] = DeviceManager::get_module_name($ref['device_id'], $ref['module_id']);

@@ -56,6 +56,12 @@ trait Handling {
                 $this->update_data_table($updates);
             }
         }
+        $updates = array();
+        $updates['device_id'] = $device_id;
+        $updates['device_name'] = $device_name;
+        $updates['module_id'] = $module_id;
+        $updates['module_type'] = $module_type;
+        $updates['module_name'] = $module_name;
         $updates['measure_timestamp'] = date('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
         $updates['measure_value'] = date('Y-m-d H:i:s');
@@ -237,7 +243,7 @@ trait Handling {
                 $updates['measure_timestamp'] = date('Y-m-d H:i:s', $datas['time_pct']);
                 $updates['measure_type'] = 'picture';
                 if ($station_type === LWS_BSKY_SID) {
-                    $updates['measure_value'] = substr(strtolower(__('View from station', 'live-weather-station')), 0, 50);
+                    $updates['measure_value'] = substr(__('View from station', 'live-weather-station'), 0, 50);
                     $this->update_data_table($updates);
                     $media = array();
                     $media['timestamp'] = date('Y-m-d H:i:s', $datas['time_pct']);
@@ -250,22 +256,37 @@ trait Handling {
                 }
             }
         }
-        /*if ($module_type === 'NAModuleV') {
-            if (array_key_exists('video_imperial', $datas) || array_key_exists('video_metric', $datas)){
-                $updates = array();
-                $updates['device_id'] = $device_id;
-                $updates['device_name'] = $device_name;
-                $updates['module_id'] = $module_id;
-                $updates['module_type'] = $module_type;
-                $updates['module_name'] = $module_name;
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s', $datas['time_pct']);
-                $updates['measure_type'] = 'picture';
-                if ($station_type === LWS_BSKY_SID) {
-                    $updates['measure_value'] = substr(strtolower(__('Timelapse with imperial subtitles', 'live-weather-station')), 0, 50);
-                    $this->update_data_table($updates);
+        if ($module_type === 'NAModuleV') {
+            foreach (array('imperial', 'metric') as $item_type) {
+                if (array_key_exists('video_' . $item_type, $datas) && isset($datas['video_' . $item_type])){
+                    $updates = array();
+                    $updates['device_id'] = $device_id;
+                    $updates['device_name'] = $device_name;
+                    $updates['module_id'] = $module_id;
+                    $updates['module_type'] = $module_type;
+                    $updates['module_name'] = $module_name;
+                    $updates['measure_type'] = 'video_' . $item_type;
+                    if ($station_type === LWS_BSKY_SID) {
+                        if (count($datas['video_' . $item_type]) > 0) {
+                            $video = end($datas['video_' . $item_type]);
+                            $timestamp = str_replace('_C', '', str_replace('.mp4', '', substr($video, ($item_type === 'imperial' ? -14 : -16)))) . ' 12:00:00';
+                            $mode = ($item_type === 'imperial' ? __('Daily timelapse with imperial subtitles', 'live-weather-station') : __('Daily timelapse with metric subtitles', 'live-weather-station'));
+                            $updates['measure_timestamp'] = $timestamp;
+                            $updates['measure_value'] = substr($mode, 0, 50);
+                            $this->update_data_table($updates);
+                            $media = array();
+                            $media['timestamp'] = $timestamp;
+                            $media['device_id'] = $device_id;
+                            $media['module_id'] = $module_id;
+                            $media['module_type'] = $module_type;
+                            $media['item_type'] = $item_type;
+                            $media['item_url'] = str_replace('http://', 'https://', $video);
+                            self::insert_update_table(self::live_weather_station_media_table(), $media);
+                        }
+                    }
                 }
             }
-        }*/
+        }
     }
 
     /**
