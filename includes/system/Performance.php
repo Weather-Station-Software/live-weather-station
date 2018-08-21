@@ -474,15 +474,26 @@ class Performance {
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
+            $tablenames = array();
             foreach ($query_a as $val) {
                 $detail = (array)$val;
                 $tablename = $database->get_table_name($detail['table_name']);
+                $tablenames[] = $tablename;
                 if (strtotime($detail['timestamp']) > $cutoff) {
                     $datetime = new \DateTime($detail['timestamp']);
                     $ts = $datetime->getTimestamp() . '000';
                     $values['table_size'][$ts][$tablename] = $detail['table_size'];
                     $values['row_size'][$ts][$tablename] = $detail['row_size'];
                     $values['row_count'][$ts][$tablename] = $detail['row_count'];
+                }
+            }
+            foreach (array('table_size', 'row_size', 'row_count') as $item) {
+                foreach ($values[$item] as &$line) {
+                    foreach ($tablenames as $tablename) {
+                        if (!array_key_exists($tablename, $line)) {
+                            $line[$tablename] = 0.0;
+                        }
+                    }
                 }
             }
             $data = array();

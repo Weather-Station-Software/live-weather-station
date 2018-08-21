@@ -95,3 +95,7 @@ Module names in stations view
 style : area and line opacity
 
 
+
+Bloomsky = baro
+
+

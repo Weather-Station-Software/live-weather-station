@@ -45,7 +45,7 @@ trait Output {
         'equivalent_temperature', 'potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
         'partial_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 'soil_temperature', 'leaf_wetness',
         'moisture_content', 'moisture_tension', 'evapotranspiration', 'strike_count', 'strike_instant',
-        'strike_distance', 'strike_bearing', 'visibility', 'picture', 'video');
+        'strike_distance', 'strike_bearing', 'visibility', 'picture', 'video', 'video_imperial', 'video_metric');
     private $not_showable_measurements = array('battery', 'firmware', 'signal', 'loc_timezone', 'loc_altitude',
         'loc_latitude', 'loc_longitude', 'last_seen', 'last_refresh', 'first_setup', 'last_upgrade', 'last_setup',
         'sunrise_c','sunrise_n','sunrise_a', 'sunset_c','sunset_n', 'sunset_a', 'day_length_c', 'day_length_n',
@@ -5998,7 +5998,17 @@ trait Output {
         if ($result) {
             return $result;
         }
-        $_result = $this->get_specific_datas($_attributes);
+        switch ($_attributes['element']) {
+            case 'device_model':
+                $info = $this->get_station_informations_by_station_id($_attributes['device_id']);
+                $_result['result'][$_attributes['measure_type']] = $info['station_model'];
+                break;
+            case 'module_name':
+                $_result['result'][$_attributes['measure_type']] = DeviceManager::get_module_name($_attributes['device_id'], $_attributes['module_id']);
+                break;
+            default:
+                $_result = $this->get_specific_datas($_attributes);
+        }
         $err = __('Malformed shortcode. Please verify it!', 'live-weather-station') ;
         if (empty($_result)) {
             return $err;
@@ -6012,7 +6022,12 @@ trait Output {
             $tz = $this->get_specific_datas($_att)['result'][$_att['measure_type']];
         }
         $result = $_result['result'][$_attributes['measure_type']];
-        $module_type = $_result['module_type'];
+        if (array_key_exists('module_type', $_result)) {
+            $module_type = $_result['module_type'];
+        }
+        else {
+            $module_type = '';
+        }
         switch ($_attributes['format']) {
             case 'raw':
                 break;
@@ -7133,6 +7148,8 @@ trait Output {
                 $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-image" aria-hidden="true"></i>';
                 break;
             case 'video':
+            case 'video_imperial':
+            case 'video_metric':
                 $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-film" aria-hidden="true"></i>';
                 break;
             default:
@@ -7757,6 +7774,14 @@ trait Output {
                 $result['long'] = $this->get_altitude_unit_full($ref);
                 $result['dimension'] = 'length';
                 break;
+            case 'picture':
+            case 'video':
+            case 'video_imperial':
+            case 'video_metric':
+                $result['unit'] = '' ;
+                $result['long'] = '' ;
+                $result['comp'] = '' ;
+                $result['dimension'] = 'dimensionless';
         }
         if ($result['comp'] != __('now', 'live-weather-station')) {
             $result['full'] = $result['unit'].' '.$result['comp'];   
@@ -8536,6 +8561,49 @@ trait Output {
         $lunation = 29.56;
         $phase = 1 - (($lunation - $value) / $lunation);
         return $this->get_moon_phase_icon($phase);
+    }
+
+    /**
+     * Retrieve the last url of the station if any.
+     *
+     * @param string $id The device id.
+     * @param string $replacement Optional. A replacement URL if not found.
+     * @return string The URL of the picture.
+     * @since 3.6.0
+     */
+    protected function get_picture_url($id, $replacement='') {
+        $result = $replacement;
+        if ($result === 'self') {
+            $result = '';
+            if (OWM_Base_Collector::is_bsky_station($id)) {
+                $p = self::get_picture($id);
+                if (is_array($p) && !empty($p)) {
+                    if (array_key_exists('item_url', $p)) {
+                        $result = $p['item_url'];
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Retrieve the last url of the station associated with this module.
+     *
+     * @param string $id The module id.
+     * @param string $replacement Optional. A replacement URL if not found.
+     * @return string The URL of the picture.
+     * @since 3.6.0
+     */
+    protected function get_picture_url_by_module($id, $replacement='') {
+        //TODO: not used for now (no station has this ability)
+        if (strpos($replacement, 'http') === false) {
+            $station_id = '';
+            return self::get_picture_url($station_id, $replacement);
+        }
+        else {
+            return $replacement;
+        }
     }
 
     /**

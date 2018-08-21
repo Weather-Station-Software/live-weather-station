@@ -1,16 +1,24 @@
 
 #3.6.0 / XXXXXX, 2018
 
-* New: .
+* New: Weather Station is now compatible with BloomSky stations (SKY1, SKY2 & Storm).
+* New: new "picture" module for stations supporting visual snapshots.
+* New: new "video" module for stations supporting daily timelapses.
 * Improvement: customized name and visibility of modules are now viewable in station view.
+* Improvement: all widgets can have the station view snapshot as background (for station supporting visual snapshot).
+* Improvement: textual shortcodes are now able to output station model.
+* Improvement: textual shortcodes are now able to output reference pressure for computed values module.
 * Improvement: correct handling of battery and signal measurements types for stations which doesn't report it.
 * Improvement: better layout and behavior in the module selector.
 * Improvement: the readme.txt have now a minimum PHP version to prepare coming changes on the official WordPress repository.
+* Bug fix: in textual shortcodes, the customized name of a module is wrongly rendered.
 * Bug fix: Weather Station is unable to get Healthy Home Coach name due to API changes made by Netatmo.
 * Bug fix: icons for illuminance and irradiance are wrongly rendered in some screens.
 * Bug fix: when canceling the addition of a Netatmo station or Healthy Home Coach, the message shown is wrong.
 * Bug fix: the customized name of a module is not correctly escaped, so some names are wrongly saved.
 * Bug fix: charts may produce errors when they try to graph values from a removed station.
+* Bug fix: database analytics may be displayed with malformed charts in some cases.
+* Bug fix: in some (very rare) condition, last refresh time of a station can not be rightly stored (thanks to Dominik T. for detecting it).
 
 #3.5.5 / June 25th, 2018
 

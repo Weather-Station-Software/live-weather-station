@@ -73,6 +73,7 @@ class Data {
         $this->ws_tables[self::live_weather_station_stations_table()] = array('name' => __('Stations details', 'live-weather-station'), 'item' => _n('station', 'stations', $n, 'live-weather-station'));
         $this->ws_tables[self::live_weather_station_module_detail_table()] = array('name' => __('Modules details', 'live-weather-station'), 'item' => _n('module', 'modules', $n, 'live-weather-station'));
         $this->ws_tables[self::live_weather_station_datas_table()] = array('name' => __('Current records', 'live-weather-station'), 'item' => _n('record', 'records', $n, 'live-weather-station'));
+        $this->ws_tables[self::live_weather_station_media_table()] = array('name' => __('Medias', 'live-weather-station'), 'item' => _n('media', 'medias', $n, 'live-weather-station'));
         $this->ws_tables[self::live_weather_station_log_table()] = array('name' => __('Events log', 'live-weather-station'), 'item' => _n('event', 'events', $n, 'live-weather-station'));
         $this->ws_tables[self::live_weather_station_histo_daily_table()] = array('name' => __('Daily data', 'live-weather-station'), 'item' => _n('record', 'records', $n, 'live-weather-station'));
         $this->ws_tables[self::live_weather_station_histo_yearly_table()] = array('name' => __('Historical data', 'live-weather-station'), 'item' => _n('record', 'records', $n, 'live-weather-station'));

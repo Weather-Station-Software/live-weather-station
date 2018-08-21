@@ -305,9 +305,9 @@ class Indoor extends \WP_Widget {
         if ($fixed_background) {
             $background_attachment = 'fixed';
         }
-        $good_url = $instance['good_url'];
-        $medium_url = $instance['medium_url'];
-        $bad_url = $instance['bad_url'];
+        $good_url = $this->get_picture_url_by_module($instance['module'], $instance['good_url']);
+        $medium_url = $this->get_picture_url_by_module($instance['module'], $instance['medium_url']);
+        $bad_url = $this->get_picture_url_by_module($instance['module'], $instance['bad_url']);
         $bg_url = '';
         $health_idx = 100;
         $temp_multipart = false;

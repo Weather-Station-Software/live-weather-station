@@ -96,7 +96,7 @@ trait BaseClient {
 
                 // Solar
                 $module_type = 'NAModule5';
-                $types = array('illuminance', 'uv_index');
+                $types = array('irradiance', 'uv_index');
                 $module_id = ID::get_fake_modulex_id($guid, 5);
                 $module_name = $this->get_fake_module_name($module_type);
                 $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
@@ -221,7 +221,7 @@ trait BaseClient {
                         $dat['TS_image'] = $data['ImageTS'];
                     }
                     if (array_key_exists('DeviceType', $data)) {
-                        $device_model = ucfirst($data['DeviceType']);
+                        $device_model = 'BloomSky - ' . ucfirst($data['DeviceType']);
                     }
                     if (array_key_exists('Voltage', $data)) {
                         $dat['battery'] = $data['Voltage'];
@@ -236,7 +236,7 @@ trait BaseClient {
                 if (array_key_exists('Storm', $station)) {
                     $data = $station['Storm'];
                     if ($device_model == '') {
-                        $device_model = 'Storm';
+                        $device_model = 'BloomSky - Storm';
                     }
                     else {
                         $device_model .= '+Storm';

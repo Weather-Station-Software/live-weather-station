@@ -1030,7 +1030,7 @@ trait Query {
      *
      * @param integer $guid The station guid.
      * @return array An array containing the station informations.
-     * @since  3.0.0
+     * @since 3.0.0
      */
     protected static function get_station($guid) {
         global $wpdb;
@@ -1060,18 +1060,43 @@ trait Query {
     }
 
     /**
+     * Get a station picture.
+     *
+     * @param string $device_id The station device id.
+     * @param integer $rank Optional. The rank of the picture (1=the most recent).
+     * @return array An array containing the picture details.
+     * @since 3.6.0
+     */
+    protected static function get_picture($device_id, $rank=1) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_media_table();
+        $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $device_id."' AND module_type='NAModuleP' ORDER BY `timestamp` DESC LIMIT " . (string)($rank-1) . ",1";
+        try {
+            $query = $wpdb->get_results($sql, ARRAY_A);
+            if (is_array($query) && !empty($query)) {
+                return $query[0];
+            }
+            else {
+                return array();
+            }
+        } catch (\Exception $ex) {
+            return array();
+        }
+    }
+
+    /**
      * Get modules informations.
      *
-     * @param string $devide_id The station device id.
+     * @param string $device_id The station device id.
      * @return array An array containing the modules details.
      * @since  3.5.0
      */
-    protected static function get_modules_informations($devide_id) {
+    protected static function get_modules_informations($device_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_module_detail_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $devide_id."'";
+        $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $device_id."'";
         try {
-            $cache_id = 'get_modules'.$devide_id;
+            $cache_id = 'get_modules'.$device_id;
             $query = Cache::get_query($cache_id);
             if ($query === false) {
                 $query = (array)$wpdb->get_results($sql);

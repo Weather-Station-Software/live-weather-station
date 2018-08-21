@@ -349,10 +349,10 @@ class Outdoor extends \WP_Widget {
         if ($fixed_background) {
             $background_attachment = 'fixed';
         }
-        $day_url = $instance['day_url'];
-        $night_url = $instance['night_url'];
-        $dawn_url = $instance['dawn_url'];
-        $dusk_url = $instance['dusk_url'];
+        $day_url = $this->get_picture_url($instance['station'], $instance['day_url']);
+        $night_url = $this->get_picture_url($instance['station'], $instance['night_url']);
+        $dawn_url = $this->get_picture_url($instance['station'], $instance['dawn_url']);
+        $dusk_url = $this->get_picture_url($instance['station'], $instance['dusk_url']);
         $bg_url = '';
         $sunrise_a = 0;
         $sunrise = 0;

@@ -586,7 +586,13 @@ trait Description {
                 $result = ($abbr ? __('Image', 'live-weather-station') : __('Image', 'live-weather-station'));
                 break;
             case 'video':
-                $result = ($abbr ? __('Film', 'live-weather-station') : __('Film', 'live-weather-station'));
+                $result = ($abbr ? __('Video', 'live-weather-station') : __('Video', 'live-weather-station'));
+                break;
+            case 'video_imperial':
+                $result = ($abbr ? __('Video', 'live-weather-station') : __('Video with imperial subtitles', 'live-weather-station'));
+                break;
+            case 'video_metric':
+                $result = ($abbr ? __('Video', 'live-weather-station') : __('Video with metric subtitles', 'live-weather-station'));
                 break;
             default:
                 $result = ($abbr ? '?' : __('Unknown measurement', 'live-weather-station'));
