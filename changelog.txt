@@ -2,10 +2,12 @@
 #3.6.0 / XXXXXX, 2018
 
 * New: Weather Station is now compatible with BloomSky stations (SKY1, SKY2 & Storm).
-* New: new "picture" module for stations supporting visual snapshots.
-* New: new "video" module for stations supporting daily timelapses.
+* New: "picture" module for stations supporting visual snapshots.
+* New: "video" module for stations supporting daily timelapses.
 * Improvement: customized name and visibility of modules are now viewable in station view.
-* Improvement: all widgets can have the station view snapshot as background (for station supporting visual snapshot).
+* Improvement: all widgets can have the station view snapshot as background (for station supporting visual snapshots).
+* Improvement: textual shortcodes are able to output picture URL (for station supporting visual snapshots).
+* Improvement: textual shortcodes are able to output video URL (for station supporting daily timelapses).
 * Improvement: textual shortcodes are now able to output station model.
 * Improvement: textual shortcodes are now able to output reference pressure for computed values module.
 * Improvement: correct handling of battery and signal measurements types for stations which doesn't report it.
