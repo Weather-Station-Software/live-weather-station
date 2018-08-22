@@ -1085,6 +1085,32 @@ trait Query {
     }
 
     /**
+     * Get a station video.
+     *
+     * @param string $device_id The station device id.
+     * @param string $type Optional. The type of the video ('none', 'imperial', 'metric').
+     * @param integer $rank Optional. The rank of the video (1=the most recent).
+     * @return array An array containing the video details.
+     * @since 3.6.0
+     */
+    protected static function get_video($device_id, $type='none', $rank=1) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_media_table();
+        $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $device_id."' AND item_type='" . $type."' AND module_type='NAModuleV' ORDER BY `timestamp` DESC LIMIT " . (string)($rank-1) . ",1";
+        try {
+            $query = $wpdb->get_results($sql, ARRAY_A);
+            if (is_array($query) && !empty($query)) {
+                return $query[0];
+            }
+            else {
+                return array();
+            }
+        } catch (\Exception $ex) {
+            return array();
+        }
+    }
+
+    /**
      * Get modules informations.
      *
      * @param string $device_id The station device id.

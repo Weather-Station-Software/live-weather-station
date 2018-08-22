@@ -6007,7 +6007,40 @@ trait Output {
                 $_result['result'][$_attributes['measure_type']] = DeviceManager::get_module_name($_attributes['device_id'], $_attributes['module_id']);
                 break;
             default:
-                $_result = $this->get_specific_datas($_attributes);
+                switch ($_attributes['format']) {
+                    case 'medias:item_url':
+                        $url = '';
+                        switch ($_attributes['measure_type']) {
+                            case 'picture':
+                                $url = self::get_picture($_attributes['device_id']);
+                                if (isset($url) and !empty($url)) {
+                                    $url = $url['item_url'];
+                                }
+                                else {
+                                    $url = '';
+                                }
+                                break;
+                            case 'video':
+                            case 'video_imperial':
+                            case 'video_metric':
+                                $type = str_replace('_', '', str_replace('video', '', $_attributes['measure_type']));
+                                if ($type === '') {
+                                    $type = 'none';
+                                }
+                                $url = self::get_video($_attributes['device_id'], $type);
+                                if (isset($url) and !empty($url)) {
+                                    $url = $url['item_url'];
+                                }
+                                else {
+                                    $url = '';
+                                }
+                                break;
+                        }
+                        $_result['result'][$_attributes['measure_type']] = $url;
+                        break;
+                    default:
+                        $_result = $this->get_specific_datas($_attributes);
+                }
         }
         $err = __('Malformed shortcode. Please verify it!', 'live-weather-station') ;
         if (empty($_result)) {

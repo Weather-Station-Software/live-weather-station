@@ -34,6 +34,7 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Module\Current\Lcd': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentLcd.php'; break;
         case 'WeatherStation\Engine\Module\Current\Meter': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentMeter.php'; break;
         case 'WeatherStation\Engine\Module\Current\Textual': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentTextual.php'; break;
+        case 'WeatherStation\Engine\Module\Current\Timelapse': $file = LWS_INCLUDES_DIR.'classes/ModuleCurrentTimelapse.php'; break;
         case 'WeatherStation\Engine\Module\Daily\AStream': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyAStream.php'; break;
         case 'WeatherStation\Engine\Module\Daily\DistributionRC': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyDistributionRC.php'; break;
         case 'WeatherStation\Engine\Module\Daily\ValueRC': $file = LWS_INCLUDES_DIR.'classes/ModuleDailyValueRC.php'; break;

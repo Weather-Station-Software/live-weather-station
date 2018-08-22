@@ -120,7 +120,7 @@ trait Generator {
     private function get_td_picture_format($sample) {
         $result = array();
         $result[0] = array (__('Name', 'live-weather-station'), 'raw', $sample[0]);
-        $result[1] = array (__('URL', 'live-weather-station'), 'defered:url', $sample[1]);
+        $result[1] = array (__('URL', 'live-weather-station'), 'medias:item_url', $sample[1]);
         return $result;
     }
 
@@ -134,7 +134,7 @@ trait Generator {
     private function get_td_video_format($sample) {
         $result = array();
         $result[0] = array (__('Name', 'live-weather-station'), 'raw', $sample[0]);
-        $result[1] = array (__('URL', 'live-weather-station'), 'defered:url', $sample[1]);
+        $result[1] = array (__('URL', 'live-weather-station'), 'medias:item_url', $sample[1]);
         return $result;
     }
 
@@ -406,7 +406,30 @@ trait Generator {
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_time_format(array($mvalue, $this->get_date_from_mysql_utc($mvalue, $ref['loc_timezone']), $this->get_time_from_mysql_utc($mvalue, $ref['loc_timezone']), $this->get_time_diff_from_mysql_utc($mvalue))));
                 break;
             case 'picture':
-
+                $picturl = self::get_picture($ref['device_id']);
+                if (isset($picturl) and !empty($picturl)) {
+                    $picturl = $picturl['item_url'];
+                }
+                else {
+                    $picturl = '';
+                }
+                $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_picture_format(array($mvalue, $picturl)));
+                break;
+            case 'video':
+            case 'video_imperial':
+            case 'video_metric':
+                $type = str_replace('_', '', str_replace('video', '', $mtype));
+                if ($type === '') {
+                    $type = 'none';
+                }
+                $vidurl = self::get_video($ref['device_id'], $type);
+                if (isset($vidurl) and !empty($vidurl)) {
+                    $vidurl = $vidurl['item_url'];
+                }
+                else {
+                    $vidurl = '';
+                }
+                $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_video_format(array($mvalue, $vidurl)));
                 break;
             default:
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']), $this->output_value($mvalue, $mtype, true, false, $ref['module_type']))));
