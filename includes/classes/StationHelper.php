@@ -6,6 +6,7 @@ use WeatherStation\Data\Output;
 use WeatherStation\Engine\Page\Standalone\Framework;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\Arrays\Generator;
+use WeatherStation\Data\ID\Handling as IDHandling;
 
 use WeatherStation\SDK\OpenWeatherMap\Plugin\Pusher as OWM_Pusher;
 use WeatherStation\SDK\PWSWeather\Plugin\Pusher as PWS_Pusher;
@@ -17,7 +18,6 @@ use WeatherStation\Engine\Module\Current\Gauge;
 use WeatherStation\Engine\Module\Current\Lcd;
 use WeatherStation\Engine\Module\Current\Meter;
 use WeatherStation\Engine\Module\Current\Textual;
-use WeatherStation\Engine\Module\Current\Timelapse;
 use WeatherStation\Engine\Module\Daily\AStream as DailyAStream;
 use WeatherStation\Engine\Module\Daily\DistributionRC as DailyDistributionRC;
 use WeatherStation\Engine\Module\Daily\ValueRC as DailyValueRC;
@@ -38,6 +38,7 @@ use WeatherStation\Engine\Module\Yearly\ValueRC as YearlyValueRC;
 use WeatherStation\Engine\Module\Yearly\Lines as YearlyLines;
 use WeatherStation\Engine\Module\Yearly\StackedAreas as YearlyStackedAreas;
 use WeatherStation\Engine\Module\Yearly\Windrose as YearlyWindrose;
+use WeatherStation\Engine\Module\Yearly\Timelapse;
 use WeatherStation\System\Plugin\Deactivator;
 use WeatherStation\System\Device\Manager as DeviceManager;
 
@@ -53,7 +54,7 @@ use WeatherStation\System\Device\Manager as DeviceManager;
 
 class Handling {
 
-    use Output, Generator {
+    use IDHandling, Output, Generator {
         Output::get_service_name insteadof Generator;
         Output::get_comparable_dimensions insteadof Generator;
         Output::get_module_type insteadof Generator;
@@ -85,11 +86,11 @@ class Handling {
      * @since 3.4.0
      */
     private function register_modules() {
+        $bsky = self::is_bsky_station($this->station_id);
         Textual::register_module('current');
         Gauge::register_module('current');
         Lcd::register_module('current');
         Meter::register_module('current');
-        Timelapse::register_module('current');
         DailyLine::register_module('daily');
         DailyLines::register_module('daily');
         DailyDoubleLine::register_module('daily');
@@ -110,6 +111,9 @@ class Handling {
         YearlyDistributionRC::register_module('yearly');
         YearlyValueRC::register_module('yearly');
         YearlyAStream::register_module('yearly');
+        if ($bsky) {
+            Timelapse::register_module('yearly');
+        }
     }
 
     /**
@@ -127,7 +131,6 @@ class Handling {
         }
         $this->Live_Weather_Station = $Live_Weather_Station;
         $this->version = $version;
-        $this->register_modules();
         $this->get_args();
         if ($this->station_guid != 0) {
             $this->edit_station();
@@ -143,6 +146,7 @@ class Handling {
                 }
             }
             $this->screen_id = $pref . $this->station_guid;
+            $this->register_modules();
         }
         if ($this->arg_action == 'manage') {
             add_action('load-' . $station, array($this, 'station_add_options'));

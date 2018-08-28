@@ -197,6 +197,8 @@ class Admin {
         add_settings_section('lws_general_section', null, array($this, 'general_section_callback'), 'lws_general');
         add_settings_section('lws_services_section', null, array($this, 'services_section_callback'), 'lws_services');
         add_settings_section('lws_display_section', null, array($this, 'display_section_callback'), 'lws_display');
+        add_settings_section('lws_widget_styles_section', null, array($this, 'widget_styles_section_callback'), 'lws_widget_styles');
+        add_settings_section('lws_chart_styles_section', null, array($this, 'chart_styles_section_callback'), 'lws_chart_styles');
         add_settings_section('lws_thresholds_section', null, array($this, 'thresholds_section_callback'), 'lws_thresholds');
         add_settings_section('lws_history_section', null, array($this, 'history_section_callback'), 'lws_history');
         add_settings_section('lws_system_section', null, array($this, 'system_section_callback'), 'lws_system');
@@ -204,6 +206,7 @@ class Admin {
         add_settings_section('lws_tasks_section', null, array($this, 'tasks_section_callback'), 'lws_tasks');
         $this->init_system_settings();
         $this->init_display_settings();
+        $this->init_styles_settings();
         $this->init_thresholds_settings();
         $this->init_history_settings();
     }
@@ -255,6 +258,14 @@ class Admin {
     public function display_section_callback() {
         $h = InlineHelp::get(3, __('You can find help on these settings on %s.', 'live-weather-station'), __('this page', 'live-weather-station'));
         echo '<p>' . __('You can set here all the units and display options for controls and widgets.', 'live-weather-station') . ' ' . $h . '</p>';
+    }
+
+    public function widget_styles_section_callback() {
+        // Nothing to do here
+    }
+
+    public function chart_styles_section_callback() {
+        // Nothing to do here
     }
 
     public function thresholds_section_callback() {
@@ -351,7 +362,7 @@ class Admin {
     }
 
     /**
-     * Initializes system fields.
+     * Initializes display fields.
      *
      * @since 3.0.0
      */
@@ -417,6 +428,41 @@ class Admin {
             array());
         register_setting('lws_display', 'lws_system_frontend_style');
     }
+
+    /**
+     * Initializes system fields.
+     *
+     * @since 3.6.0
+     */
+    public function init_styles_settings() {
+        add_settings_field('lws_chart_styles_array_opacity', __('Opacity', 'live-weather-station'),
+            array($this, 'lws_chart_styles_array_opacity_callback'), 'lws_chart_styles', 'lws_chart_styles_section',
+            array(__('Semantics of the icon representing the wind direction in widgets.', 'live-weather-station')));
+        register_setting('lws_chart_styles', 'lws_chart_styles_array_opacity');
+
+    }
+
+
+
+
+
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.6.0
+     */
+    public function lws_chart_styles_array_opacity_callback($args) {
+        echo $this->field_select($this->get_history_full_js_array(), get_option('live_weather_station_full_history'), 'lws_history_full', $args[0]);
+    }
+
+
+
+
+
+
+
 
     /**
      * Initializes thresholds fields.
@@ -754,6 +800,25 @@ class Admin {
     public function lws_system_show_technical_callback($args) {
         echo $this->field_checkbox(__('Display technical information', 'live-weather-station'), 'lws_system_show_technical', (bool)get_option('live_weather_station_show_technical'), $args[0]);
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /**
      * Renders the interface elements for the corresponding field.

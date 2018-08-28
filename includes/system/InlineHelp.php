@@ -45,6 +45,7 @@ class InlineHelp {
             'handbook/', //17 main documentation
             'community/', //18 main support page
             'handbook/controls', //19 shortcodes
+            'handbook/settings/styles', //20  source: settings - styles tab
             ),
         /*'fr' => array (
             'documentation/reglages', //0  source: settings - general tab

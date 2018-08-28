@@ -1111,6 +1111,61 @@ trait Query {
     }
 
     /**
+     * Get a station video knowing its date.
+     *
+     * @param string $device_id The station device id.
+     * @param string $type Optional. The type of the video ('none', 'imperial', 'metric').
+     * @param string $date Optional. The date of the video.
+     * @return array An array containing the video details.
+     * @since 3.6.0
+     */
+    protected static function get_video_by_date($device_id, $date, $type='none') {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_media_table();
+        $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $device_id."' AND item_type='" . $type."' AND `timestamp`='" . $date."' AND module_type='NAModuleV'";
+        try {
+            $cache_id = 'get_video_by_date_'.$type . '_' . $device_id;
+            $query = Cache::get_query($cache_id);
+            if ($query === false) {
+                $query = $wpdb->get_results($sql, ARRAY_A);
+                Cache::set_query($cache_id, $query);
+            }
+            if (is_array($query) && !empty($query)) {
+                return $query[0];
+            }
+            else {
+                return array();
+            }
+        } catch (\Exception $ex) {
+            return array();
+        }
+    }
+
+    /**
+     * Get list of videos dates.
+     *
+     * @param string $device_id The station device id.
+     * @return array An array containing the video dates.
+     * @since 3.6.0
+     */
+    protected static function get_video_dates($device_id) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_media_table();
+        $sql = "SELECT DISTINCT `timestamp` FROM " . $table_name . " WHERE device_id='" . $device_id."' AND module_type='NAModuleV' ORDER BY `timestamp` DESC";
+        try {
+            $query = $wpdb->get_results($sql, ARRAY_A);
+            if (is_array($query) && !empty($query)) {
+                return $query;
+            }
+            else {
+                return array();
+            }
+        } catch (\Exception $ex) {
+            return array();
+        }
+    }
+
+    /**
      * Get modules informations.
      *
      * @param string $device_id The station device id.

@@ -188,6 +188,20 @@ trait Conversion {
     }
 
     /**
+     * Get a standard period id for rolling days.
+     *
+     * @param integer $value The value of days to roll off.
+     * @param string $tz The timezone.
+     * @return string A standard start:end period.
+     * @since 3.4.0
+     */
+    public static function get_rolling_days($value, $tz) {
+        $end = new \DateTime('-1 day', new \DateTimeZone($tz));
+        $start = new \DateTime(sprintf('-%s days', $value), new \DateTimeZone($tz));
+        return $start->format('Y-m-d') . ':' . $end->format('Y-m-d');
+    }
+
+    /**
      * Get a standard period id for a shifted month.
      *
      * @param integer $value The value of month to shift.

@@ -304,7 +304,12 @@ abstract class Maintainer {
             $result .= '<th class="lws-option" width="35%" align="left" scope="row">' . $title . '</th>';
             $result .= '<td width="2%"/>';
         }
-        $result .= '<td align="left">';
+        if (self::$module_mode == 'current') {
+            $result .= '<td align="left" class="lws-option-setting">';
+        }
+        else {
+            $result .= '<td align="left">';
+        }
         $result .= '<span class="select-option">';
         $result .= '<select class="option-select" id="' . $id .'">';
         if ($options != '') {
@@ -814,10 +819,10 @@ abstract class Maintainer {
             if ($this->module_type == 'lines' || $this->module_type == 'bars' || $this->module_type == 'sareas') {
                 $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+" "+((js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] != $("#' . $name . '-datas-dimension-' . $this->station_guid . '").val() && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none") ? "disabled" : "")+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
             }
-            elseif (($this->module_type == 'windrose' && $i == 1) || ($this->module_type == 'astream' && $i == 1) || ($this->module_type == 'valuerc' && $i == 1) || $this->module_type == 'distributionrc') {
+            elseif (($this->module_type === 'windrose' && $i == 1) || ($this->module_type == 'astream' && $i == 1) || ($this->module_type == 'valuerc' && $i == 1) || $this->module_type == 'distributionrc') {
                 $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+" "+((js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] != "angle" && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none") ? "disabled" : "")+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
             }
-            elseif (($this->module_type == 'windrose' && $i != 1) || ($this->module_type == 'astream' && $i != 1) || ($this->module_type == 'valuerc' && $i != 1)) {
+            elseif (($this->module_type === 'windrose' && $i != 1) || ($this->module_type == 'astream' && $i != 1) || ($this->module_type == 'valuerc' && $i != 1)) {
                 $content .= '$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").append("<option value="+i+" "+(((js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][3] == "angle" || js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] == "rain_day_aggregated" || js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] == "strike_count") && js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][1] != "none") ? "disabled" : "")+">"+js_array_' . $js_name . '_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
             }
             else {
@@ -840,15 +845,17 @@ abstract class Maintainer {
                 $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . ' option[value=\'regular\']").attr("selected", true);};';
             }
             if (self::$module_mode == 'yearly') {
-                $content .= 'var js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()][2][$(this).val()][4];';
-                $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").html("");';
-                $content .= '$(js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . ').each(function (i) {';
-                $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][1]+"</option>");});';
-                $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . ' option[value=\'avg\']").attr("selected", true);';
+                if ($this->module_type !== 'timelapse') {
+                    $content .= 'var js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()][2][$(this).val()][4];';
+                    $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").html("");';
+                    $content .= '$(js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . ').each(function (i) {';
+                    $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . '[i][1]+"</option>");});';
+                    $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . ' option[value=\'avg\']").attr("selected", true);';
+                }
                 $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '" ).change();});';
                 $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").change(function() {';
             }
-            if ($this->module_type != 'calendarhm') {
+            if ($this->module_type !== 'calendarhm' && $this->module_type !== 'timelapse') {
                 $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . '" ).change();});';
                 $content .= '$("#' . $name . '-datas-line-mode-' . $i . '-' . $this->station_guid . '").change(function() {';
                 $content .= 'if ($(this).val() == "transparent" || $(this).val() == "area") {';
@@ -868,6 +875,12 @@ abstract class Maintainer {
         }
 
         $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '").change(function() {';
+        if ($this->module_type === 'timelapse') {
+            $content .= 'if ($("#' . $name . '-datas-template-' . $this->station_guid . '").val()=="scalable") {';
+            $content .= '$("#' . $name . '-info-' . $this->station_guid . '").show();}';
+            $content .= 'else {';
+            $content .= '$("#' . $name . '-info-' . $this->station_guid . '").hide();}';
+        }
         $content .= '$("#' . $name . '-datas-color-' . $this->station_guid . '" ).change();});';
         $content .= '$("#' . $name . '-datas-color-' . $this->station_guid . '").change(function() {';
         $content .= '$("#' . $name . '-datas-interpolation-' . $this->station_guid . '" ).change();});';
@@ -891,8 +904,14 @@ abstract class Maintainer {
             $content .= 'var sc_module_' . $i . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()][1];';
             $content .= 'var sc_measurement_' . $i . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()][2][$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").val()][1];';
             if (self::$module_mode == 'yearly') {
-                $content .= 'var sc_set_' . $i . ' = $("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").val();';
-                $content .= 'sc_measurement_' . $i . ' = sc_set_' . $i . '+":"+sc_measurement_' . $i . ';';
+                if ($this->module_type === 'timelapse') {
+                    $content .= 'var sc_set_' . $i . ' = "none";';
+                    //$content .= 'sc_measurement_' . $i . ' = sc_measurement_' . $i . ';';
+                }
+                else {
+                    $content .= 'var sc_set_' . $i . ' = $("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").val();';
+                    $content .= 'sc_measurement_' . $i . ' = sc_set_' . $i . '+":"+sc_measurement_' . $i . ';';
+                }
             }
             if ($this->module_type == 'distributionrc') {
                 $content .= 'var sc_line_mode_' . $i . ' = $("#' . $name . '-datas-line-mode-1-' . $this->station_guid . '").val();';
@@ -905,7 +924,12 @@ abstract class Maintainer {
             $content .= 'var sc_line_size_' . $i . ' = $("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . '").val();';
             $content .= 'var sc_' . $i . ' = "";';
             $content .= ' if (sc_measurement_' . $i . ' != "none" && sc_measurement_' . $i . ' != "none:none") {';
-            $content .= '   sc_' . $i . ' = " device_id_' . $i . '=\'"+sc_device_' . $i . '+"\' module_id_' . $i . '=\'"+sc_module_' . $i . '+"\' measurement_' . $i . '=\'"+sc_measurement_' . $i . '+"\' line_mode_' . $i . '=\'"+sc_line_mode_' . $i . '+"\' dot_style_' . $i . '=\'"+sc_dot_style_' . $i . '+"\' line_style_' . $i . '=\'"+sc_line_style_' . $i . '+"\' line_size_' . $i . '=\'"+sc_line_size_' . $i . '+"\'";';
+            if ($this->module_type === 'timelapse') {
+                $content .= '   sc_' . $i . ' = " device_id_' . $i . '=\'"+sc_device_' . $i . '+"\' module_id_' . $i . '=\'"+sc_module_' . $i . '+"\' measurement_' . $i . '=\'"+sc_measurement_' . $i . '+"\'";';
+            }
+            else {
+                $content .= '   sc_' . $i . ' = " device_id_' . $i . '=\'"+sc_device_' . $i . '+"\' module_id_' . $i . '=\'"+sc_module_' . $i . '+"\' measurement_' . $i . '=\'"+sc_measurement_' . $i . '+"\' line_mode_' . $i . '=\'"+sc_line_mode_' . $i . '+"\' dot_style_' . $i . '=\'"+sc_dot_style_' . $i . '+"\' line_style_' . $i . '=\'"+sc_line_style_' . $i . '+"\' line_size_' . $i . '=\'"+sc_line_size_' . $i . '+"\'";';
+            }
             $content .= ' }';
             $content .= ' }';
         }
@@ -926,28 +950,37 @@ abstract class Maintainer {
         $content .= 'var sc_height = $("#' . $name . '-datas-height-' . $this->station_guid . '").val();';
         $content .= 'var sc_label = $("#' . $name . '-datas-label-' . $this->station_guid . '").val();';
         $content .= 'var sc_data = $("#' . $name . '-datas-data-' . $this->station_guid . '").val();';
-        $content .= 'var shortcode = "[live-weather-station-graph mode=\'' . self::$module_mode . '\' type=\'' . $this->module_type . '\' template=\'"+sc_template+"\' data=\'"+sc_data+"\' color=\'"+sc_color+"\' label=\'"+sc_label+"\' interpolation=\'"+sc_interpolation+"\' timescale=\'"+sc_timescale+"\' valuescale=\'"+sc_valuescale+"\' guideline=\'"+sc_guideline+"\' height=\'"+sc_height+"\' periodtype=\'"+sc_period_type+"\' periodvalue=\'"+sc_period_value+"\'"';
+        if ($this->module_type === 'timelapse') {
+            $content .= 'var shortcode = "[live-weather-station-timelapse size=\'"+sc_template+"\' controls=\'"+sc_label+"\' autoplay=\'"+sc_guideline+"\' mode=\'"+sc_height+"\' periodtype=\'"+sc_period_type+"\' periodvalue=\'"+sc_period_value+"\'"';
+        }
+        else {
+            $content .= 'var shortcode = "[live-weather-station-graph mode=\'' . self::$module_mode . '\' type=\'' . $this->module_type . '\' template=\'"+sc_template+"\' data=\'"+sc_data+"\' color=\'"+sc_color+"\' label=\'"+sc_label+"\' interpolation=\'"+sc_interpolation+"\' timescale=\'"+sc_timescale+"\' valuescale=\'"+sc_valuescale+"\' guideline=\'"+sc_guideline+"\' height=\'"+sc_height+"\' periodtype=\'"+sc_period_type+"\' periodvalue=\'"+sc_period_value+"\'"';
+        }
         for ($i=1; $i<=$this->series_number; $i++) {
             $content .= '+sc_' . $i;
         }
         $content .= '+"]";';
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
-        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"' . self::$module_mode . '", type:"' . $this->module_type . '", template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, periodtype:sc_period_type, periodvalue:sc_period_value, ';
-        $t = array();
-        for ($i=1; $i<=$this->series_number; $i++) {
-            $u = array();
-            foreach ($this->graph_allowed_serie as $param) {
-                $u[] = $param . '_' . $i . ':sc_' . str_replace('_id', '', $param) . '_' . $i;
-            }
-            $t[] = implode(', ', $u);
+        if ($this->module_type === 'timelapse') {
+            $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:shortcode}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
         }
-        $content .= implode(', ', $t);
-        $content .= '}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
+        else {
+            $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_graph_code", data:sc_data, cache:"no_cache", mode:"' . self::$module_mode . '", type:"' . $this->module_type . '", template:sc_template, label:sc_label, color:sc_color, interpolation:sc_interpolation, timescale:sc_timescale, valuescale:sc_valuescale, guideline:sc_guideline, height:sc_height, periodtype:sc_period_type, periodvalue:sc_period_value, ';
+            $t = array();
+            for ($i=1; $i<=$this->series_number; $i++) {
+                $u = array();
+                foreach ($this->graph_allowed_serie as $param) {
+                    $u[] = $param . '_' . $i . ':sc_' . str_replace('_id', '', $param) . '_' . $i;
+                }
+                $t[] = implode(', ', $u);
+            }
+            $content .= implode(', ', $t);
+            $content .= '}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
+        }
         $content .= '$("#' . $name . '-datas-shortcode-' . $this->station_guid . '").html(shortcode);});';
-
         // INIT
-        if (self::$module_mode == 'yearly') {
+        if (self::$module_mode === 'yearly') {
             $content .= 'var js_array_' . $js_name . '_p_' . $this->station_guid . ' = null;';
             $content .= '$(js_array_' . $js_name . '_period_' . $this->station_guid . ').each(function (i) {';
             $content .= 'if (js_array_' . $js_name . '_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-datas-period-type-' . $this->station_guid . '").val()) {js_array_' . $js_name . '_p_' . $this->station_guid . '=js_array_' . $js_name . '_period_' . $this->station_guid . '[i][1]}  ;});';

@@ -22,6 +22,7 @@ $buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; '
         <a href="?page=lws-settings&tab=services" class="nav-tab <?php echo $active_tab == 'services' ? 'nav-tab-active' : ''; ?>"><?php echo __('Services', 'live-weather-station');?></a>
         <?php if ((bool)get_option('live_weather_station_advanced_mode')) { ?>
             <a href="?page=lws-settings&tab=display" class="nav-tab <?php echo $active_tab == 'display' ? 'nav-tab-active' : ''; ?>"><?php echo __('Display', 'live-weather-station');?></a>
+            <a href="?page=lws-settings&tab=styles" class="nav-tab <?php echo $active_tab == 'styles' ? 'nav-tab-active' : ''; ?>"><?php echo __('Styles', 'live-weather-station');?></a>
             <a href="?page=lws-settings&tab=thresholds" class="nav-tab <?php echo $active_tab == 'thresholds' ? 'nav-tab-active' : ''; ?>"><?php echo __('Thresholds', 'live-weather-station');?></a>
             <a href="?page=lws-settings&tab=history" class="nav-tab <?php echo $active_tab == 'history' ? 'nav-tab-active' : ''; ?>"><?php echo __('History', 'live-weather-station');?></a>
             <a href="?page=lws-settings&tab=system" class="nav-tab <?php echo $active_tab == 'system' ? 'nav-tab-active' : ''; ?>"><?php echo __('System', 'live-weather-station');?></a>
@@ -33,25 +34,29 @@ $buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; '
     </h2>
 
     <form action="<?php echo esc_url(lws_get_admin_page_url('lws-settings', null, $active_tab)); ?>" method="POST">
-        <?php do_settings_sections('lws_'.$active_tab); ?>
-        <?php if ($active_tab != 'general' && $active_tab != 'services' && $active_tab != 'maintenance' && $active_tab != 'tasks') { ?>
+        <?php if ($active_tab !== 'general' && $active_tab !== 'services' && $active_tab !== 'maintenance' && $active_tab !== 'tasks' && $active_tab !== 'styles') { ?>
+            <?php do_settings_sections('lws_'.$active_tab); ?>
             <?php settings_fields($active_tab);?>
             <?php echo $buttons;?>
         <?php } ?>
+        <?php if ($active_tab === 'styles') { ?>
+            <?php include(LWS_ADMIN_DIR.'partials/SettingsStyles.php'); ?>
+            <?php echo $buttons;?>
+        <?php } ?>
     </form>
-    <?php if ($active_tab == 'general') { ?>
+    <?php if ($active_tab === 'general') { ?>
         <?php include(LWS_ADMIN_DIR.'partials/SettingsGeneral.php'); ?>
     <?php } ?>
-    <?php if ($active_tab == 'services') { ?>
+    <?php if ($active_tab === 'services') { ?>
         <?php $this->_services->get(); ?>
     <?php } ?>
-    <?php if ($active_tab == 'maintenance') { ?>
+    <?php if ($active_tab === 'maintenance') { ?>
         <?php include(LWS_ADMIN_DIR.'partials/SettingsMaintenance.php'); ?>
     <?php } ?>
-    <?php if ($active_tab == 'tasks') { ?>
+    <?php if ($active_tab === 'tasks') { ?>
         <?php include(LWS_ADMIN_DIR.'partials/SettingsTasks.php'); ?>
     <?php } ?>
-    <?php if ($active_tab == 'history') { ?>
+    <?php if ($active_tab === 'history') { ?>
         <?php include(LWS_ADMIN_DIR.'partials/SettingsHistory.php'); ?>
     <?php } ?>
 
