@@ -301,12 +301,16 @@ trait Output {
                     }
                     if ($mode == 'yearly') {
                         $d = array('1971-08-01', '1971-08-31');
+                        $is_rdays = $attributes['periodduration'] == 'rdays';
                         $is_month = $attributes['periodduration'] == 'month';
                         $is_mseason = $attributes['periodduration'] == 'mseason';
                         $is_year = $attributes['periodduration'] == 'year';
                         $v = explode('-', $attributes['periodvalue']);
                         if (strpos($attributes['periodtype'], 'ixed-') > 0) {
                             $d = explode(':', $attributes['periodvalue']);
+                        }
+                        elseif ($is_rdays) {
+                            $d = explode(':', $this->get_rolling_days($v[1], $station['loc_timezone']));
                         }
                         elseif ($is_month) {
                             $d = explode(':', $this->get_shifted_month(-$v[1], $station['loc_timezone']));
@@ -323,6 +327,11 @@ trait Output {
                         $result['xdomain']['max'] = self::get_js_date_from_mysql_utc($max, $station['loc_timezone']);
                         $month = substr($min, 5, 2);
                         $year = substr($min, 0, 4);
+                        if ($is_rdays) {
+                            $result['xdomain']['01'] = self::get_js_date_from_mysql_utc(date('Y-m-d', strtotime(sprintf('-%s days', 1 + 2 * (int)round($v[1] / 3)))), $station['loc_timezone']);
+                            $result['xdomain']['02'] = self::get_js_date_from_mysql_utc(date('Y-m-d', strtotime(sprintf('-%s days', 1 + 1 * (int)round($v[1] / 3)))), $station['loc_timezone']);
+                            $result['xdomain']['03'] = self::get_js_date_from_mysql_utc(date('Y-m-d', strtotime(sprintf('-%s days', 1 + 1 * (int)round($v[1] / 3)))), $station['loc_timezone']);
+                        }
                         if ($is_month) {
                             $result['xdomain']['01'] = self::get_js_date_from_mysql_utc($year.'-' . $month .'-08', $station['loc_timezone']);
                             $result['xdomain']['02'] = self::get_js_date_from_mysql_utc($year.'-' . $month .'-15', $station['loc_timezone']);
@@ -600,7 +609,10 @@ trait Output {
                                 $period_name = '';
                                 $period_range = 0;
                                 if ($mode == 'yearly') {
-                                    if ($is_month) {
+                                    if ($is_rdays) {
+                                        $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
+                                        $period_range = 0;
+                                    } elseif ($is_month) {
                                         $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
                                         $now->setDate($year, $month, 1);
                                         $period_name = date_i18n('F Y', $now->getTimestamp());
@@ -922,7 +934,10 @@ trait Output {
                                     $period_name = '';
                                     $period_range = 0;
                                     if ($mode == 'yearly') {
-                                        if ($is_month) {
+                                        if ($is_rdays) {
+                                            $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
+                                            $period_range = 0;
+                                        } elseif ($is_month) {
                                             $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
                                             $now->setDate($year, $month, 1);
                                             $period_name = date_i18n('F Y', $now->getTimestamp());
@@ -1021,7 +1036,10 @@ trait Output {
                                         $period_name = '';
                                         $period_range = 0;
                                         if ($mode == 'yearly') {
-                                            if ($is_month) {
+                                            if ($is_rdays) {
+                                                $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
+                                                $period_range = 0;
+                                            } elseif ($is_month) {
                                                 $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
                                                 $now->setDate($year, $month, 1);
                                                 $period_name = date_i18n('F Y', $now->getTimestamp());
@@ -1195,7 +1213,10 @@ trait Output {
                             $period_name = '';
                             $period_range = 0;
                             if ($mode == 'yearly') {
-                                if ($is_month) {
+                                if ($is_rdays) {
+                                    $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
+                                    $period_range = 0;
+                                } elseif ($is_month) {
                                     $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
                                     $now->setDate($year, $month, 1);
                                     $period_name = date_i18n('F Y', $now->getTimestamp());
@@ -1316,7 +1337,10 @@ trait Output {
                             $period_name = '';
                             $period_range = 0;
                             if ($mode == 'yearly') {
-                                if ($is_month) {
+                                if ($is_rdays) {
+                                    $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
+                                    $period_range = 0;
+                                } elseif ($is_month) {
                                     $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
                                     $now->setDate($year, $month, 1);
                                     $period_name = date_i18n('F Y', $now->getTimestamp());
@@ -1606,7 +1630,10 @@ trait Output {
                                 $period_name = '';
                                 $period_range = 0;
                                 if ($mode == 'yearly') {
-                                    if ($is_month) {
+                                    if ($is_rdays) {
+                                        $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
+                                        $period_range = 0;
+                                    } elseif ($is_month) {
                                         $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
                                         $now->setDate($year, $month, 1);
                                         $period_name = date_i18n('F Y', $now->getTimestamp());
@@ -2421,13 +2448,16 @@ trait Output {
             $value_params['valuescale'] = 'none';
         }
         $value_params['periodduration'] = 'none';
-        if (strpos($value_params['periodtype'], '-month') > 0) {
+        if (strpos($value_params['periodtype'], 'rolling-days') !== false) {
+            $value_params['periodduration'] = 'rdays';
+        }
+        if (strpos($value_params['periodtype'], '-month') !== false) {
             $value_params['periodduration'] = 'month';
         }
-        if (strpos($value_params['periodtype'], '-mseason') > 0) {
+        if (strpos($value_params['periodtype'], '-mseason') !== false) {
             $value_params['periodduration'] = 'mseason';
         }
-        if (strpos($value_params['periodtype'], '-year') > 0) {
+        if (strpos($value_params['periodtype'], '-year') !== false) {
             $value_params['periodduration'] = 'year';
         }
         if (array_key_exists('color', $attributes)) {
@@ -4626,10 +4656,65 @@ trait Output {
     }
 
     /**
+     * Get value for Timelapse panel shortcodes.
+     *
+     * @return  string  $attributes The value queryed by the shortcode.
+     * @since 3.6.0
+     */
+    public function timelapse_shortcodes($attributes) {
+        $_attributes = shortcode_atts( array('device_id_1' => '','module_id_1' => '','measurement_1' => '','periodtype' => '','periodvalue' => '','size' => '','autoplay' => '','mode' => '','controls' => ''), $attributes );
+        $fingerprint = uniqid('', true);
+        $uniq = 'timelapse'.substr ($fingerprint, strlen($fingerprint)-6, 80);
+        $date = '1971-08-21 12:00:00';
+        switch ($_attributes['periodtype']) {
+            case 'sliding-timelapse':
+                $d = explode('-', $_attributes['periodvalue']);
+                if (!empty($d) && count($d) === 2) {
+                    $station = $this->get_station_informations_by_station_id($_attributes['device_id_1']);
+                    $date = self::get_date_from_mysql_utc(date('Y-m-d', strtotime(sprintf('-%s days', $d[1]))), $station['loc_timezone'], 'Y-m-d') . ' 12:00:00';
+                }
+                break;
+            case 'fixed-timelapse':
+                $date = str_replace('_', ' ', $_attributes['periodvalue']);
+                break;
+            default:
+                return __('Malformed shortcode. Please verify it!', 'live-weather-station');
+        }
+        $vidurl = self::get_video_by_date($_attributes['device_id_1'], $date, str_replace('video_', '', $_attributes['measurement_1']));
+        if (isset($vidurl) and !empty($vidurl)) {
+            $vidurl = $vidurl['item_url'];
+            $attr = '';
+            $width = -1;
+            switch ((string)$_attributes['size']) {
+                case 'micro': $width = 75; break;
+                case 'small': $width = 100; break;
+                case 'medium': $width = 225; break;
+                case 'large': $width = 330; break;
+                case 'macro': $width = 640; break;
+                default:
+                    if (strpos((string)$_attributes['size'], 'px') !== false) {
+                        $width = (int)str_replace('px', '', (string)$_attributes['size']);
+                    }
+            }
+            if ($width > 0 && $width < 641) {
+                $attr .= ' width="' . $width . 'px"';
+            }
+            $attr .=  ($_attributes['autoplay'] === 'auto' ? ' autoplay' : '');
+            $attr .=  ($_attributes['mode'] === 'loop' ? ' loop' : '');
+            $attr .=  ($_attributes['controls'] === 'full' ? ' controls' : '');
+            $result  = '<video id="'.$uniq.'" class="lws-video lws-timelapse" ' . $attr . ' src="' . $vidurl . '"></video>'.PHP_EOL;
+        }
+        else {
+            $result = __('No timelapse for this date.', 'live-weather-station');
+        }
+        return $result;
+    }
+
+    /**
      * Get value for LCD panel shortcodes.
      *
      * @return  string  $attributes The value queryed by the shortcode.
-     * @since    1.0.0
+     * @since 1.0.0
      */
     public function lcd_shortcodes($attributes) {
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','design' => '','size' => '','speed' => ''), $attributes );
@@ -6282,6 +6367,43 @@ trait Output {
                 $result = esc_html($result);
         }
         Cache::set_frontend($fingerprint, $result);
+        return $result;
+    }
+
+    /**
+     * Get value for textual shortcodes as "live" values.
+     *
+     * @return string $attributes The value queryed by the shortcode.
+     * @since 3.6.0
+     */
+    public function livetextual_shortcodes($attributes) {
+        $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => '', 'fx'=>'','color'=>'','speed'=>''), $attributes );
+        $fingerprint = uniqid('', true);
+        $uuid = substr ($fingerprint, strlen($fingerprint)-6, 80);
+        $uniq = 'live-textual-' . $uuid;
+        $time = 1000 * (120 + rand(-20, 20));
+        $speed = (int)$_attributes['speed'] / 2;
+        $shortcode = '[live-weather-station-textual device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' element=\'' . $_attributes['element'] . '\' format=\'' . $_attributes['format'] . '\']';
+        $result = '<span id="' . $uniq . '" class="lws-livetextual lws-measurement-type-' . str_replace('_', '-', $_attributes['measure_type']) . '">' . do_shortcode($shortcode) . '</span>';
+        $result .= '<script language="javascript" type="text/javascript">'.PHP_EOL;
+        $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+        switch ($_attributes['fx']) {
+            case 'fade-to-initial':
+                wp_enqueue_script('jquery-color');
+                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: "' . $_attributes['color'] . '"}, 0 );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
+                break;
+            case 'glow':
+                wp_enqueue_script('jquery-color');
+                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: "' . $_attributes['color'] . '"}, ' . $speed . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
+                break;
+            case 'blink':
+                wp_enqueue_script('jquery-color');
+                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");for (i=0; i<4; i++) { $("#' . $uniq . '").animate({color: "' . $_attributes['color'] . '"}, ' . $speed/4 . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed/4 . ' );}});}, '.$time.');});'.PHP_EOL;
+                break;
+            default:
+                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);});}, '.$time.');});'.PHP_EOL;
+        }
+        $result .= '</script>'.PHP_EOL;
         return $result;
     }
 
@@ -10001,6 +10123,9 @@ trait Output {
             }
             foreach ($this->get_all_historical_operations($set) as $key=>$operation) {
                 $result[] = array($key, ucfirst($operation));
+            }
+            if (strpos($measurement_type, 'video') !== false) {
+                $result[] = array('none', '-');
             }
         }
         return $result;

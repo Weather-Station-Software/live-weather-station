@@ -122,7 +122,6 @@ class BCLine extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_script() {
         $content = $this->get_standard_script();
-        $content .= '$("#yearly-bcline-datas-module-1-' . $this->station_guid . '").change();';
         return $this->get_script_box($content);
     }
 

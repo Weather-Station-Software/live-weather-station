@@ -55,6 +55,12 @@ select.option-at-100 {
     width:100%;
 }
 
+@media (min-width: 768px){
+    td.lws-option-setting {
+        min-width: 260px;
+    }
+}
+
 .clearfix {
     clear:both;
 }

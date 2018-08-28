@@ -20,6 +20,7 @@ class Frontend {
 
 	private $Live_Weather_Station;
 	private $version;
+	private $allowed_shortcodes = array('live-weather-station-textual', 'live-weather-station-timelapse', 'live-weather-station-picture');
 
 	/**
 	 * Initialize the class and set its properties.
@@ -288,5 +289,28 @@ class Frontend {
             $s = __('File is accessible and its format seems good.', 'live-weather-station');
         }
         exit (json_encode(array('result' => $s)));
+    }
+
+
+    /**
+     * Callback method for rendering allowed shortcodes (i.e. outputting only HTML).
+     *
+     * @since 3.6.0
+     */
+    public function lws_shortcode_callback() {
+        $shortcode = wp_kses($_POST['sc'], array());
+        $shortcode = str_replace('\\', '', $shortcode);
+        $allowed = false;
+        foreach ($this->allowed_shortcodes as $allowed_shortcode) {
+            if (strpos($shortcode, '[' . $allowed_shortcode . ' ') === 0) {
+                $allowed = true;
+            }
+        }
+        if ($allowed) {
+            exit(do_shortcode($shortcode));
+        }
+        else {
+            exit('<p>' . esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station') . '</p>');
+        }
     }
 }

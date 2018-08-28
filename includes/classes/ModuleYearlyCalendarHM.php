@@ -56,7 +56,7 @@ class CalendarHM extends \WeatherStation\Engine\Module\Maintainer {
         else {
             $this->data = null;
         }
-        $this->period = $this->get_period_value_js_array($this->station_information);
+        $this->period = $this->get_period_value_js_array($this->station_information, false);
     }
 
     /**
@@ -67,7 +67,7 @@ class CalendarHM extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_datasource() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-period-type-'. $this->station_guid, __('Period type', 'live-weather-station'), $this->get_period_type_js_array(), true, 'sliding-month');
+        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-period-type-'. $this->station_guid, __('Period type', 'live-weather-station'), $this->get_period_type_js_array(false), true, 'sliding-month');
         $content .= $this->get_neutral_option_select('yearly-calendarhm-datas-period-value-'. $this->station_guid, __('Period', 'live-weather-station'));
         $content .= $this->get_assoc_option_select('yearly-calendarhm-datas-module-1-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
         $content .= $this->get_neutral_option_select('yearly-calendarhm-datas-measurement-1-'. $this->station_guid, __('Measurement', 'live-weather-station'));
@@ -109,7 +109,6 @@ class CalendarHM extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_script() {
         $content = $this->get_standard_script();
-        $content .= '$("#yearly-calendarhm-datas-module-1-' . $this->station_guid . '").change();';
         return $this->get_script_box($content);
     }
 

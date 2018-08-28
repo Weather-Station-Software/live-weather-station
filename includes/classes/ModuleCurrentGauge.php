@@ -171,10 +171,14 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$("#current-justgage-datas-unit-' . $this->station_guid . '").change(function() {';
         $content .= '$("#current-justgage-datas-size-' . $this->station_guid . '" ).change();});';
         $content .= '$("#current-justgage-datas-size-' . $this->station_guid . '").change(function() {';
+
+
         $content .= 'if ($("#current-justgage-datas-size-' . $this->station_guid . '").val()=="scalable") {';
         $content .= '$("#current-justgage-info-' . $this->station_guid . '").show();}';
         $content .= 'else {';
         $content .= '$("#current-justgage-info-' . $this->station_guid . '").hide();}';
+
+
         $content .= 'if ($("#current-justgage-datas-size-' . $this->station_guid . '").val()=="micro") {';
         $content .= '$("#current-justgage-datas-pointer-' . $this->station_guid . '").val("none");';
         $content .= '$("#current-justgage-datas-pointer-' . $this->station_guid . '").prop("disabled", true);';
