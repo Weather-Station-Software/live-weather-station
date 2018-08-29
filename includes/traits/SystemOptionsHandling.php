@@ -91,6 +91,12 @@ trait Handling {
     private static $live_weather_station_full_history = false;
     private static $live_weather_station_retention_history = 5;
 
+    private static $live_weather_station_styles_chart_opacity_area = 0.4;
+    private static $live_weather_station_styles_chart_opacity_sarea = 0.8;
+    private static $live_weather_station_styles_chart_opacity_bar = 0.9;
+
+    private static $live_weather_station_styles_chart_cscheme_key = 'live_weather_station_styles_chart_cschemes';
+
 
 
     /**
@@ -113,10 +119,18 @@ trait Handling {
     }
 
     /**
+     * Get the color schemes for the plugin.
+     * @return array The color schemes available for the plugin.
+     * @since 3.6.0
+     */
+    public static function get_cschemes() {
+        return get_option(self::$live_weather_station_styles_chart_cscheme_key, self::live_weather_station_cshemes());
+    }
+
+    /**
      * Get the thresholds available for the plugin.
      *
      * @return array The thresholds available for the plugin.
-     *
      * @since 3.0.0
      */
     public static function get_thresholds() {
@@ -126,6 +140,18 @@ trait Handling {
             $result[] = $measure;
         }
         return $result;
+    }
+
+    /**
+     * Get the color schemes for charts.
+     *
+     * @return array The color schemes.
+     * @since 3.6.0
+     */
+    protected static function live_weather_station_cshemes(){
+        return array(
+            'cs00' => array('name' => __('Customized palette #1','live-weather-station'), 'colors' => array('#618685','#699899','#71aaae','#79bdc2','#85d0d6','#b1ded7','#d9ecd8','#fefbd8'))
+        );
     }
 
     /**
@@ -405,6 +431,15 @@ trait Handling {
     }
 
     /**
+     * Delete the color schemes of the plugin.
+     *
+     * @since 3.6.0
+     */
+    protected static function delete_cschemes_options() {
+        delete_option(self::$live_weather_station_styles_chart_cscheme_key);
+    }
+
+    /**
      * Delete the thresholds options of the plugin.
      *
      * @since 3.0.0
@@ -413,6 +448,26 @@ trait Handling {
         $thresholds = self::get_thresholds_options();
         foreach ($thresholds as $key => $val) {
             delete_option($key);
+        }
+    }
+
+    /**
+     * Init the color schemes of the plugin.
+     *
+     * @param $id string Optional. Init only specified id.
+     * @since 3.6.0
+     */
+    protected static function init_cschemes_options($id=null) {
+        if (isset($id)) {
+            $sc = get_option(self::$live_weather_station_styles_chart_cscheme_key, self::live_weather_station_cshemes());
+            $init = self::live_weather_station_cshemes();
+            if (array_key_exists($sc, $id) && array_key_exists($init, $id)) {
+                $sc[$id] = $init[$id];
+                update_option(self::$live_weather_station_styles_chart_cscheme_key, $sc);
+            }
+        }
+        else {
+            update_option(self::$live_weather_station_styles_chart_cscheme_key, self::live_weather_station_cshemes());
         }
     }
 
@@ -503,8 +558,8 @@ trait Handling {
         delete_option('live_weather_station_full_history');
         delete_option('live_weather_station_retention_history');
         delete_option('live_weather_station_purge_cache');
-
         self::delete_thresholds_options();
+        self::delete_cschemes_options();
     }
 
     /**
@@ -652,6 +707,7 @@ trait Handling {
         self::init_bloomsky_options();
         self::init_system_options();
         self::init_display_options();
+        self::init_cschemes_options();
         self::init_thresholds_options();
         self::init_map_options();
         self::init_history_options();
@@ -772,7 +828,18 @@ trait Handling {
     }
 
     /**
-     * Init the thresholds options of the plugin.
+     * Verify the color schemes of the plugin.
+     *
+     * @since 3.6.0
+     */
+    private static function verify_option_cschemes() {
+        if (false === get_option(self::$live_weather_station_styles_chart_cscheme_key)) {
+            self::init_cschemes_options();
+        }
+    }
+
+    /**
+     * Verify the thresholds options of the plugin.
      *
      * @since 3.0.0
      */
@@ -814,6 +881,7 @@ trait Handling {
         self::verify_option_integer('live_weather_station_sharing_http_timeout', self::$live_weather_station_sharing_http_timeout);
         self::verify_option_integer('live_weather_station_system_http_timeout', self::$live_weather_station_system_http_timeout);
         self::verify_option_thresholds();
+        self::verify_option_cschemes();
         self::verify_option_integer('live_weather_station_map_zoom', self::$live_weather_station_map_zoom);
         self::verify_option_string('live_weather_station_map_layer', self::$live_weather_station_map_layer);
         self::verify_option_boolean('live_weather_station_auto_manage_netatmo', self::$live_weather_station_auto_manage_netatmo);

@@ -23,6 +23,7 @@ use WeatherStation\System\Options\Handling as Options;
 use WeatherStation\Data\Arrays\Generator as Arrays;
 use WeatherStation\UI\Forms\Handling as FormsRenderer;
 use WeatherStation\UI\SVG\Handling as SVG;
+use WeatherStation\UI\ListTable\ColorSchemes;
 use WeatherStation\System\I18N\Handling as Intl;
 use WeatherStation\System\Subscription\Handling as Subscription;
 use WeatherStation\SDK\Netatmo\Plugin\Collector as Netatmo_Collector;
@@ -435,10 +436,18 @@ class Admin {
      * @since 3.6.0
      */
     public function init_styles_settings() {
-        add_settings_field('lws_chart_styles_array_opacity', __('Opacity', 'live-weather-station'),
-            array($this, 'lws_chart_styles_array_opacity_callback'), 'lws_chart_styles', 'lws_chart_styles_section',
+        add_settings_field('lws_chart_styles_area_opacity', __('Opacity', 'live-weather-station'),
+            array($this, 'lws_chart_styles_area_opacity_callback'), 'lws_chart_styles', 'lws_chart_styles_section',
             array(__('Semantics of the icon representing the wind direction in widgets.', 'live-weather-station')));
-        register_setting('lws_chart_styles', 'lws_chart_styles_array_opacity');
+        register_setting('lws_chart_styles', 'lws_chart_styles_area_opacity');
+
+
+
+
+        add_settings_field('lws_chart_styles_cschemes', __('Color schemes', 'live-weather-station'),
+            array($this, 'lws_chart_styles_cschemes_callback'), 'lws_chart_styles', 'lws_chart_styles_section',
+            array(__('Semantics of the icon representing the wind direction in widgets.', 'live-weather-station')));
+        register_setting('lws_chart_styles', 'lws_chart_styles_cschemes');
 
     }
 
@@ -453,8 +462,20 @@ class Admin {
      * @param array $args An array of arguments which first element is the description to be displayed next to the control.
      * @since 3.6.0
      */
-    public function lws_chart_styles_array_opacity_callback($args) {
+    public function lws_chart_styles_area_opacity_callback($args) {
         echo $this->field_select($this->get_history_full_js_array(), get_option('live_weather_station_full_history'), 'lws_history_full', $args[0]);
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.6.0
+     */
+    public function lws_chart_styles_cschemes_callback($args) {
+        $csListTable = new ColorSchemes();
+        $csListTable->prepare_items();
+        $csListTable->display();
     }
 
 
