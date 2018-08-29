@@ -172,6 +172,7 @@ spl_autoload_register(
         case 'WeatherStation\UI\Forms\Handling': $file = LWS_INCLUDES_DIR.'traits/Forms.php'; break;
         case 'WeatherStation\UI\ListTable\Base': $file = LWS_INCLUDES_DIR.'classes/ListTable.php'; break;
         case 'WeatherStation\UI\ListTable\Log': $file = LWS_INCLUDES_DIR.'classes/ListTableLog.php'; break;
+        case 'WeatherStation\UI\ListTable\ColorSchemes': $file = LWS_INCLUDES_DIR.'classes/ListTableColorSchemes.php'; break;
         case 'WeatherStation\UI\ListTable\Stations': $file = LWS_INCLUDES_DIR.'classes/ListTableStations.php'; break;
         case 'WeatherStation\UI\ListTable\Tasks': $file = LWS_INCLUDES_DIR.'classes/ListTableTasks.php'; break;
         case 'WeatherStation\UI\Mapping\Handling': $file = LWS_INCLUDES_DIR.'traits/MappingHandling.php'; break;
