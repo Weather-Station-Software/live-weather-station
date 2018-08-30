@@ -18,6 +18,7 @@ use WeatherStation\Data\History\Builder as History;
 use WeatherStation\System\Environment\Manager as EnvManager;
 use WeatherStation\Utilities\ColorBrewer;
 use WeatherStation\System\Device\Manager as DeviceManager;
+use WeatherStation\System\Options\Handling as Options;
 
 /**
  * Outputing / shortcoding functionalities for Weather Station plugin.
@@ -2492,6 +2493,7 @@ trait Output {
             $inverted = true;
             $color = str_replace('i_', '', $color);
         }
+        $custom = strpos($color, 'cs') === 0;
         $data = $_attributes['data'];
         $label = $_attributes['label'];
         $interpolation = $_attributes['interpolation'];
@@ -2681,9 +2683,14 @@ trait Output {
             }
             $inner_height = $inner_height . 'px';
             $legendColors = array();
-            if ($color == 'self') {
-                $col = new ColorsManipulation($prop['fg_color']);
-                $col_array = $col->makeSteppedGradient($cpt, 50);
+            if ($color == 'self' || $custom) {
+                if ($color == 'self') {
+                    $col = new ColorsManipulation($prop['fg_color']);
+                    $col_array = $col->makeSteppedGradient($cpt, 50);
+                }
+                else {
+                    $col_array = Options::get_cschemes_palette($color);
+                }
                 foreach ($col_array as $c) {
                     $legendColors[] = '"#' . $c . '"';
                 }
@@ -2695,7 +2702,7 @@ trait Output {
             }
             $result .= '</style>' . PHP_EOL;
             // BEGIN MAIN BODY
-            if ($color != 'self') {
+            if ($color != 'self' && !$custom) {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
                 if ($inverted) {
                     $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
@@ -2749,9 +2756,14 @@ trait Output {
             wp_enqueue_script('lws-colorbrewer');
             wp_enqueue_script('lws-spin');
             $legendColors = array();
-            if ($color == 'self') {
-                $col = new ColorsManipulation($prop['fg_color']);
-                $col_array = $col->makeSteppedGradient(4, 50);
+            if ($color == 'self' || $custom) {
+                if ($color == 'self') {
+                    $col = new ColorsManipulation($prop['fg_color']);
+                    $col_array = $col->makeSteppedGradient(4, 50);
+                }
+                else {
+                    $col_array = Options::get_cschemes_palette($color);
+                }
                 $i = 0;
                 foreach ($col_array as $c) {
                     if ($i++ > 2) {
@@ -2888,9 +2900,14 @@ trait Output {
                 $unit = '';
             }
             $legendColors = array();
-            if ($color == 'self') {
-                $col = new ColorsManipulation($prop['fg_color']);
-                $col_array = $col->makeSteppedGradient($cpt-1, 50);
+            if ($color == 'self' || $custom) {
+                if ($color == 'self') {
+                    $col = new ColorsManipulation($prop['fg_color']);
+                    $col_array = $col->makeSteppedGradient($cpt-1, 50);
+                }
+                else {
+                    $col_array = Options::get_cschemes_palette($color);
+                }
                 foreach ($col_array as $c) {
                     $legendColors[] = '"#' . $c . '"';
                 }
@@ -2944,7 +2961,7 @@ trait Output {
                     $body .= '    var h04Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
                 }
             }
-            if ($color != 'self') {
+            if ($color != 'self' && !$custom) {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
                 if ($inverted) {
                     $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . '.reverse();}' . PHP_EOL;
@@ -3011,9 +3028,14 @@ trait Output {
                 $unit = '';
             }
             $legendColors = array();
-            if ($color == 'self') {
-                $col = new ColorsManipulation($prop['fg_color']);
-                $col_array = $col->makeSteppedGradient($cpt, 50);
+            if ($color == 'self' || $custom) {
+                if ($color == 'self') {
+                    $col = new ColorsManipulation($prop['fg_color']);
+                    $col_array = $col->makeSteppedGradient($cpt, 50);
+                }
+                else {
+                    $col_array = Options::get_cschemes_palette($color);
+                }
                 $i = 0;
                 foreach ($col_array as $c) {
                     if ($i++ == $full_cpt) {
@@ -3045,7 +3067,7 @@ trait Output {
             // BEGIN MAIN BODY
             $body .= '      var shift' . $uniq . ' = new Date();' . PHP_EOL;
             $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
-            if ($color != 'self') {
+            if ($color != 'self' && !$custom) {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
                 if ($inverted) {
                     $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . ' = color' . $uniq . '.reverse().slice(' . (string)($cpt - $full_cpt) . ');}' . PHP_EOL;
@@ -3121,9 +3143,14 @@ trait Output {
                 $unit = '';
             }
             $legendColors = array();
-            if ($color == 'self') {
-                $col = new ColorsManipulation($prop['fg_color']);
-                $col_array = $col->makeSteppedGradient($cpt, 50);
+            if ($color == 'self' || $custom) {
+                if ($color == 'self') {
+                    $col = new ColorsManipulation($prop['fg_color']);
+                    $col_array = $col->makeSteppedGradient($cpt, 50);
+                }
+                else {
+                    $col_array = Options::get_cschemes_palette($color);
+                }
                 $i = 0;
                 foreach ($col_array as $c) {
                     if ($i++ == $full_cpt) {
@@ -3158,7 +3185,7 @@ trait Output {
             // BEGIN MAIN BODY
             $body .= '      var shift' . $uniq . ' = new Date();' . PHP_EOL;
             $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
-            if ($color != 'self') {
+            if ($color != 'self' && !$custom) {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
                 if ($inverted) {
                     $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . ' = color' . $uniq . '.reverse().slice(' . (string)($cpt - $full_cpt) . ');}' . PHP_EOL;
@@ -3219,9 +3246,14 @@ trait Output {
             wp_enqueue_script('lws-colorbrewer');
             wp_enqueue_script('lws-spin');
             $legendColors = array();
-            if ($color == 'self') {
-                $col = new ColorsManipulation($prop['fg_color']);
-                $col_array = $col->makeSteppedGradient($cpt, 50);
+            if ($color == 'self' || $custom) {
+                if ($color == 'self') {
+                    $col = new ColorsManipulation($prop['fg_color']);
+                    $col_array = $col->makeSteppedGradient($cpt, 50);
+                }
+                else {
+                    $col_array = Options::get_cschemes_palette($color);
+                }
                 $i = 0;
                 foreach ($col_array as $c) {
                     if ($i++ == $full_cpt) {
@@ -3304,7 +3336,7 @@ trait Output {
                 $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
-            if ($color != 'self') {
+            if ($color != 'self' && !$custom) {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
                 if ($inverted) {
                     $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . ' = color' . $uniq . '.reverse().slice(' . (string)($cpt - $full_cpt) . ');}' . PHP_EOL;
@@ -3401,9 +3433,14 @@ trait Output {
             $ticks1 = $this->graph_ticks($domain1, $valuescale, $measurement1, $height, $forcefactor);
             $ticks2 = $this->graph_ticks($domain2, $valuescale2, $measurement2, $height, $forcefactor);
             $legendColors = array();
-            if ($color == 'self') {
-                $col = new ColorsManipulation($prop['fg_color']);
-                $col_array = $col->makeSteppedGradient(8, 50);
+            if ($color == 'self' || $custom) {
+                if ($color == 'self') {
+                    $col = new ColorsManipulation($prop['fg_color']);
+                    $col_array = $col->makeSteppedGradient(8, 50);
+                }
+                else {
+                    $col_array = Options::get_cschemes_palette($color);
+                }
                 $i = 0;
                 foreach ($col_array as $c) {
                     if ($i++ == $full_cpt) {
@@ -3501,7 +3538,7 @@ trait Output {
                 $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
-            if ($color != 'self') {
+            if ($color != 'self' && !$c) {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[3].slice(0);' . PHP_EOL;
                 $refcolor = ColorBrewer::get($color, 3, 0);
                 if ($inverted) {
@@ -3575,9 +3612,14 @@ trait Output {
             wp_enqueue_script('lws-colorbrewer');
             wp_enqueue_script('lws-spin');
             $legendColors = array();
-            if ($color == 'self') {
-                $col = new ColorsManipulation($prop['fg_color']);
-                $col_array = $col->makeSteppedGradient(8, 50);
+            if ($color == 'self' || $custom) {
+                if ($color == 'self') {
+                    $col = new ColorsManipulation($prop['fg_color']);
+                    $col_array = $col->makeSteppedGradient(8, 50);
+                }
+                else {
+                    $col_array = Options::get_cschemes_palette($color);
+                }
                 $i = 0;
                 foreach ($col_array as $c) {
                     if ($i++ == $full_cpt) {
@@ -3675,7 +3717,7 @@ trait Output {
                 $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
-            if ($color != 'self') {
+            if ($color != 'self' && !$custom) {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[3].slice(0);' . PHP_EOL;
                 if ($inverted) {
                     $body .= '    if (colorbrewer.' . $color . '[3][0] == color' . $uniq . '[0]) {color' . $uniq . ' = color' . $uniq . '.reverse().slice(' . (string)(1) . ');}' . PHP_EOL;
@@ -3760,8 +3802,13 @@ trait Output {
             $legendColors = array();
             $legendColors[] = 'div#'.$calendar.' .graph-rect{background-color: ' . $prop['bg_color'] . ' !important;fill: ' . $prop['bg_color'] . ' !important;}';
             $legendColors[] = 'div#'.$calendar.' .qi{background-color: ' . $prop['bg_color'] . ' !important;fill: ' . $prop['bg_color'] . ' !important;}';
-            if ($color == 'self') {
-                $col_array = $col->makeSteppedGradient($step, 50);
+            if ($color == 'self' || $custom) {
+                if ($color == 'self') {
+                    $col_array = $col->makeSteppedGradient($step, 50);
+                }
+                else {
+                    $col_array = Options::get_cschemes_palette($color);
+                }
                 if ($inverted) {
                     $col_array = array_reverse($col_array);
                 }
@@ -3964,11 +4011,20 @@ trait Output {
                     $titlestyle = '';
             }
             $legendColors = array();
-            if ($color == 'self') {
+            if ($color === 'self') {
                 $col = new ColorsManipulation($prop['fg_color']);
                 $col_array = $col->makeSteppedGradient($steps-1, 50);
                 foreach ($col_array as $c) {
                     $legendColors[] = '"#' . $c . '"';
+                }
+                if ($inverted) {
+                    $legendColors = array_reverse($legendColors);
+                }
+            }
+            if ($custom) {
+                $col = Options::get_cschemes_palette($color);
+                for ($i=0 ; $i < $steps ; $i++) {
+                    $legendColors[] = '"#' . $col[$i] . '"';
                 }
                 if ($inverted) {
                     $legendColors = array_reverse($legendColors);
@@ -3990,7 +4046,7 @@ trait Output {
             }
             $result .= '</style>' . PHP_EOL;
             // BEGIN MAIN BODY
-            if ($color != 'self' && $color != 'std') {
+            if ($color != 'self' && $color != 'std' && !$custom) {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $steps . '].slice(0);' . PHP_EOL;
                 if ($inverted) {
                     $body .= '    if (colorbrewer.' . $color . '[' . $steps . '][0] == color' . $uniq . '[0]) {color' . $uniq . ' = color' . $uniq . '.reverse().slice(0);}' . PHP_EOL;

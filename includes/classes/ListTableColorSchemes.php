@@ -26,13 +26,15 @@ class ColorSchemes extends Base {
     protected function column_colors($item){
         $s = '';
         foreach ($item['colors'] as $color) {
-            $s .= '<i class="' . LWS_FAS . ' fa-lg fa-fw fa-circle" style="color:' . $color . '"></i>';
+            $s .= '<i class="' . LWS_FAS . ' fa-lg fa-fw fa-circle" style="color:#' . $color . '"></i>';
         }
         return $s;
     }
 
     protected function column_name($item){
-        return '<i style="color:#999" class="' . LWS_FAS . ' fa-lg fa-fw fa-palette"></i>&nbsp;' . $item['name'];
+        $actions['edit'] = sprintf('<a href="?page=lws-cschemes&action=form&tab=edit&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['id']);
+        $actions['reset'] = sprintf('<a href="?page=lws-settings&action=reset-cschemes&tab=styles&id=%s">'.__('Reset', 'live-weather-station').'</a>', $item['id']);
+        return '<i style="color:#999" class="' . LWS_FAS . ' fa-lg fa-fw fa-palette"></i>&nbsp;' . $item['name'] . $this->row_actions($actions);
     }
 
     public function get_columns(){
@@ -52,8 +54,7 @@ class ColorSchemes extends Base {
         return array();
     }
 
-    public function prepare_items()
-    {
+    public function prepare_items(){
         $columns = $this->get_columns();
         $hidden = $this->get_hidden_columns();
         $sortable = $this->get_sortable_columns();

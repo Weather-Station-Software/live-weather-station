@@ -444,10 +444,10 @@ class Admin {
 
 
 
-        add_settings_field('lws_chart_styles_cschemes', __('Color schemes', 'live-weather-station'),
+        /*add_settings_field('lws_chart_styles_cschemes', __('Color schemes', 'live-weather-station'),
             array($this, 'lws_chart_styles_cschemes_callback'), 'lws_chart_styles', 'lws_chart_styles_section',
-            array(__('Semantics of the icon representing the wind direction in widgets.', 'live-weather-station')));
-        register_setting('lws_chart_styles', 'lws_chart_styles_cschemes');
+            array(__('Custom palettes available for all charts, in addition to standard palettes.', 'live-weather-station')));
+        register_setting('lws_chart_styles', 'lws_chart_styles_cschemes');*/
 
     }
 
@@ -473,9 +473,11 @@ class Admin {
      * @since 3.6.0
      */
     public function lws_chart_styles_cschemes_callback($args) {
-        $csListTable = new ColorSchemes();
+        /*$csListTable = new ColorSchemes();
         $csListTable->prepare_items();
+        echo '<style>div.tablenav.top, div.tablenav.bottom {display:none;}.widefat th {padding: 8px 10px !important;font-weight: 400 !important;}.row-actions{padding-left: 28px;}</style>';
         $csListTable->display();
+        echo '<p class="description">' . $args[0] . '</p>';*/
     }
 
 
