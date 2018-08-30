@@ -9,6 +9,7 @@ use WeatherStation\Data\History\Builder as History;
 use WeatherStation\SDK\Generic\Plugin\Season\Calculator as Season;
 use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Environment\Manager as EnvManager;
+use WeatherStation\System\Options\Handling as Options;
 
 /**
  * Arrays generator for javascript conversion.
@@ -2346,85 +2347,100 @@ trait Generator {
         $pi =  __('Pink', 'live-weather-station');
         $sp =  __('Spectral', 'live-weather-station');
         if ($standard) {
-            $result[] = array('std', '- ' . __('International wind standard', 'live-weather-station') . ' -');
+            $result[] = array('basic', '//->' . ucfirst(__('basic', 'live-weather-station')));
+            $result[] = array('std', __('International wind standard', 'live-weather-station'));
         }
         if ($self) {
-            $result[] = array('self', '- ' . __('Template color', 'live-weather-station') . ' -');
+            if (count($result) === 0) {
+                $result[] = array('basic', '//->' . ucfirst(__('basic', 'live-weather-station')));
+            }
+            $result[] = array('self', __('Template color', 'live-weather-station'));
             if ($inverted) {
-                $result[] = array('i_self', '- ' . __('Template color', 'live-weather-station') . ' (' . $r . ') -');
+                $result[] = array('i_self',  __('Template color', 'live-weather-station') . ' (' . $r . ')');
             }
         }
         if ($sequential) {
-            $result[] = array('Blues', $bu . ' (' . $dsq . ', ' . $tsh . ')');
-            if ($inverted) {$result[] = array('i_Blues', $bu . ' (' . $dsq . ', ' . $tsh . ', ' . $r . ')');}
-            $result[] = array('Greens', $gn . ' (' . $dsq . ', ' . $tsh . ')');
-            if ($inverted) {$result[] = array('i_Greens', $gn . ' (' . $dsq . ', ' . $tsh . ', ' . $r . ')');}
-            $result[] = array('Oranges', $or . ' (' . $dsq . ', ' . $tsh . ')');
-            if ($inverted) {$result[] = array('i_Oranges', $or . ' (' . $dsq . ', ' . $tsh . ', ' . $r . ')');}
-            $result[] = array('Purples', $pu . ' (' . $dsq . ', ' . $tsh . ')');
-            if ($inverted) {$result[] = array('i_Purples', $pu . ' (' . $dsq . ', ' . $tsh . ', ' . $r . ')');}
-            $result[] = array('Reds', $rd . ' (' . $dsq . ', ' . $tsh . ')');
-            if ($inverted) {$result[] = array('i_Reds', $rd . ' (' . $dsq . ', ' . $tsh . ', ' . $r . ')');}
-            $result[] = array('Greys', $gr . ' (' . $dsq . ', ' . $tsh . ')');
-            if ($inverted) {$result[] = array('i_Greys', $gr . ' (' . $dsq . ', ' . $tsh . ', ' . $r . ')');}
-            $result[] = array('BuGn', $bu . $sep . $gn . ' (' . $dsq . ', ' . $tmh . ')');
-            if ($inverted) {$result[] = array('i_BuGn', $bu . $sep . $gn . ' (' . $dsq . ', ' . $tmh . ', ' . $r . ')');}
-            $result[] = array('BuPu', $bu . $sep . $pu . ' (' . $dsq . ', ' . $tmh . ')');
-            if ($inverted) {$result[] = array('i_BuPu', $bu . $sep . $pu . ' (' . $dsq . ', ' . $tmh . ', ' . $r . ')');}
-            $result[] = array('GnBu', $gn . $sep . $bu . ' (' . $dsq . ', ' . $tmh . ')');
-            if ($inverted) {$result[] = array('i_GnBu', $gn . $sep . $bu . ' (' . $dsq . ', ' . $tmh . ', ' . $r . ')');}
-            $result[] = array('OrRd', $or . $sep . $rd . ' (' . $dsq . ', ' . $tmh . ')');
-            if ($inverted) {$result[] = array('i_OrRd', $or . $sep . $rd . ' (' . $dsq . ', ' . $tmh . ', ' . $r . ')');}
-            $result[] = array('PuBu', $pu . $sep . $bu . ' (' . $dsq . ', ' . $tmh . ')');
-            if ($inverted) {$result[] = array('i_PuBu', $pu . $sep . $bu . ' (' . $dsq . ', ' . $tmh . ', ' . $r . ')');}
-            $result[] = array('PuBuGn', $pu . $sep . $bu . $sep . $gn . ' (' . $dsq . ', ' . $tmh . ')');
-            if ($inverted) {$result[] = array('i_PuBuGn', $pu . $sep . $bu . $sep . $gn . ' (' . $dsq . ', ' . $tmh . ', ' . $r . ')');}
-            $result[] = array('PuRd', $pu . $sep . $rd . ' (' . $dsq . ', ' . $tmh . ')');
-            if ($inverted) {$result[] = array('i_PuRd', $pu . $sep . $rd . ' (' . $dsq . ', ' . $tmh . ', ' . $r . ')');}
-            $result[] = array('RdPu', $rd . $sep . $pu . ' (' . $dsq . ', ' . $tmh . ')');
-            if ($inverted) {$result[] = array('i_RdPu', $rd . $sep . $pu . ' (' . $dsq . ', ' . $tmh . ', ' . $r . ')');}
-            $result[] = array('YlGn', $yl . $sep . $gn . ' (' . $dsq . ', ' . $tmh . ')');
-            if ($inverted) {$result[] = array('i_YlGn', $yl . $sep . $gn . ' (' . $dsq . ', ' . $tmh . ', ' . $r . ')');}
-            $result[] = array('YlOrBr', $yl . $sep . $or . $sep . $br . ' (' . $dsq . ', ' . $tmh . ')');
-            if ($inverted) {$result[] = array('i_YlOrBr', $yl . $sep . $or . $sep . $br . ' (' . $dsq . ', ' . $tmh . ', ' . $r . ')');}
-            $result[] = array('YlOrRd', $yl . $sep . $or . $sep . $rd . ' (' . $dsq . ', ' . $tmh . ')');
-            if ($inverted) {$result[] = array('i_YlOrRd', $yl . $sep . $or . $sep . $rd . ' (' . $dsq . ', ' . $tmh . ', ' . $r . ')');}
+            $result[] = array('dsq', '//->' . ucfirst($dsq) . ' / ' . ucfirst($tsh));
+            $result[] = array('Blues', $bu );
+            if ($inverted) {$result[] = array('i_Blues', $bu . ' (' . $r . ')');}
+            $result[] = array('Greens', $gn );
+            if ($inverted) {$result[] = array('i_Greens', $gn . ' (' . $r . ')');}
+            $result[] = array('Oranges', $or );
+            if ($inverted) {$result[] = array('i_Oranges', $or . ' (' . $r . ')');}
+            $result[] = array('Purples', $pu );
+            if ($inverted) {$result[] = array('i_Purples', $pu . ' (' . $r . ')');}
+            $result[] = array('Reds', $rd );
+            if ($inverted) {$result[] = array('i_Reds', $rd . ' (' . $r . ')');}
+            $result[] = array('Greys', $gr );
+            if ($inverted) {$result[] = array('i_Greys', $gr . ' (' . $r . ')');}
+            $result[] = array('dsq', '//->' . ucfirst($dsq) . ' / ' . ucfirst($tmh));
+            $result[] = array('BuGn', $bu . $sep . $gn );
+            if ($inverted) {$result[] = array('i_BuGn', $bu . $sep . $gn . ' ('   . $r . ')');}
+            $result[] = array('BuPu', $bu . $sep . $pu );
+            if ($inverted) {$result[] = array('i_BuPu', $bu . $sep . $pu . ' ('   . $r . ')');}
+            $result[] = array('GnBu', $gn . $sep . $bu );
+            if ($inverted) {$result[] = array('i_GnBu', $gn . $sep . $bu . ' ('   . $r . ')');}
+            $result[] = array('OrRd', $or . $sep . $rd );
+            if ($inverted) {$result[] = array('i_OrRd', $or . $sep . $rd . ' ('   . $r . ')');}
+            $result[] = array('PuBu', $pu . $sep . $bu );
+            if ($inverted) {$result[] = array('i_PuBu', $pu . $sep . $bu . ' ('   . $r . ')');}
+            $result[] = array('PuBuGn', $pu . $sep . $bu . $sep . $gn );
+            if ($inverted) {$result[] = array('i_PuBuGn', $pu . $sep . $bu . $sep . $gn . ' ('   . $r . ')');}
+            $result[] = array('PuRd', $pu . $sep . $rd );
+            if ($inverted) {$result[] = array('i_PuRd', $pu . $sep . $rd . ' ('   . $r . ')');}
+            $result[] = array('RdPu', $rd . $sep . $pu );
+            if ($inverted) {$result[] = array('i_RdPu', $rd . $sep . $pu . ' ('   . $r . ')');}
+            $result[] = array('YlGn', $yl . $sep . $gn );
+            if ($inverted) {$result[] = array('i_YlGn', $yl . $sep . $gn . ' ('   . $r . ')');}
+            $result[] = array('YlOrBr', $yl . $sep . $or . $sep . $br );
+            if ($inverted) {$result[] = array('i_YlOrBr', $yl . $sep . $or . $sep . $br . ' ('   . $r . ')');}
+            $result[] = array('YlOrRd', $yl . $sep . $or . $sep . $rd );
+            if ($inverted) {$result[] = array('i_YlOrRd', $yl . $sep . $or . $sep . $rd . ' ('   . $r . ')');}
         }
         if ($diverging) {
-            $result[] = array('PRGn', $pu . $sep . $gn . ' (' . $ddv . ')');
-            if ($inverted) {$result[] = array('i_PRGn', $pu . $sep . $gn . ' (' . $ddv . ', ' . $r . ')');}
-            $result[] = array('PuOr', $or . $sep . $pu . ' (' . $ddv . ')');
-            if ($inverted) {$result[] = array('i_PuOr', $or . $sep . $pu . ' (' . $ddv . ', ' . $r . ')');}
-            $result[] = array('RdBu', $rd . $sep . $bu . ' (' . $ddv . ')');
-            if ($inverted) {$result[] = array('i_RdBu', $rd . $sep . $bu . ' (' . $ddv . ', ' . $r . ')');}
-            $result[] = array('RdGy', $rd . $sep . $gr . ' (' . $ddv . ')');
-            if ($inverted) {$result[] = array('i_RdGy', $rd . $sep . $gr . ' (' . $ddv . ', ' . $r . ')');}
-            $result[] = array('RdYlBu', $rd . $sep . $yl . $sep . $bu . ' (' . $ddv . ')');
-            if ($inverted) {$result[] = array('i_RdYlBu', $rd . $sep . $yl . $sep . $bu . ' (' . $ddv . ', ' . $r . ')');}
-            $result[] = array('BrBG', $br . $sep . $bu . $sep . $gn . ' (' . $ddv . ')');
-            if ($inverted) {$result[] = array('i_BrBG', $br . $sep . $bu . $sep . $gn . ' (' . $ddv . ', ' . $r . ')');}
-            $result[] = array('PiYG', $pi . $sep . $yl . $sep . $gn . ' (' . $ddv . ')');
-            if ($inverted) {$result[] = array('i_PiYG', $pi . $sep . $yl . $sep . $gn . ' (' . $ddv . ', ' . $r . ')');}
-            $result[] = array('Spectral', $sp . ' (' . $ddv . ')');
-            if ($inverted) {$result[] = array('i_Spectral', $sp . ' (' . $ddv . ', ' . $r . ')');}
+            $result[] = array('ddv', '//->' . ucfirst($ddv));
+            $result[] = array('PRGn', $pu . $sep . $gn );
+            if ($inverted) {$result[] = array('i_PRGn', $pu . $sep . $gn . ' ('  . $r . ')');}
+            $result[] = array('PuOr', $or . $sep . $pu );
+            if ($inverted) {$result[] = array('i_PuOr', $or . $sep . $pu . ' ('  . $r . ')');}
+            $result[] = array('RdBu', $rd . $sep . $bu );
+            if ($inverted) {$result[] = array('i_RdBu', $rd . $sep . $bu . ' ('  . $r . ')');}
+            $result[] = array('RdGy', $rd . $sep . $gr );
+            if ($inverted) {$result[] = array('i_RdGy', $rd . $sep . $gr . ' ('  . $r . ')');}
+            $result[] = array('RdYlBu', $rd . $sep . $yl . $sep . $bu );
+            if ($inverted) {$result[] = array('i_RdYlBu', $rd . $sep . $yl . $sep . $bu . ' ('  . $r . ')');}
+            $result[] = array('BrBG', $br . $sep . $bu . $sep . $gn );
+            if ($inverted) {$result[] = array('i_BrBG', $br . $sep . $bu . $sep . $gn . ' ('  . $r . ')');}
+            $result[] = array('PiYG', $pi . $sep . $yl . $sep . $gn );
+            if ($inverted) {$result[] = array('i_PiYG', $pi . $sep . $yl . $sep . $gn . ' ('  . $r . ')');}
+            $result[] = array('Spectral', $sp );
+            if ($inverted) {$result[] = array('i_Spectral', $sp . ' ('  . $r . ')');}
         }
         if ($qualitative) {
-            $result[] = array('Accent', __('Accent', 'live-weather-station') . ' (' . $dql . ')');
-            if ($inverted) {$result[] = array('i_Accent', __('Accent', 'live-weather-station') . ' (' . $dql . ', ' . $r . ')');}
-            $result[] = array('Dark2', __('Dark', 'live-weather-station') . ' (' . $dql . ')');
-            if ($inverted) {$result[] = array('i_Dark2', __('Dark', 'live-weather-station') . ' (' . $dql . ', ' . $r . ')');}
-            $result[] = array('Paired', __('Paired', 'live-weather-station') . ' (' . $dql . ')');
-            if ($inverted) {$result[] = array('i_Paired', __('Paired', 'live-weather-station') . ' (' . $dql . ', ' . $r . ')');}
-            $result[] = array('Pastel1', __('Pastel', 'live-weather-station') . ' - 1 (' . $dql . ')');
-            if ($inverted) {$result[] = array('i_Pastel1', __('Pastel', 'live-weather-station') . ' - 1 (' . $dql . ', ' . $r . ')');}
-            $result[] = array('Pastel2', __('Pastel', 'live-weather-station') . ' - 2 (' . $dql . ')');
-            if ($inverted) {$result[] = array('i_Pastel2', __('Pastel', 'live-weather-station') . ' - 2 (' . $dql . ', ' . $r . ')');}
-            $result[] = array('Set1', __('Set', 'live-weather-station') . ' - 1 (' . $dql . ')');
-            if ($inverted) {$result[] = array('i_Set1', __('Set', 'live-weather-station') . ' - 1 (' . $dql . ', ' . $r . ')');}
-            $result[] = array('Set2', __('Set', 'live-weather-station') . ' - 2 (' . $dql . ')');
-            if ($inverted) {$result[] = array('i_Set2', __('Set', 'live-weather-station') . ' - 2 (' . $dql . ', ' . $r . ')');}
-            $result[] = array('Set3', __('Set', 'live-weather-station') . ' - 3 (' . $dql . ')');
-            if ($inverted) {$result[] = array('i_Set3', __('Set', 'live-weather-station') . ' - 3 (' . $dql . ', ' . $r . ')');}
+            $result[] = array('dql', '//->' . ucfirst($dql));
+            $result[] = array('Accent', __('Accent', 'live-weather-station') );
+            if ($inverted) {$result[] = array('i_Accent', __('Accent', 'live-weather-station') . ' ('  . $r . ')');}
+            $result[] = array('Dark2', __('Dark', 'live-weather-station') );
+            if ($inverted) {$result[] = array('i_Dark2', __('Dark', 'live-weather-station') . ' ('  . $r . ')');}
+            $result[] = array('Paired', __('Paired', 'live-weather-station') );
+            if ($inverted) {$result[] = array('i_Paired', __('Paired', 'live-weather-station') . ' ('  . $r . ')');}
+            $result[] = array('Pastel1', __('Pastel', 'live-weather-station') . ' - 1');
+            if ($inverted) {$result[] = array('i_Pastel1', __('Pastel', 'live-weather-station') . ' - 1 ('  . $r . ')');}
+            $result[] = array('Pastel2', __('Pastel', 'live-weather-station') . ' - 2');
+            if ($inverted) {$result[] = array('i_Pastel2', __('Pastel', 'live-weather-station') . ' - 2 ('  . $r . ')');}
+            $result[] = array('Set1', __('Set', 'live-weather-station') . ' - 1');
+            if ($inverted) {$result[] = array('i_Set1', __('Set', 'live-weather-station') . ' - 1 ('  . $r . ')');}
+            $result[] = array('Set2', __('Set', 'live-weather-station') . ' - 2');
+            if ($inverted) {$result[] = array('i_Set2', __('Set', 'live-weather-station') . ' - 2 ('  . $r . ')');}
+            $result[] = array('Set3', __('Set', 'live-weather-station') . ' - 3');
+            if ($inverted) {$result[] = array('i_Set3', __('Set', 'live-weather-station') . ' - 3 ('  . $r . ')');}
+        }
+        if ((bool)get_option('live_weather_station_advanced_mode')) {
+            $result[] = array('cst', '//->' . ucfirst(__('Custom', 'live-weather-station')));
+            foreach (Options::get_cschemes() as $key=>$cs) {
+                $result[] = array($key, $cs['name']);
+                if ($inverted) {$result[] = array('i_' . $key, $cs['name'] . ' ('  . $r . ')');}
+            }
         }
         return $result;
     }

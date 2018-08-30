@@ -120,11 +120,29 @@ trait Handling {
 
     /**
      * Get the color schemes for the plugin.
+     *
      * @return array The color schemes available for the plugin.
      * @since 3.6.0
      */
     public static function get_cschemes() {
         return get_option(self::$live_weather_station_styles_chart_cscheme_key, self::live_weather_station_cshemes());
+    }
+
+    /**
+     * Get the color schemes for the plugin.
+     *
+     * @param string $id The id of the color scheme.
+     * @return array The corresponding palette.
+     * @since 3.6.0
+     */
+    public static function get_cschemes_palette($id) {
+        $cschemes = self::get_cschemes();
+        if (array_key_exists(strtolower($id), $cschemes)) {
+            return $cschemes[strtolower($id)]['colors'];
+        }
+        else {
+            return array('fda403','f38d12','e9761a','de5d33','d24143','c6184f','a91352','8a1253');
+        }
     }
 
     /**
@@ -150,7 +168,12 @@ trait Handling {
      */
     protected static function live_weather_station_cshemes(){
         return array(
-            'cs00' => array('name' => __('Customized palette #1','live-weather-station'), 'colors' => array('#618685','#699899','#71aaae','#79bdc2','#85d0d6','#b1ded7','#d9ecd8','#fefbd8'))
+            'cs00' => array('name' => __('Customized palette','live-weather-station') . ' #1', 'colors' => array('fda403','f38d12','e9761a','de5d33','d24143','c6184f','a91352','8a1253')),
+            'cs01' => array('name' => __('Customized palette','live-weather-station') . ' #2', 'colors' => array('8a79af','b283ae','d58ead','e2a4ab','f0b9a9','fdcea6','ffe7b2','ffffc1')),
+            'cs02' => array('name' => __('Customized palette','live-weather-station') . ' #3', 'colors' => array('13334c','114269','075288','6281ab','bcc5d0','fee1c9','ffa36e','fd5f00')),
+            'cs03' => array('name' => __('Customized palette','live-weather-station') . ' #4', 'colors' => array('00a8b5','5a81a9','72589c','9b448e','c93880','eb496d','f5864d','fbb901')),
+            'cs04' => array('name' => __('Customized palette','live-weather-station') . ' #5', 'colors' => array('618685','699899','71aaae','79bdc2','85d0d6','b1ded7','d9ecd8','fefbd8')),
+            'cs05' => array('name' => __('Customized palette','live-weather-station') . ' #6', 'colors' => array('08141e','0f2a3f','20394f','4e495f','816271','997577','c3a38a','f6d6bd')),
         );
     }
 

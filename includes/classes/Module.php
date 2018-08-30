@@ -493,12 +493,27 @@ abstract class Maintainer {
      */
     protected function get_key_value_option_select($id, $title, $items, $label=true, $selected=null, $hidden=false, $displayed=true) {
         $result = '';
+        $cpt = 0;
+        foreach ($items as $item) {
+            if (strlen($item[1]) > $cpt && strpos($item[1], '//->') === false) {
+                $cpt = strlen($item[1]);
+            }
+        }
+        $b = '';
+        for ($i=1; $i<$cpt/2; $i++) {
+            $b .= '█';
+        }
         foreach ($items as $item) {
             $sel = '';
             if (!is_null($selected)){
-                if ($selected == $item[0]) {
+                if ($selected === $item[0]) {
                     $sel = ' SELECTED';
                 }
+            }
+            if (strpos($item[1], '//->') === 0) {
+                $sel = ' DISABLED';
+                $item[1] = str_replace('//->', '', $item[1]);
+                $item[1] = $b . ' ' . $item[1];
             }
             $result .= '<option value="' . $item[0] . '"' . $sel . '>' . $item[1] . '</option>;';
         }
