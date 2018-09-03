@@ -30,6 +30,9 @@ use WeatherStation\System\Help\InlineHelp;
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_uv'); ?>" name="<?php echo $this->get_field_name('show_uv'); ?>"<?php checked( $show_uv ); ?> />
     <label for="<?php echo $this->get_field_id('show_uv'); ?>"><?php esc_html_e( 'Display UV (if available)' , 'live-weather-station'); ?></label>
     <br/>
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_sunshine'); ?>" name="<?php echo $this->get_field_name('show_sunshine'); ?>"<?php checked( $show_sunshine ); ?> />
+    <label for="<?php echo $this->get_field_id('show_sunshine'); ?>"><?php esc_html_e( 'Display sunshine duration (if available)' , 'live-weather-station'); ?></label>
+    <br/>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('hide_obsolete'); ?>" name="<?php echo $this->get_field_name('hide_obsolete'); ?>"<?php checked( $hide_obsolete ); ?> />
     <label for="<?php echo $this->get_field_id('hide_obsolete'); ?>"><?php esc_html_e( 'Hide obsolete measurements' , 'live-weather-station'); ?></label>
 </p>

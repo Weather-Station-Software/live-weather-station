@@ -32,7 +32,7 @@ class ColorSchemes extends Base {
     }
 
     protected function column_name($item){
-        $actions['edit'] = sprintf('<a href="?page=lws-cschemes&action=form&tab=edit&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['id']);
+        $actions['edit'] = sprintf('<a href="?page=lws-settings&action=form&tab=edit&service=palette&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['id']);
         $actions['reset'] = sprintf('<a href="?page=lws-settings&action=reset-cschemes&tab=styles&id=%s">'.__('Reset', 'live-weather-station').'</a>', $item['id']);
         return '<i style="color:#999" class="' . LWS_FAS . ' fa-lg fa-fw fa-palette"></i>&nbsp;' . $item['name'] . $this->row_actions($actions);
     }

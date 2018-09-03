@@ -25,34 +25,34 @@ class OWMApiClient
     /**
      * @var string $weatherUrl The basic api url to fetch weather data from.
      */
-    private $weatherUrl = "http://api.openweathermap.org/data/2.5/weather?";
+    private $weatherUrl = "https://api.openweathermap.org/data/2.5/weather?";
 
     /**
      * @var string $weatherUrl The  api url to fetch station data from.
      */
-    private $stationUrl = "http://api.openweathermap.org/data/2.5/station?";
+    private $stationUrl = "https://api.openweathermap.org/data/2.5/station?";
 
     /**
      * @var string $url The basic api url to fetch weekly forecast data from.
      */
-    private $weatherHourlyForecastUrl = "http://api.openweathermap.org/data/2.5/forecast?";
+    private $weatherHourlyForecastUrl = "https://api.openweathermap.org/data/2.5/forecast?";
 
     /**
      * @var string $url The basic api url to fetch daily forecast data from.
      */
-    private $weatherDailyForecastUrl = "http://api.openweathermap.org/data/2.5/forecast/daily?";
+    private $weatherDailyForecastUrl = "https://api.openweathermap.org/data/2.5/forecast/daily?";
 
     /**
      * @var string $url The basic api url to fetch history weather data from.
      */
-    private $weatherHistoryUrl = "http://api.openweathermap.org/data/2.5/history/city?";
+    private $weatherHistoryUrl = "https://api.openweathermap.org/data/2.5/history/city?";
 
     /**
-     * The copyright notice. This is no official text, this hint was created regarding to http://openweathermap.org/copyright.
+     * The copyright notice. This is no official text, this hint was created regarding to https://openweathermap.org/copyright.
      *
      * @var string $copyright
      */
-    const COPYRIGHT = "Weather data from <a href=\"http://www.openweathermap.org\">OpenWeatherMap.org</a>";
+    const COPYRIGHT = "Weather data from <a href=\"https://www.openweathermap.org\">OpenWeatherMap.org</a>";
 
     /**
      * @var \WeatherStation\SDK\OpenWeatherMap\AbstractCache|bool $cacheClass The cache class.
@@ -108,7 +108,7 @@ class OWMApiClient
      * @param array|int|string $query The place to get weather information for. For possible values see below.
      * @param string           $units Can be either 'metric' or 'imperial' (default). This affects almost all units returned.
      * @param string           $lang  The language to use for descriptions, default is 'en'. For possible values see below.
-     * @param string           $appid Your app id, default ''. See http://openweathermap.org/appid for more details.
+     * @param string           $appid Your app id, default ''. See https://openweathermap.org/appid for more details.
      *
      * @throws OWMException If OpenWeatherMap returns an error.
      * @throws \InvalidArgumentException If an argument error occurs.
@@ -171,7 +171,7 @@ class OWMApiClient
      * @param array|int|string $query The place to get weather information for. For possible values see below.
      * @param string           $units Can be either 'metric' or 'imperial' (default). This affects almost all units returned.
      * @param string           $lang  The language to use for descriptions, default is 'en'. For possible values see below.
-     * @param string           $appid Your app id, default ''. See http://openweathermap.org/appid for more details.
+     * @param string           $appid Your app id, default ''. See https://openweathermap.org/appid for more details.
      * @param int              $days  For how much days you want to get a forecast. Default 1, maximum: 16.
      *
      * @throws OWMException If OpenWeatherMap returns an error.
@@ -244,7 +244,7 @@ class OWMApiClient
      * @param string           $type
      * @param string           $units Can be either 'metric' or 'imperial' (default). This affects almost all units returned.
      * @param string           $lang  The language to use for descriptions, default is 'en'. For possible values see below.
-     * @param string           $appid Your app id, default ''. See http://openweathermap.org/appid for more details.
+     * @param string           $appid Your app id, default ''. See https://openweathermap.org/appid for more details.
      *
      * @throws OWMException If OpenWeatherMap returns an error.
      * @throws \InvalidArgumentException If an argument error occurs.
@@ -306,7 +306,7 @@ class OWMApiClient
      * @param array|int|string $query The place to get weather information for. For possible values see below.
      * @param string           $units Can be either 'metric' or 'imperial' (default). This affects almost all units returned.
      * @param string           $lang  The language to use for descriptions, default is 'en'. For possible values see below.
-     * @param string           $appid Your app id, default ''. See http://openweathermap.org/appid for more details.
+     * @param string           $appid Your app id, default ''. See https://openweathermap.org/appid for more details.
      * @param string           $mode  The format of the data fetched. Possible values are 'json', 'html' and 'xml' (default).
      *
      * @return string Returns false on failure and the fetched data in the format you specified on success.
@@ -352,7 +352,7 @@ class OWMApiClient
      * @param integer          $query The station to get weather information for.
      * @param string           $units Can be either 'metric' or 'imperial' (default). This affects almost all units returned.
      * @param string           $lang  The language to use for descriptions, default is 'en'. For possible values see below.
-     * @param string           $appid Your app id, default ''. See http://openweathermap.org/appid for more details.
+     * @param string           $appid Your app id, default ''. See https://openweathermap.org/appid for more details.
      * @param string           $mode  The format of the data fetched. Possible values are 'json', 'html' and 'xml' (default).
      *
      * @return string Returns false on failure and the fetched data in the format you specified on success.
@@ -379,7 +379,7 @@ class OWMApiClient
      * @param array|int|string $query The place to get weather information for. For possible values see below.
      * @param string           $units Can be either 'metric' or 'imperial' (default). This affects almost all units returned.
      * @param string           $lang  The language to use for descriptions, default is 'en'. For possible values see below.
-     * @param string           $appid Your app id, default ''. See http://openweathermap.org/appid for more details.
+     * @param string           $appid Your app id, default ''. See https://openweathermap.org/appid for more details.
      * @param string           $mode  The format of the data fetched. Possible values are 'json', 'html' and 'xml' (default).
      *
      * @return string Returns false on failure and the fetched data in the format you specified on success.
@@ -425,7 +425,7 @@ class OWMApiClient
      * @param array|int|string $query The place to get weather information for. For possible values see below.
      * @param string           $units Can be either 'metric' or 'imperial' (default). This affects almost all units returned.
      * @param string           $lang  The language to use for descriptions, default is 'en'. For possible values see below.
-     * @param string           $appid Your app id, default ''. See http://openweathermap.org/appid for more details.
+     * @param string           $appid Your app id, default ''. See https://openweathermap.org/appid for more details.
      * @param string           $mode  The format of the data fetched. Possible values are 'json', 'html' and 'xml' (default)
      * @param int              $cnt   How many days of forecast shall be returned? Maximum (and default): 16
      *
@@ -482,7 +482,7 @@ class OWMApiClient
      *                                          "hour" or "day".
      * @param string           $units           Can be either 'metric' or 'imperial' (default). This affects almost all units returned.
      * @param string           $lang            The language to use for descriptions, default is 'en'. For possible values see below.
-     * @param string           $appid           Your app id, default ''. See http://openweathermap.org/appid for more details.
+     * @param string           $appid           Your app id, default ''. See https://openweathermap.org/appid for more details.
      *
      * @throws \InvalidArgumentException
      *

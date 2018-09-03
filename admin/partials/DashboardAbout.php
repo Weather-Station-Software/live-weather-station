@@ -24,7 +24,7 @@ use WeatherStation\System\Environment\Manager as EnvManager;
             <?php } ?>
         </li>
         <li>
-            <?php echo sprintf(__( 'Thanks to %1$s for its tools and its reactivity, to %2$s for Netatmo tests and kindness from Austria and to %3$s for advice and patience in testing stickertags generator. Also, many thanks to all the translation editors and contributors for making %4$s available and maintained in many languages: girls and guys, you\'re awesome!', 'live-weather-station'), Help::get(-6), Help::get(-7), Help::get(-8), LWS_PLUGIN_NAME);?>
+            <?php echo sprintf(__( 'Thanks to %1$s for its tools and its reactivity, to %2$s for Netatmo tests and kindness from Austria, to %4$s and to %3$s for advice and patience in testing stickertags generator. Also, many thanks to all the translation editors and contributors for making %4$s available and maintained in many languages: girls and guys, you\'re awesome!', 'live-weather-station'), Help::get(-6), Help::get(-7), Help::get(-8), LWS_PLUGIN_NAME);?>
         </li>
     </ul>
 </div>

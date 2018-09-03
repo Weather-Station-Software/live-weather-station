@@ -32,7 +32,7 @@ class Builder
             'partial_absolute_humidity', 'saturation_absolute_humidity', 'irradiance', 'uv_index', 'illuminance',
             'soil_temperature', 'leaf_wetness', 'moisture_content', 'moisture_tension', 'evapotranspiration',
             'windangle', 'gustangle', 'windstrength', 'guststrength', 'rain', 'rain_hour_aggregated', 'visibility',
-            'rain_day_aggregated', 'strike_count', 'strike_instant', 'weather', 'dew_point', 'frost_point');
+            'rain_day_aggregated', 'strike_count', 'strike_instant', 'weather', 'dew_point', 'frost_point', 'sunshine');
     
     public $standard_measurements = 
         array('health_idx', 'co2', 'humidity', 'cloudiness', 'noise', 'pressure', 'temperature', 'irradiance', 
@@ -43,7 +43,8 @@ class Builder
               'equivalent_potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
               'saturation_vapor_pressure', 'vapor_pressure', 'absolute_humidity', 'partial_absolute_humidity',
               'saturation_absolute_humidity', 'soil_temperature', 'leaf_wetness', 'moisture_content',
-              'moisture_tension', 'evapotranspiration', 'gustangle', 'guststrength', 'strike_instant', 'strike_count');
+              'moisture_tension', 'evapotranspiration', 'gustangle', 'guststrength', 'strike_instant', 'strike_count',
+              'sunshine');
 
     private $Live_Weather_Station;
     private $version;
@@ -160,6 +161,9 @@ class Builder
                 if ($measure_type == 'rain_day_aggregated') {
                     $result = array();
                 }
+                if ($measure_type == 'sunshine') {
+                    $result = array();
+                }
                 if ($measure_type == 'rain') {
                     $result = array();
                 }
@@ -178,6 +182,9 @@ class Builder
                     $result = array('AVG' => 'avg', 'MID' => 'mid');
                 }
                 if ($measure_type == 'rain_day_aggregated') {
+                    $result = array();
+                }
+                if ($measure_type == 'sunshine') {
                     $result = array();
                 }
                 if ($measure_type == 'rain') {
@@ -200,6 +207,9 @@ class Builder
                 if ($measure_type == 'rain_day_aggregated') {
                     $result = array('MAX'=>'agg');
                 }
+                if ($measure_type == 'sunshine') {
+                    $result = array('MAX'=>'agg');
+                }
                 if ($measure_type == 'rain') {
                     $result = array();
                 }
@@ -220,6 +230,9 @@ class Builder
                 if ($measure_type == 'rain_day_aggregated') {
                     $result = array();
                 }
+                if ($measure_type == 'sunshine') {
+                    $result = array();
+                }
                 if ($measure_type == 'rain') {
                     $result = array();
                 }
@@ -236,6 +249,9 @@ class Builder
                     $result = array();
                 }
                 if ($measure_type == 'rain_day_aggregated') {
+                    $result = array();
+                }
+                if ($measure_type == 'sunshine') {
                     $result = array();
                 }
                 if ($measure_type == 'rain') {

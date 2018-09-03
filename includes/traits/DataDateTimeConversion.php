@@ -157,15 +157,15 @@ trait Conversion {
      *
      * @param string $ts The UTC MySql datetime to be converted.
      * @param string $tz The timezone.
-     * @param string $ps Optional. String to add at the end.
+     * @param integer $factor Optional. Factor to multiply by.
      * @return string Date "offsetted" to the given timezone.
      * @since 3.4.0
      */
-    public static function get_js_datetime_from_mysql_utc($ts, $tz, $ps='000') {
+    public static function get_js_datetime_from_mysql_utc($ts, $tz, $factor=1000) {
         $utc_tz = new \DateTimeZone('UTC');
         $target_tz = new \DateTimeZone($tz);
         $utc_date = new \DateTime($ts, $utc_tz);
-        $result = (string)($utc_date->getTimestamp()+ $target_tz->getOffset($utc_date)).$ps;
+        $result = ($utc_date->getTimestamp() + $target_tz->getOffset($utc_date)) * $factor;
         return $result;
     }
 
@@ -174,16 +174,16 @@ trait Conversion {
      *
      * @param string $ts The UTC MySql date to be converted.
      * @param string $tz The timezone.
-     * @param string $ps Optional. String to add at the end.
-     * @return string Date "offsetted" to the given timezone.
+     * @param integer $factor Optional. String to add at the end.
+     * @return integer Date "offsetted" to the given timezone.
      * @since 3.4.0
      */
-    public static function get_js_date_from_mysql_utc($ts, $tz, $ps='000') {
+    public static function get_js_date_from_mysql_utc($ts, $tz, $factor=1000) {
         $ts .= ' 12:00:00';
         $utc_tz = new \DateTimeZone('UTC');
         //$target_tz = new \DateTimeZone($tz);
         $utc_date = new \DateTime($ts, $utc_tz);
-        $result = (string)($utc_date->getTimestamp()).$ps;
+        $result = $utc_date->getTimestamp() * $factor;
         return $result;
     }
 
@@ -477,13 +477,14 @@ trait Conversion {
     }
 
     /**
-     * Converts a decimal number of seconds into the correct format.
+     * Converts a decimal number of seconds into an array.
      *
      * @param integer $age The age in seconds.
-     * @return string Formatted age in days, hours, minutes and seconds.
-     * @since 3.1.0
+     * @param boolean $legend Optional. Add the legend.
+     * @return array Array of days, hours, minutes and seconds.
+     * @since 3.6.0
      */
-    public static function get_age_hours_from_seconds($age) {
+    public static function get_age_array_from_seconds($age, $legend=false) {
         $intervals = array(
             array(60, __('second', 'live-weather-station'), __('seconds', 'live-weather-station')),
             array(60, __('minute', 'live-weather-station'), __('minutes', 'live-weather-station')),
@@ -495,14 +496,25 @@ trait Conversion {
             $age = round(($age-$val)/$interval[0], 0);
             if ($val > 0) {
                 if ($val == 1) {
-                    $value[] = $val . ' ' . $interval[1];
+                    $value[] = $val . ($legend? ' ' . $interval[1] : '');
                 }
                 else {
-                    $value[] = $val . ' ' . $interval[2];
+                    $value[] = $val . ($legend? ' ' . $interval[2] : '');
                 }
             }
         }
-        return implode(', ', array_reverse($value));
+        return array_reverse($value);
+    }
+
+    /**
+     * Converts a decimal number of seconds into the correct format.
+     *
+     * @param integer $age The age in seconds.
+     * @return string Formatted age in days, hours, minutes and seconds.
+     * @since 3.1.0
+     */
+    public static function get_age_hours_from_seconds($age) {
+        return implode(', ', self::get_age_array_from_seconds($age, true));
     }
 
     /**

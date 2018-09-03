@@ -342,6 +342,7 @@ trait Generator {
             case 'signal':
             case 'health_idx':
             case 'cbi':
+            case 'sunshine':
             case 'day_length':
             case 'day_length_c':
             case 'day_length_n':
@@ -724,6 +725,9 @@ trait Generator {
                 }
                 if ($wflw || $bstorm || $bsky) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'illuminance', $comparison, $distribution, $current, $video, $picture);
+                }
+                if ($real) {
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'sunshine', $comparison, $distribution, $current, $video, $picture);
                 }
                 break;
             case 'namodule6': // Soil module

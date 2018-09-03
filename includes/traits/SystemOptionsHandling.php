@@ -129,7 +129,7 @@ trait Handling {
     }
 
     /**
-     * Get the color schemes for the plugin.
+     * Get the palette for the plugin.
      *
      * @param string $id The id of the color scheme.
      * @return array The corresponding palette.
@@ -142,6 +142,35 @@ trait Handling {
         }
         else {
             return array('fda403','f38d12','e9761a','de5d33','d24143','c6184f','a91352','8a1253');
+        }
+    }
+
+    /**
+     * Get the color scheme for the plugin.
+     *
+     * @param string $id The id of the color scheme.
+     * @return array The corresponding scheme.
+     * @since 3.6.0
+     */
+    public static function get_cscheme($id) {
+        $cschemes = self::get_cschemes();
+        if (array_key_exists(strtolower($id), $cschemes)) {
+            return array('id' => $id, 'detail' => $cschemes[strtolower($id)]);
+        }
+    }
+
+    /**
+     * Update the color scheme.
+     *
+     * @param string $id The id of the color scheme.
+     * @param array $value The value of the color scheme.
+     * @since 3.6.0
+     */
+    public static function update_cscheme($id, $value) {
+        $cschemes = self::get_cschemes();
+        if (array_key_exists(strtolower($id), $cschemes)) {
+            $cschemes[$id] = $value;
+            update_option(self::$live_weather_station_styles_chart_cscheme_key, $cschemes);
         }
     }
 
@@ -390,6 +419,12 @@ trait Handling {
                                                 'max_alarm' => 2000,
                                                 'min_boundary' => 0,
                                                 'max_boundary' => 5000),
+            'sunshine' => array (               'min_value' => 0,
+                                                'max_value' => 86400,
+                                                'min_alarm' => 1000,
+                                                'max_alarm' => 40000,
+                                                'min_boundary' => 0,
+                                                'max_boundary' => 86400),
             'illuminance' => array (            'min_value' => 0,
                                                 'max_value' => 110000,
                                                 'min_alarm' => 0,
@@ -480,11 +515,11 @@ trait Handling {
      * @param $id string Optional. Init only specified id.
      * @since 3.6.0
      */
-    protected static function init_cschemes_options($id=null) {
+    public static function init_cschemes_options($id=null) {
         if (isset($id)) {
             $sc = get_option(self::$live_weather_station_styles_chart_cscheme_key, self::live_weather_station_cshemes());
             $init = self::live_weather_station_cshemes();
-            if (array_key_exists($sc, $id) && array_key_exists($init, $id)) {
+            if (array_key_exists($id, $sc) && array_key_exists($id, $init)) {
                 $sc[$id] = $init[$id];
                 update_option(self::$live_weather_station_styles_chart_cscheme_key, $sc);
             }

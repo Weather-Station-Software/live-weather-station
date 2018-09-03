@@ -544,6 +544,9 @@ trait Description {
             case 'irradiance':
                 $result = ($abbr ? __('Irradiance', 'live-weather-station') : __('Solar irradiance', 'live-weather-station'));
                 break;
+            case 'sunshine':
+                $result = ($abbr ? __('Sunshine', 'live-weather-station') : __('Sunshine duration', 'live-weather-station'));
+                break;
             case 'uv_index':
                 $result = ($abbr ? __('UV', 'live-weather-station') : __('UV index', 'live-weather-station'));
                 break;
