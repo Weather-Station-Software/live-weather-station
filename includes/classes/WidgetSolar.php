@@ -69,6 +69,7 @@ class Solar extends \WP_Widget {
                 'hide_obsolete' => false,
                 'show_current' => false,
                 'show_irradiance' => false,
+                'show_sunshine' => false,
                 'show_illuminance' => false,
                 'show_uv' => false,
                 'follow_light' => false,
@@ -83,6 +84,7 @@ class Solar extends \WP_Widget {
         $result['hide_obsolete'] = !empty($result['hide_obsolete']) ? 1 : 0;
         $result['show_current'] = !empty($result['show_current']) ? 1 : 0;
         $result['show_irradiance'] = !empty($result['show_irradiance']) ? 1 : 0;
+        $result['show_sunshine'] = !empty($result['show_sunshine']) ? 1 : 0;
         $result['show_illuminance'] = !empty($result['show_illuminance']) ? 1 : 0;
         $result['show_uv'] = !empty($result['show_uv']) ? 1 : 0;
         $result['flat_design'] = !empty($result['flat_design']) ? 1 : 0;
@@ -112,6 +114,7 @@ class Solar extends \WP_Widget {
         $show_current = (bool)$instance['show_current'];
         $hide_obsolete = (bool)$instance['hide_obsolete'];
         $show_irradiance = (bool)$instance['show_irradiance'] ;
+        $show_sunshine = (bool)$instance['show_sunshine'] ;
         $show_illuminance = (bool)$instance['show_illuminance'] ;
         $show_uv = (bool)$instance['show_uv'] ;
         $flat_design = (bool)$instance['flat_design'] ;
@@ -240,6 +243,7 @@ class Solar extends \WP_Widget {
         $instance['hide_obsolete'] = !empty($new_instance['hide_obsolete']) ? 1 : 0;
         $instance['show_current'] = !empty($new_instance['show_current']) ? 1 : 0;
         $instance['show_irradiance'] = !empty($new_instance['show_irradiance']) ? 1 : 0;
+        $instance['show_sunshine'] = !empty($new_instance['show_sunshine']) ? 1 : 0;
         $instance['show_illuminance'] = !empty($new_instance['show_illuminance']) ? 1 : 0;
         $instance['show_uv'] = !empty($new_instance['show_uv']) ? 1 : 0;
         $instance['flat_design'] = !empty($new_instance['flat_design']) ? 1 : 0;
@@ -272,6 +276,7 @@ class Solar extends \WP_Widget {
         $show_current = (bool)$instance['show_current'];
         $hide_obsolete = (bool)$instance['hide_obsolete'];
         $show_irradiance = (bool)$instance['show_irradiance'] ;
+        $show_sunshine = (bool)$instance['show_sunshine'] ;
         $show_illuminance = (bool)$instance['show_illuminance'] ;
         $show_uv = (bool)$instance['show_uv'] ;
         $flat = (bool)$instance['flat_design'] ;
@@ -347,6 +352,18 @@ class Solar extends \WP_Widget {
                         }
                         else {
                             $show_irradiance = false;
+                        }
+                        if (array_key_exists('sunshine', $module['datas'])) {
+                            $NAModule5 = true;
+                            $v = self::get_age_array_from_seconds($module['datas']['sunshine']['value']);
+                            $datas['sunshine'] = array();
+                            $datas['sunshine']['hvalue'] = $v[0];
+                            $datas['sunshine']['hunit'] = __('h', 'live-weather-station');
+                            $datas['sunshine']['mvalue'] = $v[1];
+                            $datas['sunshine']['munit'] = __('min.', 'live-weather-station');
+                        }
+                        else {
+                            $sunshine = false;
                         }
                         if (array_key_exists('illuminance', $module['datas'])) {
                             $NAModule5 = true;

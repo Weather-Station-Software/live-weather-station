@@ -1232,7 +1232,7 @@ class Admin {
                     $message = __('%s have not been updated. Please try again.', 'live-weather-station');
                     $message = sprintf($message, '<em>' . ucfirst($settings_string) . '</em>');
                     add_settings_error('lws_nonce_error', 200, $message, 'error');
-                    Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to correctly update settings for '. $section . ' category.');
+                    Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to correctly update settings for '. $section . ' category.');
                 }
             }
             if ($action == 'reset') {
@@ -1246,7 +1246,7 @@ class Admin {
                     $message = __('%s have not been reset to defaults. Please try again.', 'live-weather-station');
                     $message = sprintf($message, '<em>' . ucfirst($settings_string) . '</em>');
                     add_settings_error('lws_nonce_error', 200, $message, 'error');
-                    Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to correctly reset to defaults settings for '. $section . ' category.');
+                    Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to correctly reset to defaults settings for '. $section . ' category.');
                 }
             }
 
@@ -1259,7 +1259,7 @@ class Admin {
             $message = sprintf($message, '<em>' . lcfirst($settings_string) . '</em>');
             add_settings_error('lws_nonce_error', 403, $message, 'error');
             Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-            Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to securely update settings for '. $section . ' category.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely update settings for '. $section . ' category.');
         }
         return $result;
     }
@@ -1499,7 +1499,7 @@ class Admin {
                             $args = compact('dashboard');
                     }
                 }
-                if ($service != '' && ($tab == 'add' || $tab == 'add-edit') && $action == 'do') {
+                if ($service != '' && ($tab == 'add' || $tab == 'add-edit' || $tab == 'edit') && $action == 'do') {
                     switch (strtolower($service)) {
                         case 'netatmo':
                             if (array_key_exists('add-netatmo', $_POST)) {
@@ -1718,6 +1718,24 @@ class Admin {
                     case 'cron-force': $this->cron_reschedule(true); break;
                     case 'cron-reschedule': $this->cron_reschedule(); break;
                     case 'relaunch-watchdog': $this->relaunch_watchdog(); break;
+                    case 'reset-cschemes': $this->reset_palette($id); break;
+                    case 'form':
+                        if ($service != '' && ($tab == 'add' || $tab == 'add-edit' || $tab == 'edit')) {
+                            $view = $action . '-' . $tab . '-' . $service;
+                        }
+                        switch ($service) {
+                            case 'palette': $subject = self::get_cscheme($id); break;
+                            default: $subject =null;
+                        }
+                        $args = compact('subject');
+                        break;
+                    case 'do':
+                        if ($service != '') {
+                            if (array_key_exists('edit-palette', $_POST)) {
+                                $this->save_palette();
+                            }
+                        }
+                        break;
                     default: $this->check_options();
                 }
                 break;
@@ -1997,6 +2015,57 @@ class Admin {
     }
 
     /**
+     * Reset a custom palette.
+     *
+     * @param string $id The palette id;
+     * @since 3.6.0
+     */
+    private function reset_palette($id) {
+        self::init_cschemes_options($id);
+        add_settings_error('lws_nonce_success', 200, __('Custom palette has been reset to defaults.', 'live-weather-station'), 'updated');
+        Logger::info($this->service, null, null, null, null, null, 0, 'Custom palette has been reset to defaults.');
+    }
+
+    /**
+     * Reset a custom palette.
+     *
+     * @since 3.6.0
+     */
+    private function save_palette() {
+        $sec = false;
+        if (array_key_exists('_wpnonce', $_POST)) {
+            $sec = wp_verify_nonce($_POST['_wpnonce'], 'edit-palette');
+        }
+        if ($sec) {
+            $id = '';
+            if (array_key_exists('id', $_POST)) {
+                $id = $_POST['id'];
+            }
+            $name = '';
+            if (array_key_exists('palette_name', $_POST)) {
+                $name = wp_kses($_POST['palette_name'], array());
+            }
+            $colors = self::get_cschemes_palette($id);
+            for ($i=0 ; $i<8 ; $i++) {
+                if (array_key_exists('color_'.$i, $_POST)) {
+                    $c = str_replace('#', '', $_POST['color_'.$i]);
+                    if ($c !== '') {
+                        $colors[$i] = $c;
+                    }
+                }
+            }
+            self::update_cscheme($id, array('name' => $name, 'colors' => $colors));
+            add_settings_error('lws_nonce_success', 200, __('Custom palette has been correctly updated.', 'live-weather-station'), 'updated');
+            Logger::info($this->service, null, null, null, null, null, 0, 'Custom palette has been correctly updated.');
+        }
+        else {
+            add_settings_error('lws_nonce_error', 403, __('Custom palette has not been updated. Please try again.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely update a palette.');
+        }
+    }
+
+    /**
      * Switch to imperial mode.
      *
      * @since 3.0.0
@@ -2099,7 +2168,7 @@ class Admin {
                     $message .= '<br/>' . __('The error message is "%s".', 'live-weather-station');
                     $message = sprintf($message, '<em>' . $s . '</em>');
                     add_settings_error('lws_nonce_error', 200, $message, 'error');
-                    Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to correctly connect ' . LWS_PLUGIN_NAME . ' to '. $service . '.');
+                    Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to correctly connect ' . LWS_PLUGIN_NAME . ' to '. $service . '.');
                 }
             }
             if ($action == 'disconnect') {
@@ -2133,7 +2202,7 @@ class Admin {
                     $message = __('Unable to disconnect %s from %s. Please try again.', 'live-weather-station');
                     $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . $service . '</em>');
                     add_settings_error('lws_nonce_error', 200, $message, 'error');
-                    Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to correctly disconnect ' . LWS_PLUGIN_NAME . ' from '. $service . '.');
+                    Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to correctly disconnect ' . LWS_PLUGIN_NAME . ' from '. $service . '.');
                 }
             }
             if ($action == 'reconnect') {
@@ -2168,7 +2237,7 @@ class Admin {
                     $message = __('Unable to disconnect %s from %s. Please try again.', 'live-weather-station');
                     $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . $service . '</em>');
                     add_settings_error('lws_nonce_error', 200, $message, 'error');
-                    Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to correctly disconnect ' . LWS_PLUGIN_NAME . ' from '. $service . '.');
+                    Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to correctly disconnect ' . LWS_PLUGIN_NAME . ' from '. $service . '.');
                 }
             }
         }
@@ -2177,7 +2246,7 @@ class Admin {
             $message = sprintf($message, '<em>' . $service . '</em>');
             add_settings_error('lws_nonce_error', 403, $message, 'error');
             Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-            Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to securely update connection to '. $service . ' service.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely update connection to '. $service . ' service.');
         }
     }
 
@@ -2242,7 +2311,7 @@ class Admin {
                 $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', $service, $station['station_id'], $station['station_name'], null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-                Logger::error($this->service, $service, $station['station_id'], $station['station_name'], null, null, 0, 'It had not been possible to securely delete this station.');
+                Logger::error($this->service, $service, $station['station_id'], $station['station_name'], null, null, 0, 'It was not possible to securely delete this station.');
             }
         }
         else {
@@ -2627,7 +2696,7 @@ class Admin {
                 $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', 'Netatmo', $device_id, $station['station_name'], null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-                Logger::error($this->service, 'Netatmo', $device_id, $station['station_name'], null, null, 0, 'It had not been possible to securely add this station.');
+                Logger::error($this->service, 'Netatmo', $device_id, $station['station_name'], null, null, 0, 'It was not possible to securely add this station.');
             }
         }
         else {
@@ -2676,7 +2745,7 @@ class Admin {
                 $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', 'Bloomsky', $device_id, $station['station_name'], null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-                Logger::error($this->service, 'Bloomsky', $device_id, $station['station_name'], null, null, 0, 'It had not been possible to securely add this station.');
+                Logger::error($this->service, 'Bloomsky', $device_id, $station['station_name'], null, null, 0, 'It was not possible to securely add this station.');
             }
         }
         else {
@@ -2824,7 +2893,7 @@ class Admin {
                 $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', 'OpenWeatherMap', $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-                Logger::error($this->service, 'OpenWeatherMap', $station_id, $station_name, null, null, 0, 'It had not been possible to securely add or update this station.');
+                Logger::error($this->service, 'OpenWeatherMap', $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
             }
         }
         else {
@@ -2953,7 +3022,7 @@ class Admin {
                 $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', null, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-                Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It had not been possible to securely add or update this station.');
+                Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
             }
         }
         else {
@@ -3075,7 +3144,7 @@ class Admin {
                 $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', null, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-                Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It had not been possible to securely add or update this station.');
+                Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
             }
         }
         else {
@@ -3213,7 +3282,7 @@ class Admin {
                 $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', null, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-                Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It had not been possible to securely add or update this station.');
+                Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
             }
         }
         else {
@@ -3351,7 +3420,7 @@ class Admin {
                 $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', null, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-                Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It had not been possible to securely add or update this station.');
+                Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
             }
         }
         else {
@@ -3459,7 +3528,7 @@ class Admin {
                         $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                         add_settings_error('lws_nonce_error', 403, $message, 'error');
                         Logger::critical('Security', 'Weather Underground', null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-                        Logger::error($this->service, 'Weather Underground', null, null, null, null, 0, 'It had not been possible to securely add a station.');
+                        Logger::error($this->service, 'Weather Underground', null, null, null, null, 0, 'It was not possible to securely add a station.');
 
                     }
                     else {
@@ -3467,7 +3536,7 @@ class Admin {
                         $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                         add_settings_error('lws_nonce_error', 403, $message, 'error');
                         Logger::critical('Security', 'Weather Underground', $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-                        Logger::error($this->service, 'Weather Underground', $station_id, $station_name, null, null, 0, 'It had not been possible to securely update this station.');
+                        Logger::error($this->service, 'Weather Underground', $station_id, $station_name, null, null, 0, 'It was not possible to securely update this station.');
                     }
                 }
         }
@@ -3580,7 +3649,7 @@ class Admin {
                 $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', null, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-                Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It had not been possible to securely add or update this station.');
+                Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
             }
         }
         else {

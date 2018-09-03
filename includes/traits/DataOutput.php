@@ -44,7 +44,7 @@ trait Output {
         'moon_age', 'o3_distance', 'co_distance', 'humidity_min', 'humidity_max', 'pressure_min', 'pressure_max',
         'day_length', 'health_idx', 'cbi', 'pressure_ref', 'wet_bulb', 'air_density', 'wood_emc',
         'equivalent_temperature', 'potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
-        'partial_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 'soil_temperature', 'leaf_wetness',
+        'partial_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 'sunshine', 'soil_temperature', 'leaf_wetness',
         'moisture_content', 'moisture_tension', 'evapotranspiration', 'strike_count', 'strike_instant',
         'strike_distance', 'strike_bearing', 'visibility', 'picture', 'video', 'video_imperial', 'video_metric');
     private $not_showable_measurements = array('battery', 'firmware', 'signal', 'loc_timezone', 'loc_altitude',
@@ -220,9 +220,9 @@ trait Output {
             $identical_module=false;
             $similar_set=false;
             $identical_set=false;
-            $end_date = '000';
+            $end_date = 1000;
             if ($type == 'calendarhm') {
-                $end_date = '';
+                $end_date = 1;
             }
             $cpt = 0;
             if (count($args) > 0) {
@@ -297,7 +297,7 @@ trait Output {
                         $result['xdomain']['12'] = $result['xdomain']['min'] + 14400000*3;
                         $result['xdomain']['16'] = $result['xdomain']['min'] + 14400000*4;
                         $result['xdomain']['20'] = $result['xdomain']['min'] + 14400000*5;
-                        $result['xdomain']['max'] = (integer)self::get_js_datetime_from_mysql_utc($max, $station['loc_timezone']) + 1000;
+                        $result['xdomain']['max'] = self::get_js_datetime_from_mysql_utc($max, $station['loc_timezone']) + 1000;
                         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
                     }
                     if ($mode == 'yearly') {
@@ -827,12 +827,12 @@ trait Output {
                                 }
                                 if ($timescale != 'adaptative') {
                                     if ($mode == 'daily') {
-                                        $__start = (integer)self::get_js_datetime_from_mysql_utc($min, $station['loc_timezone'], '');
-                                        $__end = (integer)self::get_js_datetime_from_mysql_utc($max, $station['loc_timezone'], '');
+                                        $__start = self::get_js_datetime_from_mysql_utc($min, $station['loc_timezone'], 1);
+                                        $__end = self::get_js_datetime_from_mysql_utc($max, $station['loc_timezone'], 1);
                                     }
                                     if ($mode == 'yearly') {
-                                        $__start = (integer)self::get_js_date_from_mysql_utc($min, $station['loc_timezone'], '');
-                                        $__end = (integer)self::get_js_date_from_mysql_utc($max, $station['loc_timezone'], '');
+                                        $__start = self::get_js_date_from_mysql_utc($min, $station['loc_timezone'], 1);
+                                        $__end = self::get_js_date_from_mysql_utc($max, $station['loc_timezone'], 1);
                                     }
                                     $d = $__start;
                                     while ($d <= $__end) {
@@ -1477,8 +1477,8 @@ trait Output {
                                             $a = (array)$val;
                                             $t[$a['timestamp']] = $a;
                                         }
-                                        $__start = (integer)self::get_js_date_from_mysql_utc($min, $station['loc_timezone'], '');
-                                        $__end = (integer)self::get_js_date_from_mysql_utc($max, $station['loc_timezone'], '');
+                                        $__start = (integer)self::get_js_date_from_mysql_utc($min, $station['loc_timezone'], 1);
+                                        $__end = (integer)self::get_js_date_from_mysql_utc($max, $station['loc_timezone'], 1);
                                         $d = $__start;
                                         while ($d <= $__end) {
                                             $__date = date('Y-m-d', $d);
@@ -6524,11 +6524,12 @@ trait Output {
      * @access   protected
      */
     protected function output_value($value, $type, $unit=false , $textual=false, $module_type='NAMain', $tz='') {
-        $result = $value;
         $not = __('N/A', 'live-weather-station');
         if ($value == $not) {
             return $not;
         }
+        $value = round($value, $this->decimal_for_output($type));
+        $result = $value;
         switch (strtolower($type)) {
             case 'battery':
                 $result = $this->get_battery_percentage($value, $module_type);
@@ -6715,6 +6716,7 @@ trait Output {
                     }
                 }
                 break;
+            case 'sunshine':
             case 'day_length':
             case 'day_length_c':
             case 'day_length_n':
@@ -7298,6 +7300,9 @@ trait Output {
             case 'irradiance':
                 $result = '<i %1$s class="' . LWS_FAS . ' fa-' . (LWS_FA5?'sign-in-alt':'sign-in') . ' %2$s fa-rotate-90" aria-hidden="true"></i>';
                 break;
+            case 'sunshine':
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-' . (LWS_FA5?'umbrella-beach':'sun-o') . ' %2$s" aria-hidden="true"></i>';
+                break;
             case 'uv_index':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-horizon-alt" aria-hidden="true"></i>';
                 break;
@@ -7876,6 +7881,15 @@ trait Output {
                 $result['long'] = $this->get_irradiance_unit_full($ref) ;
                 $result['dimension'] = 'irradiance';
                 break;
+            case 'sunshine':
+                $ref = 0;
+                if ($force_ref != 0) {
+                    $ref = $force_ref;
+                }
+                $result['unit'] = $this->get_sunshine_unit($ref) ;
+                $result['long'] = $this->get_sunshine_unit_full($ref) ;
+                $result['dimension'] = 'duration';
+                break;
             case 'illuminance':
                 $ref = 0;
                 if ($force_ref != 0) {
@@ -8247,6 +8261,9 @@ trait Output {
                 break;
             case 'irradiance':
                 $result = __('irradiance', 'live-weather-station') ;
+                break;
+            case 'sunshine':
+                $result = __('sunshine', 'live-weather-station') ;
                 break;
             case 'illuminance':
                 $result = __('illuminance', 'live-weather-station') ;
@@ -8929,6 +8946,7 @@ trait Output {
             case 'windstrength_hour_max':
             case 'windstrength_day_max':
             case 'irradiance':
+            case 'sunshine':
             case 'uv_index':
             case 'illuminance':
             case 'soil_temperature':
@@ -9292,6 +9310,7 @@ trait Output {
                             }
                             break;
                         case 'irradiance':
+                        case 'sunshine':
                         case 'uv_index':
                         case 'illuminance':
                         case 'strike_count':
@@ -9493,6 +9512,7 @@ trait Output {
         $wind_strength = null;
         $uv_index = null;
         $irradiance = null;
+        $sunshine = null;
         $illuminance = null;
         $rain = null;
         $rain_day_aggregated = null;

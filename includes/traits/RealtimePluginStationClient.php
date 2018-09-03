@@ -313,6 +313,14 @@ trait StationClient {
         else {
             $updates['measure_value'] = 0;
         }
+        $updates['measure_timestamp'] = $timestamp;
+        $updates['measure_type'] = 'sunshine';
+        if (is_numeric($weather[55])) {
+            $updates['measure_value'] = $weather[55]*3600;
+        }
+        else {
+            $updates['measure_value'] = 0;
+        }
         $this->update_data_table($updates);
         Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 

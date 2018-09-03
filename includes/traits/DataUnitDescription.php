@@ -691,6 +691,28 @@ trait Description {
     }
 
     /**
+     * Get sunshine duration units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.6.0
+     */
+    protected function get_sunshine_unit( $id = 0 ) {
+        return __( 's' , 'live-weather-station');
+    }
+
+    /**
+     * Get available sunshine duration full units.
+     *
+     * @param integer $id Optional. The unit id.
+     * @return string The unit in plain text.
+     * @since 3.6.0
+     */
+    protected function get_sunshine_unit_full( $id = 0 ) {
+        return __( 'second' , 'live-weather-station');
+    }
+
+    /**
      * Get available irradiance units.
      *
      * @param integer $id Optional. The unit id.
