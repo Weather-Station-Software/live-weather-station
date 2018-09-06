@@ -17,6 +17,7 @@ use WeatherStation\Engine\Module\Maintainer as ModuleMaintainer;
 use WeatherStation\Engine\Module\Current\Gauge;
 use WeatherStation\Engine\Module\Current\Lcd;
 use WeatherStation\Engine\Module\Current\Meter;
+use WeatherStation\Engine\Module\Current\Snapshot;
 use WeatherStation\Engine\Module\Current\Textual;
 use WeatherStation\Engine\Module\Daily\AStream as DailyAStream;
 use WeatherStation\Engine\Module\Daily\DistributionRC as DailyDistributionRC;
@@ -91,6 +92,9 @@ class Handling {
         Gauge::register_module('current');
         Lcd::register_module('current');
         Meter::register_module('current');
+        if ($bsky) {
+            Snapshot::register_module('current');
+        }
         DailyLine::register_module('daily');
         DailyLines::register_module('daily');
         DailyDoubleLine::register_module('daily');

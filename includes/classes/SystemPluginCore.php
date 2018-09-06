@@ -201,6 +201,8 @@ class Core {
         add_shortcode( 'live-weather-station-icon', array($plugin_public, 'icon_shortcodes'));
         add_shortcode( 'live-weather-station-textual', array($plugin_public, 'textual_shortcodes'));
         add_shortcode( 'live-weather-station-livetextual', array($plugin_public, 'livetextual_shortcodes'));
+        add_shortcode( 'live-weather-station-snapshot', array($plugin_public, 'snapshot_shortcodes'));
+        add_shortcode( 'live-weather-station-livesnapshot', array($plugin_public, 'livesnapshot_shortcodes'));
         add_shortcode( 'live-weather-station-lcd', array($plugin_public, 'lcd_shortcodes'));
         add_shortcode( 'live-weather-station-timelapse', array($plugin_public, 'timelapse_shortcodes'));
 		add_shortcode( 'live-weather-station-justgage', array($plugin_public, 'justgage_shortcodes'));

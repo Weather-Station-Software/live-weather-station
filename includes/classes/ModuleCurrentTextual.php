@@ -138,50 +138,33 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         $content = '';
         $content .= '$("#current-textual-datas-color-' . $this->station_guid . '").parent().parent().parent().find("button").click(function() {';
         $content .= '$("#current-textual-datas-module-' . $this->station_guid . '" ).change();});';
-
         $content .= '$("#current-textual-datas-module-' . $this->station_guid . '").change(function() {';
         $content .= 'var js_array_current_textual_measurement_' . $this->station_guid . ' = js_array_current_textual_' . $this->station_guid . '[$(this).val()][2];';
         $content .= '$("#current-textual-datas-measurement-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_textual_measurement_' . $this->station_guid . ').each(function (i) {';
         $content .= '$("#current-textual-datas-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_textual_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
         $content .= '$("#current-textual-datas-measurement-' . $this->station_guid . '" ).change();});';
-        
         $content .= '$("#current-textual-datas-measurement-' . $this->station_guid . '").change(function() {';
         $content .= 'var js_array_current_textual_element_' . $this->station_guid . ' = js_array_current_textual_' . $this->station_guid . '[$("#current-textual-datas-module-' . $this->station_guid . '").val()][2][$(this).val()][2];';
         $content .= '$("#current-textual-datas-element-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_textual_element_' . $this->station_guid . ').each(function (i) {';
         $content .= '$("#current-textual-datas-element-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_textual_element_' . $this->station_guid . '[i][0]+"</option>");});';
         $content .= '$("#current-textual-datas-element-' . $this->station_guid . '" ).change();});';
-
         $content .= '$("#current-textual-datas-element-' . $this->station_guid . '").change(function() {';
         $content .= 'var js_array_current_textual_format_' . $this->station_guid . ' = js_array_current_textual_' . $this->station_guid . '[$("#current-textual-datas-module-' . $this->station_guid . '").val()][2][$("#current-textual-datas-measurement-' . $this->station_guid . '").val()][2][$(this).val()][2];';
         $content .= '$("#current-textual-datas-format-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_textual_format_' . $this->station_guid . ').each(function (i) {';
         $content .= '$("#current-textual-datas-format-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_textual_format_' . $this->station_guid . '[i][0]+"</option>");});';
         $content .= '$("#current-textual-datas-format-' . $this->station_guid . '" ).change();});';
-
         $content .= '$("#current-textual-datas-format-' . $this->station_guid . '").change(function() {';
         $content .= '$("#current-textual-datas-data-' . $this->station_guid . '" ).change();});';
-
         $content .= '$("#current-textual-datas-data-' . $this->station_guid . '").change(function() {';
-
-
-
-
         $content .= '$("#current-textual-datas-animation-' . $this->station_guid . '").prop("disabled", ($("#current-textual-datas-data-' . $this->station_guid . '").val()=="inline"));';
         $content .= '$("#current-textual-datas-speed-' . $this->station_guid . '").prop("disabled", ($("#current-textual-datas-data-' . $this->station_guid . '").val()=="inline"));';
         $content .= '$("#current-textual-datas-color-' . $this->station_guid . '").prop("disabled", ($("#current-textual-datas-data-' . $this->station_guid . '").val()=="inline"));';
-
-
-
-
-
-
         $content .= '$("#current-textual-datas-animation-' . $this->station_guid . '" ).change();});';
-
         $content .= '$("#current-textual-datas-animation-' . $this->station_guid . '").change(function() {';
         $content .= '$("#current-textual-datas-speed-' . $this->station_guid . '" ).change();});';
-
         $content .= '$("#current-textual-datas-speed-' . $this->station_guid . '").change(function() {';
         $content .= 'var output = js_array_current_textual_' . $this->station_guid . '[$("#current-textual-datas-module-' . $this->station_guid . '").val()][2][$("#current-textual-datas-measurement-' . $this->station_guid . '").val()][2][$("#current-textual-datas-element-' . $this->station_guid . '").val()][2][$("#current-textual-datas-format-' . $this->station_guid . '").val()][2];';
         $content .= 'var sc_sc = "live-weather-station-textual";';
@@ -199,9 +182,7 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var shortcode = "["+sc_sc+" device_id=\'"+sc_device+"\' module_id=\'"+sc_module+"\' measure_type=\'"+sc_measurement+"\' element=\'"+sc_element+"\' format=\'"+sc_format+"\' fx=\'"+sc_animation+"\' color=\'"+sc_color+"\' speed=\'"+sc_speed+"\']";';
         $content .= '$("#current-textual-datas-output-' . $this->station_guid . '").html(output);';
         $content .= '$("#current-textual-datas-shortcode-' . $this->station_guid . '").html(shortcode);});';
-
         $content .= '$("#current-textual-datas-module-' . $this->station_guid . '" ).change();';
-        
         return $this->get_script_box($content);
     }
 

@@ -494,13 +494,8 @@ trait Conversion {
         foreach ($intervals as $interval) {
             $val = $age % $interval[0];
             $age = round(($age-$val)/$interval[0], 0);
-            if ($val > 0) {
-                if ($val == 1) {
-                    $value[] = $val . ($legend? ' ' . $interval[1] : '');
-                }
-                else {
-                    $value[] = $val . ($legend? ' ' . $interval[2] : '');
-                }
+            if (($val > 0 && $legend) || ($val >= 0 && !$legend)) {
+                $value[] = $val . ($legend? ' ' . $interval[($val === 1?1:2)] : '');
             }
         }
         return array_reverse($value);

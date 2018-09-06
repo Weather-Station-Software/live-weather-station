@@ -97,7 +97,7 @@ else {
             <?php endif;?>
             <?php if ($show_sunshine):?>
                 <!-- SUNSHINE DURATION -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Sunhine duration', 'live-weather-station').'"' : ''); ?>>
+                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Sunshine duration', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"></div>
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"></div>
