@@ -38,8 +38,10 @@ foreach ($modules as $module) {
                     .actionable-selected:hover {border-radius:6px;cursor:pointer; -moz-transition: all .2s ease-in; -o-transition: all .2s ease-in; -webkit-transition: all .2s ease-in; transition: all .2s ease-in; opacity: 0.6 !important;}
                     .actionable:hover {border-radius:6px;cursor:pointer; -moz-transition: all .2s ease-in; -o-transition: all .2s ease-in; -webkit-transition: all .2s ease-in; transition: all .2s ease-in; background: #f5f5f5;border:1px solid #e0e0e0;}
                     <?php if (!LWS_FA5) { ?>
-                    #yearly-astream, #daily-astream {margin-top: 12px !important;}
-                    <?php } ?>
+                        #yearly-astream, #daily-astream, #current-snapshot {margin-top: 12px !important;}
+                    <?php } else {?>
+                        #current-snapshot {margin-top: 16px !important;}
+                    <?php }?>
                 </style>
                 <?php foreach ($modules as $module) { ?>
                     <div id="<?php echo $module->get_id(); ?>" class="container-actionable"><span class="actionable<?php echo $module->is_selected()?' actionable-selected':''; ?>"><span style="color:<?php echo $module->is_selected()?$colors['text']:$module->get_icon_color(); ?>;" class="<?php echo $module->get_icon(); ?>"><?php echo $module->get_icon_index() != '' ? '<span style="font-size:12px;">' . $module->get_icon_index() . '</span>':''; ?></span></span></div>

@@ -2235,7 +2235,7 @@ trait Generator {
     /**
      * Get textual animation array.
      *
-     * @return array An array containing the line size ready to convert to a JS array.
+     * @return array An array containing the textual animations ready to convert to a JS array.
      * @since 3.6.0
      */
     protected function get_textual_animation_js_array() {
@@ -2244,6 +2244,20 @@ trait Generator {
         $result[] = array('fade-to-initial',  __('Fade', 'live-weather-station'));
         $result[] = array('glow',  __('Glow', 'live-weather-station'));
         $result[] = array('blink',  __('Blink', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get picture animation array.
+     *
+     * @return array An array containing the picture animations ready to convert to a JS array.
+     * @since 3.6.0
+     */
+    protected function get_picture_animation_js_array() {
+        $result = array();
+        $result[] = array('none',  __('None', 'live-weather-station'));
+        $result[] = array('fade-from-to',  __('Fade', 'live-weather-station'));
+        $result[] = array('spin',  __('Spinner', 'live-weather-station'));
         return $result;
     }
 

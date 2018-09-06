@@ -1098,7 +1098,12 @@ trait Query {
         $table_name = $wpdb->prefix . self::live_weather_station_media_table();
         $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $device_id."' AND item_type='" . $type."' AND module_type='NAModuleV' ORDER BY `timestamp` DESC LIMIT " . (string)($rank-1) . ",1";
         try {
-            $query = $wpdb->get_results($sql, ARRAY_A);
+            $cache_id = 'get_video_'.$type . '_' . $device_id;
+            $query = Cache::get_query($cache_id);
+            if ($query === false) {
+                $query = $wpdb->get_results($sql, ARRAY_A);
+                Cache::set_query($cache_id, $query);
+            }
             if (is_array($query) && !empty($query)) {
                 return $query[0];
             }

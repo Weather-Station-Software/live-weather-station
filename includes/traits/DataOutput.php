@@ -4712,7 +4712,7 @@ trait Output {
     }
 
     /**
-     * Get value for Timelapse panel shortcodes.
+     * Get value for Timelapse shortcodes.
      *
      * @return  string  $attributes The value queryed by the shortcode.
      * @since 3.6.0
@@ -4763,6 +4763,121 @@ trait Output {
         else {
             $result = __('No timelapse for this date.', 'live-weather-station');
         }
+        return $result;
+    }
+
+    /**
+     * Get value for snapshot shortcodes.
+     *
+     * @return  string  $attributes The value queryed by the shortcode.
+     * @since 3.6.0
+     */
+    public function snapshot_shortcodes($attributes) {
+        $_attributes = shortcode_atts(array('device_id' => '','module_id' => '','measure_type' => '','size' => '','fx' => '','speed' => '','mode'=>'full','uid'=>'','debug'=>''), $attributes);
+        $fingerprint = uniqid('', true);
+        $uniq = 'snapshot'.substr ($fingerprint, strlen($fingerprint)-6, 80);
+        if ($_attributes['uid'] !== '') {
+            $uniq = $_attributes['uid'];
+        }
+        $idx = 1;
+        if ($_attributes['debug'] === 'yes') {
+            $idx = rand(1, 2000);
+        }
+        $photourl = self::get_picture($_attributes['device_id'], $idx);
+        if (isset($photourl) and !empty($photourl)) {
+            $photourl = $photourl['item_url'];
+            $style = '';
+            $width = -1;
+            switch ($_attributes['fx']) {
+                case 'fade-from-to':
+                    $transition = 'transition: background ' . (string)((int)$_attributes['speed']/2) . 'ms ease-in 2s';
+                    break;
+                case 'spin':
+                    $transition = 'transition: background ' . (string)((int)$_attributes['speed']/8) . 'ms linear 0s';
+                    break;
+                default:
+                    $transition = 'transition: background 100ms linear 0s';
+            }
+            switch ((string)$_attributes['size']) {
+                case 'micro': $width = 75; break;
+                case 'small': $width = 100; break;
+                case 'medium': $width = 225; break;
+                case 'large': $width = 330; break;
+                case 'macro': $width = 640; break;
+                default:
+                    if (strpos((string)$_attributes['size'], 'px') !== false) {
+                        $width = (int)str_replace('px', '', (string)$_attributes['size']);
+                    }
+            }
+            if ($width > 0 && $width < 641) {
+                $style = 'width:' . $width . 'px;height:' . $width . 'px; min-width:' . $width . 'px; max-width:' . $width . 'px; display:inline-block;';
+            }
+            else {
+                $style = 'width:80vw; height:80vw; max-width:640px; max-height:640px; display:inline-block;';
+            }
+            $style = ' style="' . $style . 'background-image: url(\'' . $photourl . '\');' . $transition . ';background-size: contain;"';
+            if ($_attributes['mode'] === 'url') {
+                $result = $photourl;
+            }
+            else {
+                $result = '<div id="'.$uniq.'" ' . $style . ' class="lws-picture lws-snapshot"></div>'.PHP_EOL;
+            }
+        }
+        else {
+            $result =  __('Malformed shortcode. Please verify it!', 'live-weather-station');
+        }
+        return $result;
+    }
+
+    /**
+     * Get value for snapshot shortcodes as "live" values.
+     *
+     * @return string $attributes The value queryed by the shortcode.
+     * @since 3.6.0
+     */
+    public function livesnapshot_shortcodes($attributes) {
+        $fingerprint = uniqid('', true);
+        $uniq = 'snapshot'.substr ($fingerprint, strlen($fingerprint)-6, 80);
+        $spinner = 'spinner'.substr ($fingerprint, strlen($fingerprint)-6, 80);
+        $image = 'image'.substr ($fingerprint, strlen($fingerprint)-6, 80);
+        $_attributes = shortcode_atts(array('device_id' => '','module_id' => '','measure_type' => '','size' => '','fx' => '','speed' => '', 'mode'=>'full','uid'=>$uniq), $attributes);
+        $time = 1000 * (120 + rand(-20, 20));
+        $shortcode = '[live-weather-station-snapshot device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' size=\'' . $_attributes['size'] . '\' fx=\'' . $_attributes['fx'] . '\' speed=\'' . $_attributes['speed'] . '\' mode=\'url\']';
+        $result = $this->snapshot_shortcodes($_attributes);
+        $result .= '<script language="javascript" type="text/javascript">'.PHP_EOL;
+        $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+        switch ((string)$_attributes['size']) {
+            case 'micro': $scale = '0.2'; break;
+            case 'small': $scale = '0.4'; break;
+            case 'medium': $scale = '0.6'; break;
+            case 'large': $scale = '0.8'; break;
+            default:
+                $scale = '1';
+        }
+        switch ($_attributes['fx']) {
+            case 'fade-from-to':
+                wp_enqueue_script('jquery-color');
+                $result .= '  var ' . $image .' = new Image();'.PHP_EOL;
+                $result .= '  ' . $image .'.onload = function() {$("#' . $uniq . '").css("background-image", "url(" + ' . $image .'.src + ")");}'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {' . $image .'.src = data;});}, '.$time.');})'.PHP_EOL;
+                break;
+            case 'spin':
+                wp_enqueue_script('jquery-color');
+                wp_enqueue_script('lws-spin');
+                $result .= '  var ' . $image .' = new Image();'.PHP_EOL;
+                $result .= '  ' . $image .'.onload = function() {$("#' . $uniq . '").css("background-image", "url(" + ' . $image .'.src + ")");' . $spinner . '.stop();}'.PHP_EOL;
+                $result .= '  var opts = {lines: 15, length: 28, width: 8, radius: 42, scale: ' . $scale . ', corners: 1, color: "#ffffff", opacity: 0.2, rotate: 0, direction: 1, speed: 1, trail: 60, fps: 20, zIndex: 2e9, className: "c_' . $spinner .'", top: "50%", left: "50%", shadow: false, hwaccel: false, position: "relative"};' . PHP_EOL;
+                $result .= '  var target = document.getElementById("' . $uniq . '");' . PHP_EOL;
+                $result .= '  var ' . $spinner . ' = new Spinner(opts);' . PHP_EOL;
+                $result .= '  setInterval(function() {' . $spinner . '.spin(target); $.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {' . $image .'.src = data;});}, '.$time.');})'.PHP_EOL;
+                break;
+            default:
+                wp_enqueue_script('jquery-color');
+                $result .= '  var ' . $image .' = new Image();'.PHP_EOL;
+                $result .= '  ' . $image .'.onload = function() {$("#' . $uniq . '").css("background-image", "url(" + ' . $image .'.src + ")");}'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {' . $image .'.src = data;});}, '.$time.');})'.PHP_EOL;
+        }
+        $result .= '</script>'.PHP_EOL;
         return $result;
     }
 

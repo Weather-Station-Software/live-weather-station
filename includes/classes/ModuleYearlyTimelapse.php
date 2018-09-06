@@ -94,7 +94,7 @@ class Timelapse extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_parameters() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('yearly-timelapse-datas-template-'. $this->station_guid, __('Size', 'live-weather-station'), $this->get_size_js_array(true, true), true, 'medium');
+        $content .= $this->get_key_value_option_select('yearly-timelapse-datas-template-'. $this->station_guid, __('Size', 'live-weather-station'), $this->get_size_js_array(true, true), true, 'large');
         $content .= $this->get_key_value_option_select('yearly-timelapse-datas-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array(false), true, 'Blues', false, false);
         $content .= $this->get_key_value_option_select('yearly-timelapse-datas-label-'. $this->station_guid, __('Appearance', 'live-weather-station'), $this->get_video_appearance_js_array(), true, 'full');
         $content .= $this->get_key_value_option_select('yearly-timelapse-datas-guideline-'. $this->station_guid, __('Behavior', 'live-weather-station'), $this->get_video_behavior_js_array(), true, 'manual');
@@ -126,7 +126,6 @@ class Timelapse extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_preview() {
         $content = '<div id="lws-graph-preview"></div>';
-        //$content = '<div>&nbsp;</div>';
         $content .= '<div id="' . $this->fingerprint . '" style="padding:0px;"></div>';
         $special_footer  = '<span id="yearly-timelapse-info-' . $this->station_guid . '" style="display: none;">';
         $special_footer .= '<div id="major-publishing-actions">';

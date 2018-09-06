@@ -5,6 +5,7 @@
 * New: "picture" module for stations supporting visual snapshots.
 * New: "video" module for stations supporting daily timelapses.
 * New: a new video control to display timelapses (shortcode available in historical data tab).
+* New: a new picture control to display last snapshot from the station (shortcode available in current records tab).
 * Improvement: textual shortcodes can now be be autorefreshed every 2 minutes.
 * Improvement: all charts and graphs can now use user-editable colors schemes (thanks to Ralf Karpa for the suggestion).
 * Improvement: customized name and visibility of modules are now viewable in station view.
@@ -26,7 +27,7 @@
 * Bug fix: icons for illuminance and irradiance are wrongly rendered in some screens.
 * Bug fix: when canceling the addition of a Netatmo station or Healthy Home Coach, the message shown is wrong.
 * Bug fix: the customized name of a module is not correctly escaped, so some names are wrongly saved.
-* Bug fix: time scales for daily charts maybe wrong in PHP > 7.2.7 (thanks to XXXXXX for reporting it).
+* Bug fix: time scales for daily charts maybe wrong in PHP > 7.2.7 (thanks to Ruud Janssen for reporting it).
 * Bug fix: charts may produce errors when they try to graph values from a removed station.
 * Bug fix: database analytics may be displayed with malformed charts in some cases.
 * Bug fix: in some (very rare) condition, last refresh time of a station can not be rightly stored (thanks to Dominik T. for detecting it).
