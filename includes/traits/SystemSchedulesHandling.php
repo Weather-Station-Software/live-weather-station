@@ -18,6 +18,7 @@ use WeatherStation\SDK\Stickertags\Plugin\StationUpdater as Stickertags_Updater;
 use WeatherStation\SDK\WeatherFlow\Plugin\StationUpdater as WFLW_Updater;
 use WeatherStation\SDK\Pioupiou\Plugin\StationUpdater as PIOU_Updater;
 use WeatherStation\SDK\BloomSky\Plugin\StationUpdater as BSKY_Updater;
+use WeatherStation\SDK\Ambient\Plugin\StationUpdater as AMBT_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\CurrentUpdater as Owm_Current_Updater;
 use WeatherStation\SDK\OpenWeatherMap\Plugin\StationUpdater as Owm_Station_Updater;
 use WeatherStation\SDK\WeatherUnderground\Plugin\StationUpdater as Wug_Station_Updater;
@@ -70,6 +71,7 @@ trait Handling {
     public static $wflw_update_station_schedule_name = 'lws_wflw_station_update';
     public static $piou_update_station_schedule_name = 'lws_piou_station_update';
     public static $bsky_update_station_schedule_name = 'lws_bsky_station_update';
+    public static $ambt_update_station_schedule_name = 'lws_ambt_station_update';
     public static $raw_update_station_schedule_name = 'lws_raw_station_update';
     public static $real_update_station_schedule_name = 'lws_real_station_update';
     public static $txt_update_station_schedule_name = 'lws_txt_station_update';
@@ -77,7 +79,8 @@ trait Handling {
     public static $cron_pull = array('lws_netatmo_update', 'lws_netatmo_hc_update', 'lws_owm_current_update', 
                                     'lws_owm_station_update', 'lws_wug_station_update', 'lws_raw_station_update',
                                     'lws_real_station_update', 'lws_txt_station_update', 'lws_owm_pollution_update',
-                                    'lws_wflw_station_update', 'lws_piou_station_update', 'lws_bsky_station_update');
+                                    'lws_wflw_station_update', 'lws_piou_station_update', 'lws_bsky_station_update', 
+                                    'lws_ambt_station_update');
 
     // PUSH
     public static $wow_push_schedule_name = 'lws_wow_current_push';
@@ -377,6 +380,9 @@ trait Handling {
             case 'lws_bsky_station_update':
                 return __('BloomSky - Weather station', 'live-weather-station');
                 break;
+            case 'lws_ambt_station_update':
+                return __('Ambient - Weather station', 'live-weather-station');
+                break;
             case 'lws_raw_station_update':
                 return __('Clientraw - Weather station', 'live-weather-station');
                 break;
@@ -636,6 +642,31 @@ trait Handling {
         if (!wp_next_scheduled(self::$bsky_update_station_schedule_name)) {
             wp_schedule_event(time() + $timeshift, 'seven_minutes', self::$bsky_update_station_schedule_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$bsky_update_station_schedule_name).'" (re)scheduled.');
+        }
+    }
+
+    /**
+     * Define Ambient Updater cron job.
+     *
+     * @since 3.6.0
+     */
+    protected static function define_ambt_station_update_cron() {
+        $plugin_ambt_update_cron = new AMBT_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$ambt_update_station_schedule_name, array($plugin_ambt_update_cron, 'cron_run'));
+    }
+
+    /**
+     * Launch the Ambient Updater cron job if needed.
+     *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
+     * @since 3.6.0
+     */
+    protected static function launch_ambt_station_update_cron($timeshift=0, $system='Watchdog') {
+        if (!wp_next_scheduled(self::$ambt_update_station_schedule_name)) {
+            wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$ambt_update_station_schedule_name);
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$ambt_update_station_schedule_name).'" (re)scheduled.');
         }
     }
 

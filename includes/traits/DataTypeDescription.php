@@ -48,6 +48,9 @@ trait Description {
             case 10:
                 $result = 'BloomSky';
                 break;
+            case 11:
+                $result = 'Ambient';
+                break;
             default:
                 $result = null;
         }

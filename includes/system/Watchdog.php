@@ -40,7 +40,7 @@ class Watchdog {
     /**
      * Define watchdog cron job.
      *
-     * @since    2.7.0
+     * @since 2.7.0
      */
     protected static function define_watchdog_cron() {
         add_action(self::$watchdog_name, array(get_called_class(), 'cron_run'));

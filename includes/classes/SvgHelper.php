@@ -91,9 +91,6 @@ class Handling {
     }
 
 
-
-
-
     /**
      * Returns a base64 svg resource for the Pioupiou icon.
      *
@@ -128,6 +125,42 @@ class Handling {
      */
     public static function get_base64_piou_color_logo() {
         return self::get_base64_piou_icon('#285291');
+    }
+
+    /**
+     * Returns a base64 svg resource for the Ambient icon.
+     *
+     * @param string $color Optional. Color of the icon.
+     * @return string The svg resource as a base64.
+     * @since 3.5.0
+     */
+    public static function get_base64_ambient_icon($color='#000') {
+        $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 400 400">';
+        $source .= '<g transform="translate(55,355) scale(0.075,-0.075)">';
+        $source .= '<path style="fill:' . $color . '" d="M1815 3813 c-634 -52 -1207 -434 -1483 -988 -60 -121 -60 -116 0 -166 350 -293 869 -470 1451 -496 l147 -6 0 -39 0 -38 -118 0 c-175 0 -443 37 -653 90 -324 82 -607 219 -814 394 -33 28 -68 57 -77 64 -15 12 -20 4 -48 -83 -17 -54 -28 -106 -25 -116 3 -10 47 -57 98 -105 176 -166 412 -299 697 -394 246 -82 587 -140 824 -140 50 0 97 -4 104 -9 8 -5 12 -22 10 -42 l-3 -34 -110 3 c-412 11 -808 104 -1130 265 -55 27 -119 63 -142 78 -23 16 -44 29 -48 29 -3 0 -11 5 -18 10 -7 6 -42 33 -79 60 -37 28 -103 87 -147 131 l-80 82 -5 -34 c-3 -19 -10 -72 -16 -118 -10 -83 -10 -86 16 -122 46 -67 216 -223 313 -288 94 -62 314 -175 401 -206 321 -113 560 -160 928 -181 l122 -7 0 -34 c0 -22 -6 -36 -17 -40 -9 -3 -91 -1 -182 5 -483 35 -865 146 -1206 352 -106 64 -257 192 -325 275 l-55 67 -3 -79 c-8 -169 41 -408 125 -617 168 -421 492 -765 903 -960 403 -190 836 -226 1278 -105 61 17 112 35 112 40 0 5 9 9 20 9 36 0 223 91 347 169 211 133 424 352 566 581 270 438 335 1007 172 1507 -33 98 -117 290 -133 303 -4 3 -18 27 -32 55 -34 68 -132 198 -225 301 -363 399 -925 622 -1460 577z"/>';
+        $source .= '</g>';
+        $source .= '</svg>';
+        return 'data:image/svg+xml;base64,' . base64_encode($source);
+    }
+
+    /**
+     * Returns a base64 svg resource for the monochrome Ambient logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.5.0
+     */
+    public static function get_base64_ambient_grey_logo() {
+        return self::get_base64_ambient_icon('#666666');
+    }
+
+    /**
+     * Returns a base64 svg resource for the colored Ambient logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.5.0
+     */
+    public static function get_base64_ambient_color_logo() {
+        return self::get_base64_ambient_icon('#333B79');
     }
 
 

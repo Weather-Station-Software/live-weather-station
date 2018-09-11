@@ -1796,6 +1796,25 @@ trait Query {
     }
 
     /**
+     * Get a list of all Ambient stations.
+     *
+     * @return array An array containing the details of all stations.
+     * @since 3.6.0
+     */
+    protected function get_all_ambt_stations() {
+        return $this->get_all_stations_by_type(LWS_AMBT_SID);
+    }
+
+    /**
+     * Delete all Ambient stations.
+     *
+     * @since 3.6.0
+     */
+    protected function clear_all_ambt_stations() {
+        $this->clear_all_stations_by_type(LWS_AMBT_SID);
+    }
+
+    /**
      * Get a list of all OpenWeatherMap (local) stations.
      *
      * @return array An array containing the details of all stations.
