@@ -53,6 +53,12 @@ jQuery(document).ready( function($) {
         $('#span-sync').show();
     });
 
+    $('#add-ambient .button-primary').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#span-sync').show();
+    });
+
     $('#add-netatmohc .button-primary').click( function() {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });
@@ -339,6 +345,20 @@ jQuery(document).ready( function($) {
             $('.button').removeClass('button-primary').addClass('button-disabled');
             $('.button').click(function() { return false; });
             $('#bloomsky-span-sync').show();
+        }
+    });
+
+    $('#ambient-connect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#ambient-span-sync').show();
+    });
+
+    $('#ambient-disconnect').click( function() {
+        if (lws_ambient_confirmation) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#ambient-span-sync').show();
         }
     });
 

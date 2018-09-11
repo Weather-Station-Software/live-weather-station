@@ -97,6 +97,17 @@ else {
     $bloomsky_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
 
+if (get_option('live_weather_station_ambient_connected')) {
+    $ambient_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('an Ambient station to which you have access to.', 'live-weather-station'));
+    $ambient_l = lws_get_admin_page_url('lws-stations', 'form', 'add', 'Ambient', $dashboard);
+    $ambient_t = '_self';
+}
+else {
+    $ambient_s = addslashes(sprintf(__('To add a station of this type, you need to connect %s to your Ambient account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LWS_PLUGIN_NAME));
+    $ambient_l = lws_get_admin_page_url('lws-settings', null, 'services');
+    $ambient_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
+}
+
 
 
 ?>
@@ -116,6 +127,7 @@ else {
                 <div style="flex:auto;padding:14px;"><img id="netatmohc" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_netatmo_hc_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="weatherflow" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_weatherflow_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="bloomsky" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_bloomsky_color_logo());?>" /></div>
+                <div style="flex:auto;padding:14px;"><img id="ambient" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_ambient_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="pioupiou" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_piou_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="loc" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_loc_color_logo());?>" /></div>
                 <?php if (LWS_OWM_READY) { ?>
@@ -166,6 +178,12 @@ else {
             });
             $("#bloomsky").click(function() {
                 window.open('<?php echo $bloomsky_l; ?>', '<?php echo $bloomsky_t; ?>');
+            });
+            $("#ambient").mouseover(function() {
+                $("#tip-text").html("<?php echo $ambient_s; ?>");
+            });
+            $("#ambient").click(function() {
+                window.open('<?php echo $ambient_l; ?>', '<?php echo $ambient_t; ?>');
             });
             $("#loc").mouseover(function() {
                 $("#tip-text").html("<?php echo $loc_s; ?>");

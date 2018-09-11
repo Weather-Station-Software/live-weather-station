@@ -20,11 +20,14 @@ if (REQUIREMENTS_OK) {
     }
     $services_str = __('none', 'live-weather-station');
     $services = array();
-    if ((bool)get_option('live_weather_station_netatmo_connected') || (bool)get_option('live_weather_station_netatmohc_connected')) {
-        $services[] = 'Netatmo';
+    if (get_option('live_weather_station_ambient_connected')) {
+        $services[] = 'Ambient';
     }
     if (get_option('live_weather_station_bloomsky_connected')) {
         $services[] = 'BloomSky';
+    }
+    if ((bool)get_option('live_weather_station_netatmo_connected') || (bool)get_option('live_weather_station_netatmohc_connected')) {
+        $services[] = 'Netatmo';
     }
     if (get_option('live_weather_station_owm_apikey') != '') {
         $services[] = 'OpenWeatherMap';

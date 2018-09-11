@@ -24,9 +24,9 @@ use WeatherStation\System\Environment\Manager as EnvManager;
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.6.0-dev9');
-define('LWS_CODENAME', '"Les Wampas"');
-define('LWS_WHATSNEW', 'https://weather.station.software/blog/weather-station-3-5-leswampas/');
+define('LWS_VERSION', '3.6.0-dev10');
+define('LWS_CODENAME', '"Mano Negra"');
+define('LWS_WHATSNEW', 'https://weather.station.software/blog/weather-station-3-6-mano-negra/');
 define('LWS_SHOW_CHANGELOG', false);
 
 //---------------------------------------------------------------------------------------------------
