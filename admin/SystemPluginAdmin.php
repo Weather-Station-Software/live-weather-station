@@ -1384,6 +1384,18 @@ class Admin {
                 if ($service != '' && $tab != '' && $action == 'form') {
                     $view = $action . '-' . $tab . '-' . $service ;
                     switch (strtolower($service)) {
+                        case 'ambient':
+                            if ($id) {
+                                $station = $this->get_station_informations_by_guid($id);
+                            }
+                            else {
+                                $station = $this->get_ambt_station();
+                            }
+                            $countries = $this->get_country_names();
+                            $timezones = $this->get_timezones_js_array();
+                            $models = $this->get_models_array();
+                            $args = compact('station', 'countries', 'timezones', 'models', 'dashboard');
+                            break;
                         case 'location':
                             if ($id) {
                                 $station = $this->get_station_informations_by_guid($id);
@@ -1471,8 +1483,13 @@ class Admin {
                             $station = $this->get_station_informations_by_guid($id);
                             $station['txt_location'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
                             $station['txt_timezone'] = $this->output_timezone($station['loc_timezone']);
-                            $station['oldest_data_txt'] = __('Oldest data from', 'live-weather-station') . ' ' .$this->output_value($station['oldest_data'], 'oldest_data', false, false, 'NAMain', $station['loc_timezone']);
-                            $station['oldest_data_diff_txt'] = self::get_positive_time_diff_from_mysql_utc($station['oldest_data']);
+                            if ($station['oldest_data'] != '0000-00-00') {
+                                $station['oldest_data_txt'] = __('Oldest data from', 'live-weather-station') . ' ' .$this->output_value($station['oldest_data'], 'oldest_data', false, false, 'NAMain', $station['loc_timezone']);
+                                $station['oldest_data_diff_txt'] = self::get_positive_time_diff_from_mysql_utc($station['oldest_data']);
+                            }
+                            else {
+                                $station['oldest_data_txt'] = false;
+                            }
                             $error = array();
                             $args = compact('station', 'error');
                             break;
@@ -1481,8 +1498,13 @@ class Admin {
                             $station = $this->get_station_informations_by_guid($id);
                             $station['txt_location'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
                             $station['txt_timezone'] = $this->output_timezone($station['loc_timezone']);
-                            $station['oldest_data_txt'] = __('Oldest data from', 'live-weather-station') . ' ' .$this->output_value($station['oldest_data'], 'oldest_data', false, false, 'NAMain', $station['loc_timezone']);
-                            $station['oldest_data_diff_txt'] = self::get_positive_time_diff_from_mysql_utc($station['oldest_data']);
+                            if ($station['oldest_data'] != '0000-00-00') {
+                                $station['oldest_data_txt'] = __('Oldest data from', 'live-weather-station') . ' ' .$this->output_value($station['oldest_data'], 'oldest_data', false, false, 'NAMain', $station['loc_timezone']);
+                                $station['oldest_data_diff_txt'] = self::get_positive_time_diff_from_mysql_utc($station['oldest_data']);
+                            }
+                            else {
+                                $station['oldest_data_txt'] = false;
+                            }
                             $station['module_detail'] = DeviceManager::get_modules_details($station['station_id']);
                             $error = array();
                             $args = compact('station', 'error');
@@ -1526,7 +1548,7 @@ class Admin {
                             }
                             break;
                         case 'ambient':
-                            if (array_key_exists('add-ambient', $_POST)) {
+                            if (array_key_exists('add-edit-ambient', $_POST)) {
                                 $this->add_ambient($id);
                                 if ($dashboard) {
                                     $view = 'dashboard' ;
@@ -2837,46 +2859,123 @@ class Admin {
      * @since 3.0.0
      */
     protected function add_ambient($device_id=null) {
-        /*if ($device_id) {
-            $n = new Ambient_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
-            $nonce = 'add-ambient';
-            $station_type = LWS_AMBT_SID;
-            $stations = $n->detect_stations();
-            $station['station_name'] = '<unnamed>';
-            $station['station_type'] = $station_type;
-            $station['station_id'] = $device_id;
-            foreach ($stations as $item) {
-                if ($item['device_id'] == $device_id) {
-                    $station = $item;
+        $station = array();
+        $update = true;
+        if ($device_id) {
+            if (array_key_exists('guid', $_POST) &&
+                array_key_exists('id', $_POST) &&
+                array_key_exists('station_name', $_POST) &&
+                array_key_exists('loc_city', $_POST) &&
+                array_key_exists('loc_country_code', $_POST) &&
+                array_key_exists('loc_tz', $_POST) &&
+                array_key_exists('loc_altitude', $_POST) &&
+                array_key_exists('loc_latitude', $_POST) &&
+                array_key_exists('loc_longitude', $_POST)) {
+                $station['station_type'] = LWS_AMBT_SID;
+                if (array_key_exists('guid', $_POST)) {
+                    $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
                 }
-            }
-            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), $nonce)) {
-                if ($this->insert_ignore_stations_table($device_id, $station_type)) {
-                    $message = __('The station %s has been correctly added.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
-                    add_settings_error('lws_nonce_success', 200, $message, 'updated');
-                    Logger::notice($this->service, 'Ambient', $device_id, $station['station_name'], null, null, null, 'Station added.');
-                    $this->get_ambient();
+                if (array_key_exists('id', $_POST)) {
+                    $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['id']));
                 }
-                else {
-                    $message = __('Unable to add the station %s.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
-                    add_settings_error('lws_nonce_error', 403, $message, 'error');
-                    Logger::error($this->service, 'Ambient', $device_id, $station['station_name'], null, null, null, 'Unable to add this station.');
+                if (array_key_exists('station_name', $_POST)) {
+                    $station['station_name'] = stripslashes(htmlspecialchars_decode($_POST['station_name']));
+                }
+                if (array_key_exists('loc_city', $_POST)) {
+                    $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+                }
+                if (array_key_exists('loc_country_code', $_POST)) {
+                    $station['loc_country_code'] = $_POST['loc_country_code'];
+                }
+                if (array_key_exists('loc_tz', $_POST)) {
+                    $station['loc_timezone'] = $_POST['loc_tz'];
+                }
+                if (array_key_exists('loc_altitude', $_POST)) {
+                    $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
+                }
+                if (array_key_exists('loc_latitude', $_POST) &&
+                    array_key_exists('loc_longitude', $_POST)) {
+                    if (is_numeric($_POST['loc_latitude']) && is_numeric($_POST['loc_longitude'])) {
+                        $station['loc_latitude'] = (float)$_POST['loc_latitude'];
+                        $station['loc_longitude'] = (float)$_POST['loc_longitude'];
+                        if ($station['loc_latitude'] < -90 || $station['loc_latitude'] > 90) {
+                            $station['loc_latitude'] = 0;
+                        }
+                        if ($station['loc_longitude'] < -180 || $station['loc_longitude'] > 180) {
+                            $station['loc_longitude'] = 0;
+                        }
+                    } else {
+                        $station['loc_latitude'] = 0;
+                        $station['loc_longitude'] = 0;
+                    }
+                } else {
+                    $station['loc_latitude'] = 0;
+                    $station['loc_longitude'] = 0;
+                }
+                if (array_key_exists('guid', $station)) {
+                    if ($station['guid'] == 0) {
+                        unset($station['guid']);
+                        $update = false;
+                    }
+                }
+                if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-ambient')) {
+                    if ($guid = $this->update_stations_table($station, !$update)) {
+                        $st = $this->get_station_informations_by_guid($guid);
+                        $station_id = $st['station_id'];
+                        $station_name = $st['station_name'];
+                        if ($update) {
+                            $message = __('The station %s has been correctly updated.', 'live-weather-station');
+                            $log = 'Station updated.';
+                        }
+                        else {
+                            $message = __('The station %s has been correctly added.', 'live-weather-station');
+                            $log = 'Station added.';
+                        }
+                        $message = sprintf($message, '<em>' . $station_name . '</em>');
+                        add_settings_error('lws_nonce_success', 200, $message, 'updated');
+                        Logger::notice($this->service, 'Ambient', $station_id, $station_name, null, null, null, $log);
+                        $this->get_ambient();
+                    }
+                    else {
+                        if ($update) {
+                            $message = $message = __('Unable to update the station %s.', 'live-weather-station');
+                            $log = 'Unable to update this station.';
+                            $station_id = null;
+                            $station_name = null;
+                        }
+                        else {
+                            $message = $message = __('Unable to add the station %s.', 'live-weather-station');
+                            $log = 'Unable to add this station.';
+                            $station_id = null;
+                            $station_name = null;
+                        }
+                        $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                        add_settings_error('lws_nonce_error', 403, $message, 'error');
+                        Logger::error($this->service, 'Ambient', $station_id, $station_name, null, null, null, $log);
+                    }
                 }
             }
             else {
-                $message = __('Unable to add the station %s.', 'live-weather-station');
+                if ($update) {
+                    $message = $message = __('Unable to update the station %s.', 'live-weather-station');
+                    $station_id = $station['id'];
+                    $station_name = $station['station_name'];
+                }
+                else {
+                    $message = $message = __('Unable to add the station %s.', 'live-weather-station');
+                    $station_id = null;
+                    $station_name = null;
+                }
                 $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
-                Logger::critical('Security', 'Ambient', $device_id, $station['station_name'], null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-                Logger::error($this->service, 'Ambient', $device_id, $station['station_name'], null, null, 0, 'It was not possible to securely add this station.');
+                Logger::critical('Security', 'Ambient', $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
+                Logger::error($this->service, 'Ambient', $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
             }
         }
         else {
             add_settings_error('lws_nonce_error', 403, 'No station to add.', 'error');
             Logger::error('Security', 'Ambient', null, null, null, null, null, 'An attempt was made to add a station without ID.');
-        }*/
+        }
     }
 
     /**

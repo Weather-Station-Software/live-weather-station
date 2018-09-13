@@ -42,7 +42,7 @@ trait BaseClient {
      */
     private function store_ambient_datas($stations) {
         $datas = $this->ambient_datas;
-        /*foreach($datas as $device){
+        foreach($datas as $device){
             if (!array_key_exists('device_id', $device)) {
                 continue;
             }
@@ -54,25 +54,60 @@ trait BaseClient {
                 }
             }
             if ($store) {
+                $s = $this->get_station_informations_by_station_id($device['device_id']);
                 $place = array();
-                if (array_key_exists('place', $device)) {
-                    $place = $device['place'];
+                $place['city'] = $s['loc_city'] ;
+                $place['country'] = $s['loc_country_code'];
+                $place['timezone'] = $s['loc_timezone'];
+                $place['altitude'] = $s['loc_altitude'];
+                $place['location'] = array();
+                $place['location'][0] = $s['loc_longitude'];
+                $place['location'][1] = $s['loc_latitude'];
+                $s['last_refresh'] = date('Y-m-d H:i:s');
+                if (array_key_exists('time_utc', $device)) {
+                    $s['last_seen'] = date('Y-m-d H:i:s', $device['time_utc']);
                 }
+                $device['device_name'] = $s['station_name'];
+
                 // Main base
                 $module_type = 'NAMain';
                 $types = array('pressure');
                 $module_id = ID::get_fake_modulex_id($guid, 0);
                 $module_name = $this->get_fake_module_name($module_type);
-                $this->get_dashboard(LWS_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                $this->get_dashboard(LWS_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place, true);
                 Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
 
                 // Outdoor module
-                $module_type = 'NAModule1';
-                $types = array('temperature', 'humidity');
-                $module_id = ID::get_fake_modulex_id($guid, 1);
-                $module_name = $this->get_fake_module_name($module_type);
-                $this->get_dashboard(LWS_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
-                Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
+                if (array_key_exists('temperature', $device) || array_key_exists('humidity', $device)) {
+                    $module_type = 'NAModule1';
+                    $types = array('temperature', 'humidity');
+                    $module_id = ID::get_fake_modulex_id($guid, 1);
+                    $module_name = $this->get_fake_module_name($module_type);
+                    $this->get_dashboard(LWS_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                    Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
+                }
+
+                // Indoor module
+                if (array_key_exists('tempint', $device) || array_key_exists('humint', $device) || array_key_exists('co2', $device)) {
+                    if (array_key_exists('tempint', $device)) {
+                        $device['temperature'] = $device['tempint'];
+                    }
+                    else {
+                        unset($device['temperature']);
+                    }
+                    if (array_key_exists('humint', $device)) {
+                        $device['humidity'] = $device['humint'];
+                    }
+                    else {
+                        unset($device['humidity']);
+                    }
+                    $module_type = 'NAModule4';
+                    $types = array('temperature', 'humidity', 'co2');
+                    $module_id = ID::get_fake_modulex_id($guid, 4);
+                    $module_name = $this->get_fake_module_name($module_type);
+                    $this->get_dashboard(LWS_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                    Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
+                }
 
                 // Wind gauge
                 if (array_key_exists('windangle', $device)) {
@@ -87,7 +122,7 @@ trait BaseClient {
                 // Rain gauge
                 if (array_key_exists('rain', $device)) {
                     $module_type = 'NAModule3';
-                    $types = array('rain', 'rain_day_aggregated');
+                    $types = array('rain', 'rain_day_aggregated', 'rain_month_aggregated', 'rain_year_aggregated');
                     $module_id = ID::get_fake_modulex_id($guid, 3);
                     $module_name = $this->get_fake_module_name($module_type);
                     $this->get_dashboard(LWS_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
@@ -95,61 +130,43 @@ trait BaseClient {
                 }
 
                 // Solar
-                $module_type = 'NAModule5';
-                $types = array('irradiance', 'uv_index');
-                $module_id = ID::get_fake_modulex_id($guid, 5);
-                $module_name = $this->get_fake_module_name($module_type);
-                $this->get_dashboard(LWS_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
-                Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
+                if (array_key_exists('uv_index', $device) || array_key_exists('irradiance', $device)) {
+                    $module_type = 'NAModule5';
+                    $types = array('irradiance', 'uv_index');
+                    $module_id = ID::get_fake_modulex_id($guid, 5);
+                    $module_name = $this->get_fake_module_name($module_type);
+                    $this->get_dashboard(LWS_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                    Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
+                }
 
-                // Picture
-                $module_type = 'NAModuleP';
-                $types = array();
-                $module_id = ID::get_fake_modulex_id($guid, 'p');
-                $module_name = $this->get_fake_module_name($module_type);
-                $this->get_dashboard(LWS_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
-                Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
-
-                // Video
-                $module_type = 'NAModuleV';
-                $types = array();
-                $module_id = ID::get_fake_modulex_id($guid, 'v');
-                $module_name = $this->get_fake_module_name($module_type);
-                $this->get_dashboard(LWS_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
-                Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
-
-                $s = $this->get_station_informations_by_station_id($device['device_id']);
-                if (array_key_exists('device_name', $device)) {
-                    $s['station_name'] = $device['device_name'];
-                }
-                if (array_key_exists('device_model', $device)) {
-                    $s['station_model'] = $device['device_model'];
-                }
-                if (array_key_exists('city', $place)) {
-                    $s['loc_city'] = $place['city'];
-                }
-                if (array_key_exists('country', $place)) {
-                    $s['loc_country_code'] = $place['country'];
-                }
-                if (array_key_exists('timezone', $place)) {
-                    $s['loc_timezone'] = $place['timezone'];
-                }
-                if (array_key_exists('altitude', $place)) {
-                    $s['loc_altitude'] = $place['altitude'];
-                }
-                if (array_key_exists('location', $place)) {
-                    if (count($place['location']) == 2) {
-                        $s['loc_longitude'] = $place['location'][0];
-                        $s['loc_latitude'] = $place['location'][1];
+                // NAModule9 - max 9 extra modules
+                for ($i = 0; $i < 9; $i++) {
+                    if (array_key_exists('temp' . $i . 'f', $device) || array_key_exists('humidity' . $i, $device)) {
+                        if (array_key_exists('temp' . $i . 'f', $device)) {
+                            $device['temperature'] = $device['temp' . $i . 'f'];
+                        }
+                        else {
+                            unset($device['temperature']);
+                        }
+                        if (array_key_exists('humidity' . $i, $device)) {
+                            $device['humidity'] = $device['humidity' . $i];
+                        }
+                        else {
+                            unset($device['humidity']);
+                        }
+                        $module_type = 'NAModule9';
+                        $module_id = ID::get_fake_modulex_id($guid, 9);
+                        $module_name = $this->get_fake_module_name($module_type);
+                        $this->get_dashboard(LWS_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
+                        Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
                     }
                 }
-                $s['last_refresh'] = date('Y-m-d H:i:s');
-                if (array_key_exists('time_utc', $device)) {
-                    $s['last_seen'] = date('Y-m-d H:i:s', $device['time_utc']);
-                }
+
+
+                // Station full
                 $this->update_stations_table($s);
             }
-        }*/
+        }
     }
 
     /**
@@ -160,143 +177,99 @@ trait BaseClient {
     private function normalize_ambient_datas() {
         $result = array();
         Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($this->ambient_datas, true));
-        /*foreach($this->ambient_datas as $station) {
+        foreach($this->ambient_datas as $station) {
             if (is_array($station)) {
                 $dat = array();
-                $device_model = '';
-                if (array_key_exists('DeviceName', $station)) {
-                    $dat['device_name'] = $station['DeviceName'];
+                if (array_key_exists('info', $station)) {
+                    if (array_key_exists('name', $station['info'])) {
+                        $dat['fixed_device_name'] = $station['info']['name'];
+                    }
+                    else {
+                        $dat['fixed_device_name'] = '< NO NAME >';
+                    }
+                    if (array_key_exists('location', $station['info'])) {
+                        $dat['fixed_device_name'] .= ' (' . $station['info']['location'] . ')';
+                    }
                 }
-                else {
-                    $dat['device_name'] = '< NO NAME >';
-                }
-                if (array_key_exists('DeviceID', $station)) {
-                    $dat['device_id'] = self::compute_unique_ambt_id($station['DeviceID']);
+                if (array_key_exists('macAddress', $station)) {
+                    $dat['device_id'] = $station['macAddress'];
                 }
                 else {
                     $dat['device_id'] = '00:00:00:00:00:00';
                 }
-                if (array_key_exists('VideoList', $station)) {
-                    $videos = $station['VideoList'];
-                    if (count($videos) > 0) {
-                        $dat['video_imperial'] = array();
-                        foreach ($videos as $video) {
-                            $dat['video_imperial'][] = $video;
+                if (array_key_exists('lastData', $station)) {
+                    $data = $station['lastData'];
+                    if (array_key_exists('dateutc', $data)) {
+                        $dat['time_utc'] = (int)round($data['dateutc'] / 1000, 0);
+                        $dat['last_seen'] = (int)round($data['dateutc'] / 1000, 0);
+                    }
+                    if (array_key_exists('windgustmph', $data)) {
+                        $dat['guststrength'] = $this->get_reverse_wind_speed($data['windgustmph'], 1);
+                    }
+                    if (array_key_exists('windgustdir', $data)) {
+                        $dat['gustangle'] = $data['windgustdir'];
+                    }
+                    if (array_key_exists('windspdmph_avg2m', $data)) {
+                        $dat['windstrength'] = $this->get_reverse_wind_speed($data['windspdmph_avg2m'], 1);
+                    }
+                    if (array_key_exists('winddir_avg2m', $data)) {
+                        $dat['windangle'] = $data['winddir_avg2m'];
+                    }
+                    if (array_key_exists('humidity', $data)) {
+                        $dat['humidity'] = $data['humidity'];
+                    }
+                    if (array_key_exists('humidityin', $data)) {
+                        $dat['humint'] = $data['humidityin'];
+                    }
+                    for ($i=1; $i<10; $i++) {
+                        if (array_key_exists('humidity' . $i, $data)) {
+                            $dat['humidity' . $i] = $data['humidity' . $i];
                         }
-
                     }
-                }
-                if (array_key_exists('VideoList_C', $station)) {
-                    $videos = $station['VideoList_C'];
-                    if (count($videos) > 0) {
-                        $dat['video_metric'] = array();
-                        foreach ($videos as $video) {
-                            $dat['video_metric'][] = $video;
+                    if (array_key_exists('tempf', $data)) {
+                        $dat['temperature'] = $this->get_reverse_temperature($data['tempf'], 1);
+                    }
+                    if (array_key_exists('tempinf', $data)) {
+                        $dat['tempint'] = $this->get_reverse_temperature($data['tempinf'], 1);
+                    }
+                    for ($i=1; $i<10; $i++) {
+                        if (array_key_exists('temp' . $i . 'f', $data)) {
+                            $dat['temperature'] = $this->get_reverse_temperature($data['temp' . $i . 'f'], 1);
                         }
-
+                    }
+                    if (array_key_exists('hourlyrainin', $data)) {
+                        $dat['rain'] = $this->get_reverse_rain($data['hourlyrainin'], 1);
+                    }
+                    if (array_key_exists('dailyrainin', $data)) {
+                        $dat['rain_day_aggregated'] = $this->get_reverse_rain($data['dailyrainin'], 1);
+                    }
+                    if (array_key_exists('monthlyrainin', $data)) {
+                        $dat['rain_month_aggregated'] = $this->get_reverse_rain($data['monthlyrainin'], 1);
+                    }
+                    if (array_key_exists('yearlyrainin', $data)) {
+                        $dat['rain_year_aggregated'] = $this->get_reverse_rain($data['yearlyrainin'], 1);
+                    }
+                    if (array_key_exists('baromabsin', $data)) {
+                        $dat['pressure'] = $this->get_reverse_pressure($data['baromabsin'], 1);
+                    }
+                    if (array_key_exists('co2', $data)) {
+                        $dat['co2'] = $data['co2'];
+                    }
+                    if (array_key_exists('uv', $data)) {
+                        $dat['uv_index'] = $data['uv'];
+                    }
+                    if (array_key_exists('solarradiation', $data)) {
+                        $dat['irradiance'] = $data['solarradiation'];
                     }
                 }
-
-                if (array_key_exists('Data', $station)) {
-                    $data = $station['Data'];
-                    if (array_key_exists('TS', $data)) {
-                        $dat['time_utc'] = $data['TS'];
-                    }
-                    if (array_key_exists('Luminance', $data)) {
-                        $dat['illuminance'] = $data['Luminance'];
-                    }
-                    if (array_key_exists('Temperature', $data)) {
-                        $dat['temperature'] = $data['Temperature'];
-                    }
-                    if (array_key_exists('Humidity', $data)) {
-                        $dat['humidity'] = $data['Humidity'];
-                    }
-                    if (array_key_exists('Pressure', $data)) {
-                        $dat['pressure'] = $data['Pressure'];
-                    }
-                    if (array_key_exists('UVIndex', $data)) {
-                        $dat['uv_index'] = $data['UVIndex'];
-                    }
-                    if (array_key_exists('ImageTS', $data)) {
-                        $dat['TS_image'] = $data['ImageTS'];
-                    }
-                    if (array_key_exists('DeviceType', $data)) {
-                        $device_model = 'Ambient - ' . ucfirst($data['DeviceType']);
-                    }
-                    if (array_key_exists('Voltage', $data)) {
-                        $dat['battery'] = $data['Voltage'];
-                    }
-                    if (array_key_exists('ImageTS', $data)) {
-                        $dat['time_pct'] = $data['ImageTS'];
-                    }
-                    if (array_key_exists('ImageURL', $data)) {
-                        $dat['url_pct'] = $data['ImageURL'];
-                    }
-                }
-                if (array_key_exists('Storm', $station)) {
-                    $data = $station['Storm'];
-                    if ($device_model == '') {
-                        $device_model = 'Ambient - Storm';
-                    }
-                    else {
-                        $device_model .= '+Storm';
-                    }
-                    if (array_key_exists('UVIndex', $data)) {
-                        $dat['uv_index'] = $data['UVIndex'];
-                    }
-                    if (array_key_exists('WindDirection', $data)) {
-                        $dat['windangle'] = $this->get_reverse_wind_angle_text($data['WindDirection']);
-                        $dat['gustangle'] = $dat['windangle'];
-                    }
-                    if (array_key_exists('SustainedWindSpeed', $data)) {
-                        $dat['windstrength'] = $data['SustainedWindSpeed'];
-                    }
-                    if (array_key_exists('RainDaily', $data)) {
-                        $dat['rain_day_aggregated'] = $data['RainDaily'];
-                    }
-                    if (array_key_exists('WindGust', $data)) {
-                        $dat['guststrength'] = $data['WindGust'];
-                    }
-                    if (array_key_exists('RainRate', $data)) {
-                        $dat['rain'] = $data['RainRate'];
-                    }
-                }
-                if ($device_model != '') {
-                    $dat['device_model'] = $device_model;
-                }
-                if (array_key_exists('FullAddress', $station)) {
-                    if (strlen($station['FullAddress']) > 1) {
-                        $dat['place']['country'] = strtoupper(substr($station['FullAddress'], -2));
-                    }
-                }
-                if (array_key_exists('CityName', $station)) {
-                    $dat['place']['city'] = $station['CityName'];
-                }
-                if (array_key_exists('ALT', $station)) {
-                    $dat['place']['altitude'] = round($station['ALT']);
-                }
-                if (array_key_exists('LON', $station)) {
-                    $dat['place']['location'][0] = round($station['LON'], 4);
-                }
-                if (array_key_exists('LAT', $station)) {
-                    $dat['place']['location'][1] = round($station['LAT'], 4);
-                }
-                if (array_key_exists('place', $dat)) {
-                    if (array_key_exists('UTC', $station) && array_key_exists('country', $dat['place'])) {
-                        $dat['place']['timezone'] = $this->get_probable_timezone($dat['place']['country'], (integer)$station['UTC']);
-                    }
-                    else {
-                        $dat['place']['timezone'] = 'UTC';
-                    }
-                }
-                if (count($dat) > 3) {
+                if (count($dat) > 1) {
                     $result[] = $dat;
                 }
                 else {
                     Logger::warning($this->facility, $this->service_name, $dat['device_id'], $dat['device_name'], null, null, 900, 'No module found for this station.');
                 }
             }
-        }*/
+        }
         $this->ambient_datas = $result;
     }
 }

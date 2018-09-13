@@ -78,6 +78,9 @@ class Stations extends Base {
             case LWS_BSKY_SID :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_bloomsky_icon('#666666')) . '" />';
                 break;
+            case LWS_AMBT_SID :
+                $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_ambient_icon('#666666')) . '" />';
+                break;
         }
         return $result;
     }
@@ -126,6 +129,10 @@ class Stations extends Base {
                 break;
             case LWS_PIOU_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=pioupiou&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['guid']);
+                $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
+                break;
+            case LWS_AMBT_SID :
+                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=ambient&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['guid']);
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
         }
@@ -242,17 +249,20 @@ class Stations extends Base {
     }
 
     protected function column_time($item){
-        $last_refresh_icn = $this->output_iconic_value(0, 'refresh', false, false, 'style="color:#999"', 'fa-lg');
-        $last_refresh_txt = $this->output_value($item['last_refresh'], 'last_refresh', false, false, 'NAMain', $item['loc_timezone']);
-        $last_refresh_diff_txt = ucfirst(self::get_positive_time_diff_from_mysql_utc($item['last_refresh']));
-        $s = '<span style="width:100%;cursor: default;">' . $last_refresh_icn . '&nbsp;' . $last_refresh_txt . '</span><br/><span style="padding-left:28px;color:silver">' . $last_refresh_diff_txt . '</span><br/>';
-        if ($item['last_seen'] != '0000-00-00 00:00:00') {
-            $last_seen_icn = $this->output_iconic_value(0, 'last_seen', false, false, 'style="color:#999"', 'fa-lg');
+        $result = '';
+        if (array_key_exists('last_refresh', $item) && $item['last_refresh'] != '0000-00-00 00:00:00') {
+            $last_refresh_icn = $this->output_iconic_value(0, 'refresh', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+            $last_refresh_txt = $this->output_value($item['last_refresh'], 'last_refresh', false, false, 'NAMain', $item['loc_timezone']);
+            $last_refresh_diff_txt = ucfirst(self::get_positive_time_diff_from_mysql_utc($item['last_refresh']));
+            $result .= '<span style="width:100%;cursor: default;">' . $last_refresh_icn . '&nbsp;' . $last_refresh_txt . '</span><br/><span style="padding-left:28px;color:silver">' . $last_refresh_diff_txt . '</span><br/>';
+        }
+        if (array_key_exists('last_seen', $item) && $item['last_seen'] != '0000-00-00 00:00:00') {
+            $last_seen_icn = $this->output_iconic_value(0, 'last_seen', false, false, 'style="color:#999"', 'fa-lg fa-fw');
             $last_seen_txt = $this->output_value($item['last_seen'], 'last_seen', false, false, 'NAMain', $item['loc_timezone']);
             $last_seen_diff_txt = ucfirst(self::get_positive_time_diff_from_mysql_utc($item['last_seen']));
-            $s .= '<span style="width:100%;cursor: default;">' . $last_seen_icn . '&nbsp;' . $last_seen_txt . '</span><br/><span style="padding-left:28px;color:silver">' . $last_seen_diff_txt . '</span>';
+            $result .= '<span style="width:100%;cursor: default;">' . $last_seen_icn . '&nbsp;' . $last_seen_txt . '</span><br/><span style="padding-left:28px;color:silver">' . $last_seen_diff_txt . '</span>';
         }
-        return $s;
+        return $result;
     }
 
     public function get_columns(){

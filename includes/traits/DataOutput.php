@@ -6643,7 +6643,9 @@ trait Output {
         if ($value == $not) {
             return $not;
         }
-        $value = round($value, $this->decimal_for_output($type));
+        if (is_numeric($value) && strtolower($type) !== 'oldest_data') {
+            $value = round($value, $this->decimal_for_output($type));
+        }
         $result = $value;
         switch (strtolower($type)) {
             case 'battery':

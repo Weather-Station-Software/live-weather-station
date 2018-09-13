@@ -22,18 +22,19 @@ trait Handling {
     /**
      * Analyzes dashboard datas for simple collector/computer and store it.
      *
-     * @param   integer $station_type       The station type.
-     * @param   string  $device_id          The device id to update.
-     * @param   string  $device_name        The device name to update.
-     * @param   string  $module_id          The module id to update.
-     * @param   string  $module_name        The module name to update.
-     * @param   string  $module_type        The type of the module (NAMain, NAModule1..9, v..p).
-     * @param   array   $types              The data types available in the $datas array.
-     * @param   array   $datas              The dashboard datas.
-     * @param   array   $place              Optional. The place datas.
-     * @since    2.0.0
+     * @param integer $station_type The station type.
+     * @param string $device_id The device id to update.
+     * @param string $device_name The device name to update.
+     * @param string $module_id The module id to update.
+     * @param string $module_name The module name to update.
+     * @param string $module_type The type of the module (NAMain, NAModule1..9, v..p).
+     * @param array $types The data types available in the $datas array.
+     * @param array $datas The dashboard datas.
+     * @param array $place Optional. The place datas.
+     * @param array $last_seen Optional. Must add the last_seen value.
+     * @since 2.0.0
      */
-    private function get_dashboard($station_type, $device_id, $device_name, $module_id, $module_name, $module_type, $types, $datas, $place=null) {
+    private function get_dashboard($station_type, $device_id, $device_name, $module_id, $module_name, $module_type, $types, $datas, $place=null, $last_seen=false) {
         foreach($types as $type) {
             if (array_key_exists($type, $datas)) {
                 $updates = array();
@@ -66,6 +67,20 @@ trait Handling {
         $updates['measure_type'] = 'last_refresh';
         $updates['measure_value'] = date('Y-m-d H:i:s');
         $this->update_data_table($updates);
+        if ($last_seen) {
+            if (array_key_exists('TS_'.$type, $datas)) {
+                $updates['measure_value'] = date('Y-m-d H:i:s', $datas['TS_'.$type]);
+            }
+            elseif (array_key_exists('time_utc', $datas)){
+                $updates['measure_value'] = date('Y-m-d H:i:s', $datas['time_utc']);
+            }
+            else {
+                $updates['measure_value'] = date('Y-m-d H:i:s');
+            }
+            $updates['measure_type'] = 'last_seen';
+            $this->update_data_table($updates);
+        }
+
         $updates = array();
         $updates['device_id'] = $device_id;
         $updates['device_name'] = $device_name;

@@ -1032,6 +1032,8 @@ trait Storage {
      */
     protected function delete_operational_stations_table($value) {
         $result = $this->delete_table(self::live_weather_station_datas_table(), 'device_id', $value, '\'');
+        $this->delete_table(self::live_weather_station_module_detail_table(), 'device_id', $value, '\'');
+        $this->delete_table(self::live_weather_station_media_table(), 'device_id', $value, '\'');
         $this->delete_table(self::live_weather_station_histo_daily_table(), 'device_id', $value, '\'');
         $this->delete_table(self::live_weather_station_histo_yearly_table(), 'device_id', $value, '\'');
         Cache::invalidate_backend(Cache::$db_stat_operational);

@@ -32,19 +32,21 @@ class Builder
             'partial_absolute_humidity', 'saturation_absolute_humidity', 'irradiance', 'uv_index', 'illuminance',
             'soil_temperature', 'leaf_wetness', 'moisture_content', 'moisture_tension', 'evapotranspiration',
             'windangle', 'gustangle', 'windstrength', 'guststrength', 'rain', 'rain_hour_aggregated', 'visibility',
-            'rain_day_aggregated', 'strike_count', 'strike_instant', 'weather', 'dew_point', 'frost_point', 'sunshine');
+            'rain_day_aggregated', 'strike_count', 'strike_instant', 'weather', 'dew_point', 'frost_point', 'sunshine',
+            'windsource', 'gustsource');
     
     public $standard_measurements = 
         array('health_idx', 'co2', 'humidity', 'cloudiness', 'noise', 'pressure', 'temperature', 'irradiance', 
               'uv_index', 'illuminance', 'cloud_ceiling', 'heat_index', 'humidex', 'wind_chill', 'windangle', 
-              'windstrength', 'rain_day_aggregated', 'rain', 'weather', 'dew_point', 'frost_point', 'visibility');
+              'windstrength', 'rain_day_aggregated', 'rain', 'weather', 'dew_point', 'frost_point', 'visibility',
+              'windsource');
     public $extended_measurements = 
         array('cbi', 'wet_bulb', 'air_density', 'wood_emc', 'equivalent_temperature', 'potential_temperature',
               'equivalent_potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
               'saturation_vapor_pressure', 'vapor_pressure', 'absolute_humidity', 'partial_absolute_humidity',
               'saturation_absolute_humidity', 'soil_temperature', 'leaf_wetness', 'moisture_content',
               'moisture_tension', 'evapotranspiration', 'gustangle', 'guststrength', 'strike_instant', 'strike_count',
-              'sunshine');
+              'sunshine', 'gustsource');
 
     private $Live_Weather_Station;
     private $version;
