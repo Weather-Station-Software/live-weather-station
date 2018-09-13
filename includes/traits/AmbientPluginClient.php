@@ -93,38 +93,24 @@ trait Client {
     }
 
     /**
-     * Detect the Netatmo stations and, optionaly, store them in the stations table.
+     * Detect the Ambient stations.
      *
-     * @param boolean $store Optional. Store the found stations in the stations table.
      * @return array An array containing stations details.
      *
      * @since 3.6.0
      */
-    protected function __get_stations($store=false){
+    protected function __get_stations(){
         $result = array();
         try {
             $this->get_datas(false);
             $datas = $this->ambient_datas ;
             foreach($datas as $station){
-                $result[] = array('device_id' => $station['device_id'], 'station_name' => $station['device_name'], 'installed' => false);
+                $result[] = array('device_id' => $station['device_id'], 'station_name' => $station['fixed_device_name'], 'installed' => false);
             }
-            if ($store) {
+            foreach ($this->get_all_ambt_stations() as $item) {
                 foreach ($result as &$station) {
-                    if ($this->insert_ignore_stations_table($station['device_id'], LWS_AMBT_SID)) {
+                    if ($item['station_id'] == $station['device_id']) {
                         $station['installed'] = true;
-                        Logger::notice($this->facility, $this->service_name, $station['device_id'], $station['station_name'], null, null, null, 'Station added.');
-                    }
-                    else {
-                        Logger::notice($this->facility, $this->service_name, $station['device_id'], $station['station_name'], null, null, null, 'This station was already added.');
-                    }
-                }
-            }
-            else {
-                foreach ($this->get_all_ambt_stations() as $item) {
-                    foreach ($result as &$station) {
-                        if ($item['station_id'] == $station['device_id']) {
-                            $station['installed'] = true;
-                        }
                     }
                 }
             }

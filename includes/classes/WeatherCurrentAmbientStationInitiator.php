@@ -49,7 +49,7 @@ class StationInitiator {
      */
     public function run($auto_init=false){
         if ($auto_init) {
-            $this->__get_stations(true);
+            $this->__get_stations();
         }
         $this->__run('Backend');
     }

@@ -90,11 +90,9 @@ Chart for station comparison
 
 Test parser on website
 
-Module names in stations view
+style : area and line opacity, widget scale, ...
 
-style : area and line opacity
-
-
+use wind classification (textual, charts, )
 
 Bloomsky = baro
 

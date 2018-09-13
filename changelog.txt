@@ -2,6 +2,7 @@
 #3.6.0 / XXXXXX, 2018
 
 * New: Weather Station natively supports BloomSky stations (SKY1, SKY2 & Storm) - special thanks to Francis Gedeon for the tests.
+* New: Weather Station natively connects to Ambient Weather Network - special thanks to Francis Gedeon for the tests.
 * New: "picture" module for stations supporting visual snapshots.
 * New: "video" module for stations supporting daily timelapses.
 * New: a new video control to display timelapses (shortcode available in historical data tab).
@@ -20,6 +21,7 @@
 * Improvement: correct handling of battery and signal measurements types for stations which doesn't report it.
 * Improvement: better layout and behavior in the module selector.
 * Improvement: FontAwesome 5 has been updated to version 5.3.1.
+* Improvement: better icon handling and alignment in admin views.
 * Improvement: the select box to choose color scheme (for charts) has been redesigned to be more clear.
 * Improvement: the readme.txt have now a minimum PHP version to prepare coming changes on the official WordPress repository.
 * Bug fix: in textual shortcodes, the customized name of a module is wrongly rendered.
@@ -30,6 +32,9 @@
 * Bug fix: time scales for daily charts maybe wrong in PHP > 7.2.7 (thanks to Ruud Janssen for reporting it).
 * Bug fix: charts may produce errors when they try to graph values from a removed station.
 * Bug fix: database analytics may be displayed with malformed charts in some cases.
+* Bug fix: PHP warning in stations list when the refresh time of a station is unknown.
+* Bug fix: the display of oldest data date may be buggy (again) for some very recently added stations.
+* Bug fix: when adding a station, after removing it, the modules details are not reset.
 * Bug fix: in some (very rare) condition, last refresh time of a station can not be rightly stored (thanks to Dominik T. for detecting it).
 
 #3.5.5 / June 25th, 2018

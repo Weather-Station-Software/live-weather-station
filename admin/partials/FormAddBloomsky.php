@@ -33,7 +33,7 @@ $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
             <?php wp_nonce_field('add-bloomsky'); ?>
             <table class="form-table">
                 <tr class="form-field">
-                    <th scope="row"><label for="station_name"><?php esc_html_e( 'Station', 'live-weather-station' );?></label></th>
+                    <th scope="row"><label for="id"><?php esc_html_e( 'Station', 'live-weather-station' );?></label></th>
                     <td align="left">
                     <span class="select-option">
                         <select class="option-select" name="id">

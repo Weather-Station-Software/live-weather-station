@@ -20,7 +20,7 @@ class Frontend {
 
 	private $Live_Weather_Station;
 	private $version;
-	private $allowed_shortcodes = array('live-weather-station-textual', 'live-weather-station-snapshot');
+	private $allowed_shortcodes = array('live-weather-station-textual', 'live-weather-station-snapshot', 'live-weather-station-timelapse');
 
 	/**
 	 * Initialize the class and set its properties.

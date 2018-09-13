@@ -213,6 +213,21 @@ class InlineHelp {
         if ($number == -26) {
             $result = '<a href="http://developers.pioupiou.fr/data-licensing/"' . $target . '>Open Data</a>'. Intl::get_language_markup(array('en'));
         }
+        if ($number == -27) {
+            $result = sprintf($message, '<a href="https://dashboard.ambientweather.net/signin"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+        }
+        if ($number == -28) {
+            $result = sprintf($message, '<a href="https://dashboard.ambientweather.net/account"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+        }
+        if ($number == -29) {
+            $result = sprintf($message, '<a href="https://dashboard.bloomsky.com/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+        }
+        if ($number == -30) {
+            $result = sprintf($message, '<a href="https://dashboard.bloomsky.com/user#api"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+        }
+        if ($number == -31) {
+            $result = sprintf($message, '<a href="https://weather.station.software/community/general-questions/weather-underground-free-api-keys/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+        }
         return $result;
     }
 
@@ -371,6 +386,7 @@ class InlineHelp {
         $s2 = '<strong>' . __('General', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Allows you to switch the mode in which %s runs.', 'live-weather-station'), LWS_PLUGIN_NAME);
         $s3 = '<strong>' . __('Services', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('In order to work properly, %s has to be connected to some services. You can manage here these connections.', 'live-weather-station'), LWS_PLUGIN_NAME);
         $s4 = '<strong>' . __('Display', 'live-weather-station') . '</strong> &mdash; ' . __('You can set here all the units and display options for controls and widgets.', 'live-weather-station') . ' ' . sprintf(__('This tab is visible only if %s runs in extended mode.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        $s10 = '<strong>' . __('Styles', 'live-weather-station') . '</strong> &mdash; ' . __('Allows you to define and set all the global visual styles for controls, widgets and charts.', 'live-weather-station') . ' ' . sprintf(__('This tab is visible only if %s runs in extended mode.', 'live-weather-station'), LWS_PLUGIN_NAME);
         $s5 = '<strong>' . __('Thresholds', 'live-weather-station') . '</strong> &mdash; ' . __('You can set here all the thresholds which define limits and alarms in some controls (LCD panel, gauges, meters, etc.).', 'live-weather-station') . ' ' . sprintf(__('This tab is visible only if %s runs in extended mode.', 'live-weather-station'), LWS_PLUGIN_NAME);
         $s6 = '<strong>' . __('History', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Here, you can set and review the settings used by %s to store and manage historical data.', 'live-weather-station'), LWS_PLUGIN_NAME) . ' ' . sprintf(__('This tab is visible only if %s runs in extended mode.', 'live-weather-station'), LWS_PLUGIN_NAME);
         $s7 = '<strong>' . __('System', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('You can set here all the parameters related to the operation of the %s subsystems.', 'live-weather-station'), LWS_PLUGIN_NAME) . ' ' . sprintf(__('This tab is visible only if %s runs in extended mode.', 'live-weather-station'), LWS_PLUGIN_NAME);
@@ -379,7 +395,26 @@ class InlineHelp {
         $tabs[] = array(
             'title'    => __('Content', 'live-weather-station'),
             'id'       => 'lws-contextual-settings-content',
-            'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p><p>' . $s5 . '</p><p>' . $s6 . '</p><p>' . $s7 . '</p><p>' . $s8 . '</p><p>' . $s9 . '</p>');
+            'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p><p>' . $s10 . '</p><p>' . $s5 . '</p><p>' . $s6 . '</p><p>' . $s7 . '</p><p>' . $s8 . '</p><p>' . $s9 . '</p>');
+
+        $s1 = __('To obtain an API key to access Ambient Weather Network please, follow these steps:', 'live-weather-station' );
+        $s2 = self::get(-27, __('Log in to %s.', 'live-weather-station'), __('your Ambient dashboard', 'live-weather-station'));
+        $s3 = self::get(-28, __('In your %s, at the bottom of the page, click on "Create API Key".', 'live-weather-station'), __('account settings', 'live-weather-station'));
+        $s4 = __('Then, copy and paste your API key in the single field of the "Ambient Weather Network" box and click on the "connect" button.', 'live-weather-station');
+        $s5 = sprintf(__('Note: the Ambient Weather Network dashboard allows you to create two sorts of keys: an <em>Application API key</em> or an <em>API key</em>. %s don\'t need an <em>Application API key</em>, just a simple <em>API key</em>', 'live-weather-station'), LWS_PLUGIN_NAME);
+        $tabs[] = array(
+            'title'    => 'Ambient Weather Network',
+            'id'       => 'lws-contextual-station-settings-ambt',
+            'content'  => '<p>' . $s1 . '</p><ol><li>' . $s2 . '</li><li>' . $s3 . '</li><li>' . $s4 . '</li></ol><p>' . $s5 .'</p>');
+
+        $s1 = __('To obtain your BloomSky API key please, follow these steps:', 'live-weather-station' );
+        $s2 = self::get(-29, __('Log in to %s.', 'live-weather-station'), __('your Ambient dashboard', 'live-weather-station'));
+        $s3 = __('In this dashboard, at the bottom of the left column, click on the "Developers" link.', 'live-weather-station');
+        $s4 = __('Then, copy and paste your API key in the single field of the "BloomSky" box and click on the "connect" button.', 'live-weather-station');
+        $tabs[] = array(
+            'title'    => 'BloomSky',
+            'id'       => 'lws-contextual-station-settings-bsky',
+            'content'  => '<p>' . $s1 . '</p><ol><li>' . $s2 . '</li><li>' . $s3 . '</li><li>' . $s4 . '</li></ol>');
 
         $s1 = __('To obtain an API key from OpenWeatherMap please, follow these steps:', 'live-weather-station' );
         $s2 = self::get(-23, __('%s on the OpenWeatherMap website.', 'live-weather-station'), __('Create an account', 'live-weather-station'));
@@ -395,7 +430,7 @@ class InlineHelp {
         $s2 = self::get(-21, __('%s on the Weather Underground website.', 'live-weather-station'), __('Create an account', 'live-weather-station'));
         $s3 = self::get(-22, __('After registration, log in and %s after selecting your plan.', 'live-weather-station'), __('get your API key', 'live-weather-station'));
         $s4 = __('Then, copy and paste your API key in the corresponding fields of the "Weather Underground" box, set your plan and click on the "connect" button.', 'live-weather-station');
-        $s5 = sprintf(__('Note: the <em>Stratus Developper Plan</em> - the free one - will allow you to add up to 3 Weather Underground stations in %s.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        $s5 = self::get(-31, __('Note: to obtain a free API key please, read this %s.', 'live-weather-station'), __('article', 'live-weather-station'));
         $tabs[] = array(
             'title'    => 'Weather Underground',
             'id'       => 'lws-contextual-station-settings-wug',
@@ -653,14 +688,15 @@ class InlineHelp {
             else {
                 $s7 = '';
             }
-            $s8 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_wug_color_logo()) . '" /><strong>' .'Weather Undergroung' . '</strong> &mdash; ' . __('a personal weather station published on Weather Underground.', 'live-weather-station') . '</p>';
+            $s8 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_ambient_color_logo()) . '" /><strong>' .'Ambient Weather Network' . '</strong> &mdash; ' . __('a personal weather station published on Ambient Weather Network.', 'live-weather-station') . '</p>';
+            $s13 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_wug_color_logo()) . '" /><strong>' .'Weather Undergroung' . '</strong> &mdash; ' . __('a personal weather station published on Weather Underground.', 'live-weather-station') . '</p>';
             $s9 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_real_color_logo()) . '" /><strong>' . __('Realtime File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>realtime.txt</em> file (Cumulus, etc.).', 'live-weather-station') . '</p>';
             $s10 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_raw_color_logo()) . '" /><strong>' . __('Clientraw File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>clientraw.txt</em> file (Weather Display, WeeWX, etc.).', 'live-weather-station') . '</p>';
             $s11 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_txt_color_logo()) . '" /><strong>' . __('Stickertags File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a stickertags file (WeatherLink, WsWin32, MeteoBridge, etc.).', 'live-weather-station') . '</p>';
             $tabs[] = array(
                 'title'    => __('Stations types', 'live-weather-station'),
                 'id'       => 'lws-contextual-stations-types',
-                'content'  => $s1 . $s2 . $s3 . $s4 . $s12 . $s5 . $s6 . $s7 . $s8 . $s9 . $s10 . $s11);
+                'content'  => $s1 . $s2 . $s3 . $s4 . $s12 . $s5 . $s6 . $s7 . $s8 . $s13 . $s9 . $s10 . $s11);
 
             $s1 = __('Depending of the type of the station, you can access to these features:', 'live-weather-station');
             $s2 = '<strong>' . __('Edit', 'live-weather-station') . '</strong> &mdash; ' . __('To modify or update the properties of the station (city, country, coordinates, etc.).', 'live-weather-station');

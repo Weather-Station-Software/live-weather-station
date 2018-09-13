@@ -341,6 +341,20 @@ class Quota {
                         break;
                 }
                 break;
+            case 'Ambient':
+                switch ($verb) {
+                    case 'GET' :
+                        $quota = 60;
+                        break;
+                }
+                break;
+            case 'BloomSky':
+                switch ($verb) {
+                    case 'GET' :
+                        $quota = 60;
+                        break;
+                }
+                break;
             case 'ip-API':
                 switch ($verb) {
                     case 'GET' :

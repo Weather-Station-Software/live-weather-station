@@ -53,7 +53,7 @@ jQuery(document).ready( function($) {
         $('#span-sync').show();
     });
 
-    $('#add-ambient .button-primary').click( function() {
+    $('#add-edit-ambient').click( function() {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });
         $('#span-sync').show();
