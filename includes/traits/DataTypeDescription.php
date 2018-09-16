@@ -389,6 +389,9 @@ trait Description {
             case 'windangle_day_max':
                 $result = ($abbr ? __('Wind', 'live-weather-station') : __('Wind direction for the maximal wind strength today', 'live-weather-station'));
                 break;
+            case 'windsource_day_max':
+                $result = ($abbr ? __('Wind', 'live-weather-station') : __('Wind source for the maximal wind strength today', 'live-weather-station'));
+                break;
             case 'windstrength_day_max':
                 $result = ($abbr ? __('Wind', 'live-weather-station') : __('Maximal wind strength today', 'live-weather-station'));
                 break;
@@ -596,6 +599,7 @@ trait Description {
             case 'strike_bearing':
                 $result = ($abbr ? __('Strike bear.', 'live-weather-station') : __('Strike bearing', 'live-weather-station'));
                 break;
+            // MISC
             case 'visibility':
                 $result = ($abbr ? __('Visibility', 'live-weather-station') : __('Visibility', 'live-weather-station'));
                 break;

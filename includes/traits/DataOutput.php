@@ -51,7 +51,8 @@ trait Output {
         'loc_latitude', 'loc_longitude', 'last_seen', 'last_refresh', 'first_setup', 'last_upgrade', 'last_setup',
         'sunrise_c','sunrise_n','sunrise_a', 'sunset_c','sunset_n', 'sunset_a', 'day_length_c', 'day_length_n',
         'day_length_a', 'dawn_length_a','dawn_length_n', 'dawn_length_c', 'dusk_length_a', 'dusk_length_n',
-        'dusk_length_c','saturation_vapor_pressure','saturation_absolute_humidity','equivalent_potential_temperature');
+        'dusk_length_c','saturation_vapor_pressure','saturation_absolute_humidity','equivalent_potential_temperature',
+        'windsource_max', 'windsource_day_max', 'windsource_hour_max', 'windsource', 'gustsource');
     private $graph_allowed_serie = array('device_id', 'module_id', 'measurement', 'line_mode', 'dot_style', 'line_style', 'line_size');
     private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
 
@@ -1902,7 +1903,7 @@ trait Output {
                 }
                 break;
             case 'distributionrc':
-                $wind = (strpos($values['extras'][0]['measurement_type'], 'windangle') !== false) || (strpos($values['extras'][0]['measurement_type'], 'gustangle')!== false);
+                $wind = (strpos($values['extras'][0]['measurement_type'], 'wind') !== false) || (strpos($values['extras'][0]['measurement_type'], 'gust')!== false);
                 $strike = (strpos($values['extras'][0]['measurement_type'], 'strike_bearing') !== false);
                 if ($wind && !$strike) {
                     $name = __('Wind', 'live-weather-station');
@@ -6435,9 +6436,14 @@ trait Output {
                 switch ($_attributes['measure_type']) {
                     case 'windangle':
                     case 'gustangle':
+                    case 'windsource':
+                    case 'gustsource':
                     case 'windangle_max':
                     case 'windangle_day_max':
                     case 'windangle_hour_max':
+                    case 'windsource_max':
+                    case 'windsource_day_max':
+                    case 'windsource_hour_max':
                         $result = $this->get_angle_full_text($result);
                         break;
                     case 'health_idx':
@@ -6466,9 +6472,14 @@ trait Output {
                 switch ($_attributes['measure_type']) {
                     case 'windangle':
                     case 'gustangle':
+                    case 'windsource':
+                    case 'gustsource':
                     case 'windangle_max':
                     case 'windangle_day_max':
                     case 'windangle_hour_max':
+                    case 'windsource_max':
+                    case 'windsource_day_max':
+                    case 'windsource_hour_max':
                         $result = $this->get_angle_text($result);
                         break;
                     default:
@@ -6733,9 +6744,14 @@ trait Output {
             case 'angle':
             case 'windangle':
             case 'gustangle':
+            case 'windsource':
+            case 'gustsource':
             case 'windangle_max':
             case 'windangle_day_max':
             case 'windangle_hour_max':
+            case 'windsource_max':
+            case 'windsource_day_max':
+            case 'windsource_hour_max':
                 $result = $this->get_wind_angle($value);
                 $result .= ($unit ? $this->unit_espace.$this->get_wind_angle_unit() : '');
                 break;
@@ -7296,9 +7312,14 @@ trait Output {
                 break;
             case 'windangle':
             case 'gustangle':
+            case 'windsource':
+            case 'gustsource':
             case 'windangle_max':
             case 'windangle_day_max':
             case 'windangle_hour_max':
+            case 'windsource_max':
+            case 'windsource_day_max':
+            case 'windsource_hour_max':
                 if ($show_value) {
                     $s = (get_option('live_weather_station_wind_semantics') == 0 ? 'towards' : 'from') . '-' . $value . '-deg';
                     $result = '<i %1$s class="wi wi-fw %2$s wi-wind ' . $s . '" aria-hidden="true"></i>';
@@ -7782,23 +7803,28 @@ trait Output {
                 break;
             case 'windangle':
             case 'gustangle':
+            case 'windsource':
+            case 'gustsource':
             case 'windangle_max':
             case 'windangle_day_max':
             case 'windangle_hour_max':
+            case 'windsource_max':
+            case 'windsource_day_max':
+            case 'windsource_hour_max':
                 $ref = 0;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
                 }
-                if ($type == 'windangle') {
+                if ($type == 'windangle' || $type == 'windsource') {
                     $result['comp'] = __('now', 'live-weather-station') ;
                 }
-                if ($type == 'gustangle') {
+                if ($type == 'gustangle' || $type == 'gustsource') {
                     $result['comp'] = __('gust', 'live-weather-station') ;
                 }
-                if ($type == 'windangle_day_max') {
+                if ($type == 'windangle_day_max' || $type == 'windsource_day_max') {
                     $result['comp'] = __('today', 'live-weather-station') ;
                 }
-                if ($type == 'windangle_hour_max') {
+                if ($type == 'windangle_hour_max' || $type == 'windsource_hour_max') {
                     $result['comp'] = __('/ 1 hr', 'live-weather-station') ;
                 }
                 $result['unit'] = $this->get_wind_angle_unit($ref);
@@ -8148,7 +8174,13 @@ trait Output {
         switch ($type) {
             case 'rain':
             case 'rain_hour_aggregated':
+            case 'sum_rain_1':
             case 'rain_day_aggregated':
+            case 'sum_rain_24':
+            case 'rain_yesterday_aggregated':
+            case 'rain_month_aggregated':
+            case 'rain_season_aggregated':
+            case 'rain_year_aggregated':
                 $result = 1 + get_option('live_weather_station_unit_rain_snow') ;
                 break;
             case 'snow':
@@ -8301,10 +8333,15 @@ trait Output {
                 $result = __('snow', 'live-weather-station') ;
                 break;
             case 'windangle':
+            case 'windsource':
             case 'windangle_max':
             case 'windangle_hour_max':
             case 'windangle_day_max':
+            case 'windsource_max':
+            case 'windsource_hour_max':
+            case 'windsource_day_max':
             case 'gustangle':
+            case 'gustsource':
             case 'windstrength':
             case 'windstrength_max':
             case 'windstrength_hour_max':
@@ -9059,6 +9096,9 @@ trait Output {
             case 'rain_year_aggregated':
             case 'windstrength':
             case 'windangle':
+            case 'gustangle':
+            case 'windsource':
+            case 'gustsource':
             case 'guststrength':
             case 'windstrength_hour_max':
             case 'windstrength_day_max':
@@ -9408,9 +9448,14 @@ trait Output {
                             break;
                         case 'windangle':
                         case 'gustangle':
+                        case 'windsource':
+                        case 'gustsource':
                         case 'windangle_max':
                         case 'windangle_day_max':
                         case 'windangle_hour_max':
+                        case 'windsource_max':
+                        case 'windsource_day_max':
+                        case 'windsource_hour_max':
                         case 'windstrength':
                         case 'guststrength':
                         case 'windstrength_max':
@@ -9992,6 +10037,11 @@ trait Output {
             case 'windangle_day_max':
                 $t = 'windangle';
                 break;
+            case 'gustsource':
+            case 'windsource_hour_max':
+            case 'windsource_day_max':
+                $t = 'windsource';
+                break;
             case 'guststrength':
             case 'windstrength_hour_max':
             case 'windstrength_day_max':
@@ -10158,12 +10208,12 @@ trait Output {
                     if ($data['measure_type'] == 'battery' && DeviceManager::is_hardware($data['module_type'])) {
                         $module['battery'] = $data['measure_value'];
                         $module['battery_txt'] = $this->get_battery_level_text($data['measure_value'], $data['module_type']);
-                        $module['battery_icn'] = $this->output_iconic_value($data['measure_value'], $data['measure_type'], $data['module_type'], false, 'style="color:#999"', 'fa-lg');
+                        $module['battery_icn'] = $this->output_iconic_value($data['measure_value'], $data['measure_type'], $data['module_type'], false, 'style="color:#999"', 'fa-lg fa-fw');
                     }
                     if ($data['measure_type'] == 'signal' && DeviceManager::is_hardware($data['module_type'])) {
                         $module['signal'] = $data['measure_value'];
                         $module['signal_txt'] = $this->get_signal_level_text($data['measure_value'], $data['module_type']);
-                        $module['signal_icn'] = $this->output_iconic_value($data['measure_value'], $data['measure_type'], $data['module_type'], false, 'style="color:#999"', 'fa-lg');
+                        $module['signal_icn'] = $this->output_iconic_value($data['measure_value'], $data['measure_type'], $data['module_type'], false, 'style="color:#999"', 'fa-lg fa-fw');
                     }
                 }
 
@@ -10186,7 +10236,7 @@ trait Output {
                         $extra = 'fa-xlg';
                     }
                     else {
-                        $extra = 'fa-lg';
+                        $extra = 'fa-lg fa-fw';
 
                     }
                     $val['measure_value_txt'] = $this->output_value($val['measure_value'], $val['measure_type'], true, $textual, $module['module_type']);

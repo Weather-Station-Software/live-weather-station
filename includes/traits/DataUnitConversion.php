@@ -1530,6 +1530,9 @@ trait Conversion {
             case 'windangle_max':
             case 'windangle_day_max':
             case 'windangle_hour_max':
+            case 'windsource_max':
+            case 'windsource_day_max':
+            case 'windsource_hour_max':
             case 'strike_bearing':
                 $result = $this->get_reverse_wind_angle($value);
                 break;

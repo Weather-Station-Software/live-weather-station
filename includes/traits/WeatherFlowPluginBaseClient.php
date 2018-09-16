@@ -23,62 +23,6 @@ trait BaseClient {
     protected $service_name = 'WeatherFlow';
     protected static $service = 'WeatherFlow';
 
-    /**
-     * Get station's datas.
-     *
-     * @param string $key The API key of the account.
-     * @param string $plan The plan of the account.
-     *
-     * @return boolean True if connection is established.
-     * @since 3.3.0
-     */
-    /*public function authentication($key, $plan) {
-        $wug = new WFLWApiClient();
-        $this->last_wug_error = '';
-        try {
-            Quota::verify($this->service_name, 'GET');
-            $raw_data = $wug->getRawPublicStationData('INORDPAS92', $key);
-            $weather = json_decode($raw_data, true);
-            if (!is_array($weather)) {
-                throw new \Exception('JSON / '.(string)$raw_data);
-            }
-            if (array_key_exists('response', $weather)) {
-                if (array_key_exists('error', $weather['response'])) {
-                    if (array_key_exists('description', $weather['response']['error'])) {
-                        throw new \Exception($weather['response']['error']['description']);
-                    }
-                    else {
-                        throw new \Exception('Weather Underground unknown exception');
-                    }
-                }
-                if (array_key_exists('features', $weather['response'])) {
-                    if (array_key_exists('conditions', $weather['response']['features'])) {
-                        if ($weather['response']['features']['conditions'] != 1) {
-                            throw new \Exception($weather['response']['error']['description']);
-                        }
-                    }
-                    else {
-                        throw new \Exception('Weather Underground unknown exception');
-                    }
-                }
-            }
-            update_option('live_weather_station_wug_apikey', $key);
-            update_option('live_weather_station_wug_plan', $plan);
-            return true;
-        }
-        catch(\Exception $ex)
-        {
-            if (strpos($ex->getMessage(), 'this key does not exist') !== false) {
-                $this->last_wug_error = __('Wrong Weather Underground API key.', 'live-weather-station');
-            }
-            else {
-                $this->last_wug_error = __('Weather Underground servers have returned empty response. Please retry.', 'live-weather-station');
-            }
-            update_option('live_weather_station_wug_apikey', '');
-            update_option('live_weather_station_wug_plan', 0);
-            return false;
-        }
-    }*/
 
     /**
      * Synchronize main table with station table.

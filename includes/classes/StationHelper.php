@@ -643,10 +643,10 @@ class Handling {
                 $station['oldest_data_txt'] = false;
             }
         }
-        $station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, 'style="color:#999"', 'fa-lg');
-        $location_icn = $this->output_iconic_value(0, 'city', false, false, 'style="color:#999"', 'fa-lg');
-        $timezone_icn = $this->output_iconic_value(0, 'timezone', false, false, 'style="color:#999"', 'fa-lg');
-        $histo_icn = $this->output_iconic_value(0, 'historical', false, false, 'style="color:#999"', 'fa-lg');
+        $station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $location_icn = $this->output_iconic_value(0, 'city', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $timezone_icn = $this->output_iconic_value(0, 'timezone', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $histo_icn = $this->output_iconic_value(0, 'historical', false, false, 'style="color:#999"', 'fa-lg fa-fw');
         include(LWS_ADMIN_DIR.'partials/StationStation.php');
     }
 
@@ -663,8 +663,8 @@ class Handling {
             $station['txt_coordinates'] .= ' &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' . $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 5, true);
             $station['txt_altitude'] = $this->output_value($station['loc_altitude'], 'loc_altitude', true, true);
         }
-        $location_icn = $this->output_iconic_value(0, 'location', false, false, 'style="color:#999"', 'fa-lg');
-        $altitude_icn = $this->output_iconic_value(0, 'altitude', false, false, 'style="color:#999"', 'fa-lg');
+        $location_icn = $this->output_iconic_value(0, 'location', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $altitude_icn = $this->output_iconic_value(0, 'altitude', false, false, 'style="color:#999"', 'fa-lg fa-fw');
         include(LWS_ADMIN_DIR.'partials/StationLocation.php');
     }
 
@@ -674,7 +674,7 @@ class Handling {
      * @since 3.5.0
      */
     public function tools_widget($n, $args) {
-        $manage_link_icn = $this->output_iconic_value(0, 'module', false, false, 'style="color:#999"', 'fa-lg');
+        $manage_link_icn = $this->output_iconic_value(0, 'module', false, false, 'style="color:#999"', 'fa-lg fa-fw');
         $manage_link = sprintf('<a href="?page=lws-stations&action=form&tab=manage&service=modules&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Manage modules', 'live-weather-station').'</a>', $this->station_guid);
         include(LWS_ADMIN_DIR.'partials/StationTools.php');
     }
@@ -741,11 +741,11 @@ class Handling {
         if (array_key_exists('module', $args['args'])) {
             $module = $args['args']['module'];
         }
-        $module_icn = $this->output_iconic_value(0, 'module', false, false, 'style="color:#999"', 'fa-lg');
-        $last_seen_icn = $this->output_iconic_value(0, 'last_seen', false, false, 'style="color:#999"', 'fa-lg');
-        $firmware_icn = $this->output_iconic_value(0, 'firmware', false, false, 'style="color:#999"', 'fa-lg');
-        $setup_icn = $this->output_iconic_value(0, 'first_setup', false, false, 'style="color:#999"', 'fa-lg');
-        $refresh_icn = $this->output_iconic_value(0, 'refresh', false, false, 'style="color:#999"', 'fa-lg');
+        $module_icn = $this->output_iconic_value(0, 'module', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $last_seen_icn = $this->output_iconic_value(0, 'last_seen', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $firmware_icn = $this->output_iconic_value(0, 'firmware', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $setup_icn = $this->output_iconic_value(0, 'first_setup', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $refresh_icn = $this->output_iconic_value(0, 'refresh', false, false, 'style="color:#999"', 'fa-lg fa-fw');
         $static_display = true;
         include(LWS_ADMIN_DIR.'partials/StationModule.php');
     }

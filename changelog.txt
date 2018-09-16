@@ -18,7 +18,10 @@
 * Improvement: textual shortcodes are able to output video URL (for station supporting daily timelapses).
 * Improvement: textual shortcodes are now able to output station model.
 * Improvement: textual shortcodes are now able to output reference pressure for computed values module.
+* Improvement: accumulated rainfall for today is now based on local day for WeatherFlow stations (it was previously based on last 24h).
+* Improvement: Weather Station now collects accumulated rainfall for yesterday from WeatherFlow stations.
 * Improvement: correct handling of battery and signal measurements types for stations which doesn't report it.
+* Improvement: rain measurements have now a consistent decimal value for all value types.
 * Improvement: better layout and behavior in the module selector.
 * Improvement: FontAwesome 5 has been updated to version 5.3.1.
 * Improvement: better icon handling and alignment in admin views.

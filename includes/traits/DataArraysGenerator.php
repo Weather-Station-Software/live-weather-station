@@ -672,8 +672,10 @@ trait Generator {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_hour_aggregated', $comparison, $distribution, $current, $video, $picture);
                 }
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_day_aggregated', $comparison, $distribution, $current, $video, $picture);
-                if ($raw || $real) {
+                if ($raw || $real || $wflw) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_yesterday_aggregated', $comparison, $distribution, $current, $video, $picture);
+                }
+                if ($raw || $real) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_month_aggregated', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_year_aggregated', $comparison, $distribution, $current, $video, $picture);
                 }
