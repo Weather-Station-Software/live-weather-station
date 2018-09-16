@@ -148,6 +148,7 @@ spl_autoload_register(
         case 'WeatherStation\SDK\WeatherUnderground\Plugin\Pusher': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentWeatherUndergroundPusher.php'; break;
         case 'WeatherStation\SDK\PWSWeather\Plugin\Pusher': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentPWSWeatherPusher.php'; break;
         case 'WeatherStation\System\Analytics\Performance': $file = LWS_INCLUDES_DIR.'system/Performance.php'; break;
+        case 'WeatherStation\System\Background\ProcessManager': $file = LWS_INCLUDES_DIR.'system/BackgroundProcessManager.php'; break;
         case 'WeatherStation\System\Cache\Cache': $file = LWS_INCLUDES_DIR.'system/Cache.php'; break;
         case 'WeatherStation\System\Data\Data': $file = LWS_INCLUDES_DIR.'system/Data.php'; break;
         case 'WeatherStation\System\Device\Manager': $file = LWS_INCLUDES_DIR.'classes/SystemDeviceManager.php'; break;
@@ -204,6 +205,11 @@ spl_autoload_register(
     if (!$file) {
         if (strpos($class, '\SDK\Netatmo\\') > 0) {
             $file = LWS_INCLUDES_DIR.'libraries/netatmo/autoload.php';
+        }
+    }
+    if (!$file) {
+        if (strpos($class, '\Process\\') > 0) {
+            $file = LWS_INCLUDES_DIR.'process/autoload.php';
         }
     }
     if (file_exists($file)) {

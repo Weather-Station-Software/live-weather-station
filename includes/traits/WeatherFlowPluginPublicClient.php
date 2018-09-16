@@ -270,7 +270,7 @@ trait PublicClient {
                 }
 
                 // NAModule3
-                if (array_key_exists('precip', $observation) || array_key_exists('precip_accum_last_1hr', $observation) || array_key_exists('precip_accum_last_24hr', $observation)) {
+                if (array_key_exists('precip', $observation) || array_key_exists('precip_accum_last_1hr', $observation) || array_key_exists('precip_accum_local_day', $observation) || array_key_exists('precip_accum_local_yesterday', $observation)) {
                     $type = 'NAModule3';
                     $updates['device_id'] = $station['station_id'];
                     $updates['device_name'] = $station['station_name'];
@@ -296,9 +296,14 @@ trait PublicClient {
                         $updates['measure_value'] = $observation['precip_accum_last_1hr'];
                         $this->update_data_table($updates);
                     }
-                    if (array_key_exists('precip_accum_last_24hr', $observation)) {
+                    if (array_key_exists('precip_accum_local_day', $observation)) {
                         $updates['measure_type'] = 'rain_day_aggregated';
-                        $updates['measure_value'] = $observation['precip_accum_last_24hr'];
+                        $updates['measure_value'] = $observation['precip_accum_local_day'];
+                        $this->update_data_table($updates);
+                    }
+                    if (array_key_exists('precip_accum_local_yesterday', $observation)) {
+                        $updates['measure_type'] = 'rain_yesterday_aggregated';
+                        $updates['measure_value'] = $observation['precip_accum_local_yesterday'];
                         $this->update_data_table($updates);
                     }
                     Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');

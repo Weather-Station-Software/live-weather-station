@@ -21,7 +21,7 @@ trait Query {
 
     private $dont_filter = array('temperature_max', 'temperature_min', 'temperature_trend', 'pressure_trend', 'loc_latitude',
                                  'loc_longitude', 'loc_altitude', 'windstrength_hour_max', 'windstrength_day_max', 'windangle_hour_max',
-                                 'windangle_day_max', 'last_seen', 'date_setup', 'last_upgrade');
+                                 'windangle_day_max', 'windsource_hour_max', 'windsource_day_max','last_seen', 'date_setup', 'last_upgrade');
 
     /**
      * Filter data regarding its timestamp.
@@ -150,6 +150,12 @@ trait Query {
                 $sub_attributes[] = 'windangle';
                 if ($full_mode) {
                     $sub_attributes[] = 'gustangle';
+                }
+                break;
+            case 'windsource':
+                $sub_attributes[] = 'windsource';
+                if ($full_mode) {
+                    $sub_attributes[] = 'gustsource';
                 }
                 break;
             case 'sos': // Helper to found names (station and module) in case there's no data from first round

@@ -27,6 +27,8 @@ define('LWS_PIOU_SID', 9);
 define('LWS_BSKY_SID', 10);
 define('LWS_AMBT_SID', 11);
 
+define('DEFAULT_UUID', '00000000-0000-0000-0000-000000000000');
+
 trait Storage {
 
 
@@ -140,6 +142,14 @@ trait Storage {
      */
     public static function live_weather_station_media_table() {
         return 'live_weather_station_medias';
+    }
+
+    /**
+     *
+     * @since 3.6.0
+     */
+    public static function live_weather_station_background_process_table() {
+        return 'live_weather_station_background_process';
     }
 
     /**
@@ -536,6 +546,27 @@ trait Storage {
     }
 
     /**
+     * Creates table for the plugin.
+     *
+     * @since 3.6.0
+     */
+    private static function create_live_weather_station_background_process_table() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        $table_name = $wpdb->prefix.self::live_weather_station_background_process_table();
+        $sql = "CREATE TABLE IF NOT EXISTS ".$table_name;
+        $sql .= " (`uuid` char(36) NOT NULL DEFAULT '" . DEFAULT_UUID . "',";
+        $sql .= " `name` varchar(100) NOT NULL,";
+        $sql .= " `description` varchar(2000) NOT NULL,";
+        $sql .= " `state` varchar(12) DEFAULT 'init' NOT NULL,";
+        $sql .= " `item_type` varchar(12) DEFAULT 'none' NOT NULL,";
+        $sql .= " `item_url` varchar(2000) DEFAULT '' NOT NULL,";
+        $sql .= " UNIQUE KEY mdia (`timestamp`, `device_id`, `module_id`, `module_type`, `item_type`)";
+        $sql .= ") $charset_collate;";
+        //$wpdb->query($sql);
+    }
+
+    /**
      * Creates tables for the plugin.
      *
      * @since 1.0.0
@@ -552,6 +583,7 @@ trait Storage {
         self::create_live_weather_station_quota_year_table();
         self::create_live_weather_station_data_year_table();
         self::create_live_weather_station_media_table();
+        self::create_live_weather_station_background_process_table();
     }
 
     /**
@@ -638,6 +670,10 @@ trait Storage {
             self::create_live_weather_station_module_detail_table();
             self::create_live_weather_station_data_year_table();
 
+
+            // VERSION 3.6.0
+            self::create_live_weather_station_media_table();
+            self::create_live_weather_station_background_process_table();
         }
     }
 
@@ -703,6 +739,12 @@ trait Storage {
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_data_year_table();
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        $wpdb->query($sql);
+        $table_name = $wpdb->prefix.self::live_weather_station_media_table();
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        $wpdb->query($sql);
+        $table_name = $wpdb->prefix.self::live_weather_station_background_process_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
     }
