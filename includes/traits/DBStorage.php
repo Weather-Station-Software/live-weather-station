@@ -4,6 +4,9 @@ namespace WeatherStation\DB;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\System\Cache\Cache;
 use WeatherStation\Data\History\Builder;
+use WeatherStation\System\Background\ProcessManager;
+use WeatherStation\System\Environment\Manager as Env;
+use WeatherStation\System\Notifications\Notifier;
 
 /**
  * Storage management.
@@ -150,6 +153,14 @@ trait Storage {
      */
     public static function live_weather_station_background_process_table() {
         return 'live_weather_station_background_process';
+    }
+
+    /**
+     *
+     * @since 3.6.0
+     */
+    public static function live_weather_station_notifications_table() {
+        return 'live_weather_station_notifications';
     }
 
     /**
@@ -555,15 +566,39 @@ trait Storage {
         $charset_collate = $wpdb->get_charset_collate();
         $table_name = $wpdb->prefix.self::live_weather_station_background_process_table();
         $sql = "CREATE TABLE IF NOT EXISTS ".$table_name;
-        $sql .= " (`uuid` char(36) NOT NULL DEFAULT '" . DEFAULT_UUID . "',";
+        $sql .= " (`uuid` char(36),";
+        $sql .= " `priority` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `class` varchar(100) NOT NULL,";
         $sql .= " `name` varchar(100) NOT NULL,";
         $sql .= " `description` varchar(2000) NOT NULL,";
         $sql .= " `state` varchar(12) DEFAULT 'init' NOT NULL,";
-        $sql .= " `item_type` varchar(12) DEFAULT 'none' NOT NULL,";
-        $sql .= " `item_url` varchar(2000) DEFAULT '' NOT NULL,";
-        $sql .= " UNIQUE KEY mdia (`timestamp`, `device_id`, `module_id`, `module_type`, `item_type`)";
+        $sql .= " `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',";
+        $sql .= " `params` longtext DEFAULT '',";
+        $sql .= " `exec_time` int(11) DEFAULT '0' NOT NULL,";
+        $sql .= " UNIQUE KEY (uuid)";
         $sql .= ") $charset_collate;";
-        //$wpdb->query($sql);
+        $wpdb->query($sql);
+    }
+
+    /**
+     * Creates table for the plugin.
+     *
+     * @since 3.6.0
+     */
+    private static function create_live_weather_station_notifications_table() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        $table_name = $wpdb->prefix.self::live_weather_station_notifications_table();
+        $sql = "CREATE TABLE IF NOT EXISTS ".$table_name;
+        $sql .= " (`id` int(11) NOT NULL AUTO_INCREMENT,";
+        $sql .= " `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',";
+        $sql .= " `level` enum('info','warning','error') NOT NULL DEFAULT 'error',";
+        $sql .= " `name` varchar(100) NOT NULL DEFAULT '',";
+        $sql .= " `url` varchar(200) NOT NULL DEFAULT '',";
+        $sql .= " `description` varchar(2000) NOT NULL DEFAULT '',";
+        $sql .= " UNIQUE KEY (id)";
+        $sql .= ") $charset_collate;";
+        $wpdb->query($sql);
     }
 
     /**
@@ -584,6 +619,7 @@ trait Storage {
         self::create_live_weather_station_data_year_table();
         self::create_live_weather_station_media_table();
         self::create_live_weather_station_background_process_table();
+        self::create_live_weather_station_notifications_table();
     }
 
     /**
@@ -674,6 +710,21 @@ trait Storage {
             // VERSION 3.6.0
             self::create_live_weather_station_media_table();
             self::create_live_weather_station_background_process_table();
+            self::create_live_weather_station_notifications_table();
+
+            ProcessManager::register('FixPioupiouWind');
+
+
+
+
+
+            // ALL VERSION
+            if (!Env::is_php_version_uptodate()) {
+                Notifier::error(__('Your PHP version is outdated', 'live-weather-station'),
+                               'http://php.net/supported-versions.php',
+                                __('This version of PHP is no longer supported by the PHP team and will not even receive security fixes in a few weeks. You should seriously consider to update it.', 'live-weather-station') .
+                                '<br/><em>' . __('Note: even if you do not update, Weather Station will continue to work.', 'live-weather-station') . '</em>');
+            }
         }
     }
 
@@ -745,6 +796,9 @@ trait Storage {
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_background_process_table();
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        $wpdb->query($sql);
+        $table_name = $wpdb->prefix.self::live_weather_station_notifications_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
     }
@@ -841,6 +895,62 @@ trait Storage {
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
             $wpdb->query($sql);
         }
+    }
+
+    /**
+     * Delete one row in a table.
+     *
+     * @param string $table_name The table to update.
+     * @param int $id The id to delete.
+     * @return int|false The number of rows deleted, or false on error.
+     * @since 3.6.0
+     */
+    protected static function delete_row_on_id($table_name, $id) {
+        if (isset($id)) {
+            if (is_numeric($id)) {
+                $id = (int)round($id);
+                global $wpdb;
+                $table_name = $wpdb->prefix . $table_name;
+                $sql = "DELETE FROM " . $table_name . " WHERE `id`='" . $id . "';";
+                return $wpdb->query($sql);
+            }
+            else {
+                return 0;
+            }
+        }
+        else {
+            return 0;
+        }
+    }
+
+    /**
+     * Get the newest rows in a table.
+     *
+     * @param string $table_name The table to update.
+     * @param int $limit The id to delete.
+     * @return array The $limit newer rows.
+     * @since 3.6.0
+     */
+    protected static function get_newest_rows($table_name, $limit=20) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . $table_name;
+        $sql = "SELECT * FROM " . $table_name . " ORDER BY `timestamp` DESC LIMIT ".$limit;
+        return $wpdb->get_results($sql, ARRAY_A);
+    }
+
+    /**
+     * Get the oldest rows in a table.
+     *
+     * @param string $table_name The table to update.
+     * @param int $limit The id to delete.
+     * @return array The $limit newer rows.
+     * @since 3.6.0
+     */
+    protected static function get_oldest_rows($table_name, $limit=20) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . $table_name;
+        $sql = "SELECT * FROM " . $table_name . " ORDER BY `timestamp` ASC LIMIT ".$limit;
+        return $wpdb->get_results($sql, ARRAY_A);
     }
 
     /**

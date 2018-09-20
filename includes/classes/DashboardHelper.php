@@ -5,6 +5,7 @@ namespace WeatherStation\UI\Dashboard;
 use WeatherStation\System\Help\InlineHelp as RSS;
 use WeatherStation\System\I18N\Handling as I18N;
 use WeatherStation\System\Analytics\Performance;
+use WeatherStation\System\Notifications\Notifier;
 
 /**
  * This class builds elements of the dashboard.
@@ -171,6 +172,19 @@ class Handling {
     }
 
     /**
+     * Ajax handler for deleting dashboard notification.
+     *
+     * @since 3.6.0
+     */
+    public static function delete_notification_callback() {
+        if (isset($_POST['id'])) {
+            Notifier::delete(wp_kses_post($_POST['id']));
+            wp_die(1);
+        }
+        wp_die(0);
+    }
+
+    /**
      * Get the full dashboard.
      *
      * @since 3.0.0
@@ -209,8 +223,18 @@ class Handling {
      * @since 3.0.0
      */
     public function add_metaboxes() {
+        $count = Notifier::count();
+        if ($count > 0) {
+            $bubble = ' <span class="lws-notification count-' . $count . '"><span class="plugin-count">' . number_format_i18n($count) . '</span></span>';
+        }
+        else {
+            $bubble = '';
+        }
         // Left column
         add_meta_box('lws-summary', __('At a Glance', 'live-weather-station'), array($this, 'summary_widget'), 'lws-dashboard', 'normal');
+        if ((bool)get_option('live_weather_station_advanced_mode')) {
+            add_meta_box('lws-notifications', __('Last notifications', 'live-weather-station') . $bubble, array($this, 'notifications_widget'), 'lws-dashboard', 'normal');
+        }
         if ((bool)get_option('live_weather_station_netatmo_connected') ||
             (bool)get_option('live_weather_station_netatmohc_connected') ||
             get_option('live_weather_station_owm_apikey') != '' ||
@@ -260,6 +284,15 @@ class Handling {
      */
     public function summary_widget() {
         self::_summary_widget();
+    }
+
+    /**
+     * Get content of the "Notifications" box.
+     *
+     * @since 3.6.0
+     */
+    public static function notifications_widget() {
+        include(LWS_ADMIN_DIR.'partials/DashboardNotifications.php');
     }
 
     /**

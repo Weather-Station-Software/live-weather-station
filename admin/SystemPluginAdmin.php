@@ -46,6 +46,7 @@ use WeatherStation\SDK\Pioupiou\Plugin\StationInitiator as Pioupiou_Station_Init
 use WeatherStation\SDK\BloomSky\Plugin\StationInitiator as Bloomsky_Station_Initiator;
 use WeatherStation\SDK\Ambient\Plugin\StationInitiator as Ambient_Station_Initiator;
 use WeatherStation\System\Device\Manager as DeviceManager;
+use WeatherStation\System\Notifications\Notifier;
 
 
 
@@ -1274,7 +1275,7 @@ class Admin {
     private function get_manage_options_cap() {
         return apply_filters('lws_manage_options_capability', 'manage_options');
     }
-    
+
     /**
      * Set Weather Station admin menu and submenus in the main dashboard menu.
      *
@@ -1284,8 +1285,15 @@ class Admin {
         $icon_svg = SVG::get_base64_menu_icon();
         $manage_options_cap = $this->get_manage_options_cap();
         if (REQUIREMENTS_OK) {
+            $count = Notifier::count();
+            if ($count > 0 && (bool)get_option('live_weather_station_advanced_mode')) {
+                $bubble = ' <span class="update-plugins count-' . $count . '"><span class="plugin-count">' . number_format_i18n($count) . '</span></span>';
+            }
+            else {
+                $bubble = '';
+            }
             add_menu_page(LWS_FULL_NAME . ' - ' . __('Dashboard', 'live-weather-station'), LWS_PLUGIN_NAME, $manage_options_cap, 'lws-dashboard', array($this, 'lws_load_admin_page'), $icon_svg, '99.001357');
-            $dashboard = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Dashboard', 'live-weather-station'), __('Dashboard', 'live-weather-station'), $manage_options_cap, 'lws-dashboard', array($this, 'lws_load_admin_page'));
+            $dashboard = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Dashboard', 'live-weather-station'), __('Dashboard', 'live-weather-station') . $bubble, $manage_options_cap, 'lws-dashboard', array($this, 'lws_load_admin_page'));
             $this->_dashboard = new Dashboard(LWS_PLUGIN_NAME, LWS_VERSION, $dashboard);
             $stations = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Stations', 'live-weather-station'), __('Stations', 'live-weather-station'), $manage_options_cap, 'lws-stations', array($this, 'lws_load_admin_page'));
             $this->_station = new Station(LWS_PLUGIN_NAME, LWS_VERSION, $stations);

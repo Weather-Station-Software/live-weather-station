@@ -253,3 +253,40 @@ div.lws-brandicon {
     background-image: radial-gradient(circle at top left,#2d7dd2 10%,#104e8c 100%) !important;
     box-shadow: 4px 4px 12px 0px rgba(0,0,0,0.3) !important;
 }
+
+.lws-notification {
+    display: inline-block;
+    vertical-align: top;
+    margin: 1px 0 0 2px;
+    padding: 0 5px;
+    min-width: 7px;
+    height: 17px;
+    border-radius: 11px;
+    background-color: #ca4a1f;
+    color: #fff;
+    font-size: 9px;
+    line-height: 17px;
+    text-align: center;
+    z-index: 26;
+}
+
+.lws-notification-box {
+    margin: 5px 0 15px;
+    background: #fff;
+    border-left-width: 4px;
+    border-left-style: solid;
+    box-shadow: 0 1px 1px 0 rgba(0,0,0,.1);
+    padding: 2px 12px;
+}
+
+.bg-notice-info {
+    background: rgba(0,160,210,.06) !important;
+}
+
+.bg-notice-warning {
+    background: rgba(255,185,0,.06) !important;
+}
+
+.bg-notice-error {
+    background: rgba(220,50,50,.06) !important;
+}

@@ -86,6 +86,8 @@ Fully delete a station in fast collect mode
 
 Station compatibility list
 
+GREEK TRANSLATION
+
 Chart for station comparison
 
 Test parser on website

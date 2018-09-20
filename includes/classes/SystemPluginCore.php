@@ -144,10 +144,10 @@ class Core {
         $this->loader->add_action('wp_dashboard_setup', 'WeatherStation\UI\Dashboard\Handling', 'add_wp_dashboard_widget');
         $this->loader->add_action('admin_init', $plugin_admin, 'init_settings' );
         $this->loader->add_action('admin_init', $plugin_admin, 'force_resync_if_needed' );
-        $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'register_scripts', 1);
-        $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'register_styles', 1);
-        $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
-        $this->loader->add_action( 'admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
+        $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'register_scripts', 1);
+        $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'register_styles', 1);
+        $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
+        $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
         $this->loader->add_action('script_loader_tag', $plugin_admin, 'modify_scripts', 10, 2);
         $this->loader->add_action('admin_menu', $plugin_admin, 'lws_admin_menu' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Outdoor', 'widget_registering' );
@@ -159,12 +159,14 @@ class Core {
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Thunderstorm', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Solar', 'widget_registering' );
         $this->loader->add_action('wp_ajax_update_lws_welcome_panel', 'WeatherStation\UI\Dashboard\Handling', 'update_lws_welcome_panel_callback' );
+        $this->loader->add_action('wp_ajax_delete_notification', 'WeatherStation\UI\Dashboard\Handling', 'delete_notification_callback' );
         $this->loader->add_action('shutdown', '\WeatherStation\System\Analytics\Performance', 'store' );
         $this->loader->add_action('auto_update_plugin', '\WeatherStation\System\Environment\Manager', 'lws_auto_update', 10, 2 );
         if (((bool)get_option('live_weather_station_show_update', 1))) {
             $this->loader->add_action('admin_notices', $plugin_admin, 'admin_notice_update_done');
             $this->loader->add_action('wp_ajax_hide_lws_whatsnew', $plugin_admin, 'hide_lws_whatsnew_callback' );
         }
+
     }
 
 	/**

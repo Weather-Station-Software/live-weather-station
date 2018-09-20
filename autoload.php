@@ -159,6 +159,7 @@ spl_autoload_register(
         case 'WeatherStation\System\I18N\Handling': $file = LWS_INCLUDES_DIR.'classes/I18nHelper.php'; break;
         case 'WeatherStation\System\Logs\Logger': $file = LWS_INCLUDES_DIR.'system/Logger.php'; break;
         case 'WeatherStation\System\Logs\LoggableException': $file = LWS_INCLUDES_DIR.'system/LoggableException.php'; break;
+        case 'WeatherStation\System\Notifications\Notifier': $file = LWS_INCLUDES_DIR.'system/Notifier.php'; break;
         case 'WeatherStation\System\Options\Handling': $file = LWS_INCLUDES_DIR.'traits/SystemOptionsHandling.php'; break;
         case 'WeatherStation\System\Plugin\Activator': $file = LWS_INCLUDES_DIR.'classes/SystemPluginActivator.php'; break;
         case 'WeatherStation\System\Plugin\Admin': $file = LWS_ADMIN_DIR.'SystemPluginAdmin.php'; break;

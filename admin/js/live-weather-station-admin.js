@@ -1,7 +1,8 @@
 jQuery(document).ready( function($) {
     var welcomePanel = $('#welcome-panel'),
         welcomePanelHide = $('#lws_welcome_panel-hide'),
-        updateWelcomePanel;
+        updateWelcomePanel,
+        deleteNotification;
 
 
     updateWelcomePanel = function(visible) {
@@ -19,7 +20,7 @@ jQuery(document).ready( function($) {
     $('.welcome-panel-close, .welcome-panel-dismiss a', welcomePanel).click( function(e) {
         e.preventDefault();
         welcomePanel.addClass('hidden');
-        updateWelcomePanel( 0 );
+        updateWelcomePanel(0);
         $('#lws_welcome_panel-hide').prop('checked', false);
     });
 
