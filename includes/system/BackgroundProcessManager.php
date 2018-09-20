@@ -30,6 +30,7 @@ class ProcessManager {
     private $Live_Weather_Station;
     private $version;
     private $facility = 'Background Process';
+    private static $namespace = 'WeatherStation\Process\\';
 
 
     /**
@@ -42,6 +43,23 @@ class ProcessManager {
     public function __construct($Live_Weather_Station, $version) {
         $this->Live_Weather_Station = $Live_Weather_Station;
         $this->version = $version;
+    }
+
+    /**
+     * Initialize the class and set its properties.
+     *
+     * @param string $class_name The class name process.
+     * @since 3.6.0
+     */
+    public static function register($class_name) {
+        $class_name = self::$namespace . $class_name;
+        try {
+            $process = new $class_name;
+            $process->register();
+        }
+        catch (\Exception $ex) {
+            Logger::error('Background Process', null, null, null, null, null, 999, 'Unable to run background process with class' . $class_name . '. Message: ' . $ex->getMessage());
+        }
     }
 
     /**

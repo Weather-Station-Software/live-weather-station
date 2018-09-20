@@ -2,7 +2,7 @@
 
 namespace WeatherStation\System\Schedules;
 
-use WeatherStation\System\Background\Process;
+use WeatherStation\System\Background\ProcessManager;
 use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Data\Data;
 use WeatherStation\System\Analytics\Performance;
@@ -807,7 +807,7 @@ trait Handling {
      * @since 3.6.0
      */
     protected static function define_background_process_cron() {
-        $process = new Process(LWS_PLUGIN_NAME, LWS_VERSION);
+        $process = new ProcessManager(LWS_PLUGIN_NAME, LWS_VERSION);
         add_action(self::$log_rotate_name, array($process, 'run'));
     }
 

@@ -13,10 +13,10 @@ namespace WeatherStation\Process;
 class FixPioupiouWind extends Process {
 
 
-
     /**
      * Get the UUID of the process.
      *
+     * @return string The UUID of the process.
      * @since 3.6.0
      */
     protected function uuid() {
@@ -26,19 +26,43 @@ class FixPioupiouWind extends Process {
     /**
      * Get the name of the process.
      *
+     * @param boolean $translated Optional. Indicates if the name must be translated.
+     * @return string The name of the process.
      * @since 3.6.0
      */
-    protected function name() {
+    protected function name($translated=true) {
         return __('Pioupiou stations wind fix', 'live-weather-station');
     }
 
     /**
      * Get the description of the process.
      *
+     * @return string The description of the process.
      * @since 3.6.0
      */
     protected function description() {
-        return __('This fix allows Weather Station to rightly handle historical and daily wind angle/source for V1 & V2 versions of the Pioupiou stations.', 'live-weather-station');
+        return sprintf(__('This fix allows %s to rightly handle daily and historical wind angle/source for V1 & V2 versions of the Pioupiou stations.', 'live-weather-station'), LWS_PLUGIN_NAME);
+    }
+
+    /**
+     * Get the priority of the process.
+     *
+     * @return int The priority of the process.
+     * @since 3.6.0
+     */
+    protected function priority(){
+        return 10;
+    }
+
+    /**
+     * Verify if process is needed.
+     *
+     * @return boolean True if the process is needed. False otherwise.
+     * @since 3.6.0
+     */
+    protected function is_needed() {
+
+        return true;
     }
 
     /**
