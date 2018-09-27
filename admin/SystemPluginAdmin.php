@@ -413,7 +413,7 @@ class Admin {
         register_setting('lws_display', 'lws_display_minmax');
         add_settings_field('lws_display_obsolescence', __('Data obsolescence', 'live-weather-station'),
             array($this, 'lws_display_obsolescence_callback'), 'lws_display', 'lws_display_section',
-            array(__('Duration beyond which a data is considered stale (and will therefore neither shown nor used in computations).', 'live-weather-station')));
+            array(__('Duration beyond which a data is considered stale (and will therefore neither be shown nor used in computations).', 'live-weather-station')));
         register_setting('lws_display', 'lws_display_obsolescence');
         add_settings_field('lws_display_windsemantics', __('Wind icon', 'live-weather-station'),
             array($this, 'lws_display_windsemantics_callback'), 'lws_display', 'lws_display_section',
