@@ -53,3 +53,19 @@ function deactivate_Live_Weather_Station() {
 register_activation_hook( __FILE__, 'activate_Live_Weather_Station' );
 register_deactivation_hook( __FILE__, 'deactivate_Live_Weather_Station' );
 run_Live_Weather_Station();
+
+/**
+ * @wordpress-plugin
+ * Plugin Name:       Weather Station
+ * Plugin URI:        https://weather.station.software/
+ * Description:       Display on your WordPress site, in many elegant ways, the meteorological data collected by public or personal weather stations.
+ * Version:           3.5.5
+ * Author:            Pierre Lannoy
+ * Author URI:        https://pierre.lannoy.fr
+ * License:           GPLv2 or later
+ * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain:       live-weather-station
+ * Domain Path:       /languages
+ */
+
+

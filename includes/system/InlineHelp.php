@@ -418,7 +418,7 @@ class InlineHelp {
 
         $s1 = __('To obtain an API key from OpenWeatherMap please, follow these steps:', 'live-weather-station' );
         $s2 = self::get(-23, __('%s on the OpenWeatherMap website.', 'live-weather-station'), __('Create an account', 'live-weather-station'));
-        $s3 = self::get(-24, __('After registration, log in to %s.', 'live-weather-station'), __('create an get your API key', 'live-weather-station'));
+        $s3 = self::get(-24, __('After registration, log in to %s.', 'live-weather-station'), __('create and get your API key', 'live-weather-station'));
         $s4 = __('Then, copy and paste your API key in the corresponding fields of the "OpenWeatherMap" box, set your plan and click on the "connect" button.', 'live-weather-station');
         $s5 = sprintf(__('Note: the <em>Free Plan</em> will allow you to add up to 10 OpenWeatherMap stations in %s.', 'live-weather-station'), LWS_PLUGIN_NAME);
         $tabs[] = array(
@@ -500,7 +500,7 @@ class InlineHelp {
         }
         if (isset($action) && $action == 'manage') {
             $s1 = __('This "station view" shows you the details of a station.', 'live-weather-station');
-            $s2 = __('The left-hand column display statical information on the station as well as sharing and publishing format options.', 'live-weather-station');
+            $s2 = __('The left-hand column displays static information on the station as well as sharing and publishing format options.', 'live-weather-station');
             $s3 = __('The right-hand column displays all modules (main base, outdoor, indoor and virtual modules) attached to the station.', 'live-weather-station');
             $tabs[] = array(
                 'title'    => __('Overview', 'live-weather-station'),
@@ -698,7 +698,7 @@ class InlineHelp {
                 'id'       => 'lws-contextual-stations-types',
                 'content'  => $s1 . $s2 . $s3 . $s4 . $s12 . $s5 . $s6 . $s7 . $s8 . $s13 . $s9 . $s10 . $s11);
 
-            $s1 = __('Depending of the type of the station, you can access to these features:', 'live-weather-station');
+            $s1 = __('Depending on the type of the station, you can access to these features:', 'live-weather-station');
             $s2 = '<strong>' . __('Edit', 'live-weather-station') . '</strong> &mdash; ' . __('To modify or update the properties of the station (city, country, coordinates, etc.).', 'live-weather-station');
             $s3 = '<strong>' . __('Remove', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('To remove the station from the %s collect process.', 'live-weather-station'), LWS_PLUGIN_NAME);
             $s4 = '<strong>' . __('See events log', 'live-weather-station') . '</strong> &mdash; ' . __('To see events associated with the station.', 'live-weather-station');
