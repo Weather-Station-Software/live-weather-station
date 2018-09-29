@@ -11,7 +11,7 @@ use WeatherStation\UI\SVG\Handling as SVG;
 $dashboard = (isset($welcome) && $welcome);
 
 if (get_option('live_weather_station_netatmo_connected')) {
-    $netatmo_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a Netatmo station to which you have access to.', 'live-weather-station'));
+    $netatmo_s = ucfirst(addslashes(__('a Netatmo station to which you have access to.', 'live-weather-station')));
     $netatmo_l = lws_get_admin_page_url('lws-stations', 'form', 'add', 'Netatmo', $dashboard);
     $netatmo_t = '_self';
 }
@@ -22,7 +22,7 @@ else {
 }
 
 if (get_option('live_weather_station_netatmohc_connected')) {
-    $netatmo_hc_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a Netatmo "Healthy Home Coach" device to which you have access to.', 'live-weather-station'));
+    $netatmo_hc_s = ucfirst(addslashes(__('a Netatmo "Healthy Home Coach" device to which you have access to.', 'live-weather-station')));
     $netatmo_hc_l = lws_get_admin_page_url('lws-stations', 'form', 'add', 'NetatmoHC', $dashboard);
     $netatmo_hc_t = '_self';
 }
@@ -33,7 +33,7 @@ else {
 }
 
 if (get_option('live_weather_station_owm_apikey') != '') {
-    $loc_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a "virtual" weather station whose you only know the city or its coordinates.', 'live-weather-station'));
+    $loc_s = ucfirst(addslashes(__('a "virtual" weather station you only know the city or coordinates.', 'live-weather-station')));
     $loc_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'Location', $dashboard);
     $loc_t = '_self';
 }
@@ -44,7 +44,7 @@ else {
 }
 
 if (get_option('live_weather_station_owm_apikey') != '') {
-    $owm_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a personal weather station published on OpenWeatherMap.', 'live-weather-station'));
+    $owm_s = ucfirst(addslashes(__('a personal weather station published on OpenWeatherMap.', 'live-weather-station')));
     $owm_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'OpenWeatherMap', $dashboard);
     $owm_t = '_self';
 }
@@ -55,7 +55,7 @@ else {
 }
 
 if (get_option('live_weather_station_wug_apikey') != '') {
-    $wug_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a personal weather station published on Weather Underground.', 'live-weather-station'));
+    $wug_s = ucfirst(addslashes(__('a personal weather station published on Weather Underground.', 'live-weather-station')));
     $wug_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'WeatherUnderground', $dashboard);
     $wug_t = '_self';
 }
@@ -65,29 +65,29 @@ else {
     $wug_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
 
-$real_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a station exporting its data via a <em>realtime.txt</em> file (Cumulus, etc.).', 'live-weather-station'));
+$real_s = ucfirst(addslashes(__('a station exporting its data via a <em>realtime.txt</em> file (Cumulus, etc.).', 'live-weather-station')));
 $real_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'realtime', $dashboard);
 $real_t = '_self';
 
-$raw_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a station exporting its data via a <em>clientraw.txt</em> file (Weather Display, WeeWX, etc.).', 'live-weather-station'));
+$raw_s = ucfirst(addslashes(__('a station exporting its data via a <em>clientraw.txt</em> file (Weather Display, WeeWX, etc.).', 'live-weather-station')));
 $raw_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'clientraw', $dashboard);
 $raw_t = '_self';
 
-$txt_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a station exporting its data via a stickertags file (WeatherLink, WsWin32, MeteoBridge, etc.).', 'live-weather-station'));
+$txt_s = ucfirst(addslashes(__('a station exporting its data via a stickertags file (WeatherLink, WsWin32, MeteoBridge, etc.).', 'live-weather-station')));
 $txt_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'stickertags', $dashboard);
 $txt_t = '_self';
 
-$wflw_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a public WeatherFlow station.', 'live-weather-station'));
+$wflw_s = ucfirst(addslashes(__('a public WeatherFlow station.', 'live-weather-station')));
 $wflw_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'weatherflow', $dashboard);
 $wflw_t = '_self';
 
-$piou_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a Pioupiou sensor as a station.', 'live-weather-station'));
+$piou_s = ucfirst(addslashes(__('a Pioupiou sensor as a station.', 'live-weather-station')));
 $piou_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'pioupiou', $dashboard);
 $piou_t = '_self';
 
 
 if (get_option('live_weather_station_bloomsky_connected')) {
-    $bloomsky_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a Bloomsky station to which you have access to.', 'live-weather-station'));
+    $bloomsky_s = ucfirst(addslashes(__('a Bloomsky station to which you have access to.', 'live-weather-station')));
     $bloomsky_l = lws_get_admin_page_url('lws-stations', 'form', 'add', 'Bloomsky', $dashboard);
     $bloomsky_t = '_self';
 }
@@ -98,7 +98,7 @@ else {
 }
 
 if (get_option('live_weather_station_ambient_connected')) {
-    $ambient_s = __('Add', 'live-weather-station') . ' ' . addslashes(__('a personal weather station published on Ambient Weather Network.', 'live-weather-station'));
+    $ambient_s = ucfirst(addslashes(__('a personal weather station published on Ambient Weather Network.', 'live-weather-station')));
     $ambient_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'Ambient', $dashboard);
     $ambient_t = '_self';
 }

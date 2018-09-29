@@ -2563,6 +2563,21 @@ trait Generator {
     }
 
     /**
+     * Get the available media conservation duration.
+     *
+     * @return array An array containing the media conservation duration.
+     * @since 3.6.0
+     */
+    protected function get_media_conservation_js_array() {
+        $result = array();
+        $result[] = array(7, __('One week', 'live-weather-station'));
+        $result[] = array(31, __('One month', 'live-weather-station'));
+        $result[] = array(365, __('One year', 'live-weather-station'));
+        $result[] = array(0, __('Unlimited', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
      * Get the available history modes.
      *
      * @return array An array containing the history modes.

@@ -228,6 +228,9 @@ class InlineHelp {
         if ($number == -31) {
             $result = sprintf($message, '<a href="https://weather.station.software/community/general-questions/weather-underground-free-api-keys/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
+        if ($number == -32) {
+            $result = '<a href="http://weatherlink.gedfr.info/"' . $target . '>Francis Gedeon</a>'. Intl::get_language_markup(array('fr'));
+        }
         return $result;
     }
 
@@ -408,7 +411,7 @@ class InlineHelp {
             'content'  => '<p>' . $s1 . '</p><ol><li>' . $s2 . '</li><li>' . $s3 . '</li><li>' . $s4 . '</li></ol><p>' . $s5 .'</p>');
 
         $s1 = __('To obtain your BloomSky API key please, follow these steps:', 'live-weather-station' );
-        $s2 = self::get(-29, __('Log in to %s.', 'live-weather-station'), __('your Ambient dashboard', 'live-weather-station'));
+        $s2 = self::get(-29, __('Log in to %s.', 'live-weather-station'), __('your BloomSky dashboard', 'live-weather-station'));
         $s3 = __('In this dashboard, at the bottom of the left column, click on the "Developers" link.', 'live-weather-station');
         $s4 = __('Then, copy and paste your API key in the single field of the "BloomSky" box and click on the "connect" button.', 'live-weather-station');
         $tabs[] = array(
@@ -681,7 +684,7 @@ class InlineHelp {
             $s4 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_weatherflow_color_logo()) . '" /><strong>' . 'WeatherFlow' . '</strong> &mdash; ' . __('a public WeatherFlow station.', 'live-weather-station') . '</p>';
             $s12 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_bloomsky_color_logo()) . '" /><strong>' . 'BloomSky' . '</strong> &mdash; ' . __('a Bloomsky station to which you have access to.', 'live-weather-station') . '</p>';
             $s5 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_piou_color_logo()) . '" /><strong>' . 'Pioupiou' . '</strong> &mdash; ' . __('a Pioupiou sensor as a station.', 'live-weather-station') . '</p>';
-            $s6 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_loc_color_logo()) . '" /><strong>' . __('Virtual', 'live-weather-station') . '</strong> &mdash; ' . __('a "virtual" weather station whose you only know the city or its coordinates.', 'live-weather-station') . '</p>';
+            $s6 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_loc_color_logo()) . '" /><strong>' . __('Virtual', 'live-weather-station') . '</strong> &mdash; ' . __('a "virtual" weather station you only know the city or coordinates.', 'live-weather-station') . '</p>';
             if (LWS_OWM_READY) {
                 $s7 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_owm_color_logo()) . '" /><strong>' . 'OpenWeatherMap' . '</strong> &mdash; ' . __('a personal weather station published on OpenWeatherMap.', 'live-weather-station') . '</p>';
             }

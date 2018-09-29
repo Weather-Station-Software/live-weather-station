@@ -339,6 +339,10 @@ class Admin {
             array($this, 'lws_system_time_shift_threshold_callback'), 'lws_system', 'lws_system_section',
             array(__('Maximum allowed servers time shift before warning (useful for Netatmo accuracy).', 'live-weather-station')));
         register_setting('lws_system', 'lws_system_time_shift_threshold');
+        add_settings_field('lws_system_media', __('Medias retention', 'live-weather-station'),
+            array($this, 'lws_system_media_callback'), 'lws_system', 'lws_system_section',
+            array());
+        register_setting('lws_system', 'lws_system_media');
         add_settings_field('lws_system_show_technical', __('Stations views', 'live-weather-station'),
             array($this, 'lws_system_show_technical_callback'), 'lws_system', 'lws_system_section',
             array(__('If you check this, stations views will display detailed technical information for each module.', 'live-weather-station')));
@@ -439,18 +443,10 @@ class Admin {
      * @since 3.6.0
      */
     public function init_styles_settings() {
-        add_settings_field('lws_chart_styles_area_opacity', __('Opacity', 'live-weather-station'),
+        /*add_settings_field('lws_chart_styles_area_opacity', __('Opacity', 'live-weather-station'),
             array($this, 'lws_chart_styles_area_opacity_callback'), 'lws_chart_styles', 'lws_chart_styles_section',
             array(__('Semantics of the icon representing the wind direction in widgets.', 'live-weather-station')));
-        register_setting('lws_chart_styles', 'lws_chart_styles_area_opacity');
-
-
-
-
-        /*add_settings_field('lws_chart_styles_cschemes', __('Color schemes', 'live-weather-station'),
-            array($this, 'lws_chart_styles_cschemes_callback'), 'lws_chart_styles', 'lws_chart_styles_section',
-            array(__('Custom palettes available for all charts, in addition to standard palettes.', 'live-weather-station')));
-        register_setting('lws_chart_styles', 'lws_chart_styles_cschemes');*/
+        register_setting('lws_chart_styles', 'lws_chart_styles_area_opacity');*/
 
     }
 
@@ -468,25 +464,6 @@ class Admin {
     public function lws_chart_styles_area_opacity_callback($args) {
         echo $this->field_select($this->get_history_full_js_array(), get_option('live_weather_station_full_history'), 'lws_history_full', $args[0]);
     }
-
-    /**
-     * Renders the interface elements for the corresponding field.
-     *
-     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
-     * @since 3.6.0
-     */
-    public function lws_chart_styles_cschemes_callback($args) {
-        /*$csListTable = new ColorSchemes();
-        $csListTable->prepare_items();
-        echo '<style>div.tablenav.top, div.tablenav.bottom {display:none;}.widefat th {padding: 8px 10px !important;font-weight: 400 !important;}.row-actions{padding-left: 28px;}</style>';
-        $csListTable->display();
-        echo '<p class="description">' . $args[0] . '</p>';*/
-    }
-
-
-
-
-
 
 
 
@@ -632,6 +609,27 @@ class Admin {
                         'step' => 1,
                         'unit' => __('days', 'live-weather-station'));
         echo $this->field_multi_horizontal_input_number($nmbrs, $args[0]);
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.6.0
+     */
+    public function lws_system_media_callback($args) {
+        $sbxs = array();
+        $sbxs[] = array('text' => __('Pictures', 'live-weather-station'),
+                        'id' => 'lws_system_picture_retention',
+                        'list' => $this->get_media_conservation_js_array(),
+                        'value' => get_option('live_weather_station_picture_retention'),
+                        'description' => __('Time during which pictures and snapshots should be kept.', 'live-weather-station'));
+        $sbxs[] = array('text' => __('Videos', 'live-weather-station'),
+                        'id' => 'lws_system_video_retention',
+                        'list' => $this->get_media_conservation_js_array(),
+                        'value' => get_option('live_weather_station_video_retention'),
+                        'description' => __('Time during which videos and timelapses should be kept.', 'live-weather-station'));
+        echo $this->field_multi_select($sbxs);
     }
 
     /**
@@ -1114,6 +1112,8 @@ class Admin {
                 update_option('live_weather_station_analytics_cutoff', (integer)$_POST['lws_system_analytics_cutoff']);
                 update_option('live_weather_station_quota_mode', (integer)$_POST['lws_system_quota']);
                 update_option('live_weather_station_cron_speed', (integer)$_POST['lws_system_cron_speed']);
+                update_option('live_weather_station_picture_retention', (integer)$_POST['lws_system_picture_retention']);
+                update_option('live_weather_station_video_retention', (integer)$_POST['lws_system_video_retention']);
                 update_option('live_weather_station_collection_http_timeout', (integer)$_POST['lws_collection_http_timeout']);
                 update_option('live_weather_station_sharing_http_timeout', (integer)$_POST['lws_sharing_http_timeout']);
                 update_option('live_weather_station_system_http_timeout', (integer)$_POST['lws_system_http_timeout']);

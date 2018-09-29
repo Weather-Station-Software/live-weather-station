@@ -55,6 +55,8 @@ trait Handling {
     private static $live_weather_station_collection_http_timeout = 45;
     private static $live_weather_station_sharing_http_timeout = 45;
     private static $live_weather_station_system_http_timeout = 20;
+    private static $live_weather_station_picture_retention = 31;
+    private static $live_weather_station_video_retention = 31;
 
     private static $live_weather_station_map_zoom = 16;
     private static $live_weather_station_map_layer = 'X';
@@ -615,6 +617,8 @@ trait Handling {
         delete_option('live_weather_station_collection_http_timeout');
         delete_option('live_weather_station_sharing_http_timeout');
         delete_option('live_weather_station_system_http_timeout');
+        delete_option('live_weather_station_picture_retention');
+        delete_option('live_weather_station_video_retention');
         delete_option('live_weather_station_collect_history');
         delete_option('live_weather_station_build_history');
         delete_option('live_weather_station_full_history');
@@ -726,6 +730,8 @@ trait Handling {
         update_option('live_weather_station_collection_http_timeout', self::$live_weather_station_collection_http_timeout);
         update_option('live_weather_station_sharing_http_timeout', self::$live_weather_station_sharing_http_timeout);
         update_option('live_weather_station_system_http_timeout', self::$live_weather_station_system_http_timeout);
+        update_option('live_weather_station_picture_retention', self::$live_weather_station_picture_retention);
+        update_option('live_weather_station_video_retention', self::$live_weather_station_video_retention);
     }
 
     /**
@@ -953,6 +959,8 @@ trait Handling {
         self::verify_option_integer('live_weather_station_collection_http_timeout', self::$live_weather_station_collection_http_timeout);
         self::verify_option_integer('live_weather_station_sharing_http_timeout', self::$live_weather_station_sharing_http_timeout);
         self::verify_option_integer('live_weather_station_system_http_timeout', self::$live_weather_station_system_http_timeout);
+        self::verify_option_integer('live_weather_station_picture_retention', self::$live_weather_station_picture_retention);
+        self::verify_option_integer('live_weather_station_video_retention', self::$live_weather_station_video_retention);
         self::verify_option_thresholds();
         self::verify_option_cschemes();
         self::verify_option_integer('live_weather_station_map_zoom', self::$live_weather_station_map_zoom);
