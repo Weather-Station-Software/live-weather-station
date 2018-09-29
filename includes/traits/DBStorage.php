@@ -712,7 +712,7 @@ trait Storage {
             self::create_live_weather_station_background_process_table();
             self::create_live_weather_station_notifications_table();
 
-            ProcessManager::register('FixPioupiouWind');
+            ProcessManager::register('WindExpander');
 
 
 

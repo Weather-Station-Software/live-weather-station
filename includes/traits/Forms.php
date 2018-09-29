@@ -43,6 +43,31 @@ trait Handling {
     }
 
     /**
+     * Get a multi-select form field.
+     *
+     * @param array $args An array which contains array of (text, id, list, value, description).
+     * @return string The HTML string ready to print.
+     * @since 3.0.0
+     */
+    protected function field_multi_select($args) {
+        $html = '';
+        foreach ($args as $arg) {
+            if ($html != '') {
+                $html .= '<br />';
+            }
+            $thtml = '';
+            foreach ($arg['list'] as $val) {
+                $thtml .= '<option value="' . $val[0] . '"' . ( $val[0] == $arg['value'] ? ' selected="selected"' : '') . '>' . $val[1] . '</option>';
+            }
+            $html .= '<select name="' . $arg['id'] . '" id="' . $arg['id'] . '">' . $thtml . '</select>';
+            if ($arg['description'] != '') {
+                $html .= '<p class="description">' . $arg['description'] . '</p>';
+            }
+        }
+        return $html;
+    }
+
+    /**
      * Get a radio form field.
      *
      * @param array $list The list of options.

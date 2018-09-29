@@ -1,5 +1,5 @@
 
-#3.6.0 / XXXXXX, 2018
+#3.6.0 / October 16th, 2018
 
 * New: Weather Station natively supports ***BloomSky*** stations (SKY1, SKY2 & Storm) - special thanks to Francis Gedeon for the tests.
 * New: Weather Station natively connects to ***Ambient Weather Network*** - special thanks to Francis Gedeon for the tests.

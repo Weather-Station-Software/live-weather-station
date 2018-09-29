@@ -70,6 +70,34 @@ class Cleaner
         if ($this->delete_old_daily_values()) {
             Logger::notice($this->facility, null, null, null, null, null, null, 'Stale daily data cleaned.');
         }
+        if ($this->delete_old_medias()) {
+            Logger::notice($this->facility, null, null, null, null, null, null, 'Old medias cleaned.');
+        }
+    }
+
+    /**
+     * Delete old medias.
+     *
+     * @return bool True if operation was fully done, false otherwise.
+     * @since 3.6.0
+     */
+    private function delete_old_medias() {
+        $result = false;
+        if (get_option('live_weather_station_picture_retention') !== 0) {
+            $max = date('Y-m-d H:i:s', self::get_local_n_days_ago_midnight(1 + get_option('live_weather_station_picture_retention')));
+            global $wpdb;
+            $table_name = $wpdb->prefix . self::live_weather_station_media_table();
+            $sql = "DELETE FROM " . $table_name . " WHERE `timestamp`<='" . $max . "' AND `module_type`='NAModuleP';";
+            $result = $result || $wpdb->query($sql);
+        }
+        if (get_option('live_weather_station_video_retention') !== 0) {
+            $max = date('Y-m-d H:i:s', self::get_local_n_days_ago_midnight(1 + get_option('live_weather_station_video_retention')));
+            global $wpdb;
+            $table_name = $wpdb->prefix . self::live_weather_station_media_table();
+            $sql = "DELETE FROM " . $table_name . " WHERE `timestamp`<='" . $max . "' AND `module_type`='NAModuleV';";
+            $result = $result || $wpdb->query($sql);
+        }
+        return $result;
     }
 
     /**

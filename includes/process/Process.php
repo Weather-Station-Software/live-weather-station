@@ -93,6 +93,14 @@ abstract class Process {
     protected abstract function description();
 
     /**
+     * Get the message for end of process.
+     *
+     * @return string The message to send.
+     * @since 3.6.0
+     */
+    protected abstract function message();
+
+    /**
      * Get the url of the process doc.
      *
      * @return string The url of the process doc.
@@ -124,6 +132,16 @@ abstract class Process {
         $s = sprintf(__('A background process named <em>%s</em> has been launched.', 'live-weather-station'), $this->name());
         $s .= ' ' . __('This process may take from minutes to days.', 'live-weather-station');
         $s .= ' ' . __('It will not interfere with the operation of your server and you will be notified by email of the end of treatment.', 'live-weather-station');
+        Notifier::warning($this->name(), $this->url(), $s);
+    }
+
+    /**
+     * Set the notification for end.
+     *
+     * @since 3.6.0
+     */
+    protected function end_notification() {
+        $s = sprintf(__('The background process named <em>%s</em> has completed successfully.', 'live-weather-station'), $this->name());
         Notifier::warning($this->name(), $this->url(), $s);
     }
 
@@ -175,11 +193,51 @@ abstract class Process {
         $class = new \ReflectionClass(get_class($this));
         $this->init($class->getShortName());
         if (!$this->is_already_registered()) {
-            $this->change_state($this->is_needed()?'init':'unneeded');
+            $is_needed = $this->is_needed();
+            $this->change_state($is_needed?$this->state_init:$this->state_unneeded);
+            if ($is_needed) {
+                $this->init_core();
+                $this->init_notification();
+            }
             $this->save();
-            $this->init_notification();
         }
     }
+
+    /**
+     * Send a message and a notification when process is finished.
+     *
+     * @since 3.6.0
+     */
+    public function send_end_of_process() {
+        $detail = $this->message();
+        $to = get_bloginfo('admin_email');
+        $subject = __('End of the background process:', 'live-weather-station') . ' ' . $this->name();
+        $message = __('Hello!', 'live-weather-station') . "\r\n" . "\r\n";
+        $message .= sprintf(__('%s informs you that the background process named "%s" has completed successfully.', 'live-weather-station'), $this->name()) . "\r\n" . "\r\n";
+        if ($detail !== '') {
+            $message .= $detail . "\r\n" . "\r\n";
+        }
+        $message .= __('Have a nice day.', 'live-weather-station') . "\r\n" . "\r\n";
+        $message .= '- - - - - - - - - - - - - - - - - - - - - - -' . "\r\n";
+        $message .= __('Name:', 'live-weather-station') . ' ' . $this->name() . "\r\n" ;
+        $message .= __('Description:', 'live-weather-station') . ' ' . $this->description() . "\r\n" ;
+        $message .= __('More information:', 'live-weather-station') . ' ' . $this->url() . "\r\n" ;
+        try {
+            wp_mail($to, $subject, $message);
+            Logger::debug($this->facility, null, null, null, null, null, 0, 'Mail sent from background process {' . $this->uuid() . '}.');
+        }
+        catch (\Exception $ex) {
+            Logger::error($this->facility, null, null, null, null, null, 999, 'Unable to send mail from background process {' . $this->uuid() . '}. Message: ' . $ex->getMessage());
+        }
+        $this->end_notification();
+    }
+
+    /**
+     * Init the process core.
+     *
+     * @since 3.6.0
+     */
+    protected abstract function init_core();
 
     /**
      * Run the process core.
@@ -240,6 +298,9 @@ abstract class Process {
             $this->chrono = microtime(true) - $this->chrono;
             $this->exectime += (int)round($this->chrono, 0);
             $this->save();
+            if ($this->state === $this->state_end) {
+                $this->send_end_of_process();
+            }
         }
         catch (\Exception $ex) {
             Logger::error($this->facility, null, null, null, null, null, 999, 'Unable to run background process {' . $this->uuid() . '}. Message: ' . $ex->getMessage());

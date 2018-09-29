@@ -77,11 +77,11 @@ trait Conversion {
      * Get the timestamp corresponding to midnight, N days ago in a specific timezone.
      *
      * @param integer $n The number of days ago.
-     * @param string $tz The timezone.
+     * @param string $tz Optional. The timezone.
      * @return integer The timestamp corresponding to midnight, N days ago in a specific timezone.
      * @since 3.4.0
      */
-    public static function get_local_n_days_ago_midnight($n, $tz) {
+    public static function get_local_n_days_ago_midnight($n, $tz='UTC') {
         $datetime = new \DateTime('yesterday midnight', new \DateTimeZone($tz));
         $datetime->sub(new \DateInterval('P'.$n.'D'));
         return $datetime->getTimestamp();
