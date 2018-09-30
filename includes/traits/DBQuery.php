@@ -1230,7 +1230,7 @@ trait Query {
     protected function get_stations_informations() {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE station_type=0";
+        $sql = "SELECT * FROM " . $table_name ;
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
