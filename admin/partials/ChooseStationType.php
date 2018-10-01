@@ -33,7 +33,7 @@ else {
 }
 
 if (get_option('live_weather_station_owm_apikey') != '') {
-    $loc_s = ucfirst(addslashes(__('a "virtual" weather station you only know the city or coordinates.', 'live-weather-station')));
+    $loc_s = ucfirst(addslashes(__('a "virtual" weather station where only the coordinates or the city are known.', 'live-weather-station')));
     $loc_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'Location', $dashboard);
     $loc_t = '_self';
 }

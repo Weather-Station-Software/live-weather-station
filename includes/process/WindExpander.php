@@ -2,6 +2,7 @@
 
 namespace WeatherStation\Process;
 use WeatherStation\DB\Query;
+use WeatherStation\System\Logs\Logger;
 
 /**
  * A process to expand wind measurements for existing stations.
@@ -24,6 +25,19 @@ class WindExpander extends Process {
      */
     protected function uuid() {
         return '6dd8cc5e-226b-4eeb-b81c-e2f22d144707';
+    }
+
+    /**
+     * Get the execution mode of the process.
+     * Can be :
+     *   - pause: can be restarted in the same cycle
+     *   - schedule: must wait next cycle to be restarted
+     *
+     * @return string The execution mode of the process.
+     * @since 3.6.0
+     */
+    protected function execution_mode() {
+        return $this->state_pause;
     }
 
     /**
@@ -84,6 +98,16 @@ class WindExpander extends Process {
     }
 
     /**
+     * Verify if process is terminated.
+     *
+     * @return boolean True if the process is terminated. False otherwise.
+     * @since 3.6.0
+     */
+    protected function is_terminated(){
+        return (count($this->params['stations']['todo']) === 0);
+    }
+
+    /**
      * Init the process.
      *
      * @since 3.6.0
@@ -104,16 +128,79 @@ class WindExpander extends Process {
      */
     protected function run_core(){
         if (count($this->params['stations']['todo']) > 0) {
-
-            //MAIN CORE
-
-
-
+            $station_type = reset($this->params['stations']['todo']);
+            $station_id = key($this->params['stations']['todo']);
+            try {
+                $this->expand($station_id, $station_type);
+                unset($this->params['stations']['todo'][$station_id]);
+                $this->params['stations']['todo'] = array_values(array_filter($this->params['stations']['todo']));
+                $this->params['stations']['done'][$station_id] = $station_type;
+                $this->set_progress(100 * count($this->params['stations']['done']) / (count($this->params['stations']['todo']) + count($this->params['stations']['done'])));
+            }
+            catch (\Exception $ex) {
+                Logger::error($this->facility, null, null, null, null, null, 999, 'Error while running background process {' . $this->uuid() . '}. Message: ' . $ex->getMessage());
+            }
         }
+    }
 
-        if (count($this->params['stations']['todo']) === 0) {
-            $this->change_state($this->state_end);
+    /**
+     * Add wind sources field to a table.
+     *
+     * @param string $station_id The station ID.
+     * @param string $table_name The table where to add.
+     * @param array $fields The fields to convert.
+     * @param boolean $switch Are the values to be switched?
+     * @since 3.6.0
+     */
+    private function add_source($station_id, $table_name, $fields, $switch) {
+        global $wpdb;
+        $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $station_id . "' AND measure_type IN (" . implode(',', $fields).")";
+        $query = $wpdb->get_results($sql, ARRAY_A);
+        if (is_array($query) && !empty($query)) {
+            foreach ($query as $row) {
+                $wind = (int)$row['measure_value'];
+                $new_wind = (int)round(($wind + 180) % 360);
+                if ($switch) {
+                    $row['measure_value'] = $new_wind;
+                    self::insert_update_table($table_name, $row);
+                    $row['measure_type'] = str_replace('angle', 'source', $row['measure_type']);
+                    $row['measure_value'] = $wind;
+                    self::insert_update_table($table_name, $row);
+                }
+                else {
+                    $row['measure_type'] = str_replace('angle', 'source', $row['measure_type']);
+                    $row['measure_value'] = $new_wind;
+                    self::insert_update_table($table_name, $row);
+                }
+            }
         }
+    }
+
+    /**
+     * Expand a station.
+     *
+     * @param string $station_id The station ID.
+     * @param integer $station_type The station type.
+     * @since 3.6.0
+     */
+    private function expand($station_id, $station_type) {
+        $switch = false;
+        if ($station_type !== LWS_PIOU_SID) {
+            $switch = true;
+        }
+        global $wpdb;
+        // CURRENT DATA
+        $fields = array('windangle', 'gustangle', 'windangle_max', 'windangle_day_max', 'windangle_hour_max');
+        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $this->add_source($station_id, $table_name, $fields, $switch);
+        // DAILY DATA
+        $fields = array('windangle', 'gustangle');
+        $table_name = $wpdb->prefix.self::live_weather_station_histo_daily_table();
+        //$this->add_source($station_id, $table_name, $fields, $switch);
+        // HISTORICAL DATA
+        $fields = array('windangle', 'gustangle');
+        $table_name = $wpdb->prefix.self::live_weather_station_histo_yearly_table();
+        //$this->add_source($station_id, $table_name, $fields, $switch);
     }
 
 }

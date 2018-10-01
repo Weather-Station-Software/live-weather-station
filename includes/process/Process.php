@@ -27,12 +27,15 @@ abstract class Process {
     protected $params = array();
     protected $timestamp = '0000-00-00 00:00:00';
     protected $exectime = 0;
+    protected $progress = 0;
 
     private $chrono = 0.0;
-    private $facility = 'Background Process';
+    protected $facility = 'Background Process';
 
     protected $state_init = 'init';
     protected $state_pause = 'pause';
+    protected $state_schedule = 'schedule';
+    protected $state_running = 'running';
     protected $state_unneeded = 'unneeded';
     protected $state_end = 'end';
 
@@ -42,13 +45,13 @@ abstract class Process {
      * Initialize the class and set its properties.
      *
      * @param string $class The class of the process.
-     * @param string $state The state of the process.
      * @param array $params The parameters of the process.
+     * @param string $state The state of the process.
      * @param string $timestamp The timestamp of the last state change of the process.
      * @param int $exectime The execution time of the process so far.
      * @since 3.6.0
      */
-    protected function init($class='WeatherStation\Process', $state='init', $params=array(), $timestamp='0000-00-00 00:00:00', $exectime=0) {
+    protected function init($class='WeatherStation\Process', $params=array(), $state='init', $timestamp='0000-00-00 00:00:00', $exectime=0) {
         $this->class = $class;
         $this->state = $state;
         $this->params = $params;
@@ -68,12 +71,33 @@ abstract class Process {
     }
 
     /**
+     * Change the state of the process.
+     *
+     * @param integer $value The new progress value.
+     * @since 3.6.0
+     */
+    protected function set_progress($value) {
+        $this->progress = (int)round($value);
+    }
+
+    /**
      * Get the UUID of the process.
      *
      * @return string The UUID of the process.
      * @since 3.6.0
      */
     protected abstract function uuid();
+
+    /**
+     * Get the execution mode of the process.
+     * Can be :
+     *   - pause: can be restarted in the same cycle
+     *   - schedule: must wait next cycle to be restarted
+     *
+     * @return string The execution mode of the process.
+     * @since 3.6.0
+     */
+    protected abstract function execution_mode();
 
     /**
      * Get the name of the process.
@@ -162,6 +186,14 @@ abstract class Process {
     protected abstract function is_needed();
 
     /**
+     * Verify if process is terminated.
+     *
+     * @return boolean True if the process is terminated. False otherwise.
+     * @since 3.6.0
+     */
+    protected abstract function is_terminated();
+
+    /**
      * Get the process row.
      *
      * @return array The process row.
@@ -185,13 +217,14 @@ abstract class Process {
     }
 
     /**
-     * Register the process. Reserved for update/install procedure.
+     * Register the process..
      *
+     * @param array $args The args to pass to the instance.
      * @since 3.6.0
      */
-    public function register() {
+    public function register($args=array()) {
         $class = new \ReflectionClass(get_class($this));
-        $this->init($class->getShortName());
+        $this->init($class->getShortName(), $args);
         if (!$this->is_already_registered()) {
             $is_needed = $this->is_needed();
             $this->change_state($is_needed?$this->state_init:$this->state_unneeded);
@@ -282,6 +315,7 @@ abstract class Process {
         $row['timestamp'] = $this->timestamp;
         $row['params'] = serialize($this->params);
         $row['exec_time'] = $this->exectime;
+        $row['progress'] = $this->progress;
         self::insert_update_table(self::live_weather_station_background_process_table(), $row);
     }
 
@@ -291,18 +325,26 @@ abstract class Process {
      * @since 3.6.0
      */
     protected function run() {
-        $this->chrono = microtime(true);
         try {
+            $this->chrono = microtime(true);
             $this->load();
+            $this->change_state($this->state_running);
+            $this->save();
             $this->run_core();
+            if ($this->is_terminated()) {
+                $this->change_state($this->state_end);
+                $this->send_end_of_process();
+            }
+            else {
+                $this->change_state($this->execution_mode());
+            }
             $this->chrono = microtime(true) - $this->chrono;
             $this->exectime += (int)round($this->chrono, 0);
             $this->save();
-            if ($this->state === $this->state_end) {
-                $this->send_end_of_process();
-            }
         }
         catch (\Exception $ex) {
+            $this->change_state($this->execution_mode());
+            $this->save();
             Logger::error($this->facility, null, null, null, null, null, 999, 'Unable to run background process {' . $this->uuid() . '}. Message: ' . $ex->getMessage());
         }
     }

@@ -575,6 +575,7 @@ trait Storage {
         $sql .= " `timestamp` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',";
         $sql .= " `params` longtext DEFAULT '',";
         $sql .= " `exec_time` int(11) DEFAULT '0' NOT NULL,";
+        $sql .= " `progress` int(11) DEFAULT '0' NOT NULL,";
         $sql .= " UNIQUE KEY (uuid)";
         $sql .= ") $charset_collate;";
         $wpdb->query($sql);

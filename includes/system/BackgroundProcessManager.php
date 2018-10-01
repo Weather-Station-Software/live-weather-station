@@ -3,15 +3,11 @@
 namespace WeatherStation\System\Background;
 
 use WeatherStation\Process;
-
-
-
-
 use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Quota\Quota;
 use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\Logs\Logger;
-use WeatherStation\DB\Storage;
+use WeatherStation\DB\Query;
 use WeatherStation\System\Schedules\Handling as Schedules;
 use WeatherStation\System\Data\Data;
 
@@ -25,12 +21,15 @@ use WeatherStation\System\Data\Data;
  */
 class ProcessManager {
 
-    use Schedules, Storage;
+    use Schedules, Query;
 
     private $Live_Weather_Station;
     private $version;
     private $facility = 'Background Process';
     private static $namespace = 'WeatherStation\Process\\';
+    private $max_time = 0;
+    private $start = 0;
+    private $chrono = 0;
 
 
     /**
@@ -49,16 +48,41 @@ class ProcessManager {
      * Initialize the class and set its properties.
      *
      * @param string $class_name The class name process.
+     * @param array $args The args to pass to the class.
      * @since 3.6.0
      */
-    public static function register($class_name) {
+    public static function register($class_name, $args=array()) {
         $class_name = self::$namespace . $class_name;
         try {
             $process = new $class_name;
-            $process->register();
+            $process->register($args);
         }
         catch (\Exception $ex) {
             Logger::error('Background Process', null, null, null, null, null, 999, 'Unable to run background process with class' . $class_name . '. Message: ' . $ex->getMessage());
+        }
+    }
+
+    /**
+     * Do the main job.
+     *
+     * @param boolean $only_paused Optional. Only the paused processes.
+     * @since 3.6.0
+     */
+    private function _run($only_paused=false) {
+        $processes = self::get_ready_background_processes($only_paused);
+        foreach ($processes as $process) {
+            $class_name = self::$namespace . $process['class'];
+            try {
+                $process = new $class_name;
+                $process->run();
+            }
+            catch (\Exception $ex) {
+                Logger::error('Background Process', null, null, null, null, null, 999, 'Unable to run background process with class' . $class_name . '. Message: ' . $ex->getMessage());
+            }
+            $this->chrono += (int)round(microtime(true)) - $this->start;
+            if ($this->chrono > $this->max_time) {
+                break;
+            }
         }
     }
 
@@ -69,29 +93,27 @@ class ProcessManager {
      */
     public function run(){
         $cron_id = Watchdog::init_chrono(Watchdog::$background_process_name);
-        Logger::debug($this->facility, null, null, null, null, null, 0, 'Background process: starting main job.');
+        Logger::warning($this->facility, null, null, null, null, null, 0, 'Background process: starting main job.');
+        if (ini_get('max_execution_time') < 180) {
+            $this->max_time = (int)round(ini_get('max_execution_time') * 2 / 3);
+        }
+        else {
+            $this->max_time = 120;
+        }
+        $this->start = (int)round(microtime(true));
+        $this->chrono = 0;
 
+        // FIRST PASS => for init, pause, schedule states
+        //$this->_run();
 
+        // SECOND PASS => for pause states only
+        while($this->chrono < $this->max_time) {
+            //$this->_run(true);
+        }
 
+        //error_log($this->max_time . ' / ' . $this->start . ' / ' . $this->chrono) ;
 
-        //max_execution_time
-
-        //microtime(true);
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        Logger::debug($this->facility, null, null, null, null, null, 0, 'Background process: ending main job.');
+        Logger::warning($this->facility, null, null, null, null, null, 0, 'Background process: ending main job.');
         Watchdog::stop_chrono($cron_id);
     }
 
