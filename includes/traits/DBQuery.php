@@ -1211,6 +1211,26 @@ trait Query {
     }
 
     /**
+     * Get the ordered list of background processes to execute.
+     *
+     * @param boolean $only_paused Optional. Only the paused processes.
+     * @return array An array containing the processes.
+     * @since 3.6.0
+     */
+    protected static function get_ready_background_processes($only_paused=false) {
+        if ($only_paused) {
+            $states = array('pause');
+        }
+        else {
+            $states = array('init', 'pause', 'schedule');
+        }
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_background_process_table();
+        $sql = "SELECT * FROM " . $table_name . " WHERE state IN (" . implode(',', $states).") ORDER BY priority ASC";
+        return $wpdb->get_results($sql, ARRAY_A);
+    }
+
+    /**
      * Get station informations.
      *
      * @param integer $guid The station guid.

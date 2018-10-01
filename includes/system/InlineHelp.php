@@ -684,7 +684,7 @@ class InlineHelp {
             $s4 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_weatherflow_color_logo()) . '" /><strong>' . 'WeatherFlow' . '</strong> &mdash; ' . __('a public WeatherFlow station.', 'live-weather-station') . '</p>';
             $s12 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_bloomsky_color_logo()) . '" /><strong>' . 'BloomSky' . '</strong> &mdash; ' . __('a Bloomsky station to which you have access to.', 'live-weather-station') . '</p>';
             $s5 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_piou_color_logo()) . '" /><strong>' . 'Pioupiou' . '</strong> &mdash; ' . __('a Pioupiou sensor as a station.', 'live-weather-station') . '</p>';
-            $s6 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_loc_color_logo()) . '" /><strong>' . __('Virtual', 'live-weather-station') . '</strong> &mdash; ' . __('a "virtual" weather station you only know the city or coordinates.', 'live-weather-station') . '</p>';
+            $s6 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_loc_color_logo()) . '" /><strong>' . __('Virtual', 'live-weather-station') . '</strong> &mdash; ' . __('a "virtual" weather station where only the coordinates or the city are known.', 'live-weather-station') . '</p>';
             if (LWS_OWM_READY) {
                 $s7 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_owm_color_logo()) . '" /><strong>' . 'OpenWeatherMap' . '</strong> &mdash; ' . __('a personal weather station published on OpenWeatherMap.', 'live-weather-station') . '</p>';
             }
@@ -701,7 +701,7 @@ class InlineHelp {
                 'id'       => 'lws-contextual-stations-types',
                 'content'  => $s1 . $s2 . $s3 . $s4 . $s12 . $s5 . $s6 . $s7 . $s8 . $s13 . $s9 . $s10 . $s11);
 
-            $s1 = __('Depending on the type of the station, you can access to these features:', 'live-weather-station');
+            $s1 = __('Depending on the type of the station, you can access these features:', 'live-weather-station');
             $s2 = '<strong>' . __('Edit', 'live-weather-station') . '</strong> &mdash; ' . __('To modify or update the properties of the station (city, country, coordinates, etc.).', 'live-weather-station');
             $s3 = '<strong>' . __('Remove', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('To remove the station from the %s collect process.', 'live-weather-station'), LWS_PLUGIN_NAME);
             $s4 = '<strong>' . __('See events log', 'live-weather-station') . '</strong> &mdash; ' . __('To see events associated with the station.', 'live-weather-station');
