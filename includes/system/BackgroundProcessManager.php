@@ -66,24 +66,30 @@ class ProcessManager {
      * Do the main job.
      *
      * @param boolean $only_paused Optional. Only the paused processes.
+     * @return boolean False if there's not process to run, True otherwise.
      * @since 3.6.0
      */
     private function _run($only_paused=false) {
+        $this->start = round(microtime(true));
         $processes = self::get_ready_background_processes($only_paused);
+        if (count($processes) === 0) {
+            return false;
+        }
         foreach ($processes as $process) {
             $class_name = self::$namespace . $process['class'];
             try {
                 $process = new $class_name;
-                $process->run();
+                $process->run(!$only_paused);
             }
             catch (\Exception $ex) {
                 Logger::error('Background Process', null, null, null, null, null, 999, 'Unable to run background process with class' . $class_name . '. Message: ' . $ex->getMessage());
             }
-            $this->chrono += (int)round(microtime(true)) - $this->start;
             if ($this->chrono > $this->max_time) {
                 break;
             }
         }
+        $this->chrono += round(microtime(true)) - $this->start;
+        return true;
     }
 
     /**
@@ -100,19 +106,14 @@ class ProcessManager {
         else {
             $this->max_time = 120;
         }
-        $this->start = (int)round(microtime(true));
         $this->chrono = 0;
-
-        // FIRST PASS => for init, pause, schedule states
-        //$this->_run();
-
-        // SECOND PASS => for pause states only
-        while($this->chrono < $this->max_time) {
-            //$this->_run(true);
+        if ($this->_run()) {
+            while($this->chrono < $this->max_time) {
+                if (!$this->_run(true)) {
+                    break;
+                }
+            }
         }
-
-        //error_log($this->max_time . ' / ' . $this->start . ' / ' . $this->chrono) ;
-
         Logger::warning($this->facility, null, null, null, null, null, 0, 'Background process: ending main job.');
         Watchdog::stop_chrono($cron_id);
     }

@@ -265,11 +265,18 @@ trait PublicClient {
 
                                 $updates['measure_timestamp'] = $windstamp;
                                 if (array_key_exists('wind_heading', $measurements)) {
-                                    $value = ($measurements['wind_heading'] + 180) % 360;
+                                    $value = $measurements['wind_heading'];
                                     $updates['measure_type'] = 'windangle';
                                     $updates['measure_value'] = $value;
                                     $this->update_data_table($updates);
                                     $updates['measure_type'] = 'gustangle';
+                                    $updates['measure_value'] = $value;
+                                    $this->update_data_table($updates);
+                                    $value = (int)round(($measurements['wind_heading'] + 180) % 360);
+                                    $updates['measure_type'] = 'winddirection';
+                                    $updates['measure_value'] = $value;
+                                    $this->update_data_table($updates);
+                                    $updates['measure_type'] = 'gustdirection';
                                     $updates['measure_value'] = $value;
                                     $this->update_data_table($updates);
                                 }

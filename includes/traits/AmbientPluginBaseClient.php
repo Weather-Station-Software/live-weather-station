@@ -42,7 +42,7 @@ trait BaseClient {
      */
     private function store_ambient_datas($stations) {
         $datas = $this->ambient_datas;
-        foreach($datas as $device){
+        foreach($datas as &$device){
             if (!array_key_exists('device_id', $device)) {
                 continue;
             }
@@ -89,20 +89,29 @@ trait BaseClient {
 
                 // Indoor module
                 if (array_key_exists('tempint', $device) || array_key_exists('humint', $device) || array_key_exists('co2', $device)) {
+                    $tempint = null;
+                    $humint = null;
                     if (array_key_exists('tempint', $device)) {
                         $device['temperature'] = $device['tempint'];
+                        $tempint = $device['tempint'];
                     }
                     else {
                         unset($device['temperature']);
                     }
                     if (array_key_exists('humint', $device)) {
                         $device['humidity'] = $device['humint'];
+                        $humint = $device['humint'];
                     }
                     else {
                         unset($device['humidity']);
                     }
                     $module_type = 'NAModule4';
-                    $types = array('temperature', 'humidity', 'co2');
+                    $types = array('temperature', 'humidity');
+                    $health = $this->compute_health_index($tempint, $humint, null, null);
+                    foreach ($health as $key => $idx) {
+                        $device[$key] = $idx;
+                        $types[] = $key;
+                    }
                     $module_id = ID::get_fake_modulex_id($guid, 4);
                     $module_name = $this->get_fake_module_name($module_type);
                     $this->get_dashboard(LWS_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
@@ -112,7 +121,7 @@ trait BaseClient {
                 // Wind gauge
                 if (array_key_exists('windangle', $device)) {
                     $module_type = 'NAModule2';
-                    $types = array('windangle', 'gustangle', 'windstrength', 'guststrength');
+                    $types = array('windangle', 'gustangle', 'winddirection', 'gustdirection', 'windstrength', 'guststrength');
                     $module_id = ID::get_fake_modulex_id($guid, 2);
                     $module_name = $this->get_fake_module_name($module_type);
                     $this->get_dashboard(LWS_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
@@ -203,17 +212,17 @@ trait BaseClient {
                         $dat['time_utc'] = (int)round($data['dateutc'] / 1000, 0);
                         $dat['last_seen'] = (int)round($data['dateutc'] / 1000, 0);
                     }
+                    if (array_key_exists('winddir', $data)) {
+                        $dat['windangle'] = $data['winddir'];
+                        $dat['winddirection'] = (int)round(($data['winddir'] + 180) % 360);
+                        $dat['gustangle'] = $data['winddir'];
+                        $dat['gustdirection'] = (int)round(($data['winddir'] + 180) % 360);
+                    }
                     if (array_key_exists('windgustmph', $data)) {
                         $dat['guststrength'] = $this->get_reverse_wind_speed($data['windgustmph'], 1);
                     }
-                    if (array_key_exists('windgustdir', $data)) {
-                        $dat['gustangle'] = $data['windgustdir'];
-                    }
-                    if (array_key_exists('windspdmph_avg2m', $data)) {
-                        $dat['windstrength'] = $this->get_reverse_wind_speed($data['windspdmph_avg2m'], 1);
-                    }
-                    if (array_key_exists('winddir_avg2m', $data)) {
-                        $dat['windangle'] = $data['winddir_avg2m'];
+                    if (array_key_exists('windspeedmph', $data)) {
+                        $dat['windstrength'] = $this->get_reverse_wind_speed($data['windspeedmph'], 1);
                     }
                     if (array_key_exists('humidity', $data)) {
                         $dat['humidity'] = $data['humidity'];

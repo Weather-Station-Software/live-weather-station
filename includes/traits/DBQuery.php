@@ -21,7 +21,7 @@ trait Query {
 
     private $dont_filter = array('temperature_max', 'temperature_min', 'temperature_trend', 'pressure_trend', 'loc_latitude',
                                  'loc_longitude', 'loc_altitude', 'windstrength_hour_max', 'windstrength_day_max', 'windangle_hour_max',
-                                 'windangle_day_max', 'windsource_hour_max', 'windsource_day_max','last_seen', 'date_setup', 'last_upgrade');
+                                 'windangle_day_max', 'winddirection_hour_max', 'winddirection_day_max','last_seen', 'date_setup', 'last_upgrade');
 
     /**
      * Filter data regarding its timestamp.
@@ -152,10 +152,10 @@ trait Query {
                     $sub_attributes[] = 'gustangle';
                 }
                 break;
-            case 'windsource':
-                $sub_attributes[] = 'windsource';
+            case 'winddirection':
+                $sub_attributes[] = 'winddirection';
                 if ($full_mode) {
-                    $sub_attributes[] = 'gustsource';
+                    $sub_attributes[] = 'gustdirection';
                 }
                 break;
             case 'sos': // Helper to found names (station and module) in case there's no data from first round
@@ -1219,10 +1219,10 @@ trait Query {
      */
     protected static function get_ready_background_processes($only_paused=false) {
         if ($only_paused) {
-            $states = array('pause');
+            $states = array('\'pause\'');
         }
         else {
-            $states = array('init', 'pause', 'schedule');
+            $states = array('\'init\'', '\'pause\'', '\'schedule\'');
         }
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_background_process_table();

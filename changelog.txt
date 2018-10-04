@@ -10,6 +10,7 @@
 * New: notification system in Weather Station dashboard.
 * New language: German (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/) and all German translators for their involvement).
 * New language: Swedish (thanks to [@fredrik](https://weather.station.software/community/account/fredrik/) for its involvement).
+* Improvement:
 * Improvement: textual shortcodes can now be be autorefreshed every 2 minutes.
 * Improvement: all charts and graphs can now use user-editable colors schemes (thanks to Ralf Karpa for the suggestion).
 * Improvement: customized name and visibility of modules are now viewable in station view.
@@ -17,6 +18,7 @@
 * Improvement: new "rolling days" period type for historical charts allowing to view 7, 15, 30, 60 and 90 last days.
 * Improvement: for station supporting it, Weather Station is now able to collect and display "sunshine duration" (thanks to Gerhard Witteveen for the suggestion and tests).
 * Improvement: for historical data, standard deviation, average value and median value have now a consistent number of decimal.
+* Improvement: huge precision improvements for windroses, angular streams and value radial charts.
 * Improvement: textual shortcodes are able to output picture URL (for station supporting visual snapshots).
 * Improvement: textual shortcodes are able to output video URL (for station supporting daily timelapses).
 * Improvement: textual shortcodes are now able to output station model.
@@ -43,7 +45,9 @@
 * Bug fix: PHP warning in stations list when the refresh time of a station is unknown.
 * Bug fix: the display of oldest data date may be buggy (again) for some very recently added stations.
 * Bug fix: when adding a station, after removing it, the modules details are not reset.
+* Bug fix: the infobox for carbon dioxide in indoor widget wrongly display "carbon monoxide" as label.
 * Bug fix: in some (very rare) condition, last refresh time of a station can not be rightly stored (thanks to Dominik T. for detecting it).
+* Removed: Netatmo wind gauge module no longer supports maximum hourly wind source and strength, so it is removed from collected and displayed measurements.
 
 #3.5.5 / June 25th, 2018
 

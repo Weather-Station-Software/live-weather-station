@@ -112,11 +112,14 @@ trait CurrentClient {
             }
             if (array_key_exists('wind', $weather) && isset($weather['wind']['deg']) && isset($weather['wind']['speed'])) {
                 $dashboard['windangle'] = round($weather['wind']['deg']);
+                $dashboard['winddirection'] = (int)round(($weather['wind']['deg'] + 180) % 360);
                 $dashboard['windstrength'] = round($weather['wind']['speed'] * 3.6);
                 $result['data_type'][] = 'windangle';
+                $result['data_type'][] = 'winddirection';
                 $result['data_type'][] = 'windstrength';
             } else {
                 $dashboard['windangle'] = 0;
+                $dashboard['winddirection'] = 0;
                 $dashboard['windstrength'] = 0;
             }
             if (array_key_exists('rain', $weather) && isset($weather['rain']['3h'])) {

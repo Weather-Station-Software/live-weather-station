@@ -385,6 +385,11 @@ trait Generator {
             case 'windangle_max':
             case 'windangle_day_max':
             case 'windangle_hour_max':
+            case 'winddirection':
+            case 'gustdirection':
+            case 'winddirection_max':
+            case 'winddirection_day_max':
+            case 'winddirection_hour_max':
             case 'strike_bearing':
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_wind_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']), $this->output_value($mvalue, $mtype, true, false, $ref['module_type']), $this->get_angle_text($mvalue), $this->get_angle_full_text($mvalue))));
                 break;
@@ -516,6 +521,7 @@ trait Generator {
         $wflw = OWM_Base_Collector::is_wflw_station($ref['device_id']);
         $piou = OWM_Base_Collector::is_piou_station($ref['device_id']);
         $bsky = OWM_Base_Collector::is_bsky_station($ref['device_id']);
+        $ambt = OWM_Base_Collector::is_ambt_station($ref['device_id']);
         $bstorm = false;
         if ($bsky) {
             $bstorm = (strpos($ref['device_model'], '+Storm') !== false);
@@ -610,7 +616,7 @@ trait Generator {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity_min', $comparison, $distribution, $current, $video, $picture);
                 }
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature', $comparison, $distribution, $current, $video, $picture);
-                if (($full || $mono) && !$wug && !$wflw && !$bstorm && !$bsky) {
+                if (($full || $mono) && !$wug && !$wflw && !$bstorm && !$bsky && !$ambt) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_max', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature_min', $comparison, $distribution, $current, $video, $picture);
                 }
@@ -637,14 +643,18 @@ trait Generator {
                 }
                 if (!$bsky) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'windangle', $comparison, $distribution, $current, $video, $picture);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'winddirection', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'windstrength', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'gustangle', $comparison, $distribution, $current, $video, $picture);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'gustdirection', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'guststrength', $comparison, $distribution, $current, $video, $picture);
                 }
                 if ($netatmo) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle_hour_max', $comparison, $distribution, $current, $video, $picture);
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength_hour_max', $comparison, $distribution, $current, $video, $picture);
+                    //$result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle_hour_max', $comparison, $distribution, $current, $video, $picture);
+                    //$result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'winddirection_hour_max', $comparison, $distribution, $current, $video, $picture);
+                    //$result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength_hour_max', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle_day_max', $comparison, $distribution, $current, $video, $picture);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'winddirection_day_max', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength_day_max', $comparison, $distribution, $current, $video, $picture);
                 }
                 break;
@@ -665,17 +675,17 @@ trait Generator {
                 if ($full) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'last_refresh', $comparison, $distribution, $current, $video, $picture);
                 }
-                if ($netatmo || $raw || $real || $wflw || $bstorm) {
+                if ($netatmo || $raw || $real || $wflw || $bstorm ||$ambt) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain', $comparison, $distribution, $current, $video, $picture);
                 }
-                if (!$raw && !$bsky && !$bstorm) {
+                if (!$raw && !$bsky && !$bstorm && !$ambt) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_hour_aggregated', $comparison, $distribution, $current, $video, $picture);
                 }
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_day_aggregated', $comparison, $distribution, $current, $video, $picture);
                 if ($raw || $real || $wflw) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_yesterday_aggregated', $comparison, $distribution, $current, $video, $picture);
                 }
-                if ($raw || $real) {
+                if ($raw || $real || $ambt) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_month_aggregated', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'rain_year_aggregated', $comparison, $distribution, $current, $video, $picture);
                 }
@@ -869,6 +879,7 @@ trait Generator {
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'visibility', $comparison, $distribution, $current, $video, $picture);
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'snow', $comparison, $distribution, $current, $video, $picture);
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windangle', $comparison, $distribution, $current, $video, $picture);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'winddirection', $comparison, $distribution, $current, $video, $picture);
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'windstrength', $comparison, $distribution, $current, $video, $picture);
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'cloudiness', $comparison, $distribution, $current, $video, $picture);
                 break;

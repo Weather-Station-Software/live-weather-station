@@ -42,7 +42,7 @@ trait BaseClient {
      */
     private function store_bloomsky_datas($stations) {
         $datas = $this->bloomsky_datas ;
-        foreach($datas as $device){
+        foreach($datas as &$device){
             if (!array_key_exists('device_id', $device)) {
                 continue;
             }
@@ -77,7 +77,7 @@ trait BaseClient {
                 // Wind gauge
                 if (array_key_exists('windangle', $device)) {
                     $module_type = 'NAModule2';
-                    $types = array('windangle', 'gustangle', 'windstrength', 'guststrength');
+                    $types = array('windangle', 'gustangle', 'winddirection', 'gustdirection', 'windstrength', 'guststrength');
                     $module_id = ID::get_fake_modulex_id($guid, 2);
                     $module_name = $this->get_fake_module_name($module_type);
                     $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
@@ -96,7 +96,7 @@ trait BaseClient {
 
                 // Solar
                 $module_type = 'NAModule5';
-                $types = array('irradiance', 'uv_index');
+                $types = array('illuminance', 'uv_index');
                 $module_id = ID::get_fake_modulex_id($guid, 5);
                 $module_name = $this->get_fake_module_name($module_type);
                 $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
@@ -247,6 +247,8 @@ trait BaseClient {
                     if (array_key_exists('WindDirection', $data)) {
                         $dat['windangle'] = $this->get_reverse_wind_angle_text($data['WindDirection']);
                         $dat['gustangle'] = $dat['windangle'];
+                        $dat['winddirection'] = (int)round(($dat['windangle'] + 180) % 360);
+                        $dat['gustdirection'] = $dat['winddirection'];
                     }
                     if (array_key_exists('SustainedWindSpeed', $data)) {
                         $dat['windstrength'] = $data['SustainedWindSpeed'];

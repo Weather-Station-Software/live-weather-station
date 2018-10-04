@@ -52,7 +52,7 @@ trait Output {
         'sunrise_c','sunrise_n','sunrise_a', 'sunset_c','sunset_n', 'sunset_a', 'day_length_c', 'day_length_n',
         'day_length_a', 'dawn_length_a','dawn_length_n', 'dawn_length_c', 'dusk_length_a', 'dusk_length_n',
         'dusk_length_c','saturation_vapor_pressure','saturation_absolute_humidity','equivalent_potential_temperature',
-        'windsource_max', 'windsource_day_max', 'windsource_hour_max', 'windsource', 'gustsource');
+        'winddirection_max', 'winddirection_day_max', 'winddirection_hour_max', 'winddirection', 'gustdirection');
     private $graph_allowed_serie = array('device_id', 'module_id', 'measurement', 'line_mode', 'dot_style', 'line_style', 'line_size');
     private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
 
@@ -379,6 +379,7 @@ trait Output {
                                 $a = ($i * $angle_val) - ($angle_val / 2);
                                 $b = ($i * $angle_val) + ($angle_val / 2);
                                 $sectors[] = array($a, $b);
+
                             }
                             if ($mode == 'yearly') {
                                 $timeshift = 86400;
@@ -457,20 +458,13 @@ trait Output {
                                     for ($i = 0; $i < $sects; $i++) {
                                         $a = $sectors[$i][0];
                                         $b = $sectors[$i][1];
-                                        if ($a < 0) {
-                                            $v = $v - 360;
+                                        $w = $v;
+                                        if ($v >= (360 - ($angle_val/2))) {
+                                            $w = $v - 360;
                                         }
-                                        if ($b > 360) {
-                                            $v = $v + 360;
-                                        }
-                                        if ($v < $b && $v >= $a && !is_null($m)) {
+                                        if ($w >= $a && $w <= $b && !is_null($m)) {
                                             $values[$i][] = $m;
-                                        }
-                                        if ($a < 0) {
-                                            $v = $v + 360;
-                                        }
-                                        if ($b > 360) {
-                                            $v = $v - 360;
+
                                         }
                                     }
                                 }
@@ -693,7 +687,7 @@ trait Output {
                                 $steps = str_replace('color-step-', '', $steps);
                             }
                             $sects = str_replace('s', '', $args[1]['line_mode']);
-                            $angle_val = (int)(360 / $sects);
+                            $angle_val = 360 / $sects;
                             $sectors = array();
                             for ($i = 0; $i < $sects; $i++) {
                                 $a = ($i * $angle_val) - ($angle_val / 2);
@@ -803,23 +797,16 @@ trait Output {
                                     for ($i = 0; $i < $sects; $i++) {
                                         $a = $sectors[$i][0];
                                         $b = $sectors[$i][1];
-                                        if ($a < 0) {
-                                            $v = $v - 360;
-                                        }
-                                        if ($b > 360) {
-                                            $v = $v + 360;
+                                        $w = $v;
+                                        if ($v >= (360 - ($angle_val/2))) {
+                                            $w = $v - 360;
                                         }
                                         $d = array();
-                                        if ($v < $b && $v >= $a) {
+                                        if ($w >= $a && $w <= $b) {
                                             $d['measure_value'] = $m;
-                                        } else {
+                                        }
+                                        else {
                                             $d['measure_value'] = $dummy;
-                                        }
-                                        if ($a < 0) {
-                                            $v = $v + 360;
-                                        }
-                                        if ($b > 360) {
-                                            $v = $v - 360;
                                         }
                                         $d['timestamp'] = $angle['timestamp'];
                                         $d['module_type'] = $module_type;
@@ -857,7 +844,7 @@ trait Output {
                                 for ($i = 0; $i < $sects; $i++) {
                                     ksort($t[$i]);
                                 }
-                                if ($type == 'windrose') {
+                                if ($type === 'windrose') {
                                     $mes_typ = $args[2]['measurement'];
                                     $stepval = ($maxbreakdown - $minbreakdown) / $steps;
                                     $step = $this->output_value($stepval, $mes_typ, false, false, $module_type);
@@ -889,7 +876,7 @@ trait Output {
                                     $cpt = 0;
                                     foreach ($t as $key => $s) {
                                         $sub = array();
-                                        foreach ($breakdown as $b) {
+                                        foreach ($breakdown as $bdm) {
                                             $sub[] = 0;
                                         }
                                         foreach ($s as $rec) {
@@ -897,7 +884,7 @@ trait Output {
                                             if ($a != $dummy) {
                                                 $done = false;
                                                 foreach ($breakdown as $k=>$b) {
-                                                    if ($a <= $b) {
+                                                    if ($a < $b) {
                                                         $sub[$k] += 1;
                                                         $cpt += 1;
                                                         $done = true;
@@ -912,19 +899,24 @@ trait Output {
                                         }
                                         $values[] = array('axis'=>'"' . $this->get_angle_text($key * $angle_val) . '"', 'values'=>$sub);
                                     }
-                                    $set = array();
-                                    foreach ($values as $key => $val) {
-                                        $sub = array();
-                                        foreach ($val['values'] as $v) {
-                                            if ($cpt > 0) {
-                                                $sub[] = $v / $cpt;
-                                            }
-                                            else {
-                                                $sub[] = 0;
-                                            }
+                                    if ($valuescale === 'fixed') {
+                                        $set = array();
+                                        foreach ($values as $key => $val) {
+                                            $sub = array();
+                                            foreach ($val['values'] as $v) {
+                                                if ($cpt > 0) {
+                                                    $sub[] = $v / $cpt;
+                                                }
+                                                else {
+                                                    $sub[] = 0;
+                                                }
 
+                                            }
+                                            $set[] = array('axis' => $val['axis'], 'values' => $sub);
                                         }
-                                        $set[] = array('axis' => $val['axis'], 'values' => $sub);
+                                    }
+                                    else {
+                                        $set = $values;
                                     }
                                     $jset = str_replace('\"', '', $this->jsonify(null, $set, $raw_json, true));
                                     $jlegend = str_replace('\/', '/', $this->jsonify(null, $breakdownlegend, $raw_json, true));
@@ -6436,14 +6428,14 @@ trait Output {
                 switch ($_attributes['measure_type']) {
                     case 'windangle':
                     case 'gustangle':
-                    case 'windsource':
-                    case 'gustsource':
+                    case 'winddirection':
+                    case 'gustdirection':
                     case 'windangle_max':
                     case 'windangle_day_max':
                     case 'windangle_hour_max':
-                    case 'windsource_max':
-                    case 'windsource_day_max':
-                    case 'windsource_hour_max':
+                    case 'winddirection_max':
+                    case 'winddirection_day_max':
+                    case 'winddirection_hour_max':
                         $result = $this->get_angle_full_text($result);
                         break;
                     case 'health_idx':
@@ -6472,14 +6464,14 @@ trait Output {
                 switch ($_attributes['measure_type']) {
                     case 'windangle':
                     case 'gustangle':
-                    case 'windsource':
-                    case 'gustsource':
+                    case 'winddirection':
+                    case 'gustdirection':
                     case 'windangle_max':
                     case 'windangle_day_max':
                     case 'windangle_hour_max':
-                    case 'windsource_max':
-                    case 'windsource_day_max':
-                    case 'windsource_hour_max':
+                    case 'winddirection_max':
+                    case 'winddirection_day_max':
+                    case 'winddirection_hour_max':
                         $result = $this->get_angle_text($result);
                         break;
                     default:
@@ -6744,14 +6736,14 @@ trait Output {
             case 'angle':
             case 'windangle':
             case 'gustangle':
-            case 'windsource':
-            case 'gustsource':
+            case 'winddirection':
+            case 'gustdirection':
             case 'windangle_max':
             case 'windangle_day_max':
             case 'windangle_hour_max':
-            case 'windsource_max':
-            case 'windsource_day_max':
-            case 'windsource_hour_max':
+            case 'winddirection_max':
+            case 'winddirection_day_max':
+            case 'winddirection_hour_max':
                 $result = $this->get_wind_angle($value);
                 $result .= ($unit ? $this->unit_espace.$this->get_wind_angle_unit() : '');
                 break;
@@ -7312,14 +7304,14 @@ trait Output {
                 break;
             case 'windangle':
             case 'gustangle':
-            case 'windsource':
-            case 'gustsource':
+            case 'winddirection':
+            case 'gustdirection':
             case 'windangle_max':
             case 'windangle_day_max':
             case 'windangle_hour_max':
-            case 'windsource_max':
-            case 'windsource_day_max':
-            case 'windsource_hour_max':
+            case 'winddirection_max':
+            case 'winddirection_day_max':
+            case 'winddirection_hour_max':
                 if ($show_value) {
                     $s = (get_option('live_weather_station_wind_semantics') == 0 ? 'towards' : 'from') . '-' . $value . '-deg';
                     $result = '<i %1$s class="wi wi-fw %2$s wi-wind ' . $s . '" aria-hidden="true"></i>';
@@ -7803,28 +7795,28 @@ trait Output {
                 break;
             case 'windangle':
             case 'gustangle':
-            case 'windsource':
-            case 'gustsource':
+            case 'winddirection':
+            case 'gustdirection':
             case 'windangle_max':
             case 'windangle_day_max':
             case 'windangle_hour_max':
-            case 'windsource_max':
-            case 'windsource_day_max':
-            case 'windsource_hour_max':
+            case 'winddirection_max':
+            case 'winddirection_day_max':
+            case 'winddirection_hour_max':
                 $ref = 0;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
                 }
-                if ($type == 'windangle' || $type == 'windsource') {
+                if ($type == 'windangle' || $type == 'winddirection') {
                     $result['comp'] = __('now', 'live-weather-station') ;
                 }
-                if ($type == 'gustangle' || $type == 'gustsource') {
+                if ($type == 'gustangle' || $type == 'gustdirection') {
                     $result['comp'] = __('gust', 'live-weather-station') ;
                 }
-                if ($type == 'windangle_day_max' || $type == 'windsource_day_max') {
+                if ($type == 'windangle_day_max' || $type == 'winddirection_day_max') {
                     $result['comp'] = __('today', 'live-weather-station') ;
                 }
-                if ($type == 'windangle_hour_max' || $type == 'windsource_hour_max') {
+                if ($type == 'windangle_hour_max' || $type == 'winddirection_hour_max') {
                     $result['comp'] = __('/ 1 hr', 'live-weather-station') ;
                 }
                 $result['unit'] = $this->get_wind_angle_unit($ref);
@@ -8333,15 +8325,15 @@ trait Output {
                 $result = __('snow', 'live-weather-station') ;
                 break;
             case 'windangle':
-            case 'windsource':
+            case 'winddirection':
             case 'windangle_max':
             case 'windangle_hour_max':
             case 'windangle_day_max':
-            case 'windsource_max':
-            case 'windsource_hour_max':
-            case 'windsource_day_max':
+            case 'winddirection_max':
+            case 'winddirection_hour_max':
+            case 'winddirection_day_max':
             case 'gustangle':
-            case 'gustsource':
+            case 'gustdirection':
             case 'windstrength':
             case 'windstrength_max':
             case 'windstrength_hour_max':
@@ -9097,8 +9089,8 @@ trait Output {
             case 'windstrength':
             case 'windangle':
             case 'gustangle':
-            case 'windsource':
-            case 'gustsource':
+            case 'winddirection':
+            case 'gustdirection':
             case 'guststrength':
             case 'windstrength_hour_max':
             case 'windstrength_day_max':
@@ -9448,14 +9440,14 @@ trait Output {
                             break;
                         case 'windangle':
                         case 'gustangle':
-                        case 'windsource':
-                        case 'gustsource':
+                        case 'winddirection':
+                        case 'gustdirection':
                         case 'windangle_max':
                         case 'windangle_day_max':
                         case 'windangle_hour_max':
-                        case 'windsource_max':
-                        case 'windsource_day_max':
-                        case 'windsource_hour_max':
+                        case 'winddirection_max':
+                        case 'winddirection_day_max':
+                        case 'winddirection_hour_max':
                         case 'windstrength':
                         case 'guststrength':
                         case 'windstrength_max':
@@ -10037,10 +10029,10 @@ trait Output {
             case 'windangle_day_max':
                 $t = 'windangle';
                 break;
-            case 'gustsource':
-            case 'windsource_hour_max':
-            case 'windsource_day_max':
-                $t = 'windsource';
+            case 'gustdirection':
+            case 'winddirection_hour_max':
+            case 'winddirection_day_max':
+                $t = 'winddirection';
                 break;
             case 'guststrength':
             case 'windstrength_hour_max':

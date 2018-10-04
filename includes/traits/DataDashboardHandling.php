@@ -369,10 +369,34 @@ trait Handling {
                 $updates['measure_timestamp'] = date('Y-m-d H:i:s', $datas['time_utc']);
                 $updates['measure_type'] = strtolower($type);
                 $updates['measure_value'] = $datas[$type];
-                if ($type == 'wind_chill' || $type == 'wind_ref') {
+                if ($type === 'WindAngle') {
+                    $wind = $datas[$type];
+                    if ($wind < 0) {
+                        $wind = 0;
+                    }
+                    $updates['measure_value'] = $wind;
+                }
+                if ($type === 'GustAngle') {
+                    $wind = $datas[$type];
+                    if ($wind < 0) {
+                        $wind = 0;
+                    }
+                    $updates['measure_value'] = $wind;
+                }
+                if ($type === 'wind_chill' || $type === 'wind_ref') {
                     $updates['measure_timestamp'] = date('Y-m-d H:i:s', $datas['wind_time_utc']);
                 }
                 $this->update_data_table($updates);
+                if ($type == 'WindAngle') {
+                    $updates['measure_type'] = 'winddirection';
+                    $updates['measure_value'] = (int)round(($wind + 180) % 360);
+                    $this->update_data_table($updates);
+                }
+                if ($type == 'GustAngle') {
+                    $updates['measure_type'] = 'gustdirection';
+                    $updates['measure_value'] = (int)round(($wind + 180) % 360);
+                    $this->update_data_table($updates);
+                }
                 if (strtolower($type) == 'temperature') {
                     $hi_tmp = $datas[$type];
                 }
@@ -652,8 +676,7 @@ trait Handling {
             $this->update_data_table($updates);
         }
         // Additional datas about wind
-        if (array_key_exists('WindHistoric', $datas) &&
-            is_array($datas['WindHistoric'])) {
+        if (array_key_exists('WindHistoric', $datas) && is_array($datas['WindHistoric'])) {
             $wsmax=0;
             $wamax=0;
             $wdmax = time();
@@ -672,7 +695,10 @@ trait Handling {
             $updates['module_name'] = $module_name;
             $updates['measure_timestamp'] = date('Y-m-d H:i:s', $wdmax);
             $updates['measure_type'] = 'windangle_hour_max';
-            $updates['measure_value'] =$wamax ;
+            $updates['measure_value'] = $wamax ;
+            $this->update_data_table($updates);
+            $updates['measure_type'] = 'winddirection_hour_max';
+            $updates['measure_value'] = (int)round(($wamax + 180) % 360); ;
             $this->update_data_table($updates);
             $updates = array();
             $updates['device_id'] = $device_id;
@@ -699,7 +725,10 @@ trait Handling {
             $updates['module_name'] = $module_name;
             $updates['measure_timestamp'] = date('Y-m-d H:i:s', $datas['date_max_wind_str']);
             $updates['measure_type'] = 'windangle_day_max';
-            $updates['measure_value'] =$datas['max_wind_angle'] ;
+            $updates['measure_value'] = $datas['max_wind_angle'] ;
+            $this->update_data_table($updates);
+            $updates['measure_type'] = 'winddirection_day_max';
+            $updates['measure_value'] = (int)round(($datas['max_wind_angle'] + 180) % 360);
             $this->update_data_table($updates);
             $updates = array();
             $updates['device_id'] = $device_id;

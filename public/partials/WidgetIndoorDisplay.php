@@ -46,7 +46,7 @@ else {
             <?php endif;?>
             <?php if ($show_co2):?>
                 <!-- CO2 -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Carbon monoxide', 'live-weather-station').'"' : ''); ?>>
+                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Carbon dioxide', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <i class="wi wi-x26-<?php echo $id ?> wi-smoke"></i>
                     </div>

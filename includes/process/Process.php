@@ -27,6 +27,7 @@ abstract class Process {
     protected $params = array();
     protected $timestamp = '0000-00-00 00:00:00';
     protected $exectime = 0;
+    protected $pass = 0;
     protected $progress = 0;
 
     private $chrono = 0.0;
@@ -166,7 +167,7 @@ abstract class Process {
      */
     protected function end_notification() {
         $s = sprintf(__('The background process named <em>%s</em> has completed successfully.', 'live-weather-station'), $this->name());
-        Notifier::warning($this->name(), $this->url(), $s);
+        Notifier::info($this->name(), $this->url(), $s);
     }
 
     /**
@@ -217,7 +218,7 @@ abstract class Process {
     }
 
     /**
-     * Register the process..
+     * Register the process.
      *
      * @param array $args The args to pass to the instance.
      * @since 3.6.0
@@ -246,7 +247,7 @@ abstract class Process {
         $to = get_bloginfo('admin_email');
         $subject = __('End of the background process:', 'live-weather-station') . ' ' . $this->name();
         $message = __('Hello!', 'live-weather-station') . "\r\n" . "\r\n";
-        $message .= sprintf(__('%s informs you that the background process named "%s" has completed successfully.', 'live-weather-station'), $this->name()) . "\r\n" . "\r\n";
+        $message .= sprintf(__('%s informs you that the background process named "%s" has completed successfully.', 'live-weather-station'), LWS_PLUGIN_NAME, $this->name()) . "\r\n" . "\r\n";
         if ($detail !== '') {
             $message .= $detail . "\r\n" . "\r\n";
         }
@@ -291,11 +292,13 @@ abstract class Process {
             throw new \Exception('Database contains inconsistent data');
         }
         else {
-            $this->class = $row['class'];
-            $this->state = $row['state'];
-            $this->timestamp = $row['timestamp'];
-            $this->params = unserialize($row['params']);
-            $this->exectime = $row['exec_time'];
+            $this->class = $row[0]['class'];
+            $this->state = $row[0]['state'];
+            $this->timestamp = $row[0]['timestamp'];
+            $this->params = unserialize($row[0]['params']);
+            $this->exectime = $row[0]['exec_time'];
+            $this->pass = $row[0]['pass'];
+            $this->progress = $row[0]['progress'];
         }
     }
 
@@ -315,6 +318,7 @@ abstract class Process {
         $row['timestamp'] = $this->timestamp;
         $row['params'] = serialize($this->params);
         $row['exec_time'] = $this->exectime;
+        $row['pass'] = $this->pass;
         $row['progress'] = $this->progress;
         self::insert_update_table(self::live_weather_station_background_process_table(), $row);
     }
@@ -322,9 +326,10 @@ abstract class Process {
     /**
      * Run the process wrapper.
      *
+     * @param boolean $count_as_pass Optional. It's a full pass!
      * @since 3.6.0
      */
-    protected function run() {
+    public function run($count_as_pass=true) {
         try {
             $this->chrono = microtime(true);
             $this->load();
@@ -340,6 +345,9 @@ abstract class Process {
             }
             $this->chrono = microtime(true) - $this->chrono;
             $this->exectime += (int)round($this->chrono, 0);
+            if ($count_as_pass) {
+                $this->pass += 1;
+            }
             $this->save();
         }
         catch (\Exception $ex) {
