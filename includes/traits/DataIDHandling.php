@@ -250,6 +250,32 @@ trait Handling {
     }
 
     /**
+     * Indicates if the id is the id of a Ambient station.
+     *
+     * @param integer $station_id The numeric id of the station.
+     * @return boolean True if it's an Ambient station, false otherwise.
+     * @since 3.3.0
+     */
+    public static function is_ambt_station($station_id) {
+        $result = false;
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+        $sql = "SELECT station_type FROM " . $table_name . " WHERE station_id='" . $station_id."'";
+        try {
+            $query = $wpdb->get_results($sql, ARRAY_A);
+            if (count($query) === 1) {
+                if (array_key_exists('station_type', $query[0])) {
+                    $result = ($query[0]['station_type'] == LWS_AMBT_SID);
+                }
+            }
+        }
+        catch(\Exception $ex) {
+            $result = false;
+        }
+        return $result;
+    }
+
+    /**
      * Indicates if the id is the id of an Netatmo station.
      *
      * @param integer $station_id The numeric id of the station.
@@ -260,7 +286,8 @@ trait Handling {
         return (!self::is_owm_station($station_id) && !self::is_wug_station($station_id) &&
                 !self::is_raw_station($station_id) && !self::is_real_station($station_id) &&
                 !self::is_txt_station($station_id) && !self::is_wflw_station($station_id) &&
-                !self::is_piou_station($station_id) && !self::is_bsky_station($station_id));
+                !self::is_piou_station($station_id) && !self::is_bsky_station($station_id) &&
+                !self::is_ambt_station($station_id));
     }
 
     /**

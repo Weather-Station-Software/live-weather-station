@@ -42,7 +42,7 @@ trait BaseClient {
      */
     private function store_netatmo_datas($stations, $is_hc=false) {
         $datas = $this->netatmo_datas ;
-        foreach($datas['devices'] as $device){
+        foreach($datas['devices'] as &$device){
             $store = false;
             foreach ($stations as $station) {
                 if ($station['station_id'] == $device['_id']) {
@@ -53,7 +53,7 @@ trait BaseClient {
                 $this->get_netatmo_dashboard($device['_id'], $device['station_name'], $device['_id'], $device['module_name'],
                     $device['type'], $device['data_type'], $device['dashboard_data'], $device['place'], $device['wifi_status'], $device['firmware'], $device['last_status_store'], 0, $device['date_setup'], $device['last_setup'], $device['last_upgrade'], $is_hc);
                 Logger::debug($this->facility, $this->service_name, $device['_id'], $device['station_name'], $device['_id'], $device['module_name'], 0, 'Success while collecting module records.');
-                foreach($device['modules'] as $module)
+                foreach($device['modules'] as &$module)
                 {
                     $this->get_netatmo_dashboard($device['_id'], $device['station_name'], $module['_id'], $module['module_name'],
                         $module['type'], $module['data_type'], $module['dashboard_data'], $device['place'], $module['rf_status'], $module['firmware'], $module['last_seen'], $module['battery_vp'], null, $module['last_setup'], null, $is_hc);

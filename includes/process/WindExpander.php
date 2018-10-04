@@ -133,7 +133,6 @@ class WindExpander extends Process {
             try {
                 $this->expand($station_id, $station_type);
                 unset($this->params['stations']['todo'][$station_id]);
-                $this->params['stations']['todo'] = array_values(array_filter($this->params['stations']['todo']));
                 $this->params['stations']['done'][$station_id] = $station_type;
                 $this->set_progress(100 * count($this->params['stations']['done']) / (count($this->params['stations']['todo']) + count($this->params['stations']['done'])));
             }
@@ -154,21 +153,26 @@ class WindExpander extends Process {
      */
     private function add_source($station_id, $table_name, $fields, $switch) {
         global $wpdb;
-        $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $station_id . "' AND measure_type IN (" . implode(',', $fields).")";
+        $sql = "SELECT * FROM " . $wpdb->prefix . $table_name . " WHERE device_id='" . $station_id . "' AND measure_type IN (" . implode(',', $fields).")";
         $query = $wpdb->get_results($sql, ARRAY_A);
         if (is_array($query) && !empty($query)) {
-            foreach ($query as $row) {
-                $wind = (int)$row['measure_value'];
-                $new_wind = (int)round(($wind + 180) % 360);
+            foreach ($query as &$row) {
+                $wind = $row['measure_value'];
+                $new_wind = round(fmod($wind + 180, 360), strlen(strrchr($wind, '.')) -1);
+                if (array_key_exists('measure_set', $row)) {
+                    if ($row['measure_set'] === 'dev') {
+                        $new_wind = $wind;
+                    }
+                }
                 if ($switch) {
                     $row['measure_value'] = $new_wind;
                     self::insert_update_table($table_name, $row);
-                    $row['measure_type'] = str_replace('angle', 'source', $row['measure_type']);
+                    $row['measure_type'] = str_replace('angle', 'direction', $row['measure_type']);
                     $row['measure_value'] = $wind;
                     self::insert_update_table($table_name, $row);
                 }
                 else {
-                    $row['measure_type'] = str_replace('angle', 'source', $row['measure_type']);
+                    $row['measure_type'] = str_replace('angle', 'direction', $row['measure_type']);
                     $row['measure_value'] = $new_wind;
                     self::insert_update_table($table_name, $row);
                 }
@@ -185,22 +189,15 @@ class WindExpander extends Process {
      */
     private function expand($station_id, $station_type) {
         $switch = false;
-        if ($station_type !== LWS_PIOU_SID) {
+        if ($station_type === LWS_PIOU_SID) {
             $switch = true;
         }
-        global $wpdb;
-        // CURRENT DATA
-        $fields = array('windangle', 'gustangle', 'windangle_max', 'windangle_day_max', 'windangle_hour_max');
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
-        $this->add_source($station_id, $table_name, $fields, $switch);
         // DAILY DATA
-        $fields = array('windangle', 'gustangle');
-        $table_name = $wpdb->prefix.self::live_weather_station_histo_daily_table();
-        //$this->add_source($station_id, $table_name, $fields, $switch);
+        $fields = array('\'windangle\'', '\'gustangle\'');
+        $this->add_source($station_id, self::live_weather_station_histo_daily_table(), $fields, $switch);
         // HISTORICAL DATA
-        $fields = array('windangle', 'gustangle');
-        $table_name = $wpdb->prefix.self::live_weather_station_histo_yearly_table();
-        //$this->add_source($station_id, $table_name, $fields, $switch);
+        $fields = array('\'windangle\'', '\'gustangle\'');
+        $this->add_source($station_id, self::live_weather_station_histo_yearly_table(), $fields, $switch);
     }
 
 }

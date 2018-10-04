@@ -808,7 +808,7 @@ trait Handling {
      */
     protected static function define_background_process_cron() {
         $process = new ProcessManager(LWS_PLUGIN_NAME, LWS_VERSION);
-        add_action(self::$log_rotate_name, array($process, 'run'));
+        add_action(self::$background_process_name, array($process, 'run'));
     }
 
     /**
