@@ -2551,6 +2551,10 @@ trait Output {
                 $measurement2 = '';
             }
         }
+        $dimension1 = $this->output_unit($measurement1);
+        $dimension1 = $dimension1['dimension'];
+        $dimension2 = $this->output_unit($measurement2);
+        $dimension2 = $dimension2['dimension'];
 
 
         // Compute scales
@@ -3224,7 +3228,12 @@ trait Output {
             }
             $body .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
             $body .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
-            $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+            if ($dimension1 === 'duration') {
+                $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+            }
+            else {
+                $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+            }
             $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
             $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
             $body .= '      return chart'.$uniq.';' . PHP_EOL;
@@ -3394,7 +3403,12 @@ trait Output {
             else {
                 $body .= '      chart'.$uniq.'.yAxis.showMaxMin(false)';
             }
-            $body .= '.tickFormat(function(d) { return d + " ' . $values['legend']['unit']['unit'] . '"; });' . PHP_EOL;
+            if ($dimension1 === 'duration') {
+                $body .= '.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+            }
+            else {
+                $body .= '.tickFormat(function(d) { return d + " ' . $values['legend']['unit']['unit'] . '"; });' . PHP_EOL;
+            }
             $body .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
             $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
             $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
@@ -3585,10 +3599,20 @@ trait Output {
             $body .= '      _date = d3.time.format("' . $specialtimeformat . '")(new Date(d.value));' . PHP_EOL;
             $body .= '      return sprintf(s, _date, _color, _key, _value)});' . PHP_EOL;
             $body .= '      chart'.$uniq.'.legendRightAxisHint("");' . PHP_EOL;
-            $body .= '      chart'.$uniq.'.yAxis1.tickFormat(function(d) { return d + " ' . $values['extras'][0]['unit']['unit'] . '"; });' . PHP_EOL;
+            if ($dimension1 === 'duration') {
+                $body .= '      chart'.$uniq.'.yAxis1.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+            }
+            else {
+                $body .= '      chart'.$uniq.'.yAxis1.tickFormat(function(d) { return d + " ' . $values['extras'][0]['unit']['unit'] . '"; });' . PHP_EOL;
+            }
             $body .= '      chart'.$uniq.'.yAxis1.showMaxMin(false);';
             $body .= '      chart'.$uniq.'.yAxis1.tickValues([' . implode(', ', $ticks1).']);' . PHP_EOL;
-            $body .= '      chart'.$uniq.'.yAxis2.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+            if ($dimension2 === 'duration') {
+                $body .= '      chart'.$uniq.'.yAxis2.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+            }
+            else {
+                $body .= '      chart'.$uniq.'.yAxis2.tickFormat(function(d) { return d + " ' . $values['extras'][0]['unit']['unit'] . '"; });' . PHP_EOL;
+            }
             $body .= '      chart'.$uniq.'.yAxis2.tickPadding(-6);' . PHP_EOL;
             $body .= '      chart'.$uniq.'.yAxis2.showMaxMin(false);';
             $body .= '      chart'.$uniq.'.yAxis2.tickValues([' . implode(', ', $ticks2).']);' . PHP_EOL;
