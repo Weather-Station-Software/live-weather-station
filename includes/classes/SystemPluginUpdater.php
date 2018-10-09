@@ -9,6 +9,8 @@ use WeatherStation\System\URL\Handling as Url;
 use WeatherStation\DB\Storage as Storage;
 use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Environment\Manager;
+use WeatherStation\System\Notifications\Notifier;
+use WeatherStation\System\Help\InlineHelp;
 
 /**
  * Fired during plugin update.
@@ -66,6 +68,12 @@ class Updater {
         delete_transient(self::$transient_name);
         if (Manager::is_updated($oldversion)) {
             update_option('live_weather_station_show_update', 1);
+            if (defined('DISABLE_NAG_NOTICES')) {
+                if (DISABLE_NAG_NOTICES === true) {
+                    update_option('live_weather_station_show_update', 0);
+                }
+            }
+            Notifier::info(sprintf(__('%s has been updated.', 'live-weather-station'), LWS_PLUGIN_NAME), InlineHelp::whats_new_url(), sprintf(__('Your site now uses version %s.', 'live-weather-station'), LWS_VERSION));
         }
     }
 }

@@ -36,37 +36,6 @@ class Notifier {
     }
 
     /**
-     * Delete old logged events.
-     *
-     * @since 3.6.0
-     */
-    public function rotate() {
-        /*$cron_id = Watchdog::init_chrono(Watchdog::$log_rotate_name);
-        $count = 0;
-        if ($hour_done = $this->purge_table(self::live_weather_station_log_table() , 'timestamp', 24 * get_option('live_weather_station_logger_retention', 14))) {
-            $count += $hour_done;
-        }
-        $limit = $this->get_log_count() - get_option('live_weather_station_logger_rotate', 20000);
-        if ($limit > 0) {
-            if ($max_done = $this->rotate_table(self::live_weather_station_log_table() , 'id', $limit)) {
-                $count += $max_done;
-            }
-        }
-        if ($count > 0) {
-            if ($count == 1) {
-                self::notice('Logger',null,null,null,null,null,null,'1 old record deleted.');
-            }
-            if ($count > 1) {
-                self::notice('Logger',null,null,null,null,null,null,$count . ' old records deleted.');
-            }
-        }
-        else {
-            self::info('Logger',null,null,null,null,null,null,'No old records to delete.');
-        }
-        Watchdog::stop_chrono($cron_id);*/
-    }
-
-    /**
      * Record a notification with specific level.
      *
      * @param $level string Optional. A level of notification in ('info','warning','error').
