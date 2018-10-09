@@ -132,7 +132,7 @@ abstract class Process {
      * @since 3.6.0
      */
     protected function url() {
-        return 'http://weather.station.software/background-process/' . sanitize_title($this->name(false));
+        return 'https://weather.station.software/handbook/background-processes/' . sanitize_title($this->name(false)) . '/';
     }
 
     /**

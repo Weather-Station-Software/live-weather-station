@@ -99,7 +99,7 @@ class ProcessManager {
      */
     public function run(){
         $cron_id = Watchdog::init_chrono(Watchdog::$background_process_name);
-        Logger::warning($this->facility, null, null, null, null, null, 0, 'Background process: starting main job.');
+        Logger::info($this->facility, null, null, null, null, null, 0, 'Background process: starting main job.');
         if (ini_get('max_execution_time') < 180) {
             $this->max_time = (int)round(ini_get('max_execution_time') * 2 / 3);
         }
@@ -114,7 +114,7 @@ class ProcessManager {
                 }
             }
         }
-        Logger::warning($this->facility, null, null, null, null, null, 0, 'Background process: ending main job.');
+        Logger::info($this->facility, null, null, null, null, null, 0, 'Background process: ending main job.');
         Watchdog::stop_chrono($cron_id);
     }
 

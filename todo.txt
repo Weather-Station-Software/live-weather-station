@@ -100,6 +100,3 @@ use wind classification (textual, charts, )
 Bloomsky = baro
 
 https://community.weatherflow.com/t/steadman-apparent-temperature-australian-apparent-temperature/2248
-
-
-!!!!!!!!!!!!!!!!! cache is_ambt_station

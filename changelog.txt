@@ -1,5 +1,5 @@
 
-#3.6.0 / October 16th, 2018
+#3.6.0 / October 9th, 2018
 
 * New: Weather Station natively supports ***BloomSky*** stations (SKY1, SKY2 & Storm) - special thanks to Francis Gedeon for the tests.
 * New: Weather Station natively connects to ***Ambient Weather Network*** - special thanks to Francis Gedeon for the tests.
@@ -8,9 +8,8 @@
 * New: a new video control to display timelapses (shortcode available in historical data tab).
 * New: a new picture control to display last snapshot from the station (shortcode available in current records tab).
 * New: notification system in Weather Station dashboard.
-* New language: German (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/) and all German translators for their involvement).
-* New language: Swedish (thanks to [@fredrik](https://weather.station.software/community/account/fredrik/) for its involvement).
-* Improvement:
+* New language: German / Formal German (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/) and all German translators for their involvement).
+* Improvement: full redesign of wind handling. There are now two measurements: [wind source and wind direction](https://weather.station.software/handbook/background-processes/wind-angle-wind-source-expander/).
 * Improvement: textual shortcodes can now be be autorefreshed every 2 minutes.
 * Improvement: all charts and graphs can now use user-editable colors schemes (thanks to Ralf Karpa for the suggestion).
 * Improvement: customized name and visibility of modules are now viewable in station view.
@@ -32,6 +31,7 @@
 * Improvement: better icon handling and alignment in admin views.
 * Improvement: the select box to choose color scheme (for charts) has been redesigned to be more clear.
 * Improvement: a background process manager can now handle long treatments without slowing down WordPress.
+* Improvement: Weather Station now supports the [DISABLE_NAG_NOTICES directive](https://codex.wordpress.org/Plugin_API/Action_Reference/admin_notices#Disable_Nag_Notices) if you do not want to see update message in site backend.
 * Improvement: the readme.txt have now a minimum PHP version to prepare coming changes on the official WordPress repository.
 * Bug fix: in textual shortcodes, the customized name of a module is wrongly rendered.
 * Bug fix: Weather Station is unable to get Healthy Home Coach name due to API changes made by Netatmo.

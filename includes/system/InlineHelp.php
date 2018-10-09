@@ -85,6 +85,21 @@ class InlineHelp {
     }
 
     /**
+     * Get the what's new url.
+     *
+     * @return string The url of the what's new.
+     *
+     * @since 3.6.0
+     */
+    public static function whats_new_url() {
+        $url = LWS_WHATSNEW;
+        if (Manager::patch_version() != 0 && LWS_SHOW_CHANGELOG) {
+            $url = LWS_CHANGELOG;
+        }
+        return $url;
+    }
+
+    /**
      * Get the what's new string.
      *
      * @return string The complete icon string, ready to print.
@@ -96,10 +111,7 @@ class InlineHelp {
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
             $target = ' target="_blank" ';
         }
-        $url = LWS_WHATSNEW;
-        if (Manager::patch_version() != 0 && LWS_SHOW_CHANGELOG) {
-            $url = LWS_CHANGELOG;
-        }
+        $url = self::whats_new_url();
         if (Manager::is_plugin_in_production_mode()) {
             return '<a href="' . $url . '"' . $target . '>' . __('See what\'s new', 'live-weather-station') . '&hellip;</a>';
         }

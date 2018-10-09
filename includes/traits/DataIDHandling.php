@@ -2,6 +2,8 @@
 
 namespace WeatherStation\Data\ID;
 
+use WeatherStation\System\Cache\Cache;
+
 /**
  * ID handling for Weather Station plugin.
  *
@@ -257,22 +259,25 @@ trait Handling {
      * @since 3.3.0
      */
     public static function is_ambt_station($station_id) {
-        $result = false;
-        global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-        $sql = "SELECT station_type FROM " . $table_name . " WHERE station_id='" . $station_id."'";
-        try {
-            $query = $wpdb->get_results($sql, ARRAY_A);
-            if (count($query) === 1) {
-                if (array_key_exists('station_type', $query[0])) {
-                    $result = ($query[0]['station_type'] == LWS_AMBT_SID);
+        $cache_id = 'is_ambt_station_' . $station_id;
+        $result = Cache::get_backend($cache_id);
+        if (!$result) {
+            global $wpdb;
+            $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            $sql = "SELECT station_type FROM " . $table_name . " WHERE station_id='" . $station_id . "'";
+            try {
+                $query = $wpdb->get_results($sql, ARRAY_A);
+                if (count($query) === 1) {
+                    if (array_key_exists('station_type', $query[0])) {
+                        $result = ($query[0]['station_type'] == LWS_AMBT_SID?1:-1);
+                        Cache::set_backend($cache_id, $result);
+                    }
                 }
+            } catch (\Exception $ex) {
+                $result = -1;
             }
         }
-        catch(\Exception $ex) {
-            $result = false;
-        }
-        return $result;
+        return ($result === 1);
     }
 
     /**
