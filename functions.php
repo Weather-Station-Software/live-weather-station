@@ -372,3 +372,16 @@ function lws_get_region_name($locale, $in_locale = null) {
     }
     return $result;
 }
+
+/**
+ * Fake __() function for debugging / developing purpose.
+ *
+ * @since 3.6.1
+ *
+ * @param string $text Text to translate.
+ * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
+ * @return string tring Translated text.
+ */
+function lws__($text, $domain='default') {
+    return $text;
+}

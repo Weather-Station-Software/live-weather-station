@@ -1,4 +1,10 @@
 
+#3.6.1 / October XXXXX, 2018
+
+* Improvement: durations can now be used as main dimension in line series and bar series charts.
+* Improvement: 
+
+
 #3.6.0 / October 9th, 2018
 
 * New: Weather Station natively supports ***BloomSky*** stations (SKY1, SKY2 & Storm) - special thanks to Francis Gedeon for the tests.

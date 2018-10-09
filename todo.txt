@@ -97,6 +97,19 @@ style : area and line opacity, widget scale, ...
 
 use wind classification (textual, charts, )
 
-Bloomsky = baro
 
 https://community.weatherflow.com/t/steadman-apparent-temperature-australian-apparent-temperature/2248
+
+
+
+
+
+Netatmo             : MSLP (Abs)
+WeatherFlow         : Abs (MSLP)
+BloomSky            : Abs (-)
+OpenWeatherMap      : MSLP (-)
+Ambient             : Abs (-)
+Weather underground : MSLP (-)
+realtime            : MSLP (-)
+clientraw           : MSLP (-)          Assumption
+stickertags         : MSLP (-)
