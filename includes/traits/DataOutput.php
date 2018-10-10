@@ -2537,24 +2537,24 @@ trait Output {
         if ($cpt > 8) {
             $cpt = 8;
         }
-        $measurement1 = '';
-        $measurement2 = '';
-        if ($type != 'distributionrc' && $type != 'valuerc' && $type != 'doubleline') {
-            if (isset($items[1]) && array_key_exists('measurement', $items[1])) {
-                $measurement1 = $items[1]['measurement'];
-            } else {
-                $measurement1 = '';
-            }
-            if (isset($items[2]) && array_key_exists('measurement', $items[2])) {
-                $measurement2 = $items[2]['measurement'];
-            } else {
-                $measurement2 = '';
-            }
+        if (isset($items[1]) && array_key_exists('measurement', $items[1])) {
+            $measurement1 = $items[1]['measurement'];
+        } else {
+            $measurement1 = '';
+        }
+        if (isset($items[2]) && array_key_exists('measurement', $items[2])) {
+            $measurement2 = $items[2]['measurement'];
+        } else {
+            $measurement2 = '';
         }
         $dimension1 = $this->output_unit($measurement1);
         $dimension1 = $dimension1['dimension'];
         $dimension2 = $this->output_unit($measurement2);
         $dimension2 = $dimension2['dimension'];
+        if ($type === 'distributionrc' || $type === 'valuerc' || $type === 'doubleline') {
+            $measurement1 = '';
+            $measurement2 = '';
+        }
 
 
         // Compute scales
@@ -3589,12 +3589,22 @@ trait Output {
             $body .= '      if (d.series[0].color=="' . $refcolor . '"){' . PHP_EOL;
             $body .= '        _color = d.series[0].color;' . PHP_EOL;
             $body .= '        _key = d.series[0].key;' . PHP_EOL;
-            $body .= '        _value = d.series[0].value+" ' . $values['extras'][0]['unit']['unit'] . '";' . PHP_EOL;
+            if ($dimension1 === 'duration') {
+                $body .= '        _value = Math.floor(d.series[0].value/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d.series[0].value%3600)/60).toString().padStart(2,"0");' . PHP_EOL;
+            }
+            else {
+                $body .= '        _value = d.series[0].value+" ' . $values['extras'][0]['unit']['unit'] . '";' . PHP_EOL;
+            }
             $body .= '      }' . PHP_EOL;
             $body .= '      else{' . PHP_EOL;
             $body .= '        _color = d.series[0].color;' . PHP_EOL;
             $body .= '        _key = d.series[0].key;' . PHP_EOL;
-            $body .= '        _value = d.series[0].value+" ' . $unit . '";' . PHP_EOL;
+            if ($dimension2 === 'duration') {
+                $body .= '        _value = Math.floor(d.series[0].value/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d.series[0].value%3600)/60).toString().padStart(2,"0");' . PHP_EOL;
+            }
+            else {
+                $body .= '        _value = d.series[0].value+" ' . $unit . '";' . PHP_EOL;
+            }
             $body .= '      }' . PHP_EOL;
             $body .= '      _date = d3.time.format("' . $specialtimeformat . '")(new Date(d.value));' . PHP_EOL;
             $body .= '      return sprintf(s, _date, _color, _key, _value)});' . PHP_EOL;
@@ -3611,7 +3621,8 @@ trait Output {
                 $body .= '      chart'.$uniq.'.yAxis2.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
             }
             else {
-                $body .= '      chart'.$uniq.'.yAxis2.tickFormat(function(d) { return d + " ' . $values['extras'][0]['unit']['unit'] . '"; });' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.yAxis2.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+
             }
             $body .= '      chart'.$uniq.'.yAxis2.tickPadding(-6);' . PHP_EOL;
             $body .= '      chart'.$uniq.'.yAxis2.showMaxMin(false);';
@@ -3786,21 +3797,45 @@ trait Output {
             $body .= '      if (d.hasOwnProperty("element")){' . PHP_EOL;
             $body .= '        _color = d.series[0].color;' . PHP_EOL;
             $body .= '        _key = d.series[0].key;' . PHP_EOL;
-            $body .= '        _value = d.series[0].value+" ' . $unit . '";' . PHP_EOL;
+            //$body .= '        _value = d.series[0].value+" ' . $unit . '";' . PHP_EOL;
+            if ($dimension2 === 'duration') {
+                $body .= '        _value = Math.floor(d.series[0].value/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d.series[0].value%3600)/60).toString().padStart(2,"0");' . PHP_EOL;
+            }
+            else {
+                $body .= '        _value = d.series[0].value+" ' . $unit . '";' . PHP_EOL;
+            }
             $body .= '      }' . PHP_EOL;
             $body .= '      else{' . PHP_EOL;
             $body .= '        _color = d.color;' . PHP_EOL;
             $body .= '        _key = "' . $values['extras'][0]['info_key'] . '";' . PHP_EOL;
-            $body .= '        _value = d.series[0].value+" ' . $values['extras'][0]['unit']['unit'] . '";' . PHP_EOL;
+
+            if ($dimension1 === 'duration') {
+                $body .= '        _value = Math.floor(d.series[0].value/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d.series[0].value%3600)/60).toString().padStart(2,"0");' . PHP_EOL;
+            }
+            else {
+                $body .= '        _value = d.series[0].value+" ' . $values['extras'][0]['unit']['unit'] . '";' . PHP_EOL;
+            }
+
             $body .= '      }' . PHP_EOL;
             $body .= '      _date = d3.time.format("' . $specialtimeformat . '")(new Date(d.value));' . PHP_EOL;
             $body .= '      return sprintf(s, _date, _color, _key, _value)});' . PHP_EOL;
             if ($focus) {
                 $body .= '      chart' . $uniq . '.focusMargin({"top":20, "bottom":-10});' . PHP_EOL;
             }
-            $body .= '      chart'.$uniq.'.y1Axis.tickFormat(function(d) { return d + " ' . $values['extras'][0]['unit']['unit'] . '"; });' . PHP_EOL;
+            if ($dimension1 === 'duration') {
+                $body .= '      chart'.$uniq.'.y1Axis.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+            }
+            else {
+                $body .= '      chart'.$uniq.'.y1Axis.tickFormat(function(d) { return d + " ' . $values['extras'][0]['unit']['unit'] . '"; });' . PHP_EOL;
+            }
             $body .= '      chart'.$uniq.'.y1Axis.showMaxMin(false);';
-            $body .= '      chart'.$uniq.'.y2Axis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+            if ($dimension2 === 'duration') {
+                $body .= '      chart'.$uniq.'.y2Axis.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+            }
+            else {
+                $body .= '      chart'.$uniq.'.y2Axis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+
+            }
             $body .= '      chart'.$uniq.'.y2Axis.tickPadding(-6);' . PHP_EOL;
             $body .= '      chart'.$uniq.'.y2Axis.showMaxMin(false);';
             $body .= '      chart'.$uniq.'.y2Axis.tickValues([' . implode(', ', $ticks2).']);' . PHP_EOL;
@@ -6260,12 +6295,14 @@ trait Output {
     /**
      * Get value for textual shortcodes.
      *
-     * @return  string  $attributes The value queryed by the shortcode.
-     * @since    1.0.0
-     * @access   public
+     * @return string $attributes The value queryed by the shortcode.
+     * @since 1.0.0
      */
     public function textual_shortcodes($attributes) {
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => ''), $attributes );
+        if ($_attributes['device_id'] === '') {
+            return;
+        }
         $fingerprint = md5(json_encode($attributes));
         $result = Cache::get_frontend($fingerprint);
         if ($result) {
@@ -6325,7 +6362,12 @@ trait Output {
             $_att['module_id'] = $_attributes['device_id'];
             $_att['measure_type'] = 'loc_timezone';
             $_att['element'] = 'measure_value';
-            $tz = $this->get_specific_datas($_att)['result'][$_att['measure_type']];
+            $tzone = $this->get_specific_datas($_att);
+            if (array_key_exists('result', $tzone)) {
+                if (array_key_exists($_att['measure_type'], $tzone['result'])) {
+                    $tz = $tzone['result'][$_att['measure_type']];
+                }
+            }
         }
         $result = $_result['result'][$_attributes['measure_type']];
         if (array_key_exists('module_type', $_result)) {
@@ -6581,8 +6623,8 @@ trait Output {
         $uniq = 'live-textual-' . $uuid;
         $time = 1000 * (120 + rand(-20, 20));
         $speed = (int)$_attributes['speed'] / 2;
-        $shortcode = '[live-weather-station-textual device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' element=\'' . $_attributes['element'] . '\' format=\'' . $_attributes['format'] . '\']';
-        $result = '<span id="' . $uniq . '" class="lws-livetextual lws-measurement-type-' . str_replace('_', '-', $_attributes['measure_type']) . '">' . do_shortcode($shortcode) . '</span>';
+        $shortcode = 'live-weather-station-textual device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' element=\'' . $_attributes['element'] . '\' format=\'' . $_attributes['format'] . '\'';
+        $result = '<span id="' . $uniq . '" class="lws-livetextual lws-measurement-type-' . str_replace('_', '-', $_attributes['measure_type']) . '">' . do_shortcode('[' . $shortcode . ']') . '</span>';
         $result .= '<script language="javascript" type="text/javascript">'.PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         switch ($_attributes['fx']) {

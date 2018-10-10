@@ -1,9 +1,11 @@
 
-#3.6.1 / October XXXXX, 2018
+#3.6.1 / October 10th, 2018
 
+* Improvement: all controls and charts can now be rendered in TablePress cells.
+* Improvement: charts now display sunshine duration in a human-friendly format (thanks to [@gerhard](https://weather.station.software/community/profile/gerhard/) for the suggestion).
 * Improvement: durations can now be used as main dimension in line series and bar series charts.
-* Improvement: 
-
+* Bug fix: auto-refresh for textual data does not work properly with some pages builders (thanks to [@gerhard](https://weather.station.software/community/profile/gerhard/), [@johnny](https://weather.station.software/community/profile/johnny/) and [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+* Bug fix: in the wizard for textual data and clean gauge shortcodes, selecting a color reset the module name.
 
 #3.6.0 / October 9th, 2018
 
