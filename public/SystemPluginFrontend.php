@@ -300,6 +300,9 @@ class Frontend {
     public function lws_shortcode_callback() {
         $shortcode = wp_kses($_POST['sc'], array());
         $shortcode = str_replace('\\', '', $shortcode);
+        if (strpos($shortcode, '[') === false) {
+            $shortcode = '[' . $shortcode . ']';
+        }
         $allowed = false;
         foreach ($this->allowed_shortcodes as $allowed_shortcode) {
             if (strpos($shortcode, '[' . $allowed_shortcode . ' ') === 0) {

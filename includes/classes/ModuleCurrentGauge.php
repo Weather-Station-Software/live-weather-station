@@ -143,13 +143,14 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
     protected function get_script() {
         $content = '';
         $content .= '$("#current-justgage-datas-fc-pointer-' . $this->station_guid . '").parent().parent().parent().find("button").click(function() {';
-        $content .= '$("#current-justgage-datas-module-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-justgage-datas-size-' . $this->station_guid . '" ).change();});';
         $content .= '$("#current-justgage-datas-fc-title-' . $this->station_guid . '").parent().parent().parent().find("button").click(function() {';
-        $content .= '$("#current-justgage-datas-module-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-justgage-datas-size-' . $this->station_guid . '" ).change();});';
         $content .= '$("#current-justgage-datas-fc-label-' . $this->station_guid . '").parent().parent().parent().find("button").click(function() {';
-        $content .= '$("#current-justgage-datas-module-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-justgage-datas-size-' . $this->station_guid . '" ).change();});';
         $content .= '$("#current-justgage-datas-fc-value-' . $this->station_guid . '").parent().parent().parent().find("button").click(function() {';
-        $content .= '$("#current-justgage-datas-module-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-justgage-datas-size-' . $this->station_guid . '" ).change();});';
+
         $content .= '$("#current-justgage-datas-module-' . $this->station_guid . '").change(function() {';
         $content .= 'var js_array_current_justgage_measurement_' . $this->station_guid . ' = js_array_current_justgage_' . $this->station_guid . '[$(this).val()][2];';
         $content .= '$("#current-justgage-datas-measurement-' . $this->station_guid . '").html("");';
@@ -171,14 +172,10 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$("#current-justgage-datas-unit-' . $this->station_guid . '").change(function() {';
         $content .= '$("#current-justgage-datas-size-' . $this->station_guid . '" ).change();});';
         $content .= '$("#current-justgage-datas-size-' . $this->station_guid . '").change(function() {';
-
-
         $content .= 'if ($("#current-justgage-datas-size-' . $this->station_guid . '").val()=="scalable") {';
         $content .= '$("#current-justgage-info-' . $this->station_guid . '").show();}';
         $content .= 'else {';
         $content .= '$("#current-justgage-info-' . $this->station_guid . '").hide();}';
-
-
         $content .= 'if ($("#current-justgage-datas-size-' . $this->station_guid . '").val()=="micro") {';
         $content .= '$("#current-justgage-datas-pointer-' . $this->station_guid . '").val("none");';
         $content .= '$("#current-justgage-datas-pointer-' . $this->station_guid . '").prop("disabled", true);';
