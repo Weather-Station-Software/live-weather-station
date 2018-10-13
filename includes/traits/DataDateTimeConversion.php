@@ -509,7 +509,11 @@ trait Conversion {
      * @since 3.1.0
      */
     public static function get_age_hours_from_seconds($age) {
-        return implode(', ', self::get_age_array_from_seconds($age, true));
+        $result = implode(', ', self::get_age_array_from_seconds($age, true));
+        if ($result === '') {
+            $result = '-';
+        }
+        return $result;
     }
 
     /**

@@ -49,3 +49,7 @@ td.key {
 td.value {
     display: inline-block;
 }
+
+div.module-daily-windrose div div svg:not(:root){
+    overflow: visible !important;
+}

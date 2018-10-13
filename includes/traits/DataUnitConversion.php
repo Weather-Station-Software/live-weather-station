@@ -21,6 +21,39 @@ trait Conversion {
     private $beaufort_thresholds = array(1.1, 5.5, 11.9, 19.7, 28.7, 38.8, 49.9, 61.8, 74.6, 88.1, 102.4, 117.4, 143);
 
     /**
+     * Convert the absolute pressure to MSLP.
+     *
+     * @param float $baro The absolute pressure in hPa.
+     * @param float $altitude The altitude, in meter, (elevation + height above ground) of the probe.
+     * @param float $temperature Optional. The temperature, in °C, at the given altitude.
+     * @return string The MSL pressure, with right decimal point, in hPa .
+     * @since 3.6.2
+     */
+    protected function convert_from_baro_to_mslp($baro, $altitude, $temperature=15.0){
+        $H = 0.0065 * $altitude;
+        $T = 273.15 + $temperature;
+        $result = $baro * pow(1 - ($H / ($T + $H)), -5.257);
+        return sprintf('%.1F', round($result, 1));
+    }
+
+    /**
+     * Convert the absolute pressure to MSLP.
+     *
+     * @param float $mslp The mean sea level pressure in hPa.
+     * @param float $altitude The altitude, in meter, (elevation + height above ground) of the probe.
+     * @param float $temperature Optional. The temperature, in °C, at the given altitude.
+     * @return string The absolute pressure, with right decimal point, in hPa .
+     * @since 3.6.2
+     */
+    protected function convert_from_mslp_to_baro($mslp, $altitude, $temperature=15.0){
+        $H = 0.0065 * $altitude;
+        $T = 273.15 + $temperature;
+        $result = $mslp * pow(1 - ($H / ($T + $H)), 5.257);
+        return sprintf('%.1F', round($result, 1));
+    }
+
+
+    /**
      * Get the health index expressed in its unique unit.
      *
      * @param mixed $value The value of the health index.
