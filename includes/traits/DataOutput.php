@@ -6715,7 +6715,7 @@ trait Output {
         if (is_numeric($value) && strtolower($type) !== 'oldest_data') {
             $value = round($value, $this->decimal_for_output($type));
         }
-        $result = $value;
+        $result = (string)$value;
         switch (strtolower($type)) {
             case 'battery':
                 $result = $this->get_battery_percentage($value, $module_type);
@@ -7030,7 +7030,7 @@ trait Output {
                 $result .= ($unit ? $this->unit_espace.$this->get_irradiance_unit() : '');
                 break;
             case 'uv_index':
-                $result = $value;
+                $result = (string)$value;
                 break;
             case 'illuminance':
                 $result = $this->get_illuminance($value);
@@ -7060,7 +7060,7 @@ trait Output {
             // THUNDERSTORM
             case 'strike_count':
             case 'strike_instant':
-                $result = $value;
+                $result = (string)$value;
                 break;
             case 'strike_distance':
                 $ref = get_option('live_weather_station_unit_distance');

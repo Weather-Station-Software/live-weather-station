@@ -4,7 +4,7 @@ Tags: weather, openweathermap, netatmo, weatherflow, wunderground
 Requires at least: 4.9
 Requires PHP: 7.1
 Tested up to: 4.9
-Stable tag: 3.6.1
+Stable tag: 3.6.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://support.laquadrature.net/
@@ -58,8 +58,6 @@ Anyway, I'll be glad to help you if you encounter issues when using this plugin.
 
 = Donation =
 If you like this plugin or find it useful and want to thank me for the work done, please consider making a donation to [La Quadrature Du Net](https://www.laquadrature.net/en) which is an advocacy group defending the rights and freedoms of citizens on the Internet. By supporting them, you help the daily actions they perform to defend our fundamental freedoms!
-
-> **DISCLAIMER:** *This plugin **IS NOT** an official software from [Netatmo](http://www.netatmo.com "Netatmo Homepage"), [WeatherFlow](http://weatherflow.com/ "WeatherFlow Homepage"), [OpenWeatherMap](http://openweathermap.org/) or [Weather Underground](https://www.wunderground.com/) and is not endorsed or supported by these companies.*
 
 
 == Installation ==

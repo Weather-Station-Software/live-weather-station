@@ -1,4 +1,11 @@
 
+#3.6.2 / October 13th, 2018
+
+* Improvement: better precision in psychrometric computation.
+* Improvement: durations have now a consistent displaying while used as textual data.
+* Bug fix: with some themes, the legend of windroses may be partially hidden.
+* Bug fix: UV values and strike counts are wrongly rendered in textual data when their values are 0 (thanks to [@johnny](https://weather.station.software/community/profile/johnny/)).
+
 #3.6.1 / October 10th, 2018
 
 * Improvement: all controls and charts can now be rendered in TablePress cells.

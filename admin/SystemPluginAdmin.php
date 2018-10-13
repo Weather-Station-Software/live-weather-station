@@ -48,6 +48,8 @@ use WeatherStation\SDK\Ambient\Plugin\StationInitiator as Ambient_Station_Initia
 use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Notifications\Notifier;
 
+use WeatherStation\SDK\Generic\Plugin\Common\Utilities;
+
 
 
 /**
@@ -60,7 +62,7 @@ use WeatherStation\System\Notifications\Notifier;
  */
 class Admin {
 
-    use Schedule, Options, Arrays, FormsRenderer {
+    use Utilities, Schedule, Options, Arrays, FormsRenderer {
         FormsRenderer::get_service_name insteadof Arrays;
         FormsRenderer::get_comparable_dimensions insteadof Arrays;
         FormsRenderer::get_module_type insteadof Arrays;
@@ -94,6 +96,50 @@ class Admin {
     public function __construct($Live_Weather_Station, $version) {
         $this->Live_Weather_Station = $Live_Weather_Station;
         $this->version = $version;
+
+        $alt=array(100, 500, 1000, 2000);
+        foreach ($alt as $a) {
+            $P0 = 1000.0;
+            $T = 15.0;
+            $H = 60;
+            $P = $this->convert_from_mslp_to_baro($P0, $a, $T);
+            $test = $this->output_value($this->compute_partial_absolute_humidity($T, $P*100, $H), 'partial_absolute_humidity', true);
+            $test0 = $this->output_value($this->compute_partial_absolute_humidity($T, $P0*100, $H), 'partial_absolute_humidity', true);
+            //error_log('Altitude ' . $a . 'm, pah='.$test . ' / pah0=' . $test0 . ' / delta=' . round(100 * (max($test, $test0) - min($test, $test0)) / $test0, 1) . '%');
+
+            $test = $this->output_value($this->compute_saturation_absolute_humidity($T, $P*100), 'saturation_absolute_humidity', true);
+            $test0 = $this->output_value($this->compute_saturation_absolute_humidity($T, $P0*100), 'saturation_absolute_humidity', true);
+            //error_log('Altitude ' . $a . 'm, sah='.$test . ' / sah0=' . $test0 . ' / delta=' . round(100 * (max($test, $test0) - min($test, $test0)) / $test0, 1) . '%');
+
+            $test = $this->output_value($this->compute_specific_enthalpy($T, $P*100, $H), 'specific_enthalpy', true);
+            $test0 = $this->output_value($this->compute_specific_enthalpy($T, $P0*100, $H), 'specific_enthalpy', true);
+            //error_log('Altitude ' . $a . 'm, se='.$test . ' / se0=' . $test0 . ' / delta=' . round(100 * (max($test, $test0) - min($test, $test0)) / $test0, 1) . '%');
+
+            $test = $this->output_value($this->compute_air_density($T, $P*100, $H), 'air_density', true);
+            $test0 = $this->output_value($this->compute_air_density($T, $P0*100, $H), 'air_density', true);
+            ///error_log('Altitude ' . $a . 'm, ad='.$test . ' / ad0=' . $test0 . ' / delta=' . round(100 * (max($test, $test0) - min($test, $test0)) / $test0, 1) . '%');
+
+            $test = $this->output_value($this->compute_potential_temperature($T, $P*100), 'potential_temperature', true);
+            $test0 = $this->output_value($this->compute_potential_temperature($T, $P0*100), 'potential_temperature', true);
+            //error_log('Altitude ' . $a . 'm, pt='.$test . ' / pt0=' . $test0 . ' / delta=' . round(100 * (max($test, $test0) - min($test, $test0)) / $test0, 1) . '%');
+
+
+            $test = $this->output_value($this->compute_equivalent_temperature($T, $P*100), 'equivalent_temperature', true);
+            $test0 = $this->output_value($this->compute_equivalent_temperature($T, $P0*100), 'equivalent_temperature', true);
+            //error_log('Altitude ' . $a . 'm, et='.$test . ' / et0=' . $test0 . ' / delta=' . round(100 * (max($test, $test0) - min($test, $test0)) / $test0, 1) . '%');
+
+
+            $test = $this->output_value($this->compute_equivalent_potential_temperature($T, $P*100), 'equivalent_potential_temperature', true);
+            $test0 = $this->output_value($this->compute_equivalent_potential_temperature($T, $P0*100), 'equivalent_potential_temperature', true);
+            //error_log('Altitude ' . $a . 'm, ept='.$test . ' / ept0=' . $test0 . ' / delta=' . round(100 * (max($test, $test0) - min($test, $test0)) / $test0, 1) . '%');
+
+
+        }
+
+        //$this->compute
+
+        //error_log('MSLP=1008.0 hPa, Baro=' . $this->convert_from_mslp_to_baro(1008.0, 110, 26.2).' hPa');
+
     }
 
     /**

@@ -101,7 +101,7 @@ use wind classification (textual, charts, )
 https://community.weatherflow.com/t/steadman-apparent-temperature-australian-apparent-temperature/2248
 
 
-
+weather underground => uv negatif
 
 
 Netatmo             : MSLP (Abs)
@@ -113,3 +113,12 @@ Weather underground : MSLP (-)
 realtime            : MSLP (-)
 clientraw           : MSLP (-)          Assumption
 stickertags         : MSLP (-)
+
+
+
+MSLP -> Baro
+
+Air density =>                          -0.0110% / m
+Specific enthropy =>                    +0.0065% / m
+Potential temperature =>                +0.0065% / m
+Equivalent potential temperature =>     +0.0065% / m
