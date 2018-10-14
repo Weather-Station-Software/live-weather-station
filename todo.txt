@@ -103,16 +103,18 @@ https://community.weatherflow.com/t/steadman-apparent-temperature-australian-app
 
 weather underground => uv negatif
 
+pressure.temp/hum reference in charts
 
-Netatmo             : MSLP (Abs)
-WeatherFlow         : Abs (MSLP)
-BloomSky            : Abs (-)
-OpenWeatherMap      : MSLP (-)
-Ambient             : Abs (-)
-Weather underground : MSLP (-)
-realtime            : MSLP (-)
-clientraw           : MSLP (-)          Assumption
-stickertags         : MSLP (-)
+
+Netatmo             : MSLP (Abs)        0 / 6
+WeatherFlow         : Abs (MSLP)                    8
+BloomSky            : Abs (-)                       10
+OpenWeatherMap      : MSLP (-)          1 / 2
+Ambient             : Abs (-)                       11
+Weather underground : MSLP (-)          3
+realtime            : MSLP (-)          5
+clientraw           : MSLP (-)          4                         Assumption
+stickertags         : MSLP (-)          7
 
 
 

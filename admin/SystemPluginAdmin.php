@@ -48,8 +48,6 @@ use WeatherStation\SDK\Ambient\Plugin\StationInitiator as Ambient_Station_Initia
 use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Notifications\Notifier;
 
-use WeatherStation\SDK\Generic\Plugin\Common\Utilities;
-
 
 
 /**
@@ -62,7 +60,7 @@ use WeatherStation\SDK\Generic\Plugin\Common\Utilities;
  */
 class Admin {
 
-    use Utilities, Schedule, Options, Arrays, FormsRenderer {
+    use Schedule, Options, Arrays, FormsRenderer {
         FormsRenderer::get_service_name insteadof Arrays;
         FormsRenderer::get_comparable_dimensions insteadof Arrays;
         FormsRenderer::get_module_type insteadof Arrays;
