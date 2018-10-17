@@ -29,6 +29,7 @@ abstract class Process {
     protected $exectime = 0;
     protected $pass = 0;
     protected $progress = 0;
+    protected $silent = false;
 
     private $chrono = 0.0;
     protected $facility = 'Background Process';
@@ -231,7 +232,9 @@ abstract class Process {
             $this->change_state($is_needed?$this->state_init:$this->state_unneeded);
             if ($is_needed) {
                 $this->init_core();
-                $this->init_notification();
+                if (!$this->silent) {
+                    $this->init_notification();
+                }
             }
             $this->save();
         }
@@ -257,13 +260,17 @@ abstract class Process {
         $message .= __('Description:', 'live-weather-station') . ' ' . $this->description() . "\r\n" ;
         $message .= __('More information:', 'live-weather-station') . ' ' . $this->url() . "\r\n" ;
         try {
-            wp_mail($to, $subject, $message);
+            if (!$this->silent) {
+                wp_mail($to, $subject, $message);
+            }
             Logger::debug($this->facility, null, null, null, null, null, 0, 'Mail sent from background process {' . $this->uuid() . '}.');
         }
         catch (\Exception $ex) {
             Logger::error($this->facility, null, null, null, null, null, 999, 'Unable to send mail from background process {' . $this->uuid() . '}. Message: ' . $ex->getMessage());
         }
-        $this->end_notification();
+        if (!$this->silent) {
+            $this->end_notification();
+        }
     }
 
     /**

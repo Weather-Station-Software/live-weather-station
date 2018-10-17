@@ -9,6 +9,7 @@ use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
 use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
 use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\Quota\Quota;
+use WeatherStation\Data\Unit\Conversion;
 
 
 /**
@@ -21,7 +22,7 @@ use WeatherStation\System\Quota\Quota;
  */
 trait StationClient {
 
-    use BaseClient;
+    use BaseClient, Conversion;
 
     protected $facility = 'Weather Collector';
 
@@ -187,8 +188,17 @@ trait StationClient {
                 $this->update_data_table($updates);
             }
             if (array_key_exists('pressure_mb', $observation)) {
-                $updates['measure_type'] = 'pressure';
+                $updates['measure_type'] = 'pressure_sl';
                 $updates['measure_value'] = $observation['pressure_mb'];
+                $this->update_data_table($updates);
+                if (array_key_exists('temp_c', $observation)) {
+                    $temperature = $observation['temp_c'];
+                }
+                else {
+                    $temperature = 15.0;
+                }
+                $updates['measure_type'] = 'pressure';
+                $updates['measure_value'] = $this->convert_from_mslp_to_baro($updates['measure_value'], $station['loc_longitude'], $temperature);
                 $this->update_data_table($updates);
             }
             if (array_key_exists('pressure_trend', $observation)) {
@@ -200,6 +210,8 @@ trait StationClient {
                 elseif ($observation['pressure_trend'] == '+') {
                     $updates['measure_value'] = 'up';
                 }
+                $this->update_data_table($updates);
+                $updates['measure_type'] = 'pressure_sl_trend';
                 $this->update_data_table($updates);
             }
             $station['last_refresh'] = date('Y-m-d H:i:s');

@@ -8,6 +8,7 @@ use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
 use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
 use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\Quota\Quota;
+use WeatherStation\Data\Unit\Conversion;
 
 /**
  * OpenWeatherMap current weather client for Weather Station plugin.
@@ -19,7 +20,7 @@ use WeatherStation\System\Quota\Quota;
  */
 trait CurrentClient {
 
-    use BaseClient;
+    use BaseClient, Conversion;
 
     protected $owm_client;
     protected $owm_datas;
@@ -95,13 +96,18 @@ trait CurrentClient {
             if (array_key_exists('main', $weather) && isset($weather['main']['temp'])) {
                 $dashboard['temperature'] = $weather['main']['temp'];
                 $result['data_type'][] = 'temperature';
+                $temperature = $weather['main']['temp'];
             } else {
                 $dashboard['temperature'] = 0;
+                $temperature = 15.0;
             }
             if (array_key_exists('main', $weather) && isset($weather['main']['pressure'])) {
-                $dashboard['pressure'] = $weather['main']['pressure'];
+                $dashboard['pressure_sl'] = $weather['main']['pressure'];
+                $dashboard['pressure'] = $this->convert_from_mslp_to_baro($weather['main']['pressure'], $station['loc_altitude'], $temperature);
+                $result['data_type'][] = 'pressure_sl';
                 $result['data_type'][] = 'pressure';
             } else {
+                $dashboard['pressure_sl'] = 0;
                 $dashboard['pressure'] = 0;
             }
             if (array_key_exists('main', $weather) && isset($weather['main']['humidity'])) {

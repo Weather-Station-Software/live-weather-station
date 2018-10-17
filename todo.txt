@@ -103,7 +103,7 @@ https://community.weatherflow.com/t/steadman-apparent-temperature-australian-app
 
 weather underground => uv negatif
 
-pressure.temp/hum reference in charts
+pressure/temp/hum reference in charts
 
 
 Netatmo             : MSLP (Abs)        0 / 6
@@ -115,12 +115,3 @@ Weather underground : MSLP (-)          3
 realtime            : MSLP (-)          5
 clientraw           : MSLP (-)          4                         Assumption
 stickertags         : MSLP (-)          7
-
-
-
-MSLP -> Baro
-
-Air density =>                          -0.0110% / m
-Specific enthropy =>                    +0.0065% / m
-Potential temperature =>                +0.0065% / m
-Equivalent potential temperature =>     +0.0065% / m
