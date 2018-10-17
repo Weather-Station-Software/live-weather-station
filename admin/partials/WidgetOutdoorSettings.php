@@ -25,7 +25,7 @@ use WeatherStation\System\Help\InlineHelp;
     <label for="<?php echo $this->get_field_id('show_temperature'); ?>"><?php esc_html_e( 'Display temperatures (if available)' , 'live-weather-station'); ?></label>
     <br/>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_pressure'); ?>" name="<?php echo $this->get_field_name('show_pressure'); ?>"<?php checked( $show_pressure ); ?> />
-    <label for="<?php echo $this->get_field_id('show_pressure'); ?>"><?php esc_html_e( 'Display atmospheric pressure (if available)' , 'live-weather-station'); echo InlineHelp::article(16)?></label>
+    <label for="<?php echo $this->get_field_id('show_pressure'); ?>"><?php esc_html_e( 'Display barometric pressure (if available)' , 'live-weather-station'); echo InlineHelp::article(16)?></label>
     <br/>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_humidity'); ?>" name="<?php echo $this->get_field_name('show_humidity'); ?>"<?php checked( $show_humidity ); ?> />
     <label for="<?php echo $this->get_field_id('show_humidity'); ?>"><?php esc_html_e( 'Display humidity (if available)' , 'live-weather-station'); echo InlineHelp::article(12)?></label>

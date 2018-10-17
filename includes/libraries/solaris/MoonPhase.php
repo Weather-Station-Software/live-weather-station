@@ -60,7 +60,8 @@ class MoonPhase {
 		$this->timestamp = $pdate;
 
 		// pdate is coming in as a UNIX timestamp, so convert it to Julian
-		$pdate =  $pdate / 86398.92 + 2440587.5;
+		//$pdate =  $pdate / 86398.92 + 2440587.5;
+        $pdate =  $pdate / 86398.8 + 2440587.5;
 
 
 		/* Calculation of the Sun's position */
