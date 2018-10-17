@@ -748,7 +748,7 @@ trait Query {
             foreach ($data as $line) {
                 switch (strtolower($line['module_type'])) {
                     case 'namain': // Main base
-                        if ($line['measure_type'] == 'pressure') {
+                        if ($line['measure_type'] == 'pressure_sl') {
                             $result['pressure'] = $line['measure_value'];
                         }
                         if ($line['measure_type'] == 'last_seen') {

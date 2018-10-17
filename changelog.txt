@@ -1,4 +1,16 @@
 
+#3.6.3 / October XXXXXXXX, 2018
+
+* Improvement: full redesign of pressure handling. There are now two measurements: [Atmospheric and Barometric pressures](https://weather.station.software/handbook/background-processes/pressure-expander/).
+* Improvement: better precision in ephemeris computation.
+* Improvement: code cleaning for better download time.
+* Improvement: ready for the next change in WeatherFlow APIs.
+* Bug fix: irradiance is not stored when the collected station is based on realtime.txt file (thanks to [@gerhard](https://weather.station.software/community/profile/gerhard/)).
+* Bug fix: in some cases, moon age and phase are wrongly truncated.
+* Bug fix: decimal specifications are not applied on some measurements.
+* Bug fix: the changelog renderer can not support more than 100000 characters.
+
+
 #3.6.2 / October 13th, 2018
 
 * Improvement: better precision in psychrometric computation.

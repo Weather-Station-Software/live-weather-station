@@ -311,8 +311,8 @@ class Ephemeris extends \WP_Widget {
                     case 'NAEphemer':
                         if (array_key_exists('sunrise', $module['datas']) && array_key_exists('sunset', $module['datas'])) {
                             if ($mode==0) {
-                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise']['value'], 'sunrise', true, false, '', $tz);
-                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset']['value'], 'sunset', true, false, '', $tz);
+                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise']['raw_value'], 'sunrise', true, false, '', $tz);
+                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset']['raw_value'], 'sunset', true, false, '', $tz);
                                 $show_sun = true;
                             }
                             $sunrise = $module['datas']['sunrise']['raw_value'];
@@ -320,60 +320,60 @@ class Ephemeris extends \WP_Widget {
                         }
                         if (array_key_exists('sunrise_c', $module['datas']) && array_key_exists('sunset_c', $module['datas'])) {
                             if ($mode==1) {
-                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise_c']['value'], 'sunrise_c', true, false, '', $tz);
-                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset_c']['value'], 'sunset_c', true, false, '', $tz);
+                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise_c']['raw_value'], 'sunrise_c', true, false, '', $tz);
+                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset_c']['raw_value'], 'sunset_c', true, false, '', $tz);
                                 $show_sun = true;
                             }
                         }
                         if (array_key_exists('sunrise_n', $module['datas']) && array_key_exists('sunset_n', $module['datas'])) {
                             if ($mode==2) {
-                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise_n']['value'], 'sunrise_n', true, false, '', $tz);
-                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset_n']['value'], 'sunset_n', true, false, '', $tz);
+                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise_n']['raw_value'], 'sunrise_n', true, false, '', $tz);
+                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset_n']['raw_value'], 'sunset_n', true, false, '', $tz);
                                 $show_sun = true;
                             }
                         }
                         if (array_key_exists('sunrise_a', $module['datas']) && array_key_exists('sunset_a', $module['datas'])) {
                             if ($mode==3) {
-                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise_a']['value'], 'sunrise_a', true, false, '', $tz);
-                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset_a']['value'], 'sunset_a', true, false, '', $tz);
+                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise_a']['raw_value'], 'sunrise_a', true, false, '', $tz);
+                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset_a']['raw_value'], 'sunset_a', true, false, '', $tz);
                                 $show_sun = true;
                             }
                             $sunrise_a = $module['datas']['sunrise_a']['raw_value'];
                             $sunset_a = $module['datas']['sunset_a']['raw_value'];
                         }
                         if (array_key_exists('sun_distance', $module['datas']) && array_key_exists('sun_diameter', $module['datas'])) {
-                            $datas['sun_distance']['value'] = $this->output_value($module['datas']['sun_distance']['value'], 'sun_distance');
+                            $datas['sun_distance']['value'] = $this->output_value($module['datas']['sun_distance']['raw_value'], 'sun_distance');
                             $datas['sun_distance']['unit'] = $module['datas']['sun_distance']['unit']['unit'];
-                            $datas['sun_diameter']['value'] = $this->output_value($module['datas']['sun_diameter']['value'], 'sun_diameter');
+                            $datas['sun_diameter']['value'] = $this->output_value($module['datas']['sun_diameter']['raw_value'], 'sun_diameter');
                             $datas['sun_diameter']['unit'] = $module['datas']['sun_diameter']['unit']['unit'];
                             $show_sundetails = true;
                         }
                         if (array_key_exists('moonrise', $module['datas']) && array_key_exists('moonset', $module['datas'])) {
-                            $datas['moonrise']['value'] = $this->output_value($module['datas']['moonrise']['value'], 'moonrise', true, false, '', $tz);
-                            $datas['moonset']['value'] = $this->output_value($module['datas']['moonset']['value'], 'moonset', true, false, '', $tz);
+                            $datas['moonrise']['value'] = $this->output_value($module['datas']['moonrise']['raw_value'], 'moonrise', true, false, '', $tz);
+                            $datas['moonset']['value'] = $this->output_value($module['datas']['moonset']['raw_value'], 'moonset', true, false, '', $tz);
                             $show_moon = true;
                         }
                         if (array_key_exists('moon_phase', $module['datas'])) {
-                            $datas['moon_phase']['value'] = $this->get_moon_phase_icon($module['datas']['moon_phase']['value']);
-                            $datas['moon_phase']['name'] = $this->output_value($module['datas']['moon_phase']['value'], 'moon_phase', true);
+                            $datas['moon_phase']['value'] = $this->get_moon_phase_icon($module['datas']['moon_phase']['raw_value']);
+                            $datas['moon_phase']['name'] = $this->output_value($module['datas']['moon_phase']['raw_value'], 'moon_phase', true);
                             $show_moonphase = true;
                         }
                         if (array_key_exists('moon_age', $module['datas'])) {
-                            $datas['moon_age']['value'] = $this->output_value($module['datas']['moon_age']['value'], 'moon_age', true, true);
+                            $datas['moon_age']['value'] = $this->output_value($module['datas']['moon_age']['raw_value'], 'moon_age', true, true);
                         } else {
                             $datas['moon_age']['value'] = '';
                         }
                         if (array_key_exists('moon_illumination', $module['datas'])) {
-                            $datas['moon_illumination']['value'] = $this->output_value($module['datas']['moon_illumination']['value'], 'moon_illumination');
+                            $datas['moon_illumination']['value'] = $this->output_value($module['datas']['moon_illumination']['raw_value'], 'moon_illumination');
                             $datas['moon_illumination']['unit'] = $module['datas']['moon_illumination']['unit']['unit'];
                         } else {
                             $datas['moon_illumination']['value'] = '';
                             $datas['moon_illumination']['unit'] = '';
                         }
                         if (array_key_exists('moon_distance', $module['datas']) && array_key_exists('moon_diameter', $module['datas'])) {
-                            $datas['moon_distance']['value'] = $this->output_value($module['datas']['moon_distance']['value'], 'sun_distance');
+                            $datas['moon_distance']['value'] = $this->output_value($module['datas']['moon_distance']['raw_value'], 'sun_distance');
                             $datas['moon_distance']['unit'] = $module['datas']['moon_distance']['unit']['unit'];
-                            $datas['moon_diameter']['value'] = $this->output_value($module['datas']['moon_diameter']['value'], 'sun_diameter');
+                            $datas['moon_diameter']['value'] = $this->output_value($module['datas']['moon_diameter']['raw_value'], 'sun_diameter');
                             $datas['moon_diameter']['unit'] = $module['datas']['moon_diameter']['unit']['unit'];
                             $show_moondetails = true;
                         }

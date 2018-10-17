@@ -25,7 +25,7 @@ class Builder
     use Conversion;
 
     public static $data_to_historize =
-        array('health_idx', 'cbi', 'co2', 'humidity', 'cloudiness', 'noise', 'pressure', 'temperature',
+        array('health_idx', 'cbi', 'co2', 'humidity', 'cloudiness', 'noise', 'pressure', 'pressure_sl', 'temperature',
             'heat_index', 'humidex', 'wind_chill', 'cloud_ceiling', 'wet_bulb', 'air_density', 'wood_emc',
             'equivalent_temperature', 'potential_temperature', 'equivalent_potential_temperature', 'specific_enthalpy',
             'partial_vapor_pressure', 'saturation_vapor_pressure', 'vapor_pressure', 'absolute_humidity',
@@ -36,13 +36,13 @@ class Builder
             'winddirection', 'gustdirection');
     
     public $standard_measurements = 
-        array('health_idx', 'co2', 'humidity', 'cloudiness', 'noise', 'pressure', 'temperature', 'irradiance', 
+        array('health_idx', 'co2', 'humidity', 'cloudiness', 'noise', 'pressure_sl', 'temperature', 'irradiance',
               'uv_index', 'illuminance', 'cloud_ceiling', 'heat_index', 'humidex', 'wind_chill', 'windangle', 
               'windstrength', 'rain_day_aggregated', 'rain', 'weather', 'dew_point', 'frost_point', 'visibility',
               'winddirection');
     public $extended_measurements = 
         array('cbi', 'wet_bulb', 'air_density', 'wood_emc', 'equivalent_temperature', 'potential_temperature',
-              'equivalent_potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
+              'pressure', 'equivalent_potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
               'saturation_vapor_pressure', 'vapor_pressure', 'absolute_humidity', 'partial_absolute_humidity',
               'saturation_absolute_humidity', 'soil_temperature', 'leaf_wetness', 'moisture_content',
               'moisture_tension', 'evapotranspiration', 'gustangle', 'guststrength', 'strike_instant', 'strike_count',

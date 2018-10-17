@@ -195,6 +195,26 @@ trait PublicClient {
                     $updates['measure_value'] = $observation['barometric_pressure'];
                     $this->update_data_table($updates);
                 }
+                if (array_key_exists('station_pressure_indoor', $observation)) {
+                    $updates['measure_type'] = 'pressure';
+                    $updates['measure_value'] = $observation['station_pressure_indoor'];
+                    $this->update_data_table($updates);
+                }
+                if (array_key_exists('station_pressure', $observation)) {
+                    $updates['measure_type'] = 'pressure';
+                    $updates['measure_value'] = $observation['station_pressure'];
+                    $this->update_data_table($updates);
+                }
+                if (array_key_exists('sea_level_pressure_indoor', $observation)) {
+                    $updates['measure_type'] = 'pressure_sl';
+                    $updates['measure_value'] = $observation['sea_level_pressure_indoor'];
+                    $this->update_data_table($updates);
+                }
+                if (array_key_exists('sea_level_pressure', $observation)) {
+                    $updates['measure_type'] = 'pressure_sl';
+                    $updates['measure_value'] = $observation['sea_level_pressure'];
+                    $this->update_data_table($updates);
+                }
                 $station['last_refresh'] = date('Y-m-d H:i:s');
                 $station['last_seen'] = $timestamp;
                 $this->update_table(self::live_weather_station_stations_table(), $station);

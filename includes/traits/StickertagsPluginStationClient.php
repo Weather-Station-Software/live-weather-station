@@ -113,8 +113,17 @@ trait StationClient {
         $updates['measure_value'] = $station['loc_longitude'];
         $this->update_data_table($updates);
         if (isset($weather[7])) {
-            $updates['measure_type'] = 'pressure';
+            $updates['measure_type'] = 'pressure_sl';
             $updates['measure_value'] = $this->get_reverse_pressure($weather[7], $pressure_unit);
+            $this->update_data_table($updates);
+            if (isset($weather[2])) {
+                $temperature = $this->get_reverse_temperature($weather[2], $temperature_unit);
+            }
+            else {
+                $temperature = 15.0;
+            }
+            $updates['measure_type'] = 'pressure';
+            $updates['measure_value'] = $this->convert_from_mslp_to_baro($updates['measure_value'], $station['loc_latitude'], $temperature);
             $this->update_data_table($updates);
         }
         if (isset($weather[8])) {
@@ -127,6 +136,8 @@ trait StationClient {
             }
             $updates['measure_type'] = 'pressure_trend';
             $updates['measure_value'] = $trend;
+            $this->update_data_table($updates);
+            $updates['measure_type'] = 'pressure_sl_trend';
             $this->update_data_table($updates);
         }
         $station['last_refresh'] = date('Y-m-d H:i:s');

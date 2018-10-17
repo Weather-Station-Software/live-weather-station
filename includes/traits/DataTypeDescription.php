@@ -267,7 +267,19 @@ trait Description {
                 $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Highest atmospheric pressure of the day', 'live-weather-station'));
                 break;
             case 'pressure_trend':
-                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Pressure trend', 'live-weather-station'));
+                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Atmospheric pressure trend', 'live-weather-station'));
+                break;
+            case 'pressure_sl':
+                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Barometric pressure', 'live-weather-station'));
+                break;
+            case 'pressure_sl_min':
+                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Lowest barometric pressure of the day', 'live-weather-station'));
+                break;
+            case 'pressure_sl_max':
+                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Highest barometric pressure of the day', 'live-weather-station'));
+                break;
+            case 'pressure_sl_trend':
+                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Barometric pressure trend', 'live-weather-station'));
                 break;
             case 'temperature':
                 $result = ($abbr ? __('Temperature', 'live-weather-station') : __('Temperature', 'live-weather-station'));

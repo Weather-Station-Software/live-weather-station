@@ -11,7 +11,7 @@ use WeatherStation\Data\Unit\Conversion;
  * @package Includes\Process
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
- * @since 3.7.0
+ * @since 3.6.3
  */
 class PressureExpander extends Process {
 
@@ -22,7 +22,7 @@ class PressureExpander extends Process {
      * Get the UUID of the process.
      *
      * @return string The UUID of the process.
-     * @since 3.7.0
+     * @since 3.6.3
      */
     protected function uuid() {
         return 'da0d5263-1824-4b55-99b9-f474aba831ba';
@@ -35,7 +35,7 @@ class PressureExpander extends Process {
      *   - schedule: must wait next cycle to be restarted
      *
      * @return string The execution mode of the process.
-     * @since 3.7.0
+     * @since 3.6.3
      */
     protected function execution_mode() {
         return $this->state_pause;
@@ -46,27 +46,27 @@ class PressureExpander extends Process {
      *
      * @param boolean $translated Optional. Indicates if the name must be translated.
      * @return string The name of the process.
-     * @since 3.7.0
+     * @since 3.6.3
      */
     protected function name($translated=true) {
-        return lws__('Pressure expander', 'live-weather-station');
+        return __('Pressure expander', 'live-weather-station');
     }
 
     /**
      * Get the description of the process.
      *
      * @return string The description of the process.
-     * @since 3.7.0
+     * @since 3.6.3
      */
     protected function description() {
-        return sprintf(lws__('This fix allows %s to handle daily and historical barometric and mean sea level pressures measurements for all types of stations.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        return sprintf(__('This fix allows %s to handle daily and historical barometric and mean sea level pressures measurements for all types of stations.', 'live-weather-station'), LWS_PLUGIN_NAME);
     }
 
     /**
      * Get the message for end of process.
      *
      * @return string The message to send.
-     * @since 3.7.0
+     * @since 3.6.3
      */
     protected function message() {
         return '';
@@ -76,7 +76,7 @@ class PressureExpander extends Process {
      * Get the priority of the process.
      *
      * @return int The priority of the process.
-     * @since 3.7.0
+     * @since 3.6.3
      */
     protected function priority(){
         return 10;
@@ -86,7 +86,7 @@ class PressureExpander extends Process {
      * Verify if process is needed.
      *
      * @return boolean True if the process is needed. False otherwise.
-     * @since 3.7.0
+     * @since 3.6.3
      */
     protected function is_needed() {
         if (!(bool)get_option('live_weather_station_collect_history')) {
@@ -102,7 +102,7 @@ class PressureExpander extends Process {
      * Verify if process is terminated.
      *
      * @return boolean True if the process is terminated. False otherwise.
-     * @since 3.7.0
+     * @since 3.6.3
      */
     protected function is_terminated(){
         return (count($this->params['stations']['todo']) === 0);
@@ -111,7 +111,7 @@ class PressureExpander extends Process {
     /**
      * Init the process.
      *
-     * @since 3.7.0
+     * @since 3.6.3
      */
     protected function init_core(){
         $this->params['stations'] = array();
@@ -125,7 +125,7 @@ class PressureExpander extends Process {
     /**
      * Run the process.
      *
-     * @since 3.7.0
+     * @since 3.6.3
      */
     protected function run_core(){
         if (count($this->params['stations']['todo']) > 0) {
@@ -150,7 +150,7 @@ class PressureExpander extends Process {
      * @param string $table_name The table where to add.
      * @param integer $altitude The altitude of the station.
      * @param boolean $switch Are the values to be switched?
-     * @since 3.7.0
+     * @since 3.6.3
      */
     private function process_histo_pressure($station_id, $table_name, $altitude, $switch) {
         global $wpdb;
@@ -160,7 +160,6 @@ class PressureExpander extends Process {
         if (is_array($query) && !empty($query)) {
             foreach ($query as &$row) {
                 $temps[$row['timestamp']] = $row['temperature'];
-
             }
         }
         $fields = array('\'pressure\'', '\'air_density\'', '\'specific_enthalpy\'', '\'potential_temperature\'', '\'equivalent_potential_temperature\'' );
@@ -173,7 +172,7 @@ class PressureExpander extends Process {
                     if (array_key_exists($row['timestamp'], $temps)) {
                         $temperature = (float)$temps[$row['timestamp']];
                     }
-                    if ($switch) {
+                    if ($switch || $row['module_type'] === 'NACurrent') {
                         $mslp = $row['measure_value'];
                         $baro = $this->convert_from_mslp_to_baro($mslp, (float)$altitude, $temperature);
                     }
@@ -182,10 +181,10 @@ class PressureExpander extends Process {
                         $mslp = $this->convert_from_baro_to_mslp($baro, (float)$altitude, $temperature);
                     }
                     $row['measure_type'] = 'pressure';
-                    $row['measure_value'] = $baro;
+                    $row['measure_value'] = sprintf('%.14F', round($baro, 14));
                     self::insert_update_table($table_name, $row);
                     $row['measure_type'] = 'pressure_sl';
-                    $row['measure_value'] = $mslp;
+                    $row['measure_value'] = sprintf('%.14F', round($mslp, 14));
                     self::insert_update_table($table_name, $row);
                 }
                 if ($row['measure_type'] === 'air_density' || $row['measure_type'] === 'specific_enthalpy' || $row['measure_type'] === 'potential_temperature' || $row['measure_type'] === 'equivalent_potential_temperature') {
@@ -195,17 +194,63 @@ class PressureExpander extends Process {
                     else {
                         $coef = (float)(1 + $altitude * 0.000065);
                     }
-                    $row['measure_value'] = $row['measure_value'] * $coef;
+                    $row['measure_value'] = sprintf('%.14F', round($row['measure_value'] * $coef, 14));
                     self::insert_update_table($table_name, $row);
                 }
             }
         }
+    }
 
-
-        //sprintf('%.1F', round($result, 1));
-
-
-
+    /**
+     * Process all daily data.
+     *
+     * @param string $station_id The station ID.
+     * @param string $table_name The table where to add.
+     * @param integer $altitude The altitude of the station.
+     * @param boolean $switch Are the values to be switched?
+     * @since 3.6.3
+     */
+    private function process_daily_pressure($station_id, $table_name, $altitude, $switch) {
+        global $wpdb;
+        $sql = "SELECT avg(`measure_value`) as temperature FROM " . $wpdb->prefix . $table_name . " WHERE `device_id` = '" . $station_id . "' AND `measure_type` = 'temperature' AND (`module_type`='NAModule1' OR`module_type`='NACurrent')";
+        $query = $wpdb->get_results($sql, ARRAY_A);
+        $temperature = 15.0;
+        if (is_array($query) && !empty($query)) {
+            $temperature = $query[0]['temperature'];
+        }
+        $fields = array('\'pressure\'', '\'air_density\'', '\'specific_enthalpy\'', '\'potential_temperature\'', '\'equivalent_potential_temperature\'' );
+        $sql = "SELECT * FROM " . $wpdb->prefix . $table_name . " WHERE device_id='" . $station_id . "' AND measure_type IN (" . implode(',', $fields).")";
+        $query = $wpdb->get_results($sql, ARRAY_A);
+        if (is_array($query) && !empty($query)) {
+            foreach ($query as &$row) {
+                if ($row['measure_type'] === 'pressure') {
+                    if ($switch || $row['module_type'] === 'NACurrent') {
+                        $mslp = $row['measure_value'];
+                        $baro = $this->convert_from_mslp_to_baro($mslp, (float)$altitude, $temperature);
+                    }
+                    else {
+                        $baro = $row['measure_value'];
+                        $mslp = $this->convert_from_baro_to_mslp($baro, (float)$altitude, $temperature);
+                    }
+                    $row['measure_type'] = 'pressure';
+                    $row['measure_value'] = sprintf('%.10F', round($baro, 10));
+                    self::insert_update_table($table_name, $row);
+                    $row['measure_type'] = 'pressure_sl';
+                    $row['measure_value'] = sprintf('%.10F', round($mslp, 10));
+                    self::insert_update_table($table_name, $row);
+                }
+                if ($row['measure_type'] === 'air_density' || $row['measure_type'] === 'specific_enthalpy' || $row['measure_type'] === 'potential_temperature' || $row['measure_type'] === 'equivalent_potential_temperature') {
+                    if ($row['measure_type'] === 'air_density') {
+                        $coef = (float)(1 - $altitude * 0.00011);
+                    }
+                    else {
+                        $coef = (float)(1 + $altitude * 0.000065);
+                    }
+                    $row['measure_value'] = sprintf('%.10F', round($row['measure_value'] * $coef, 10));
+                    self::insert_update_table($table_name, $row);
+                }
+            }
+        }
     }
 
     /**
@@ -213,16 +258,16 @@ class PressureExpander extends Process {
      *
      * @param string $station_id The station ID.
      * @param array $station_spec The station type and altitude.
-     * @since 3.7.0
+     * @since 3.6.3
      */
     private function expand($station_id, $station_spec) {
         $switch = false;
-        if ((integer)$station_spec[0] <= 7) { // All stations from LWS_NETATMO_SID to LWS_TXT_SID
+        if ((integer)$station_spec[0] <= 7) { // All stations from LWS_NETATMO_SID to LWS_TXT_SID must be switched
             $switch = true;
         }
 
         // DAILY DATA
-        //$this->add_source($station_id, self::live_weather_station_histo_daily_table(), (integer)$station_spec[1], $switch);
+        $this->process_daily_pressure($station_id, self::live_weather_station_histo_daily_table(), (integer)$station_spec[1], $switch);
 
         // HISTORICAL DATA
         $this->process_histo_pressure($station_id, self::live_weather_station_histo_yearly_table(), (integer)$station_spec[1], $switch);

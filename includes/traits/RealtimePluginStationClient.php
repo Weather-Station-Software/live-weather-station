@@ -113,14 +113,23 @@ trait StationClient {
         $updates['measure_type'] = 'loc_longitude';
         $updates['measure_value'] = $station['loc_longitude'];
         $this->update_data_table($updates);
-        $updates['measure_type'] = 'pressure';
+        $updates['measure_type'] = 'pressure_sl';
         $updates['measure_value'] = $this->get_reverse_pressure($weather[10], $pressure_unit);
         $this->update_data_table($updates);
-        $updates['measure_type'] = 'pressure_min';
+        $updates['measure_type'] = 'pressure';
+        $updates['measure_value'] = $this->convert_from_mslp_to_baro($updates['measure_value'], $station['loc_latitude'], $this->get_reverse_temperature($weather[2], $temperature_unit));
+        $this->update_data_table($updates);
+        $updates['measure_type'] = 'pressure_sl_min';
         $updates['measure_value'] = $this->get_reverse_pressure($weather[36], $pressure_unit);
         $this->update_data_table($updates);
-        $updates['measure_type'] = 'pressure_max';
+        $updates['measure_type'] = 'pressure_min';
+        $updates['measure_value'] = $this->convert_from_mslp_to_baro($updates['measure_value'], $station['loc_latitude'], $this->get_reverse_temperature($weather[2], $temperature_unit));
+        $this->update_data_table($updates);
+        $updates['measure_type'] = 'pressure_sl_max';
         $updates['measure_value'] = $this->get_reverse_pressure($weather[34], $pressure_unit);
+        $this->update_data_table($updates);
+        $updates['measure_type'] = 'pressure_max';
+        $updates['measure_value'] = $this->convert_from_mslp_to_baro($updates['measure_value'], $station['loc_latitude'], $this->get_reverse_temperature($weather[2], $temperature_unit));
         $this->update_data_table($updates);
         $trend = 'stable';
         if ($weather[18] > 0) {
@@ -131,6 +140,8 @@ trait StationClient {
         }
         $updates['measure_type'] = 'pressure_trend';
         $updates['measure_value'] = $trend;
+        $this->update_data_table($updates);
+        $updates['measure_type'] = 'pressure_sl_trend';
         $this->update_data_table($updates);
         $updates['measure_type'] = 'battery';
         $updates['measure_value'] = 100;
@@ -319,6 +330,7 @@ trait StationClient {
         else {
             $updates['measure_value'] = 0;
         }
+        $this->update_data_table($updates);
         $updates['measure_timestamp'] = $timestamp;
         $updates['measure_type'] = 'sunshine';
         if (is_numeric($weather[55])) {

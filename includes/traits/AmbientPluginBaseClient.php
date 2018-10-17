@@ -71,7 +71,7 @@ trait BaseClient {
 
                 // Main base
                 $module_type = 'NAMain';
-                $types = array('pressure');
+                $types = array('pressure', 'pressure_sl');
                 $module_id = ID::get_fake_modulex_id($guid, 0);
                 $module_name = $this->get_fake_module_name($module_type);
                 $this->get_dashboard(LWS_AMBT_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place, true);
@@ -188,6 +188,8 @@ trait BaseClient {
         Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($this->ambient_datas, true));
         foreach($this->ambient_datas as $station) {
             if (is_array($station)) {
+                $temperature = 15.0;
+                $altitude = 0;
                 $dat = array();
                 if (array_key_exists('info', $station)) {
                     if (array_key_exists('name', $station['info'])) {
@@ -201,7 +203,11 @@ trait BaseClient {
                     }
                 }
                 if (array_key_exists('macAddress', $station)) {
-                    $dat['device_id'] = $station['macAddress'];
+                    $dat['device_id'] = strtolower($station['macAddress']);
+                    $st = $this->get_station_informations_by_station_id($dat['device_id']);
+                    if (array_key_exists('loc_altitude', $st)) {
+                        $altitude = $st['loc_altitude'];
+                    }
                 }
                 else {
                     $dat['device_id'] = '00:00:00:00:00:00';
@@ -237,6 +243,7 @@ trait BaseClient {
                     }
                     if (array_key_exists('tempf', $data)) {
                         $dat['temperature'] = $this->get_reverse_temperature($data['tempf'], 1);
+                        $temperature = $dat['temperature'];
                     }
                     if (array_key_exists('tempinf', $data)) {
                         $dat['tempint'] = $this->get_reverse_temperature($data['tempinf'], 1);
@@ -260,6 +267,7 @@ trait BaseClient {
                     }
                     if (array_key_exists('baromabsin', $data)) {
                         $dat['pressure'] = $this->get_reverse_pressure($data['baromabsin'], 1);
+                        $dat['pressure_sl'] = $this->convert_from_baro_to_mslp($dat['pressure'], $altitude, $temperature);
                     }
                     if (array_key_exists('co2', $data)) {
                         $dat['co2'] = $data['co2'];

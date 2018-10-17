@@ -81,14 +81,14 @@
         <?php endif;?>
         <?php if ($show_pressure):?>
             <!-- PRESSURE -->
-            <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Atmospheric pressure', 'live-weather-station').'"' : ''); ?>>
+            <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Barometric pressure', 'live-weather-station').'"' : ''); ?>>
                 <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                     <i class="wi wi-x26-<?php echo $id ?> wi-barometer"></i>
                 </div>
                 <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <div class="lws-widget-med-value lws-widget-med-value-<?php echo $id ?>"><?php echo $datas['pressure']['value']; ?></div>
-                        <div class="lws-widget-med-unit lws-widget-med-unit-<?php echo $id ?>"><?php echo $datas['pressure']['unit']; ?></div>
+                        <div class="lws-widget-med-value lws-widget-med-value-<?php echo $id ?>"><?php echo $datas['pressure_sl']['value']; ?></div>
+                        <div class="lws-widget-med-unit lws-widget-med-unit-<?php echo $id ?>"><?php echo $datas['pressure_sl']['unit']; ?></div>
                     </div>
                 </div>
             </div>

@@ -60,7 +60,7 @@ trait BaseClient {
                 }
                 // Main base
                 $module_type = 'NAMain';
-                $types = array('pressure');
+                $types = array('pressure', 'pressure_sl');
                 $module_id = ID::get_fake_modulex_id($guid, 0);
                 $module_name = $this->get_fake_module_name($module_type);
                 $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
@@ -162,6 +162,8 @@ trait BaseClient {
         Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($this->bloomsky_datas, true));
         foreach($this->bloomsky_datas as $station) {
             if (is_array($station)) {
+                $temperature = 15.0;
+                $altitude = 0;
                 $dat = array();
                 $device_model = '';
                 if (array_key_exists('DeviceName', $station)) {
@@ -172,6 +174,10 @@ trait BaseClient {
                 }
                 if (array_key_exists('DeviceID', $station)) {
                     $dat['device_id'] = self::compute_unique_bsky_id($station['DeviceID']);
+                    $st = $this->get_station_informations_by_station_id($dat['device_id']);
+                    if (array_key_exists('loc_altitude', $st)) {
+                        $altitude = $st['loc_altitude'];
+                    }
                 }
                 else {
                     $dat['device_id'] = '00:00:00:00:00:00';
@@ -213,6 +219,7 @@ trait BaseClient {
                     }
                     if (array_key_exists('Pressure', $data)) {
                         $dat['pressure'] = $data['Pressure'];
+                        $dat['pressure_sl'] = $this->convert_from_baro_to_mslp($dat['pressure'], $altitude, $temperature);
                     }
                     if (array_key_exists('UVIndex', $data)) {
                         $dat['uv_index'] = $data['UVIndex'];

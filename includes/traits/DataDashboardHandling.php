@@ -330,6 +330,7 @@ trait Handling {
             $types = array('WindAngle','WindStrength','GustAngle','GustStrength');
         }
         if ($module_type == 'NAMain') {
+            $types[] = 'AbsolutePressure';
             $station = $this->get_station_informations_by_station_id($device_id);
             if (count($station) > 0) {
                 if ($station['station_name'] == '') {
@@ -385,6 +386,12 @@ trait Handling {
                 }
                 if ($type === 'wind_chill' || $type === 'wind_ref') {
                     $updates['measure_timestamp'] = date('Y-m-d H:i:s', $datas['wind_time_utc']);
+                }
+                if ($type === 'Pressure') {
+                    $updates['measure_type'] = 'pressure_sl';
+                }
+                if ($type === 'AbsolutePressure') {
+                    $updates['measure_type'] = 'pressure';
                 }
                 $this->update_data_table($updates);
                 if ($type == 'WindAngle') {
@@ -646,6 +653,8 @@ trait Handling {
             $updates['measure_timestamp'] = date('Y-m-d H:i:s', $datas['time_utc']);
             $updates['measure_type'] = 'pressure_trend';
             $updates['measure_value'] = $datas['pressure_trend'] ;
+            $this->update_data_table($updates);
+            $updates['measure_type'] = 'pressure_sl_trend';
             $this->update_data_table($updates);
         }
 

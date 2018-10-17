@@ -713,11 +713,12 @@ trait Storage {
             self::create_live_weather_station_media_table();
             self::create_live_weather_station_background_process_table();
             self::create_live_weather_station_notifications_table();
-
             ProcessManager::register('WindExpander');
 
 
-
+            // VERSION 3.6.3
+            ProcessManager::register('IdentifierLowercaser');
+            ProcessManager::register('PressureExpander');
 
 
             // ALL VERSION
@@ -803,6 +804,22 @@ trait Storage {
         $table_name = $wpdb->prefix.self::live_weather_station_notifications_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
+    }
+
+    /**
+     * Lower case specified fields.
+     *
+     * @param array $fields The fields to lowercase.
+     * @param string $table The table name.
+     * @since 3.6.3
+     */
+    protected static function fields_lower_case($fields, $table) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . $table;
+        foreach ($fields as $field) {
+            $sql = "UPDATE " . $table_name . " SET `" . $field . "`=LOWER(`" . $field . "`) WHERE 1";
+            $wpdb->query($sql);
+        }
     }
 
     /**

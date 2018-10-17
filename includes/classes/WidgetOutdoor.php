@@ -384,11 +384,11 @@ class Outdoor extends \WP_Widget {
             foreach ($modules['modules'] as $module) {
                 switch ($module['type']) {
                     case 'NAMain':
-                        if (array_key_exists('pressure', $module['datas'])){
+                        if (array_key_exists('pressure_sl', $module['datas'])){
                             $NAMain = true;
-                            $datas['pressure'] = array();
-                            $datas['pressure']['value'] = $module['datas']['pressure']['value'];
-                            $datas['pressure']['unit'] = $module['datas']['pressure']['unit']['unit'];
+                            $datas['pressure_sl'] = array();
+                            $datas['pressure_sl']['value'] = $module['datas']['pressure_sl']['value'];
+                            $datas['pressure_sl']['unit'] = $module['datas']['pressure_sl']['unit']['unit'];
                         }
                         else {
                             $show_pressure = false ;

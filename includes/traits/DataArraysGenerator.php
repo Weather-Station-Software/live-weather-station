@@ -357,6 +357,7 @@ trait Generator {
                 break;
             case 'temperature_trend':
             case 'pressure_trend':
+            case 'pressure_sl_trend':
             case 'moon_age':
             case 'moon_phase':
             case 'loc_timezone':
@@ -570,17 +571,22 @@ trait Generator {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'noise', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure', $comparison, $distribution, $current, $video, $picture);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_sl', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'health_idx', $comparison, $distribution, $current, $video, $picture);
                 }
-                if ($wug || $real || $raw || $txt || $wflw || $bsky || $bstorm) {
+                if ($wug || $real || $raw || $txt || $wflw || $bsky || $bstorm || $ambt) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure', $comparison, $distribution, $current, $video, $picture);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_sl', $comparison, $distribution, $current, $video, $picture);
                 }
                 if ($full && ($netatmo || $real || $raw || $txt)) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_trend', $comparison, $distribution, $current, $video, $picture);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_sl_trend', $comparison, $distribution, $current, $video, $picture);
                 }
                 if (($full || $mono) && ($real || $raw)) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_max', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_min', $comparison, $distribution, $current, $video, $picture);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_sl_max', $comparison, $distribution, $current, $video, $picture);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_sl_min', $comparison, $distribution, $current, $video, $picture);
                 }
                 if ($netatmo) {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature', $comparison, $distribution, $current, $video, $picture);
@@ -871,6 +877,7 @@ trait Generator {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware', $comparison, $distribution, $current, $video, $picture);
                 }
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure', $comparison, $distribution, $current, $video, $picture);
+                $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_sl', $comparison, $distribution, $current, $video, $picture);
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidity', $comparison, $distribution, $current, $video, $picture);
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'temperature', $comparison, $distribution, $current, $video, $picture);
                 if (!$historical) {
@@ -994,6 +1001,7 @@ trait Generator {
             $wflw = OWM_Base_Collector::is_wflw_station($data['station']['station_id']);
             $piou = OWM_Base_Collector::is_piou_station($data['station']['station_id']);
             $bsky = OWM_Base_Collector::is_bsky_station($data['station']['station_id']);
+            $ambt = OWM_Base_Collector::is_ambt_station($data['station']['station_id']);
             $mainbase = array();
             if (count($data['module']) > 0) {
                 foreach ($data['module'] as $module) {
@@ -1017,7 +1025,7 @@ trait Generator {
                 $ref['loc_timezone'] = $data['station']['loc_timezone'];
                 $modules[] = array ('- ' . __('None', 'live-weather-station') . ' -', 'none', array(array('- ' . __('None', 'live-weather-station') . ' -', 'none', array(), 'none' , array(array('none', '- ' . __('None', 'live-weather-station') . ' -')))));
             }
-            if ($aggregated  && ($netatmo || $wug || $raw || $real || $txt || $wflw || $piou || $bsky)) {
+            if ($aggregated  && ($netatmo || $wug || $raw || $real || $txt || $wflw || $piou || $bsky || $ambt)) {
                 $ref = array();
                 $ref['device_id'] = $data['station']['station_id'];
                 $ref['device_name'] = $data['station']['station_name'];
