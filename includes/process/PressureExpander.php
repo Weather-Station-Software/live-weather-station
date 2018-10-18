@@ -59,7 +59,7 @@ class PressureExpander extends Process {
      * @since 3.6.3
      */
     protected function description() {
-        return sprintf(__('This fix allows %s to handle daily and historical barometric and mean sea level pressures measurements for all types of stations.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        return sprintf(__('This fix allows %s to handle daily and historical barometric and atmospheric pressures measurements for all types of stations.', 'live-weather-station'), LWS_PLUGIN_NAME);
     }
 
     /**

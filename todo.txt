@@ -115,3 +115,10 @@ Weather underground : MSLP (-)          3
 realtime            : MSLP (-)          5
 clientraw           : MSLP (-)          4                         Assumption
 stickertags         : MSLP (-)          7
+
+
+-- Importer(s)
+-- Maps
+-- Comparison
+
+Bonus : min/max, banner
