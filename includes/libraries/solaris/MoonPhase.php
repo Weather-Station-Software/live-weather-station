@@ -61,7 +61,7 @@ class MoonPhase {
 
 		// pdate is coming in as a UNIX timestamp, so convert it to Julian
 		//$pdate =  $pdate / 86398.92 + 2440587.5;
-        $pdate =  $pdate / 86398.8 + 2440587.5;
+        $pdate =  $pdate / 86400 + 2440587.5;
 
 
 		/* Calculation of the Sun's position */
@@ -120,7 +120,7 @@ class MoonPhase {
 	}
 
 	private function fixangle($a) {
-		return ( $a - 360 * floor($a / 360) );
+		return fmod($a, 360);//( $a - 360 * (int)($a / 360) );
 	}
 
 	//  KEPLER  --   Solve the equation of Kepler.
