@@ -8379,6 +8379,10 @@ trait Output {
             case 'specific_enthalpy':
                 $result = 2 ;
                 break;
+
+            case 'moon_age':
+                $result = 3 ;
+                break;
             case 'partial_vapor_pressure':
             case 'saturation_vapor_pressure':
             case 'vapor_pressure':
