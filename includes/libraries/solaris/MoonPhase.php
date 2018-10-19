@@ -49,7 +49,8 @@ class MoonPhase {
 		$mangsiz = 0.5181;			// Moon's angular size at distance a from Earth
 		$msmax = 384401;			// Semi-major axis of Moon's orbit in km
 		$mparallax = 0.9507;		// Parallax at distance a from Earth
-		$synmonth = 29.53058868;	// Synodic month (new Moon to new Moon)
+		//$synmonth = 29.53058868;	// Synodic month (new Moon to new Moon)
+        $synmonth = $this->trueSynodicMonthLength();
 		$this->synmonth = $synmonth;
 		$lunatbase = 2423436.0;		// Base date for E. W. Brown's numbered series of lunations (1923 January 16)
 
@@ -103,7 +104,7 @@ class MoonPhase {
 		$MoonPhase = (1 - cos(deg2rad($MoonAge))) / 2;					// Phase of the Moon
 
 		// Distance of moon from the centre of the Earth
-		$MoonDist = ($msmax * (1 - $mecc * $mecc)) / (1 + $mecc * cos(deg2rad($MmP + $mEc)));
+		$MoonDist = ($msmax * (1 - $mecc * $mecc)) / (1 + $mecc * cos(deg2rad($MmP + $mEc))) - 1770;
 
 		$MoonDFrac = $MoonDist / $msmax;
 		$MoonAng = $mangsiz / $MoonDFrac;								// Moon's angular diameter
@@ -112,15 +113,196 @@ class MoonPhase {
 		// store results
 		$this->phase = $this->fixangle($MoonAge) / 360;					// Phase (0 to 1)
 		$this->illum = $MoonPhase;										// Illuminated fraction (0 to 1)
-		$this->age = $synmonth * $this->phase;							// Age of moon (days)
+		$this->age = $this->trueMoonAge();                              // $synmonth * $this->phase; // Age of moon (days)
 		$this->dist = $MoonDist;										// Distance (kilometres)
 		$this->angdia = $MoonAng;										// Angular diameter (degrees)
 		$this->sundist = $SunDist;										// Distance to Sun (kilometres)
 		$this->sunangdia = $SunAng;										// Sun's angular diameter (degrees)
 	}
 
+	private function vMP ($year, $month, $day, $hour, $min) {
+	    $v = mktime($hour, $min, 0, $month, $day, $year);
+        $t = time();
+        if ($t > $v) {
+            return $t - $v;
+        }
+        return 0;
+    }
+
+	private function trueMoonAge() {
+	    // http://astropixels.com/ephemeris/moon/synodicmonth2001.html
+	    $result = 0;
+        if (0 !== ($v = $this->vMP(2018, 1, 17, 2, 17))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2018, 2, 15, 21, 5))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2018, 3, 17, 13, 12))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2018, 4, 16, 1, 57))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2018, 5, 15, 11, 48))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2018, 6, 13, 19, 43))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2018, 7, 13, 2, 48))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2018, 8, 11, 9, 58))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2018, 9, 9, 18, 1))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2018, 10, 9, 3, 47))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2018, 11, 7, 16, 2))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2018, 12, 7, 7, 20))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2019, 1, 6, 1, 28))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2019, 2, 4, 21, 4))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2019, 3, 6, 16, 4))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2019, 4, 5, 8, 50))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2019, 5, 4, 22, 45))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2019, 6, 3, 10, 2))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2019, 7, 2, 19, 16))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2019, 8, 1, 3, 12))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2019, 8, 30, 10, 37))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2019, 9, 28, 18, 26))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2019, 10, 28, 3, 38))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2019, 11, 26, 15, 6))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2019, 12, 26, 5, 13))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2020, 1, 24, 21, 42))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2020, 2, 23, 15, 32))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2020, 3, 24, 9, 28))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2020, 4, 23, 2, 26))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2020, 5, 22, 17, 39))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2020, 6, 21, 6, 41))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2020, 7, 20, 17, 33))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2020, 8, 19, 2, 42))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2020, 9, 17, 11, 0))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2020, 10, 16, 19, 31))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2020, 11, 15, 5, 7))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2020, 12, 14, 16, 17))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2021, 1, 13, 5, 0))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2021, 2, 11, 19, 6))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2021, 3, 13, 10, 21))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2021, 4, 12, 2, 31))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2021, 5, 11, 19, 0))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2021, 6, 10, 10, 53))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2021, 7, 10, 1, 17))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2021, 8, 8, 13, 50))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2021, 9, 7, 0, 52))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2021, 10, 6, 11, 5))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2021, 11, 4, 21, 15))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2021, 12, 4, 7, 43))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2022, 1, 2, 18, 33))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2022, 2, 1, 5, 46))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2022, 3, 2, 17, 35))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2022, 4, 1, 6, 24))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2022, 4, 30, 20, 28))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2022, 5, 30, 11, 30))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2022, 6, 29, 2, 52))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2022, 7, 28, 17, 55))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2022, 8, 27, 8, 17))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2022, 9, 25, 21, 54))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2022, 10, 25, 10, 49))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2022, 11, 23, 22, 57))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2022, 12, 23, 10, 17))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2023, 1, 21, 20, 53))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2023, 2, 20, 7, 6))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2023, 3, 21, 17, 23))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2023, 4, 20, 4, 12))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2023, 5, 19, 15, 53))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2023, 6, 18, 4, 37))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2023, 7, 17, 18, 32))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2023, 8, 16, 9, 38))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2023, 9, 15, 1, 40))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2023, 10, 14, 17, 55))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2023, 11, 13, 9, 27))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2023, 12, 12, 23, 32))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2024, 1, 11, 11, 57))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2024, 2, 9, 22, 59))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2024, 3, 10, 9, 0))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2024, 4, 8, 18, 21))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2024, 5, 8, 3, 22))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2024, 6, 6, 12, 38))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2024, 7, 5, 22, 57))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2024, 8, 4, 11, 13))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2024, 9, 3, 1, 56))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2024, 10, 2, 18, 49))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2024, 11, 1, 12, 47))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2024, 12, 1, 6, 21))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2024, 12, 30, 22, 27))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2025, 1, 29, 12, 36))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2025, 2, 28, 0, 45))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2025, 3, 29, 10, 58))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2025, 4, 27, 19, 31))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2025, 5, 27, 3, 2))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2025, 6, 25, 10, 32))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2025, 7, 24, 19, 11))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2025, 8, 23, 6, 6))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2025, 9, 21, 19, 54))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2025, 10, 21, 12, 25))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2025, 11, 20, 6, 47))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2025, 12, 20, 1, 43))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2026, 1, 18, 19, 52))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2026, 2, 17, 12, 1))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2026, 3, 19, 1, 23))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2026, 4, 17, 11, 52))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2026, 5, 16, 20, 1))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2026, 6, 15, 2, 54))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2026, 7, 14, 9, 44))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2026, 8, 12, 17, 37))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2026, 9, 11, 3, 27))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2026, 10, 10, 15, 50))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2026, 11, 9, 7, 2))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2026, 12, 9, 0, 52))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2027, 1, 7, 20, 24))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2027, 2, 6, 15, 56))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2027, 3, 8, 9, 29))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2027, 4, 6, 23, 51))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2027, 5, 6, 10, 59))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2027, 6, 4, 19, 40))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2027, 7, 4, 3, 2))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2027, 8, 2, 10, 5))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2027, 8, 31, 17, 41))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2027, 9, 30, 2, 36))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2027, 10, 29, 13, 36))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2027, 11, 28, 3, 24))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2027, 12, 27, 20, 12))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2028, 1, 26, 15, 12))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2028, 2, 25, 10, 37))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2028, 3, 26, 4, 31))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2028, 4, 24, 19, 47))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2028, 5, 24, 8, 16))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2028, 6, 22, 18, 27))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2028, 7, 22, 3, 2))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2028, 8, 20, 10, 44))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2028, 9, 18, 18, 24))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2028, 10, 18, 2, 57))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2028, 11, 16, 13, 18))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2028, 12, 16, 2, 6))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2029, 1, 14, 17, 24))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2029, 2, 13, 10, 31))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2029, 3, 15, 4, 19))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2029, 4, 13, 21, 40))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2029, 5, 13, 13, 42))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2029, 6, 12, 3, 50))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2029, 7, 11, 15, 51))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2029, 8, 10, 1, 56))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2029, 9, 8, 10, 44))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2029, 10, 7, 19, 14))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2029, 11, 6, 4, 24))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2029, 12, 5, 14, 52))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2030, 1, 4, 2, 49))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2030, 2, 2, 16, 7))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2030, 3, 4, 6, 35))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2030, 4, 2, 22, 2))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2030, 5, 2, 14, 12))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2030, 6, 1, 6, 21))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2030, 6, 30, 21, 34))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2030, 7, 30, 11, 11))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2030, 8, 28, 23, 7))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2030, 9, 27, 9, 55))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2030, 10, 26, 20, 17))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2030, 11, 25, 6, 46))) {$result = $v;} else {return $result / (60*60*24);}
+        if (0 !== ($v = $this->vMP(2030, 12, 24, 17, 32))) {$result = $v;} else {return $result / (60*60*24);}
+	    return $result / (60*60*24);
+    }
+
+    private function trueSynodicMonthLength() {
+        $result = 29.53058868;
+        return $result ;
+    }
+
 	private function fixangle($a) {
-		return fmod($a, 360);//( $a - 360 * (int)($a / 360) );
+		return fmod($a, 360);
 	}
 
 	//  KEPLER  --   Solve the equation of Kepler.
