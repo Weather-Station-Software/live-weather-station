@@ -6442,7 +6442,7 @@ trait Output {
                         $result = $this->get_module_type($result);
                         break;
                     case 'measure_type':
-                        $result = $this->get_measurement_type($result, $module_type);
+                        $result = $this->get_measurement_type($result, false, $module_type);
                         break;
                     default:
                         $result = $err ;

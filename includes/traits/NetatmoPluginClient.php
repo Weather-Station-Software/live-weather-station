@@ -30,6 +30,11 @@ trait Client {
 
     protected $netatmo_scope = 'read_station';
     protected $netatmo_type = LWS_NETATMO_SID;
+    public $available_types = array('NAMain' => array('Temperature', 'CO2', 'Humidity', 'Pressure', 'Noise'),
+                                    'NAModule1' => array('Temperature', 'Humidity'),
+                                    'NAModule2' => array('WindStrength', 'WindAngle', 'Guststrength', 'GustAngle'),
+                                    'NAModule3' => array('Rain'),
+                                    'NAModule4' => array('Temperature', 'CO2', 'Humidity'));
 
 
     /**
@@ -69,7 +74,7 @@ trait Client {
     /**
      * Get station's (old) measures.
      *
-     * @param string $device_id
+     * @param string $device_id The device_id.
      * @param string $module_id Optional. If specified will retrieve the module's measurements, else it will retrieve the main device's measurements
      * @param string $scale : interval of time between two measurements. Allowed values : max, 30min, 1hour, 3hours, 1day, 1week, 1month
      * @param string $type : type of measurements you wanna retrieve. Ex : "Temperature, CO2, Humidity".
@@ -80,7 +85,7 @@ trait Client {
      * @param bool $realtime Optional. Remove time offset (+scale/2) for scale bigger than max
      *
      * @return array The measured data.
-     * @since 1.0.0
+     * @since 3.7.0
      */
     public function get_measures($device_id, $module_id, $scale, $type, $start = null, $end = null, $limit = null, $optimize = null, $realtime = null) {
         $refresh_token = get_option('live_weather_station_netatmo_refresh_token');
@@ -156,6 +161,23 @@ trait Client {
         return $this->netatmo_datas;
     }
 
+    /**
+     * Get station's datas.
+     *
+     * @param string $device_id The device_id.
+     * @param string $module_id Optional. If specified will retrieve the module's measurements, else it will retrieve the main device's measurements
+     *
+     * @return integer The timestamp of the oldest measure available for this module.
+     * @since 3.7.0
+     */
+    public function oldest_measure($device_id, $module_id, $module_type) {
+        $result = time();
+        //$this->get_measures($device_id, $module_id, '30min', );
+
+
+
+        return $result;
+    }
     /**
      * Get station's datas.
      *

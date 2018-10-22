@@ -1,8 +1,10 @@
 
-#3.6.4 / October XXXth, 2018
+#3.6.4 / October 22nd, 2018
 
 * Improvement: better UV handling for Weather Underground stations.
-* Bug fix: some links to the documentation may be wrong when site is not in english (thanks to [@christophe](https://weather.station.software/community/profile/christophe/)).
+* Improvement: better precision in moon phase computation.
+* Improvement: in textual shortcodes, the long name (instead of short one) is now rendered for measurement type to avoid confusion with dimension name (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+* Bug fix: some links to the online documentation may be wrong when site is not in english (thanks to [@christophe](https://weather.station.software/community/profile/christophe/)).
 
 #3.6.3 / October 19th, 2018
 

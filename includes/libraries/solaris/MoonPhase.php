@@ -302,7 +302,8 @@ class MoonPhase {
     }
 
 	private function fixangle($a) {
-		return fmod($a, 360);
+		//return fmod($a, 360);
+        return($a - 360 * floor($a / 360));
 	}
 
 	//  KEPLER  --   Solve the equation of Kepler.
