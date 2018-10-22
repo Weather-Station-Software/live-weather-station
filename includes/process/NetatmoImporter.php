@@ -127,10 +127,15 @@ class NetatmoImporter extends Process {
      * @since 3.7.0
      */
     protected function init_core(){
+
+        // $this->params['init']['station_id']
+        // $this->params['init']['start_date']
+        // $this->params['init']['end_date']
+
         $station = $this->get_station_informations_by_station_id($this->params['init']['station_id']);
         $this->params['init']['station_name'] = $station['station_name'];
         $this->params['init']['loc_timezone'] = $station['loc_timezone'];
-        $this->params['process']['now'] = self::get_local_date($station['loc_timezone']);
+        $this->params['process']['now'] = $this->params['init']['start_date']; //self::get_local_date($station['loc_timezone']);
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
         $sql = "SELECT DISTINCT device_name, module_id, module_type, module_name FROM " . $table_name . " WHERE device_id = '" . $this->params['init']['station_id'] . "'";
@@ -157,6 +162,8 @@ class NetatmoImporter extends Process {
                 $this->params['summary'][$row['module_id']]['name'] = $row['module_name'];
                 $this->params['summary'][$row['module_id']]['measurements'] = 0;
                 $this->params['summary'][$row['module_id']]['days'] = 0;
+
+
             }
         }
     }
