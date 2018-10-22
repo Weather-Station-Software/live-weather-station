@@ -5,6 +5,7 @@ use WeatherStation\DB\Query;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\Unit\Conversion;
 use WeatherStation\Data\DateTime\Conversion as DateTimeConversion;
+use WeatherStation\SDK\Netatmo\Plugin\Client;
 
 /**
  * A process to import old data from a Netatmo station.
@@ -16,7 +17,7 @@ use WeatherStation\Data\DateTime\Conversion as DateTimeConversion;
  */
 class NetatmoImporter extends Process {
 
-    use Conversion, Query, DateTimeConversion;
+    use Client, Conversion, Query, DateTimeConversion;
 
 
     /**
@@ -26,9 +27,7 @@ class NetatmoImporter extends Process {
      * @since 3.7.0
      */
     protected function uuid() {
-        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-                        mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000,
-                        mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
+        return $this->generate_v4_uuid();
     }
 
     /**
@@ -52,7 +51,12 @@ class NetatmoImporter extends Process {
      * @since 3.7.0
      */
     protected function name($translated=true) {
-        return lws__('Netatmo importer', 'live-weather-station');
+        if ($translated) {
+            return lws__('Netatmo importer', 'live-weather-station');
+        }
+        else {
+            return 'Netatmo importer';
+        }
     }
 
     /**
@@ -77,7 +81,7 @@ class NetatmoImporter extends Process {
             $result .= '  - ' . sprintf(lws__('"%s": %s measurements spread over %s days.', 'live-weather-station'), $module['name'], $module['measurements'], $module['days']) . "\r\n";
         }
         $result .= "\r\n" . sprintf(lws__('These measurements were compiled in %s.', 'live-weather-station'), $this->get_age_hours_from_seconds($this->exectime)) . ' ';
-        $result .= "\r\n" . lws__('Historical data has been updated and is now usable.', 'live-weather-station');
+        $result .= "\r\n" . sprintf(lws__('Historical data has been updated and is now usable in %s controls.', 'live-weather-station'), LWS_PLUGIN_NAME);
         return $result;
     }
 
@@ -123,55 +127,38 @@ class NetatmoImporter extends Process {
      * @since 3.7.0
      */
     protected function init_core(){
-        //$station = $this->get_station_informations_by_station_id($this->params['init']['station_id']);
-        //$this->params['init']['station_name'] = $station['station_name'];
-
+        $station = $this->get_station_informations_by_station_id($this->params['init']['station_id']);
+        $this->params['init']['station_name'] = $station['station_name'];
+        $this->params['init']['loc_timezone'] = $station['loc_timezone'];
+        $this->params['process']['now'] = self::get_local_date($station['loc_timezone']);
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
         $sql = "SELECT DISTINCT device_name, module_id, module_type, module_name FROM " . $table_name . " WHERE device_id = '" . $this->params['init']['station_id'] . "'";
         $rows = $wpdb->get_results($sql, ARRAY_A);
+        $this->params['todo_ext'] = array();
+        $this->params['todo_int'] = array();
+        $this->params['done'] = array();
         $this->params['summary'] = array();
         foreach ($rows as $row) {
-            if ($row['module_id'] === 'NAMain' ||
-                $row['module_id'] === 'NAModule1' ||
-                $row['module_id'] === 'NAModule2' ||
-                $row['module_id'] === 'NAModule3' ||
-                $row['module_id'] === 'NAModule4') {
-                $this->params['init']['station_id'] = $row['device_name'];
-                if ($row['module_id'] === 'NAModule3' ||
-                    $row['module_id'] === 'NAModule4') {
-
-
+            if ($row['module_type'] === 'NAMain' ||
+                $row['module_type'] === 'NAModule1' ||
+                $row['module_type'] === 'NAModule2' ||
+                $row['module_type'] === 'NAModule3' ||
+                $row['module_type'] === 'NAModule4') {
+                $module = array();
+                $module[] = array('module_id' => $row['module_id'], 'module_name' => $row['module_name'], 'module_type' => $row['module_type']);
+                if ($row['module_type'] === 'NAModule3' ||
+                    $row['module_type'] === 'NAModule4') {
+                    $this->params['todo_int'][] = $module;
                 }
                 else {
-
+                    $this->params['todo_ext'][] = $module;
                 }
                 $this->params['summary'][$row['module_id']]['name'] = $row['module_name'];
                 $this->params['summary'][$row['module_id']]['measurements'] = 0;
                 $this->params['summary'][$row['module_id']]['days'] = 0;
-
-
-
-
             }
-
-
-
-
-
-
         }
-
-
-
-        $this->params['stations'] = array();
-        $this->params['stations']['todo'] = array();
-        $this->params['stations']['done'] = array();
-        foreach ($this->get_stations_informations() as $station) {
-            $this->params['stations']['todo'][$station['station_id']] = array($station['station_type'], $station['loc_altitude']);
-        }
-
-
     }
 
     /**
@@ -180,7 +167,13 @@ class NetatmoImporter extends Process {
      * @since 3.7.0
      */
     protected function run_core(){
-        if (count($this->params['stations']['todo']) > 0) {
+        if (count($this->params['stations']['todo_ext']) > 0) {
+
+
+
+
+
+
             $station_spec = reset($this->params['stations']['todo']);
             $station_id = key($this->params['stations']['todo']);
             try {

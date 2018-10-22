@@ -48,7 +48,12 @@ class WindExpander extends Process {
      * @since 3.6.0
      */
     protected function name($translated=true) {
-        return __('Wind angle / Wind source expander', 'live-weather-station');
+        if ($translated) {
+            return __('Wind angle / Wind source expander', 'live-weather-station');
+        }
+        else {
+            return 'Wind angle / Wind source expander';
+        }
     }
 
     /**
