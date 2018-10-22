@@ -86,6 +86,18 @@ abstract class Process {
     }
 
     /**
+     * Generates a v4 UUID.
+     *
+     * @return string A v4 UUID.
+     * @since 3.7.0
+     */
+    protected function generate_v4_uuid() {
+        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000,
+            mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
+    }
+
+    /**
      * Get the UUID of the process.
      *
      * @return string The UUID of the process.

@@ -352,6 +352,9 @@ trait StationClient {
                 $updates['measure_type'] = 'uv_index';
                 if (is_numeric($observation['UV'])) {
                     $updates['measure_value'] = $observation['UV'];
+                    if ($updates['measure_value'] < 0) {
+                        $updates['measure_value'] = 0;
+                    }
                 }
                 else {
                     $updates['measure_value'] = 0;

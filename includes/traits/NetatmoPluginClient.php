@@ -67,6 +67,96 @@ trait Client {
     }
 
     /**
+     * Get station's (old) measures.
+     *
+     * @param string $device_id
+     * @param string $module_id Optional. If specified will retrieve the module's measurements, else it will retrieve the main device's measurements
+     * @param string $scale : interval of time between two measurements. Allowed values : max, 30min, 1hour, 3hours, 1day, 1week, 1month
+     * @param string $type : type of measurements you wanna retrieve. Ex : "Temperature, CO2, Humidity".
+     * @param integer $start Optional. Starting timestamp of requested measurements
+     * @param integer $end Optional. Ending timestamp of requested measurements.
+     * @param int $limit Optional. Limits numbers of measurements returned (default & max : 1024)
+     * @param bool $optimize Optional. Optimize the bandwith usage if true. Optimize = FALSE enables an easier result parsing
+     * @param bool $realtime Optional. Remove time offset (+scale/2) for scale bigger than max
+     *
+     * @return array The measured data.
+     * @since 1.0.0
+     */
+    public function get_measures($device_id, $module_id, $scale, $type, $start = null, $end = null, $limit = null, $optimize = null, $realtime = null) {
+        $refresh_token = get_option('live_weather_station_netatmo_refresh_token');
+        $access_token = get_option('live_weather_station_netatmo_access_token');
+        $this->last_netatmo_error = '';
+        $this->last_netatmo_warning = '';
+        if ($refresh_token != '' && $access_token != '') {
+            if (!isset($this->netatmo_client)) {
+                $config = array();
+                $config['client_id'] = $this->client_id;
+                $config['client_secret'] = $this->client_secret;
+                $config['scope'] = $this->netatmo_scope;
+                $config['refresh_token'] = $refresh_token;
+                $config['access_token'] = $access_token;
+                $this->netatmo_client = new NAWSApiClient($config);
+            }
+            try {
+                if (Quota::verify($this->service_name, 'GET', true)) {
+                    $this->netatmo_datas = $this->netatmo_client->getMeasure($device_id, $module_id, $scale, $type, $start, $end, $limit, $optimize, $realtime);
+                    /*$this->normalize_netatmo_datas(LWS_NETATMO_SID);
+                    if ($store) {
+                        $this->store_netatmo_datas($this->get_all_netatmo_stations());
+                    }*/
+
+
+
+
+                    update_option('live_weather_station_netatmo_refresh_token', $this->netatmo_client->getRefreshToken());
+                    update_option('live_weather_station_netatmo_access_token', $this->netatmo_client->getAccessToken()['access_token']);
+                    update_option('live_weather_station_netatmo_connected', 1);
+                    if (isset($config)) {
+                        if (array_key_exists('access_token', $config)) {
+                            if ($config['access_token'] != $this->netatmo_client->getAccessToken()['access_token']) {
+                                Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Access token has been regenerated for following scope: '.$this->netatmo_client->getVariable('scope'));
+                            }
+                        }
+                        if (array_key_exists('refresh_token', $config)) {
+                            if ($config['refresh_token'] != $this->netatmo_client->getRefreshToken()) {
+                                Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Refresh token has been updated for following scope: '.$this->netatmo_client->getVariable('scope'));
+                            }
+                        }
+                    }
+                }
+                else {
+                    return array ();
+                }
+            }
+            catch (\Exception $ex) {
+                switch ($ex->getCode()) {
+                    case 2:
+                    case 23:
+                    case 32:
+                        $this->last_netatmo_error = __('Wrong credentials. Please, verify your login and password.', 'live-weather-station');
+                        Logger::critical('Authentication', $this->service_name, null, null, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your login and password.');
+                        break;
+                    case 5:
+                    case 22:
+                        $this->last_netatmo_error = __('Application deactivated. Please contact support.', 'live-weather-station');
+                        Logger::alert($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Application deactivated. Please contact support.');
+                        break;
+                    case 20:
+                        $this->last_netatmo_error = __('Too many users with this IP.', 'live-weather-station');
+                        Logger::error($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Too many users with this IP.');
+                        break;
+                    default:
+                        $this->last_netatmo_warning = __('Temporary unable to contact Netatmo servers. Retry will be done shortly.', 'live-weather-station');
+                        Logger::warning($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Temporary unable to contact Netatmo servers. Retry will be done shortly.');
+                }
+                Logger::critical($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), $ex->getMessage());
+                return array();
+            }
+        }
+        return $this->netatmo_datas;
+    }
+
+    /**
      * Get station's datas.
      *
      * @param boolean $store Optional. Store the data.

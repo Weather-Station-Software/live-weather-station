@@ -49,7 +49,12 @@ class PressureExpander extends Process {
      * @since 3.6.3
      */
     protected function name($translated=true) {
-        return __('Pressure expander', 'live-weather-station');
+        if ($translated) {
+            return __('Pressure expander', 'live-weather-station');
+        }
+        else {
+            return 'Pressure expander';
+        }
     }
 
     /**

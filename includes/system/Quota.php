@@ -102,15 +102,21 @@ class Quota {
      *
      * @param string $service The service to query.
      * @param string $verb The verb to apply (GET, POST, PUT, etc.).
+     * @param boolean $import Optional. Set mode for import (3="Distribute queries in the remaining time").
      * @return boolean True if it's ok to query, false otherwise.
      *
      * @since 3.2.0
      */
-    public static function verify($service, $verb){
+    public static function verify($service, $verb, $import=false){
         $verified = true;
         $verb = strtolower($verb);
         $quota = self::get_count_quota($service, $verb);
-        $mode = get_option('live_weather_station_quota_mode');
+        if ($import) {
+            $mode = 3;
+        }
+        else {
+            $mode = get_option('live_weather_station_quota_mode');
+        }
         if ($quota != 0 && $mode != 0) {
             $values = self::get_actual($service, $verb);
             $verb = strtolower($verb);

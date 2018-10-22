@@ -101,10 +101,6 @@ use wind classification (textual, charts, )
 https://community.weatherflow.com/t/steadman-apparent-temperature-australian-apparent-temperature/2248
 
 
-weather underground => uv negatif
-
-pressure/temp/hum reference in charts
-
 
 Netatmo             : MSLP (Abs)        0 / 6
 WeatherFlow         : Abs (MSLP)                    8
