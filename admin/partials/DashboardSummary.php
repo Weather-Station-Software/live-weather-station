@@ -18,6 +18,19 @@ if (REQUIREMENTS_OK) {
     else {
         $data_str = sprintf(__('The system is up and running: it is currently collecting %3$d measurements from %1$d stations composed of %2$d modules.', 'live-weather-station'), $a['station'], $a['module'], $a['measure']);
     }
+    $p = $stats->get_processes();
+    if (count($p) > 0) {
+        $show_processes = true;
+        $de = array();
+        foreach ($p as $d) {
+            $de[] = $d['name'] . ' (' . $d['progress'] . '%)';
+        }
+        $processes_str = lws__('Currently running:', 'live-weather-station') . ' ' . implode(', ', $de) . '.';
+    }
+    else {
+        $show_processes = false;
+        $processes_str = '';
+    }
     $services_str = __('none', 'live-weather-station');
     $services = array();
     if (get_option('live_weather_station_ambient_connected')) {
@@ -76,6 +89,13 @@ if ($quota > 0) {
     <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
         <ul>
             <li><i style="color:#FF4444;" class="<?php echo LWS_FAS;?> fa-lg fa-fw fa-exclamation-triangle"></i>&nbsp;&nbsp;<?php echo $quota_str; ?></li>
+        </ul>
+    </div>
+<?php } ?>
+<?php if ($show_processes) { ?>
+    <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
+        <ul>
+            <?php echo $processes_str; ?>
         </ul>
     </div>
 <?php } ?>

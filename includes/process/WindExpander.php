@@ -142,7 +142,7 @@ class WindExpander extends Process {
                 $this->set_progress(100 * count($this->params['stations']['done']) / (count($this->params['stations']['todo']) + count($this->params['stations']['done'])));
             }
             catch (\Exception $ex) {
-                Logger::error($this->facility, null, null, null, null, null, 999, 'Error while running background process {' . $this->uuid() . '}. Message: ' . $ex->getMessage());
+                Logger::error($this->bp_facility, null, null, null, null, null, 999, 'Error while running background process {' . $this->uuid() . '}. Message: ' . $ex->getMessage());
             }
         }
     }

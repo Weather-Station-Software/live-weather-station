@@ -33,6 +33,7 @@ class Cache {
 
     public static $db_stat = 'stat';
     public static $db_stat_log = 'stat_log';
+    public static $db_bg_processes = 'stat_bgp';
     public static $db_stat_quota = 'stat_quota';
     public static $db_stat_perf = 'stat_perf';
     public static $db_stat_perf_cache = 'stat_perf_cache';

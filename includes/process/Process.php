@@ -32,7 +32,9 @@ abstract class Process {
     protected $silent = false;
 
     private $chrono = 0.0;
-    protected $facility = 'Background Process';
+    private $uuid = null;
+    protected $bp_facility = 'Background Process';
+    protected $bp_service = null;
 
     protected $state_init = 'init';
     protected $state_pause = 'pause';
@@ -71,6 +73,7 @@ abstract class Process {
         $this->state = $new_state;
         $this->timestamp = date('Y-m-d H:i:s');
         if ($new_state === $this->state_end) {
+            $this->set_progress(100);
             Cache::reset();
         }
     }
@@ -95,6 +98,20 @@ abstract class Process {
         return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
             mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000,
             mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
+    }
+
+    /**
+     * Get the meta UUID of the process.
+     *
+     * @return string The meta UUID of the process.
+     * @since 3.6.0
+     */
+    protected function meta_uuid() {
+        $uuid = $this->uuid;
+        if (!isset($uuid)) {
+            $uuid = $this->uuid();
+        }
+        return $uuid;
     }
 
     /**
@@ -183,7 +200,7 @@ abstract class Process {
      */
     protected function end_notification() {
         $s = sprintf(__('The background process named <em>%s</em> has completed successfully.', 'live-weather-station'), $this->name());
-        Notifier::info($this->name(), $this->url(), $s);
+        Notifier::info($this->name(), $this->url(), $s, true);
     }
 
     /**
@@ -219,7 +236,7 @@ abstract class Process {
     private function _get() {
         global $wpdb;
         $table = $wpdb->prefix . self::live_weather_station_background_process_table();
-        $sql = "SELECT * FROM " . $table . " WHERE `uuid`='" . $this->uuid() . "';";
+        $sql = "SELECT * FROM " . $table . " WHERE `uuid`='" . $this->meta_uuid() . "';";
         return $wpdb->get_results($sql, ARRAY_A);
     }
 
@@ -250,6 +267,10 @@ abstract class Process {
                 if (!$this->silent) {
                     $this->init_notification();
                 }
+                if ($this->is_terminated()) {
+                    $this->change_state($this->state_end);
+                    $this->send_end_of_process();
+                }
             }
             $this->save();
         }
@@ -276,12 +297,14 @@ abstract class Process {
         $message .= __('More information:', 'live-weather-station') . ' ' . $this->url() . "\r\n" ;
         try {
             if (!$this->silent) {
-                wp_mail($to, $subject, $message);
+                if (function_exists('wp_mail')) {
+                    wp_mail($to, $subject, $message);
+                }
             }
-            Logger::debug($this->facility, null, null, null, null, null, 0, 'Mail sent from background process {' . $this->uuid() . '}.');
+            Logger::debug($this->bp_facility, $this->bp_service, null, null, null, null, 0, 'Mail sent from background process {' . $this->meta_uuid() . '}.');
         }
         catch (\Exception $ex) {
-            Logger::error($this->facility, null, null, null, null, null, 999, 'Unable to send mail from background process {' . $this->uuid() . '}. Message: ' . $ex->getMessage());
+            Logger::error($this->bp_facility, $this->bp_service, null, null, null, null, 999, 'Unable to send mail from background process {' . $this->meta_uuid() . '}. Message: ' . $ex->getMessage());
         }
         if (!$this->silent) {
             $this->end_notification();
@@ -331,7 +354,7 @@ abstract class Process {
      */
     protected function save() {
         $row = array();
-        $row['uuid'] = $this->uuid();
+        $row['uuid'] = $this->meta_uuid();
         $row['priority'] = $this->priority();
         $row['class'] = $this->class;
         $row['name'] = $this->name();
@@ -343,15 +366,18 @@ abstract class Process {
         $row['pass'] = $this->pass;
         $row['progress'] = $this->progress;
         self::insert_update_table(self::live_weather_station_background_process_table(), $row);
+        Cache::invalidate_backend(Cache::$db_bg_processes);
     }
 
     /**
      * Run the process wrapper.
      *
      * @param boolean $count_as_pass Optional. It's a full pass!
+     * @param string $uuid Optional. The UUID (in case it is a self generated uuid).
      * @since 3.6.0
      */
-    public function run($count_as_pass=true) {
+    public function run($count_as_pass=true, $uuid=null) {
+        $this->uuid = $uuid;
         try {
             $this->chrono = microtime(true);
             $this->load();
@@ -375,7 +401,7 @@ abstract class Process {
         catch (\Exception $ex) {
             $this->change_state($this->execution_mode());
             $this->save();
-            Logger::error($this->facility, null, null, null, null, null, 999, 'Unable to run background process {' . $this->uuid() . '}. Message: ' . $ex->getMessage());
+            Logger::error($this->bp_facility, $this->bp_service, null, null, null, null, 999, 'Unable to run background process {' . $this->meta_uuid() . '}. Message: ' . $ex->getMessage());
         }
     }
 

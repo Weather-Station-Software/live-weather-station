@@ -217,7 +217,7 @@ trait StationClient {
         $updates['measure_value'] = $weather[7];
         $this->update_data_table($updates);
         $updates['measure_type'] = 'winddirection';
-        $updates['measure_value'] = (int)round(($weather[7] + 180) % 360);
+        $updates['measure_value'] = (int)floor(($weather[7] + 180) % 360);
         $this->update_data_table($updates);
         $updates['measure_type'] = 'windstrength';
         $updates['measure_value'] = $this->get_reverse_wind_speed($weather[5], $wind_unit);
@@ -226,7 +226,7 @@ trait StationClient {
         $updates['measure_value'] = $weather[7];
         $this->update_data_table($updates);
         $updates['measure_type'] = 'gustdirection';
-        $updates['measure_value'] = (int)round(($weather[7] + 180) % 360);
+        $updates['measure_value'] = (int)floor(($weather[7] + 180) % 360);
         $this->update_data_table($updates);
         $updates['measure_type'] = 'guststrength';
         $updates['measure_value'] = $this->get_reverse_wind_speed($weather[40], $wind_unit);

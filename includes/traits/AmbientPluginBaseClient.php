@@ -220,9 +220,9 @@ trait BaseClient {
                     }
                     if (array_key_exists('winddir', $data)) {
                         $dat['windangle'] = $data['winddir'];
-                        $dat['winddirection'] = (int)round(($data['winddir'] + 180) % 360);
+                        $dat['winddirection'] = (int)floor(($data['winddir'] + 180) % 360);
                         $dat['gustangle'] = $data['winddir'];
-                        $dat['gustdirection'] = (int)round(($data['winddir'] + 180) % 360);
+                        $dat['gustdirection'] = (int)floor(($data['winddir'] + 180) % 360);
                     }
                     if (array_key_exists('windgustmph', $data)) {
                         $dat['guststrength'] = $this->get_reverse_wind_speed($data['windgustmph'], 1);

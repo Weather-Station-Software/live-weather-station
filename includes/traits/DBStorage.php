@@ -721,6 +721,25 @@ trait Storage {
             ProcessManager::register('PressureExpander');
 
 
+
+
+            $args = array();
+            $args['init'] = array();
+
+            $args['init']['station_id'] = '70:ee:50:01:22:be';
+            $args['init']['start_date'] = 1440108000;   // local timestamp
+            $args['init']['end_date']   = 1440972000;   // local timestamp
+
+            ProcessManager::register('NetatmoImporter', $args);
+
+
+
+
+
+
+
+
+
             // ALL VERSION
             if (!Env::is_php_version_uptodate()) {
                 Notifier::error(__('Your PHP version is outdated', 'live-weather-station'),

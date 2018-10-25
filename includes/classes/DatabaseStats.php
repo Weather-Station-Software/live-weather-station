@@ -180,4 +180,21 @@ class Stats
         }
     }
 
+    /**
+     * Get the state of background processes.
+     *
+     * @return array The stats for logs.
+     * @since 3.0.0
+     */
+    public function get_processes() {
+        if (false !== ( $result = Cache::get_backend(Cache::$db_bg_processes))) {
+            return $result;
+        }
+        else {
+            $value = self::get_active_background_processes();
+            Cache::set_backend(Cache::$db_bg_processes, $value);
+            return $value;
+        }
+    }
+
 }

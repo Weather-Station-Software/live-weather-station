@@ -272,7 +272,7 @@ trait PublicClient {
                                     $updates['measure_type'] = 'gustangle';
                                     $updates['measure_value'] = $value;
                                     $this->update_data_table($updates);
-                                    $value = (int)round(($measurements['wind_heading'] + 180) % 360);
+                                    $value = (int)floor(($measurements['wind_heading'] + 180) % 360);
                                     $updates['measure_type'] = 'winddirection';
                                     $updates['measure_value'] = $value;
                                     $this->update_data_table($updates);

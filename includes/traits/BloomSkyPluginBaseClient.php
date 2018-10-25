@@ -254,7 +254,7 @@ trait BaseClient {
                     if (array_key_exists('WindDirection', $data)) {
                         $dat['windangle'] = $this->get_reverse_wind_angle_text($data['WindDirection']);
                         $dat['gustangle'] = $dat['windangle'];
-                        $dat['winddirection'] = (int)round(($dat['windangle'] + 180) % 360);
+                        $dat['winddirection'] = (int)floor(($dat['windangle'] + 180) % 360);
                         $dat['gustdirection'] = $dat['winddirection'];
                     }
                     if (array_key_exists('SustainedWindSpeed', $data)) {
