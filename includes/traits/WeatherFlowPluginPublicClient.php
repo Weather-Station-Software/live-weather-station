@@ -273,13 +273,13 @@ trait PublicClient {
                         $updates['measure_value'] = $observation['wind_direction'];
                         $this->update_data_table($updates);
                         $updates['measure_type'] = 'winddirection';
-                        $updates['measure_value'] = (int)round(($observation['wind_direction'] + 180) % 360);
+                        $updates['measure_value'] = (int)floor(($observation['wind_direction'] + 180) % 360);
                         $this->update_data_table($updates);
                         $updates['measure_type'] = 'gustangle';
                         $updates['measure_value'] = $observation['wind_direction'];
                         $this->update_data_table($updates);
                         $updates['measure_type'] = 'gustdirection';
-                        $updates['measure_value'] = (int)round(($observation['wind_direction'] + 180) % 360);
+                        $updates['measure_value'] = (int)floor(($observation['wind_direction'] + 180) % 360);
                         $this->update_data_table($updates);
                     }
                     if (array_key_exists('wind_avg', $observation)) {

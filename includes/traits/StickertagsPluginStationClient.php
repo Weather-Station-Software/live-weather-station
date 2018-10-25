@@ -195,13 +195,13 @@ trait StationClient {
             $updates['measure_value'] = $angle;
             $this->update_data_table($updates);
             $updates['measure_type'] = 'winddirection';
-            $updates['measure_value'] = (int)round(($angle + 180) % 360);
+            $updates['measure_value'] = (int)floor(($angle + 180) % 360);
             $this->update_data_table($updates);
             $updates['measure_type'] = 'gustangle';
             $updates['measure_value'] = $angle;
             $this->update_data_table($updates);
             $updates['measure_type'] = 'gustdirection';
-            $updates['measure_value'] = (int)round(($angle + 180) % 360);
+            $updates['measure_value'] = (int)floor(($angle + 180) % 360);
             $this->update_data_table($updates);
         }
         if (isset($weather[9])) {

@@ -78,8 +78,8 @@ class ProcessManager {
         foreach ($processes as $process) {
             $class_name = self::$namespace . $process['class'];
             try {
-                $process = new $class_name;
-                $process->run(!$only_paused);
+                $p = new $class_name;
+                $p->run(!$only_paused, $process['uuid']);
             }
             catch (\Exception $ex) {
                 Logger::error('Background Process', null, null, null, null, null, 999, 'Unable to run background process with class' . $class_name . '. Message: ' . $ex->getMessage());

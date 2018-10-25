@@ -42,11 +42,12 @@ class Notifier {
      * @param $name string Optional. The name of the notification.
      * @param $url string Optional. The URL of the detail.
      * @param $description string Optional. The description of the notification.
+     * @param $shift boolean Optional. Indicates if teher is a decay in the notification.
      * @since 3.6.0
      */
-    private static function _notify($level = 'error', $name='', $url='', $description='') {
+    private static function _notify($level = 'error', $name='', $url='', $description='', $shift=false) {
         $values = array();
-        $values['timestamp'] = date('Y-m-d H:i:s');
+        $values['timestamp'] = date('Y-m-d H:i:s', ($shift?time()+1:time()));
         $values['level'] = $level;
         $values['name'] = substr($name, 0, 99);
         $values['description'] = substr($description, 0, 1999);
@@ -61,10 +62,11 @@ class Notifier {
      * @param $name string Optional. The name of the notification.
      * @param $url string Optional. The URL of the detail.
      * @param $description string Optional. The description of the notification.
+     * @param $shift boolean Optional. Indicates if teher is a decay in the notification.
      * @since 3.6.0
      */
-    public static function error($name='', $url='', $description='') {
-        self::_notify('error', $name, $url, $description);
+    public static function error($name='', $url='', $description='', $shift=false) {
+        self::_notify('error', $name, $url, $description, $shift);
     }
 
     /**
@@ -73,10 +75,11 @@ class Notifier {
      * @param $name string Optional. The name of the notification.
      * @param $url string Optional. The URL of the detail.
      * @param $description string Optional. The description of the notification.
+     * @param $shift boolean Optional. Indicates if teher is a decay in the notification.
      * @since 3.6.0
      */
-    public static function warning($name='', $url='', $description='') {
-        self::_notify('warning', $name, $url, $description);
+    public static function warning($name='', $url='', $description='', $shift=false) {
+        self::_notify('warning', $name, $url, $description, $shift);
     }
 
     /**
@@ -85,10 +88,11 @@ class Notifier {
      * @param $name string Optional. The name of the notification.
      * @param $url string Optional. The URL of the detail.
      * @param $description string Optional. The description of the notification.
+     * @param $shift boolean Optional. Indicates if teher is a decay in the notification.
      * @since 3.6.0
      */
-    public static function info($name='', $url='', $description='') {
-        self::_notify('info', $name, $url, $description);
+    public static function info($name='', $url='', $description='', $shift=false) {
+        self::_notify('info', $name, $url, $description, $shift);
     }
 
     /**

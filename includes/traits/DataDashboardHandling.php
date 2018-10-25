@@ -396,12 +396,12 @@ trait Handling {
                 $this->update_data_table($updates);
                 if ($type == 'WindAngle') {
                     $updates['measure_type'] = 'winddirection';
-                    $updates['measure_value'] = (int)round(($wind + 180) % 360);
+                    $updates['measure_value'] = (int)floor(($wind + 180) % 360);
                     $this->update_data_table($updates);
                 }
                 if ($type == 'GustAngle') {
                     $updates['measure_type'] = 'gustdirection';
-                    $updates['measure_value'] = (int)round(($wind + 180) % 360);
+                    $updates['measure_value'] = (int)floor(($wind + 180) % 360);
                     $this->update_data_table($updates);
                 }
                 if (strtolower($type) == 'temperature') {
@@ -707,7 +707,7 @@ trait Handling {
             $updates['measure_value'] = $wamax ;
             $this->update_data_table($updates);
             $updates['measure_type'] = 'winddirection_hour_max';
-            $updates['measure_value'] = (int)round(($wamax + 180) % 360); ;
+            $updates['measure_value'] = (int)floor(($wamax + 180) % 360); ;
             $this->update_data_table($updates);
             $updates = array();
             $updates['device_id'] = $device_id;
@@ -737,7 +737,7 @@ trait Handling {
             $updates['measure_value'] = $datas['max_wind_angle'] ;
             $this->update_data_table($updates);
             $updates['measure_type'] = 'winddirection_day_max';
-            $updates['measure_value'] = (int)round(($datas['max_wind_angle'] + 180) % 360);
+            $updates['measure_value'] = (int)floor(($datas['max_wind_angle'] + 180) % 360);
             $this->update_data_table($updates);
             $updates = array();
             $updates['device_id'] = $device_id;

@@ -6925,6 +6925,7 @@ trait Output {
                 break;
             case 'temperature_trend':
             case 'pressure_trend':
+            case 'pressure_sl_trend':
                 if ($textual) {
                     $result = $this->get_trend_text($value);
                 }

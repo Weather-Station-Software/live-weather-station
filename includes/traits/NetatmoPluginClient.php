@@ -33,7 +33,7 @@ trait Client {
     public $available_types = array('NAMain' => array('Temperature', 'CO2', 'Humidity', 'Pressure', 'Noise'),
                                     'NAModule1' => array('Temperature', 'Humidity'),
                                     'NAModule2' => array('WindStrength', 'WindAngle', 'Guststrength', 'GustAngle'),
-                                    'NAModule3' => array('Rain'),
+                                    'NAModule3' => array('sum_rain'),
                                     'NAModule4' => array('Temperature', 'CO2', 'Humidity'));
 
 
@@ -77,7 +77,7 @@ trait Client {
      * @param string $device_id The device_id.
      * @param string $module_id Optional. If specified will retrieve the module's measurements, else it will retrieve the main device's measurements
      * @param string $scale : interval of time between two measurements. Allowed values : max, 30min, 1hour, 3hours, 1day, 1week, 1month
-     * @param string $type : type of measurements you wanna retrieve. Ex : "Temperature, CO2, Humidity".
+     * @param array $type : type of measurements you wanna retrieve. Ex : "Temperature, CO2, Humidity".
      * @param integer $start Optional. Starting timestamp of requested measurements
      * @param integer $end Optional. Ending timestamp of requested measurements.
      * @param int $limit Optional. Limits numbers of measurements returned (default & max : 1024)
@@ -104,15 +104,8 @@ trait Client {
             }
             try {
                 if (Quota::verify($this->service_name, 'GET', true)) {
-                    $this->netatmo_datas = $this->netatmo_client->getMeasure($device_id, $module_id, $scale, $type, $start, $end, $limit, $optimize, $realtime);
-                    /*$this->normalize_netatmo_datas(LWS_NETATMO_SID);
-                    if ($store) {
-                        $this->store_netatmo_datas($this->get_all_netatmo_stations());
-                    }*/
-
-
-
-
+                    $this->netatmo_datas = $this->netatmo_client->getMeasure($device_id, $module_id, $scale, implode(',', $type), $start, $end, $limit, $optimize, $realtime);
+                    $this->normalize_netatmo_historical_datas($type);
                     update_option('live_weather_station_netatmo_refresh_token', $this->netatmo_client->getRefreshToken());
                     update_option('live_weather_station_netatmo_access_token', $this->netatmo_client->getAccessToken()['access_token']);
                     update_option('live_weather_station_netatmo_connected', 1);
@@ -167,16 +160,10 @@ trait Client {
      * @param string $device_id The device_id.
      * @param string $module_id Optional. If specified will retrieve the module's measurements, else it will retrieve the main device's measurements
      *
-     * @return integer The timestamp of the oldest measure available for this module.
      * @since 3.7.0
      */
-    public function oldest_measure($device_id, $module_id, $module_type) {
-        $result = time();
-        //$this->get_measures($device_id, $module_id, '30min', );
-
-
-
-        return $result;
+    public function get_oldest_measure($device_id, $module_id, $module_type) {
+        $this->get_measures($device_id, $module_id, '30min', $this->available_types[$module_type], null, null, 1, false);
     }
     /**
      * Get station's datas.

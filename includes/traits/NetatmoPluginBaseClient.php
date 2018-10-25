@@ -64,6 +64,30 @@ trait BaseClient {
     }
 
     /**
+     * Corrects historical station's data.
+     *
+     * @param array $types : type of measurements you wanna retrieve. Ex : "Temperature, CO2, Humidity".
+     *
+     * @since 3.7.0
+     */
+    private function normalize_netatmo_historical_datas($types) {
+        $datas = $this->netatmo_datas ;
+        unset($datas['time_server']);
+        $result = array();
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($datas, true));
+        if (count($datas) > 0) {
+            $result['start'] = array_keys($datas)[0];
+            foreach ($datas as $ts => $data) {
+                foreach ($data as $k => $d) {
+                    $result[strtolower($types[$k])][$ts] = $d;
+                }
+            }
+            $result['end'] = $ts;
+        }
+        $this->netatmo_datas = $result;
+    }
+
+    /**
      * Corrects station's datas.
      *
      * @param integer $station_type The station type.

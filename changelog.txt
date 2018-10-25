@@ -1,4 +1,10 @@
 
+#3.6.5 / October XXXXX, 2018
+
+* Improvement: better wind angle precision.
+* Improvement: running background processes are now listed in the "at a glance" box.
+* Bug fix: in textual shortcode, trend for barometric pressure is not available in plain text (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+
 #3.6.4 / October 22nd, 2018
 
 * Improvement: better UV handling for Weather Underground stations.
