@@ -723,14 +723,16 @@ trait Storage {
 
 
 
-            $args = array();
+            /*$args = array();
             $args['init'] = array();
 
             $args['init']['station_id'] = '70:ee:50:01:22:be';
-            $args['init']['start_date'] = 1440108000;   // local timestamp
-            $args['init']['end_date']   = 1440972000;   // local timestamp
+            //$args['init']['start_date'] = 1440108000;   // local timestamp
+            $args['init']['start_date'] = 1356994800;   // local timestamp
+            $args['init']['end_date']   = 1483138800;   // local timestamp
+            $args['init']['force'] = false;
 
-            ProcessManager::register('NetatmoImporter', $args);
+            ProcessManager::register('NetatmoStationImporter', $args);*/
 
 
 
@@ -913,6 +915,7 @@ trait Storage {
     /**
      * Update table with current value line.
      *
+     * @param string $table_name The table name.
      * @param array $value The values to update or insert in the table
      * @since 3.5.0
      */
@@ -931,6 +934,29 @@ trait Storage {
             $sql .= "(" . implode(',', $field_insert) . ") ";
             $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
+            $wpdb->query($sql);
+        }
+    }
+
+    /**
+     * Insert in a table with current value line.
+     *
+     * @param string $table_name The table name.
+     * @param array $value The values to update or insert in the table
+     * @since 3.7.0
+     */
+    protected static function insert_ignore_table($table_name, $value) {
+        $field_insert = array();
+        $value_insert = array();
+        foreach ($value as $k => $v) {
+            $field_insert[] = '`' . $k . '`';
+            $value_insert[] = "'" . $v . "'";
+        }
+        if (count($field_insert) > 0) {
+            global $wpdb;
+            $sql = "INSERT IGNORE INTO `" . $wpdb->prefix . $table_name . "` ";
+            $sql .= "(" . implode(',', $field_insert) . ") ";
+            $sql .= "VALUES (" . implode(',', $value_insert) . ");";
             $wpdb->query($sql);
         }
     }

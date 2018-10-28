@@ -3,6 +3,7 @@
 
 * Improvement: better wind angle precision.
 * Improvement: running background processes are now listed in the "at a glance" box.
+* Improvement: there's now a "disclaimer" box in the dashboard.
 * Bug fix: in textual shortcode, trend for barometric pressure is not available in plain text (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
 
 #3.6.4 / October 22nd, 2018

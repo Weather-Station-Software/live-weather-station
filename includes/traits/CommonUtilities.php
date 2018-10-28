@@ -16,8 +16,8 @@ trait Utilities {
     /**
      * Computes the vapor pressure.
      *
-     * @param integer $t Temperature in celcius.
-     * @param integer $h Humidity in percent.
+     * @param float $t Temperature in celcius.
+     * @param float $h Humidity in percent.
      * @return float The computed partial vapor pressure (in Pascal).
      * @since 3.3.0
      */
@@ -29,7 +29,7 @@ trait Utilities {
     /**
      * Computes the saturation vapor pressure.
      *
-     * @param integer $t Temperature in celcius.
+     * @param float $t Temperature in celcius.
      * @return float The computed saturation vapor pressure (in Pascal).
      * @since 3.3.0
      */
@@ -46,9 +46,9 @@ trait Utilities {
     /**
      * Computes the absolute humidity.
      *
-     * @param integer $t Temperature in celcius.
-     * @param integer $p Pressure in pascal.
-     * @param integer $h Humidity in percent.
+     * @param float $t Temperature in celcius.
+     * @param float $p Pressure in pascal.
+     * @param float $h Humidity in percent.
      * @return float The computed absolute humidity (in kg/kg).
      * @since 3.3.0
      */
@@ -87,9 +87,9 @@ trait Utilities {
     /**
      * Computes the air density.
      *
-     * @param integer $t Temperature in celcius.
-     * @param integer $p Pressure in pascal.
-     * @param integer $h Humidity in percent.
+     * @param float $t Temperature in celcius.
+     * @param float $p Pressure in pascal.
+     * @param float $h Humidity in percent.
      * @return float The computed air density (in kg/m^3).
      * @since 3.3.0
      */
@@ -134,6 +134,18 @@ trait Utilities {
      */
     protected function compute_wet_bulb($t, $h) {
         return round((0.2831 * pow ($h, 0.2735) * $t) + (0.0003018 * pow($h, 2)) + (0.01289 * $h) - 4.0962, 1);
+    }
+
+    /**
+     * Computes the delta-t.
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $h Humidity in percent.
+     * @return float The computed delta-t (in celcius).
+     * @since 3.7.0
+     */
+    protected function compute_delta_t($t, $h) {
+        return round($t - $this->compute_wet_bulb($t, $h), 1);
     }
 
     /**
@@ -281,6 +293,59 @@ trait Utilities {
         }
         return round($result, 1);
     }
+
+    /**
+     * Computes the Steadman index (Australian Apparent Temperature).
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $h Humidity in percent.
+     * @param integer $w Windspeed in km/h.
+     * @return float The computed Steadman index.
+     * @since 3.7.0
+     */
+    protected function compute_steadman($t, $h, $w) {
+        $b = $this->compute_wet_bulb($t, $h);
+        $v = $this->compute_partial_vapor_pressure($t, $h) / 100;
+        $w = $w / 3.6;
+        return round($b - 4 + ($v / 3) + ($w * 0.7), 1);
+    }
+
+    /**
+     * Computes the Summer Simmer index.
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $h Humidity in percent.
+     * @return integer The summer simmer index.
+     * @since 3.1.0
+     */
+    protected function compute_summer_simmer($t, $h) {
+
+
+        // https://www.vcalc.com/wiki/rklarsen/Summer+Simmer+Index
+
+
+        $c1 = -42.379;
+        $c2 = 2.04901523;
+        $c3 = 10.14333127;
+        $c4 = -0.22475541;
+        $c5 = -6.83783 * 0.001;
+        $c6 = -5.481717 * 0.01;
+        $c7 = 1.22874 * 0.001;
+        $c8 = 8.5282 * 0.0001;
+        $c9 = -1.99 * 0.000001;
+        $t = 1.8 * $t + 32;
+        $result = $c1 +
+            ( $c2 * $t ) +
+            ( $c3 * $h ) +
+            ( $c4 * $t * $h ) +
+            ( $c5 * $t * $t ) +
+            ( $c6 * $h * $h ) +
+            ( $c7 * $t * $t * $h ) +
+            ( $c8 * $t * $h * $h) +
+            ( $c9 * $t * $t * $h * $h);
+        return round(($result-32)/1.8);
+    }
+
 
     /**
      * Computes the cloud ceiling distance.

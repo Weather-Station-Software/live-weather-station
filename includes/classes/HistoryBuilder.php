@@ -18,6 +18,31 @@ use WeatherStation\Data\DateTime\Conversion;
  * @since 3.3.2
  */
 
+function lws_array_median($arr) {
+    if($arr){
+        $count = count($arr);
+        sort($arr);
+        $mid = floor(($count-1)/2);
+        return ($arr[$mid]+$arr[$mid+1-$count%2])/2;
+    }
+    return 0;
+}
+
+function lws_array_sd($arr) {
+    $no_value = -123456789;
+    $n = count($arr);
+    if ($n < 2) {
+        return $no_value;
+    }
+    $mean = array_sum($arr) / $n;
+    $carry = 0.0;
+    foreach ($arr as $val) {
+        $d = ((double) $val) - $mean;
+        $carry += $d * $d;
+    }
+    return sqrt($carry / $n);
+}
+
 class Builder
 {
 
@@ -33,20 +58,20 @@ class Builder
             'soil_temperature', 'leaf_wetness', 'moisture_content', 'moisture_tension', 'evapotranspiration',
             'windangle', 'gustangle', 'windstrength', 'guststrength', 'rain', 'rain_hour_aggregated', 'visibility',
             'rain_day_aggregated', 'strike_count', 'strike_instant', 'weather', 'dew_point', 'frost_point', 'sunshine',
-            'winddirection', 'gustdirection');
+            'winddirection', 'gustdirection', 'delta_t', 'steadman', 'summer_simmer');
     
     public $standard_measurements = 
         array('health_idx', 'co2', 'humidity', 'cloudiness', 'noise', 'pressure_sl', 'temperature', 'irradiance',
               'uv_index', 'illuminance', 'cloud_ceiling', 'heat_index', 'humidex', 'wind_chill', 'windangle', 
               'windstrength', 'rain_day_aggregated', 'rain', 'weather', 'dew_point', 'frost_point', 'visibility',
-              'winddirection');
+              'winddirection', 'steadman', 'summer_simmer');
     public $extended_measurements = 
         array('cbi', 'wet_bulb', 'air_density', 'wood_emc', 'equivalent_temperature', 'potential_temperature',
               'pressure', 'equivalent_potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
               'saturation_vapor_pressure', 'vapor_pressure', 'absolute_humidity', 'partial_absolute_humidity',
               'saturation_absolute_humidity', 'soil_temperature', 'leaf_wetness', 'moisture_content',
               'moisture_tension', 'evapotranspiration', 'gustangle', 'guststrength', 'strike_instant', 'strike_count',
-              'sunshine', 'gustdirection');
+              'sunshine', 'gustdirection', 'delta_t');
 
     private $Live_Weather_Station;
     private $version;
@@ -137,6 +162,117 @@ class Builder
             $this->delete_remaining_daily_values($device_id, $station['loc_timezone']);
             Logger::notice($this->facility, null, $station['station_id'], $station['station_name'], null, null, null, 'Old daily data cleaned.');
         }
+    }
+
+    /**
+     * Add a record from an imported module.
+     *
+     * @param string $timestamp
+     * @param string $device_id
+     * @param string $module_id
+     * @param string $module_type
+     * @param string $measure_type
+     * @param string $measure_set
+     * @param mixed $measure_value
+     * @param boolean $force Optional. Force the overriding of data already in database.
+     * @since 3.7.0
+     */
+    private function add_record($timestamp, $device_id, $module_id, $module_type, $measure_type, $measure_set, $measure_value, $force=false) {
+        $val = array();
+        $val['timestamp'] = $timestamp;
+        $val['device_id'] = $device_id;
+        $val['module_id'] = $module_id;
+        $val['module_type'] = $module_type;
+        $val['measure_type'] = $measure_type;
+        $val['measure_set'] = $measure_set;
+        $val['measure_value'] = $measure_value;
+        if ($force) {
+            self::insert_update_table(self::live_weather_station_histo_yearly_table(), $val);
+        }
+        else {
+            self::insert_ignore_table(self::live_weather_station_histo_yearly_table(), $val);
+        }
+    }
+
+    /**
+     * Import data from a module.
+     *
+     * @param array $data An array containing reference values.
+     * @param integer $date_start Timestamp of start (included).
+     * @param integer $date_end Timestamp of end (excluded).
+     * @param boolean $force Optional. Force the overriding of data already in database.
+     * @return array The number of measurements and days which was correctly imported.
+     * @since 3.7.0
+     */
+    public function import_data($data, $date_start, $date_end, $force=false){
+        $full_mode = (bool)get_option('live_weather_station_full_history');
+        $no_value = -123456789;
+        $result = array(0, 0);
+        $date_control = $date_start;
+        while ($date_control < $date_end) {
+            $start = $date_control;
+            $end = $date_control + 86399;
+            $index = date('Y-m-d', $start + (86400/2));
+            $count = false;
+            if (is_array($data['values'])) {
+                foreach ($data['values'] as $type => $value) {
+                    $d = array();
+                    foreach ($value as $ts => $m) {
+                        if ($ts >= $start && $ts < $end) {
+                            $d[] = $m;
+                        }
+                    }
+                    if (count($d) > 0) {
+                        if ($type === 'sum_rain') {
+                            $sets[] = array('SUM' => 'agg');
+                            $type = 'rain_day_aggregated';
+                        } else {
+                            $sets = $this->get_measurements_operations_type($type, '', $full_mode);
+                        }
+                        if (array_key_exists('MID', $sets)) {
+                            unset($sets['MID']);
+                        }
+                        if (array_key_exists('AMP', $sets)) {
+                            unset($sets['AMP']);
+                        }
+                        foreach ($sets as $set) {
+                            switch ($set) {
+                                case 'agg':
+                                    $v = array_sum($d);
+                                    break;
+                                case 'max':
+                                    $v = max($d);
+                                    break;
+                                case 'min':
+                                    $v = min($d);
+                                    break;
+                                case 'avg':
+                                    $v = array_sum($d) / count($d);
+                                    break;
+                                case 'med':
+                                    $v = lws_array_median($d);
+                                    break;
+                                case 'dev':
+                                    $v = lws_array_sd($d);
+                                    break;
+                                default:
+                                    $v = $no_value;
+                            }
+                            if ($v !== $no_value) {
+                                $this->add_record($index, $data['meta']['device_id'], $data['meta']['module_id'], $data['meta']['module_type'], $type, $set, $v, $force);
+                                $count = true;
+                            }
+                        }
+                        $result[0] += count($d);
+                    }
+                }
+            }
+            if ($count) {
+                $result[1] += 1;
+            }
+            $date_control += 86400;
+        }
+        return $result;
     }
 
     /**

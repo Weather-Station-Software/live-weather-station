@@ -257,6 +257,7 @@ class Handling {
         add_meta_box('lws-signup', sprintf(__('Subscribe', 'live-weather-station'), LWS_PLUGIN_NAME), array($this, 'signup_widget'), 'lws-dashboard', 'side');
         add_meta_box('lws-about', __('About', 'live-weather-station'), array($this, 'about_widget'), 'lws-dashboard', 'side');
         add_meta_box('lws-licenses', __('Licenses', 'live-weather-station'), array($this, 'licenses_widget'), 'lws-dashboard', 'side');
+        add_meta_box('lws-disclaimer', lws__('Disclaimer', 'live-weather-station'), array($this, 'disclaimer_widget'), 'lws-dashboard', 'side');
     }
 
     /**
@@ -385,6 +386,15 @@ class Handling {
      */
     public function licenses_widget() {
         include(LWS_ADMIN_DIR.'partials/DashboardLicenses.php');
+    }
+
+    /**
+     * Get content of the licenses box.
+     *
+     * @since 3.7.0
+     */
+    public function disclaimer_widget() {
+        include(LWS_ADMIN_DIR.'partials/DashboardDisclaimer.php');
     }
 
     /**
