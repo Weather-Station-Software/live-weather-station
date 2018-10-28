@@ -84,7 +84,7 @@ trait Client {
      * @param bool $optimize Optional. Optimize the bandwith usage if true. Optimize = FALSE enables an easier result parsing
      * @param bool $realtime Optional. Remove time offset (+scale/2) for scale bigger than max
      *
-     * @return array The measured data.
+     * @return boolean True if it was a success, false otherwise.
      * @since 3.7.0
      */
     public function get_measures($device_id, $module_id, $scale, $type, $start = null, $end = null, $limit = null, $optimize = null, $realtime = null) {
@@ -123,7 +123,7 @@ trait Client {
                     }
                 }
                 else {
-                    return array ();
+                    return false;
                 }
             }
             catch (\Exception $ex) {
@@ -148,10 +148,10 @@ trait Client {
                         Logger::warning($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Temporary unable to contact Netatmo servers. Retry will be done shortly.');
                 }
                 Logger::critical($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), $ex->getMessage());
-                return array();
+                return false;
             }
         }
-        return $this->netatmo_datas;
+        return true;
     }
 
     /**

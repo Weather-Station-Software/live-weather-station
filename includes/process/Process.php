@@ -397,6 +397,7 @@ abstract class Process {
                 $this->pass += 1;
             }
             $this->save();
+            Logger::notice($this->bp_facility, $this->bp_service, null, null, null, null, 0, 'Background process {' . $this->meta_uuid() . '} properly executed.');
         }
         catch (\Exception $ex) {
             $this->change_state($this->execution_mode());
