@@ -88,8 +88,10 @@ trait Client {
                 $nm['data_type'][] = 'humidex';
                 $nm['data_type'][] = 'cloud_ceiling';
                 $nm['data_type'][] = 'wet_bulb';
+                $nm['data_type'][] = 'delta_t';
                 $nm['data_type'][] = 'partial_vapor_pressure';
                 $nm['data_type'][] = 'wood_emc';
+                $nm['data_type'][] = 'summer_simmer';
                 $nm['dashboard_data']['time_utc'] = time();
                 $nm['dashboard_data']['temperature_ref'] = $temperature_ref;
                 $nm['dashboard_data']['humidity_ref'] = $humidity_ref;
@@ -100,8 +102,10 @@ trait Client {
                 $nm['dashboard_data']['cloud_ceiling'] = $cloud_ceiling;
                 $nm['dashboard_data']['cbi'] = $this->compute_cbi($temperature_ref, $humidity_ref);
                 $nm['dashboard_data']['wet_bulb'] = $this->compute_wet_bulb($temperature_ref, $humidity_ref);
+                $nm['dashboard_data']['delta_t'] = $this->compute_delta_t($temperature_ref, $humidity_ref);
                 $nm['dashboard_data']['partial_vapor_pressure'] = $this->compute_partial_vapor_pressure($temperature_ref, $humidity_ref);
                 $nm['dashboard_data']['wood_emc'] = $this->compute_emc($temperature_ref, $humidity_ref);
+                $nm['dashboard_data']['summer_simmer'] = $this->compute_summer_simmer($temperature_ref, $humidity_ref);
             }
             if ( ($temperature_ref != $this->value_unknown) &&
                 ($humidity_ref != $this->value_unknown) &&
@@ -164,6 +168,26 @@ trait Client {
                 $nm['dashboard_data']['temperature_ref'] = $temperature_ref;
                 $nm['dashboard_data']['wind_ref'] = $wind_ref;
                 $nm['dashboard_data']['wind_chill'] = $wind_chill;
+            }
+            if ( ($temperature_ref != $this->value_unknown) &&
+                ($humidity_ref != $this->value_unknown) &&
+                ($wind_ref != $this->value_unknown) ) {
+                $steadman = $this->compute_steadman($temperature_ref, $humidity_ref, $wind_ref);
+                if (!in_array('temperature_ref', $nm['data_type'])) {
+                    $nm['data_type'][] = 'temperature_ref';
+                }
+                if (!in_array('humidity_ref', $nm['data_type'])) {
+                    $nm['data_type'][] = 'humidity_ref';
+                }
+                if (!in_array('wind_ref', $nm['data_type'])) {
+                    $nm['data_type'][] = 'wind_ref';
+                }
+                $nm['data_type'][] = 'steadman';
+                $nm['dashboard_data']['time_utc'] = time();
+                $nm['dashboard_data']['temperature_ref'] = $temperature_ref;
+                $nm['dashboard_data']['humidity_ref'] = $humidity_ref;
+                $nm['dashboard_data']['wind_ref'] = $wind_ref;
+                $nm['dashboard_data']['steadman'] = $steadman;
             }
             if (count($nm['dashboard_data']) > 0) {
                 $result[] = $nm;

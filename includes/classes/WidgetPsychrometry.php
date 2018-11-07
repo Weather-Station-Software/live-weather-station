@@ -432,6 +432,14 @@ class Psychrometry extends \WP_Widget {
                             $datas['wet_bulb'] = array();
                             $datas['wet_bulb']['value'] = $module['datas']['wet_bulb']['value'];
                             $datas['wet_bulb']['unit'] = $module['datas']['wet_bulb']['unit']['unit'];
+                            $datas['delta_t'] = array();
+                            $datas['delta_t']['value'] = '-';
+                            $datas['delta_t']['unit'] = '';
+                            if (array_key_exists('delta_t', $module['datas'])) {
+                                $datas['delta_t'] = array();
+                                $datas['delta_t']['value'] = $module['datas']['delta_t']['value'];
+                                $datas['delta_t']['unit'] = $module['datas']['wet_bulb']['unit']['unit'];
+                            }
                         } else {
                             $show_wet_bulb = false;
                         }

@@ -451,9 +451,7 @@ class Admin {
     }
 
 
-
-
-
+    
 
     /**
      * Renders the interface elements for the corresponding field.
@@ -465,15 +463,17 @@ class Admin {
         echo $this->field_select($this->get_history_full_js_array(), get_option('live_weather_station_full_history'), 'lws_history_full', $args[0]);
     }
 
-
-
     /**
      * Initializes thresholds fields.
      *
      * @since 3.0.0
      */
+    private function uasort_reorder_by_threshold_name($a,$b){
+        return strcmp(strtolower($this->get_measurement_type($a, false, ($a === 'rain' ? 'namodule3' : 'NAMain'))), strtolower($this->get_measurement_type($b, false, ($b === 'rain' ? 'namodule3' : 'NAMain'))));
+    }
     public function init_thresholds_settings() {
         $thresholds = self::get_thresholds();
+        uasort($thresholds, array($this, 'uasort_reorder_by_threshold_name'));
         foreach ($thresholds as $threshold) {
             add_settings_field('lws_thresholds_' . $threshold, $this->get_measurement_type($threshold, false, ($threshold == 'rain' ? 'namodule3' : 'NAMain')),
                 array($this, 'lws_thresholds_callback'), 'lws_thresholds', 'lws_thresholds_section',
@@ -1502,6 +1502,22 @@ class Admin {
                             $args = compact('station', 'error');
                             break;
                         case 'modules':
+                            DeviceManager::synchronize_modules();
+                            $station = $this->get_station_informations_by_guid($id);
+                            $station['txt_location'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
+                            $station['txt_timezone'] = $this->output_timezone($station['loc_timezone']);
+                            if ($station['oldest_data'] != '0000-00-00') {
+                                $station['oldest_data_txt'] = __('Oldest data from', 'live-weather-station') . ' ' .$this->output_value($station['oldest_data'], 'oldest_data', false, false, 'NAMain', $station['loc_timezone']);
+                                $station['oldest_data_diff_txt'] = self::get_positive_time_diff_from_mysql_utc($station['oldest_data']);
+                            }
+                            else {
+                                $station['oldest_data_txt'] = false;
+                            }
+                            $station['module_detail'] = DeviceManager::get_modules_details($station['station_id']);
+                            $error = array();
+                            $args = compact('station', 'error');
+                            break;
+                        case 'data':
                             DeviceManager::synchronize_modules();
                             $station = $this->get_station_informations_by_guid($id);
                             $station['txt_location'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);

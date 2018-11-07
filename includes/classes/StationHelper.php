@@ -676,6 +676,8 @@ class Handling {
     public function tools_widget($n, $args) {
         $manage_link_icn = $this->output_iconic_value(0, 'module', false, false, 'style="color:#999"', 'fa-lg fa-fw');
         $manage_link = sprintf('<a href="?page=lws-stations&action=form&tab=manage&service=modules&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Manage modules', 'live-weather-station').'</a>', $this->station_guid);
+        $import_link_icn = $this->output_iconic_value(0, 'import', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $import_link = sprintf('<a href="?page=lws-stations&action=form&tab=import&service=data&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.lws__('Import historical data', 'live-weather-station').'</a>', $this->station_guid);
         include(LWS_ADMIN_DIR.'partials/StationTools.php');
     }
 

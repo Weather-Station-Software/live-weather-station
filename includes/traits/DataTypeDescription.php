@@ -326,6 +326,15 @@ trait Description {
             case 'wind_chill':
                 $result = ($abbr ? __('Wind chill', 'live-weather-station') : __('Wind chill', 'live-weather-station'));
                 break;
+            case 'steadman':
+                $result = ($abbr ? lws__('Steadman', 'live-weather-station') : lws__('Steadman index', 'live-weather-station'));
+                break;
+            case 'delta_t':
+                $result = ($abbr ? lws__('Delta-T', 'live-weather-station') : lws__('Delta-T', 'live-weather-station'));
+                break;
+            case 'summer_simmer':
+                $result = ($abbr ? lws__('Summer Simmer', 'live-weather-station') : lws__('Summer Simmer index', 'live-weather-station'));
+                break;
             case 'cloud_ceiling':
                 $result = ($abbr ? __('Cloud base', 'live-weather-station') : __('Cloud base altitude', 'live-weather-station'));
                 break;

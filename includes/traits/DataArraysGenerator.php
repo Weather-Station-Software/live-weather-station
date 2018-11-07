@@ -849,12 +849,15 @@ trait Generator {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'dew_point', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'frost_point', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'heat_index', $comparison, $distribution, $current, $video, $picture);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'steadman', $comparison, $distribution, $current, $video, $picture);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'summer_simmer', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'humidex', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'wind_chill', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'cloud_ceiling', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'cbi', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'air_density', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'wet_bulb', $comparison, $distribution, $current, $video, $picture);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'delta_t', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'wood_emc', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'specific_enthalpy', $comparison, $distribution, $current, $video, $picture);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'equivalent_temperature', $comparison, $distribution, $current, $video, $picture);

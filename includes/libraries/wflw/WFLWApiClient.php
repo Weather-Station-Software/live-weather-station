@@ -103,11 +103,26 @@ class WFLWApiClient
      * @param string $id The station id to get weather information for.
      * @param string $key The API key.
      *
-     * @return bool|string Returns false on failure and the fetched data in the format you specified on success.
+     * @return bool|string Returns false on failure and the fetched data on success.
      * @since 3.3.0
      */
     public function getRawPublicStationData($id, $key) {
         $command = 'observations/station/' . $id;
+        $url = $this->buildUrl($command, array('api_key='.$key));
+        return $this->cacheOrFetchResult($url);
+    }
+
+    /**
+     * Get the string returned by WeatherFlow for a specific public station.
+     *
+     * @param string $id The station id to get weather information for.
+     * @param string $key The API key.
+     *
+     * @return bool|string Returns false on failure and the fetched data on success.
+     * @since 3.3.0
+     */
+    public function getRawPublicStationMeta($id, $key) {
+        $command = 'stations/' . $id;
         $url = $this->buildUrl($command, array('api_key='.$key));
         return $this->cacheOrFetchResult($url);
     }
