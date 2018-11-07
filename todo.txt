@@ -99,11 +99,11 @@ use wind classification (textual, charts, )
 
 update Font Awesome
 
-https://community.weatherflow.com/t/steadman-apparent-temperature-australian-apparent-temperature/2248
 
-add delta-T as measurement
 
 add Zambretti forecast
+
+min/max for new indexes
 
 
 

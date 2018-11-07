@@ -36,8 +36,8 @@ trait PublicClient {
      */
     public function test_station($id) {
         $result = 'unknown station ID';
-        $wflw = new WFLWApiClient();
         try {
+            $wflw = new WFLWApiClient();
             Quota::verify(self::$service, 'GET');
             $raw_data = $wflw->getRawPublicStationData($id, self::$dev_key);
             $weather = json_decode($raw_data, true);
@@ -71,6 +71,61 @@ trait PublicClient {
         catch(\Exception $ex)
         {
             $result = 'unable to contact WeatherFlow servers';
+        }
+        return $result;
+    }
+
+    /**
+     * Get the devices attached to a station.
+     *
+     * @param string $id The station ID.
+     * @return array The devices.
+     * @since 3.7.0
+     */
+    public function get_devices($id) {
+        $result = array();
+        try {
+            $wflw = new WFLWApiClient();
+            $this->devices = array();
+            Quota::verify(self::$service, 'GET');
+            $raw_data = $wflw->getRawPublicStationMeta($id, self::$dev_key);
+            $data = json_decode($raw_data, true);
+            if (is_array($data)) {
+                if (array_key_exists('status', $data)) {
+                    if (array_key_exists('status_code', $data['status'])) {
+                        if ($data['status']['status_code'] == 0) {
+                            if (array_key_exists('stations', $data)) {
+                                if (array_key_exists('devices', $data['stations'])) {
+                                    foreach ($data['stations']['devices'] as $device) {
+                                        if (array_key_exists('serial_number', $device)) {
+                                            if ($device['device_type'] === 'AR' ||
+                                                $device['device_type'] === 'SK') {
+                                                if (array_key_exists('device_id', $device)) {
+                                                    $device_id = $device['device_id'];
+                                                    if (array_key_exists('device_meta', $device) &&
+                                                        array_key_exists('serial_number', $device)) {
+                                                        if (array_key_exists('environment', $device['device_meta'])) {
+                                                            if ($device['device_meta']['environment'] === 'indoor') {
+                                                                $result['indoor'] = $device_id;
+                                                            }
+                                                            else {
+                                                                $result['outdoor'] = $device_id;
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        catch(\Exception $ex) {
+            $result = array();
         }
         return $result;
     }

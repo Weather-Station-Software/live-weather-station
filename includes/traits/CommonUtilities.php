@@ -319,33 +319,10 @@ trait Utilities {
      * @since 3.1.0
      */
     protected function compute_summer_simmer($t, $h) {
-
-
-        // https://www.vcalc.com/wiki/rklarsen/Summer+Simmer+Index
-
-
-        $c1 = -42.379;
-        $c2 = 2.04901523;
-        $c3 = 10.14333127;
-        $c4 = -0.22475541;
-        $c5 = -6.83783 * 0.001;
-        $c6 = -5.481717 * 0.01;
-        $c7 = 1.22874 * 0.001;
-        $c8 = 8.5282 * 0.0001;
-        $c9 = -1.99 * 0.000001;
         $t = 1.8 * $t + 32;
-        $result = $c1 +
-            ( $c2 * $t ) +
-            ( $c3 * $h ) +
-            ( $c4 * $t * $h ) +
-            ( $c5 * $t * $t ) +
-            ( $c6 * $h * $h ) +
-            ( $c7 * $t * $t * $h ) +
-            ( $c8 * $t * $h * $h) +
-            ( $c9 * $t * $t * $h * $h);
-        return round(($result-32)/1.8);
+        $result = 1.98 * ($t - (0.55 - 0.0055 * $h) * ($t - 58)) - 56.83;
+        return round(($result - 32) / 1.8, 1);
     }
-
 
     /**
      * Computes the cloud ceiling distance.

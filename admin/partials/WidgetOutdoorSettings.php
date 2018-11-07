@@ -63,6 +63,14 @@ use WeatherStation\System\Help\InlineHelp;
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_humidex'); ?>" name="<?php echo $this->get_field_name('show_humidex'); ?>"<?php checked( $show_humidex ); ?> />
     <label for="<?php echo $this->get_field_id('show_humidex'); ?>"><?php esc_html_e( 'Display humidex (if available)' , 'live-weather-station'); echo InlineHelp::article(4)?></label>
     <br/>
+
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_steadman'); ?>" name="<?php echo $this->get_field_name('show_steadman'); ?>"<?php checked( $show_steadman ); ?> />
+    <label for="<?php echo $this->get_field_id('show_steadman'); ?>"><?php esc_html_e_lws__( 'Display Steadman index (if available)' , 'live-weather-station'); ?></label>
+    <br/>
+    <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_summer_simmer'); ?>" name="<?php echo $this->get_field_name('show_summer_simmer'); ?>"<?php checked( $show_summer_simmer ); ?> />
+    <label for="<?php echo $this->get_field_id('show_summer_simmer'); ?>"><?php esc_html_e_lws__( 'Display Summer Simmer index (if available)' , 'live-weather-station'); ?></label>
+    <br/>
+
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('show_windchill'); ?>" name="<?php echo $this->get_field_name('show_windchill'); ?>"<?php checked( $show_windchill ); ?> />
     <label for="<?php echo $this->get_field_id('show_windchill'); ?>"><?php esc_html_e( 'Display wind chill (if available)' , 'live-weather-station'); echo InlineHelp::article(5)?></label>
     <br/>

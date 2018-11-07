@@ -1,10 +1,17 @@
 
-#3.6.5 / October XXXXX, 2018
+#3.7.0 / November XXXXX, 2018
 
-* Improvement: better wind angle precision.
+* New: Summer Simmer index is now computed and available in all controls and outdoor widget.
+* New: Steadman index (aka "Australian apparent temperature") is now computed and available in all controls and outdoor widget.
+* New: psychrometric delta-t value is now computed and available in all controls and psychrometry widget.
+* Improvement: better wind angle precision in all computation.
 * Improvement: running background processes are now listed in the "at a glance" box.
 * Improvement: there's now a "disclaimer" box in the dashboard.
+* Improvement: thresholds are now alphabetically ordered in the settings page.
+* Improvement: modules management form is now fully responsive.
+* Improvement: full compatibility with WordPress 5.0.
 * Bug fix: in textual shortcode, trend for barometric pressure is not available in plain text (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+* Bug fix: in distribution radial charts, legend is wrong when values are rain rates.
 
 #3.6.4 / October 22nd, 2018
 

@@ -74,7 +74,8 @@ else {
                             <div class="lws-widget-small-value-up lws-widget-small-value-up-<?php echo $id ?>"><?php echo esc_html__('Wet Bulb', 'live-weather-station'); ?></div>
                         </div>
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
-                            <div class="lws-widget-small-value-down lws-widget-small-value-down-<?php echo $id ?>">&nbsp;</div>
+                            <div class="lws-widget-small-value-down lws-widget-small-value-down-<?php echo $id ?>">𝝙T=<?php echo $datas['delta_t']['value']; ?></div>
+                            <div class="lws-widget-small-unit-down lws-widget-small-unit-down-<?php echo $id ?>"><?php echo $datas['wet_bulb']['unit']; ?></div>
                         </div>
                     </div>
                 </div>

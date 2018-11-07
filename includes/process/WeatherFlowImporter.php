@@ -5,7 +5,7 @@ use WeatherStation\DB\Query;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\Unit\Conversion;
 use WeatherStation\Data\DateTime\Conversion as DateTimeConversion;
-use WeatherStation\SDK\Netatmo\Plugin\Client;
+use WeatherStation\SDK\WeatherFlow\Plugin\PublicClient;
 use WeatherStation\Data\ID\Handling as Id_Manipulation;
 use WeatherStation\Data\History\Builder;
 
@@ -19,7 +19,7 @@ use WeatherStation\Data\History\Builder;
  */
 class WeatherFlowImporter extends Process {
 
-    use Id_Manipulation, Client, Conversion, DateTimeConversion;
+    use Id_Manipulation, PublicClient, Conversion, DateTimeConversion;
 
 
     /**
@@ -186,16 +186,27 @@ class WeatherFlowImporter extends Process {
 
         $this->params['init']['end_date'] -= 86400;
 
-        $this->bp_service = 'Netatmo';
+        $this->bp_service = 'WeatherFlow';
         $station = $this->get_station_informations_by_station_id($this->params['init']['station_id']);
         $this->params['init']['station_name'] = $station['station_name'];
+        $this->params['init']['service_id'] = $station['service_id'];
         $this->params['init']['loc_timezone'] = $station['loc_timezone'];
         $this->params['init']['loc_altitude'] = $station['loc_altitude'];
         $old_dates = array();
+
+
+
+
+
+
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
         $sql = "SELECT DISTINCT device_name, module_id, module_type, module_name FROM " . $table_name . " WHERE device_id = '" . $this->params['init']['station_id'] . "'";
         $rows = $wpdb->get_results($sql, ARRAY_A);
+
+
+
+
         $this->params['todo_ext'] = array();
         $this->params['todo_int'] = array();
         $this->params['done'] = array();

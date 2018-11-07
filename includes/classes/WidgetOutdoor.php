@@ -75,6 +75,8 @@ class Outdoor extends \WP_Widget {
                 'show_frost' => false,
                 'show_heat' => false,
                 'show_humidex' => false,
+                'show_summer_simmer' => false,
+                'show_steadman' => false,
                 'show_rain' => false,
                 'show_snow' => false,
                 'show_wind' => false,
@@ -102,6 +104,8 @@ class Outdoor extends \WP_Widget {
         $result['show_frost'] = !empty($result['show_frost']) ? 1 : 0;
         $result['show_heat'] = !empty($result['show_heat']) ? 1 : 0;
         $result['show_humidex'] = !empty($result['show_humidex']) ? 1 : 0;
+        $result['show_summer_simmer'] = !empty($result['show_summer_simmer']) ? 1 : 0;
+        $result['show_steadman'] = !empty($result['show_steadman']) ? 1 : 0;
         $result['show_rain'] = !empty($result['show_rain']) ? 1 : 0;
         $result['show_snow'] = !empty($result['show_snow']) ? 1 : 0;
         $result['show_wind'] = !empty($result['show_wind']) ? 1 : 0;
@@ -145,6 +149,8 @@ class Outdoor extends \WP_Widget {
         $show_frost = (bool)$instance['show_frost'] ;
         $show_heat = (bool)$instance['show_heat'] ;
         $show_humidex = (bool)$instance['show_humidex'] ;
+        $show_summer_simmer = (bool)$instance['show_summer_simmer'] ;
+        $show_steadman = (bool)$instance['show_steadman'] ;
         $show_rain = (bool)$instance['show_rain'] ;
         $show_snow = (bool)$instance['show_snow'] ;
         $show_wind = (bool)$instance['show_wind'] ;
@@ -287,6 +293,8 @@ class Outdoor extends \WP_Widget {
         $instance['show_frost'] = !empty($new_instance['show_frost']) ? 1 : 0;
         $instance['show_heat'] = !empty($new_instance['show_heat']) ? 1 : 0;
         $instance['show_humidex'] = !empty($new_instance['show_humidex']) ? 1 : 0;
+        $instance['show_summer_simmer'] = !empty($new_instance['show_summer_simmer']) ? 1 : 0;
+        $instance['show_steadman'] = !empty($new_instance['show_steadman']) ? 1 : 0;
         $instance['show_rain'] = !empty($new_instance['show_rain']) ? 1 : 0;
         $instance['show_snow'] = !empty($new_instance['show_snow']) ? 1 : 0;
         $instance['show_wind'] = !empty($new_instance['show_wind']) ? 1 : 0;
@@ -332,6 +340,8 @@ class Outdoor extends \WP_Widget {
         $show_frost = (bool)$instance['show_frost'] ;
         $show_heat = (bool)$instance['show_heat'] ;
         $show_humidex = (bool)$instance['show_humidex'] ;
+        $show_summer_simmer = (bool)$instance['show_summer_simmer'] ;
+        $show_steadman = (bool)$instance['show_steadman'] ;
         $show_rain = (bool)$instance['show_rain'] ;
         $show_snow = (bool)$instance['show_snow'] ;
         $show_wind = (bool)$instance['show_wind'] ;
@@ -584,10 +594,12 @@ class Outdoor extends \WP_Widget {
                             $show_dew = false;
                             $show_frost = false;
                         }
-                        // Heat index & humidex
+                        // Heat index, humidex, Summer Simmer & Steadman
                         if (array_key_exists('temperature_ref', $module['datas']) &&
                             array_key_exists('humidity_ref', $module['datas']) &&
                             array_key_exists('heat_index', $module['datas']) &&
+                            array_key_exists('summer_simmer', $module['datas']) &&
+                            array_key_exists('steadman', $module['datas']) &&
                             array_key_exists('humidex', $module['datas'])
                         ) {
                             $temp_ref = $module['datas']['temperature_ref']['value'];
@@ -597,11 +609,19 @@ class Outdoor extends \WP_Widget {
                             $datas['heat']['value'] = $module['datas']['heat_index']['value'];
                             $datas['humidex'] = array();
                             $datas['humidex']['value'] = $module['datas']['humidex']['value'];
+                            $datas['summer_simmer'] = array();
+                            $datas['summer_simmer']['value'] = $module['datas']['summer_simmer']['value'];
+                            $datas['steadman'] = array();
+                            $datas['steadman']['value'] = $module['datas']['steadman']['value'];
                             $show_heat = $show_heat && $this->is_valid_heat_index($temp_ref, $hum_ref, $dew_ref);
                             $show_humidex = $show_humidex && $this->is_valid_humidex($temp_ref, $hum_ref, $dew_ref);
+                            $show_steadman = $show_steadman && $this->is_valid_steadman($temp_ref, $hum_ref);
+                            $show_summer_simmer = $show_summer_simmer && $this->is_valid_summer_simmer($temp_ref, $hum_ref);
                         } else {
                             $show_heat = false;
                             $show_humidex = false;
+                            $show_steadman = false;
+                            $show_summer_simmer = false;
                         }
                         // Wind chill
                         if (array_key_exists('temperature_ref', $module['datas']) &&
@@ -712,6 +732,8 @@ class Outdoor extends \WP_Widget {
             $show_frost = false ;
             $show_heat = false ;
             $show_humidex = false ;
+            $show_steadman = false ;
+            $show_summer_simmer = false ;
             $show_windchill = false ;
             $show_cloud_ceiling = false ;
         }

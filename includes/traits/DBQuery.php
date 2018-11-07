@@ -122,6 +122,22 @@ trait Query {
                 $sub_attributes[] = 'wind_chill';
                 $sub_attributes[] = 'temperature_ref';
                 break;
+            case 'steadman':
+                $sub_attributes[] = 'steadman';
+                $sub_attributes[] = 'temperature_ref';
+                $sub_attributes[] = 'wind_ref';
+                $sub_attributes[] = 'humidity_ref';
+                break;
+            case 'summer_simmer':
+                $sub_attributes[] = 'summer_simmer';
+                $sub_attributes[] = 'temperature_ref';
+                $sub_attributes[] = 'humidity_ref';
+                break;
+            case 'delta_t':
+                $sub_attributes[] = 'delta_t';
+                $sub_attributes[] = 'temperature_ref';
+                $sub_attributes[] = 'humidity_ref';
+                break;
             case 'temperature':
                 $sub_attributes[] = 'temperature';
                 $sub_attributes[] = 'temperature_min';

@@ -46,7 +46,8 @@ trait Output {
         'equivalent_temperature', 'potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
         'partial_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 'sunshine', 'soil_temperature', 'leaf_wetness',
         'moisture_content', 'moisture_tension', 'evapotranspiration', 'strike_count', 'strike_instant',
-        'strike_distance', 'strike_bearing', 'visibility', 'picture', 'video', 'video_imperial', 'video_metric');
+        'strike_distance', 'strike_bearing', 'visibility', 'picture', 'video', 'video_imperial', 'video_metric', 'steadman',
+        'summer_simmer', 'delta_t');
     private $not_showable_measurements = array('battery', 'firmware', 'signal', 'loc_timezone', 'loc_altitude',
         'loc_latitude', 'loc_longitude', 'last_seen', 'last_refresh', 'first_setup', 'last_upgrade', 'last_setup',
         'sunrise_c','sunrise_n','sunrise_a', 'sunset_c','sunset_n', 'sunset_a', 'day_length_c', 'day_length_n',
@@ -587,18 +588,18 @@ trait Output {
                                 $modulename = DeviceManager::get_module_name($args[2]['device_id'], $args[2]['module_id'], 'unknown');
                                 $l = array();
                                 if ($mode == 'yearly') {
-                                    $l['key'] = $this->get_measurement_type($args[2]['measurement']) . ' - ' . ucfirst($this->get_operation_name('max', true)) . ' - ' . $modulename;
+                                    $l['key'] = $this->get_measurement_type($args[2]['measurement'], false, $module_type) . ' - ' . ucfirst($this->get_operation_name('max', true)) . ' - ' . $modulename;
                                     $l['values'] = $vmax;
                                     $res[] = $l;
-                                    $l['key'] = $this->get_measurement_type($args[2]['measurement']) . ' - ' . ucfirst($this->get_operation_name('avg', true)) . ' - ' . $modulename;
+                                    $l['key'] = $this->get_measurement_type($args[2]['measurement'], false, $module_type) . ' - ' . ucfirst($this->get_operation_name('avg', true)) . ' - ' . $modulename;
                                     $l['values'] = $vavg;
                                     $res[] = $l;
-                                    $l['key'] = $this->get_measurement_type($args[2]['measurement']) . ' - ' . ucfirst($this->get_operation_name('min', true)) . ' - ' . $modulename;
+                                    $l['key'] = $this->get_measurement_type($args[2]['measurement'], false, $module_type) . ' - ' . ucfirst($this->get_operation_name('min', true)) . ' - ' . $modulename;
                                     $l['values'] = $vmin;
                                     $res[] = $l;
                                 }
                                 else {
-                                    $l['key'] = $this->get_measurement_type($args[2]['measurement']) . ' - ' . $modulename;
+                                    $l['key'] = $this->get_measurement_type($args[2]['measurement'], false, $module_type) . ' - ' . $modulename;
                                     $l['values'] = $vavg;
                                     $res[] = $l;
                                 }
@@ -6625,6 +6626,16 @@ trait Output {
                             $test = __('N/A', 'live-weather-station') ;
                         }
                         break;
+                    case 'summer_simmer':
+                        if (!$this->is_valid_summer_simmer($_result['result']['temperature_ref'], $_result['result']['humidity_ref'])) {
+                            $test = __('N/A', 'live-weather-station') ;
+                        }
+                        break;
+                    case 'steadman':
+                        if (!$this->is_valid_steadman($_result['result']['temperature_ref'], $_result['result']['humidity_ref'])) {
+                            $test = __('N/A', 'live-weather-station') ;
+                        }
+                        break;
                     case 'wind_chill':
                         if (!$this->is_valid_wind_chill($_result['result']['temperature_ref'], $result)) {
                             $test = __('N/A', 'live-weather-station') ;
@@ -6744,6 +6755,8 @@ trait Output {
             case 'frost_point':
             case 'heat_index':
             case 'humidex':
+            case 'summer_simmer':
+            case 'steadman':
             case 'wind_chill':
             case 'soil_temperature':
                 $result = true;
@@ -6906,6 +6919,8 @@ trait Output {
                 break;
             case 'heat_index':
             case 'humidex':
+            case 'steadman':
+            case 'summer_simmer':
                 $ref = get_option('live_weather_station_unit_temperature') ;
                 $result = round($this->get_temperature($value, $ref));
                 break;
@@ -7045,6 +7060,11 @@ trait Output {
                 break;
             // PSYCHROMETRY
             case 'wet_bulb':
+                $ref = get_option('live_weather_station_unit_temperature') ;
+                $result = $this->get_temperature($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_temperature_unit($ref) : '');
+                break;
+            case 'delta_t':
                 $ref = get_option('live_weather_station_unit_temperature') ;
                 $result = $this->get_temperature($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_temperature_unit($ref) : '');
@@ -7344,6 +7364,8 @@ trait Output {
             case 'heat_index':
             case 'humidex':
             case 'wind_chill':
+            case 'steadman':
+            case 'summer_simmer':
             /*
              * @fixme find better icons
              */
@@ -7369,6 +7391,12 @@ trait Output {
                 break;
             case 'module':
                 $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-database" aria-hidden="true"></i>';
+                break;
+            case 'import':
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-download" aria-hidden="true"></i>';
+                break;
+            case 'export':
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-upload" aria-hidden="true"></i>';
                 break;
             case 'location':
                 $result = '<i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-map-marker-alt':'fa-map-marker') . ' %2$s" aria-hidden="true"></i>';
@@ -7529,6 +7557,7 @@ trait Output {
                 $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-adjust" aria-hidden="true"></i>';
                 break;
             case 'wet_bulb':
+            case 'delta_t':
                 $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer" aria-hidden="true"></i>';
                 break;
             case 'wood_emc':
@@ -8062,6 +8091,7 @@ trait Output {
                 break;
             // PSYCHROMETRY
             case 'wet_bulb':
+            case 'delta_t':
             case 'equivalent_temperature':
             case 'potential_temperature':
             case 'equivalent_potential_temperature':
@@ -8325,8 +8355,11 @@ trait Output {
             case 'wind_chill':
             case 'humidex':
             case 'heat_index':
+            case 'summer_simmer':
+            case 'steadman':
             case 'cbi':
             case 'wet_bulb':
+            case 'delta_t':
             case 'equivalent_temperature':
             case 'potential_temperature':
             case 'equivalent_potential_temperature':
@@ -8512,6 +8545,12 @@ trait Output {
             case 'humidex':
                 $result = __('humidex', 'live-weather-station') ;
                 break;
+            case 'steadman':
+                $result = lws__('steadman', 'live-weather-station') ;
+                break;
+            case 'summer_simmer':
+                $result = __('summer_simmer', 'live-weather-station') ;
+                break;
             case 'wind_chill':
                 $result = __('wind chill', 'live-weather-station') ;
                 break;
@@ -8525,6 +8564,7 @@ trait Output {
             case 'temperature_min':
             case 'temperature_max':
             case 'wet_bulb':
+            case 'delta_t':
             case 'equivalent_temperature':
             case 'potential_temperature':
             case 'equivalent_potential_temperature':
@@ -9269,6 +9309,7 @@ trait Output {
                 $result = $computed && $outdoor;
                 break;
             case 'wet_bulb':
+            case 'delta_t':
             case 'air_density':
                 $result = ($computed && $outdoor) || $psychrometry;
                 break;
@@ -9484,6 +9525,16 @@ trait Output {
                                 $response[] = $measure;
                             }
                             break;
+                        case 'summer_simmer':
+                            if ($has_temp_ref && $has_hum_ref && $this->is_valid_summer_simmer($temp_ref, $hum_ref)) {
+                                $response[] = $measure;
+                            }
+                            break;
+                        case 'steadman':
+                            if ($has_temp_ref && $has_hum_ref && $this->is_valid_steadman($temp_ref, $hum_ref)) {
+                                $response[] = $measure;
+                            }
+                            break;
                         case 'humidex':
                             if ($has_temp_ref && $has_hum_ref && $has_dew_point && $this->is_valid_humidex($temp_ref, $hum_ref, $dew_point)) {
                                 $response[] = $measure;
@@ -9668,6 +9719,7 @@ trait Output {
                             }
                             break;
                         case 'wet_bulb':
+                        case 'delta_t':
                         case 'air_density':
                         case 'wood_emc':
                         case 'emc':
@@ -9884,6 +9936,20 @@ trait Output {
                     case 'heat_index':
                         if (strtolower($data['module_type']) == 'nacomputed') {
                             if ($this->is_valid_heat_index($tr, $hr, $dr)) {
+                                $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
+                            }
+                        }
+                        break;
+                    case 'summer_simmer':
+                        if (strtolower($data['module_type']) == 'nacomputed') {
+                            if ($this->is_valid_summer_simmer($tr, $hr)) {
+                                $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
+                            }
+                        }
+                        break;
+                    case 'steadman':
+                        if (strtolower($data['module_type']) == 'nacomputed') {
+                            if ($this->is_valid_steadman($tr, $hr)) {
                                 $temp_like = sprintf('%.1F', round($data['measure_value'], 1));
                             }
                         }
@@ -10136,6 +10202,38 @@ trait Output {
     }
 
     /**
+     * Indicates if steadman index is valid (i.e. must be displayed).
+     *
+     * @param   integer   $temp_ref      Reference temperature in celcius degrees (reference = as it was at compute time).
+     * @param   integer   $hum_ref      Reference humidity in % (reference = as it was at compute time).
+     * @return  boolean   True if heat index is valid, false otherwise.
+     * @since 3.7.0
+     */
+    protected function is_valid_steadman($temp_ref, $hum_ref) {
+        $result = false;
+        if ( ($temp_ref >= 27) && ($hum_ref>=40)) {
+            $result = true;
+        }
+        return $result;
+    }
+
+    /**
+     * Indicates if summer simmer index is valid (i.e. must be displayed).
+     *
+     * @param   integer   $temp_ref      Reference temperature in celcius degrees (reference = as it was at compute time).
+     * @param   integer   $hum_ref      Reference humidity in % (reference = as it was at compute time).
+     * @return  boolean   True if heat index is valid, false otherwise.
+     * @since 3.7.0
+     */
+    protected function is_valid_summer_simmer($temp_ref, $hum_ref) {
+        $result = false;
+        if ( ($temp_ref >= 27) && ($hum_ref>=40)) {
+            $result = true;
+        }
+        return $result;
+    }
+
+    /**
      * Indicates if humidex is valid (i.e. must be displayed).
      *
      * @param   integer   $temp_ref      Reference temperature in celcius degrees (reference = as it was at compute time).
@@ -10172,7 +10270,10 @@ trait Output {
             case 'wind_chill':
             case 'humidex':
             case 'heat_index':
+            case 'steadman':
+            case 'summer_simmer':
             case 'wet_bulb':
+            case 'delta_t':
             case 'equivalent_temperature':
             case 'potential_temperature':
             case 'equivalent_potential_temperature':
