@@ -10,6 +10,8 @@
 * Improvement: thresholds are now alphabetically ordered in the settings page.
 * Improvement: modules management form is now fully responsive.
 * Improvement: full compatibility with WordPress 5.0.
+* Improvement: added inline help while adding or editing station for Netatmo, WeatherFlow, BloomSky, Pioupiou, Ambient and sticketags-based stations.
+* Improvement: added inline help for modules management.
 * Bug fix: in textual shortcode, trend for barometric pressure is not available in plain text (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
 * Bug fix: in distribution radial charts, legend is wrong when values are rain rates.
 
@@ -57,7 +59,7 @@
 * New: notification system in Weather Station dashboard.
 * New language: German / Formal German (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/) and all German translators for their involvement).
 * Improvement: full redesign of wind handling. There are now two measurements: [wind source and wind direction](https://weather.station.software/handbook/background-processes/wind-angle-wind-source-expander/).
-* Improvement: textual shortcodes can now be be autorefreshed every 2 minutes.
+* Improvement: textual shortcodes can now be autorefreshed every 2 minutes.
 * Improvement: all charts and graphs can now use user-editable colors schemes (thanks to Ralf Karpa for the suggestion).
 * Improvement: customized name and visibility of modules are now viewable in station view.
 * Improvement: all widgets can have the station view snapshot as background (for station supporting visual snapshots).

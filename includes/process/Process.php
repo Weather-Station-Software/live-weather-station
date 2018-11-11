@@ -32,7 +32,7 @@ abstract class Process {
     protected $silent = false;
 
     private $chrono = 0.0;
-    private $uuid = null;
+    protected $uuid = null;
     protected $bp_facility = 'Background Process';
     protected $bp_service = null;
 
@@ -204,6 +204,16 @@ abstract class Process {
     }
 
     /**
+     * Set the notification on error.
+     *
+     * @since 3.7.0
+     */
+    protected function error_notification() {
+        $s = sprintf(lws__('The background process named <em>%s</em> has NOT completed successfully.', 'live-weather-station'), $this->name());
+        Notifier::error($this->name(), $this->url(), $s, true);
+    }
+
+    /**
      * Get the priority of the process.
      *
      * @return int The priority of the process.
@@ -226,6 +236,14 @@ abstract class Process {
      * @since 3.6.0
      */
     protected abstract function is_terminated();
+
+    /**
+     * Verify if process is in error.
+     *
+     * @return boolean True if the process is is in error. False otherwise.
+     * @since 3.7.0
+     */
+    protected abstract function is_in_error();
 
     /**
      * Get the process row.
@@ -269,7 +287,12 @@ abstract class Process {
                 }
                 if ($this->is_terminated()) {
                     $this->change_state($this->state_end);
-                    $this->send_end_of_process();
+                    if ($this->is_in_error()) {
+                        $this->send_error_on_process();
+                    }
+                    else {
+                        $this->send_end_of_process();
+                    }
                 }
             }
             $this->save();
@@ -277,7 +300,7 @@ abstract class Process {
     }
 
     /**
-     * Send a message and a notification when process is finished.
+     * Send a message and a notification when process is successfully finished.
      *
      * @since 3.6.0
      */
@@ -308,6 +331,41 @@ abstract class Process {
         }
         if (!$this->silent) {
             $this->end_notification();
+        }
+    }
+
+    /**
+     * Send a message and a notification when process is not successfully finished.
+     *
+     * @since 3.7.0
+     */
+    public function send_error_on_process() {
+        $detail = $this->message();
+        $to = get_bloginfo('admin_email');
+        $subject = lws__('Error of the background process:', 'live-weather-station') . ' ' . $this->name();
+        $message = __('Hello!', 'live-weather-station') . "\r\n" . "\r\n";
+        $message .= sprintf(lws__('%s informs you that the background process named "%s" has NOT completed successfully.', 'live-weather-station'), LWS_PLUGIN_NAME, $this->name()) . "\r\n" . "\r\n";
+        if ($detail !== '') {
+            $message .= $detail . "\r\n" . "\r\n";
+        }
+        $message .= __('Have a nice day.', 'live-weather-station') . "\r\n" . "\r\n";
+        $message .= '- - - - - - - - - - - - - - - - - - - - - - -' . "\r\n";
+        $message .= __('Name:', 'live-weather-station') . ' ' . $this->name() . "\r\n" ;
+        $message .= __('Description:', 'live-weather-station') . ' ' . $this->description() . "\r\n" ;
+        $message .= __('More information:', 'live-weather-station') . ' ' . $this->url() . "\r\n" ;
+        try {
+            if (!$this->silent) {
+                if (function_exists('wp_mail')) {
+                    wp_mail($to, $subject, $message);
+                }
+            }
+            Logger::debug($this->bp_facility, $this->bp_service, null, null, null, null, 0, 'Mail sent from background process {' . $this->meta_uuid() . '}.');
+        }
+        catch (\Exception $ex) {
+            Logger::error($this->bp_facility, $this->bp_service, null, null, null, null, 999, 'Unable to send mail from background process {' . $this->meta_uuid() . '}. Message: ' . $ex->getMessage());
+        }
+        if (!$this->silent) {
+            $this->error_notification();
         }
     }
 
@@ -386,7 +444,12 @@ abstract class Process {
             $this->run_core();
             if ($this->is_terminated()) {
                 $this->change_state($this->state_end);
-                $this->send_end_of_process();
+                if ($this->is_in_error()) {
+                    $this->send_error_on_process();
+                }
+                else {
+                    $this->send_end_of_process();
+                }
             }
             else {
                 $this->change_state($this->execution_mode());

@@ -36,7 +36,7 @@ $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
                 <th scope="row"><label for="station_name"><?php esc_html_e( 'Station', 'live-weather-station' );?></label></th>
                 <td align="left">
                     <span class="select-option">
-                        <select class="option-select" name="id">
+                        <select class="option-select" name="id" style="max-width: 300px;">
                             <?php foreach($stations as $station) { ?>
                                 <option value="<?php echo $station['device_id']; ?>"<?php echo ($station['installed'] ? ' disabled' : ''); ?>><?php echo $station['station_name']; ?></option>;
                             <?php } ?>

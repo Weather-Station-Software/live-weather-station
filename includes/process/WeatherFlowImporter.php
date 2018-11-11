@@ -82,6 +82,16 @@ class WeatherFlowImporter extends Process {
     }
 
     /**
+     * Verify if process is in error.
+     *
+     * @return boolean True if the process is in error. False otherwise.
+     * @since 3.7.0
+     */
+    protected function is_in_error(){
+        return false;
+    }
+
+    /**
      * Get the name of the process.
      *
      * @param boolean $translated Optional. Indicates if the name must be translated.

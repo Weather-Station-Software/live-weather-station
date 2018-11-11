@@ -15,6 +15,7 @@ require_once (__DIR__.'/autoload.php');
 use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\URL\Client as URL;
 use WeatherStation\System\Environment\Manager as EnvManager;
+use WeatherStation\System\Storage\Manager as FS;
 
 /**
  * Definition of main constants.
@@ -24,7 +25,7 @@ use WeatherStation\System\Environment\Manager as EnvManager;
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.7.0-dev1');
+define('LWS_VERSION', '3.7.0-dev2');
 define('LWS_CODENAME', '"Mano Negra"');
 define('LWS_WHATSNEW', 'https://weather.station.software/blog/weather-station-3-6-mano-negra/');
 define('LWS_SHOW_CHANGELOG', false);
@@ -65,7 +66,6 @@ define('LWS_IC_AUTOPTIMIZE', EnvManager::is_autoptimize_installed());
 define('LWS_IC_HC', EnvManager::is_hyper_cache_installed());
 
 
-
 /**
  * Initialize the Logger class that is responsible for logging.
  *
@@ -80,6 +80,7 @@ require_once LWS_INCLUDES_DIR.'system/Logger.php';
  */
 function run_Live_Weather_Station() {
     URL::init_rewrite_rules();
+    FS::init();
     $plugin = new \WeatherStation\System\Plugin\Core();
     $plugin->run();
     Watchdog::start();

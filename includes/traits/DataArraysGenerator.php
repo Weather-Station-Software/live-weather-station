@@ -2874,4 +2874,54 @@ trait Generator {
         $result[] = array(1, __('Fast', 'live-weather-station'));
         return $result;
     }
+
+    /**
+     * Get export formats.
+     *
+     * @return array An array containing the available export formats.
+     * @since 3.7.0
+     */
+    public static function _get_export_formats_array() {
+        $result = array();
+        $result['csv'] = array('name' => 'CSV', 'description' => lws__('A text file format, presenting the data as lines of comma-separated values. This type of format can be read by the majority of spreadsheet software (Calc, Excel, Numbers, etc.) and allows all the data manipulation you want.', 'live-weather-station'));
+        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(lws__('A standard format used by %s to allow export/import between different WordPress instances. If you want to save your historical data so you can import it into another WordPress site (or another station), this is the ideal format.', 'live-weather-station'), LWS_PLUGIN_NAME));
+        return $result;
+    }
+
+    /**
+     * Get export formats.
+     *
+     * @return array An array containing the available export formats.
+     * @since 3.7.0
+     */
+    public function get_export_formats_array() {
+        return self::_get_export_formats_array();
+    }
+
+    /**
+     * Get import formats.
+     *
+     * @param string $service Optional. The service for which to generate the array. May be 'none', 'all' or a service name like 'netatmo' or 'weatherflow'.
+     * @return array An array containing the available import formats.
+     * @since 3.7.0
+     */
+    public static function _get_import_formats_array($service = 'none') {
+        $result = array();
+        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(lws__('Import from a <em>.ndjson</em> file previously exported by %s.', 'live-weather-station'), LWS_PLUGIN_NAME));
+        if ($service === 'all' || $service === 'netatmo' || $service === 'netatmohc') {
+            $result['netatmo'] = array('name' => lws__('Netatmo cloud services', 'live-weather-station'), 'description' => lws__('Import the data stored by Netatmo for your station or device.', 'live-weather-station'));
+        }
+        return $result;
+    }
+
+    /**
+     * Get import formats.
+     *
+     * @param string $service Optional. The service for which to generate the array. May be 'none', 'all' or a service name like 'netatmo' or 'weatherflow'.
+     * @return array An array containing the available import formats.
+     * @since 3.7.0
+     */
+    public function get_import_formats_array($service = 'none') {
+        return self::_get_import_formats_array($service);
+    }
 }

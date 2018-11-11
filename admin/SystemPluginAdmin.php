@@ -1528,10 +1528,14 @@ class Admin {
                             }
                             else {
                                 $station['oldest_data_txt'] = false;
+                                $station['oldest_data'] = date('Y-m-d');
                             }
+                            $station['newest_data'] = date('Y-m-d', time() - 86400);
                             $station['module_detail'] = DeviceManager::get_modules_details($station['station_id']);
+                            $export_formats = self::_get_export_formats_array();
+                            $import_formats = self::_get_import_formats_array();
                             $error = array();
-                            $args = compact('station', 'error');
+                            $args = compact('station', 'error', 'export_formats', 'import_formats');
                             break;
                         case 'weatherunderground':
                             if ($id) {
