@@ -42,6 +42,7 @@ use WeatherStation\Engine\Module\Yearly\Windrose as YearlyWindrose;
 use WeatherStation\Engine\Module\Yearly\Timelapse;
 use WeatherStation\System\Plugin\Deactivator;
 use WeatherStation\System\Device\Manager as DeviceManager;
+use WeatherStation\System\Background\ProcessManager;
 
 
 /**
@@ -245,6 +246,7 @@ class Handling {
                         $wow = false;
                         if (($guid != 0) && ($guid == $this->station_guid)) {
                             $station = $this->get_station_informations_by_guid($guid);
+                            $update = true;
                             if (array_key_exists('submit-publish', $_POST)) {
                                 foreach ($this->publishing_proto as $proto) {
                                     if (array_key_exists($proto . '_sync', $_POST)) {
@@ -336,6 +338,35 @@ class Handling {
                                     }
                                 }
                             }
+                            if (array_key_exists('do-export-data', $_POST)) {
+                                $success = false;
+                                if (array_key_exists('lws-date-start', $_POST) && array_key_exists('lws-date-end', $_POST) && array_key_exists('lws-format', $_POST)) {
+                                    $args = array();
+                                    $args['init'] = array();
+                                    $args['init']['station_id'] = $station['station_id'];
+                                    $args['init']['start_date'] = sanitize_text_field($_POST['lws-date-start']);
+                                    $args['init']['end_date'] = sanitize_text_field($_POST['lws-date-end']);
+                                    $format = sanitize_text_field(strtolower($_POST['lws-format']));
+                                    $classname = 'Line' . ucfirst($format) . 'Exporter';
+                                    ProcessManager::register($classname, $args);
+                                    $success = true;
+                                }
+                                if ($success) {
+                                    $message = lws__('Data export for the station %s has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');
+                                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                                    add_settings_error('lws_nonce_success', 200, $message, 'updated');
+                                    Logger::notice('Export Manager', null, $station['station_id'], $station['station_name'], null, null, null, 'Data export launched.');
+                                }
+                                else {
+                                    $message = lws__('Unable to launch data export for the station %s.', 'live-weather-station');
+                                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                                    add_settings_error('lws_nonce_error', 200, $message, 'error');
+                                    Logger::error('Export Manager', null, $station['station_id'], $station['station_name'], null, null, null, 'Unable to launch data export.');
+                                }
+                                $update = false;
+                            }
+
+
                             if ($connect) {
                                 $this->update_stations_table($station);
                                 $datas = array();
@@ -393,29 +424,31 @@ class Handling {
                                     //error_log(LWS_PLUGIN_NAME . ' / ' . LWS_VERSION . ' / ' . get_class() . ' / ' . get_class($this) . ' / Error code: ' . $ex->getCode() . ' / Error message: ' . $ex->getMessage());
                                 }
                             }
-                            if ($this->update_stations_table($station)) {
-                                if ($save) {
-                                    $message = __('The station %s has been correctly updated.', 'live-weather-station');
-                                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
-                                    add_settings_error('lws_nonce_success', 200, $message, 'updated');
-                                    Logger::notice($this->service, null, $station['station_id'], $station['station_name'], null, null, null, 'Station updated.');
-                                    Framework::apply_configuration();
+                            if ($update) {
+                                if ($this->update_stations_table($station)) {
+                                    if ($save) {
+                                        $message = __('The station %s has been correctly updated.', 'live-weather-station');
+                                        $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                                        add_settings_error('lws_nonce_success', 200, $message, 'updated');
+                                        Logger::notice($this->service, null, $station['station_id'], $station['station_name'], null, null, null, 'Station updated.');
+                                        Framework::apply_configuration();
+                                    } else {
+                                        $message = __('Unable to update the station %s.', 'live-weather-station');
+                                        $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                                        add_settings_error('lws_nonce_error', 403, $message, 'error');
+                                        Logger::error($this->service, null, $station['station_id'], $station['station_name'], null, null, null, 'Unable to update the station.');
+                                    }
                                 } else {
                                     $message = __('Unable to update the station %s.', 'live-weather-station');
                                     $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                                     Logger::error($this->service, null, $station['station_id'], $station['station_name'], null, null, null, 'Unable to update the station.');
                                 }
-                            } else {
-                                $message = __('Unable to update the station %s.', 'live-weather-station');
-                                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
-                                add_settings_error('lws_nonce_error', 403, $message, 'error');
-                                Logger::error($this->service, null, $station['station_id'], $station['station_name'], null, null, null, 'Unable to update the station.');
                             }
                         }
                     }
                 } else {
-                    $message = __('Unable to perform this update.', 'live-weather-station');
+                    $message = lws__('Unable to perform this operation.', 'live-weather-station');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                     Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to securely perform an update for a station.');
@@ -678,6 +711,8 @@ class Handling {
         $manage_link = sprintf('<a href="?page=lws-stations&action=form&tab=manage&service=modules&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Manage modules', 'live-weather-station').'</a>', $this->station_guid);
         $import_link_icn = $this->output_iconic_value(0, 'import', false, false, 'style="color:#999"', 'fa-lg fa-fw');
         $import_link = sprintf('<a href="?page=lws-stations&action=form&tab=import&service=data&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.lws__('Import historical data', 'live-weather-station').'</a>', $this->station_guid);
+        $export_link_icn = $this->output_iconic_value(0, 'export', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $export_link = sprintf('<a href="?page=lws-stations&action=form&tab=export&service=data&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.lws__('Export historical data', 'live-weather-station').'</a>', $this->station_guid);
         include(LWS_ADMIN_DIR.'partials/StationTools.php');
     }
 

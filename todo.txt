@@ -79,7 +79,11 @@ Fully delete a station in fast collect mode
 * DOCUMENTATION       *
 ***********************
 
-background process as system for event logs
+import data page
+export data page
+manage modules page
+add export manager and import manager as events systems
+add storage manager as events system
 
 ***********************
 * 3.6.x               *

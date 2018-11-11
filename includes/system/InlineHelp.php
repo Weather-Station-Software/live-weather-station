@@ -7,6 +7,7 @@ use WeatherStation\UI\SVG\Handling as SVG;
 use WeatherStation\DB\Query;
 use WeatherStation\System\Environment\Manager;
 use WeatherStation\System\I18N\Handling as Intl;
+use WeatherStation\Data\Arrays\Generator;
 
 /**
  * This class add inline help links to the plugin.
@@ -18,7 +19,7 @@ use WeatherStation\System\I18N\Handling as Intl;
  */
 class InlineHelp {
 
-    use Query;
+    use Query, Generator;
 
     private $Live_Weather_Station;
     private $version;
@@ -46,6 +47,9 @@ class InlineHelp {
             'community/', //18 main support page
             'handbook/controls', //19 shortcodes
             'handbook/settings/styles', //20  source: settings - styles tab
+            'handbook/stations-management/module-management/',  //21
+            'handbook/stations-management/data-export/',  //22
+            'handbook/stations-management/data-import/',  //23
             ),
         /*'fr' => array (
             'documentation/reglages', //0  source: settings - general tab
@@ -571,9 +575,126 @@ class InlineHelp {
             }
         }
         if (isset($action) && $action == 'form') {
+            if (isset($service) && $service == 'modules' && isset($tab) && $tab == 'manage') {
+                $s1 = lws__('In this screen, you can set a displayed name for each module of the station. You can choose, too, to hide some modules.', 'live-weather-station');
+                $tabs[] = array(
+                    'title'    => __('Overview', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-overview',
+                    'content'  => '<p>' . $s1 . '</p>');
+            }
+            if (isset($service) && $service == 'data' && isset($tab) && $tab == 'export') {
+                $formats = self::_get_export_formats_array();
+                $s1 = lws__('This page allows you to obtain a file containing historical data of the station for a given period, and in a specific format.', 'live-weather-station');
+                $s2 = '<em>' . sprintf(lws__('Note: if %s has no historical data for the station and/or for the given period, the file will be empty.', 'live-weather-station'), LWS_PLUGIN_NAME) . '</em>';
+                $tabs[] = array(
+                    'title'    => __('Overview', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-' . $tab . '-overview',
+                    'content'  => '<p>' . $s1 . '</p>' . $s2 );
+                $s1 = sprintf(lws__('%s supports the following export formats:', 'live-weather-station'), LWS_PLUGIN_NAME);
+                $s2 = '';
+                foreach($formats as $format) {
+                    $s2 .= '<p><strong>' . $format['name'] . '</strong> &mdash; ' . $format['description'] . '</p>';
+                }
+                $tabs[] = array(
+                    'title'    => __('Formats', 'live-weather-station'),
+                    'id'       => 'lws-contextual-export-formats',
+                    'content'  => '<p>' . $s1 . '</p>' . $s2 );
+            }
+            if (isset($service) && $service == 'data' && isset($tab) && $tab == 'import') {
+                $formats = self::_get_import_formats_array('all');
+                $s1 = lws__('This page allows you to import historical data in the station.', 'live-weather-station');
+                $tabs[] = array(
+                    'title'    => __('Overview', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-' . $tab . '-overview',
+                    'content'  => '<p>' . $s1 . '</p>');
+                $s1 = sprintf(lws__('%s supports the following import services and formats:', 'live-weather-station'), LWS_PLUGIN_NAME);
+                $s2 = '';
+                foreach($formats as $format) {
+                    $s2 .= '<p><strong>' . $format['name'] . '</strong> &mdash; ' . $format['description'] . '</p>';
+                }
+                $tabs[] = array(
+                    'title'    => __('Formats', 'live-weather-station'),
+                    'id'       => 'lws-contextual-import-formats',
+                    'content'  => '<p>' . $s1 . '</p>' . $s2 );
+            }
+            if (isset($service) && $service == 'netatmo') {
+                $s1 = __('In this screen, you can add:', 'live-weather-station') . ' ' . __('a Netatmo station to which you have access to.', 'live-weather-station');
+                $tabs[] = array(
+                    'title'    => __('Overview', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-overview',
+                    'content'  => '<p>' . $s1 . '</p>');
+
+                $s1 = lws__('To add a station of this type, just select it in the dropdown list.', 'live-weather-station') . '</em>';
+                $tabs[] = array(
+                    'title'    => __('Settings', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-settings',
+                    'content'  => '<p>' . $s1 . '</p>');
+            }
+            if (isset($service) && $service == 'netatmohc') {
+                $s1 = lws__('In this screen, you can add:', 'live-weather-station') . ' ' . __('a Netatmo "Healthy Home Coach" device to which you have access to.', 'live-weather-station');
+                $tabs[] = array(
+                    'title'    => __('Overview', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-overview',
+                    'content'  => '<p>' . $s1 . '</p>');
+
+                $s1 = lws__('To add a station of this type, just select it in the dropdown list.', 'live-weather-station') . '</em>';
+                $tabs[] = array(
+                    'title'    => __('Settings', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-settings',
+                    'content'  => '<p>' . $s1 . '</p>');
+            }
+            if (isset($service) && $service == 'weatherflow') {
+                $s1 = lws__('In this screen, you can add or edit:', 'live-weather-station') . ' ' . __('a public WeatherFlow station.', 'live-weather-station');
+                $tabs[] = array(
+                    'title'    => __('Overview', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-overview',
+                    'content'  => '<p>' . $s1 . '</p>');
+
+                $s1 = __('To add a station of this type, complete the fields', 'live-weather-station');
+                $s1 .= ', <strong>' . lcfirst(__('City', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('Country', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Station ID', 'live-weather-station')) . '</strong>.';
+                $s3 = '<em>' . __('Note that the information you enter here is required for computations and presentations of meteorological and astronomical data. It is therefore crucial that they are as accurate as possible.', 'live-weather-station') . '</em>';
+                $tabs[] = array(
+                    'title'    => __('Settings', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-settings',
+                    'content'  => '<p>' . $s1 . '</p><p>' . $s3 . '</p>');
+            }
+            if (isset($service) && $service == 'bloomsky') {
+                $s1 = lws__('In this screen, you can add:', 'live-weather-station') . ' ' . __('a Bloomsky station to which you have access to.', 'live-weather-station');
+                $tabs[] = array(
+                    'title'    => __('Overview', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-overview',
+                    'content'  => '<p>' . $s1 . '</p>');
+
+                $s1 = lws__('To add a station of this type, just select it in the dropdown list.', 'live-weather-station') . '</em>';
+                $tabs[] = array(
+                    'title'    => __('Settings', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-settings',
+                    'content'  => '<p>' . $s1 . '</p>');
+            }
+            if (isset($service) && $service == 'pioupiou') {
+                $s1 = lws__('In this screen, you can add or edit:', 'live-weather-station') . ' ' . __('a Pioupiou sensor as a station.', 'live-weather-station');
+                $tabs[] = array(
+                    'title'    => __('Overview', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-overview',
+                    'content'  => '<p>' . $s1 . '</p>');
+
+                $s1 = __('To add a station of this type, complete the fields', 'live-weather-station');
+                $s1 .= ' <strong>' . lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('City', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('Country', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('Altitude', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Station ID', 'live-weather-station')) . '</strong>.';
+                $s3 = '<em>' . __('Note that the information you enter here is required for computations and presentations of meteorological and astronomical data. It is therefore crucial that they are as accurate as possible.', 'live-weather-station') . '</em>';
+                $tabs[] = array(
+                    'title'    => __('Settings', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-settings',
+                    'content'  => '<p>' . $s1 . '</p><p>' . $s3 . '</p>');
+            }
             if (isset($service) && $service == 'location') {
-                $s1 = __('In this screen, you can', 'live-weather-station');
-                $s1 .= ' ' . lcfirst(__('Add or edit a "virtual" weather station', 'live-weather-station')) . '.';
+                $s1 = lws__('In this screen, you can add or edit:', 'live-weather-station') . ' ' . __('a "virtual" weather station where only the coordinates or the city are known.', 'live-weather-station');
                 $s2 = sprintf(__('A "virtual" weather station is not a real, hardware station. This is in fact an assembly of meteorological measurements collected and updated by OpenWeatherMap service for specific coordinates; these measurements are presented by %s as those from a real station.', 'live-weather-station'), LWS_PLUGIN_NAME);
                 $tabs[] = array(
                     'title'    => __('Overview', 'live-weather-station'),
@@ -595,6 +716,28 @@ class InlineHelp {
                     'title'    => __('Settings', 'live-weather-station'),
                     'id'       => 'lws-contextual-' . $service . '-settings',
                     'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p>');
+            }
+            if (isset($service) && $service == 'ambient') {
+                $s1 = lws__('In this screen, you can add or edit:', 'live-weather-station') . ' ' . __('a personal weather station published on Ambient Weather Network.', 'live-weather-station');
+                $tabs[] = array(
+                    'title'    => __('Overview', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-overview',
+                    'content'  => '<p>' . $s1 . '</p>');
+
+                $s1 = __('To add a station of this type, first select the station in the dropdown list then, complete the fields', 'live-weather-station');
+                $s1 .= ' <strong>' . lcfirst(__('Station name', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('City', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('Country', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('Altitude', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('Latitude', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Longitude', 'live-weather-station')) . '</strong>.';
+                $s2 = '<em>' . __('Note that the information you enter here is required for computations and presentations of meteorological and astronomical data. It is therefore crucial that they are as accurate as possible.', 'live-weather-station') . '</em>';
+                $tabs[] = array(
+                    'title'    => __('Settings', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-settings',
+                    'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p>');
             }
             if (isset($service) && $service == 'weatherunderground') {
                 $s1 = __('In this screen, you can', 'live-weather-station');
@@ -618,8 +761,7 @@ class InlineHelp {
                     'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p>');
             }
             if (isset($service) && $service == 'realtime') {
-                $s1 = __('In this screen, you can', 'live-weather-station');
-                $s1 .= ' ' . lcfirst(__('Add a station via <em>realtime</em> file', 'live-weather-station')) . '.';
+                $s1 = lws__('In this screen, you can add or edit:', 'live-weather-station') . ' ' . __('a station exporting its data via a <em>realtime.txt</em> file (Cumulus, etc.).', 'live-weather-station');
                 $s2 = sprintf(__('If you operate your weather station using a software such as %1$s or %2$s, you can ask it to export its data via a  <em>%3$s</em> file. This file must be locally accessible, via a file server or a web server to be read by %4$s.', 'live-weather-station'), 'Cumulus', 'WeeWX', 'realtime.txt', LWS_PLUGIN_NAME);
                 $tabs[] = array(
                     'title'    => __('Overview', 'live-weather-station'),
@@ -651,8 +793,7 @@ class InlineHelp {
                     'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p>');
             }
             if (isset($service) && $service == 'clientraw') {
-                $s1 = __('In this screen, you can', 'live-weather-station');
-                $s1 .= ' ' . lcfirst(__('Add a station via <em>clientraw</em> file', 'live-weather-station')) . '.';
+                $s1 = lws__('In this screen, you can add or edit:', 'live-weather-station') . ' ' . __('a station exporting its data via a <em>clientraw.txt</em> file (Weather Display, WeeWX, etc.).', 'live-weather-station');
                 $s2 = sprintf(__('If you operate your weather station using a software such as %1$s or %2$s, you can ask it to export its data via a  <em>%3$s</em> file. This file must be locally accessible, via a file server or a web server to be read by %4$s.', 'live-weather-station'), 'Weather Display', 'WeeWX', 'clientraw.txt', LWS_PLUGIN_NAME);
                 $tabs[] = array(
                     'title'    => __('Overview', 'live-weather-station'),
@@ -666,6 +807,37 @@ class InlineHelp {
                 $s1 .= ', <strong>' . lcfirst(__('Country', 'live-weather-station')) . '</strong>';
                 $s1 .= ', <strong>' . lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
                 $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Altitude', 'live-weather-station')) . '</strong>.';
+                $s1 .= ' ' . __('Then, complete', 'live-weather-station') . ' <strong>' . lcfirst(__('Source type', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong> ';
+                $s1 .= ' ' . __('as follow:', 'live-weather-station') . '<br/>';
+                $s1 .= '<p><strong>' . __('Local file', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . sprintf(__('you can specify the full path of the file like %1$s or %2$s or %3$s.', 'live-weather-station'), '<code>/path/to/clientraw.txt</code>', '<code>C:\path\to\clientraw.txt</code>', '<code>\\\\smbserver\share\path\to\clientraw.txt</code>') . '</p>';
+                $s1 .= '<p><strong>' . __('Web server', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . sprintf(__('you can specify the resource like %1$s.', 'live-weather-station'), '<code>www.example.com/path/clientraw.txt</code>') . '</p>';
+                $s1 .= '<p><strong>' . __('File server', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . sprintf(__('you can specify the resource like %1$s (anonymous file server) or %2$s (authenticated file server).', 'live-weather-station'), '<code>example.com/path/clientraw.txt</code>', '<code>user:password@example.com/path/clientraw.txt</code>') . '</p>';
+                $s2 = '<em>' . __('Note that the information you enter here is required for computations and presentations of meteorological and astronomical data. It is therefore crucial that they are as accurate as possible.', 'live-weather-station') . '</em>';
+                $tabs[] = array(
+                    'title'    => __('Settings', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-settings',
+                    'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p>');
+            }
+            if (isset($service) && $service == 'stickertags') {
+                $s1 = lws__('In this screen, you can add or edit:', 'live-weather-station') . ' ' . __('a station exporting its data via a stickertags file (WeatherLink, WsWin32, MeteoBridge, etc.)..', 'live-weather-station');
+                $tabs[] = array(
+                    'title'    => __('Overview', 'live-weather-station'),
+                    'id'       => 'lws-contextual-' . $service . '-overview',
+                    'content'  => '<p>' . $s1 . '</p>');
+
+                $s1 = __('To add a station of this type, first complete the fields', 'live-weather-station');
+                $s1 .= ' <strong>' . lcfirst(__('Station name', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('City', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('Country', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('Altitude', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lcfirst(__('Latitude', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Longitude', 'live-weather-station')) . '</strong>.';
                 $s1 .= ' ' . __('Then, complete', 'live-weather-station') . ' <strong>' . lcfirst(__('Source type', 'live-weather-station')) . '</strong>';
                 $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong> ';
                 $s1 .= ' ' . __('as follow:', 'live-weather-station') . '<br/>';
@@ -725,13 +897,31 @@ class InlineHelp {
                 'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p><p>' . $s5 . '</p><p>' . $s6 . '</p>');
         }
         $screen = get_current_screen();
-        foreach($tabs as $tab) {
-            $screen->add_help_tab($tab);
+        foreach($tabs as $t) {
+            $screen->add_help_tab($t);
         }
         if (isset($action) && $action == 'shortcode') {
             $screen->set_help_sidebar(
                 '<p><strong>' . __('For more information:', 'live-weather-station') . '</strong></p>' .
                 '<p>' . self::get(19, '%s', __('Shortcodes', 'live-weather-station')) . '</p>'.
+                self::get_standard_help_sidebar());
+        }
+        elseif (isset($action) && $action == 'form' && isset($service) && $service == 'modules' && isset($tab) && $tab == 'manage') {
+            $screen->set_help_sidebar(
+                '<p><strong>' . __('For more information:', 'live-weather-station') . '</strong></p>' .
+                '<p>' . self::get(21, '%s', lws__('Modules management', 'live-weather-station')) . '</p>'.
+                self::get_standard_help_sidebar());
+        }
+        elseif (isset($action) && $action == 'form' && isset($service) && $service == 'data' && isset($tab) && $tab == 'export') {
+            $screen->set_help_sidebar(
+                '<p><strong>' . __('For more information:', 'live-weather-station') . '</strong></p>' .
+                '<p>' . self::get(22, '%s', lws__('Data export', 'live-weather-station')) . '</p>'.
+                self::get_standard_help_sidebar());
+        }
+        elseif (isset($action) && $action == 'form' && isset($service) && $service == 'data' && isset($tab) && $tab == 'import') {
+            $screen->set_help_sidebar(
+                '<p><strong>' . __('For more information:', 'live-weather-station') . '</strong></p>' .
+                '<p>' . self::get(23, '%s', lws__('Data import', 'live-weather-station')) . '</p>'.
                 self::get_standard_help_sidebar());
         }
         else {

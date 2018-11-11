@@ -8549,7 +8549,7 @@ trait Output {
                 $result = lws__('steadman', 'live-weather-station') ;
                 break;
             case 'summer_simmer':
-                $result = __('summer_simmer', 'live-weather-station') ;
+                $result = lws__('simmer', 'live-weather-station') ;
                 break;
             case 'wind_chill':
                 $result = __('wind chill', 'live-weather-station') ;

@@ -22,6 +22,7 @@ trait Handling {
     private static $live_weather_station_logger_level = 5 ;
     private static $live_weather_station_logger_rotate = 10000 ;
     private static $live_weather_station_logger_retention = 14 ;
+    private static $live_weather_station_file_retention = 7 ;
     private static $live_weather_station_analytics_cutoff = 7 ;
 
     private static $live_weather_station_quota_mode = 2 ;
@@ -583,6 +584,7 @@ trait Handling {
         delete_option('live_weather_station_logger_level');
         delete_option('live_weather_station_logger_rotate');
         delete_option('live_weather_station_logger_retention');
+        delete_option('live_weather_station_file_retention');
         delete_option('live_weather_station_netatmo_refresh_token');
         delete_option('live_weather_station_netatmo_access_token');
         delete_option('live_weather_station_netatmo_connected');
@@ -728,6 +730,7 @@ trait Handling {
         update_option('live_weather_station_logger_level', self::$live_weather_station_logger_level);
         update_option('live_weather_station_logger_rotate', self::$live_weather_station_logger_rotate);
         update_option('live_weather_station_logger_retention', self::$live_weather_station_logger_retention);
+        update_option('live_weather_station_file_retention', self::$live_weather_station_file_retention);
         update_option('live_weather_station_txt_cache_bypass', self::$live_weather_station_txt_cache_bypass);
         update_option('live_weather_station_frontend_cache', self::$live_weather_station_frontend_cache);
         update_option('live_weather_station_widget_cache', self::$live_weather_station_widget_cache);
@@ -965,6 +968,7 @@ trait Handling {
         self::verify_option_integer('live_weather_station_logger_level', self::$live_weather_station_logger_level);
         self::verify_option_integer('live_weather_station_logger_rotate', self::$live_weather_station_logger_rotate);
         self::verify_option_integer('live_weather_station_logger_retention', self::$live_weather_station_logger_retention);
+        self::verify_option_integer('live_weather_station_file_retention', self::$live_weather_station_file_retention);
         self::verify_option_boolean('live_weather_station_txt_cache_bypass', self::$live_weather_station_txt_cache_bypass);
         self::verify_option_boolean('live_weather_station_use_cdn', self::$live_weather_station_use_cdn);
         self::verify_option_boolean('live_weather_station_footer_scripts', self::$live_weather_station_footer_scripts);
