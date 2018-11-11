@@ -25,7 +25,7 @@ use WeatherStation\System\Storage\Manager as FS;
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.7.0-dev2');
+define('LWS_VERSION', '3.7.0-dev3');
 define('LWS_CODENAME', '"Mano Negra"');
 define('LWS_WHATSNEW', 'https://weather.station.software/blog/weather-station-3-6-mano-negra/');
 define('LWS_SHOW_CHANGELOG', false);
