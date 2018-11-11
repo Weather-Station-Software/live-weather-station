@@ -618,7 +618,7 @@ class InlineHelp {
                     'content'  => '<p>' . $s1 . '</p>' . $s2 );
             }
             if (isset($service) && $service == 'netatmo') {
-                $s1 = __('In this screen, you can add:', 'live-weather-station') . ' ' . __('a Netatmo station to which you have access to.', 'live-weather-station');
+                $s1 = lws__('In this screen, you can add:', 'live-weather-station') . ' ' . __('a Netatmo station to which you have access to.', 'live-weather-station');
                 $tabs[] = array(
                     'title'    => __('Overview', 'live-weather-station'),
                     'id'       => 'lws-contextual-' . $service . '-overview',
@@ -724,7 +724,7 @@ class InlineHelp {
                     'id'       => 'lws-contextual-' . $service . '-overview',
                     'content'  => '<p>' . $s1 . '</p>');
 
-                $s1 = __('To add a station of this type, first select the station in the dropdown list then, complete the fields', 'live-weather-station');
+                $s1 = lws__('To add a station of this type, first select the station in the dropdown list then, complete the fields', 'live-weather-station');
                 $s1 .= ' <strong>' . lcfirst(__('Station name', 'live-weather-station')) . '</strong>';
                 $s1 .= ', <strong>' . lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
                 $s1 .= ', <strong>' . lcfirst(__('City', 'live-weather-station')) . '</strong>';
@@ -823,7 +823,7 @@ class InlineHelp {
                     'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p>');
             }
             if (isset($service) && $service == 'stickertags') {
-                $s1 = lws__('In this screen, you can add or edit:', 'live-weather-station') . ' ' . __('a station exporting its data via a stickertags file (WeatherLink, WsWin32, MeteoBridge, etc.)..', 'live-weather-station');
+                $s1 = lws__('In this screen, you can add or edit:', 'live-weather-station') . ' ' . __('a station exporting its data via a stickertags file (WeatherLink, WsWin32, MeteoBridge, etc.).', 'live-weather-station');
                 $tabs[] = array(
                     'title'    => __('Overview', 'live-weather-station'),
                     'id'       => 'lws-contextual-' . $service . '-overview',
