@@ -1,9 +1,8 @@
 <?php
 
 namespace WeatherStation\Process;
-use WeatherStation\DB\Query;
 use WeatherStation\System\Storage\Manager as FS;
-use WeatherStation\Data\DateTime\Conversion as DateTimeConversion;
+use WeatherStation\Data\Output ;
 
 /**
  * A process to export old data as CSV file.
@@ -15,7 +14,7 @@ use WeatherStation\Data\DateTime\Conversion as DateTimeConversion;
  */
 class LineCsvExporter extends LineExporter {
 
-    use Query, DateTimeConversion;
+    use Output;
 
     protected $extension = 'csv';
 
@@ -51,8 +50,20 @@ class LineCsvExporter extends LineExporter {
      * @since 3.7.0
      */
     protected function begin_job() {
-        $header = 'jqehvzejhqdfjczhedfjhzedjfhczrjeshdb';
-        FS::write_file_line($this->filename, $header);
+        $h = array();
+        $h[] = lws__('Date', 'live-weather-station');
+        $h[] = lws__('Module', 'live-weather-station');
+        $h[] = lws__('Measure', 'live-weather-station');
+        $h[] = lws__('Unit', 'live-weather-station');
+        $h[] = lws__('Average', 'live-weather-station');
+        $h[] = lws__('Minimum', 'live-weather-station');
+        $h[] = lws__('Maximum', 'live-weather-station');
+        $h[] = lws__('Median', 'live-weather-station');
+        $h[] = lws__('Standard Deviation', 'live-weather-station');
+        $h[] = lws__('Count', 'live-weather-station');
+        $h[] = lws__('Hourly Maximum', 'live-weather-station');
+        $h[] = lws__('Prevalent', 'live-weather-station');
+        FS::write_file_line($this->params['filename'], implode(',', $h));
     }
 
     /**
@@ -62,7 +73,21 @@ class LineCsvExporter extends LineExporter {
      * @since 3.7.0
      */
     protected function do_job($line) {
-        //
+        $set = array('avg', 'min', 'max', 'med', 'dev', 'agg', 'maxhr', 'dom');
+        $v = array();
+        $v[] = str_replace(',', '', $line['timestamp']);
+        $v[] = str_replace(',', '', $line['module_name']);
+        $v[] = str_replace(',', '', $this->get_measurement_type($line['measure_type'], false, $line['module_type']));
+        $v[] = str_replace(',', '', $this->output_unit($line['measure_type'], $line['module_type'])['unit']);
+        foreach ($set as $s) {
+            if (array_key_exists($s, $line)) {
+                $v[] = str_replace(',', '_', $this->output_value($line[$s], $line['measure_type'], false, false, $line['module_type']));
+            }
+            else {
+                $v[] = '';
+            }
+        }
+        FS::add_file_line($this->params['filename'], implode(',', $v));
     }
 
     /**

@@ -153,6 +153,34 @@ trait Conversion {
     }
 
     /**
+     * Add x days to a MySql date.
+     *
+     * @param string $date The MySql date.
+     * @param string $days Number of days to add.
+     * @return string The new MySql date.
+     * @since 3.7.0
+     */
+    public static function add_days_to_mysql_date($date, $days) {
+        $datetime = \DateTime::createFromFormat('Y-m-d', $date);
+        $datetime->add(new \DateInterval('P' . $days . 'D'));
+        return $datetime->format('Y-m-d');
+    }
+
+    /**
+     *Compare two MySql dates.
+     *
+     * @param string $date1 The first MySql date.
+     * @param string $date2 The second MySql date.
+     * @return boolean The new MySql date.
+     * @since 3.7.0
+     */
+    public static function mysql_is_ordered($date1, $date2) {
+        $datetime1 = \DateTime::createFromFormat('Y-m-d', $date1);
+        $datetime2 = \DateTime::createFromFormat('Y-m-d', $date2);
+        return $datetime2->getTimestamp() >= $datetime1->getTimestamp();
+    }
+
+    /**
      * Converts an UTC datetime into the correct format.
      *
      * @param string $ts The UTC MySql datetime to be converted.

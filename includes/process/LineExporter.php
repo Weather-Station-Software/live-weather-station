@@ -4,6 +4,7 @@ namespace WeatherStation\Process;
 use WeatherStation\DB\Query;
 use WeatherStation\System\Storage\Manager as FS;
 use WeatherStation\Data\DateTime\Conversion as DateTimeConversion;
+use WeatherStation\System\Device\Manager as ModuleManager;
 
 /**
  * A process to export data line after line.
@@ -17,7 +18,6 @@ abstract class LineExporter extends Process {
 
     use Query, DateTimeConversion;
 
-    protected $filename = null;
     protected $extension = 'txt';
 
 
@@ -65,7 +65,6 @@ abstract class LineExporter extends Process {
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
         $sql = "SELECT COUNT(*) as CNT FROM " . $table_name . " WHERE device_id = '" . $this->params['init']['station_id'] . "' AND `timestamp` >= '" . $this->params['init']['start_date'] . "' AND `timestamp` <= '" . $this->params['init']['end_date'] . "'";
         $query = $wpdb->get_results($sql, ARRAY_A);
-        error_log(print_r($query, true));
         if (count($query) > 0) {
             $count = $query[0]['CNT'];
         }
@@ -109,7 +108,8 @@ abstract class LineExporter extends Process {
         else {
             $fileurl = FS::get_full_file_url($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension);
             $result = sprintf(lws__('The historical data of "%s" has been correctly exported for the period from %s to %s.', 'live-weather-station'), $this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date']) . "\r\n";
-            $result .= "\r\n" . sprintf(lws__('The file is now ready to download. It will be keeped on your server for %s days.', 'live-weather-station'), $fileurl) . "\r\n";
+            $result .= sprintf(lws__('The file is now ready to download. It will be kept on your server for %s days.', 'live-weather-station'), get_option('live_weather_station_file_retention', '7')) . "\r\n";
+            $result .= "\r\n" . $fileurl . "\r\n";
         }
         return $result;
     }
@@ -124,10 +124,10 @@ abstract class LineExporter extends Process {
     /**
      * Do the main process job for each line.
      *
-     * @param array $line The line to process.
+     * @param array $set The line to process.
      * @since 3.7.0
      */
-    protected abstract function do_job($line);
+    protected abstract function do_job($set);
 
     /**
      * End the main process job.
@@ -142,14 +142,55 @@ abstract class LineExporter extends Process {
      * @since 3.7.0
      */
     protected function job(){
-
-
-
-
-
-
-
-
+        if (self::mysql_is_ordered($this->params['now_date'], $this->params['end_date'])) {
+            $modules = ModuleManager::get_modules_names($this->params['init']['station_id']);
+            $query_start = $this->params['now_date'];
+            $query_end = self::add_days_to_mysql_date($this->params['now_date'], 21);
+            if (!self::mysql_is_ordered($query_end, $this->params['end_date'])) {
+                $query_end = $this->params['end_date'];
+            }
+            $this->params['now_date'] = self::add_days_to_mysql_date($this->params['now_date'], 22);
+            global $wpdb;
+            $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
+            $order_by = 'ORDER BY `timestamp` ASC, `module_id` ASC, `measure_type` ASC';
+            $sql = "SELECT * FROM " . $table_name . " WHERE device_id = '" . $this->params['init']['station_id'] . "' AND `timestamp` >= '" . $query_start . "' AND `timestamp` <= '" . $query_end . "' " . $order_by;
+            $query = $wpdb->get_results($sql, ARRAY_A);
+            if (count($query) > 0) {
+                $ts = '';
+                $md = '';
+                $tp = '';
+                $set = array();
+                foreach ($query as $line) {
+                    if ($line['timestamp'] !== $ts || $line['module_id'] !== $md || $line['measure_type'] !== $tp) {
+                        if (!empty($set)) {
+                            $this->do_job($set);
+                        }
+                        $ts = $line['timestamp'];
+                        $md = $line['module_id'];
+                        $tp = $line['measure_type'];
+                        $set = array();
+                        $set['timestamp'] = $line['timestamp'];
+                        $set['module_id'] = $line['module_id'];
+                        $set['module_type'] = $line['module_type'];
+                        if (array_key_exists($set['module_id'], $modules)) {
+                            $set['module_name'] = $modules[$set['module_id']];
+                        }
+                        else {
+                            $set['module_name'] = '<unnamed>';
+                        }
+                        $set['measure_type'] = $line['measure_type'];
+                        $set[$line['measure_set']] = $line['measure_value'];
+                    }
+                    else {
+                        $set[$line['measure_set']] = $line['measure_value'];
+                    }
+                }
+                $this->params['done'] = $this->params['done'] + count($query);
+            }
+        }
+        else {
+            $this->params['done'] = $this->params['todo'];
+        }
     }
 
     /**
@@ -163,10 +204,17 @@ abstract class LineExporter extends Process {
         // $this->params['init']['start_date'] // local timestamp
         // $this->params['init']['end_date']   // local timestamp
 
+        if (!self::mysql_is_ordered($this->params['init']['start_date'], $this->params['init']['end_date'])) {
+            $end = $this->params['init']['start_date'];
+            $start = $this->params['init']['end_date'];
+            $this->params['init']['start_date'] = $start;
+            $this->params['init']['end_date'] = $end;
+        }
+
+        $this->uuid = $this->meta_uuid();
         $station = $this->get_station_informations_by_station_id($this->params['init']['station_id']);
         $this->params['init']['station_name'] = $station['station_name'];
         $this->params['init']['loc_timezone'] = $station['loc_timezone'];
-        $old_dates = array();
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
         $sql = "SELECT COUNT(*) as CNT FROM " . $table_name . " WHERE device_id = '" . $this->params['init']['station_id'] . "' AND `timestamp` >= '" . $this->params['init']['start_date'] . "' AND `timestamp` <= '" . $this->params['init']['end_date'] . "'";
@@ -178,11 +226,12 @@ abstract class LineExporter extends Process {
             $count = 0;
         }
         $this->params['filename'] = FS::file_for_write($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension);
-        $this->params['error'] = $this->params['filename'] === false;
+        $this->params['error'] = ($this->params['filename'] === false);
         $this->params['todo'] = $count;
         $this->params['done'] = 0;
         $this->params['start_date'] = $this->params['init']['start_date'];
         $this->params['end_date'] = $this->params['init']['end_date'];
+        $this->params['now_date'] = $this->params['init']['start_date'];
     }
 
     /**
@@ -192,11 +241,20 @@ abstract class LineExporter extends Process {
      */
     protected function run_core(){
         $max = 1;
-        /*for ($i=1; $i<8; $i++) {
-            if ((int)round(ini_get('max_execution_time') > $i*40)) {
+        for ($i=1; $i<10; $i++) {
+            if ((int)round(ini_get('max_execution_time') > $i*20)) {
                 $max += 1;
             }
-        }*/
+        }
+
+        // mauvaise date de fin
+
+
+
+        $this->params['filename'] = str_replace('../', '', $this->params['filename']);
+        $this->params['filename'] = str_replace('/..', '', $this->params['filename']);
+        $this->params['filename'] = str_replace('./', '', $this->params['filename']);
+        $this->params['filename'] = str_replace('/.', '', $this->params['filename']);
         if (!file_exists($this->params['filename'])) {
             if (!FS::create_file($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension)) {
                 $this->params['error'] = true;
@@ -207,14 +265,13 @@ abstract class LineExporter extends Process {
         }
         if (!$this->is_terminated() && !$this->is_in_error()) {
             for ($i=1; $i<=$max; $i++) {
-                if (count($this->params['todo']) > 0) {
-                    $this->job();
-                }
+                $this->job();
             }
         }
         if ($this->is_terminated()) {
             $this->end_job();
         }
+        $this->set_progress(100 * count($this->params['done']) / (count($this->params['todo']) + count($this->params['done'])));
     }
 
 }

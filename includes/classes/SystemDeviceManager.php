@@ -138,6 +138,23 @@ class Manager
     }
 
     /**
+     * Get an array of modules names.
+     *
+     * @param string $device_id The device id.
+     * @return array An array of the modules names.
+     *
+     * @since 3.7.0
+     */
+    public static function get_modules_names($device_id) {
+        $modules = self::get_modules_details($device_id);
+        $result = array();
+        foreach ($modules as $module) {
+            $result[$module['module_id']] = $module['module_name'];
+        }
+        return $result;
+    }
+
+    /**
      * Set a detailed array about modules.
      *
      * @param array $modules Details about the modules (same structure as get_modules_details).

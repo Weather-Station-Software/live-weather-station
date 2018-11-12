@@ -163,7 +163,7 @@ class Manager {
         $filename = self::file_for_write($station_name, $start, $end, $uid, $ext);
         if ($filename !== false) {
             try {
-                return file_put_contents(self::$dir . $filename, '');
+                return false !== file_put_contents(self::$dir . $filename, '');
             }
             catch (\Exception $ex) {
                 Logger::critical(self::$service,null, null, null, null, null, $ex->getCode(), 'Unable to create a file in persistent storage root: ' . $ex->getMessage());
@@ -184,7 +184,7 @@ class Manager {
      * @since 3.7.0
      */
     public static function write_file_line($filename, $line) {
-        file_put_contents(self::$dir . $filename, $line . PHP_EOL, LOCK_EX);
+        file_put_contents(self::$dir . $filename, $line . PHP_EOL);
     }
 
     /**
@@ -195,7 +195,7 @@ class Manager {
      * @since 3.7.0
      */
     public static function add_file_line($filename, $line) {
-        file_put_contents(self::$dir . $filename, $line . PHP_EOL, FILE_APPEND | LOCK_EX);
+        file_put_contents(self::$dir . $filename, $line . PHP_EOL, FILE_APPEND);
     }
 
 }
