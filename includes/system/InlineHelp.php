@@ -596,7 +596,7 @@ class InlineHelp {
                     $s2 .= '<p><strong>' . $format['name'] . '</strong> &mdash; ' . $format['description'] . '</p>';
                 }
                 $tabs[] = array(
-                    'title'    => __('Formats', 'live-weather-station'),
+                    'title'    => lws__('Formats', 'live-weather-station'),
                     'id'       => 'lws-contextual-export-formats',
                     'content'  => '<p>' . $s1 . '</p>' . $s2 );
             }
@@ -613,7 +613,7 @@ class InlineHelp {
                     $s2 .= '<p><strong>' . $format['name'] . '</strong> &mdash; ' . $format['description'] . '</p>';
                 }
                 $tabs[] = array(
-                    'title'    => __('Formats', 'live-weather-station'),
+                    'title'    => lws__('Formats', 'live-weather-station'),
                     'id'       => 'lws-contextual-import-formats',
                     'content'  => '<p>' . $s1 . '</p>' . $s2 );
             }
