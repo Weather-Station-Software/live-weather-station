@@ -242,7 +242,7 @@ abstract class LineExporter extends Process {
     protected function run_core(){
         $max = 1;
         for ($i=1; $i<20; $i++) {
-            if ((int)round(ini_get('max_execution_time') > $i*10)) {
+            if ((int)round(ini_get('max_execution_time') > $i*20)) {
                 $max += 1;
             }
         }

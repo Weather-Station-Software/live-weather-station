@@ -22,11 +22,13 @@ trait Handling {
     private static $live_weather_station_logger_level = 5 ;
     private static $live_weather_station_logger_rotate = 10000 ;
     private static $live_weather_station_logger_retention = 14 ;
-    private static $live_weather_station_file_retention = 7 ;
     private static $live_weather_station_analytics_cutoff = 7 ;
 
     private static $live_weather_station_quota_mode = 2 ;
     private static $live_weather_station_force_frontend_styling = true;
+
+    private static $live_weather_station_file_retention = 7 ;
+    private static $live_weather_station_only_valid_files = true;
 
     private static $live_weather_station_use_cdn = false;
     private static $live_weather_station_footer_scripts = true;
@@ -577,6 +579,7 @@ trait Handling {
      */
     protected static function delete_options() {
         delete_option('live_weather_station_use_cdn');
+        delete_option('live_weather_station_only_valid_files');
         delete_option('live_weather_station_footer_scripts');
         delete_option('live_weather_station_fa_mode');
         delete_option('live_weather_station_partial_translation');
@@ -725,6 +728,7 @@ trait Handling {
      */
     protected static function init_system_options() {
         update_option('live_weather_station_use_cdn', self::$live_weather_station_use_cdn);
+        update_option('live_weather_station_only_valid_files', self::$live_weather_station_only_valid_files);
         update_option('live_weather_station_footer_scripts', self::$live_weather_station_footer_scripts);
         update_option('live_weather_station_fa_mode', self::$live_weather_station_fa_mode);
         update_option('live_weather_station_logger_level', self::$live_weather_station_logger_level);
@@ -971,6 +975,7 @@ trait Handling {
         self::verify_option_integer('live_weather_station_file_retention', self::$live_weather_station_file_retention);
         self::verify_option_boolean('live_weather_station_txt_cache_bypass', self::$live_weather_station_txt_cache_bypass);
         self::verify_option_boolean('live_weather_station_use_cdn', self::$live_weather_station_use_cdn);
+        self::verify_option_boolean('live_weather_station_only_valid_files', self::$live_weather_station_only_valid_files);
         self::verify_option_boolean('live_weather_station_footer_scripts', self::$live_weather_station_footer_scripts);
         self::verify_option_integer('live_weather_station_fa_mode', self::$live_weather_station_fa_mode);
         self::verify_option_boolean('live_weather_station_frontend_cache', self::$live_weather_station_frontend_cache);

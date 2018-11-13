@@ -1261,6 +1261,20 @@ trait Query {
     }
 
     /**
+     * Get the ordered list of active background processes.
+     *
+     * @return array An array containing the processes.
+     * @since 3.7.0
+     */
+    protected static function get_status_for_active_background_processes() {
+        $result = array();
+        foreach (self::get_active_background_processes() as $process) {
+            $result[$process['uuid']] = array('state' => $process['state'], 'progress' => $process['progress']);
+        }
+        return $result;
+    }
+
+    /**
      * Get station informations.
      *
      * @param integer $guid The station guid.

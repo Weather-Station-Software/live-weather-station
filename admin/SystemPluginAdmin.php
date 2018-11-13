@@ -68,6 +68,7 @@ class Admin {
         FormsRenderer::get_measurement_type insteadof Arrays;
         FormsRenderer::get_dimension_name insteadof Arrays;
         FormsRenderer::get_operation_name insteadof Arrays;
+        FormsRenderer::get_extension_description insteadof Arrays;
     }
 
 	private $Live_Weather_Station;
@@ -1304,17 +1305,31 @@ class Admin {
             else {
                 $files = null;
             }
+            if ((bool)get_option('live_weather_station_show_tasks')) {
+                $scheduler = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . lws__('Scheduler', 'live-weather-station'), lws__('Scheduler', 'live-weather-station'), $manage_options_cap, 'lws-scheduler', array($this, 'lws_load_admin_page'));
+            }
+            else {
+                $scheduler = null;
+            }
             $events = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Events log', 'live-weather-station'), __('Events', 'live-weather-station'), $manage_options_cap, 'lws-events', array($this, 'lws_load_admin_page'));
-            $settings = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Settings', 'live-weather-station'), __('Settings', 'live-weather-station'), $manage_options_cap, 'lws-settings', array($this, 'lws_load_admin_page'));
-            $this->_services = new Services(LWS_PLUGIN_NAME, LWS_VERSION, $settings);
             if ((bool)get_option('live_weather_station_show_analytics')) {
                 $analytics = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Analytics', 'live-weather-station'), __('Analytics', 'live-weather-station'), $manage_options_cap, 'lws-analytics', array($this, 'lws_load_admin_page'));
                 $this->_analytics = new Analytics(LWS_PLUGIN_NAME, LWS_VERSION, $analytics);
             }
+            $settings = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Settings', 'live-weather-station'), __('Settings', 'live-weather-station'), $manage_options_cap, 'lws-settings', array($this, 'lws_load_admin_page'));
+
+            $this->_services = new Services(LWS_PLUGIN_NAME, LWS_VERSION, $settings);
+
             InlineHelp::set_contextual_help('load-' . $dashboard, 'dashboard');
             InlineHelp::set_contextual_help('load-' . $settings, 'settings');
             InlineHelp::set_contextual_help('load-' . $stations, 'stations');
             InlineHelp::set_contextual_help('load-' . $events, 'events');
+            if (isset($files)) {
+                InlineHelp::set_contextual_help('load-' . $files, 'files');
+            }
+            if (isset($scheduler)) {
+                InlineHelp::set_contextual_help('load-' . $scheduler, 'scheduler');
+            }
         }
         else {
             add_menu_page(LWS_FULL_NAME . ' - ' . __('Requirements', 'live-weather-station'), LWS_PLUGIN_NAME, $manage_options_cap, 'lws-requirements', array($this, 'lws_load_admin_page'), $icon_svg, '99.001357');
@@ -1784,9 +1799,6 @@ class Admin {
                     case 'sync-data': $this->sync_data(); break;
                     case 'reset-cache': $this->reset_cache(); break;
                     case 'purge-log': $this->reset_log(); break;
-                    case 'cron-force': $this->cron_reschedule(true); break;
-                    case 'cron-reschedule': $this->cron_reschedule(); break;
-                    case 'relaunch-watchdog': $this->relaunch_watchdog(); break;
                     case 'reset-cschemes': $this->reset_palette($id); break;
                     case 'form':
                         if ($service != '' && ($tab == 'add' || $tab == 'add-edit' || $tab == 'edit')) {
@@ -1806,6 +1818,15 @@ class Admin {
                         }
                         break;
                     default: $this->check_options();
+                }
+                break;
+            case 'lws-scheduler':
+                $view = 'list-table-tasks';
+                $args = array();
+                switch ($action) {
+                    case 'cron-force': $this->cron_reschedule(true); break;
+                    case 'cron-reschedule': $this->cron_reschedule(); break;
+                    case 'relaunch-watchdog': $this->relaunch_watchdog(); break;
                 }
                 break;
             case 'lws-requirements':

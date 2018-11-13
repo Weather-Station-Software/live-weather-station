@@ -213,4 +213,90 @@ class Manager {
         file_put_contents($filename, $line . PHP_EOL, FILE_APPEND);
     }
 
+    /**
+     * List the storage root.
+     *
+     * @return array The files list.
+     * @since 3.7.0
+     */
+    public static function raw_list_dir() {
+        $result = array();
+        foreach (array_diff(scandir(self::$dir), array('..', '.')) as $item) {
+            if (!is_dir(self::$dir . $item)) {
+                $result[] = $item;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * List the storage root.
+     *
+     * @param boolean $only_valid Optional. Exclude invalid files.
+     * @return array The extended files list.
+     * @since 3.7.0
+     */
+    public static function extended_list_dir($only_valid=true) {
+        $result = array();
+        foreach (self::raw_list_dir() as $file) {
+            $e = explode('_', $file);
+            $station = lws__('unknown station', 'live-weather-station');
+            $uuid = '-';
+            $from = '-';
+            $to = '-';
+            $ext = 'ukn';
+            $valid = false;
+            if (count($e) === 4) {
+                $d = explode('.', $e[3]);
+                if (count($d) === 2) {
+                    $UUIDv4 = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
+                    if (preg_match($UUIDv4, $d[0]) !== false) {
+                        $station = ucwords(str_replace('-', ' ', $e[0]));
+                        $uuid = $d[0];
+                        $from = $e[1];
+                        $to = $e[2];
+                        $ext = $d[1];
+                        $valid = true;
+                    }
+                }
+            }
+            if ($valid || !$only_valid) {
+                try {
+                    $size = filesize(self::$dir . $file);
+                }
+                catch (\Exception $ex) {
+                    $size = 0;
+                }
+                $decimal = 0;
+                if ($size > 1024) {
+                    $decimal = 1;
+                }
+                if ($size > 1024*1024) {
+                    $decimal = 2;
+                }
+                try {
+                    $time = filemtime(self::$dir . $file);
+                }
+                catch (\Exception $ex) {
+                    $time = time();
+                }
+                $f = array();
+                $f['file'] = $file;
+                $f['station'] = $station;
+                $f['uuid'] = $uuid;
+                $f['from'] = $from;
+                $f['to'] = $to;
+                $f['ext'] = $ext;
+                $f['size'] = $size;
+                $f['state'] = 'none';
+                $f['progress'] = '100';
+                $f['std_size'] = size_format($f['size'], $decimal);
+                $f['date'] = $time;
+                $f['url'] = self::get_full_file_url($station, $from, $to, $uuid, $ext);
+                $result[] = $f;
+            }
+        }
+        return $result;
+    }
+
 }

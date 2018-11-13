@@ -64,6 +64,7 @@ class Handling {
         Output::get_measurement_type insteadof Generator;
         Output::get_dimension_name insteadof Generator;
         Output::get_operation_name insteadof Generator;
+        Output::get_extension_description insteadof Generator;
     }
 
     private $Live_Weather_Station;

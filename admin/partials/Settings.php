@@ -27,9 +27,6 @@ $buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; '
             <a href="?page=lws-settings&tab=history" class="nav-tab <?php echo $active_tab == 'history' ? 'nav-tab-active' : ''; ?>"><?php echo __('History', 'live-weather-station');?></a>
             <a href="?page=lws-settings&tab=system" class="nav-tab <?php echo $active_tab == 'system' ? 'nav-tab-active' : ''; ?>"><?php echo __('System', 'live-weather-station');?></a>
             <a href="?page=lws-settings&tab=maintenance" class="nav-tab <?php echo $active_tab == 'maintenance' ? 'nav-tab-active' : ''; ?>"><?php echo __('Maintenance', 'live-weather-station');?></a>
-            <?php if ((bool)get_option('live_weather_station_show_tasks')) { ?>
-                <a href="?page=lws-settings&tab=tasks" class="nav-tab <?php echo $active_tab == 'tasks' ? 'nav-tab-active' : ''; ?>"><?php echo __('Scheduled tasks', 'live-weather-station');?></a>
-            <?php } ?>
         <?php } ?>
     </h2>
 
@@ -52,9 +49,6 @@ $buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; '
     <?php } ?>
     <?php if ($active_tab === 'maintenance') { ?>
         <?php include(LWS_ADMIN_DIR.'partials/SettingsMaintenance.php'); ?>
-    <?php } ?>
-    <?php if ($active_tab === 'tasks') { ?>
-        <?php include(LWS_ADMIN_DIR.'partials/SettingsTasks.php'); ?>
     <?php } ?>
     <?php if ($active_tab === 'history') { ?>
         <?php include(LWS_ADMIN_DIR.'partials/SettingsHistory.php'); ?>
