@@ -19,6 +19,7 @@ abstract class LineExporter extends Process {
     use Query, DateTimeConversion;
 
     protected $extension = 'txt';
+    protected $fullfilename = null;
 
 
     /**
@@ -142,14 +143,14 @@ abstract class LineExporter extends Process {
      * @since 3.7.0
      */
     protected function job(){
-        if (self::mysql_is_ordered($this->params['now_date'], $this->params['end_date'])) {
+        $query_start = $this->params['now_date'];
+        $query_end = self::add_days_to_mysql_date($this->params['now_date'], 21);
+        if (!self::mysql_is_ordered($query_end, $this->params['end_date'])) {
+            $query_end = $this->params['end_date'];
+        }
+        if (self::mysql_is_ordered($query_start, $query_end)) {
+            $this->params['now_date'] = self::add_days_to_mysql_date($query_end, 1);
             $modules = ModuleManager::get_modules_names($this->params['init']['station_id']);
-            $query_start = $this->params['now_date'];
-            $query_end = self::add_days_to_mysql_date($this->params['now_date'], 21);
-            if (!self::mysql_is_ordered($query_end, $this->params['end_date'])) {
-                $query_end = $this->params['end_date'];
-            }
-            $this->params['now_date'] = self::add_days_to_mysql_date($this->params['now_date'], 22);
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
             $order_by = 'ORDER BY `timestamp` ASC, `module_id` ASC, `measure_type` ASC';
@@ -225,8 +226,7 @@ abstract class LineExporter extends Process {
         else {
             $count = 0;
         }
-        $this->params['filename'] = FS::file_for_write($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension);
-        $this->params['error'] = ($this->params['filename'] === false);
+        $this->params['error'] = (false === FS::file_for_write($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension));
         $this->params['todo'] = $count;
         $this->params['done'] = 0;
         $this->params['start_date'] = $this->params['init']['start_date'];
@@ -241,21 +241,13 @@ abstract class LineExporter extends Process {
      */
     protected function run_core(){
         $max = 1;
-        for ($i=1; $i<10; $i++) {
-            if ((int)round(ini_get('max_execution_time') > $i*20)) {
+        for ($i=1; $i<20; $i++) {
+            if ((int)round(ini_get('max_execution_time') > $i*10)) {
                 $max += 1;
             }
         }
-
-        // mauvaise date de fin
-
-
-
-        $this->params['filename'] = str_replace('../', '', $this->params['filename']);
-        $this->params['filename'] = str_replace('/..', '', $this->params['filename']);
-        $this->params['filename'] = str_replace('./', '', $this->params['filename']);
-        $this->params['filename'] = str_replace('/.', '', $this->params['filename']);
-        if (!file_exists($this->params['filename'])) {
+        $this->fullfilename = FS::get_full_file_name($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension);
+        if (!file_exists($this->fullfilename)) {
             if (!FS::create_file($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension)) {
                 $this->params['error'] = true;
             }
@@ -271,7 +263,12 @@ abstract class LineExporter extends Process {
         if ($this->is_terminated()) {
             $this->end_job();
         }
-        $this->set_progress(100 * count($this->params['done']) / (count($this->params['todo']) + count($this->params['done'])));
+        if ($this->params['todo'] > 0) {
+            $this->set_progress(100 * $this->params['done'] / $this->params['todo']);
+        }
+        else {
+            $this->set_progress(100);
+        }
     }
 
 }

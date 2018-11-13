@@ -1,6 +1,7 @@
 
 #3.7.0 / November XXXXX, 2018
 
+* New: it's now possible to export historical data as CSV, DSV, TSV or ND-JSON file.
 * New: Summer Simmer index is now computed and available in all controls and outdoor widget.
 * New: Steadman index (aka "Australian apparent temperature") is now computed and available in all controls and outdoor widget.
 * New: psychrometric delta-t value is now computed and available in all controls and psychrometry widget.
@@ -12,6 +13,7 @@
 * Improvement: full compatibility with WordPress 5.0.
 * Improvement: added inline help while adding or editing station for Netatmo, WeatherFlow, BloomSky, Pioupiou, Ambient and sticketags-based stations.
 * Improvement: added inline help for modules management.
+* Improvement: weather condition (as numerical ID) is now rightly truncated in historical data.
 * Bug fix: in textual shortcode, trend for barometric pressure is not available in plain text (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
 * Bug fix: in distribution radial charts, legend is wrong when values are rain rates.
 

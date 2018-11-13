@@ -18,7 +18,7 @@
                         <span class="login">
                             <select id="lws-format" name="lws-format" style="width:100%;">
                                 <?php foreach($formats as $key => $format) { ?>
-                                    <option value="<?php echo $key ?>"><?php echo $format['name'] ?></option>
+                                    <option value="<?php echo $key ?>" <?php echo ($key==='ndjson'?'SELECTED':''); ?>><?php echo $format['name'] ?></option>
                                 <?php } ?>
                             </select>
                         </span>

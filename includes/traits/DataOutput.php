@@ -6794,6 +6794,9 @@ trait Output {
                     $result = $this->get_battery_level_text($value, $module_type);
                 }
                 break;
+            case 'weather':
+                $result = (int)round($value, 0);
+                break;
             case 'signal':
                 $result = $this->get_signal_percentage($value, $module_type);
                 $result .= ($unit ? $this->unit_espace.$this->get_signal_unit() : '');

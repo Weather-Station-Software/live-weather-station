@@ -1298,6 +1298,12 @@ class Admin {
             $stations = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Stations', 'live-weather-station'), __('Stations', 'live-weather-station'), $manage_options_cap, 'lws-stations', array($this, 'lws_load_admin_page'));
             $this->_station = new Station(LWS_PLUGIN_NAME, LWS_VERSION, $stations);
             InlineHelp::$station_instance = $this->_station;
+            if ((bool)get_option('live_weather_station_advanced_mode')) {
+                $files = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . lws__('Files', 'live-weather-station'), lws__('Files', 'live-weather-station'), $manage_options_cap, 'lws-files', array($this, 'lws_load_admin_page'));
+            }
+            else {
+                $files = null;
+            }
             $events = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Events log', 'live-weather-station'), __('Events', 'live-weather-station'), $manage_options_cap, 'lws-events', array($this, 'lws_load_admin_page'));
             $settings = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Settings', 'live-weather-station'), __('Settings', 'live-weather-station'), $manage_options_cap, 'lws-settings', array($this, 'lws_load_admin_page'));
             $this->_services = new Services(LWS_PLUGIN_NAME, LWS_VERSION, $settings);
@@ -1368,6 +1374,9 @@ class Admin {
                     $log = array();
                 }
                 $args = compact('log');
+                break;
+            case 'lws-files':
+                $view = 'list-table-files';
                 break;
             case 'lws-stations':
             case 'lws-dashboard':
