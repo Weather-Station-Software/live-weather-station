@@ -3,17 +3,17 @@
 namespace WeatherStation\Process;
 
 /**
- * A process to export old data as CSV file.
+ * A process to export old data as DSV-s file.
  *
  * @package Includes\Process
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
-class LineCsvExporter extends LineXsvExporter {
+class LineDsvsExporter extends LineXsvExporter {
 
-    protected $extension = 'csv';
-    protected $delimiter = ',';
+    protected $extension = 'dsv';
+    protected $delimiter = ';';
 
     /**
      * Get the name of the process.
@@ -24,10 +24,10 @@ class LineCsvExporter extends LineXsvExporter {
      */
     protected function name($translated=true) {
         if ($translated) {
-            return lws__('CSV exporter', 'live-weather-station');
+            return lws__('DSV (semicolon) exporter', 'live-weather-station');
         }
         else {
-            return 'CSV exporter';
+            return 'DSV (semicolon) exporter';
         }
     }
 
@@ -38,7 +38,7 @@ class LineCsvExporter extends LineXsvExporter {
      * @since 3.7.0
      */
     protected function description() {
-        return lws__('Exporting historical data from a weather station as a CSV file.', 'live-weather-station');
+        return lws__('Exporting historical data from a weather station as a DSV file with semicolon separator.', 'live-weather-station');
     }
 
 }

@@ -2884,7 +2884,10 @@ trait Generator {
     public static function _get_export_formats_array() {
         $result = array();
         $result['csv'] = array('name' => 'CSV', 'description' => lws__('A text file format, presenting the data as lines of comma-separated values. This type of format can be read by the majority of spreadsheet software (Calc, Excel, Numbers, etc.) and allows all the data manipulation you want.', 'live-weather-station'));
+        $result['dsvp'] = array('name' => 'DSV (pipe)', 'description' => lws__('A text file format, presenting the data as lines of pipe-separated values. You can use it for plain text processing.', 'live-weather-station'));
+        $result['dsvs'] = array('name' => 'DSV (semicolon)', 'description' => lws__('A text file format, presenting the data as lines of semicolon-separated values. You can use it for plain text processing.', 'live-weather-station'));
         $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(lws__('A standard format used by %s to allow export/import between different WordPress instances. If you want to save your historical data so you can import it into another WordPress site (or another station), this is the ideal format.', 'live-weather-station'), LWS_PLUGIN_NAME));
+        $result['tsv'] = array('name' => 'TSV', 'description' => lws__('A text file format, presenting the data as lines of tab-separated values. You can use it for plain text processing.', 'live-weather-station'));
         return $result;
     }
 

@@ -13,7 +13,7 @@ use WeatherStation\Data\DateTime\Conversion as DateTimeConversion;
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */
-class LineCsvExporter extends LineExporter {
+class LineNdjsonExporter extends LineExporter {
 
     use Query, DateTimeConversion;
 
@@ -61,21 +61,8 @@ class LineCsvExporter extends LineExporter {
      * @since 3.7.0
      */
     protected function do_job($line) {
-        $set = array('avg', 'min', 'max', 'med', 'dev', 'agg', 'maxhr', 'dom');
-        $v = array();
-        $v[] = str_replace(',', '', $line['timestamp']);
-        $v[] = str_replace(',', '', $line['module_name']);
-        $v[] = str_replace(',', '', $this->get_measurement_type($line['measure_type'], false, $line['module_type']));
-        $v[] = str_replace(',', '', $this->output_unit($line['measure_type'], $line['module_type'])['unit']);
-        foreach ($set as $s) {
-            if (array_key_exists($s, $line)) {
-                $v[] = str_replace(',', '_', $this->output_value($line[$s], $line['measure_type'], false, false, $line['module_type']));
-            }
-            else {
-                $v[] = '';
-            }
-        }
-        //FS::add_file_line($this->params['filename'], implode(',', $v));
+        unset ($line['module_name']);
+        FS::add_file_line($this->fullfilename, wp_json_encode($line));
     }
 
     /**

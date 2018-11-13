@@ -117,6 +117,21 @@ class Manager {
     }
 
     /**
+     * Get the absolute file name.
+     *
+     * @param string $station_name The name of the station.
+     * @param string $start The start date of the export/import.
+     * @param string $end The end date of the export/import.
+     * @param string $uid The unique id of the file (mainly the V4 UUID of the process).
+     * @param string $ext The extension of the file (w/o the dot).
+     * @return string The fully qualified file name.
+     * @since 3.7.0
+     */
+    public static function get_full_file_name($station_name, $start, $end, $uid, $ext) {
+        return self::$dir . self::get_file_name($station_name, $start, $end, $uid, $ext);
+    }
+
+    /**
      * Get the root name.
      *
      * @return string The file name.
@@ -184,7 +199,7 @@ class Manager {
      * @since 3.7.0
      */
     public static function write_file_line($filename, $line) {
-        file_put_contents(self::$dir . $filename, $line . PHP_EOL);
+        file_put_contents($filename, $line . PHP_EOL);
     }
 
     /**
@@ -195,7 +210,7 @@ class Manager {
      * @since 3.7.0
      */
     public static function add_file_line($filename, $line) {
-        file_put_contents(self::$dir . $filename, $line . PHP_EOL, FILE_APPEND);
+        file_put_contents($filename, $line . PHP_EOL, FILE_APPEND);
     }
 
 }
