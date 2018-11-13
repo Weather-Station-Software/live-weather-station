@@ -23,6 +23,7 @@ class Settings {
         Output::get_measurement_type insteadof Arrays;
         Output::get_dimension_name insteadof Arrays;
         Output::get_operation_name insteadof Arrays;
+        Output::get_extension_description insteadof Arrays;
     }
 
 }

@@ -7669,6 +7669,32 @@ trait Output {
 }
 
     /**
+     * Output a file type icon.
+     *
+     * @param string $format Optional. The file format.
+     * @param string $style Optional. The style of the icon.
+     * @param string $extra Optional. Class of the icon.
+     * @return string The HTML tag for icon.
+     * @since 3.7.0
+     */
+    protected function output_iconic_filetype($format='ukn', $style='', $extra='') {
+        lws_font_awesome();
+        switch (strtolower($format)) {
+            case 'csv':
+            case 'dsv':
+            case 'tsv':
+                $result = '<i %1$s class="' . LWS_FAR . ' ' . (LWS_FA5?'fa-file-excel':'fa-file-excel-o') . ' %2$s" aria-hidden="true"></i>';
+                break;
+            case 'ndjson':
+                $result = '<i %1$s class="' . LWS_FAR . ' ' . (LWS_FA5?'fa-file-code':'fa-file-code-o') . ' %2$s" aria-hidden="true"></i>';
+                break;
+            default:
+                $result = '<i %1$s class="' . LWS_FAR . ' ' . (LWS_FA5?'fa-file':'fa-file-o') . ' %2$s" aria-hidden="true"></i>';
+        }
+        return sprintf($result, $style, $extra);
+    }
+
+    /**
      * Output a latitude or longitude with user's unit.
      *
      * @param   mixed       $value          The value to output.

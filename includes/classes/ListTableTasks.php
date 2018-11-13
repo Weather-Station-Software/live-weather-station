@@ -91,17 +91,17 @@ class Tasks extends Base {
         $sort = '&orderby=' . $orderby . '&order=' . $order;
         $actions = array();
         if ($item['next'] != $this->ts_none) {
-            $actions['force'] = sprintf('<a href="?page=lws-settings&tab=tasks&action=cron-force&hook=%s' . $sort . '">' . __('Force execution now', 'live-weather-station') . '</a>', $item['hook']);
+            $actions['force'] = sprintf('<a href="?page=lws-scheduler&tab=tasks&action=cron-force&hook=%s' . $sort . '">' . __('Force execution now', 'live-weather-station') . '</a>', $item['hook']);
         }
         if ($item['next'] != $this->ts_none) {
             if (wp_next_scheduled($item['hook']) < wp_get_schedules()[wp_get_schedule($item['hook'])]['interval'] + time()) {
-                $actions['reschedule'] = sprintf('<a href="?page=lws-settings&tab=tasks&action=cron-reschedule&hook=%s' . $sort . '">' . __('Reschedule', 'live-weather-station') . '</a>', $item['hook']);
+                $actions['reschedule'] = sprintf('<a href="?page=lws-scheduler&tab=tasks&action=cron-reschedule&hook=%s' . $sort . '">' . __('Reschedule', 'live-weather-station') . '</a>', $item['hook']);
             }
         }
         $result = '-';
         if ($item['hook'] == self::$watchdog_name) {
             $actions = array();
-            $actions['relaunch'] = '<a href="?page=lws-settings&tab=tasks&action=relaunch-watchdog' . $sort . '">' . __('Restart', 'live-weather-station') . '</a>';
+            $actions['relaunch'] = '<a href="?page=lws-scheduler&tab=tasks&action=relaunch-watchdog' . $sort . '">' . __('Restart', 'live-weather-station') . '</a>';
         }
         if ($item['next'] != $this->ts_none) {
             $result = ucfirst(sprintf( __('in %s', 'live-weather-station'), human_time_diff(time(), $item['next'])));

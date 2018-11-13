@@ -773,4 +773,22 @@ trait Description {
         }
         return $result;
     }
+
+    /**
+     * Get the file extension description.
+     *
+     * @param string $ext The extension.
+     * @return string The file extension description.
+     * @since 3.4.0
+     */
+    protected function get_extension_description($ext) {
+        switch (strtolower($ext)) {
+            case 'csv' : $result = lws__('Comma-separated values','live-weather-station'); break;
+            case 'dsv' : $result = lws__('Delimiter-separated values', 'live-weather-station'); break;
+            case 'tsv' : $result = lws__('Tab-separated values', 'live-weather-station'); break;
+            case 'ndjson' : $result = lws__('Standard import/export values', 'live-weather-station'); break;
+            default : $result = lws__('Unknown format', 'live-weather-station');
+        }
+        return $result;
+    }
 }

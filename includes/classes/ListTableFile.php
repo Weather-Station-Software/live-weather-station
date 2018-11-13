@@ -4,6 +4,7 @@ namespace WeatherStation\UI\ListTable;
 
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\Output;
+use WeatherStation\System\Storage\Manager as FS;
 
 /**
  * Files list table for Weather Station plugin.
@@ -29,64 +30,44 @@ class File extends Base {
         return $item[$column_name];
     }
 
-    protected function column_system($item){
-        $color = Logger::get_color($item['level']);
-        if ($color != '') {
-            $color = 'style="color:' . $color . '"';
-        }
-        $s = sprintf('?page=%s&view=log-detail&log-entry=%s',$_REQUEST['page'],$item['id']);
-        $result = '<i ' . $color . ' class="' . LWS_FAS . ' fa-fw fa-lg ' . Logger::get_icon($item['level']) . '"></i>&nbsp;';
-        $result .= '&nbsp;<a class="row-title" href="' . $s . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . 'title="'. ucfirst(__('see details', 'live-weather-station')) . '">' . $item['system'] . ' ' . $item['version'] . '</a>';
-        $result .= '<br /><span style="color:silver">Event ' . $item['id'] . ', ' . Logger::get_name($item['level']) . ' ' . __('code', 'live-weather-station') . ' ' . $item['code'] . '</span>';
+    protected function column_station($item){
+        $result = $this->output_iconic_filetype($item['ext'], 'style="color:#999"', 'fa-lg fa-fw') . '&nbsp;&nbsp;';
+        $result .= $item['station'];
+        $result .= '<br /><span style="color:silver">' . $this->get_extension_description($item['ext']);
+        $result .= ', ' . $item['std_size'] . '</span>';
         return $result;
     }
 
-    protected function column_service($item){
-        if ($item['service'] == 'N/A') {
-            return '<span style="color:silver">' . __('N/A', 'live-weather-station') . '</span>';
-        }
-        else {
-            return $item['service'];
-        }
-    }
-
-    protected function column_message($item){
-        $trunc = 50;
-        if (strlen($item['message']) > $trunc) {
-            return substr($item['message'],0 , $trunc - 1) . '...';
-        }
-        else {
-            return $item['message'];
-        }
-    }
-
-    protected function column_timestamp($item){
-        $result = $this->get_date_from_mysql_utc($item['timestamp'], '', 'Y-m-d H:i:s') ;
-        $result .='<br /><span style="color:silver">' . $this->get_positive_time_diff_from_mysql_utc($item['timestamp']) . '</span>';
-        return $result;
-    }
-
-    protected function column_device_name($item){
-        if ($item['device_name'] == 'N/A') {
-            return '<span style="color:silver">' . __('N/A', 'live-weather-station') . '</span>';
-        }
-        else {
-            if ($item['module_name'] != 'N/A') {
-                return $item['device_name'] . '<br /><span style="color:silver">' . $item['module_name'] . '</span>';
+    protected function column_state($item){
+        $actions = array();
+        if ($item['state'] === 'none') {
+            if ($item['ext'] !== 'ukn') {
+                $result = lws__('Ready', 'live-weather-station');
+                $actions = array('<a href="' . $item['url'] . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.lws__('Download file', 'live-weather-station').'</a>');
             }
             else {
-                return $item['device_name'];
+                $result = lws__('Ready', 'live-weather-station');
             }
         }
+        else {
+            $result = lws__('In progress...', 'live-weather-station') . ' ' . $item['progress'] . '%';
+        }
+        return sprintf('%1$s %2$s', $result, $this->row_actions($actions));
+    }
+
+    protected function column_date($item){
+        $result = date_i18n(get_option('date_format'), $item['date']);
+        $result .='<br /><span style="color:silver">' . $this->get_time_diff_from_utc($item['date']) . '</span>';
+        return $result;
     }
 
     public function get_columns(){
-        $columns = array('system' => __('Event', 'live-weather-station'),
-            'file' => lws__('File', 'live-weather-station'),
+        $columns = array(
             'station' => __('Station', 'live-weather-station'),
+            'date' => __('Freshness', 'live-weather-station'),
             'from' => lws__('From', 'live-weather-station'),
             'to' => lws__('To', 'live-weather-station'),
-            'size' => lws__('Size', 'live-weather-station'));
+            'state' => lws__('State', 'live-weather-station'));
         return $columns;
     }
 
@@ -94,8 +75,16 @@ class File extends Base {
         return array();
     }
 
+    public function usort_reorder($a,$b){
+        $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'date';
+        $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'desc';
+        $result = strcmp(strtolower($a[$orderby]), strtolower($b[$orderby]));
+        return ($order==='asc') ? $result : -$result;
+    }
+
     protected function get_sortable_columns() {
-        return array();
+        $sortable_columns = array('station' => array('station',false), 'date' => array('date',true), 'from' => array('from',false), 'to' => array('to',false));
+        return $sortable_columns;
     }
 
     public function get_bulk_actions() {
@@ -103,7 +92,13 @@ class File extends Base {
     }
 
     protected function init_values() {
-        // list files
+        $this->filters = array();
+        if (isset($_GET['limit'])) {
+            $this->limit = intval($_GET['limit']);
+            if (!$this->limit) {
+                $this->limit = 25;
+            }
+        }
     }
 
     public function prepare_items() {
@@ -112,9 +107,12 @@ class File extends Base {
         $hidden = $this->get_hidden_columns();
         $sortable = $this->get_sortable_columns();
         $this->_column_headers = array($columns, $hidden, $sortable);
+        $data = $this->add_status(FS::extended_list_dir((bool)get_option('live_weather_station_only_valid_files')));
+        usort($data, array($this, 'usort_reorder'));
         $current_page = $this->get_pagenum();
-        $total_items = $this->get_log_count($this->filters);
-        $this->items = $this->get_log_list($this->filters, ($current_page-1)*$this->limit, $this->limit);
+        $total_items = count($data);
+        $data = array_slice($data,(($current_page-1)*$this->limit),$this->limit);
+        $this->items = $data;
         $this->set_pagination_args(array('total_items' => $total_items, 'per_page' => $this->limit, 'total_pages' => ceil($total_items/$this->limit)));
     }
 
@@ -135,47 +133,15 @@ class File extends Base {
     }
 
     public function get_views() {
-        /*$filters = $this->filters;
-        unset($filters['level']);
-        $s1 = '<a href="' . $this->get_page_url($filters) . '"' . ( $this->level == '' ? ' class="current"' : '') . '>' . __('All', 'live-weather-station') . ' <span class="count">(' . $this->get_log_count($filters) . ')</span></a>';
-        $filters['level'] = 'notice';
-        $s2 = '<a href="' . $this->get_page_url($filters) . '"' . ( $this->level == 'notice' ? ' class="current"' : '') . '>' . __('Notices &amp; beyond', 'live-weather-station') . ' <span class="count">(' . $this->get_log_count($filters) . ')</span></a>';
-        $filters['level'] = 'error';
-        $s3 = '<a href="' . $this->get_page_url($filters) . '"' . ( $this->level == 'error' ? ' class="current"' : '') . '>' . __('Errors &amp; beyond', 'live-weather-station') . ' <span class="count">(' . $this->get_log_count($filters) . ')</span></a>';
-        $status_links = array( 'all' => $s1, 'notices' => $s2, 'errors' => $s3);*/
         return '';
     }
 
     public function extra_tablenav($which) {
-        /*$list = $this;
+        $list = $this;
         $args = compact('list');
-        foreach ($args as $key => $val) {
-            $$key = $val;
-        }
-        if ($which == 'top'){
-            include(LWS_ADMIN_DIR.'partials/ListTableLogsTop.php');
-        }
         if ($which == 'bottom'){
-            include(LWS_ADMIN_DIR.'partials/ListTableLogsBottom.php');
-        }*/
-    }
-
-    // SPECIFIC METHODS FOR RENDERING
-
-    public function get_level() {
-        return $this->level;
-    }
-
-    public function get_station() {
-        return $this->station;
-    }
-
-    public function get_system() {
-        return $this->system;
-    }
-
-    public function get_service() {
-        return $this->service;
+            include(LWS_ADMIN_DIR.'partials/ListTableFilesBottom.php');
+        }
     }
 
     public function get_line_number_select() {
@@ -190,5 +156,20 @@ class File extends Base {
         }
         return $result;
     }
+
+    // SPECIFIC METHODS FOR RENDERING
+
+    private function add_status($data) {
+        $processes = self::get_status_for_active_background_processes();
+        foreach ($data as &$file) {
+            if (array_key_exists($file['uuid'], $processes)) {
+                $file['state'] = $processes[$file['uuid']]['state'];
+                $file['progress'] = $processes[$file['uuid']]['progress'];
+            }
+        }
+        return $data;
+    }
+
+
 
 }

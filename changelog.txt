@@ -14,6 +14,7 @@
 * Improvement: added inline help while adding or editing station for Netatmo, WeatherFlow, BloomSky, Pioupiou, Ambient and sticketags-based stations.
 * Improvement: added inline help for modules management.
 * Improvement: weather condition (as numerical ID) is now rightly truncated in historical data.
+* Improvement: the "scheduled tasks" tab is now replaced by a full page.
 * Bug fix: in textual shortcode, trend for barometric pressure is not available in plain text (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
 * Bug fix: in distribution radial charts, legend is wrong when values are rain rates.
 
