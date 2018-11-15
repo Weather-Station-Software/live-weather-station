@@ -82,6 +82,7 @@ Fully delete a station in fast collect mode
 import data page
 export data page
 manage modules page
+file manager page
 add export manager and import manager as events systems
 add storage manager as events system
 
@@ -110,16 +111,6 @@ add Zambretti forecast
 min/max for new indexes
 
 
-
-Netatmo             : MSLP (Abs)        0 / 6
-WeatherFlow         : Abs (MSLP)                    8
-BloomSky            : Abs (-)                       10
-OpenWeatherMap      : MSLP (-)          1 / 2
-Ambient             : Abs (-)                       11
-Weather underground : MSLP (-)          3
-realtime            : MSLP (-)          5
-clientraw           : MSLP (-)          4                         Assumption
-stickertags         : MSLP (-)          7
 
 
 -- Importer(s)

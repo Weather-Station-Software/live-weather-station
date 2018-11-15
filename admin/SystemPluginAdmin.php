@@ -47,6 +47,7 @@ use WeatherStation\SDK\BloomSky\Plugin\StationInitiator as Bloomsky_Station_Init
 use WeatherStation\SDK\Ambient\Plugin\StationInitiator as Ambient_Station_Initiator;
 use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Notifications\Notifier;
+use WeatherStation\System\Storage\Manager as FS;
 
 
 
@@ -1557,9 +1558,10 @@ class Admin {
                             $station['newest_data'] = date('Y-m-d', time() - 86400);
                             $station['module_detail'] = DeviceManager::get_modules_details($station['station_id']);
                             $export_formats = self::_get_export_formats_array();
-                            $import_formats = self::_get_import_formats_array();
+                            $import_formats = self::_get_import_formats_array(strtolower($this->get_service_name($station['station_type'])));
+                            $ndjson = FS::get_valid(array('ndjson'));
                             $error = array();
-                            $args = compact('station', 'error', 'export_formats', 'import_formats');
+                            $args = compact('station', 'error', 'export_formats', 'import_formats', 'ndjson');
                             break;
                         case 'weatherunderground':
                             if ($id) {

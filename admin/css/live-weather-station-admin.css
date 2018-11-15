@@ -26,6 +26,10 @@ table.lws-settings {
     width: 100%;
 }
 
+.lws-settings input[type=date] {
+    width: 100%;
+}
+
 .lws-settings th.lws-password {
     vertical-align: middle;
     padding-top: 0;

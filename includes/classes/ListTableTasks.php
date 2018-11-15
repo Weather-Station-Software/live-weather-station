@@ -38,7 +38,7 @@ class Tasks extends Base {
                 $result = '<i style="color:#999" class="' . LWS_FAS . ' fa-lg fa-fw fa-cog"></i>&nbsp;';
                 break;
             case 'pull' :
-                $result = '<i style="color:#999" class="' . LWS_FAS . ' fa-' . (LWS_FA5?'cloud-download-alt':'cloud-download') . '"></i>&nbsp;';
+                $result = '<i style="color:#999" class="' . LWS_FAS . ' fa-lg fa-fw fa-' . (LWS_FA5?'cloud-download-alt':'cloud-download') . '"></i>&nbsp;';
                 break;
             case 'push' :
                 $result = '<i style="color:#999" class="' . LWS_FAS . ' fa-lg fa-fw fa-share-alt"></i>&nbsp;';
