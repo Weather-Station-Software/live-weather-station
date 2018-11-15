@@ -32,9 +32,8 @@ class File extends Base {
 
     protected function column_station($item){
         $result = $this->output_iconic_filetype($item['ext'], 'style="color:#999"', 'fa-lg fa-fw') . '&nbsp;&nbsp;';
-        $result .= $item['station'];
-        $result .= '<br /><span style="color:silver">' . $this->get_extension_description($item['ext']);
-        $result .= ', ' . $item['std_size'] . '</span>';
+        $result .= $item['station'] . ' - ' . $item['std_size'];
+        $result .= '<br /><span style="color:silver">' . $this->get_extension_description($item['ext']) . '</span>';
         return $result;
     }
 
@@ -64,10 +63,10 @@ class File extends Base {
     public function get_columns(){
         $columns = array(
             'station' => __('Station', 'live-weather-station'),
-            'date' => __('Freshness', 'live-weather-station'),
+            'state' => lws__('State', 'live-weather-station'),
             'from' => lws__('From', 'live-weather-station'),
             'to' => lws__('To', 'live-weather-station'),
-            'state' => lws__('State', 'live-weather-station'));
+            'date' => __('Freshness', 'live-weather-station'));
         return $columns;
     }
 

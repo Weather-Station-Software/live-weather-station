@@ -5,6 +5,7 @@
 * New: Summer Simmer index is now computed and available in all controls and outdoor widget.
 * New: Steadman index (aka "Australian apparent temperature") is now computed and available in all controls and outdoor widget.
 * New: psychrometric delta-t value is now computed and available in all controls and psychrometry widget.
+* New: an new file manager to manage import / export files.
 * Improvement: better wind angle precision in all computation.
 * Improvement: running background processes are now listed in the "at a glance" box.
 * Improvement: there's now a "disclaimer" box in the dashboard.
@@ -14,7 +15,9 @@
 * Improvement: added inline help while adding or editing station for Netatmo, WeatherFlow, BloomSky, Pioupiou, Ambient and sticketags-based stations.
 * Improvement: added inline help for modules management.
 * Improvement: weather condition (as numerical ID) is now rightly truncated in historical data.
-* Improvement: the "scheduled tasks" tab is now replaced by a full page.
+* Improvement: the "scheduled tasks" tab is now replaced by a full admin page.
+* Improvement: better layout and icons alignment in the tasks scheduler.
+* Improvement: inline help for the tasks scheduler.
 * Bug fix: in textual shortcode, trend for barometric pressure is not available in plain text (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
 * Bug fix: in distribution radial charts, legend is wrong when values are rain rates.
 

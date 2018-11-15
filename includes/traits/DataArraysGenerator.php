@@ -2912,7 +2912,7 @@ trait Generator {
         $result = array();
         $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(lws__('Import from a <em>.ndjson</em> file previously exported by %s.', 'live-weather-station'), LWS_PLUGIN_NAME));
         if ($service === 'all' || $service === 'netatmo' || $service === 'netatmohc') {
-            $result['netatmo'] = array('name' => lws__('Netatmo cloud services', 'live-weather-station'), 'description' => lws__('Import the data stored by Netatmo for your station or device.', 'live-weather-station'));
+            $result['netatmo'] = array('name' => lws__('Netatmo cloud services', 'live-weather-station'), 'description' => lws__('Import data stored by Netatmo for your station or device.', 'live-weather-station'));
         }
         return $result;
     }

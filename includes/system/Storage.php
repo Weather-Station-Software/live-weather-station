@@ -299,4 +299,28 @@ class Manager {
         return $result;
     }
 
+    /**
+     * Get a list of valid files.
+     *
+     * @param array $extension Optional. Includes only these file extensions.
+     * @return array The extended files list.
+     * @since 3.7.0
+     */
+    public static function get_valid($extension=array()) {
+        $result = array();
+        foreach (self::extended_list_dir() as $file) {
+            if (count($extension) > 0) {
+                if (in_array($file['ext'], $extension)) {
+                    $result[] = $file;
+                }
+            }
+            else {
+                $result[] = $file;
+            }
+
+
+        }
+        return $result;
+    }
+
 }
