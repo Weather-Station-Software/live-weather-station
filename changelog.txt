@@ -1,7 +1,9 @@
 
-#3.7.0 / November XXXXX, 2018
+#3.7.0 / December XXXXX, 2018
 
-* New: it's now possible to export historical data as CSV, DSV, TSV or ND-JSON file.
+* New: historical data import from Netatmo cloud services for weather stations and "Healthy Home Coaches".
+* New: historical data export as CSV, DSV, TSV or ND-JSON file.
+* New: historical data import from previously saved file (ND-JSON).
 * New: Summer Simmer index is now computed and available in all controls and outdoor widget.
 * New: Steadman index (aka "Australian apparent temperature") is now computed and available in all controls and outdoor widget.
 * New: psychrometric delta-t value is now computed and available in all controls and psychrometry widget.

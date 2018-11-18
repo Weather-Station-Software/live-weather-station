@@ -511,7 +511,7 @@ trait PublicClient {
                 if (Quota::verify($this->service_name, 'GET')) {
                     $raw_data = $wflw->getRawPublicStationData($station['service_id'], self::$dev_key);
                     $this->format_and_store($raw_data, $station);
-                    Logger::notice($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Weather stations data retrieved.');
+                    Logger::notice($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Data retrieved.');
                 }
                 else {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');

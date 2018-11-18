@@ -207,7 +207,7 @@ trait CurrentClient {
                     $place['timezone'] = $station['loc_timezone'];
                     $place['location'] = array($station['loc_longitude'], $station['loc_latitude']);
                     $values['place'] = $place;
-                    Logger::notice($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Current observations data retrieved.');
+                    Logger::notice($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Data retrieved.');
                 }
                 else {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');

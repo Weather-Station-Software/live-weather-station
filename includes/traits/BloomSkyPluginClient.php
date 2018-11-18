@@ -70,7 +70,7 @@ trait Client {
                     if ($store) {
                         $this->store_bloomsky_datas($this->get_all_bsky_stations());
                     }
-                    Logger::notice($this->facility, $this->service_name, null, null, null, null, 0, 'Personal weather stations data retrieved.');
+                    Logger::notice($this->facility, $this->service_name, null, null, null, null, 0, 'Data retrieved.');
                 }
                 else {
                     Logger::warning($this->facility, $this->service_name, null, null, null, null, 0, 'Quota manager has forbidden to retrieve data.');

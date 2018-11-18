@@ -167,17 +167,34 @@ trait Conversion {
     }
 
     /**
-     *Compare two MySql dates.
+     * Compare two MySql dates.
      *
      * @param string $date1 The first MySql date.
      * @param string $date2 The second MySql date.
-     * @return boolean The new MySql date.
+     * @return boolean The comparison of MySql dates.
      * @since 3.7.0
      */
     public static function mysql_is_ordered($date1, $date2) {
         $datetime1 = \DateTime::createFromFormat('Y-m-d', $date1);
         $datetime2 = \DateTime::createFromFormat('Y-m-d', $date2);
         return $datetime2->getTimestamp() >= $datetime1->getTimestamp();
+    }
+
+    /**
+     * Verify a MySql date.
+     *
+     * @param string $date The MySql date to verify.
+     * @return boolean True if it's a valid date. False otherwise..
+     * @since 3.7.0
+     */
+    public static function verify_mysql_date($date) {
+        try {
+            $datetime = \DateTime::createFromFormat('Y-m-d', $date);
+            return $datetime->format('Y-m-d') == $date;
+        }
+        catch (\Exception $ex) {
+            return false;
+        }
     }
 
     /**

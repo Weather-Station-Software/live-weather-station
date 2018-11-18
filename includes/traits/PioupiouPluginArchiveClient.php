@@ -12,64 +12,19 @@ use WeatherStation\System\Quota\Quota;
 
 
 /**
- * Pioupiou station client for Weather Station plugin.
+ * Pioupiou archive client for Weather Station plugin.
  *
  * @package Includes\Traits
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
- * @since 3.5.0
+ * @since 3.7.0
  */
-trait PublicClient {
+trait ArchiveClient {
 
     use BaseClient;
 
-    protected $facility = 'Weather Collector';
+    protected $facility = 'Import Manager';
     public $detected_station_name = '';
-
-    /**
-     * Verify if a station is accessible.
-     *
-     * @param string $id The station ID.
-     * @return string The error message, empty string otherwise.
-     * @since 3.5.0
-     */
-    public function test_station($id) {
-        $result = 'unknown station ID';
-        $piou = new PIOUApiClient();
-        try {
-            Quota::verify(self::$service, 'GET');
-            $raw_data = $piou->getRawPublicStationData($id);
-            $weather = json_decode($raw_data, true);
-            if (is_array($weather)) {
-                if (array_key_exists('data', $weather)) {
-                    if (array_key_exists('meta', $weather['data'])) {
-                        if (array_key_exists('name', $weather['data']['meta'])) {
-                            $this->detected_station_name = $weather['data']['meta']['name'];
-                        }
-                        else {
-                            $this->detected_station_name = '< NO NAME >';
-                        }
-                        $result = '';
-                    }
-                }
-                else {
-                    $result = 'Pioupiou servers have returned unknown response';
-                    if (array_key_exists('error_message', $weather)) {
-                        $result = $weather['error_message'];
-                        $result = str_replace('{station_id}', 'Station ID', $result);
-                    }
-                }
-            }
-            else {
-                $result = 'internal Pioupiou error';
-            }
-        }
-        catch(\Exception $ex)
-        {
-            $result = 'unable to contact Pioupiou servers';
-        }
-        return $result;
-    }
 
     /**
      * Format and store data.
@@ -77,7 +32,7 @@ trait PublicClient {
      * @param string $json_weather Weather array json formated.
      * @param array $station Station array.
      * @throws \Exception
-     * @since 3.5.0
+     * @since 3.7.0
      */
     private function format_and_store($json_weather, $station) {
         $weather = json_decode($json_weather, true);
@@ -311,7 +266,7 @@ trait PublicClient {
     /**
      * Get and store station's data.
      *
-     * @since 3.5.0
+     * @since 3.7.0
      */
     public function get_and_store_data() {
         $this->synchronize_piou_station();
@@ -341,32 +296,5 @@ trait PublicClient {
                 }
             }
         }
-    }
-
-    /**
-     * Do the main job.
-     *
-     * @param string $system The calling system.
-     * @since 3.5.0
-     */
-    protected function __run($system){
-        $cron_id = Watchdog::init_chrono(Watchdog::$piou_update_station_schedule_name);
-        $err = '';
-        try {
-            $err = 'collecting weather';
-            $this->get_and_store_data();
-            $err = 'computing weather';
-            $weather = new Weather_Index_Computer();
-            $weather->compute(LWS_PIOU_SID);
-            $err = 'computing ephemeris';
-            $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute(LWS_PIOU_SID);
-            Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
-        }
-        catch (\Exception $ex) {
-            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
-        }
-        $this->synchronize_modules_count();
-        Watchdog::stop_chrono($cron_id);
     }
 }

@@ -12,9 +12,10 @@ $timezone_icn = $this->output_iconic_value(0, 'timezone', false, false, 'style="
 $histo_icn = $this->output_iconic_value(0, 'historical', false, false, 'style="color:#999"', 'fa-lg fa-fw');
 $static_display = false;
 $manage_modules = true;
-$constraint_range = true;
+$constraint_range = false;
 $formats = $import_formats;
-
+$show_override = true;
+$show_files = true;
 
 ?>
 
@@ -47,18 +48,11 @@ $formats = $import_formats;
                             <?php include(LWS_ADMIN_DIR.'partials/ChooseFormat.php'); ?>
                         </div>
                     </div>
-                    <div id="lws-options-select" class="postbox" >
-                        <button type="button" class="handlediv" aria-expanded="true"><span class="toggle-indicator" aria-hidden="true"></span></button>
-                        <h2 class="hndle ui-sortable-handle"><span><?php esc_html_e_lws__('Options', 'live-weather-station');?></span></h2>
-                        <div class="inside">
-                            <?php include(LWS_ADMIN_DIR.'partials/ChooseOptions.php'); ?>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
         <div style="width: 100%;clear: both;">
-            <p class="submit"><input type="submit" name="do-import-data" id="do-import-data" class="button button-primary" value="<?php esc_html_e_lws__('Import Data', 'live-weather-station');?>"  /> &nbsp;&nbsp;&nbsp;
+            <p class="submit"><input disabled type="submit" name="do-import-data" id="do-import-data" class="button button-primary" value="<?php esc_html_e_lws__('Import Data', 'live-weather-station');?>"  /> &nbsp;&nbsp;&nbsp;
                 <a href="<?php echo esc_url(lws_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" class="button" ><?php esc_html_e('Cancel', 'live-weather-station');?></a>
         </div>
     </form>

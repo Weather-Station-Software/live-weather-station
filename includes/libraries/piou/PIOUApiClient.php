@@ -23,11 +23,16 @@ class PIOUApiClient
 {
 
     /**
-     * @var string $mainnUrl The api url to fetch data from.
+     * @var string $mainnUrl The "live" api url to fetch data from.
      */
     private $mainnUrl = "https://api.pioupiou.fr/v1/live/{sensor_id}";
 
-    
+    /**
+     * @var string $archiveUrl The "archive" api url to fetch data from.
+     */
+    private $archiveUrl = "https://api.pioupiou.fr/v1/archive/{sensor_id}?start={start}&stop={stop}";
+
+
     /**
      * @var \WeatherStation\SDK\Pioupiou\AbstractCache|bool $cacheClass The cache class.
      */
@@ -99,6 +104,19 @@ class PIOUApiClient
      * @since 3.5.0
      */
     public function getRawPublicStationData($id) {
+        $url = $this->buildUrl($id);
+        return $this->cacheOrFetchResult($url);
+    }
+
+    /**
+     * Get the string returned by Pioupiou for a specific public station.
+     *
+     * @param string $id The station id to get weather information for.
+     *
+     * @return bool|string Returns false on failure and the fetched data in the format you specified on success.
+     * @since 3.7.0
+     */
+    public function getRawPublicStationArchive($id, $start_date, $end_date) {
         $url = $this->buildUrl($id);
         return $this->cacheOrFetchResult($url);
     }

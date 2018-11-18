@@ -14,7 +14,8 @@ $static_display = false;
 $manage_modules = true;
 $constraint_range = true;
 $formats = $export_formats;
-
+$show_override = false;
+$show_files = false;
 
 ?>
 

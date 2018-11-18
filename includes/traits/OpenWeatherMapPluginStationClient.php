@@ -157,7 +157,7 @@ trait StationClient {
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
                     $raw_data = $owm->getRawStationData(29584, 'metric', 'en', get_option('live_weather_station_owm_apikey'), 'json');
-                    Logger::notice($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Weather stations data retrieved.');
+                    Logger::notice($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Data retrieved.');
                 }
                 else {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');
