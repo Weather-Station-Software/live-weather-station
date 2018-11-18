@@ -74,11 +74,11 @@ trait Description {
             case 'namodule1': // Outdoor module
                 $result = __('Outdoor module', 'live-weather-station');
                 break;
-            case 'namodule3': // Rain gauge
-                $result = __('Rain gauge', 'live-weather-station');
-                break;
             case 'namodule2': // Wind gauge
                 $result = __('Wind gauge', 'live-weather-station');
+                break;
+            case 'namodule3': // Rain gauge
+                $result = __('Rain gauge', 'live-weather-station');
                 break;
             case 'namodule4': // Additional indoor module
                 $result = __('Indoor module', 'live-weather-station');

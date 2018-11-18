@@ -4,6 +4,7 @@ namespace WeatherStation\UI\Station;
 
 use WeatherStation\Data\Output;
 use WeatherStation\Engine\Page\Standalone\Framework;
+use WeatherStation\System\Device\Manager;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\Arrays\Generator;
 use WeatherStation\Data\ID\Handling as IDHandling;
@@ -363,6 +364,45 @@ class Handling {
                                     $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                                     add_settings_error('lws_nonce_error', 200, $message, 'error');
                                     Logger::error('Export Manager', null, $station['station_id'], $station['station_name'], null, null, null, 'Unable to launch data export.');
+                                }
+                                $update = false;
+                            }
+
+                            if (array_key_exists('do-import-data', $_POST)) {
+                                $success = false;
+                                if (array_key_exists('lws-date-start', $_POST) && array_key_exists('lws-date-end', $_POST) && array_key_exists('lws-format', $_POST) && array_key_exists('lws-ndjson', $_POST)) {
+                                    $args = array();
+                                    $args['init'] = array();
+                                    $args['init']['station_id'] = $station['station_id'];
+                                    $args['init']['start_date'] = sanitize_text_field($_POST['lws-date-start']);
+                                    $args['init']['end_date'] = sanitize_text_field($_POST['lws-date-end']);
+                                    $args['init']['force'] = array_key_exists('lws-option-override', $_POST);
+                                    $format = sanitize_text_field(strtolower($_POST['lws-format']));
+                                    if ($format === 'netatmo' && $station['station_type'] == LWS_NETATMOHC_SID) {
+                                        $format = 'NetatmoHC';
+                                    }
+                                    if ($format === 'netatmo' && $station['station_type'] == LWS_NETATMO_SID) {
+                                        $format = 'NetatmoStation';
+                                    }
+                                    if ($format === 'ndjson') {
+                                        $args['init']['uuid'] = sanitize_text_field($_POST['lws-ndjson']);
+                                        $format = 'LineNdjson';
+                                    }
+                                    $classname = $format . 'Importer';
+                                    ProcessManager::register($classname, $args);
+                                    $success = true;
+                                }
+                                if ($success) {
+                                    $message = lws__('Data import for the station %s has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');
+                                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                                    add_settings_error('lws_nonce_success', 200, $message, 'updated');
+                                    Logger::notice('Import Manager', null, $station['station_id'], $station['station_name'], null, null, null, 'Data import launched.');
+                                }
+                                else {
+                                    $message = lws__('Unable to launch data import for the station %s.', 'live-weather-station');
+                                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                                    add_settings_error('lws_nonce_error', 200, $message, 'error');
+                                    Logger::error('Import Manager', null, $station['station_id'], $station['station_name'], null, null, null, 'Unable to launch data import.');
                                 }
                                 $update = false;
                             }

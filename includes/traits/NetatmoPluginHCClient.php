@@ -111,7 +111,7 @@ trait HCClient {
                             }
                         }
                     }
-                    Logger::notice($this->facility, $this->service_name, null, null, null, null, 0, 'Healthy Home Coaches data retrieved.');
+                    Logger::notice($this->facility, $this->service_name, null, null, null, null, 0, 'Data retrieved.');
                 }
                 else {
                     Logger::warning($this->facility, $this->service_name, null, null, null, null, 0, 'Quota manager has forbidden to retrieve data.');

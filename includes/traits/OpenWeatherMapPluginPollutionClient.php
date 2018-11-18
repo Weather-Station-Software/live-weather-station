@@ -215,7 +215,7 @@ trait PollutionClient {
                     if (!empty($st['dashboard_data'])) {
                         $st['dashboard_data']['time_utc'] = time();
                         $this->owm_datas[] = $st;
-                        Logger::notice($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], 0, 'Pollution data retrieved.');
+                        Logger::notice($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], 0, 'Data retrieved.');
                     } else {
                         Logger::notice($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], 0, 'Pollution data are empty or irrelevant.');
                     }

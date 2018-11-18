@@ -132,6 +132,25 @@ class Manager {
     }
 
     /**
+     * Construct the absolute file name.
+     *
+     * @param string $file The file.
+     * @return string The fully qualified file name.
+     * @since 3.7.0
+     */
+    public static function construct_full_file_name($file) {
+        $file = trim($file);
+        $file = str_replace('/../', '', $file);
+        $file = str_replace('../', '', $file);
+        $file = str_replace('/..', '', $file);
+        $file = str_replace('/./', '', $file);
+        $file = str_replace('./', '', $file);
+        $file = str_replace('/.', '', $file);
+        $file = str_replace('/', '', $file);
+        return self::$dir . $file;
+    }
+
+    /**
      * Get the root name.
      *
      * @return string The file name.
@@ -317,8 +336,37 @@ class Manager {
             else {
                 $result[] = $file;
             }
+        }
+        return $result;
+    }
 
-
+    /**
+     * Find a file from an uuid.
+     *
+     * @param string $uuid The uuid to find.
+     * @param array $extension Optional. Includes only these file extensions.
+     * @return array The extended files list.
+     * @since 3.7.0
+     */
+    public static function find_valid($uuid, $extension=array()) {
+        $result = array();
+        foreach (self::get_valid($extension) as $file) {
+            if ($file['uuid'] === $uuid) {
+                $result = $file;
+                break;
+            }
+        }
+        if (count($result) > 0) {
+            try {
+                $file = new \SplFileObject(self::$dir . $result['file']);
+                $file->seek(PHP_INT_MAX);
+                $lines = $file->key() + 1;
+                $file = null;
+            }
+            catch (\Exception $ex) {
+                $lines = 0;
+            }
+            $result['lines'] = $lines;
         }
         return $result;
     }

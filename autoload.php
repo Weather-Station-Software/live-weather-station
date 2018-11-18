@@ -119,6 +119,7 @@ spl_autoload_register(
         case 'WeatherStation\SDK\OpenWeatherMap\Plugin\StationUpdater': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentOpenWeatherMapStationUpdater.php'; break;
         case 'WeatherStation\SDK\OpenWeatherMap\OWMApiClient': $file = LWS_INCLUDES_DIR.'libraries/owm/autoload.php'; break;
         case 'WeatherStation\SDK\Pioupiou\PIOUApiClient': $file = LWS_INCLUDES_DIR.'libraries/piou/autoload.php'; break;
+        case 'WeatherStation\SDK\Pioupiou\Plugin\ArchiveClient': $file = LWS_INCLUDES_DIR.'traits/PioupiouPluginArchiveClient.php'; break;
         case 'WeatherStation\SDK\Pioupiou\Plugin\BaseClient': $file = LWS_INCLUDES_DIR.'traits/PioupiouPluginBaseClient.php'; break;
         case 'WeatherStation\SDK\Pioupiou\Plugin\PublicClient': $file = LWS_INCLUDES_DIR.'traits/PioupiouPluginPublicClient.php'; break;
         case 'WeatherStation\SDK\Pioupiou\Plugin\StationCollector': $file = LWS_INCLUDES_DIR.'classes/WeatherCurrentPioupiouStationCollector.php'; break;

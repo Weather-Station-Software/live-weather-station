@@ -177,7 +177,24 @@ class Builder
      * @param boolean $force Optional. Force the overriding of data already in database.
      * @since 3.7.0
      */
-    private function add_record($timestamp, $device_id, $module_id, $module_type, $measure_type, $measure_set, $measure_value, $force=false) {
+    private function _add_record($timestamp, $device_id, $module_id, $module_type, $measure_type, $measure_set, $measure_value, $force=false) {
+        self::add_record($timestamp, $device_id, $module_id, $module_type, $measure_type, $measure_set, $measure_value, $force);
+    }
+
+    /**
+     * Add a record from an imported module.
+     *
+     * @param string $timestamp
+     * @param string $device_id
+     * @param string $module_id
+     * @param string $module_type
+     * @param string $measure_type
+     * @param string $measure_set
+     * @param mixed $measure_value
+     * @param boolean $force Optional. Force the overriding of data already in database.
+     * @since 3.7.0
+     */
+    static public function add_record($timestamp, $device_id, $module_id, $module_type, $measure_type, $measure_set, $measure_value, $force=false) {
         $val = array();
         $val['timestamp'] = $timestamp;
         $val['device_id'] = $device_id;
@@ -214,7 +231,7 @@ class Builder
             $end = $date_control + 86399;
             $index = date('Y-m-d', $start + (86400/2));
             $count = false;
-            if (is_array($data['values'])) {
+            if (array_key_exists('values', $data) && is_array($data['values'])) {
                 foreach ($data['values'] as $type => $value) {
                     $d = array();
                     foreach ($value as $ts => $m) {
@@ -259,7 +276,7 @@ class Builder
                                     $v = $no_value;
                             }
                             if ($v !== $no_value) {
-                                $this->add_record($index, $data['meta']['device_id'], $data['meta']['module_id'], $data['meta']['module_type'], $type, $set, $v, $force);
+                                $this->_add_record($index, $data['meta']['device_id'], $data['meta']['module_id'], $data['meta']['module_type'], $type, $set, $v, $force);
                                 $count = true;
                             }
                         }

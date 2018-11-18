@@ -21,6 +21,9 @@ abstract class NetatmoImporter extends Process {
 
     use Id_Manipulation, Client, Conversion, DateTimeConversion;
 
+    protected $facility = 'Import Manager';
+    protected $terminated = false;
+
 
     /**
      * Get the UUID of the process.
@@ -30,6 +33,16 @@ abstract class NetatmoImporter extends Process {
      */
     protected function uuid() {
         return $this->generate_v4_uuid();
+    }
+
+    /**
+     * Get the url of the process doc.
+     *
+     * @return string The url of the process doc.
+     * @since 3.6.0
+     */
+    protected function url() {
+        return 'https://weather.station.software/handbook/background-processes/netatmo-importer/';
     }
 
     /**
@@ -78,6 +91,9 @@ abstract class NetatmoImporter extends Process {
      * @since 3.7.0
      */
     protected function is_terminated(){
+        if ($this->terminated) {
+            return true;
+        }
         return (count($this->params['todo_ext'] + $this->params['todo_int']) === 0);
     }
 
@@ -140,7 +156,9 @@ abstract class NetatmoImporter extends Process {
         }
         else {
             $this->set_progress(100);
+
         }
+        $this->terminated = ($days_done > $days_todo);
     }
 
     /**
@@ -150,10 +168,21 @@ abstract class NetatmoImporter extends Process {
      */
     protected function init_core(){
 
-        // $this->params['init']['station_id']
-        // $this->params['init']['start_date'] // local timestamp
-        // $this->params['init']['end_date']   // local timestamp
-        // $args['init']['force'] = false;
+        $datetime = \DateTime::createFromFormat('Y-m-d', $this->params['init']['start_date']);
+        if ($datetime !== false) {
+            $this->params['init']['start_date'] = $datetime->getTimestamp();
+        }
+        else {
+            $this->params['init']['start_date'] = 0;
+        }
+
+        $datetime = \DateTime::createFromFormat('Y-m-d', $this->params['init']['end_date']);
+        if ($datetime !== false) {
+            $this->params['init']['end_date'] = $datetime->getTimestamp();
+        }
+        else {
+            $this->params['init']['end_date'] = 0;
+        }
 
         $this->params['init']['end_date'] -= 86400;
 
@@ -686,7 +715,11 @@ abstract class NetatmoImporter extends Process {
                 $this->run_int();
             }
         }
+        $this->update_oldest_data($this->params['init']['station_id']);
         $this->summarize();
+        if ($this->is_terminated()) {
+            Logger::notice('Import Manager', 'Netatmo', $this->params['init']['station_id'], $this->params['init']['station_name'], null, null, null, 'Data import terminated.');
+        }
     }
 
 }

@@ -686,7 +686,6 @@ class InlineHelp {
                 $s1 = sprintf(lws__('%s supports the following export formats:', 'live-weather-station'), LWS_PLUGIN_NAME);
                 $s2 = '';
                 foreach($formats as $format) {
-                    $desc = str_replace(' :', '.', $format['$desc']);
                     $s2 .= '<p><strong>' . $format['name'] . '</strong> &mdash; ' . $format['description'] . '</p>';
                 }
                 $tabs[] = array(

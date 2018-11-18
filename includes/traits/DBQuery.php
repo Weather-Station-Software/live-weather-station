@@ -944,6 +944,22 @@ trait Query {
     }
 
     /**
+     * Update the value 'oldest_data' for a station.
+     *
+     * @param string $station_id The station id.
+     * @since 3.7.0
+     */
+    public function update_oldest_data($station_id) {
+        $station = $this->get_station_informations_by_station_id($station_id);
+        if (is_array($station) && !empty($station)) {
+            if ($date = $this->get_oldest_data($station)) {
+                $station['oldest_data'] = $date;
+                $this->update_stations_table($station);
+            }
+        }
+    }
+
+    /**
      * Get station informations.
      *
      * @param integer $station_id The station id.

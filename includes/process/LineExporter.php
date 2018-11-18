@@ -5,6 +5,7 @@ use WeatherStation\DB\Query;
 use WeatherStation\System\Storage\Manager as FS;
 use WeatherStation\Data\DateTime\Conversion as DateTimeConversion;
 use WeatherStation\System\Device\Manager as ModuleManager;
+use WeatherStation\System\Logs\Logger;
 
 /**
  * A process to export data line after line.
@@ -20,6 +21,7 @@ abstract class LineExporter extends Process {
 
     protected $extension = 'txt';
     protected $fullfilename = null;
+    protected $facility = 'Export Manager';
 
 
     /**
@@ -104,11 +106,11 @@ abstract class LineExporter extends Process {
     protected function message() {
         if ($this->is_in_error()) {
             $result = sprintf(lws__('Unable to create the file named %s in the directory "%s".', 'live-weather-station'), FS::get_file_name($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension), FS::get_root_name()) . "\r\n";
-            $result .= "\r\n" . sprintf(lws__('Check %s to see what\'s going on.', 'live-weather-station'), '<a href="' . lws_get_admin_page_url('lws-events') . '">' . sprintf(lws__('the %s events log', 'live-weather-station'), LWS_PLUGIN_NAME) . '</a>');
+            $result .= "\r\n" . sprintf(lws__('Check the events log to see what\'s going on: %s', 'live-weather-station'), lws_get_admin_page_url('lws-events')) . "\r\n";
         }
         else {
             $fileurl = FS::get_full_file_url($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension);
-            $result = sprintf(lws__('The historical data of "%s" has been correctly exported for the period from %s to %s.', 'live-weather-station'), $this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date']) . "\r\n";
+            $result = sprintf(lws__('Historical data of "%s" has been correctly exported for the period from %s to %s.', 'live-weather-station'), $this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date']) . "\r\n";
             $result .= sprintf(lws__('The file is now ready to download. It will be kept on your server for %s days.', 'live-weather-station'), get_option('live_weather_station_file_retention', '7')) . "\r\n";
             $result .= "\r\n" . $fileurl . "\r\n";
         }
@@ -214,7 +216,7 @@ abstract class LineExporter extends Process {
 
         $this->uuid = $this->meta_uuid();
         $station = $this->get_station_informations_by_station_id($this->params['init']['station_id']);
-        $this->params['init']['station_name'] = $station['station_name'];
+        $this->params['init']['station_name'] = trim($station['station_name']);
         $this->params['init']['loc_timezone'] = $station['loc_timezone'];
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
@@ -258,10 +260,14 @@ abstract class LineExporter extends Process {
         if (!$this->is_terminated() && !$this->is_in_error()) {
             for ($i=1; $i<=$max; $i++) {
                 $this->job();
+                if ($this->is_terminated()) {
+                    break;
+                }
             }
         }
         if ($this->is_terminated()) {
             $this->end_job();
+            Logger::notice('Export Manager', null, $this->params['init']['station_id'], $this->params['init']['station_name'], null, null, null, 'Data export terminated.');
         }
         if ($this->params['todo'] > 0) {
             $this->set_progress(100 * $this->params['done'] / $this->params['todo']);
