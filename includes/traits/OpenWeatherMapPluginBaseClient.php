@@ -33,10 +33,10 @@ trait BaseClient {
      * @since 2.8.0
      */
     public function authentication($key, $plan) {
-        $owm = new OWMApiClient();
         $this->last_owm_error = '';
         try {
             Quota::verify($this->service_name, 'GET');
+            $owm = new OWMApiClient();
             $raw_data = $owm->getRawWeatherData(6455259, 'metric', 'en', $key, 'json');
             $weather = json_decode($raw_data, true);
             if (!is_array($weather)) {

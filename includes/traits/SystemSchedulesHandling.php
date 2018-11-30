@@ -80,7 +80,7 @@ trait Handling {
     public static $txt_update_station_schedule_name = 'lws_txt_station_update';
     public static $owm_update_pollution_schedule_name = 'lws_owm_pollution_update';
     public static $cron_pull = array('lws_netatmo_update', 'lws_netatmo_hc_update', 'lws_owm_current_update', 
-                                    'lws_owm_station_update', 'lws_wug_station_update', 'lws_raw_station_update',
+                                    /*'lws_owm_station_update', 'lws_wug_station_update',*/ 'lws_raw_station_update',
                                     'lws_real_station_update', 'lws_txt_station_update', 'lws_owm_pollution_update',
                                     'lws_wflw_station_update', 'lws_piou_station_update', 'lws_bsky_station_update', 
                                     'lws_ambt_station_update');
@@ -90,7 +90,7 @@ trait Handling {
     public static $owm_push_schedule_name = 'lws_owm_current_push';
     public static $pws_push_schedule_name = 'lws_pws_current_push';
     public static $wug_push_schedule_name = 'lws_wug_current_push';
-    public static $cron_push = array('lws_wow_current_push', 'lws_owm_current_push', 'lws_pws_current_push', 'lws_wug_current_push');
+    public static $cron_push = array('lws_wow_current_push'/*, 'lws_owm_current_push'*/, 'lws_pws_current_push'/*, 'lws_wug_current_push'*/);
 
     // OLD
     public static $netatmo_push_schedule_name = 'lws_netatmo_push';
@@ -731,10 +731,10 @@ trait Handling {
      *
      * @since 3.0.0
      */
-    protected static function define_wug_station_update_cron() {
+    /*protected static function define_wug_station_update_cron() {
         $plugin_wug_station_cron = new Wug_Station_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
         add_action(self::$wug_update_station_schedule_name, array($plugin_wug_station_cron, 'cron_run'));
-    }
+    }*/
 
     /**
      * Launch the WUG Station Updater cron job if needed.
@@ -744,12 +744,12 @@ trait Handling {
      *
      * @since 3.0.0
      */
-    protected static function launch_wug_station_update_cron($timeshift=0, $system='Watchdog') {
+    /*protected static function launch_wug_station_update_cron($timeshift=0, $system='Watchdog') {
         if (!wp_next_scheduled(self::$wug_update_station_schedule_name)) {
             wp_schedule_event(time() + $timeshift, 'ten_minutes', self::$wug_update_station_schedule_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$wug_update_station_schedule_name).'" (re)scheduled.');
         }
-    }
+    }*/
 
     /**
      * Define OWM Pollution Updater cron job.
@@ -1106,10 +1106,10 @@ trait Handling {
      *
      * @since 3.2.0
      */
-    protected static function define_wug_current_push_cron() {
+    /*protected static function define_wug_current_push_cron() {
         $plugin_wug_push_cron = new Wug_Pusher(LWS_PLUGIN_NAME, LWS_VERSION);
         add_action(self::$wug_push_schedule_name, array($plugin_wug_push_cron, 'cron_run'));
-    }
+    }*/
 
     /**
      * Launch the WUG Pusher cron job if needed.
@@ -1119,7 +1119,7 @@ trait Handling {
      *
      * @since 3.2.0
      */
-    protected static function launch_wug_current_push_cron($timeshift=0, $system='Watchdog') {
+    /*protected static function launch_wug_current_push_cron($timeshift=0, $system='Watchdog') {
         if (get_option('live_weather_station_cron_speed', 0) == 0) {
             $rec = 'six_minutes';
         }
@@ -1130,7 +1130,7 @@ trait Handling {
             wp_schedule_event(time() + $timeshift, $rec, self::$wug_push_schedule_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$wug_push_schedule_name).'" (re)scheduled.');
         }
-    }
+    }*/
 
     /**
      * Add a new 3 minutes interval capacity to the WP cron feature.

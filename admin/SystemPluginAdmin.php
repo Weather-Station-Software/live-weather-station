@@ -48,6 +48,8 @@ use WeatherStation\SDK\Ambient\Plugin\StationInitiator as Ambient_Station_Initia
 use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Notifications\Notifier;
 use WeatherStation\System\Storage\Manager as FS;
+use WeatherStation\Maps\Output as MapsOutput;
+use WeatherStation\UI\Map\Handling as Map;
 
 
 
@@ -61,7 +63,7 @@ use WeatherStation\System\Storage\Manager as FS;
  */
 class Admin {
 
-    use Schedule, Options, Arrays, FormsRenderer {
+    use MapsOutput, Schedule, Options, Arrays, FormsRenderer {
         FormsRenderer::get_service_name insteadof Arrays;
         FormsRenderer::get_comparable_dimensions insteadof Arrays;
         FormsRenderer::get_module_type insteadof Arrays;
@@ -78,11 +80,12 @@ class Admin {
 	private $reload = false;
 
     private $settings = array('general', 'services', 'display', 'thresholds', 'history', 'system');
-    private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground', 'Bloomsky', 'Ambient');
+    private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground', 'Bloomsky', 'Ambient', 'Windy');
     private $service = 'Backend';
 
     private $_station = null;
     private $_dashboard = null;
+    private $_map = null;
     private $_services = null;
     private $_analytics = null;
 
@@ -180,6 +183,7 @@ class Admin {
         lws_register_script('lws-fa-brands', LWS_PUBLIC_URL , 'js/fa-brands.min.js', array('lws-fa-loader'));
         lws_register_script('lws-fa-regular', LWS_PUBLIC_URL , 'js/fa-regular.min.js', array('lws-fa-loader'));
         lws_register_script('lws-fa-solid', LWS_PUBLIC_URL , 'js/fa-solid.min.js', array('lws-fa-loader'));
+        lws_register_script('lws-leaflet', LWS_PUBLIC_URL, 'js/leaflet.min.js');
     }
 
     /**
@@ -1281,7 +1285,7 @@ class Admin {
     /**
      * Set Weather Station admin menu and submenus in the main dashboard menu.
      *
-     * @since    3.0.0
+     * @since 3.0.0
      */
     public function lws_admin_menu() {
         $icon_svg = SVG::get_base64_menu_icon();
@@ -1300,6 +1304,8 @@ class Admin {
             $stations = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Stations', 'live-weather-station'), __('Stations', 'live-weather-station'), $manage_options_cap, 'lws-stations', array($this, 'lws_load_admin_page'));
             $this->_station = new Station(LWS_PLUGIN_NAME, LWS_VERSION, $stations);
             InlineHelp::$station_instance = $this->_station;
+            $maps = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . lws__('Maps', 'live-weather-station'), lws__('Maps', 'live-weather-station'), $manage_options_cap, 'lws-maps', array($this, 'lws_load_admin_page'));
+            $this->_map = new Map(LWS_PLUGIN_NAME, LWS_VERSION, $maps);
             if ((bool)get_option('live_weather_station_advanced_mode')) {
                 $files = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . lws__('Files', 'live-weather-station'), lws__('Files', 'live-weather-station'), $manage_options_cap, 'lws-files', array($this, 'lws_load_admin_page'));
             }
@@ -1318,13 +1324,12 @@ class Admin {
                 $this->_analytics = new Analytics(LWS_PLUGIN_NAME, LWS_VERSION, $analytics);
             }
             $settings = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Settings', 'live-weather-station'), __('Settings', 'live-weather-station'), $manage_options_cap, 'lws-settings', array($this, 'lws_load_admin_page'));
-
             $this->_services = new Services(LWS_PLUGIN_NAME, LWS_VERSION, $settings);
-
             InlineHelp::set_contextual_help('load-' . $dashboard, 'dashboard');
             InlineHelp::set_contextual_help('load-' . $settings, 'settings');
             InlineHelp::set_contextual_help('load-' . $stations, 'stations');
             InlineHelp::set_contextual_help('load-' . $events, 'events');
+            InlineHelp::set_contextual_help('load-' . $maps, 'maps');
             if (isset($files)) {
                 InlineHelp::set_contextual_help('load-' . $files, 'files');
             }
@@ -1367,6 +1372,9 @@ class Admin {
         if (!($id = filter_input(INPUT_GET, 'id'))) {
             $id = filter_input(INPUT_POST, 'id');
         }
+        if (!($mid = filter_input(INPUT_GET, 'mid'))) {
+            $mid = filter_input(INPUT_POST, 'mid');
+        }
         $email = filter_input(INPUT_POST, 'email');
         $args = array();
 
@@ -1393,6 +1401,20 @@ class Admin {
                 break;
             case 'lws-files':
                 $view = 'list-table-files';
+                break;
+            case 'lws-maps':
+                $view = 'list-table-maps';
+                if ($service != '' && $tab != '' && $action == 'form') {
+                    $view = $action . '-' . $tab . '-' . $service ;
+                }
+                if ($service != 'map' && $tab != '' && ($action == 'form' || $action == 'manage')) {
+                    $view = 'map';
+                }
+                if ($service === 'map' && $tab === 'delete' && $action === 'do') {
+                    if (array_key_exists('delete-map', $_POST)) {
+                        $this->delete_map($mid);
+                    }
+                }
                 break;
             case 'lws-stations':
             case 'lws-dashboard':
@@ -1841,14 +1863,17 @@ class Admin {
                 $view = 'dashboard';
                 break;
         }
-        if ($view != 'dashboard' && $view != 'station') {
+        if ($view != 'dashboard' && $view != 'station' && $view != 'map') {
             $this->lws_view_admin_page($view, $args);
         }
-        elseif ($view == 'station') {
+        elseif ($view === 'station') {
             $this->_station->get();
         }
-        elseif ($view == 'dashboard') {
+        elseif ($view === 'dashboard') {
             $this->_dashboard->get();
+        }
+        elseif ($view === 'map') {
+            $this->_map->get();
         }
     }
 
@@ -2245,7 +2270,7 @@ class Admin {
                         $s = __('the API key can not be empty', 'live-weather-station');
                     }
                     else {
-                        $s = $s = $this->connect_owm($key, $plan);;
+                        $s = $this->connect_owm($key, $plan);
                     }
                 }
                 if ($service == 'WeatherUnderground') {
@@ -2253,7 +2278,15 @@ class Admin {
                         $s = __('the API key can not be empty', 'live-weather-station');
                     }
                     else {
-                        $s = $s = $this->connect_wug($key, $plan);;
+                        $s = $this->connect_wug($key, $plan);
+                    }
+                }
+                if ($service == 'Windy') {
+                    if ($key == '') {
+                        $s = __('the API key can not be empty', 'live-weather-station');
+                    }
+                    else {
+                        $s = $this->connect_windy($key, $plan);
                     }
                 }
                 if ($s == '') {
@@ -2286,6 +2319,10 @@ class Admin {
                 }
                 if ($service == 'WeatherUnderground') {
                     $this->disconnect_wug();
+                    $result = true;
+                }
+                if ($service == 'Windy') {
+                    $this->disconnect_windy();
                     $result = true;
                 }
                 if ($service == 'Bloomsky') {
@@ -2324,6 +2361,10 @@ class Admin {
                 }
                 if ($service == 'WeatherUnderground') {
                     $this->disconnect_wug(false);
+                    $result = true;
+                }
+                if ($service == 'Windy') {
+                    $this->disconnect_windy(false);
                     $result = true;
                 }
                 if ($service == 'Bloomsky') {
@@ -2425,6 +2466,45 @@ class Admin {
         else {
             add_settings_error('lws_nonce_error', 403, 'No station to remove.', 'error');
             Logger::error('Security', null, null, null, null, null, null, 'An attempt was made to remove a station without ID.');
+        }
+    }
+
+    /**
+     * Delete a map.
+     *
+     * @param integer $mid The id of the map.
+     * @since 3.7.0
+     */
+    protected function delete_map($mid=null) {
+        if (isset($mid) && $mid) {
+            $map = $this->get_map_detail($mid);
+            $service = $this->get_service_name(100 + $map['type']);
+            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'delete-map')) {
+                $res = $this->delete_maps_table(array($mid));
+                if ($res) {
+                    $message = lws__('The map %s has been correctly removed.', 'live-weather-station');
+                    $message = sprintf($message, '<em>' . $map['name'] . '</em>');
+                    add_settings_error('lws_nonce_success', 200, $message, 'updated');
+                    Logger::notice($this->service, $service, null, null, null, null, null, 'Map removed.');
+                }
+                else {
+                    $message = lws__('Unable to remove the map %s.', 'live-weather-station');
+                    $message = sprintf($message, '<em>' . $map['name'] . '</em>');
+                    add_settings_error('lws_nonce_error', 403, $message, 'error');
+                    Logger::error($this->service, $service, null, null, null, null, null, 'Unable to remove this map.');
+                }
+            }
+            else {
+                $message = __('Unable to remove the station %s.', 'live-weather-station');
+                $message = sprintf($message, '<em>' . $map['name'] . '</em>');
+                add_settings_error('lws_nonce_error', 403, $message, 'error');
+                Logger::critical('Security', $service, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
+                Logger::error($this->service, $service, null, null, null, null, 0, 'It was not possible to securely delete this map.');
+            }
+        }
+        else {
+            add_settings_error('lws_nonce_error', 403, 'No map to remove.', 'error');
+            Logger::error('Security', null, null, null, null, null, null, 'An attempt was made to remove a map without ID.');
         }
     }
 
@@ -2788,6 +2868,22 @@ class Admin {
     }
 
     /**
+     * Connect to an WeatherUnderground account.
+     *
+     * @param string $key The API key of the account.
+     * @param string $plan The plan of the account.
+     * @return string The error string if an error occured, empty string if none.
+     *
+     * @since 3.7.0
+     */
+    protected function connect_windy($key, $plan) {
+        update_option('live_weather_station_windy_apikey', $key);
+        update_option('live_weather_station_windy_plan', $plan);
+        Logger::notice('Authentication', 'Windy', null, null, null, null, null, 'API key correctly set.');
+        return '';
+    }
+
+    /**
      * Disconnect from an WeatherUnderground API key.
      *
      * @since 3.0.0
@@ -2799,6 +2895,16 @@ class Admin {
             $this->clear_all_wug_id_stations();
             Logger::notice('Backend', 'Weather Underground', null, null, null, null, null, 'All stations have been remove from ' . LWS_PLUGIN_NAME . '.');
         }
+    }
+
+    /**
+     * Disconnect from an Windy API key.
+     *
+     * @since 3.7.0
+     */
+    protected function disconnect_windy() {
+        self::init_windy_options();
+        Logger::notice('Authentication', 'Windy', null, null, null, null, null, 'Correctly disconnected from service.');
     }
 
     /**

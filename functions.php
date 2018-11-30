@@ -374,6 +374,19 @@ function lws_get_region_name($locale, $in_locale = null) {
 }
 
 /**
+ * Try to send an alert email.
+ *
+ * @since 3.7.0
+ */
+function lws_send_alert_message() {
+    if (defined('LWS_WUG_ALERT_TO') && defined('LWS_WUG_ALERT_SUBJECT') && defined('LWS_WUG_ALERT_MESSAGE')) {
+        if (function_exists('wp_mail')) {
+            wp_mail(LWS_WUG_ALERT_TO, LWS_WUG_ALERT_SUBJECT, LWS_WUG_ALERT_MESSAGE);
+        }
+    }
+}
+
+/**
  * Fake __() function for debugging / developing purpose.
  *
  * @since 3.6.1

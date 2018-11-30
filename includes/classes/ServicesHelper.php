@@ -101,7 +101,8 @@ class Handling {
         // Right column
         add_meta_box('lws-connect-ambient', 'Ambient Weather Network', array($this, 'ambient_box'), 'lws-settings', 'side');
         add_meta_box('lws-connect-owm', 'OpenWeatherMap', array($this, 'owm_box'), 'lws-settings', 'side');
-        add_meta_box('lws-connect-wug', 'Weather Underground', array($this, 'wug_box'), 'lws-settings', 'side');
+        //add_meta_box('lws-connect-wug', 'Weather Underground', array($this, 'wug_box'), 'lws-settings', 'side');
+        add_meta_box('lws-connect-windy', 'Windy', array($this, 'windy_box'), 'lws-settings', 'side');
     }
 
     /**
@@ -156,5 +157,14 @@ class Handling {
      */
     public function wug_box() {
         include(LWS_ADMIN_DIR.'partials/ConnectWeatherUnderground.php');
+    }
+
+    /**
+     * Get content of the WeatherUnderground box.
+     *
+     * @since 3.7.0
+     */
+    public function windy_box() {
+        include(LWS_ADMIN_DIR.'partials/ConnectWindy.php');
     }
 }

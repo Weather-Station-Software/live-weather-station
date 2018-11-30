@@ -19,10 +19,10 @@ use WeatherStation\Data\DateTime\Conversion;
  */
 
 function lws_array_median($arr) {
-    if($arr){
+    if($arr && is_array($arr)){
         $count = count($arr);
         sort($arr);
-        $mid = floor(($count-1)/2);
+        $mid = (int)floor(($count-1)/2);
         return ($arr[$mid]+$arr[$mid+1-$count%2])/2;
     }
     return 0;
@@ -239,6 +239,7 @@ class Builder
                             $d[] = $m;
                         }
                     }
+                    //error_log(print_r($d,true));
                     if (count($d) > 0) {
                         if ($type === 'sum_rain') {
                             $sets[] = array('SUM' => 'agg');

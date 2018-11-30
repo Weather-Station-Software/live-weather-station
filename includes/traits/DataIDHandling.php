@@ -24,6 +24,7 @@ trait Handling {
     private static $piou_id ='zz';
 
     private static $bsky_id ='94';
+    private static $ambt_id ='00';
 
     private static $owm_current_id ='wm';
     private static $owm_pollution_id ='po';
@@ -259,25 +260,7 @@ trait Handling {
      * @since 3.3.0
      */
     public static function is_ambt_station($station_id) {
-        $cache_id = 'is_ambt_station_' . $station_id;
-        $result = Cache::get_backend($cache_id);
-        if (!$result) {
-            global $wpdb;
-            $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-            $sql = "SELECT station_type FROM " . $table_name . " WHERE station_id='" . $station_id . "'";
-            try {
-                $query = $wpdb->get_results($sql, ARRAY_A);
-                if (count($query) === 1) {
-                    if (array_key_exists('station_type', $query[0])) {
-                        $result = ($query[0]['station_type'] == LWS_AMBT_SID?1:-1);
-                        Cache::set_backend($cache_id, $result);
-                    }
-                }
-            } catch (\Exception $ex) {
-                $result = -1;
-            }
-        }
-        return ($result === 1);
+        return (substr($station_id, 0, 2) == self::$ambt_id);
     }
 
     /**

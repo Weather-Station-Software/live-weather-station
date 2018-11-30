@@ -34,10 +34,10 @@ trait BaseClient {
      * @since 3.0.0
      */
     public function authentication($key, $plan) {
-        $wug = new WUGApiClient();
         $this->last_wug_error = '';
         try {
             Quota::verify($this->service_name, 'GET');
+            $wug = new WUGApiClient();
             $raw_data = $wug->getRawStationData('INORDPAS92', $key);
             $weather = json_decode($raw_data, true);
             if (!is_array($weather)) {

@@ -1,6 +1,6 @@
 === Weather Station ===
 Contributors: PierreLannoy
-Tags: weather, openweathermap, netatmo, weatherflow, wunderground
+Tags: weather, openweathermap, netatmo, weatherflow
 Requires at least: 4.9
 Requires PHP: 7.1
 Tested up to: 5.0

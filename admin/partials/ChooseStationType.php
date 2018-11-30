@@ -133,7 +133,9 @@ else {
                     <div style="flex:auto;padding:14px;"><img id="owm" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_owm_color_logo());?>" /></div>
                 <?php } ?>
                 <div style="flex:auto;padding:14px;"><img id="ambient" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_ambient_color_logo());?>" /></div>
-                <div style="flex:auto;padding:14px;"><img id="wug" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_wug_color_logo());?>" /></div>
+                <?php if (LWS_WU_ACTIVE) { ?>
+                    <div style="flex:auto;padding:14px;"><img id="wug" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_wug_color_logo());?>" /></div>
+                <?php } ?>
                 <div style="flex:auto;padding:14px;"><img id="real" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_real_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="raw" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_raw_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="txt" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_txt_color_logo());?>" /></div>

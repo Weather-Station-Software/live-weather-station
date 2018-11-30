@@ -4,9 +4,7 @@ namespace WeatherStation\Process;
 use WeatherStation\DB\Query;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\Unit\Conversion;
-use WeatherStation\Data\DateTime\Conversion as DateTimeConversion;
 use WeatherStation\SDK\Pioupiou\Plugin\ArchiveClient;
-use WeatherStation\Data\ID\Handling as Id_Manipulation;
 use WeatherStation\Data\History\Builder;
 
 /**
@@ -19,7 +17,7 @@ use WeatherStation\Data\History\Builder;
  */
 class PioupiouImporter extends Process {
 
-    use Id_Manipulation, ArchiveClient, Conversion, DateTimeConversion;
+    use ArchiveClient, Conversion, Query;
 
     protected $terminated = false;
 
@@ -172,7 +170,7 @@ class PioupiouImporter extends Process {
         else {
             $this->set_progress(100);
         }
-        $this->terminated = ($days_done > $days_todo);
+        $this->terminated = ($days_done >= $days_todo);
     }
 
     /**
@@ -182,7 +180,13 @@ class PioupiouImporter extends Process {
      */
     protected function init_core(){
 
-        $datetime = \DateTime::createFromFormat('Y-m-d', $this->params['init']['start_date']);
+        $station = $this->get_station_informations_by_station_id($this->params['init']['station_id']);
+        $this->params['init']['station_name'] = $station['station_name'];
+        $this->params['init']['service_id'] = $station['service_id'];
+        $this->params['init']['loc_timezone'] = $station['loc_timezone'];
+        $this->params['init']['loc_altitude'] = $station['loc_altitude'];
+
+        $datetime = \DateTime::createFromFormat('Y-m-d H:i:s', $this->params['init']['start_date'] . ' 00:00:00', new \DateTimeZone($this->params['init']['loc_timezone']));
         if ($datetime !== false) {
             $this->params['init']['start_date'] = $datetime->getTimestamp();
         }
@@ -190,7 +194,7 @@ class PioupiouImporter extends Process {
             $this->params['init']['start_date'] = 0;
         }
 
-        $datetime = \DateTime::createFromFormat('Y-m-d', $this->params['init']['end_date']);
+        $datetime = \DateTime::createFromFormat('Y-m-d H:i:s', $this->params['init']['end_date'] . ' 23:59:59', new \DateTimeZone($this->params['init']['loc_timezone']));
         if ($datetime !== false) {
             $this->params['init']['end_date'] = $datetime->getTimestamp();
         }
@@ -198,14 +202,8 @@ class PioupiouImporter extends Process {
             $this->params['init']['end_date'] = 0;
         }
 
-        $this->params['init']['end_date'] -= 86400;
-
         $this->bp_service = 'Pioupiou';
-        $station = $this->get_station_informations_by_station_id($this->params['init']['station_id']);
-        $this->params['init']['station_name'] = $station['station_name'];
-        $this->params['init']['loc_timezone'] = $station['loc_timezone'];
-        $this->params['init']['loc_altitude'] = $station['loc_altitude'];
-        $old_dates = array();
+
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
         $sql = "SELECT DISTINCT device_name, module_id, module_type, module_name FROM " . $table_name . " WHERE device_id = '" . $this->params['init']['station_id'] . "'";
@@ -215,7 +213,7 @@ class PioupiouImporter extends Process {
         $this->params['summary'] = array();
         foreach ($rows as $row) {
             if ($row['module_type'] === 'NAModule2') {
-                $days_todo = 2 + (int)floor(($this->params['init']['end_date'] - $this->params['init']['start_date']) / 86400);
+                $days_todo = (int)floor((1 + $this->params['init']['end_date'] - $this->params['init']['start_date']) / 86400);
                 $module = array('device_id' => $this->params['init']['station_id'], 'module_id' => $row['module_id'], 'module_name' => $row['module_name'], 'module_type' => $row['module_type'], 'start_date' => $old = $this->params['init']['start_date']);
                 $this->params['todo_ext'][$row['module_id']] = $module;
                 $this->params['summary'][$row['module_id']]['name'] = $row['module_name'];
@@ -224,50 +222,10 @@ class PioupiouImporter extends Process {
                 $this->params['summary'][$row['module_id']]['days_todo'] = $days_todo;
             }
         }
-        $this->params['process']['start_date'] = max(min($old_dates), $this->params['init']['start_date']);
+        $this->params['process']['start_date'] = $this->params['init']['start_date'];
         $this->params['process']['end_date'] = $this->params['init']['end_date'];
         $this->params['process']['now_ext_date'] = $this->params['process']['start_date'];
         $this->summarize();
-    }
-
-    /**
-     * Add all values for NAModule2 module.
-     *
-     * @return array An array of timestamped values.
-     * @since 3.7.0
-     */
-    private function expand_namodule2(){
-        $cpt = 0;
-        $cpt_type = 'windangle';
-        $result = array();
-        /*foreach ($this->netatmo_datas as $type => $set) {
-            if (in_array($type, $this->available_types['NAModule2'])) {
-                if (count($set) > $cpt) {
-                    $cpt = count($set);
-                    $cpt_type = $type;
-                }
-            }
-        }
-        if (array_key_exists($cpt_type, $this->netatmo_datas)) {
-            foreach ($this->netatmo_datas[$cpt_type] as $ts => $dummy) {
-                if (array_key_exists($ts, $this->netatmo_datas['windangle'])) {
-                    $result['windangle'][$ts] = $this->netatmo_datas['windangle'][$ts];
-                    $result['winddirection'][$ts] = (int)floor(($this->netatmo_datas['windangle'][$ts] + 180) % 360);
-                }
-                if (array_key_exists($ts, $this->netatmo_datas['windstrength'])) {
-                    $result['windstrength'][$ts] = $this->netatmo_datas['windstrength'][$ts];
-                }
-                if (array_key_exists($ts, $this->netatmo_datas['gustangle'])) {
-                    $result['gustangle'][$ts] = $this->netatmo_datas['gustangle'][$ts];
-                    $result['gustdirection'][$ts] = (int)floor(($this->netatmo_datas['gustangle'][$ts] + 180) % 360);
-                }
-                if (array_key_exists($ts, $this->netatmo_datas['guststrength'])) {
-                    $result['guststrength'][$ts] = $this->netatmo_datas['guststrength'][$ts];
-                }
-            }
-        }*/
-        unset($this->netatmo_datas);
-        return $result;
     }
 
     /**
@@ -279,7 +237,6 @@ class PioupiouImporter extends Process {
         $namodule2 = array();  // Wind module
         $query_start = 0;
         $query_end = 0;
-        $done = false;
         if (count($this->params['todo_ext']) > 0) {
             foreach ($this->params['todo_ext'] as $module) {
                 switch ($module['module_type']) {
@@ -288,23 +245,20 @@ class PioupiouImporter extends Process {
                         break;
                 }
                 $query_start = $this->params['process']['now_ext_date'];
-                $query_end = (86400 * 21) + $query_start -1;
+                $query_end = (86400 * 21) + $query_start;
                 if ($query_end > $this->params['process']['end_date']) {
-                    $query_end = $this->params['process']['end_date'] + 2*86400 - 1;
+                    $query_end = $this->params['process']['end_date'];
                 }
-                if ($module['start_date'] > $query_end || $this->params['process']['end_date'] < $query_start) {
-                    $this->params['summary'][$module['module_id']]['days_done'] = $this->params['summary'][$module['module_id']]['days_todo'];
-                }
-                else {
-                    //$done = $this->get_measures($this->params['init']['station_id'], $module['module_id'], '30min', $this->available_types[$module['module_type']], $query_start, $query_end, 1024, false);
-                    if (!$done) {
+                if ($this->params['process']['start_date'] <= $query_start && $query_start < $this->params['process']['end_date'] &&
+                    $this->params['process']['start_date'] < $query_end && $query_end <= $this->params['process']['end_date']) {
+                    $data = $this->get_archive($this->params['init']['service_id'], $this->params['init']['station_id'], $this->params['init']['station_name'], $this->params['init']['loc_timezone'], $query_start, $query_end);
+                    if (!$data) {
                         break;
                     }
-                    switch ($module['module_type']) {
-                        case 'NAModule2':
-                            $namodule2['values'] = $this->expand_namodule2();
-                            break;
-                    }
+                    $namodule2['values'] = $data;
+                }
+                else {
+                    $this->params['summary'][$module['module_id']]['days_done'] = $this->params['summary'][$module['module_id']]['days_todo'];
                 }
             }
             $force = null;
@@ -312,18 +266,22 @@ class PioupiouImporter extends Process {
                 $force = $this->params['init']['force'];
             }
             $history = new Builder(LWS_PLUGIN_NAME, LWS_VERSION);
-
             foreach ($this->params['todo_ext'] as $module) {
                 switch ($module['module_type']) {
                     case 'NAModule2':
                         $l = $history->import_data($namodule2, $query_start, $query_end + 1, $force);
                         $this->params['summary'][$namodule2['meta']['module_id']]['measurements'] += $l[0];
-                        $this->params['summary'][$namodule2['meta']['module_id']]['days_done'] += $l[1];
+                        $c = (int)ceil(($query_end - $query_start) / 86400);
+                        if ($c > 0) {
+                            $this->params['summary'][$namodule2['meta']['module_id']]['days_done'] += $c;
+                        }
+                        else {
+                            $this->params['summary'][$namodule2['meta']['module_id']]['days_done'] = $this->params['summary'][$namodule2['meta']['module_id']]['days_todo'];
+                        }
+
+                        $this->params['process']['now_ext_date'] += (86400 * 21);
                         break;
                 }
-            }
-            if ($done) {
-                $this->params['process']['now_ext_date'] += (86400 * 21);
             }
         }
     }

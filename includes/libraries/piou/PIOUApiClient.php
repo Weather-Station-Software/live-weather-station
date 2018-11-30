@@ -109,15 +109,34 @@ class PIOUApiClient
     }
 
     /**
+     * Build the url to fetch weather data from.
+     *
+     * @param string $sensor_id The sensor to query.
+     * @param string $start The UTC starting date.
+     * @param string $stop The UTC ending date.
+     * @return string The url, ready to fetch.
+     * @since 3.5.0
+     *
+     */
+    private function buildArchiveUrl($sensor_id, $start, $stop) {
+        $result = $this->archiveUrl;
+        $result = str_replace('{sensor_id}', $sensor_id, $result);
+        $result = str_replace('{start}', $start, $result);
+        $result = str_replace('{stop}', $stop, $result);
+        return $result;
+    }
+
+    /**
      * Get the string returned by Pioupiou for a specific public station.
      *
-     * @param string $id The station id to get weather information for.
-     *
+     * @param string $id The station id to get archive for.
+     * @param string $start_date The UTC starting date.
+     * @param string $end_date The UTC ending date.
      * @return bool|string Returns false on failure and the fetched data in the format you specified on success.
      * @since 3.7.0
      */
     public function getRawPublicStationArchive($id, $start_date, $end_date) {
-        $url = $this->buildUrl($id);
+        $url = $this->buildArchiveUrl($id, $start_date, $end_date);
         return $this->cacheOrFetchResult($url);
     }
 

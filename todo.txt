@@ -85,6 +85,8 @@ manage modules page
 file manager page
 add export manager and import manager as events systems
 add storage manager as events system
+windy as event source
+add windy in service page
 
 ***********************
 * 3.6.x               *
@@ -116,5 +118,7 @@ min/max for new indexes
 -- Importer(s)
 -- Maps
 -- Comparison
+-- Maps of WF stations
+-- Remove WU
 
 Bonus : min/max, banner

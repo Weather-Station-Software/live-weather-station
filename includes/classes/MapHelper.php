@@ -1,59 +1,22 @@
 <?php
 
-namespace WeatherStation\UI\Station;
+namespace WeatherStation\UI\Map;
 
 use WeatherStation\Data\Output;
-use WeatherStation\Engine\Page\Standalone\Framework;
-use WeatherStation\System\Device\Manager;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\Arrays\Generator;
 use WeatherStation\Data\ID\Handling as IDHandling;
 use WeatherStation\System\Help\InlineHelp;
 
-use WeatherStation\SDK\OpenWeatherMap\Plugin\Pusher as OWM_Pusher;
-use WeatherStation\SDK\PWSWeather\Plugin\Pusher as PWS_Pusher;
-use WeatherStation\SDK\MetOffice\Plugin\Pusher as WOW_Pusher;
-use WeatherStation\SDK\WeatherUnderground\Plugin\Pusher as WUG_Pusher;
-
-use WeatherStation\Engine\Module\Maintainer as ModuleMaintainer;
-use WeatherStation\Engine\Module\Current\Gauge;
-use WeatherStation\Engine\Module\Current\Lcd;
-use WeatherStation\Engine\Module\Current\Meter;
-use WeatherStation\Engine\Module\Current\Snapshot;
-use WeatherStation\Engine\Module\Current\Textual;
-use WeatherStation\Engine\Module\Daily\AStream as DailyAStream;
-use WeatherStation\Engine\Module\Daily\DistributionRC as DailyDistributionRC;
-use WeatherStation\Engine\Module\Daily\ValueRC as DailyValueRC;
-use WeatherStation\Engine\Module\Daily\Line as DailyLine;
-use WeatherStation\Engine\Module\Daily\DoubleLine as DailyDoubleLine;
-use WeatherStation\Engine\Module\Daily\Lines as DailyLines;
-use WeatherStation\Engine\Module\Daily\Windrose as DailyWindrose;
-use WeatherStation\Engine\Module\Yearly\AStream as YearlyAStream;
-use WeatherStation\Engine\Module\Yearly\CStick as YearlyCStick;
-use WeatherStation\Engine\Module\Yearly\Line as YearlyLine;
-use WeatherStation\Engine\Module\Yearly\DoubleLine as YearlyDoubleLine;
-use WeatherStation\Engine\Module\Yearly\Bar as YearlyBar;
-use WeatherStation\Engine\Module\Yearly\Bars as YearlyBars;
-use WeatherStation\Engine\Module\Yearly\CalendarHM as YearlyCalendarHM;
-use WeatherStation\Engine\Module\Yearly\BCLine as YearlyBCLine;
-use WeatherStation\Engine\Module\Yearly\DistributionRC as YearlyDistributionRC;
-use WeatherStation\Engine\Module\Yearly\ValueRC as YearlyValueRC;
-use WeatherStation\Engine\Module\Yearly\Lines as YearlyLines;
-use WeatherStation\Engine\Module\Yearly\StackedAreas as YearlyStackedAreas;
-use WeatherStation\Engine\Module\Yearly\Windrose as YearlyWindrose;
-use WeatherStation\Engine\Module\Yearly\Timelapse;
-use WeatherStation\System\Plugin\Deactivator;
-use WeatherStation\System\Device\Manager as DeviceManager;
-use WeatherStation\System\Background\ProcessManager;
 
 
 /**
- * This class builds elements of the station view.
+ * This class builds elements of the map view.
  *
  * @package Includes\Classes
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
- * @since 3.0.0
+ * @since 3.7.0
  */
 
 class Handling {
@@ -73,67 +36,27 @@ class Handling {
     private $version;
     private $screen;
     private $screen_id;
-    private $station_guid;
-    private $station_id;
-    private $station_name;
-    private $station_type;
-    private $station_information;
+    private $map_id;
+    private $map_name;
+    private $map_type;
+    private $map_information;
+    private $map_params;
+    private $aux_handler;
     private $arg_service;
     private $arg_tab;
     private $arg_action;
     private $service = 'Backend';
-    private $publishable = array(LWS_NETATMO_SID, LWS_LOC_SID, LWS_OWM_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WUG_SID, LWS_WFLW_SID, LWS_BSKY_SID, LWS_AMBT_SID);
-    private $sharable = array(LWS_NETATMO_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WFLW_SID, LWS_BSKY_SID, LWS_AMBT_SID);
-    private $publishing_proto = array('txt', 'raw', 'real', 'yow');
-
-    /**
-     * Register all available modules.
-     *
-     * @since 3.4.0
-     */
-    private function register_modules() {
-        $bsky = self::is_bsky_station($this->station_id);
-        Textual::register_module('current');
-        Gauge::register_module('current');
-        Lcd::register_module('current');
-        Meter::register_module('current');
-        if ($bsky) {
-            Snapshot::register_module('current');
-        }
-        DailyLine::register_module('daily');
-        DailyLines::register_module('daily');
-        DailyDoubleLine::register_module('daily');
-        DailyWindrose::register_module('daily');
-        DailyDistributionRC::register_module('daily');
-        DailyValueRC::register_module('daily');
-        DailyAStream::register_module('daily');
-        YearlyLine::register_module('yearly');
-        YearlyBar::register_module('yearly');
-        YearlyCStick::register_module('yearly');
-        YearlyLines::register_module('yearly');
-        YearlyBars::register_module('yearly');
-        YearlyDoubleLine::register_module('yearly');
-        YearlyBCLine::register_module('yearly');
-        YearlyCalendarHM::register_module('yearly');
-        YearlyStackedAreas::register_module('yearly');
-        YearlyWindrose::register_module('yearly');
-        YearlyDistributionRC::register_module('yearly');
-        YearlyValueRC::register_module('yearly');
-        YearlyAStream::register_module('yearly');
-        if ($bsky) {
-            Timelapse::register_module('yearly');
-        }
-    }
+    private $init_common = array('loc_latitude' => 0, 'loc_longitude' => 0, 'loc_zoom' => 13);
 
     /**
      * Initialize the class and set its properties.
      *
      * @param string $Live_Weather_Station The name of this plugin.
      * @param string $version The version of this plugin.
-     * @param string $station The station screen.
-     * @since 3.0.0
+     * @param string $maps The map screen.
+     * @since 3.7.0
      */
-    public function __construct($Live_Weather_Station, $version, $station) {
+    public function __construct($Live_Weather_Station, $version, $maps) {
         $page = filter_input(INPUT_GET, 'page');
         if (strpos($page, 'lws-') === false) {
             return;
@@ -141,82 +64,46 @@ class Handling {
         $this->Live_Weather_Station = $Live_Weather_Station;
         $this->version = $version;
         $this->get_args();
-        if ($this->station_guid != 0) {
-            $this->edit_station();
-            $this->station_information = $this->get_station_informations_by_guid($this->station_guid);
-            $this->station_name = $this->station_information['station_name'];
-            $this->station_id = $this->station_information['station_id'];
-            $this->station_type = $this->station_information['station_type'];
-            $this->screen = $station;
-            $pref = 'lws-station-';
-            if ($this->arg_action == 'shortcode') {
-                $pref .= 'shortcode-';
-                if ($this->arg_service != '') {
-                    $pref .= $this->arg_service . '-';
-                }
-            }
-            $this->screen_id = $pref . $this->station_guid;
-            $this->register_modules();
-        }
-        if ($this->arg_action == 'manage') {
-            add_action('load-' . $station, array($this, 'station_add_options'));
-            add_action('admin_footer-' . $station, array($this, 'station_add_footer'));
-            add_filter('screen_settings', array($this, 'append_screen_settings'), 10, 2);
-        }
-        else {
-            add_action('admin_footer-' . $station, array($this, 'station_add_footer'));
-        }
-    }
 
-    /**
-     * Get the module array.
-     *
-     * @return array An array containing the available instanciated modules;
-     * @since 3.4.0
-     */
-    private function get_modules() {
-        $result = array();
-        foreach (ModuleMaintainer::get_modules($this->arg_tab) as $class){
-            $module = new $class($this->station_information);
-            if ($this->arg_service == $module->get_id()) {
-                $module->select();
-            }
-            $result[] = $module;
+        switch ($this->arg_service) {
+            case 'windy':
+                $this->map_type = 1;
+                $this->aux_handler = new WindyHandling();
+                break;
         }
-        return $result;
-    }
 
-    /**
-     * Get the inline help for module.
-     *
-     * @param string $type The type of module to view.
-     * @return string The inline help, ready to insert.
-     * @since 3.4.0
-     */
-    public function get_help_modules($type) {
-        $result = '';
-        foreach (ModuleMaintainer::get_modules($type) as $class){
-            $module = new $class($this->station_information);
-            $result .= '<p><i style="color:#666666" class="' . $module->get_icon() . '"></i>&nbsp;<strong>' . ucfirst($module->get_name()) . '</strong> &mdash; ' . $module->get_hint() . '</p>';
+        if ($this->map_id === 0 && $this->arg_action === 'form' && $this->arg_tab === 'add-edit') {
+            $this->map_id = $this->aux_handler->new_map($this->init_common);
         }
-        return $result;
+        if ($this->map_id !== 0) {
+            $this->edit_map();
+            $this->map_information = $this->get_map_detail($this->map_id);
+            if (count($this->map_information) > 0) {
+                $this->map_name = $this->map_information['name'];
+                $this->map_type = $this->map_information['type'];
+                $this->map_params = unserialize($this->map_information['params']);
+            } else {
+                //Logger::error('Export Manager', null, $station['station_id'], $station['station_name'], null, null, null, 'Unable to launch data export.');
+            }
+        }
+        $this->screen = $maps;
+        $this->screen_id = 'lws-map-' . $this->map_id;
+        add_action('load-' . $maps, array($this, 'map_add_options'));
+        add_action('admin_footer-' . $maps, array($this, 'map_add_footer'));
     }
 
     /**
      * Get all the args view.
      *
-     * @since 3.4.0
+     * @since 3.7.0
      */
     private function get_args() {
-        if (!($id = filter_input(INPUT_GET, 'id'))) {
-            if (!($id = filter_input(INPUT_POST, 'id'))) {
-                $id = 0;
+        if (!($mid = filter_input(INPUT_GET, 'mid'))) {
+            if (!($mid = filter_input(INPUT_POST, 'mid'))) {
+                $mid = 0;
             }
         }
-        if (strpos($id, ':') > 0) {
-            $id = $this->get_station_guid_by_station_id($id);
-        }
-        $this->station_guid = $id;
+        $this->map_id = $mid;
         if (!($tab = filter_input(INPUT_POST, 'tab'))) {
             $this->arg_tab = filter_input(INPUT_GET, 'tab');
         }
@@ -232,12 +119,12 @@ class Handling {
     }
 
     /**
-     * Edit station details.
+     * Edit map details.
      *
-     * @since 3.0.0
+     * @since 3.7.0
      */
-    public function edit_station() {
-        if ($this->arg_service == 'station' && $this->arg_tab == 'view' && $this->arg_action == 'manage') {
+    public function edit_map() {
+       /* if ($this->arg_service == 'station' && $this->arg_tab == 'view' && $this->arg_action == 'manage') {
             $station = array();
             if (array_key_exists('_wpnonce', $_POST)) {
                 if (wp_verify_nonce($_POST['_wpnonce'], 'edit-station')) {
@@ -501,24 +388,24 @@ class Handling {
                     Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to securely perform an update for a station.');
                 }
             }
-        }
+        }*/
     }
 
     /**
      * Add options.
      *
-     * @since 3.0.0
+     * @since 3.7.0
      */
-    public function station_add_options() {
+    public function map_add_options() {
         $this->add_metaboxes();
     }
 
     /**
      * Add footer scripts.
      *
-     * @since 3.0.0
+     * @since 3.7.0
      */
-    public function station_add_footer() {
+    public function map_add_footer() {
         $result = '';
         $result .= '<script type="text/javascript">';
         $result .= "    jQuery(document).ready( function($) {";
@@ -531,53 +418,12 @@ class Handling {
     }
 
     /**
-     * Append custom panel HTML to the "Screen Options" box of the current page.
-     * Callback for the 'screen_settings' filter.
-     *
-     * @param string $current Current content.
-     * @param \WP_Screen $screen Screen object.
-     * @return string The HTML code to append to "Screen Options"
-     */
-    public function append_screen_settings($current, $screen){
-        if (!isset($screen->id)) {
-            return $current;
-        }
-        $s = convert_to_screen($this->screen);
-        if ($screen->id !== $s->id) {
-            return $current;
-        }
-        if ($this->station_guid == 0) {
-            return $current;
-        }
-        $current .= '<div id="lws_station" class="metabox-prefs custom-options-panel requires-autosave"><input type="hidden" name="_wpnonce-lws_station" value="' . wp_create_nonce('save_settings_lws_station') . '" />';
-        $current .= $this->get_options();
-        $current .= '</div>';
-        return $current ;
-    }
-
-    /**
-     * Get the box options.
-     *
-     * @return string The HTML code to append.
-     * @since 3.0.0
-     */
-    public function get_options() {
-        $result = '<fieldset class="metabox-prefs">';
-        $result .= '<legend>' . __('Boxes', 'live-weather-station') . '</legend>';
-        $result .= $this->meta_box_prefs($this->screen_id);
-        $result .= '<legend>' . __('Modules', 'live-weather-station') . '</legend>';
-        $result .= $this->meta_box_prefs($this->screen_id, true);
-        $result .= '</fieldset>';
-        return $result;
-    }
-
-    /**
-     * Prints the meta box preferences for station screen meta.
+     * Prints the meta box preferences for map screen meta.
      *
      * @param string|\WP_Screen $screen Screen object or name.
      * @param boolean $module Optional. Module boxes only.
      * @return string The HTML code to append.
-     * @since 3.0.0
+     * @since 3.7.0
      */
     public function meta_box_prefs($screen, $module=false) {
         global $wp_meta_boxes;
@@ -619,80 +465,46 @@ class Handling {
     }
 
     /**
-     * Get the full station.
+     * Get the full map.
      *
-     * @since 3.0.0
+     * @since 3.7.0
      **/
     public function get() {
         echo '<div class="wrap">';
-        echo '<h1>' . $this->station_name . '</h1>';
-        if ($this->station_type == LWS_WUG_SID) {
-            $this->wug_warning();
-        }
-        include(LWS_ADMIN_DIR.'partials/StationTab.php');
+        echo '<h1>' . $this->map_name . '</h1>';
         settings_errors();
-        if ($this->arg_action == 'manage') {
-            echo '<form name="lws_station" method="post">';
-            echo '<div id="dashboard-widgets-wrap">';
-            wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false);
-            wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false);
-            echo '    <div id="dashboard-widgets" class="metabox-holder">';
-            echo '        <div id="postbox-container-1" class="postbox-container">';
-            do_meta_boxes($this->screen_id, 'advanced', null);
-            echo '        </div>';
-            echo '        <div id="postbox-container-2" class="postbox-container">';
-            do_meta_boxes($this->screen_id, 'side', null);
-            echo '        </div>';
-            echo '        <div id="postbox-container-3" class="postbox-container">';
-            do_meta_boxes($this->screen_id, 'column3', null);
-            echo '        </div>';
-            echo '        <div id="postbox-container-4" class="postbox-container">';
-            do_meta_boxes($this->screen_id, 'column4', null);
-            echo '        </div>';
-            echo '    </div>';
-            echo '</div>';
-            echo '</form>';
-        }
-        if ($this->arg_action == 'shortcode') {
-            wp_enqueue_style('lws-font-chart-icons');
-            wp_enqueue_script('lws-clipboard');
-            $modules = $this->get_modules();
-            echo '<div id="dashboard-widgets-wrap">';
-            echo '    <div id="shortcodes-widgets" class="metabox-holder">';
-            echo '        <div id="shortcodes-container" class="postbox-container" style="width:100%">';
-            include(LWS_ADMIN_DIR.'partials/ChooseModuleType.php');
-            foreach ($modules as $module) {
-                if ($module->is_selected()) {
-                    $module->print_form();
-                }
-            }
-            echo '        </div>';
-            echo '    </div>';
-            echo '</div>';
-        }
+        echo '<form name="lws_map" method="post">';
+        echo '<div id="dashboard-widgets-wrap">';
+        wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false);
+        wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false);
+        echo '    <div id="dashboard-widgets" class="metabox-holder">';
+        echo '        <div id="postbox-container-1" class="postbox-container">';
+        do_meta_boxes($this->screen_id, 'advanced', null);
+        echo '        </div>';
+        echo '        <div id="postbox-container-2" class="postbox-container">';
+        do_meta_boxes($this->screen_id, 'side', null);
+        echo '        </div>';
+        echo '        <div id="postbox-container-3" class="postbox-container">';
+        do_meta_boxes($this->screen_id, 'column3', null);
+        echo '        </div>';
+        echo '        <div id="postbox-container-4" class="postbox-container">';
+        do_meta_boxes($this->screen_id, 'column4', null);
+        echo '        </div>';
+        echo '    </div>';
         echo '</div>';
-    }
-
-    /**
-     * Add a warning for WUG stations.
-     *
-     * @since 3.7.0
-     */
-    public function wug_warning() {
-        $result = '<div class="settings-error error"><p><strong>%s</strong></p></div>';
-        $s = sprintf(lws__('This station is no longer collected by %s because Weather Underground no longer provides the corresponding service.', 'live-weather-station'), LWS_PLUGIN_NAME);
-        $l = InlineHelp::get(-34, '%s', 'Weather Underground closes its doors to individual users') . '.';
-        $a = sprintf(lws__('To know the reasons for this, and discover alternative methods to collect weather data with %s, please read the following article:', 'live-weather-station'), LWS_PLUGIN_NAME);
-        echo sprintf($result, $s . ' ' . $a . ' ' . $l);
+        echo '</form>';
+        echo '</div>';
     }
 
     /**
      * Add all the needed meta boxes.
      *
-     * @since 3.0.0
+     * @since 3.7.0
      */
     public function add_metaboxes() {
-        if ($this->station_guid != 0) {
+        // Left column
+        add_meta_box('lws-maps', lws__('Map', 'live-weather-station' ), array($this, 'summary_widget'), $this->screen_id, 'advanced', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
+        /*if ($this->station_guid != 0) {
             $data = $this->get_all_formated_datas($this->station_guid);
             $station = $data['station'];
             $gid = strtolower(str_replace(':', '', $station['station_id']));
@@ -719,39 +531,31 @@ class Handling {
                     }
                 }
             }
-        }
+        }*/
     }
 
     /**
      * Get content of the station widget box.
      *
-     * @since 3.0.0
+     * @since 3.7.0
      */
-    public function station_widget($n, $args) {
-        $station = array();
-        if (array_key_exists('station', $args['args'])) {
-            $station = $args['args']['station'];
-            $station['txt_location'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
-            $station['txt_timezone'] = $this->output_timezone($station['loc_timezone']);
-            if ($station['oldest_data'] != '0000-00-00') {
-                $station['oldest_data_txt'] = __('Oldest data from', 'live-weather-station') . ' ' .$this->output_value($station['oldest_data'], 'oldest_data', false, false, 'NAMain', $station['loc_timezone']);
-                $station['oldest_data_diff_txt'] = self::get_positive_time_diff_from_mysql_utc($station['oldest_data']);
-            }
-            else {
-                $station['oldest_data_txt'] = false;
-            }
+    public function summary_widget($n, $args) {
+        if (array_key_exists('map', $args['args']) && array_key_exists('params', $args['args'])) {
+            $map_name = $args['args']['map']['name'];
+            $map_location = $this->output_coordinate($args['args']['params']['common']['loc_latitude'], 'loc_latitude', 5, true);
+            $map_location .= ' ⁛ ' . $this->output_coordinate($args['args']['params']['common']['loc_longitude'], 'loc_longitude', 5, true);
+            $map_zoom = $args['args']['params']['common']['loc_zoom'];
+            $map_icn = $this->output_iconic_value(0, 'map', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+            $location_icn = $this->output_iconic_value(0, 'location', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+            $zoom_icn = $this->output_iconic_value(0, 'zoom', false, false, 'style="color:#999"', 'fa-lg fa-fw');
         }
-        $station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-        $location_icn = $this->output_iconic_value(0, 'city', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-        $timezone_icn = $this->output_iconic_value(0, 'timezone', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-        $histo_icn = $this->output_iconic_value(0, 'historical', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-        include(LWS_ADMIN_DIR.'partials/StationStation.php');
+        include(LWS_ADMIN_DIR.'partials/MapSummary.php');
     }
 
     /**
      * Get content of the location widget box.
      *
-     * @since 3.0.0
+     * @since 3.7.0
      */
     public function location_widget($n, $args) {
         $station = array();
@@ -784,7 +588,7 @@ class Handling {
     /**
      * Get content of the datasharing widget box.
      *
-     * @since 3.0.0
+     * @since 3.7.0
      */
     public function publishing_widget($n, $args) {
         $station = array();
@@ -797,7 +601,7 @@ class Handling {
     /**
      * Get content of the publishing on... widget box.
      *
-     * @since 3.0.0
+     * @since 3.7.0
      */
     public function sharing_widget($n, $args) {
         $station = array();
@@ -836,7 +640,7 @@ class Handling {
     /**
      * Get content of the news box.
      *
-     * @since 3.0.0
+     * @since 3.7.0
      */
     public function module_widget($n, $args) {
         $module = array();

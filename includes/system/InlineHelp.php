@@ -51,6 +51,7 @@ class InlineHelp {
             'handbook/stations-management/data-export/',  //22
             'handbook/stations-management/data-import/',  //23
             'handbook/files/',  //24
+            'handbook/maps/',  //25
             ),
         /*'fr' => array (
             'documentation/reglages', //0  source: settings - general tab
@@ -183,7 +184,7 @@ class InlineHelp {
             $result = sprintf($message, '<a href="https://weather.station.software/languages-translation/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -11) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/weather/api/d/pricing.html?apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://www.wunderground.com/weather/api/d/pricing.html"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -12) {
             $result = sprintf($message, '<a href="https://register.metoffice.gov.uk/WaveRegistrationClient/public/register.do?service=weatherobservations"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
@@ -210,13 +211,13 @@ class InlineHelp {
             $result = sprintf($message, '<a href="https://www.wunderground.com/personal-weather-station/signup?new=1"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -20) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/personal-weather-station/dashboard?ID=INORDPAS92&apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://www.wunderground.com/personal-weather-station/dashboard?ID=INORDPAS92"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -21) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/member/registration?apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://www.wunderground.com/member/registration"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -22) {
-            $result = sprintf($message, '<a href="https://www.wunderground.com/weather/api/d/pricing.html?apiref=d97bd03904cd49c5"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://www.wunderground.com/weather/api/d/pricing.html"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -23) {
             $result = sprintf($message, '<a href="https://home.openweathermap.org/users/sign_up"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
@@ -250,6 +251,18 @@ class InlineHelp {
         }
         if ($number == -33) {
             $result = sprintf($message, '<a href="https://weather.station.software/blog/scheduled-task-interface/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+        }
+        if ($number == -34) {
+            $result = sprintf($message, '<a href="https://weather.station.software/blog/weather-underground-closes-its-doors-to-individual-users/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+        }
+        if ($number == -35) {
+            $result = sprintf($message, '<a href="https://api4.windy.com/#conditionsofuse"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+        }
+        if ($number == -36) {
+            $result = sprintf($message, '<a href="https://www.windy.com"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+        }
+        if ($number == -37) {
+            $result = sprintf($message, '<a href="https://api4.windy.com/api-key/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         return $result;
     }
@@ -332,6 +345,70 @@ class InlineHelp {
             '<p>' . self::get(17, '%s', __('Documentation', 'live-weather-station')) . '</p>'.
             '<p>' . self::get(18, '%s', __('Support', 'live-weather-station')) . '</p>'.
             '<p>' . self::get(-1, '%s', __('Official website', 'live-weather-station')) . '</p>';
+    }
+
+    /**
+     * Contextual help for "files" panel.
+     *
+     * @see set_contextual_help()
+     * @since 3.7.0
+     */
+    public static function set_contextual_maps() {
+        $action = null;
+        $id = null;
+        $tabs = array();
+        $screen = get_current_screen();
+        if (!($action = filter_input(INPUT_GET, 'action'))) {
+            $action = filter_input(INPUT_POST, 'action');
+        }
+        if (!($service = strtolower(filter_input(INPUT_GET, 'service')))) {
+            $service = strtolower(filter_input(INPUT_POST, 'service'));
+        }
+        if (!($id = filter_input(INPUT_GET, 'id'))) {
+            $id = filter_input(INPUT_POST, 'id');
+        }
+        if (!($tab = filter_input(INPUT_GET, 'tab'))) {
+            $tab = filter_input(INPUT_POST, 'tab');
+        }
+        if (is_numeric($id)) {
+            //$station = self::get_station($id);
+            //$type = $station['station_type'];
+        }
+        if (!isset($action)) {
+            $s = lws__('This screen allows you to manage maps.', 'live-weather-station');
+
+            $tabs[] = array(
+                'title' => __('Overview', 'live-weather-station'),
+                'id' => 'lws-contextual-maps',
+                'content' => '<p>' . $s . '</p>');
+            $s1 = sprintf(lws__('In this version of %s and depending of the API key you have set, you can manage the following types of maps:', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s2 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_windy_color_logo()) . '" /><strong>' . 'Windy' . '</strong> &mdash; ' . lws__('a full featured map with many weather layers and animated wind flows.', 'live-weather-station') . '</p>';
+            $tabs[] = array(
+                'title'    => __('Stations types', 'live-weather-station'),
+                'id'       => 'lws-contextual-maps-types',
+                'content'  => '<p>' . $s1 . '</p>' . $s2);
+
+            $s1 = lws__('You can access these features:', 'live-weather-station');
+            $s2 = '<strong>' . __('View', 'live-weather-station') . '</strong> &mdash; ' . lws__('To display the map and its shortcode.', 'live-weather-station');
+            $s3 = '<strong>' . __('Modify', 'live-weather-station') . '</strong> &mdash; ' . lws__('To modify or update the properties of the map.', 'live-weather-station') . ' <strong>[' . lws__('default action', 'live-weather-station') . ']</strong>';
+            $s4 = '<strong>' . __('Remove', 'live-weather-station') . '</strong> &mdash; ' . sprintf(lws__('To remove the map from %s.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $tabs[] = array(
+                'title'    => __('Features', 'live-weather-station'),
+                'id'       => 'lws-contextual-stations-features',
+                'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p>');
+        }
+
+
+
+
+
+        foreach ($tabs as $tab) {
+            $screen->add_help_tab($tab);
+        }
+        $screen->set_help_sidebar(
+            '<p><strong>' . __('For more information:', 'live-weather-station') . '</strong></p>' .
+            '<p>' . self::get(25, '%s', lws__('Maps management', 'live-weather-station')) . '</p>' .
+            self::get_standard_help_sidebar());
     }
 
     /**
@@ -543,10 +620,21 @@ class InlineHelp {
         $s3 = self::get(-22, __('After registration, log in and %s after selecting your plan.', 'live-weather-station'), __('get your API key', 'live-weather-station'));
         $s4 = __('Then, copy and paste your API key in the corresponding fields of the "Weather Underground" box, set your plan and click on the "connect" button.', 'live-weather-station');
         $s5 = self::get(-31, __('Note: to obtain a free API key please, read this %s.', 'live-weather-station'), __('article', 'live-weather-station'));
+        if (LWS_WU_ACTIVE) {
+            $tabs[] = array(
+                'title'    => 'Weather Underground',
+                'id'       => 'lws-contextual-station-settings-wug',
+                'content'  => '<p>' . $s1 . '</p><ol><li>' . $s2 . '</li><li>' . $s3 . '</li><li>' . $s4 . '</li></ol><p>' . $s5 .'</p>');
+        }
+
+        $s1 = lws__('To obtain an API key from Windy please, follow these steps:', 'live-weather-station' );
+        $s2 = self::get(-36, lws__('%s on the Windy.com website.', 'live-weather-station'), __('Create an account', 'live-weather-station'));
+        $s3 = self::get(-37, lws__('After registration, log in and %s.', 'live-weather-station'), __('get your API key', 'live-weather-station'));
+        $s4 = lws__('Then, copy and paste your API key in the corresponding fields of the "Windy" box, set your plan and click on the "connect" button.', 'live-weather-station');
         $tabs[] = array(
-            'title'    => 'Weather Underground',
-            'id'       => 'lws-contextual-station-settings-wug',
-            'content'  => '<p>' . $s1 . '</p><ol><li>' . $s2 . '</li><li>' . $s3 . '</li><li>' . $s4 . '</li></ol><p>' . $s5 .'</p>');
+            'title'    => 'Windy',
+            'id'       => 'lws-contextual-station-settings-windy',
+            'content'  => '<p>' . $s1 . '</p><ol><li>' . $s2 . '</li><li>' . $s3 . '</li><li>' . $s4 . '</li></ol>');
 
         foreach($tabs as $tab) {
             $screen->add_help_tab($tab);
@@ -660,10 +748,12 @@ class InlineHelp {
                 $s3 = self::get(-19, __('After registration, log in and %s.', 'live-weather-station'), __('add a new station by following the 4 steps registration form', 'live-weather-station'));
                 $s4 = __('Then, copy and paste <em>Station ID</em> in the corresponding fields of the "Weather Underground" box, set your password and click on the "connect" button.', 'live-weather-station');
                 $s5 = self::get(-20, __('After a few hours you\'ll get something %s', 'live-weather-station'), __('like this!', 'live-weather-station'));
-                $tabs[] = array(
-                    'title'    => 'Weather Underground',
-                    'id'       => 'lws-contextual-station-sharing-wug',
-                    'content'  => '<p>' . $s1 . '</p><ol><li>' . $s2 . '</li><li>' . $s3 . '</li><li>' . $s4 . '</li></ol><p>' . $s5 .'</p>');
+                if (LWS_WU_ACTIVE) {
+                    $tabs[] = array(
+                        'title' => 'Weather Underground',
+                        'id' => 'lws-contextual-station-sharing-wug',
+                        'content' => '<p>' . $s1 . '</p><ol><li>' . $s2 . '</li><li>' . $s3 . '</li><li>' . $s4 . '</li></ol><p>' . $s5 . '</p>');
+                }
 
             }
         }
@@ -832,7 +922,7 @@ class InlineHelp {
                     'id'       => 'lws-contextual-' . $service . '-settings',
                     'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p>');
             }
-            if (isset($service) && $service == 'weatherunderground') {
+            if (isset($service) && $service == 'weatherunderground' && LWS_WU_ACTIVE) {
                 $s1 = __('In this screen, you can', 'live-weather-station');
                 $s1 .= ' ' . lcfirst(sprintf(__('Add or edit a weather station published on %s', 'live-weather-station'), 'Weather Underground')) . '.';
                 $s2 = sprintf(__('This station may be a station that belongs to you or a station you know. The main thing is that it must be publicly available on the %s website.', 'live-weather-station'), 'Weather Underground');
@@ -976,18 +1066,21 @@ class InlineHelp {
             $tabs[] = array(
                 'title'    => __('Stations types', 'live-weather-station'),
                 'id'       => 'lws-contextual-stations-types',
-                'content'  => $s1 . $s2 . $s3 . $s4 . $s12 . $s5 . $s6 . $s7 . $s8 . $s13 . $s9 . $s10 . $s11);
+                'content'  => '<p>' . $s1 . '</p>' . $s2 . $s3 . $s4 . $s12 . $s5 . $s6 . $s7 . $s8 . $s9 . $s10 . $s11);
 
             $s1 = __('Depending on the type of the station, you can access these features:', 'live-weather-station');
-            $s2 = '<strong>' . __('Edit', 'live-weather-station') . '</strong> &mdash; ' . __('To modify or update the properties of the station (city, country, coordinates, etc.).', 'live-weather-station');
-            $s3 = '<strong>' . __('Remove', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('To remove the station from the %s collect process.', 'live-weather-station'), LWS_PLUGIN_NAME);
-            $s4 = '<strong>' . __('See events log', 'live-weather-station') . '</strong> &mdash; ' . __('To see events associated with the station.', 'live-weather-station');
-            $s5 = '<strong>' . __('Verify on a map', 'live-weather-station') . '</strong> &mdash; ' . __('To verify, visually, the coordinates of the station.', 'live-weather-station');
-            $s6 = '<strong>' . __('Data', 'live-weather-station') . '</strong> &mdash; ' . __('To get the direct URL where the station shares its data.', 'live-weather-station');
+            $s2 = '<strong>' . __('View', 'live-weather-station') . '</strong> &mdash; ' . lws__('To display the full detailed view of the station.', 'live-weather-station') . ' <strong>[' . lws__('default action', 'live-weather-station') . ']</strong>';
+            $s3 = '<strong>' . __('Modify', 'live-weather-station') . '</strong> &mdash; ' . __('To modify or update the properties of the station (city, country, coordinates, etc.).', 'live-weather-station');
+            $s4 = '<strong>' . __('Remove', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('To remove the station from the %s collect process.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s5 = '<strong>' . __('Browse events', 'live-weather-station') . '</strong> &mdash; ' . __('To see events associated with the station.', 'live-weather-station');
+            $s6 = '<strong>' . __('Verify on a map', 'live-weather-station') . '</strong> &mdash; ' . __('To verify, visually, the coordinates of the station.', 'live-weather-station');
+            $s7 = '<strong>' . lws__('Manage modules', 'live-weather-station') . '</strong> &mdash; ' . lws__('To rename or hide some modules of the station.', 'live-weather-station');
+            $s8 = '<strong>' . lws__('Shortcodes', 'live-weather-station') . '</strong> &mdash; ' . lws__('To get direct access to the right shortcode tab.', 'live-weather-station');
+            $s9 = '<strong>' . __('Data', 'live-weather-station') . '</strong> &mdash; ' . __('To get the direct URL where the station shares its data.', 'live-weather-station');
             $tabs[] = array(
                 'title'    => __('Features', 'live-weather-station'),
                 'id'       => 'lws-contextual-stations-features',
-                'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p><p>' . $s5 . '</p><p>' . $s6 . '</p>');
+                'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p><p>' . $s5 . '</p><p>' . $s6 . '</p><p>' . $s7 . '</p><p>' . $s8 . '</p><p>' . $s9 . '</p>');
         }
         $screen = get_current_screen();
         foreach($tabs as $t) {

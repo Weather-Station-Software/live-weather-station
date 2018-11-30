@@ -21,7 +21,6 @@ abstract class NetatmoImporter extends Process {
 
     use Id_Manipulation, Client, Conversion, DateTimeConversion;
 
-    protected $facility = 'Import Manager';
     protected $terminated = false;
 
 
@@ -168,7 +167,12 @@ abstract class NetatmoImporter extends Process {
      */
     protected function init_core(){
 
-        $datetime = \DateTime::createFromFormat('Y-m-d', $this->params['init']['start_date']);
+        $station = $this->get_station_informations_by_station_id($this->params['init']['station_id']);
+        $this->params['init']['station_name'] = $station['station_name'];
+        $this->params['init']['loc_timezone'] = $station['loc_timezone'];
+        $this->params['init']['loc_altitude'] = $station['loc_altitude'];
+
+        $datetime = \DateTime::createFromFormat('Y-m-d H:i:s', $this->params['init']['start_date'] . ' 00:00:00', new \DateTimeZone($this->params['init']['loc_timezone']));
         if ($datetime !== false) {
             $this->params['init']['start_date'] = $datetime->getTimestamp();
         }
@@ -176,7 +180,7 @@ abstract class NetatmoImporter extends Process {
             $this->params['init']['start_date'] = 0;
         }
 
-        $datetime = \DateTime::createFromFormat('Y-m-d', $this->params['init']['end_date']);
+        $datetime = \DateTime::createFromFormat('Y-m-d H:i:s', $this->params['init']['end_date'] . ' 23:59:59', new \DateTimeZone($this->params['init']['loc_timezone']));
         if ($datetime !== false) {
             $this->params['init']['end_date'] = $datetime->getTimestamp();
         }
@@ -184,13 +188,10 @@ abstract class NetatmoImporter extends Process {
             $this->params['init']['end_date'] = 0;
         }
 
-        $this->params['init']['end_date'] -= 86400;
-
         $this->bp_service = 'Netatmo';
-        $station = $this->get_station_informations_by_station_id($this->params['init']['station_id']);
-        $this->params['init']['station_name'] = $station['station_name'];
-        $this->params['init']['loc_timezone'] = $station['loc_timezone'];
-        $this->params['init']['loc_altitude'] = $station['loc_altitude'];
+
+
+
         $old_dates = array();
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
@@ -218,7 +219,7 @@ abstract class NetatmoImporter extends Process {
                     $days_todo = 0;
                 }
                 else {
-                    $days_todo = 2 + (int)floor(($this->params['init']['end_date'] - max($old, $this->params['init']['start_date'])) / 86400);
+                    $days_todo = (int)floor((1 + $this->params['init']['end_date'] - $this->params['init']['start_date']) / 86400);
                 }
                 $module = array('device_id' => $this->params['init']['station_id'], 'module_id' => $row['module_id'], 'module_name' => $row['module_name'], 'module_type' => $row['module_type'], 'start_date' => $old);
                 if ($row['module_type'] === 'NAModule3' ||
@@ -548,15 +549,14 @@ abstract class NetatmoImporter extends Process {
                         $namodule2['meta'] = $module;
                         break;
                 }
+
                 $query_start = $this->params['process']['now_ext_date'];
-                $query_end = (86400 * 21) + $query_start -1;
+                $query_end = (86400 * 21) + $query_start;
                 if ($query_end > $this->params['process']['end_date']) {
-                    $query_end = $this->params['process']['end_date'] + 2*86400 - 1;
+                    $query_end = $this->params['process']['end_date'];
                 }
-                if ($module['start_date'] > $query_end || $this->params['process']['end_date'] < $query_start) {
-                    $this->params['summary'][$module['module_id']]['days_done'] = $this->params['summary'][$module['module_id']]['days_todo'];
-                }
-                else {
+                if ($this->params['process']['start_date'] <= $query_start && $query_start < $this->params['process']['end_date'] &&
+                    $this->params['process']['start_date'] < $query_end && $query_end <= $this->params['process']['end_date']) {
                     $done = $this->get_measures($this->params['init']['station_id'], $module['module_id'], '30min', $this->available_types[$module['module_type']], $query_start, $query_end, 1024, false);
                     if (!$done) {
                         break;
@@ -572,6 +572,9 @@ abstract class NetatmoImporter extends Process {
                             $namodule2['values'] = $this->expand_namodule2();
                             break;
                     }
+                }
+                else {
+                    $this->params['summary'][$module['module_id']]['days_done'] = $this->params['summary'][$module['module_id']]['days_todo'];
                 }
             }
             if ($this->has_computer()) {
@@ -654,16 +657,14 @@ abstract class NetatmoImporter extends Process {
             foreach ($this->params['todo_int'] as $module) {
                 $namodule = array();
                 $namodule['meta'] = $module;
-                $query_start = $this->params['process']['now_int_date'];
-                $query_end = (86400 * 21) + $query_start -1;
 
+                $query_start = $this->params['process']['now_int_date'];
+                $query_end = (86400 * 21) + $query_start;
                 if ($query_end > $this->params['process']['end_date']) {
-                    $query_end = $this->params['process']['end_date'] + 2*86400 - 1;
+                    $query_end = $this->params['process']['end_date'];
                 }
-                if ($module['start_date'] > $query_end || $this->params['process']['end_date'] < $query_start) {
-                    $this->params['summary'][$module['module_id']]['days_done'] = $this->params['summary'][$module['module_id']]['days_todo'];
-                }
-                else {
+                if ($this->params['process']['start_date'] <= $query_start && $query_start < $this->params['process']['end_date'] &&
+                    $this->params['process']['start_date'] < $query_end && $query_end <= $this->params['process']['end_date']) {
                     $done = $this->get_measures($this->params['init']['station_id'], $module['module_id'], '30min', $this->available_types[$module['module_type']], $query_start, $query_end, 1024, false);
                     if (!$done) {
                         break;
@@ -677,6 +678,9 @@ abstract class NetatmoImporter extends Process {
                             break;
                     }
                     $namodules[] = $namodule;
+                }
+                else {
+                    $this->params['summary'][$module['module_id']]['days_done'] = $this->params['summary'][$module['module_id']]['days_todo'];
                 }
             }
             $force = null;
