@@ -634,14 +634,15 @@ class NAApiClient
                 $params[$key] = json_encode($value);
             }
         }
-    $res = $this->makeOAuth2Request($this->getUri($path, array(), $secure), $method, $params);
+        $res = $this->makeOAuth2Request($this->getUri($path, array(), $secure), $method, $params);
         if(isset($res["time_server"])) {
             if(isset($res["body"]) && is_array($res["body"])) {
                 $res["body"]["time_server"] = $res["time_server"];
             }
         }
+        //error_log(print_r($res, true));
         if(isset($res["body"])) return $res["body"];
-    else return $res;
+        else return $res;
     }
 
     /**

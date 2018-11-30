@@ -35,9 +35,9 @@ trait PublicClient {
      */
     public function test_station($id) {
         $result = 'unknown station ID';
-        $piou = new PIOUApiClient();
         try {
             Quota::verify(self::$service, 'GET');
+            $piou = new PIOUApiClient();
             $raw_data = $piou->getRawPublicStationData($id);
             $weather = json_decode($raw_data, true);
             if (is_array($weather)) {

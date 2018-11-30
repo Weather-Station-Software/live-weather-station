@@ -78,6 +78,12 @@ jQuery(document).ready( function($) {
         $('#span-sync').show();
     });
 
+    $('#delete-map').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#span-sync').show();
+    });
+
     $('#add-edit-loc').click( function() {
         var form_data=$('#add-edit-loc-form').serializeArray();
         var error_free=true;
@@ -318,6 +324,20 @@ jQuery(document).ready( function($) {
             $('.button').removeClass('button-primary').addClass('button-disabled');
             $('.button').click(function() { return false; });
             $('#wug-span-sync').show();
+        }
+    });
+
+    $('#windy-connect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#windy-span-sync').show();
+    });
+
+    $('#windy-disconnect').click( function() {
+        if (lws_windy_confirmation) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#windy-span-sync').show();
         }
     });
 

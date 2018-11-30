@@ -1041,6 +1041,61 @@ trait Query {
     }
 
     /**
+     * Get a list of all maps.
+     *
+     * @return array The maps list.
+     */
+    protected function get_all_maps() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_maps_table();
+        $sql = "SELECT * FROM " . $table_name . ";";
+        try {
+            return $wpdb->get_results($sql, ARRAY_A);
+
+        } catch (\Exception $ex) {
+            return array();
+        }
+    }
+
+    /**
+     * Add a new map.
+     *
+     * @param integer $type The map type.
+     * @param string $name The map name.
+     * @param array $params The map parameters.
+     * @return integer The map id.
+     */
+    protected function add_new_map($type, $name, $params) {
+        $val = array();
+        $val['type'] = $type;
+        $val['name'] = $name;
+        $val['params'] = serialize($params);
+        return self::insert_table(self::live_weather_station_maps_table(), $val);
+    }
+
+    /**
+     * Get the detail of a map.
+     *
+     * @param integer $id The map id.
+     * @return array The map details.
+     */
+    protected function get_map_detail($id) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_maps_table();
+        $sql = "SELECT * FROM " . $table_name . " WHERE id='" . $id . "';";
+        try {
+            $result = $wpdb->get_results($sql, ARRAY_A);
+            if (count($result) > 0) {
+                return $result[0];
+            }
+
+        } catch (\Exception $ex) {
+            return array();
+        }
+        return array();
+    }
+
+    /**
      * Synchronizes the count of modules per station.
      *
      * @since 3.0.0

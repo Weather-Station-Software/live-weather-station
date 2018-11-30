@@ -78,6 +78,8 @@ trait Handling {
     private static $live_weather_station_owm_plan = 0;
     private static $live_weather_station_wug_apikey = '';
     private static $live_weather_station_wug_plan = 0;
+    private static $live_weather_station_windy_apikey = '';
+    private static $live_weather_station_windy_plan = 0;
     private static $live_weather_station_unit_temperature = 0;  
     private static $live_weather_station_unit_pressure = 0;     
     private static $live_weather_station_unit_wind_strength = 0;
@@ -602,6 +604,8 @@ trait Handling {
         delete_option('live_weather_station_owm_plan');
         delete_option('live_weather_station_wug_apikey');
         delete_option('live_weather_station_wug_plan');
+        delete_option('live_weather_station_windy_apikey');
+        delete_option('live_weather_station_windy_plan');
         delete_option('live_weather_station_unit_temperature');
         delete_option('live_weather_station_unit_pressure');
         delete_option('live_weather_station_unit_wind_strength');
@@ -722,6 +726,16 @@ trait Handling {
     }
 
     /**
+     * Init the Windy options of the plugin.
+     *
+     * @since 3.7.0
+     */
+    protected static function init_windy_options() {
+        update_option('live_weather_station_windy_apikey', self::$live_weather_station_windy_apikey);
+        update_option('live_weather_station_windy_plan', self::$live_weather_station_windy_plan);
+    }
+
+    /**
      * Init the system options of the plugin.
      *
      * @since 3.0.0
@@ -813,6 +827,7 @@ trait Handling {
         self::init_netatmohc_options();
         self::init_owm_options();
         self::init_wug_options();
+        self::init_windy_options();
         self::init_bloomsky_options();
         self::init_ambient_options();
         self::init_system_options();
@@ -1027,6 +1042,8 @@ trait Handling {
         self::verify_option_integer('live_weather_station_owm_plan', self::$live_weather_station_owm_plan);
         self::verify_option_string('live_weather_station_wug_apikey', self::$live_weather_station_wug_apikey);
         self::verify_option_integer('live_weather_station_wug_plan', self::$live_weather_station_wug_plan);
+        self::verify_option_string('live_weather_station_windy_apikey', self::$live_weather_station_windy_apikey);
+        self::verify_option_integer('live_weather_station_windy_plan', self::$live_weather_station_windy_plan);
         self::verify_option_integer('live_weather_station_unit_temperature', self::$live_weather_station_unit_temperature);
         self::verify_option_integer('live_weather_station_unit_pressure', self::$live_weather_station_unit_pressure);
         self::verify_option_integer('live_weather_station_unit_wind_strength', self::$live_weather_station_unit_wind_strength);

@@ -2697,6 +2697,19 @@ trait Generator {
     }
 
     /**
+     * Get plans for WeatherUnderground API access.
+     *
+     * @return array An array containing the available plans for API access.
+     * @since 3.7.0
+     */
+    public function get_windy_plan_array() {
+        $result = array();
+        $result[] = array(0, lws__('Free', 'live-weather-station'));
+        $result[] = array(1, lws__('Paid', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
      * Get models for stations.
      *
      * @return array An array containing the available models.
@@ -2913,6 +2926,9 @@ trait Generator {
         $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(lws__('Import from a file previously exported by %s.', 'live-weather-station'), LWS_PLUGIN_NAME));
         if ($service === 'all' || $service === 'netatmo' || $service === 'netatmohc') {
             $result['netatmo'] = array('name' => lws__('Netatmo cloud services', 'live-weather-station'), 'description' => lws__('Import data stored by Netatmo for your station or device.', 'live-weather-station'));
+        }
+        if ($service === 'all' || $service === 'pioupiou') {
+            $result['pioupiou'] = array('name' => lws__('Pioupiou cloud services', 'live-weather-station'), 'description' => lws__('Import data stored on Pioupiou servers for this sensor.', 'live-weather-station'));
         }
         return $result;
     }

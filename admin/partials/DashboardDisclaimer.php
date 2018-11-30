@@ -6,7 +6,7 @@
  * @since 3.7.0
  */
 
-$brands = array('Ambient', 'BloomSky', 'Netatmo', 'OpenStreetMap', 'OpenWeatherMap', 'Pioupiou', 'WeatherFlow', 'Weather Underground', 'Windy', 'YoWindow');
+$brands = array('Ambient', 'BloomSky', 'Netatmo', 'OpenStreetMap', 'OpenWeatherMap', 'Pioupiou', 'WeatherFlow', 'Windy', 'YoWindow');
 $official = sprintf(lws__('This plugin is not an official software from %s and, as such, is not endorsed or supported by these companies.', 'live-weather-station'), implode (', ', $brands));
 $trademarks = lws__('All brands, icons and graphic illustrations are registered trademarks of their respective owners.', 'live-weather-station');
 

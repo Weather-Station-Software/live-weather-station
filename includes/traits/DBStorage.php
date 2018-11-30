@@ -45,6 +45,14 @@ trait Storage {
 
     /**
      *
+     * @since 3.7.0
+     */
+    public static function live_weather_station_maps_table() {
+        return 'live_weather_station_maps';
+    }
+
+    /**
+     *
      * @since 3.3.2
      */
     public static function live_weather_station_histo_daily_table() {
@@ -587,6 +595,25 @@ trait Storage {
      *
      * @since 3.6.0
      */
+    private static function create_live_weather_station_maps_table() {
+        global $wpdb;
+        $charset_collate = $wpdb->get_charset_collate();
+        $table_name = $wpdb->prefix.self::live_weather_station_maps_table();
+        $sql = "CREATE TABLE IF NOT EXISTS ".$table_name;
+        $sql .= " (`id` int(11) NOT NULL AUTO_INCREMENT,";
+        $sql .= " `type` int(11) DEFAULT '0' NOT NULL,";
+        $sql .= " `name` varchar(80) DEFAULT '<unnamed>' NOT NULL,";
+        $sql .= " `params` longtext DEFAULT '',";
+        $sql .= " PRIMARY KEY (`id`)";
+        $sql .= ") $charset_collate;";
+        $wpdb->query($sql);
+    }
+
+    /**
+     * Creates table for the plugin.
+     *
+     * @since 3.6.0
+     */
     private static function create_live_weather_station_notifications_table() {
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
@@ -622,6 +649,7 @@ trait Storage {
         self::create_live_weather_station_media_table();
         self::create_live_weather_station_background_process_table();
         self::create_live_weather_station_notifications_table();
+        self::create_live_weather_station_maps_table();
     }
 
     /**
@@ -720,35 +748,51 @@ trait Storage {
             ProcessManager::register('IdentifierLowercaser');
             ProcessManager::register('PressureExpander');
 
-
-
-
-            /*$args = array();
-            $args['init'] = array();
-
-            $args['init']['station_id'] = '70:ee:50:01:22:be';
-            //$args['init']['start_date'] = 1440108000;   // local timestamp
-            $args['init']['start_date'] = 1356994800;   // local timestamp
-            $args['init']['end_date']   = 1483138800;   // local timestamp
-            $args['init']['force'] = false;
-
-            ProcessManager::register('NetatmoStationImporter', $args);*/
-
-
-
-
-
+            // VERSION 3.7.0
+            self::create_live_weather_station_maps_table();
 
 
 
 
             // ALL VERSION
+
+            // OUTDATED PHP
             if (!Env::is_php_version_uptodate()) {
                 Notifier::error(__('Your PHP version is outdated', 'live-weather-station'),
                                'http://php.net/supported-versions.php',
                                 __('This version of PHP is no longer supported by the PHP team and will not even receive security fixes in a few weeks. You should seriously consider to update it.', 'live-weather-station') .
                                 '<br/><em>' . __('Note: even if you do not update, Weather Station will continue to work.', 'live-weather-station') . '</em>');
             }
+
+            // WUG STATION COLLECTED
+            $wug = self::wug_stations();
+            if (count($wug) > 0) {
+                $st = implode('", "', $wug);
+                $url = 'https://weather.station.software/blog/weather-underground-closes-its-doors-to-individual-users/';
+                Notifier::error(lws__('Weather Underground error', 'live-weather-station'),
+                    $url,
+                    sprintf(lws__('As Weather Underground closed its API service, "%s" can not be collected anymore.', 'live-weather-station'), $st));
+
+                $to = get_bloginfo('admin_email');
+                $subject = lws__('About your Weather Underground stations', 'live-weather-station');
+                $message = __('Hello!', 'live-weather-station') . "\r\n" . "\r\n";
+                $message .= sprintf(lws__('%s informs you that Weather Underground closed its API service.', 'live-weather-station'), LWS_PLUGIN_NAME) . ' ';
+                $message .= lws__('As a result, the following stations will no longer be collected:', 'live-weather-station') . "\r\n" ;
+                foreach ($wug as $station) {
+                    $message .= '     - ' . $station . "\r\n";
+                }
+                $message .= "\r\n" . lws__('To know the reasons for this, and discover alternative methods to collect weather data with Weather Station, please read the following article:', 'live-weather-station') . ' ' . $url . ".\r\n" . "\r\n";
+                if (function_exists('wp_mail')) {
+                    wp_mail($to, $subject, $message);
+                }
+                else {
+                    define('LWS_WUG_ALERT_TO', $to);
+                    define('LWS_WUG_ALERT_SUBJECT', $subject);
+                    define('LWS_WUG_ALERT_MESSAGE', $message);
+                    add_action('wp_loaded', 'lws_send_alert_message');
+                }
+            }
+
         }
     }
 
@@ -825,6 +869,9 @@ trait Storage {
         $table_name = $wpdb->prefix.self::live_weather_station_notifications_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
+        $table_name = $wpdb->prefix.self::create_live_weather_station_maps_table();
+        $sql = 'DROP TABLE IF EXISTS '.$table_name;
+        $wpdb->query($sql);
     }
 
     /**
@@ -859,6 +906,23 @@ trait Storage {
             if (array_key_exists('CNT', $cnt[0])) {
                 $result = $cnt[0]['CNT'];
             }
+        }
+        return $result;
+    }
+
+    /**
+     * Count the number of records in a table.
+     *
+     * @return array The stations names.
+     * @since 3.7.0
+     */
+    private static function wug_stations() {
+        $result = array();
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+        $sql = "SELECT station_name FROM `" . $table_name . "` WHERE `station_type` ='" . LWS_WUG_SID ."' ;";
+        foreach ($wpdb->get_results($sql, ARRAY_A) as $station) {
+            $result[] = $station['station_name'];
         }
         return $result;
     }
@@ -905,11 +969,15 @@ trait Storage {
      *
      * @param   string  $table_name The table to update.
      * @param   array   $value  The values to update or insert in the table
+     * @return integer The insert id if anny
      * @since    2.0.0
      */
     private static function insert_table($table_name, $value) {
         global $wpdb;
-        $wpdb->insert($wpdb->prefix.$table_name,$value);
+        if ($wpdb->insert($wpdb->prefix.$table_name,$value)) {
+            return $wpdb->insert_id;
+        }
+        return 0;
     }
 
     /**
@@ -1237,6 +1305,17 @@ trait Storage {
      */
     protected function delete_stations_table($value) {
         return $this->delete_table(self::live_weather_station_stations_table(), 'guid', $value);
+    }
+
+    /**
+     * Delete some maps.
+     *
+     * @param array $value The id to delete from the table
+     * @return int|false The number of rows deleted, or false on error.
+     * @since 3.7.0
+     */
+    protected function delete_maps_table($value) {
+        return $this->delete_table(self::live_weather_station_maps_table(), 'id', $value);
     }
 
     /**

@@ -25,7 +25,7 @@ use WeatherStation\System\Storage\Manager as FS;
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.7.0-dev8');
+define('LWS_VERSION', '3.7.0-dev11');
 define('LWS_CODENAME', '"Mano Negra"');
 define('LWS_WHATSNEW', 'https://weather.station.software/blog/weather-station-3-6-mano-negra/');
 define('LWS_SHOW_CHANGELOG', false);
@@ -64,6 +64,7 @@ define('LWS_IC_WPSC', EnvManager::is_wp_super_cache_installed());
 define('LWS_IC_W3TC', EnvManager::is_w3_total_cache_installed());
 define('LWS_IC_AUTOPTIMIZE', EnvManager::is_autoptimize_installed());
 define('LWS_IC_HC', EnvManager::is_hyper_cache_installed());
+define('LWS_WU_ACTIVE', false);
 
 
 /**

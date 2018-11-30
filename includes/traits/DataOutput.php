@@ -7662,6 +7662,12 @@ trait Output {
             case 'video_metric':
                 $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-film" aria-hidden="true"></i>';
                 break;
+            case 'map':
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-map" aria-hidden="true"></i>';
+                break;
+            case 'zoom':
+                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-search" aria-hidden="true"></i>';
+                break;
             default:
                 $result = '<i %1$s class="' . LWS_FAR . ' ' . (LWS_FA5?'fa-sun':'fa-sun-o') . ' %2$s" aria-hidden="true"></i>';
     }
@@ -10602,7 +10608,7 @@ trait Output {
             $result[] = '<a href="http://wow.metoffice.gov.uk/weather/view?siteID=' . $data['wow_user'] . '"' . $t . '>WOW Met Office</a>';
         }
         if ($data['wug_sync']) {
-            $result[] = '<a href="https://www.wunderground.com/personal-weather-station/dashboard?ID=' . $data['wug_user'] . '&apiref=d97bd03904cd49c5"' . $t . '>Weather Underground</a>';
+            $result[] = '<a href="https://www.wunderground.com/personal-weather-station/dashboard?ID=' . $data['wug_user'] . '"' . $t . '>Weather Underground</a>';
         }
         return $result;
     }

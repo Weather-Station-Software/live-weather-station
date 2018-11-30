@@ -167,6 +167,20 @@ trait Conversion {
     }
 
     /**
+     * Sub x days to a MySql date.
+     *
+     * @param string $date The MySql date.
+     * @param string $days Number of days to substract.
+     * @return string The new MySql date.
+     * @since 3.7.0
+     */
+    public static function sub_days_to_mysql_date($date, $days) {
+        $datetime = \DateTime::createFromFormat('Y-m-d', $date);
+        $datetime->sub(new \DateInterval('P' . $days . 'D'));
+        return $datetime->format('Y-m-d');
+    }
+
+    /**
      * Compare two MySql dates.
      *
      * @param string $date1 The first MySql date.
