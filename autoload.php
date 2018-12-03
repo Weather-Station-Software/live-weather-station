@@ -64,7 +64,6 @@ spl_autoload_register(
         case 'WeatherStation\DB\Query': $file = LWS_INCLUDES_DIR.'traits/DBQuery.php'; break;
         case 'WeatherStation\DB\Stats': $file = LWS_INCLUDES_DIR.'classes/DatabaseStats.php'; break;
         case 'WeatherStation\DB\Storage': $file = LWS_INCLUDES_DIR.'traits/DBStorage.php'; break;
-        case 'WeatherStation\Maps\Output': $file = LWS_INCLUDES_DIR.'traits/MapsOutput.php'; break;
         case 'WeatherStation\SDK\Ambient\AMBTApiClient': $file = LWS_INCLUDES_DIR.'libraries/ambient/autoload.php'; break;
         case 'WeatherStation\SDK\Ambient\Plugin\BaseClient': $file = LWS_INCLUDES_DIR.'traits/AmbientPluginBaseClient.php'; break;
         case 'WeatherStation\SDK\Ambient\Plugin\Client': $file = LWS_INCLUDES_DIR.'traits/AmbientPluginClient.php'; break;
@@ -189,6 +188,7 @@ spl_autoload_register(
         case 'WeatherStation\UI\ListTable\Maps': $file = LWS_INCLUDES_DIR.'classes/ListTableMaps.php'; break;
         case 'WeatherStation\UI\ListTable\Stations': $file = LWS_INCLUDES_DIR.'classes/ListTableStations.php'; break;
         case 'WeatherStation\UI\ListTable\Tasks': $file = LWS_INCLUDES_DIR.'classes/ListTableTasks.php'; break;
+        case 'WeatherStation\UI\Map\BaseHandling': $file = LWS_INCLUDES_DIR.'classes/MapBaseHelper.php'; break;
         case 'WeatherStation\UI\Map\Handling': $file = LWS_INCLUDES_DIR.'classes/MapHelper.php'; break;
         case 'WeatherStation\UI\Map\WindyHandling': $file = LWS_INCLUDES_DIR.'classes/MapWindyHelper.php'; break;
         case 'WeatherStation\UI\Mapping\Handling': $file = LWS_INCLUDES_DIR.'traits/MappingHandling.php'; break;

@@ -102,12 +102,13 @@ class Quota {
      *
      * @param string $service The service to query.
      * @param string $verb The verb to apply (GET, POST, PUT, etc.).
+     * @param intger $count Optional. The number of calls to do.
      * @param boolean $import Optional. Set mode for import (3="Distribute queries in the remaining time").
      * @return boolean True if it's ok to query, false otherwise.
      *
      * @since 3.2.0
      */
-    public static function verify($service, $verb, $import=false){
+    public static function verify($service, $verb, $count=1, $import=false){
         $verified = true;
         $verb = strtolower($verb);
         $quota = self::get_count_quota($service, $verb);
@@ -128,7 +129,7 @@ class Quota {
                 }
             }
             $max_potential_consumption = $values['rolling'] * Cache::$backend_expiry / DAY_IN_SECONDS;
-            $actual_rolling = round($values['rolling'] + $max_potential_consumption + $delta, 0) + 1;
+            $actual_rolling = round($values['rolling'] + $max_potential_consumption + $delta, 0) + $count;
             $warning = ($actual_rolling > $quota);
             $error = ($actual_rolling > $quota);
             $d1 = new \DateTime(date('Y-m-d H:i:s',time()));
@@ -139,7 +140,7 @@ class Quota {
             $actual_strict = 0;
             if ($ratio > self::$ratio_threshold) {
                 $max_potential_consumption = $values['strict'] * Cache::$backend_expiry / $diff;
-                $actual_strict = round($values['strict'] + $max_potential_consumption + $delta, 0) + 1;
+                $actual_strict = round($values['strict'] + $max_potential_consumption + $delta, 0) + $count;
                 $full_strict = round($actual_strict / $ratio, 0);
                 $warning = ($full_strict > $quota);
                 $error = ($actual_strict > $quota);
@@ -180,14 +181,14 @@ class Quota {
         }
         if ($verified) {
             if (!array_key_exists($service, self::$stats)) {
-                self::$stats[$service][$verb] = 1;
+                self::$stats[$service][$verb] = $count;
             }
             else {
                 if (!array_key_exists($verb, self::$stats[$service])) {
-                    self::$stats[$service][$verb] = 1;
+                    self::$stats[$service][$verb] = $count;
                 }
                 else {
-                    self::$stats[$service][$verb] += 1;
+                    self::$stats[$service][$verb] += $count;
                 }
             }
         }

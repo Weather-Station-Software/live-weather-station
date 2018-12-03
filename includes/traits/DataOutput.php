@@ -19,6 +19,7 @@ use WeatherStation\System\Environment\Manager as EnvManager;
 use WeatherStation\Utilities\ColorBrewer;
 use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Options\Handling as Options;
+use WeatherStation\UI\Map\WindyHandling;
 
 /**
  * Outputing / shortcoding functionalities for Weather Station plugin.
@@ -59,10 +60,43 @@ trait Output {
     private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
 
 
+
+
     /**
      * Get the changelog.
      *
-     * @return string $attributes The type of analytics queryed by the shortcode.
+     * @param array $attributes The type of map queryed by the shortcode.
+     * @return string The output of the shortcode.
+     * @since 3.7.0
+     */
+    public function maps_shortcodes($attributes) {
+        $_attributes = shortcode_atts( array('id' => 0, 'size' => 'auto'), $attributes );
+        $mid = $_attributes['id'];
+        if ($mid !== 0) {
+            $map = $this->get_map_detail($mid);
+            if (count($map) > 0) {
+                switch ($map['type']) {
+                    case 1 :
+                        $mapping_service = new WindyHandling($map, $_attributes['size']);
+                        return $mapping_service->output();
+                        break;
+                    default:
+                        return lws__('This map has been removed.', 'live-weather-station');
+                        break;
+                }
+            }
+            else {
+                return lws__('This map does not exist.', 'live-weather-station');
+            }
+        }
+        return '';
+    }
+
+    /**
+     * Get the changelog.
+     *
+     * @param string $attributes The type of analytics queryed by the shortcode.
+     * @return string The output of the shortcode.
      * @since 3.3.0
      */
     public function admin_changelog_shortcodes($attributes) {

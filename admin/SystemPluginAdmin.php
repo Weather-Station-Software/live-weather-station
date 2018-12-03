@@ -48,7 +48,6 @@ use WeatherStation\SDK\Ambient\Plugin\StationInitiator as Ambient_Station_Initia
 use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Notifications\Notifier;
 use WeatherStation\System\Storage\Manager as FS;
-use WeatherStation\Maps\Output as MapsOutput;
 use WeatherStation\UI\Map\Handling as Map;
 
 
@@ -63,7 +62,7 @@ use WeatherStation\UI\Map\Handling as Map;
  */
 class Admin {
 
-    use MapsOutput, Schedule, Options, Arrays, FormsRenderer {
+    use Schedule, Options, Arrays, FormsRenderer {
         FormsRenderer::get_service_name insteadof Arrays;
         FormsRenderer::get_comparable_dimensions insteadof Arrays;
         FormsRenderer::get_module_type insteadof Arrays;
@@ -184,6 +183,7 @@ class Admin {
         lws_register_script('lws-fa-regular', LWS_PUBLIC_URL , 'js/fa-regular.min.js', array('lws-fa-loader'));
         lws_register_script('lws-fa-solid', LWS_PUBLIC_URL , 'js/fa-solid.min.js', array('lws-fa-loader'));
         lws_register_script('lws-leaflet', LWS_PUBLIC_URL, 'js/leaflet.min.js');
+        wp_register_script('lws-windy-boot', 'https://api4.windy.com/assets/libBoot.js');
     }
 
     /**
@@ -1407,7 +1407,7 @@ class Admin {
                 if ($service != '' && $tab != '' && $action == 'form') {
                     $view = $action . '-' . $tab . '-' . $service ;
                 }
-                if ($service != 'map' && $tab != '' && ($action == 'form' || $action == 'manage')) {
+                if ($service != 'map' && $action == 'form') {
                     $view = 'map';
                 }
                 if ($service === 'map' && $tab === 'delete' && $action === 'do') {

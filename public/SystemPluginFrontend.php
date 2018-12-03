@@ -120,6 +120,8 @@ class Frontend {
         lws_register_script('lws-fa-brands', LWS_PUBLIC_URL , 'js/fa-brands.min.js', array('lws-fa-loader'));
         lws_register_script('lws-fa-regular', LWS_PUBLIC_URL , 'js/fa-regular.min.js', array('lws-fa-loader'));
         lws_register_script('lws-fa-solid', LWS_PUBLIC_URL , 'js/fa-solid.min.js', array('lws-fa-loader'));
+        lws_register_script('lws-leaflet', LWS_PUBLIC_URL, 'js/leaflet.min.js');
+        wp_register_script('lws-windy-boot', 'https://api4.windy.com/assets/libBoot.js');
     }
 
 	/**

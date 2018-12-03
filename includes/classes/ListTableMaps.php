@@ -43,7 +43,7 @@ class Maps extends Base {
 
     protected function column_map($item){
         $type = strtolower($this->get_service_name(100 + $item['type']));
-        $actions['view'] = sprintf('<a href="?page=lws-maps&action=manage&tab=view&service=map&mid=%s">'.__('View', 'live-weather-station').'</a>', $item['id']);
+        $actions['view'] = sprintf('<a href="?page=lws-maps&action=form&tab=view&service=' . $type . '&mid=%s">'.__('View', 'live-weather-station').'</a>', $item['id']);
         $actions['edit'] = sprintf('<a href="?page=lws-maps&action=form&tab=add-edit&service=' . $type . '&mid=%s">'.__('Modify', 'live-weather-station').'</a>', $item['id']);
         $actions['delete'] = sprintf('<a href="?page=lws-maps&action=form&tab=delete&service=map&mid=%s">'.__('Remove', 'live-weather-station').'</a>', $item['id']);
         $id = sprintf(lws__('Map ID #%s'), $item['id']);
@@ -54,19 +54,24 @@ class Maps extends Base {
     protected function column_stations($item){
         $result = '-';
         $params = unserialize($item['params']);
-        if (array_key_exists('stations', $params)) {
-            $list = $params['stations'];
-            if (count($list) > 0) {
-                $r = array();
-                foreach ($this->stations as $station) {
-                    if (in_array($station['guid'], $list)) {
-                        $r[] = $station['station_name'];
+        if (!$params['common']['all']) {
+            if (array_key_exists('stations', $params)) {
+                $list = $params['stations'];
+                if (count($list) > 0) {
+                    $r = array();
+                    foreach ($this->stations as $station) {
+                        if (in_array($station['guid'], $list)) {
+                            $r[] = $station['station_name'];
+                        }
+                    }
+                    if (count($r) > 0) {
+                        $result = implode(', ', $r);
                     }
                 }
-                if (count($r) > 0) {
-                    $result = implode(', ', $r);
-                }
             }
+        }
+        else {
+            $result = '- ' . lws__('all', 'live-weather-station') . ' -';
         }
         return $result;
     }
@@ -79,6 +84,25 @@ class Maps extends Base {
             }
         }
         return '-';
+    }
+
+    protected function column_size($item){
+        $params = unserialize($item['params']);
+        $width = '-';
+        $height = '-';
+        if (array_key_exists('common', $params)) {
+            if (array_key_exists('width', $params['common'])) {
+                $width = $params['common']['width'];
+            }
+        }
+        if (array_key_exists('common', $params)) {
+            if (array_key_exists('height', $params['common'])) {
+                $height = $params['common']['height'];
+            }
+        }
+        $s = '<span style="color:silver">' . lws__('Width:', 'live-weather-station') . '</span>&nbsp;' . $width . '<br/>';
+        $s .= '<span style="color:silver">' . lws__('Height:', 'live-weather-station') . '</span>&nbsp;' . $height;
+        return $s;
     }
 
     protected function column_center($item){
@@ -102,9 +126,10 @@ class Maps extends Base {
 
     public function get_columns(){
         $columns = array(
-            'map' => __('Map', 'live-weather-station'),
-            'center' => __('Center', 'live-weather-station'),
-            'zoom' => __('Zoom', 'live-weather-station'),
+            'map' => lws__('Map', 'live-weather-station'),
+            'center' => lws__('Center', 'live-weather-station'),
+            'zoom' => lws__('Zoom', 'live-weather-station'),
+            'size' => lws__('Size', 'live-weather-station'),
             'stations' => lws__('Stations', 'live-weather-station'));
         return $columns;
     }

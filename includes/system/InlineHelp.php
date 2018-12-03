@@ -348,7 +348,7 @@ class InlineHelp {
     }
 
     /**
-     * Contextual help for "files" panel.
+     * Contextual help for "maps" panel.
      *
      * @see set_contextual_help()
      * @since 3.7.0
@@ -364,8 +364,8 @@ class InlineHelp {
         if (!($service = strtolower(filter_input(INPUT_GET, 'service')))) {
             $service = strtolower(filter_input(INPUT_POST, 'service'));
         }
-        if (!($id = filter_input(INPUT_GET, 'id'))) {
-            $id = filter_input(INPUT_POST, 'id');
+        if (!($id = filter_input(INPUT_GET, 'mid'))) {
+            $id = filter_input(INPUT_POST, 'mid');
         }
         if (!($tab = filter_input(INPUT_GET, 'tab'))) {
             $tab = filter_input(INPUT_POST, 'tab');
@@ -382,7 +382,7 @@ class InlineHelp {
                 'id' => 'lws-contextual-maps',
                 'content' => '<p>' . $s . '</p>');
             $s1 = sprintf(lws__('In this version of %s and depending of the API key you have set, you can manage the following types of maps:', 'live-weather-station'), LWS_PLUGIN_NAME);
-            $s2 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_windy_color_logo()) . '" /><strong>' . 'Windy' . '</strong> &mdash; ' . lws__('a full featured map with many weather layers and animated wind flows.', 'live-weather-station') . '</p>';
+            $s2 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_windy_color_logo()) . '" /><strong>' . 'Windy' . '</strong> &mdash; ' . lws__('a full featured map with many weather layers and animations.', 'live-weather-station') . '</p>';
             $tabs[] = array(
                 'title'    => __('Stations types', 'live-weather-station'),
                 'id'       => 'lws-contextual-maps-types',
@@ -396,6 +396,26 @@ class InlineHelp {
                 'title'    => __('Features', 'live-weather-station'),
                 'id'       => 'lws-contextual-stations-features',
                 'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p>');
+        }
+        if (isset($action) && $action == 'form') {
+            $s = lws__('Here, you can set the parameters of your map.', 'live-weather-station');
+
+            $tabs[] = array(
+                'title' => __('Overview', 'live-weather-station'),
+                'id' => 'lws-contextual-maps',
+                'content' => '<p>' . $s . '</p>');
+
+
+
+
+            $s1 = sprintf(lws__('You can use the following controls to arrange the map screen to suit your workflow:', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s2 = '<strong>' . __('Screen Options', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Use the Screen Options tab to choose which %s Dashboard boxes to show.', 'live-weather-station'), LWS_PLUGIN_NAME);
+            $s3 = '<strong>' . __('Drag and Drop', 'live-weather-station') . '</strong> &mdash; ' . __('To rearrange the boxes, drag and drop by clicking on the title bar of the selected box and releasing when you see a gray dotted-line rectangle appear in the location you want to place the box.', 'live-weather-station');
+            $s4 = '<strong>' . __('Box Controls', 'live-weather-station') . '</strong> &mdash; ' . __('Click the title bar of the box to expand or collapse it.', 'live-weather-station');
+            $tabs[] = array(
+                'title' => __('Layout', 'live-weather-station'),
+                'id' => 'lws-contextual-maps-layout',
+                'content' => '<p>' . $s1 . '</p><p>' . $s3 . '</p><p>' . $s4 . '</p>');
         }
 
 

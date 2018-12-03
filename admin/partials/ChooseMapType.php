@@ -9,7 +9,7 @@
 use WeatherStation\UI\SVG\Handling as SVG;
 
 if (get_option('live_weather_station_windy_apikey') != '') {
-    $windy_s = ucfirst(addslashes(lws__('a full featured map with many weather layers and animated wind flows.', 'live-weather-station')));
+    $windy_s = ucfirst(addslashes(lws__('a full featured map with many weather layers and animations.', 'live-weather-station')));
     $windy_l = lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'windy');
     $windy_t = '_self';
 }
