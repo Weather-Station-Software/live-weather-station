@@ -2943,4 +2943,66 @@ trait Generator {
     public function get_import_formats_array($service = 'none') {
         return self::_get_import_formats_array($service);
     }
+
+    /**
+     * Get map overlay array for Windy.
+     *
+     * @return array An array containing map overlay for Windy ready to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_windymap_overlay_js_array() {
+        $result = array();
+        $result[] = array('wind',  lws__('Wind', 'live-weather-station'));
+        $result[] = array('temp',  lws__('Temperature', 'live-weather-station'));
+        $result[] = array('rain',  lws__('Rain', 'live-weather-station'));
+        $result[] = array('clouds',  lws__('Clouds', 'live-weather-station'));
+        $result[] = array('pressure',  lws__('Pressure', 'live-weather-station'));
+        $result[] = array('currents',  lws__('Currents', 'live-weather-station'));
+        $result[] = array('waves',  lws__('Waves', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get map isolines array for Windy.
+     *
+     * @return array An array containing map isolines for Windy ready to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_windymap_isolines_js_array() {
+        $result = array();
+        $result[] = array('none',  lws__('None', 'live-weather-station'));
+        $result[] = array('pressure',  lws__('Pressure', 'live-weather-station'));
+        //$result[] = array('temp',  lws__('Temperature', 'live-weather-station'));
+        //$result[] = array('deg0',  lws__('Freezing altitude', 'live-weather-station'));
+        //$result[] = array('gh',  lws__('Geopotential height', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get map footer array for Windy.
+     *
+     * @return array An array containing map footers for Windy ready to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_windymap_footer_js_array() {
+        $result = array();
+        $result[] = array('none',  lws__('None', 'live-weather-station'));
+        $result[] = array('legend',  lws__('Legend', 'live-weather-station'));
+        $result[] = array('calendar',  lws__('Calendar', 'live-weather-station'));
+        $result[] = array('both',  lws__('Full', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get activated array for Windy.
+     *
+     * @return array An array containing activated / deactivated to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_activated_js_array() {
+        $result = array();
+        $result[] = array('on',  lws__('Enabled', 'live-weather-station'));
+        $result[] = array('off',  lws__('Disabled', 'live-weather-station'));
+        return $result;
+    }
 }

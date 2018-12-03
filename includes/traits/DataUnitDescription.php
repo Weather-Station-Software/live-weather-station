@@ -940,7 +940,7 @@ trait Description {
      * @since    1.0.0
      * @access   protected
      */
-    protected function get_wind_speed_unit( $id = 0 ) {
+    protected function get_wind_speed_unit($id = 0) {
         switch ($id) {
             case 1:
                 $result = __( 'mph' , 'live-weather-station');
@@ -949,10 +949,10 @@ trait Description {
                 $result = __( 'm/s' , 'live-weather-station');
                 break;
             case 3:
-                $result = __( 'bf' , 'live-weather-station');
+                $result = lws__( 'bft' , 'live-weather-station');
                 break;
             case 4:
-                $result = __( 'kts' , 'live-weather-station');
+                $result = lws__( 'kt' , 'live-weather-station');
                 break;
             default:
                 $result = __( 'km/h' , 'live-weather-station'); 

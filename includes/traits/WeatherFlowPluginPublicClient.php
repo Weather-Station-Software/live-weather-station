@@ -145,10 +145,10 @@ trait PublicClient {
                 if (array_key_exists('status_code', $weather['status'])) {
                     if ($weather['status']['status_code'] != 0) {
                         if (array_key_exists('status_message', $weather['status'])) {
-                            throw new \Exception($weather['status']['status_message']);
+                            throw new \Exception($weather['status']['status_message'], $weather['status']['status_code']);
                         }
                         else {
-                            throw new \Exception('WeatherFlow unknown exception');
+                            throw new \Exception('WeatherFlow unknown exception', 0);
                         }
                     }
                 }
@@ -503,11 +503,11 @@ trait PublicClient {
     public function get_and_store_data() {
         $this->synchronize_wflw_station();
         $stations = $this->get_all_wflw_id_stations();
-        $wflw = new WFLWApiClient();
         foreach ($stations as $st => $station) {
             $device_id = $station['station_id'];
             $device_name = $station['station_name'];
             try {
+                $wflw = new WFLWApiClient();
                 if (Quota::verify($this->service_name, 'GET')) {
                     $raw_data = $wflw->getRawPublicStationData($station['service_id'], self::$dev_key);
                     $this->format_and_store($raw_data, $station);

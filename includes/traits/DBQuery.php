@@ -1044,6 +1044,7 @@ trait Query {
      * Get a list of all maps.
      *
      * @return array The maps list.
+     * @since 3.7.0
      */
     protected function get_all_maps() {
         global $wpdb;
@@ -1064,6 +1065,7 @@ trait Query {
      * @param string $name The map name.
      * @param array $params The map parameters.
      * @return integer The map id.
+     * @since 3.7.0
      */
     protected function add_new_map($type, $name, $params) {
         $val = array();
@@ -1074,10 +1076,29 @@ trait Query {
     }
 
     /**
+     * Update a new map.
+     *
+     * @param integer $id The map id.
+     * @param integer $type The map type.
+     * @param string $name The map name.
+     * @param array $params The map parameters.
+     * @since 3.7.0
+     */
+    protected function update_map($id, $type, $name, $params) {
+        $val = array();
+        $val['id'] = $id;
+        $val['type'] = $type;
+        $val['name'] = $name;
+        $val['params'] = serialize($params);
+        self::insert_update_table(self::live_weather_station_maps_table(), $val);
+    }
+
+    /**
      * Get the detail of a map.
      *
      * @param integer $id The map id.
      * @return array The map details.
+     * @since 3.7.0
      */
     protected function get_map_detail($id) {
         global $wpdb;
@@ -1149,6 +1170,36 @@ trait Query {
             }
         } catch (\Exception $ex) {
             return array();
+        }
+    }
+
+    /**
+     * Get the barycenter of all the stations coordinates.
+     *
+     * @return array An array containing the lat & lon of the barycenter.
+     * @since 3.0.0
+     */
+    protected static function get_all_stations_barycenter() {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+        $sql = "SELECT AVG(loc_latitude) as latitude, AVG(loc_longitude) as longitude FROM " . $table_name . ";";
+        try {
+            $cache_id = 'stations_barycenter';
+            $query = Cache::get_query($cache_id);
+            if ($query === false) {
+                $query = $wpdb->get_results($sql, ARRAY_A);
+                if (count($query) > 0 && isset($query[0]['latitude']) && isset($query[0]['longitude'])) {
+                    Cache::set_query($cache_id, $query);
+                }
+            }
+            if (count($query) > 0 && isset($query[0]['latitude']) && isset($query[0]['longitude'])) {
+                return $query[0];
+            }
+            else {
+                return array('latitude' => 51.476852, 'longitude' => -0.000500); // Royal Observatory Greenwich, London, UK
+            }
+        } catch (\Exception $ex) {
+            return array('latitude' => 51.476852, 'longitude' => -0.000500); // Royal Observatory Greenwich, London, UK
         }
     }
 
