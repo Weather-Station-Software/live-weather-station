@@ -17,7 +17,7 @@ trait Description {
     /**
      * Get the service type in plain text.
      *
-     * @param integer $type The type of the station.
+     * @param integer $type The type of the service.
      * @return string The type of the service in plain text.
      * @since 3.0.0
      */

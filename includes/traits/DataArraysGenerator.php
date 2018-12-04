@@ -3075,6 +3075,7 @@ trait Generator {
         $result = array();
         $result[] = array('none',  __('None', 'live-weather-station'));
         $result[] = array('pin',  __('Pin', 'live-weather-station'));
+        //$result[] = array('old',  __('Oldies', 'live-weather-station'));
         $result[] = array('logo',  __('Logo', 'live-weather-station'));
         $result[] = array('brand',  __('Station\'s brand', 'live-weather-station'));
         return $result;

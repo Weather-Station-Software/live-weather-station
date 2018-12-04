@@ -22,6 +22,7 @@
 * Improvement: the "scheduled tasks" tab is now replaced by a full admin page.
 * Improvement: better layout and icons alignment in the tasks scheduler.
 * Improvement: inline help for the tasks scheduler.
+* Improvement: in the add form for WeatherFlow station, there's now a link to the [official WeatherFlow map](https://smartweather.weatherflow.com/map/).
 * Bug fix: in textual shortcode, trend for barometric pressure is not available in plain text (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
 * Bug fix: in distribution radial charts, legend is wrong when values are rain rates.
 * Bug fix: in some conditions, the inline help layout is shifted.
