@@ -4,6 +4,7 @@ namespace WeatherStation\UI\Map;
 
 use WeatherStation\Data\Output;
 use WeatherStation\Data\Arrays\Generator;
+use WeatherStation\UI\SVG\Handling as SVG;
 
 /**
  * This class is the base class for all map handler.
@@ -118,6 +119,27 @@ abstract class BaseHandling {
         $s = __('Zoom', 'live-weather-station');
 
 
+        if (array_key_exists('marker-type', $_POST)) {
+            if (in_array($_POST['marker-type'], array('none', 'pin', 'old', 'logo', 'brand'))) {
+                $params['marker']['type'] = $_POST['marker-type'];
+            }
+        }
+        if (array_key_exists('marker-data', $_POST)) {
+            if (in_array($_POST['marker-data'], array('current', 'calendar', 'station'))) {
+                $params['marker']['data'] = $_POST['marker-data'];
+            }
+        }
+        if (array_key_exists('marker-style', $_POST)) {
+            if (in_array($_POST['marker-style'], array('minimalist', 'standard', 'extended'))) {
+                $params['marker']['style'] = $_POST['marker-style'];
+            }
+        }
+        if (array_key_exists('marker-contrast', $_POST)) {
+            if (in_array($_POST['marker-contrast'], array('light', 'medium', 'dark'))) {
+                $params['marker']['contrast'] = $_POST['marker-contrast'];
+            }
+        }
+
 
 
         $params['specific'] = $this->get_specific_post_values();
@@ -223,6 +245,23 @@ abstract class BaseHandling {
         $result = '';
         $stations = array();
         $st = array();
+        $classname = 'lws-popup-' . $this->map_params['marker']['contrast'] . ' ' . 'lws-popup-' . $this->map_params['marker']['style'];
+        switch ($this->map_params['marker']['contrast']) {
+            case 'light':
+                $color1 = '#FFFFFF';
+                $color2 = '#ffd200';
+                $color3 = '#2d7dd2';
+                break;
+            case 'dark':
+                $color1 = '#273043';
+                $color2 = '#ffd200';
+                $color3 = '#ffd200';
+                break;
+            default:
+                $color1 = '#2d7dd2';
+                $color2 = '#ffd200';
+                $color3 = '#ffffff';
+        }
         if ($this->map_params['common']['all']) {
             $stations = $this->get_stations_list();
         }
@@ -234,7 +273,20 @@ abstract class BaseHandling {
             $s['id'] = $station['guid'];
             $s['lat'] = $station['loc_latitude'];
             $s['lon'] = $station['loc_longitude'];
-            $s['name'] = $station['station_name'];
+            $s['iconUrl'] = SVG::get_base64_station_icon($station['station_type'], $color3);
+            $image = "<img style='width:34px;float:left;padding-right:6px;' src='" . set_url_scheme(SVG::get_base64_station_color_logo($station['station_type'])) . "' />";
+            $s['content'] = '<div><div>' . $image . $station['station_name'] . '</div>';
+
+            if ($this->map_params['marker']['data'] == 'current') {
+                $data = $this->get_widget_data($station['station_id'], 'outdoor');
+
+
+            }
+
+
+
+
+            //$s['content'] = '<p>Hello world!<br />This is a nice popup.</p>';//SVG::get_base64_station_color_logo($station['station_type']);
 
             $st[] = $s;
         }
@@ -245,11 +297,21 @@ abstract class BaseHandling {
         if (count($st) > 0) {
             $result = 'var stations = {';
             foreach ($st as $s) {
-                $result .= $s['id'] . ':{"lat":' . $s['lat'] . ',"lon":' . $s['lon'] . '},';
+                $result .= $s['id'] . ':{"lat":' . $s['lat'] . ',"lon":' . $s['lon'] . ',"icn":"' . $s['iconUrl'] . '","cnt":"' . $s['content'] . '"},';
             }
             $result .= "};";
+            if ($this->map_params['marker']['type'] == 'pin') {
+                $result .= "  var stationIcon = L.icon({iconUrl: '" . SVG::get_base64_pin_icon($color1) ."', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor:  [0, -18]});" . PHP_EOL;
+            }
+            if ($this->map_params['marker']['type'] == 'logo') {
+                $result .= "  var stationIcon = L.icon({iconUrl: '" . SVG::get_base64_menu_icon($color1, $color2) ."', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor:  [0, -18]});" . PHP_EOL;
+            }
             $result .= "for (id in stations) {";
-            $result .= " var marker = L.marker([stations[id].lat, stations[id].lon]).addTo(map).addTo(map).bindPopup('<p>Hello world!<br />This is a nice popup.</p>', {className:'test'});" . PHP_EOL;
+            if ($this->map_params['marker']['type'] == 'brand') {
+                $result .= "";
+                $result .= "  var stationIcon = L.icon({iconUrl: stations[id].icn, iconSize: [32, 32], iconAnchor: [16, 24], shadowSize: [56, 56], shadowAnchor: [28, 28], popupAnchor:  [0, -30], shadowUrl: '" . SVG::get_base64_marker_icon($color1) ."',});" . PHP_EOL;
+            }
+            $result .= " var marker = L.marker([stations[id].lat, stations[id].lon], {icon: stationIcon}).addTo(map).addTo(map).bindPopup(stations[id].cnt, {className:'" . $classname . "'});" . PHP_EOL;
             $result .= "}";
             $result .= "";
             $result .= "";
@@ -258,16 +320,6 @@ abstract class BaseHandling {
 
 
         }
-
-
-
-
-
-
-
-        //$result .= "  var myIcon = L.icon({iconUrl: '" . SVG::get_base64_lws_icon() ."', iconSize: 40});" . PHP_EOL;
-        //$result .= "  L.marker([47.8, -2.7], {icon: myIcon}).addTo(map).bindPopup('<p>Hello world!<br />This is a nice popup.</p>', {className:'test'});" . PHP_EOL;
-
         $result .= '';
         return $result;
     }

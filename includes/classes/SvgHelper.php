@@ -55,6 +55,113 @@ class Handling {
     }
 
     /**
+     * Returns a base64 svg resource for the icon.
+     *
+     * @param integer $type The type of the station.
+     * @param string $color The color of the logo.
+     * @return string The svg resource as a base64.
+     * @since 3.7.0
+     */
+    public static function get_base64_station_icon($type, $color='#000') {
+        switch ($type) {
+            case 0:
+                $result = self::get_base64_netatmo_icon($color);
+                break;
+            case 1:
+                $result = self::get_base64_loc_icon($color);
+                break;
+            case 2:
+                $result = self::get_base64_owm_icon($color);
+                break;
+            case 3:
+                $result = self::get_base64_wug_icon($color);
+                break;
+            case 4:
+                $result = self::get_base64_raw_icon($color);
+                break;
+            case 5:
+                $result = self::get_base64_real_icon($color);
+                break;
+            case 6:
+                $result = self::get_base64_netatmo_icon($color);
+                break;
+            case 7:
+                $result = self::get_base64_txt_icon($color, $color, $color, $color);
+                break;
+            case 8:
+                $result = self::get_base64_weatherflow_icon($color);
+                break;
+            case 9:
+                $result = self::get_base64_piou_icon($color);
+                break;
+            case 10:
+                $result = self::get_base64_bloomsky_icon($color);
+                break;
+            case 11:
+                $result = self::get_base64_ambient_icon($color);
+                break;
+            default:
+                $result = self::get_base64_lws_icon();
+        }
+        return $result;
+    }
+
+    /**
+     * Returns a base64 svg resource for the icon.
+     *
+     * @param integer $type The type of the station.
+     * @return string The svg resource as a base64.
+     * @since 3.7.0
+     */
+    public static function get_base64_station_color_logo($type) {
+        switch ($type) {
+            case 0:
+                $result = self::get_base64_netatmo_color_logo();
+                break;
+            case 1:
+                $result = self::get_base64_loc_color_logo();
+                break;
+            case 2:
+                $result = self::get_base64_owm_color_logo();
+                break;
+            case 3:
+                $result = self::get_base64_wug_color_logo();
+                break;
+            case 4:
+                $result = self::get_base64_raw_color_logo();
+                break;
+            case 5:
+                $result = self::get_base64_real_color_logo();
+                break;
+            case 6:
+                $result = self::get_base64_netatmo_hc_color_logo();
+                break;
+            case 7:
+                $result = self::get_base64_txt_color_logo();
+                break;
+            case 8:
+                $result = self::get_base64_weatherflow_color_logo();
+                break;
+            case 9:
+                $result = self::get_base64_piou_color_logo();
+                break;
+            case 10:
+                $result = self::get_base64_bloomsky_color_logo();
+                break;
+            case 11:
+                $result = self::get_base64_ambient_color_logo();
+                break;
+            default:
+                $result = self::get_base64_lws_icon();
+        }
+        return $result;
+    }
+
+
+
+
+
+    /**
      * Returns a base64 svg resource for the OpenWeatherMap icon.
      *
      * @param string $color Optional. Color of the icon.
@@ -489,7 +596,7 @@ class Handling {
      *
      * @param string $color Optional. Color of the icon.
      * @return string The svg resource as a base64.
-     * @since 3.3.0
+     * @since 3.7.0
      */
     public static function get_base64_windy_icon($color='#000') {
         $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 900 900">';
@@ -504,7 +611,7 @@ class Handling {
      * Returns a base64 svg resource for the monochrome Windy logo.
      *
      * @return string The svg resource as a base64.
-     * @since 3.3.0
+     * @since 3.7.0
      */
     public static function get_base64_windy_grey_logo() {
         return self::get_base64_windy_icon('#666666');
@@ -514,7 +621,7 @@ class Handling {
      * Returns a base64 svg resource for the colored Windy logo.
      *
      * @return string The svg resource as a base64.
-     * @since 3.3.0
+     * @since 3.7.0
      */
     public static function get_base64_windy_color_logo() {
         return self::get_base64_windy_icon('#A32029');
@@ -525,7 +632,7 @@ class Handling {
      *
      * @param string $color Optional. Color of the icon.
      * @return string The svg resource as a base64.
-     * @since 3.3.0
+     * @since 3.7.0
      */
     public static function get_base64_thunderforest_icon($color='#000') {
         $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 144 144">';
@@ -542,7 +649,7 @@ class Handling {
      * Returns a base64 svg resource for the monochrome Thunderforest logo.
      *
      * @return string The svg resource as a base64.
-     * @since 3.3.0
+     * @since 3.7.0
      */
     public static function get_base64_thunderforest_grey_logo() {
         return self::get_base64_thunderforest_icon('#666666');
@@ -552,7 +659,7 @@ class Handling {
      * Returns a base64 svg resource for the colored Thunderforest logo.
      *
      * @return string The svg resource as a base64.
-     * @since 3.3.0
+     * @since 3.7.0
      */
     public static function get_base64_thunderforest_color_logo() {
         return self::get_base64_thunderforest_icon();
@@ -563,7 +670,7 @@ class Handling {
      *
      * @param string $color Optional. Color of the icon.
      * @return string The svg resource as a base64.
-     * @since 3.3.0
+     * @since 3.7.0
      */
     public static function get_base64_stamen_icon($color='#000') {
         $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 20 20">';
@@ -578,7 +685,7 @@ class Handling {
      * Returns a base64 svg resource for the monochrome Stamen logo.
      *
      * @return string The svg resource as a base64.
-     * @since 3.3.0
+     * @since 3.7.0
      */
     public static function get_base64_stamen_grey_logo() {
         return self::get_base64_stamen_icon('#666666');
@@ -588,7 +695,7 @@ class Handling {
      * Returns a base64 svg resource for the colored Stamen logo.
      *
      * @return string The svg resource as a base64.
-     * @since 3.3.0
+     * @since 3.7.0
      */
     public static function get_base64_stamen_color_logo() {
         return self::get_base64_stamen_icon();
@@ -599,7 +706,7 @@ class Handling {
      *
      * @param string $color Optional. Color of the icon.
      * @return string The svg resource as a base64.
-     * @since 3.3.0
+     * @since 3.7.0
      */
     public static function get_base64_mapbox_icon($color='#000') {
         $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 256 256">';
@@ -614,7 +721,7 @@ class Handling {
      * Returns a base64 svg resource for the monochrome Mapbox logo.
      *
      * @return string The svg resource as a base64.
-     * @since 3.3.0
+     * @since 3.7.0
      */
     public static function get_base64_mapbox_grey_logo() {
         return self::get_base64_mapbox_icon('#666666');
@@ -624,9 +731,42 @@ class Handling {
      * Returns a base64 svg resource for the colored Mapbox logo.
      *
      * @return string The svg resource as a base64.
-     * @since 3.3.0
+     * @since 3.7.0
      */
     public static function get_base64_mapbox_color_logo() {
         return self::get_base64_mapbox_icon('#4264FB');
+    }
+
+    /**
+     * Returns a base64 svg resource for the Mapbox icon.
+     *
+     * @param string $color Optional. Color of the icon.
+     * @return string The svg resource as a base64.
+     * @since 3.7.0
+     */
+    public static function get_base64_marker_icon($color='#000') {
+        $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 1000 1000">';
+        $source .= '<g transform="translate(0,0) scale(1,1)">';
+        $source .= '<path style="fill:' . $color . '" d="M500,10c-192.1,0-347.9,155.8-347.9,347.9c0,78.5,26,151,69.9,209.2l278,422.5l0.2,0.4l0.3-0.4l283.4-430.7c40.3-56.7,64-126.1,64-201C847.9,165.8,692.1,10,500,10z"/>';
+        $source .= '<path style="fill:' . $color . '" d="M495.5,128.3c-124.2,0-225.1,101-225.1,225.2s100.9,225.2,225.1,225.2c124.2,0,225.2-101,225.2-225.2S619.7,128.3,495.5,128.3z M495.5,559.1C382,559.1,290,467,290,353.5c0-113.6,92-205.6,205.5-205.6c113.6,0,205.6,92,205.6,205.6C701.1,467.1,609.1,559.1,495.5,559.1z"/>';
+        $source .= '</g>';
+        $source .= '</svg>';
+        return 'data:image/svg+xml;base64,' . base64_encode($source);
+    }
+
+    /**
+     * Returns a base64 svg resource for the Mapbox icon.
+     *
+     * @param string $color Optional. Color of the icon.
+     * @return string The svg resource as a base64.
+     * @since 3.7.0
+     */
+    public static function get_base64_pin_icon($color='#000') {
+        $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 1200 1200">';
+        $source .= '<g transform="translate(180,1280) scale(0.1,-0.1)">';
+        $source .= '<path style="fill:' . $color . '" d="M3855 12789 c-555 -44 -1043 -176 -1530 -414 -1457 -712 -2370 -2223 -2322 -3840 19 -605 152 -1155 406 -1680 109 -225 183 -353 331 -575 65 -96 856 -1369 1760 -2827 903 -1459 1646 -2653 1650 -2653 4 0 747 1194 1650 2652 904 1459 1695 2732 1760 2828 148 222 222 350 331 575 421 869 520 1869 279 2821 -244 958 -822 1795 -1640 2371 -696 491 -1551 759 -2404 752 -94 -1 -216 -5 -271 -10z m635 -1764 c440 -80 813 -271 1120 -575 769 -761 825 -1980 130 -2812 -335 -402 -817 -663 -1344 -728 -114 -14 -378 -14 -492 0 -853 105 -1550 715 -1764 1544 -141 545 -52 1136 243 1613 330 531 862 876 1497 968 130 19 481 13 610 -10z"/>';
+        $source .= '</g>';
+        $source .= '</svg>';
+        return 'data:image/svg+xml;base64,' . base64_encode($source);
     }
 }
