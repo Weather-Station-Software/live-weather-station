@@ -38,7 +38,7 @@ class Handling {
     private $screen_id;
     private $map_id;
     private $map_name;
-    private $map_type;
+    private $map_type = 0;
     private $map_information;
     private $map_params;
     private $aux_handler;
@@ -74,9 +74,24 @@ class Handling {
                 $this->map_type = 2;
                 $this->aux_handler = new StamenHandling();
                 break;
+            case 'thunderforest':
+                $this->map_type = 3;
+                $this->aux_handler = new ThunderforestHandling();
+                break;
+            case 'mapbox':
+                $this->map_type = 4;
+                $this->aux_handler = new MapboxHandling();
+                break;
+            case 'openweathermap':
+                $this->map_type = 5;
+                $this->aux_handler = new OpenweathermapHandling();
+                break;
+            default:
+                $this->map_type = 0;
+                break;
         }
 
-        if ($this->map_id === 0 && $this->arg_action === 'form' && $this->arg_tab === 'add-edit') {
+        if ($this->map_id === 0 && $this->arg_action === 'form' && $this->arg_tab === 'add-edit' && $this->map_type != 0) {
             $barycenter = self::get_all_stations_barycenter();
             $this->init_common['loc_latitude'] = $barycenter['latitude'];
             $this->init_common['loc_longitude'] = $barycenter['longitude'];
@@ -143,19 +158,19 @@ class Handling {
                         if (isset($this->aux_handler)) {
                             $this->aux_handler->set_map($this->get_map_detail($this->map_id), 'auto');
                             $this->aux_handler->save_map();
-                            $message = lws__('This map has been correctly updated.', 'live-weather-station');
+                            $message = __('This map has been correctly updated.', 'live-weather-station');
                             add_settings_error('lws_nonce_success', 200, $message, 'updated');
                             Logger::notice($this->service, $this->aux_handler->service, null, null, null, null, null, 'Map updated.');
                         }
                         else {
-                            $message = lws__('Unable to update this map.', 'live-weather-station');
+                            $message = __('Unable to update this map.', 'live-weather-station');
                             add_settings_error('lws_nonce_error', 403, $message, 'error');
                             Logger::error($this->service, null, null, null, null, null, null, 'Unable to update a map.');
                         }
                     }
                 }
                 else {
-                    $message = lws__('Unable to perform this operation.', 'live-weather-station');
+                    $message = __('Unable to perform this operation.', 'live-weather-station');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                     Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to securely perform an update for a map.');
@@ -291,7 +306,7 @@ class Handling {
         $result .= '  new Clipboard(".copy-sc-map-button");';
         $result .= '});';
         $result .= '</script>';
-        $title = lws__('Shortcode', 'live-weather-station');
+        $title = __('Shortcode', 'live-weather-station');
         $content = '<textarea readonly rows="1" style="width:100%;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="' . $id . '">[live-weather-station-map id="' . $this->map_id . '"]</textarea>';
         $footer = '<button data-clipboard-target="#' . $id . '" class="button button-primary copy-sc-map-button">' . __('Copy', 'live-weather-station'). '</button>';
         return $result . $this->get_box('lws-shortcode-id', $title, $content, $footer);
@@ -312,6 +327,7 @@ class Handling {
             wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false);
             wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false);
             wp_nonce_field('lws-map-' . $this->map_id, 'lws-map-' . $this->map_id . '-nonce', false);
+            echo '<input name="mid" type="hidden" value="' . $this->map_id . '" />';
             echo '    <div id="dashboard-widgets" class="metabox-holder">';
             echo '        <div id="postbox-container-1" class="postbox-container">';
             do_meta_boxes($this->screen_id, 'advanced', null);
@@ -334,7 +350,7 @@ class Handling {
         echo '<div class="main-boxes-container">';
         echo '<div class="row-boxes-container">';
         echo '<div class="item-boxes-container" id="lws-preview">';
-        echo $this->get_box('map-preview', lws__('Preview (without size constraints)', 'live-weather-station'), $this->aux_handler->output());
+        echo $this->get_box('map-preview', __('Preview (without size constraints)', 'live-weather-station'), $this->aux_handler->output());
         echo '</div>';
         echo '</div>';
         echo '<div class="row-boxes-container">';
@@ -356,16 +372,16 @@ class Handling {
     public function add_metaboxes() {
         if (isset($this->aux_handler)) {
             // Left column
-            add_meta_box('lws-maps', lws__('Map', 'live-weather-station' ), array($this, 'summary_widget'), $this->screen_id, 'advanced', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
-            add_meta_box('lws-actions', lws__('Actions', 'live-weather-station' ), array($this, 'action_widget'), $this->screen_id, 'advanced', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
-            add_meta_box('lws-stations', lws__('Stations', 'live-weather-station' ), array($this, 'station_widget'), $this->screen_id, 'side', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
+            add_meta_box('lws-maps', __('Map', 'live-weather-station' ), array($this, 'summary_widget'), $this->screen_id, 'advanced', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
+            add_meta_box('lws-actions', __('Actions', 'live-weather-station' ), array($this, 'action_widget'), $this->screen_id, 'advanced', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
+            add_meta_box('lws-stations', __('Stations', 'live-weather-station' ), array($this, 'station_widget'), $this->screen_id, 'side', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
 
             // Right column
             if ($this->aux_handler->has_feature()) {
-                add_meta_box('lws-features', lws__('Features', 'live-weather-station' ), array($this, 'feature_widget'), $this->screen_id, 'column3', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
+                add_meta_box('lws-features', __('Features', 'live-weather-station' ), array($this, 'feature_widget'), $this->screen_id, 'column3', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
             }
             if ($this->aux_handler->has_control()) {
-                add_meta_box('lws-controls', lws__('Controls', 'live-weather-station' ), array($this, 'control_widget'), $this->screen_id, 'column4', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
+                add_meta_box('lws-controls', __('Controls', 'live-weather-station' ), array($this, 'control_widget'), $this->screen_id, 'column4', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
             }
         }
     }
@@ -395,7 +411,7 @@ class Handling {
      * @since 3.7.0
      */
     public function action_widget($n, $args) {
-        echo '<div style="text-align:center;"><input type="submit" name="save-map" id="save-map" class="button button-primary" value="' . lws__('Save & Refresh Preview', 'live-weather-station') . '"  /></div>';
+        echo '<div style="text-align:center;"><input type="submit" name="save-map" id="save-map" class="button button-primary" value="' . __('Save & Refresh Preview', 'live-weather-station') . '"  /></div>';
     }
 
     /**

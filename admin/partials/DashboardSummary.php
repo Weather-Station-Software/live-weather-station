@@ -25,7 +25,7 @@ if (REQUIREMENTS_OK) {
         foreach ($p as $d) {
             $de[] = $d['name'] . ' (' . $d['progress'] . '%)';
         }
-        $processes_str = lws__('Currently running:', 'live-weather-station') . ' ' . implode(', ', $de) . '.';
+        $processes_str = __('Currently running:', 'live-weather-station') . ' ' . implode(', ', $de) . '.';
     }
     else {
         $show_processes = false;

@@ -24,7 +24,7 @@ class LineDsvpExporter extends LineXsvExporter {
      */
     protected function name($translated=true) {
         if ($translated) {
-            return lws__('DSV (pipe) exporter', 'live-weather-station');
+            return __('DSV (pipe) exporter', 'live-weather-station');
         }
         else {
             return 'DSV (pipe) exporter';
@@ -38,7 +38,7 @@ class LineDsvpExporter extends LineXsvExporter {
      * @since 3.7.0
      */
     protected function description() {
-        return lws__('Exporting historical data from a weather station as a DSV file with pipe separator.', 'live-weather-station');
+        return __('Exporting historical data from a weather station as a DSV file with pipe separator.', 'live-weather-station');
     }
 
 }

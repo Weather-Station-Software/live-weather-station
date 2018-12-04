@@ -949,10 +949,10 @@ trait Description {
                 $result = __( 'm/s' , 'live-weather-station');
                 break;
             case 3:
-                $result = lws__( 'bft' , 'live-weather-station');
+                $result = __( 'bft' , 'live-weather-station');
                 break;
             case 4:
-                $result = lws__( 'kt' , 'live-weather-station');
+                $result = __( 'kt' , 'live-weather-station');
                 break;
             default:
                 $result = __( 'km/h' , 'live-weather-station'); 

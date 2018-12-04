@@ -259,7 +259,7 @@ class Manager {
         $result = array();
         foreach (self::raw_list_dir() as $file) {
             $e = explode('_', $file);
-            $station = lws__('unknown station', 'live-weather-station');
+            $station = __('unknown station', 'live-weather-station');
             $uuid = '-';
             $from = '-';
             $to = '-';

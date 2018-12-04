@@ -570,7 +570,7 @@ trait Conversion {
     public static function get_age_hours_from_seconds($age) {
         $result = implode(', ', self::get_age_array_from_seconds($age, true));
         if ($result === '') {
-            $result = lws__('less than 1 second', 'live-weather-station');
+            $result = __('less than 1 second', 'live-weather-station');
         }
         return $result;
     }

@@ -7,7 +7,7 @@ use WeatherStation\System\Quota\Quota;
 use WeatherStation\Data\Arrays\Generator;
 
 /**
- * This class builds elements of the map view for Stamen maps.
+ * This class builds elements of the map view for Openweathermap maps.
  *
  * @package Includes\Classes
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
@@ -15,7 +15,7 @@ use WeatherStation\Data\Arrays\Generator;
  * @since 3.7.0
  */
 
-class StamenHandling extends BaseHandling {
+class OpenweathermapHandling extends BaseHandling {
 
     use Output, Generator {
         Output::get_service_name insteadof Generator;
@@ -28,8 +28,8 @@ class StamenHandling extends BaseHandling {
         Output::get_extension_description insteadof Generator;
     }
 
-    protected $type = 2;
-    public $service = 'Stamen';
+    protected $type = 5;
+    public $service = 'OpenWeatherMap';
 
     /**
      * Initialize the map and set its specific properties.
@@ -40,7 +40,7 @@ class StamenHandling extends BaseHandling {
     protected function specific_params() {
         $result = array();
         $result['controls']['zoom'] = true;
-        $result['options']['overlay'] = 'terrain';
+        $result['options']['overlay'] = 'owm:temp_new';
         return $result;
     }
 
@@ -58,7 +58,7 @@ class StamenHandling extends BaseHandling {
             $result['controls']['zoom'] = ($_POST['controls-zoom'] == 'on');
         }
         if (array_key_exists('options-overlay', $_POST)) {
-            if (in_array($_POST['options-overlay'], array('terrain', 'terrain-background', 'terrain-classic', 'toner', 'toner-background', 'toner-lite', 'watercolor'))) {
+            if (in_array($_POST['options-overlay'], array('owm:rain', 'owm:snow', 'owm:clouds_new', 'owm:precipitation_new', 'owm:pressure_new', 'owm:wind_new', 'owm:temp_new', 'vane:rgb', 'vane:nir', 'vane:ndvi', 'vane=ndwi'))) {
                 $result['options']['overlay'] = $_POST['options-overlay'];
             }
         }
@@ -73,7 +73,6 @@ class StamenHandling extends BaseHandling {
      */
     protected function specific_resources(){
         $result = '';
-        wp_enqueue_script('lws-stamen-boot');
         return $result;
     }
 
@@ -86,7 +85,7 @@ class StamenHandling extends BaseHandling {
     protected function specific_styles(){
         $result = '';
         if (!$this->map_params['specific']['controls']['zoom']) {
-            $result .= "#" . $this->uniq . " #stamen-" . $this->uniq . " .leaflet-control-zoom {display: none !important;}" . PHP_EOL;
+            $result .= "#" . $this->uniq . " #openweathermap-" . $this->uniq . " .leaflet-control-zoom {display: none !important;}" . PHP_EOL;
         }
         return $result;
     }
@@ -98,7 +97,7 @@ class StamenHandling extends BaseHandling {
      * @since 3.7.0
      */
     protected function specific_container(){
-        $result = '<div id="stamen-' . $this->uniq . '" style="width:100%;height:100%;"></div>';
+        $result = '<div id="openweathermap-' . $this->uniq . '" style="width:100%;height:100%;"></div>';
         return $result;
     }
 
@@ -110,12 +109,50 @@ class StamenHandling extends BaseHandling {
      */
     protected function specific_script(){
         $result = '';
-        $result .= "var layer = new L.StamenTileLayer('" . $this->map_params['specific']['options']['overlay'] . "');" . PHP_EOL;
-        $result .= "var map = new L.Map('stamen-" . $this->uniq . "', {" . PHP_EOL;
+        $layer = explode(':', $this->map_params['specific']['options']['overlay']);
+        $result .= "var bg = new L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {" . PHP_EOL;
+        $result .= '  attribution: "Maps &copy; <a href=\"https://openweathermap.org\">OpenWeatherMap</a>, Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
+        $result .= '  maxZoom: 22,' . PHP_EOL;
+        $result .= '  minZoom: 2' . PHP_EOL;
+        $result .= '});' . PHP_EOL;
+        if ($layer[0] === 'owm') {
+            $result .= "var layer = new L.tileLayer('https://tile.openweathermap.org/map/" . $layer[1] . "/{z}/{x}/{y}.png?appid=" . get_option('live_weather_station_owm_apikey') . "', {" . PHP_EOL;
+            $result .= '  maxZoom: 22,' . PHP_EOL;
+            $result .= '  minZoom: 2' . PHP_EOL;
+            $result .= '});' . PHP_EOL;
+        }
+        else {
+            if ($layer[1] === 'rgb') {
+                $result .= "var layer = new L.tileLayer('http://{s}.sat.owm.io/sql/{z}/{x}/{y}?from=s2&appid=" . get_option('live_weather_station_owm_apikey') . "', {" . PHP_EOL;
+                $result .= '  maxZoom: 22,' . PHP_EOL;
+                $result .= '  minZoom: 2' . PHP_EOL;
+                $result .= '});' . PHP_EOL;
+            }
+            if ($layer[1] === 'nir') {
+                $result .= "var layer = new L.tileLayer('http://{s}.sat.owm.io/sql/{z}/{x}/{y}?select=b8,b3,b2&from=s2&appid=" . get_option('live_weather_station_owm_apikey') . "', {" . PHP_EOL;
+                $result .= '  maxZoom: 22,' . PHP_EOL;
+                $result .= '  minZoom: 2' . PHP_EOL;
+                $result .= '});' . PHP_EOL;
+            }
+            if ($layer[1] === 'ndvi') {
+                $result .= "var layer = new L.tileLayer('http://{s}.sat.owm.io/sql/{z}/{x}/{y}?from=s2&op=ndvi&appid=" . get_option('live_weather_station_owm_apikey') . "', {" . PHP_EOL;
+                $result .= '  maxZoom: 22,' . PHP_EOL;
+                $result .= '  minZoom: 2' . PHP_EOL;
+                $result .= '});' . PHP_EOL;
+            }
+            if ($layer[1] === 'ndwi') {
+                $result .= "var layer = new L.tileLayer('http://{s}.sat.owm.io/sql/{z}/{x}/{y}?select=b8,b12&from=s2&op=ndi&appid=" . get_option('live_weather_station_owm_apikey') . "', {" . PHP_EOL;
+                $result .= '  maxZoom: 22,' . PHP_EOL;
+                $result .= '  minZoom: 2' . PHP_EOL;
+                $result .= '});' . PHP_EOL;
+            }
+        }
+        $result .= "var map = new L.Map('openweathermap-" . $this->uniq . "', {" . PHP_EOL;
         $result .= "  center: new L.LatLng(" . $this->map_params['common']['loc_latitude'] . ", " . $this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
         $result .= "  zoom: " . $this->map_params['common']['loc_zoom'] . PHP_EOL;
         $result .= "});" . PHP_EOL;
-        $result .= "map.attributionControl.setPrefix('');" . PHP_EOL;
+        $result .= "map.attributionControl.setPrefix('');";
+        $result .= "map.addLayer(bg);" . PHP_EOL;
         $result .= "map.addLayer(layer);" . PHP_EOL;
         if ($this->map_params['marker']['type'] != 'none') {
             $result .= "" . PHP_EOL;
@@ -154,7 +191,7 @@ class StamenHandling extends BaseHandling {
      */
     public function output_feature() {
         $content = '<table cellspacing="0" style="display:table;" class="lws-settings"><tbody>';
-        $content .= $this->get_key_value_option_select('options-overlay', __('Overlay', 'live-weather-station'), $this->get_stamenmap_overlay_js_array(), true, $this->map_params['specific']['options']['overlay']);
+        $content .= $this->get_key_value_option_select('options-overlay', __('Overlay', 'live-weather-station'), $this->get_openweathermapmap_overlay_js_array(), true, $this->map_params['specific']['options']['overlay']);
         $content .= '</tbody></table>';
         return $content;
     }

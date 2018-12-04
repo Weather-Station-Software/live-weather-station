@@ -6,6 +6,8 @@
  * @since 3.3.0
  */
 
+use WeatherStation\System\Help\InlineHelp;
+
 $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
 $message = __('Adding this station, please wait', 'live-weather-station');
 if ($error_message == '') {
@@ -55,6 +57,7 @@ else {
                 <td><input required name="service_id" aria-required="true" type="text" id="service_id" value="<?php echo htmlspecialchars($station['service_id']) ?>" maxlength="20" style="width:25em;" /></td>
             </tr>
         </table>
+        <p><?php echo sprintf(__('You can find public stations on %s.', 'live-weather-station'), InlineHelp::get(-42, '%s', __('the official WeatherFlow map', 'live-weather-station')));?></p>
         <?php if ($error != 0) { ?>
             <p style="color:red;"><?php echo $errmsg;?></p>
         <?php } ?>

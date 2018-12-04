@@ -10,10 +10,10 @@ use WeatherStation\System\Help\InlineHelp;
 use WeatherStation\Utilities\Settings;
 
 $settings = new Settings();
-$windy_plan = $settings->get_windy_plan_array();
+$thunderforest_plan = $settings->get_thunderforest_plan_array();
 
-foreach ($windy_plan as $plan) {
-    if (get_option('live_weather_station_windy_plan')==$plan[0]) {
+foreach ($thunderforest_plan as $plan) {
+    if (get_option('live_weather_station_thunderforest_plan')==$plan[0]) {
         $plan_name = $plan[1];
     }
 }
@@ -24,13 +24,13 @@ $warning = __('All the maps associated to this service will no longer be display
 
 <form action="<?php echo esc_url(lws_get_admin_page_url('lws-settings', null, 'services')); ?>" method="POST">
     <input type="hidden" name="action" value="manage-connection" />
-    <input type="hidden" name="service" value="Windy" />
+    <input type="hidden" name="service" value="Thunderforest" />
     <input type="hidden" name="option_page" value="services" />
-    <?php wp_nonce_field('Windy', '_wpnonce', true ); ?>
+    <?php wp_nonce_field('Thunderforest', '_wpnonce', true ); ?>
     <div class="inside" style="padding: 11px;">
         <table cellspacing="0" class="lws-settings">
             <tbody>
-            <?php if (get_option('live_weather_station_windy_apikey') == '') { ?>
+            <?php if (get_option('live_weather_station_thunderforest_apikey') == '') { ?>
                 <tr>
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('API key', 'live-weather-station');?></th>
                     <td width="2%"/>
@@ -44,8 +44,8 @@ $warning = __('All the maps associated to this service will no longer be display
                     <td align="left">
                         <span class="select-option">
                             <select class="option-at-100" name="plan">
-                                <?php foreach ($windy_plan as $plan) { ?>
-                                    <option value="<?php echo $plan[0] ?>"<?php if (get_option('live_weather_station_windy_plan')==$plan[0]):?> selected="selected"<?php endif;?>><?php echo $plan[1] ?></option>;
+                                <?php foreach ($thunderforest_plan as $plan) { ?>
+                                    <option value="<?php echo $plan[0] ?>"<?php if (get_option('live_weather_station_thunderforest_plan')==$plan[0]):?> selected="selected"<?php endif;?>><?php echo $plan[1] ?></option>;
                                 <?php } ?>
                             </select>
                         </span>
@@ -56,7 +56,7 @@ $warning = __('All the maps associated to this service will no longer be display
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('Status', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(lws_get_admin_page_url('lws-events', null, null, 'Windy')); ?>"<?php echo $target; ?>><?php echo strtolower(__('See events log', 'live-weather-station')); ?></a>)</span>
+                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(lws_get_admin_page_url('lws-events', null, null, 'Thunderforest')); ?>"<?php echo $target; ?>><?php echo strtolower(__('See events log', 'live-weather-station')); ?></a>)</span>
                     </td>
                 </tr>
                 <tr>
@@ -70,24 +70,24 @@ $warning = __('All the maps associated to this service will no longer be display
             </tbody>
         </table>
     </div>
-    <?php if (get_option('live_weather_station_windy_apikey') == '') { ?>
+    <?php if (get_option('live_weather_station_thunderforest_apikey') == '') { ?>
         <div id="major-publishing-actions">
             <div id="publishing-action">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="windy-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="thunderforest-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="connect" id="windy-connect" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
+                <input type="submit" name="connect" id="thunderforest-connect" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
             </div>
             <div class="clear"></div>
         </div>
     <?php } else {?>
         <div id="major-publishing-actions">
             <div id="publishing-action">
-                <input type="submit" name="reconnect" id="windy-reconnect" class="button button-primary" value="<?php esc_attr_e('Change', 'live-weather-station');?>">
+                <input type="submit" name="reconnect" id="thunderforest-reconnect" class="button button-primary" value="<?php esc_attr_e('Change', 'live-weather-station');?>">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="windy-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="thunderforest-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="disconnect" id="windy-disconnect" class="button button-primary" onclick="lws_windy_confirmation = confirm('<?php echo $warning; ?>'); return lws_windy_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+                <input type="submit" name="disconnect" id="thunderforest-disconnect" class="button button-primary" onclick="lws_thunderforest_confirmation = confirm('<?php echo $warning; ?>'); return lws_thunderforest_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>
             <div class="clear"></div>
         </div>

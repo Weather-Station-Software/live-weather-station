@@ -102,7 +102,9 @@ class Handling {
         add_meta_box('lws-connect-ambient', 'Ambient Weather Network', array($this, 'ambient_box'), 'lws-settings', 'side');
         add_meta_box('lws-connect-owm', 'OpenWeatherMap', array($this, 'owm_box'), 'lws-settings', 'side');
         //add_meta_box('lws-connect-wug', 'Weather Underground', array($this, 'wug_box'), 'lws-settings', 'side');
-        add_meta_box('lws-connect-windy', 'Windy', array($this, 'windy_box'), 'lws-settings', 'side');
+        add_meta_box('lws-connect-mapbox', 'Mapbox', array($this, 'mapbox_box'), 'lws-settings', 'column3');
+        add_meta_box('lws-connect-thunderforest', 'Thunderforest', array($this, 'thunderforest_box'), 'lws-settings', 'column3');
+        add_meta_box('lws-connect-windy', 'Windy', array($this, 'windy_box'), 'lws-settings', 'column3');
     }
 
     /**
@@ -160,7 +162,25 @@ class Handling {
     }
 
     /**
-     * Get content of the WeatherUnderground box.
+     * Get content of the Mapbox box.
+     *
+     * @since 3.7.0
+     */
+    public function mapbox_box() {
+        include(LWS_ADMIN_DIR.'partials/ConnectMapbox.php');
+    }
+
+    /**
+     * Get content of the Thunderforest box.
+     *
+     * @since 3.7.0
+     */
+    public function thunderforest_box() {
+        include(LWS_ADMIN_DIR.'partials/ConnectThunderforest.php');
+    }
+
+    /**
+     * Get content of the Windy box.
      *
      * @since 3.7.0
      */

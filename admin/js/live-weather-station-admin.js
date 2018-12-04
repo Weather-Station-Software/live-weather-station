@@ -341,6 +341,34 @@ jQuery(document).ready( function($) {
         }
     });
 
+    $('#mapbox-connect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#mapbox-span-sync').show();
+    });
+
+    $('#mapbox-disconnect').click( function() {
+        if (lws_mapbox_confirmation) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#mapbox-span-sync').show();
+        }
+    });
+
+    $('#thunderforest-connect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#thunderforest-span-sync').show();
+    });
+
+    $('#thunderforest-disconnect').click( function() {
+        if (lws_thunderforest_confirmation) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#thunderforest-span-sync').show();
+        }
+    });
+
     $('#netatmo-connect').click( function() {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });

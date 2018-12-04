@@ -358,7 +358,7 @@
 
         <?php if ($show_summer_simmer):?>
             <!-- SUMMER_SIMMER -->
-            <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html_lws__('Summer Simmer index', 'live-weather-station').'"' : ''); ?>>
+            <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Summer Simmer index', 'live-weather-station').'"' : ''); ?>>
                 <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                     <i class="wi wi-x26-<?php echo $id ?> wi-thermometer-internal"></i><i class="wi wi-x26-<?php echo $id ?> wi-degrees"></i>
                 </div>
@@ -375,7 +375,7 @@
 
         <?php if ($show_steadman):?>
             <!-- STEADMAN -->
-            <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html_lws__('Steadman index', 'live-weather-station').'"' : ''); ?>>
+            <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Steadman index', 'live-weather-station').'"' : ''); ?>>
                 <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                     <i class="wi wi-x26-<?php echo $id ?> wi-thermometer-internal"></i><i class="wi wi-x26-<?php echo $id ?> wi-degrees"></i>
                 </div>

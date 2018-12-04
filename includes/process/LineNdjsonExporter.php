@@ -28,7 +28,7 @@ class LineNdjsonExporter extends LineExporter {
      */
     protected function name($translated=true) {
         if ($translated) {
-            return lws__('ND-JSON exporter', 'live-weather-station');
+            return __('ND-JSON exporter', 'live-weather-station');
         }
         else {
             return 'ND-JSON exporter';
@@ -42,7 +42,7 @@ class LineNdjsonExporter extends LineExporter {
      * @since 3.7.0
      */
     protected function description() {
-        return lws__('Exporting historical data from a weather station as a ND-JSON file.', 'live-weather-station');
+        return __('Exporting historical data from a weather station as a ND-JSON file.', 'live-weather-station');
     }
 
     /**

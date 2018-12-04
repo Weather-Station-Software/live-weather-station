@@ -2697,15 +2697,44 @@ trait Generator {
     }
 
     /**
-     * Get plans for WeatherUnderground API access.
+     * Get plans for Windy API access.
      *
      * @return array An array containing the available plans for API access.
      * @since 3.7.0
      */
     public function get_windy_plan_array() {
         $result = array();
-        $result[] = array(0, lws__('Free', 'live-weather-station'));
-        $result[] = array(1, lws__('Paid', 'live-weather-station'));
+        $result[] = array(0, __('Free', 'live-weather-station'));
+        $result[] = array(1, __('Paid', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get plans for Thunderforest API access.
+     *
+     * @return array An array containing the available plans for API access.
+     * @since 3.7.0
+     */
+    public function get_thunderforest_plan_array() {
+        $result = array();
+        $result[] = array(0, __('Hobby Project (free)', 'live-weather-station'));
+        $result[] = array(1, __('Solo Developer', 'live-weather-station'));
+        $result[] = array(2, __('Small Business', 'live-weather-station'));
+        $result[] = array(3, __('Large Business', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get plans for Mapbox API access.
+     *
+     * @return array An array containing the available plans for API access.
+     * @since 3.7.0
+     */
+    public function get_mapbox_plan_array() {
+        $result = array();
+        $result[] = array(0, __('Pay-As-You-Go', 'live-weather-station'));
+        $result[] = array(1, __('Commercial', 'live-weather-station'));
+        $result[] = array(2, __('Enterprise', 'live-weather-station'));
         return $result;
     }
 
@@ -2896,11 +2925,11 @@ trait Generator {
      */
     public static function _get_export_formats_array() {
         $result = array();
-        $result['csv'] = array('name' => 'CSV', 'description' => lws__('A text file format, presenting the data as lines of comma-separated values. This type of format can be read by the majority of spreadsheet software (Calc, Excel, Numbers, etc.) and allows all the data manipulation you want.', 'live-weather-station'));
-        $result['dsvp'] = array('name' => 'DSV (pipe)', 'description' => lws__('A text file format, presenting the data as lines of pipe-separated values. You can use it for plain text processing.', 'live-weather-station'));
-        $result['dsvs'] = array('name' => 'DSV (semicolon)', 'description' => lws__('A text file format, presenting the data as lines of semicolon-separated values. You can use it for plain text processing.', 'live-weather-station'));
-        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(lws__('A standard format used by %s to allow export/import between different WordPress instances. If you want to save your historical data so you can import it into another WordPress site (or another station), this is the ideal format.', 'live-weather-station'), LWS_PLUGIN_NAME));
-        $result['tsv'] = array('name' => 'TSV', 'description' => lws__('A text file format, presenting the data as lines of tab-separated values. You can use it for plain text processing.', 'live-weather-station'));
+        $result['csv'] = array('name' => 'CSV', 'description' => __('A text file format, presenting the data as lines of comma-separated values. This type of format can be read by the majority of spreadsheet software (Calc, Excel, Numbers, etc.) and allows all the data manipulation you want.', 'live-weather-station'));
+        $result['dsvp'] = array('name' => 'DSV (pipe)', 'description' => __('A text file format, presenting the data as lines of pipe-separated values. You can use it for plain text processing.', 'live-weather-station'));
+        $result['dsvs'] = array('name' => 'DSV (semicolon)', 'description' => __('A text file format, presenting the data as lines of semicolon-separated values. You can use it for plain text processing.', 'live-weather-station'));
+        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(__('A standard format used by %s to allow export/import between different WordPress instances. If you want to save your historical data so you can import it into another WordPress site (or another station), this is the ideal format.', 'live-weather-station'), LWS_PLUGIN_NAME));
+        $result['tsv'] = array('name' => 'TSV', 'description' => __('A text file format, presenting the data as lines of tab-separated values. You can use it for plain text processing.', 'live-weather-station'));
         return $result;
     }
 
@@ -2923,12 +2952,12 @@ trait Generator {
      */
     public static function _get_import_formats_array($service = 'none') {
         $result = array();
-        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(lws__('Import from a file previously exported by %s.', 'live-weather-station'), LWS_PLUGIN_NAME));
+        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(__('Import from a file previously exported by %s.', 'live-weather-station'), LWS_PLUGIN_NAME));
         if ($service === 'all' || $service === 'netatmo' || $service === 'netatmohc') {
-            $result['netatmo'] = array('name' => lws__('Netatmo cloud services', 'live-weather-station'), 'description' => lws__('Import data stored by Netatmo for your station or device.', 'live-weather-station'));
+            $result['netatmo'] = array('name' => __('Netatmo cloud services', 'live-weather-station'), 'description' => __('Import data stored by Netatmo for your station or device.', 'live-weather-station'));
         }
         if ($service === 'all' || $service === 'pioupiou') {
-            $result['pioupiou'] = array('name' => lws__('Pioupiou cloud services', 'live-weather-station'), 'description' => lws__('Import data stored on Pioupiou servers for this sensor.', 'live-weather-station'));
+            $result['pioupiou'] = array('name' => __('Pioupiou cloud services', 'live-weather-station'), 'description' => __('Import data stored on Pioupiou servers for this sensor.', 'live-weather-station'));
         }
         return $result;
     }
@@ -2952,13 +2981,13 @@ trait Generator {
      */
     protected function get_windymap_overlay_js_array() {
         $result = array();
-        $result[] = array('wind',  lws__('Wind', 'live-weather-station'));
-        $result[] = array('temp',  lws__('Temperature', 'live-weather-station'));
-        $result[] = array('rain',  lws__('Rain', 'live-weather-station'));
-        $result[] = array('clouds',  lws__('Clouds', 'live-weather-station'));
-        $result[] = array('pressure',  lws__('Pressure', 'live-weather-station'));
-        $result[] = array('currents',  lws__('Currents', 'live-weather-station'));
-        $result[] = array('waves',  lws__('Waves', 'live-weather-station'));
+        $result[] = array('wind',  __('Wind', 'live-weather-station'));
+        $result[] = array('temp',  __('Temperature', 'live-weather-station'));
+        $result[] = array('rain',  __('Rain', 'live-weather-station'));
+        $result[] = array('clouds',  __('Clouds', 'live-weather-station'));
+        $result[] = array('pressure',  __('Pressure', 'live-weather-station'));
+        $result[] = array('currents',  __('Currents', 'live-weather-station'));
+        $result[] = array('waves',  __('Waves', 'live-weather-station'));
         return $result;
     }
 
@@ -2970,11 +2999,11 @@ trait Generator {
      */
     protected function get_windymap_isolines_js_array() {
         $result = array();
-        $result[] = array('none',  lws__('None', 'live-weather-station'));
-        $result[] = array('pressure',  lws__('Pressure', 'live-weather-station'));
-        //$result[] = array('temp',  lws__('Temperature', 'live-weather-station'));
-        //$result[] = array('deg0',  lws__('Freezing altitude', 'live-weather-station'));
-        //$result[] = array('gh',  lws__('Geopotential height', 'live-weather-station'));
+        $result[] = array('none',  __('None', 'live-weather-station'));
+        $result[] = array('pressure',  __('Pressure', 'live-weather-station'));
+        //$result[] = array('temp',  __('Temperature', 'live-weather-station'));
+        //$result[] = array('deg0',  __('Freezing altitude', 'live-weather-station'));
+        //$result[] = array('gh',  __('Geopotential height', 'live-weather-station'));
         return $result;
     }
 
@@ -2986,10 +3015,10 @@ trait Generator {
      */
     protected function get_windymap_footer_js_array() {
         $result = array();
-        $result[] = array('none',  lws__('None', 'live-weather-station'));
-        $result[] = array('legend',  lws__('Legend', 'live-weather-station'));
-        $result[] = array('calendar',  lws__('Calendar', 'live-weather-station'));
-        $result[] = array('both',  lws__('Full', 'live-weather-station'));
+        $result[] = array('none',  __('None', 'live-weather-station'));
+        $result[] = array('legend',  __('Legend', 'live-weather-station'));
+        $result[] = array('calendar',  __('Calendar', 'live-weather-station'));
+        $result[] = array('both',  __('Full', 'live-weather-station'));
         return $result;
     }
 
@@ -3001,8 +3030,8 @@ trait Generator {
      */
     protected function get_activated_js_array() {
         $result = array();
-        $result[] = array('on',  lws__('Enabled', 'live-weather-station'));
-        $result[] = array('off',  lws__('Disabled', 'live-weather-station'));
+        $result[] = array('on',  __('Enabled', 'live-weather-station'));
+        $result[] = array('off',  __('Disabled', 'live-weather-station'));
         return $result;
     }
 
@@ -3014,8 +3043,8 @@ trait Generator {
      */
     protected function get_station_selector_js_array() {
         $result = array();
-        $result[] = array('all',  lws__('All', 'live-weather-station'));
-        $result[] = array('select',  lws__('Selection', 'live-weather-station'));
+        $result[] = array('all',  __('All', 'live-weather-station'));
+        $result[] = array('select',  __('Selection', 'live-weather-station'));
         return $result;
     }
 
@@ -3044,10 +3073,10 @@ trait Generator {
      */
     protected function get_map_marker_js_array() {
         $result = array();
-        $result[] = array('none',  lws__('None', 'live-weather-station'));
-        $result[] = array('pin',  lws__('Pin', 'live-weather-station'));
-        $result[] = array('logo',  lws__('Logo', 'live-weather-station'));
-        $result[] = array('brand',  lws__('Station\'s brand', 'live-weather-station'));
+        $result[] = array('none',  __('None', 'live-weather-station'));
+        $result[] = array('pin',  __('Pin', 'live-weather-station'));
+        $result[] = array('logo',  __('Logo', 'live-weather-station'));
+        $result[] = array('brand',  __('Station\'s brand', 'live-weather-station'));
         return $result;
     }
 
@@ -3059,9 +3088,9 @@ trait Generator {
      */
     protected function get_map_data_js_array() {
         $result = array();
-        $result[] = array('current',  lws__('Current records', 'live-weather-station'));
-        $result[] = array('calendar',  lws__('Calendar', 'live-weather-station'));
-        $result[] = array('station',  lws__('Station\'s information', 'live-weather-station'));
+        $result[] = array('current',  __('Current records', 'live-weather-station'));
+        $result[] = array('calendar',  __('Calendar', 'live-weather-station'));
+        $result[] = array('station',  __('Station\'s information', 'live-weather-station'));
         return $result;
     }
 
@@ -3073,27 +3102,109 @@ trait Generator {
      */
     protected function get_map_style_js_array() {
         $result = array();
-        $result[] = array('minimalist',  lws__('Minimalist', 'live-weather-station'));
-        $result[] = array('standard',  lws__('Standard', 'live-weather-station'));
-        $result[] = array('extended',  lws__('Extended', 'live-weather-station'));
+        $result[] = array('minimalist',  __('Minimalist', 'live-weather-station'));
+        $result[] = array('standard',  __('Standard', 'live-weather-station'));
+        $result[] = array('extended',  __('Extended', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get contrast array for maps.
+     *
+     * @return array An array containing marker style to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_map_contrast_js_array() {
+        $result = array();
+        $result[] = array('light',  __('Light', 'live-weather-station'));
+        $result[] = array('medium',  __('Medium', 'live-weather-station'));
+        $result[] = array('dark',  __('Dark', 'live-weather-station'));
         return $result;
     }
 
     /**
      * Get map overlay array for Stamen.
      *
-     * @return array An array containing map overlay for Windy ready to convert to a JS array.
+     * @return array An array containing map overlay for Stamen ready to convert to a JS array.
      * @since 3.7.0
      */
     protected function get_stamenmap_overlay_js_array() {
         $result = array();
-        $result[] = array('terrain',  lws__('Terrain', 'live-weather-station'));
-        $result[] = array('terrain-background',  lws__('Terrain (background)', 'live-weather-station'));
-        $result[] = array('terrain-classic',  lws__('Terrain (classical)', 'live-weather-station'));
-        $result[] = array('toner',  lws__('Toner', 'live-weather-station'));
-        $result[] = array('toner-background',  lws__('Toner (background)', 'live-weather-station'));
-        $result[] = array('toner-lite',  lws__('Toner (lite)', 'live-weather-station'));
-        $result[] = array('watercolor',  lws__('Watercolor', 'live-weather-station'));
+        $result[] = array('terrain',  __('Terrain', 'live-weather-station'));
+        $result[] = array('terrain-background',  __('Terrain (background)', 'live-weather-station'));
+        $result[] = array('terrain-classic',  __('Terrain (classical)', 'live-weather-station'));
+        $result[] = array('toner',  __('Toner', 'live-weather-station'));
+        $result[] = array('toner-background',  __('Toner (background)', 'live-weather-station'));
+        $result[] = array('toner-lite',  __('Toner (lite)', 'live-weather-station'));
+        $result[] = array('watercolor',  __('Watercolor', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get map overlay array for Thunderforest.
+     *
+     * @return array An array containing map overlay for Thunderforest ready to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_thunderforestmap_overlay_js_array() {
+        $result = array();
+        $result[] = array('landscape',  __('Landscape', 'live-weather-station'));
+        $result[] = array('mobile-atlas',  __('Mobile atlas', 'live-weather-station'));
+        $result[] = array('cycle',  __('OpenCycleMap', 'live-weather-station'));
+        $result[] = array('outdoors',  __('Outdoors', 'live-weather-station'));
+        $result[] = array('pioneer',  __('Pioneer', 'live-weather-station'));
+        $result[] = array('neighbourhood',  __('Neighbourhood', 'live-weather-station'));
+        $result[] = array('spinal-map',  __('Spinal map', 'live-weather-station'));
+        $result[] = array('transport-dark',  __('Transport (dark)', 'live-weather-station'));
+        $result[] = array('transport',  __('Transport (light)', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get map overlay array for Mapbox.
+     *
+     * @return array An array containing map overlay for Mapbox ready to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_mapboxmap_overlay_js_array() {
+        $result = array();
+        $result[] = array('comic',  __('Comic', 'live-weather-station'));
+        $result[] = array('dark',  __('Dark', 'live-weather-station'));
+        $result[] = array('emerald',  __('Emerald', 'live-weather-station'));
+        $result[] = array('high-contrast',  __('High-contrast', 'live-weather-station'));
+        $result[] = array('light',  __('Light', 'live-weather-station'));
+        $result[] = array('pencil',  __('Pencil', 'live-weather-station'));
+        $result[] = array('pirates',  __('Pirates', 'live-weather-station'));
+        $result[] = array('outdoors',  __('Outdoors', 'live-weather-station'));
+        $result[] = array('run-bike-hike',  __('Run, bike, hike', 'live-weather-station'));
+        $result[] = array('satellite',  __('Satellite', 'live-weather-station'));
+        $result[] = array('streets-satellite',  __('Satellite and streets', 'live-weather-station'));
+        $result[] = array('streets',  __('Streets', 'live-weather-station'));
+        $result[] = array('streets-basic',  __('Streets (basic)', 'live-weather-station'));
+        $result[] = array('terrain-rgb',  __('Terrain RGB', 'live-weather-station'));
+        $result[] = array('wheatpaste',  __('Wheatpaste', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get map overlay array for OpenWeatherMap.
+     *
+     * @return array An array containing map overlay for OpenWeatherMap ready to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_openweathermapmap_overlay_js_array() {
+        $result = array();
+        $result[] = array('owm:clouds_new',  __('Weather: clouds', 'live-weather-station'));
+        $result[] = array('owm:precipitation_new',  __('Weather: precipitation', 'live-weather-station'));
+        $result[] = array('owm:pressure_new',  __('Weather: pressure', 'live-weather-station'));
+        $result[] = array('owm:rain',  __('Weather: rain', 'live-weather-station'));
+        $result[] = array('owm:temp_new',  __('Weather: temperature', 'live-weather-station'));
+        $result[] = array('owm:snow',  __('Weather: snow', 'live-weather-station'));
+        $result[] = array('owm:wind_new',  __('Weather: wind', 'live-weather-station'));
+        //$result[] = array('vane:rgb',  __('Vegetation: RGB', 'live-weather-station'));
+        //$result[] = array('vane:nir',  __('Vegetation: NIR', 'live-weather-station'));
+        //$result[] = array('vane:ndvi',  __('Vegetation: NDVI', 'live-weather-station'));
+        //$result[] = array('vane=ndwi',  __('Vegetation: NDWI', 'live-weather-station'));
         return $result;
     }
 }

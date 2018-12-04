@@ -180,17 +180,11 @@ class WindyHandling extends BaseHandling {
         $result .= "  overlays.waves.setMetric('" . $this->get_altitude_unit(get_option('live_weather_station_unit_altitude')) ."')" . PHP_EOL;
         $result .= "  overlays.pressure.setMetric('" . $this->get_pressure_unit(get_option('live_weather_station_unit_pressure')) ."')" . PHP_EOL;
         //$result .= "  overlays.altitude.setMetric('" . $this->get_altitude_unit(get_option('live_weather_station_unit_altitude')) ."')" . PHP_EOL;
-        //if ($this->map_params['marker']['type'] != 'none') {
+        if ($this->map_params['marker']['type'] != 'none') {
             $result .= "" . PHP_EOL;
             $result .= $this->output_markers();
             $result .= "" . PHP_EOL;
-        //}
-
-
-        //$result .= "  var myIcon = L.icon({iconUrl: '" . SVG::get_base64_lws_icon() ."', iconSize: 40});" . PHP_EOL;
-        //$result .= "  L.marker([47.8, -2.7], {icon: myIcon}).addTo(map).bindPopup('<p>Hello world!<br />This is a nice popup.</p>', {className:'test'});" . PHP_EOL;
-
-
+        }
         $result .= "})" . PHP_EOL;
         return $result;
     }
@@ -207,7 +201,7 @@ class WindyHandling extends BaseHandling {
         if ($this->map_params['specific']['controls']['selector']) {
             $count = 7;
         }
-        return Quota::verify($this->service, 'GET', $count);
+        return Quota::verify($this->service, 'GET', 20 * $count);
     }
 
     /**
@@ -228,10 +222,10 @@ class WindyHandling extends BaseHandling {
      */
     public function output_feature() {
         $content = '<table cellspacing="0" style="display:table;" class="lws-settings"><tbody>';
-        $content .= $this->get_key_value_option_select('options-overlay', lws__('Overlay', 'live-weather-station'), $this->get_windymap_overlay_js_array(), true, $this->map_params['specific']['options']['overlay']);
-        $content .= $this->get_key_value_option_select('options-isolines', lws__('Isolines', 'live-weather-station'), $this->get_windymap_isolines_js_array(), true, $this->map_params['specific']['options']['isolines']);
-        $content .= $this->get_key_value_option_select('options-animation', lws__('Animation', 'live-weather-station'), $this->get_activated_js_array(), true, $this->map_params['specific']['options']['animation'] ? 'on' : 'off');
-        $content .= $this->get_key_value_option_select('options-graticule', lws__('Graticule', 'live-weather-station'), $this->get_activated_js_array(), true, $this->map_params['specific']['options']['graticule'] ? 'on' : 'off');
+        $content .= $this->get_key_value_option_select('options-overlay', __('Overlay', 'live-weather-station'), $this->get_windymap_overlay_js_array(), true, $this->map_params['specific']['options']['overlay']);
+        $content .= $this->get_key_value_option_select('options-isolines', __('Isolines', 'live-weather-station'), $this->get_windymap_isolines_js_array(), true, $this->map_params['specific']['options']['isolines']);
+        $content .= $this->get_key_value_option_select('options-animation', __('Animation', 'live-weather-station'), $this->get_activated_js_array(), true, $this->map_params['specific']['options']['animation'] ? 'on' : 'off');
+        $content .= $this->get_key_value_option_select('options-graticule', __('Graticule', 'live-weather-station'), $this->get_activated_js_array(), true, $this->map_params['specific']['options']['graticule'] ? 'on' : 'off');
         $content .= '</tbody></table>';
         return $content;
     }
@@ -254,10 +248,10 @@ class WindyHandling extends BaseHandling {
      */
     public function output_control() {
         $content = '<table cellspacing="0" style="display:table;" class="lws-settings"><tbody>';
-        $content .= $this->get_key_value_option_select('controls-zoom', lws__('Zoom', 'live-weather-station'), $this->get_activated_js_array(), true, $this->map_params['specific']['controls']['zoom'] ? 'on' : 'off');
-        $content .= $this->get_key_value_option_select('controls-selector', lws__('Selector', 'live-weather-station'), $this->get_activated_js_array(), true, $this->map_params['specific']['controls']['selector'] ? 'on' : 'off');
-        $content .= $this->get_key_value_option_select('controls-picker', lws__('Picker', 'live-weather-station'), $this->get_activated_js_array(), true, $this->map_params['specific']['controls']['picker'] ? 'on' : 'off');
-        $content .= $this->get_key_value_option_select('controls-footer', lws__('Footer', 'live-weather-station'), $this->get_windymap_footer_js_array(), true, $this->map_params['specific']['controls']['footer']);
+        $content .= $this->get_key_value_option_select('controls-zoom', __('Zoom', 'live-weather-station'), $this->get_activated_js_array(), true, $this->map_params['specific']['controls']['zoom'] ? 'on' : 'off');
+        $content .= $this->get_key_value_option_select('controls-selector', __('Selector', 'live-weather-station'), $this->get_activated_js_array(), true, $this->map_params['specific']['controls']['selector'] ? 'on' : 'off');
+        $content .= $this->get_key_value_option_select('controls-picker', __('Picker', 'live-weather-station'), $this->get_activated_js_array(), true, $this->map_params['specific']['controls']['picker'] ? 'on' : 'off');
+        $content .= $this->get_key_value_option_select('controls-footer', __('Footer', 'live-weather-station'), $this->get_windymap_footer_js_array(), true, $this->map_params['specific']['controls']['footer']);
         $content .= '</tbody></table>';
         return $content;
     }

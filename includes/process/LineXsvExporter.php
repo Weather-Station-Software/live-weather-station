@@ -35,18 +35,18 @@ abstract class LineXsvExporter extends LineExporter {
      */
     protected function begin_job() {
         $h = array();
-        $h[] = lws__('Date', 'live-weather-station');
-        $h[] = lws__('Module', 'live-weather-station');
-        $h[] = lws__('Measure', 'live-weather-station');
-        $h[] = lws__('Unit', 'live-weather-station');
-        $h[] = lws__('Average', 'live-weather-station');
-        $h[] = lws__('Minimum', 'live-weather-station');
-        $h[] = lws__('Maximum', 'live-weather-station');
-        $h[] = lws__('Median', 'live-weather-station');
-        $h[] = lws__('Standard Deviation', 'live-weather-station');
-        $h[] = lws__('Count', 'live-weather-station');
-        $h[] = lws__('Hourly Maximum', 'live-weather-station');
-        $h[] = lws__('Prevalent Value', 'live-weather-station');
+        $h[] = __('Date', 'live-weather-station');
+        $h[] = __('Module', 'live-weather-station');
+        $h[] = __('Measure', 'live-weather-station');
+        $h[] = __('Unit', 'live-weather-station');
+        $h[] = __('Average', 'live-weather-station');
+        $h[] = __('Minimum', 'live-weather-station');
+        $h[] = __('Maximum', 'live-weather-station');
+        $h[] = __('Median', 'live-weather-station');
+        $h[] = __('Standard Deviation', 'live-weather-station');
+        $h[] = __('Count', 'live-weather-station');
+        $h[] = __('Hourly Maximum', 'live-weather-station');
+        $h[] = __('Prevalent Value', 'live-weather-station');
         FS::write_file_line($this->fullfilename, implode($this->delimiter, $h));
     }
 

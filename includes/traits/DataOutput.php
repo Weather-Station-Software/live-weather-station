@@ -81,12 +81,12 @@ trait Output {
                         return $mapping_service->output();
                         break;
                     default:
-                        return lws__('This map has been removed.', 'live-weather-station');
+                        return __('This map has been removed.', 'live-weather-station');
                         break;
                 }
             }
             else {
-                return lws__('This map does not exist.', 'live-weather-station');
+                return __('This map does not exist.', 'live-weather-station');
             }
         }
         return '';
@@ -8615,10 +8615,10 @@ trait Output {
                 $result = __('humidex', 'live-weather-station') ;
                 break;
             case 'steadman':
-                $result = lws__('steadman', 'live-weather-station') ;
+                $result = __('steadman', 'live-weather-station') ;
                 break;
             case 'summer_simmer':
-                $result = lws__('simmer', 'live-weather-station') ;
+                $result = __('simmer', 'live-weather-station') ;
                 break;
             case 'wind_chill':
                 $result = __('wind chill', 'live-weather-station') ;

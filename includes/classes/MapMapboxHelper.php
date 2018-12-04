@@ -7,7 +7,7 @@ use WeatherStation\System\Quota\Quota;
 use WeatherStation\Data\Arrays\Generator;
 
 /**
- * This class builds elements of the map view for Stamen maps.
+ * This class builds elements of the map view for Mapbox maps.
  *
  * @package Includes\Classes
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
@@ -15,7 +15,7 @@ use WeatherStation\Data\Arrays\Generator;
  * @since 3.7.0
  */
 
-class StamenHandling extends BaseHandling {
+class MapboxHandling extends BaseHandling {
 
     use Output, Generator {
         Output::get_service_name insteadof Generator;
@@ -28,8 +28,8 @@ class StamenHandling extends BaseHandling {
         Output::get_extension_description insteadof Generator;
     }
 
-    protected $type = 2;
-    public $service = 'Stamen';
+    protected $type = 4;
+    public $service = 'Mapbox';
 
     /**
      * Initialize the map and set its specific properties.
@@ -40,7 +40,7 @@ class StamenHandling extends BaseHandling {
     protected function specific_params() {
         $result = array();
         $result['controls']['zoom'] = true;
-        $result['options']['overlay'] = 'terrain';
+        $result['options']['overlay'] = 'outdoors';
         return $result;
     }
 
@@ -58,7 +58,7 @@ class StamenHandling extends BaseHandling {
             $result['controls']['zoom'] = ($_POST['controls-zoom'] == 'on');
         }
         if (array_key_exists('options-overlay', $_POST)) {
-            if (in_array($_POST['options-overlay'], array('terrain', 'terrain-background', 'terrain-classic', 'toner', 'toner-background', 'toner-lite', 'watercolor'))) {
+            if (in_array($_POST['options-overlay'], array('streets', 'light', 'dark', 'satellite', 'streets-satellite', 'wheatpaste', 'streets-basic', 'comic', 'outdoors', 'run-bike-hike', 'pencil', 'pirates', 'emerald', 'high-contrast', 'terrain-rgb'))) {
                 $result['options']['overlay'] = $_POST['options-overlay'];
             }
         }
@@ -73,7 +73,6 @@ class StamenHandling extends BaseHandling {
      */
     protected function specific_resources(){
         $result = '';
-        wp_enqueue_script('lws-stamen-boot');
         return $result;
     }
 
@@ -86,7 +85,7 @@ class StamenHandling extends BaseHandling {
     protected function specific_styles(){
         $result = '';
         if (!$this->map_params['specific']['controls']['zoom']) {
-            $result .= "#" . $this->uniq . " #stamen-" . $this->uniq . " .leaflet-control-zoom {display: none !important;}" . PHP_EOL;
+            $result .= "#" . $this->uniq . " #mapbox-" . $this->uniq . " .leaflet-control-zoom {display: none !important;}" . PHP_EOL;
         }
         return $result;
     }
@@ -98,7 +97,7 @@ class StamenHandling extends BaseHandling {
      * @since 3.7.0
      */
     protected function specific_container(){
-        $result = '<div id="stamen-' . $this->uniq . '" style="width:100%;height:100%;"></div>';
+        $result = '<div id="mapbox-' . $this->uniq . '" style="width:100%;height:100%;"></div>';
         return $result;
     }
 
@@ -110,8 +109,14 @@ class StamenHandling extends BaseHandling {
      */
     protected function specific_script(){
         $result = '';
-        $result .= "var layer = new L.StamenTileLayer('" . $this->map_params['specific']['options']['overlay'] . "');" . PHP_EOL;
-        $result .= "var map = new L.Map('stamen-" . $this->uniq . "', {" . PHP_EOL;
+        $result .= "var layer = new L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {" . PHP_EOL;
+        $result .= '  attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",' . PHP_EOL;
+        $result .= '  maxZoom: 18,' . PHP_EOL;
+        $result .= '  minZoom: 2,' . PHP_EOL;
+        $result .= '  id: "mapbox.' . $this->map_params['specific']['options']['overlay'] . '",' . PHP_EOL;
+        $result .= '  accessToken: "' . get_option('live_weather_station_mapbox_apikey') . '"' . PHP_EOL;
+        $result .= '});' . PHP_EOL;
+        $result .= "var map = new L.Map('mapbox-" . $this->uniq . "', {" . PHP_EOL;
         $result .= "  center: new L.LatLng(" . $this->map_params['common']['loc_latitude'] . ", " . $this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
         $result .= "  zoom: " . $this->map_params['common']['loc_zoom'] . PHP_EOL;
         $result .= "});" . PHP_EOL;
@@ -133,7 +138,7 @@ class StamenHandling extends BaseHandling {
      * @since 3.7.0
      */
     protected function quota_verify() {
-        return Quota::verify($this->service, 'GET', 20);
+        return Quota::verify($this->service, 'GET');
     }
 
     /**
@@ -154,7 +159,7 @@ class StamenHandling extends BaseHandling {
      */
     public function output_feature() {
         $content = '<table cellspacing="0" style="display:table;" class="lws-settings"><tbody>';
-        $content .= $this->get_key_value_option_select('options-overlay', __('Overlay', 'live-weather-station'), $this->get_stamenmap_overlay_js_array(), true, $this->map_params['specific']['options']['overlay']);
+        $content .= $this->get_key_value_option_select('options-overlay', __('Overlay', 'live-weather-station'), $this->get_mapboxmap_overlay_js_array(), true, $this->map_params['specific']['options']['overlay']);
         $content .= '</tbody></table>';
         return $content;
     }

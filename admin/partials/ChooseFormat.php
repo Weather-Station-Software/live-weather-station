@@ -36,7 +36,7 @@
                     <td align="left">
                         <span class="login">
                             <select disabled id="lws-format" name="lws-format" style="width:100%;">
-                                <option value="generic"><?php esc_html_e_lws__('Generic', 'live-weather-station') ?></option>
+                                <option value="generic"><?php esc_html_e('Generic', 'live-weather-station') ?></option>
                             </select>
                         </span>
                     </td>
@@ -56,7 +56,7 @@
                             <span class="login">
                                 <select id="lws-ndjson" name="lws-ndjson" style="width:100%;">
                                     <?php foreach($ndjson as $file) { ?>
-                                        <option value="<?php echo $file['uuid'] ?>"><?php echo $file['station'] ?> (<?php echo $file['from'] ?> ⇥ <?php echo $file['to'] ?>). <?php echo $file['std_size'] . ', ' . sprintf(lws__('exported %s ago.', 'live-weather-station'), human_time_diff($file['date'])) ?></option>
+                                        <option value="<?php echo $file['uuid'] ?>"><?php echo $file['station'] ?> (<?php echo $file['from'] ?> ⇥ <?php echo $file['to'] ?>). <?php echo $file['std_size'] . ', ' . sprintf(__('exported %s ago.', 'live-weather-station'), human_time_diff($file['date'])) ?></option>
                                     <?php } ?>
                                 </select>
                             </span>
@@ -73,7 +73,7 @@
                         <td align="left">
                             <span class="login">
                                 <select id="lws-ndjson" name="lws-ndjson" disabled style="width:100%;">
-                                    <option value="X"><?php esc_html_e_lws__('No file', 'live-weather-station') ?>&hellip;</option>
+                                    <option value="X"><?php esc_html_e('No file', 'live-weather-station') ?>&hellip;</option>
                                 </select>
                             </span>
                         </td>

@@ -357,13 +357,13 @@ class Handling {
                                     $success = true;
                                 }
                                 if ($success) {
-                                    $message = lws__('Data export for the station %s has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');
+                                    $message = __('Data export for the station %s has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');
                                     $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                                     Logger::notice('Export Manager', null, $station['station_id'], $station['station_name'], null, null, null, 'Data export launched.');
                                 }
                                 else {
-                                    $message = lws__('Unable to launch data export for the station %s.', 'live-weather-station');
+                                    $message = __('Unable to launch data export for the station %s.', 'live-weather-station');
                                     $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                                     add_settings_error('lws_nonce_error', 200, $message, 'error');
                                     Logger::error('Export Manager', null, $station['station_id'], $station['station_name'], null, null, null, 'Unable to launch data export.');
@@ -399,13 +399,13 @@ class Handling {
                                     $success = true;
                                 }
                                 if ($success) {
-                                    $message = lws__('Data import for the station %s has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');
+                                    $message = __('Data import for the station %s has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');
                                     $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                                     Logger::notice('Import Manager', null, $station['station_id'], $station['station_name'], null, null, null, 'Data import launched.');
                                 }
                                 else {
-                                    $message = lws__('Unable to launch data import for the station %s.', 'live-weather-station');
+                                    $message = __('Unable to launch data import for the station %s.', 'live-weather-station');
                                     $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                                     add_settings_error('lws_nonce_error', 200, $message, 'error');
                                     Logger::error('Import Manager', null, $station['station_id'], $station['station_name'], null, null, null, 'Unable to launch data import.');
@@ -495,7 +495,7 @@ class Handling {
                         }
                     }
                 } else {
-                    $message = lws__('Unable to perform this operation.', 'live-weather-station');
+                    $message = __('Unable to perform this operation.', 'live-weather-station');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                     Logger::error($this->service, null, null, null, null, null, 0, 'It had not been possible to securely perform an update for a station.');
@@ -680,9 +680,9 @@ class Handling {
      */
     public function wug_warning() {
         $result = '<div class="settings-error error"><p><strong>%s</strong></p></div>';
-        $s = sprintf(lws__('This station is no longer collected by %s because Weather Underground no longer provides the corresponding service.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        $s = sprintf(__('This station is no longer collected by %s because Weather Underground no longer provides the corresponding service.', 'live-weather-station'), LWS_PLUGIN_NAME);
         $l = InlineHelp::get(-34, '%s', 'Weather Underground closes its doors to individual users') . '.';
-        $a = sprintf(lws__('To know the reasons for this, and discover alternative methods to collect weather data with %s, please read the following article:', 'live-weather-station'), LWS_PLUGIN_NAME);
+        $a = sprintf(__('To know the reasons for this, and discover alternative methods to collect weather data with %s, please read the following article:', 'live-weather-station'), LWS_PLUGIN_NAME);
         echo sprintf($result, $s . ' ' . $a . ' ' . $l);
     }
 
@@ -775,9 +775,9 @@ class Handling {
         $manage_link_icn = $this->output_iconic_value(0, 'module', false, false, 'style="color:#999"', 'fa-lg fa-fw');
         $manage_link = sprintf('<a href="?page=lws-stations&action=form&tab=manage&service=modules&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Manage modules', 'live-weather-station').'</a>', $this->station_guid);
         $import_link_icn = $this->output_iconic_value(0, 'import', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-        $import_link = sprintf('<a href="?page=lws-stations&action=form&tab=import&service=data&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.lws__('Import historical data', 'live-weather-station').'</a>', $this->station_guid);
+        $import_link = sprintf('<a href="?page=lws-stations&action=form&tab=import&service=data&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Import historical data', 'live-weather-station').'</a>', $this->station_guid);
         $export_link_icn = $this->output_iconic_value(0, 'export', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-        $export_link = sprintf('<a href="?page=lws-stations&action=form&tab=export&service=data&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.lws__('Export historical data', 'live-weather-station').'</a>', $this->station_guid);
+        $export_link = sprintf('<a href="?page=lws-stations&action=form&tab=export&service=data&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Export historical data', 'live-weather-station').'</a>', $this->station_guid);
         include(LWS_ADMIN_DIR.'partials/StationTools.php');
     }
 

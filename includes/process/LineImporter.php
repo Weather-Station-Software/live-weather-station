@@ -98,11 +98,11 @@ abstract class LineImporter extends Process {
      */
     protected function message() {
         if ($this->is_in_error()) {
-            $result = sprintf(lws__('Unable to import the specified file in the station "%s".', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
-            $result .= "\r\n" . sprintf(lws__('Check the events log to see what\'s going on: %s', 'live-weather-station'), lws_get_admin_page_url('lws-events')) . "\r\n";
+            $result = sprintf(__('Unable to import the specified file in the station "%s".', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
+            $result .= "\r\n" . sprintf(__('Check the events log to see what\'s going on: %s', 'live-weather-station'), lws_get_admin_page_url('lws-events')) . "\r\n";
         }
         else {
-            $result = sprintf(lws__('Historical data has been correctly imported in "%s" for the period from %s to %s.', 'live-weather-station'), $this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date']) . "\r\n";
+            $result = sprintf(__('Historical data has been correctly imported in "%s" for the period from %s to %s.', 'live-weather-station'), $this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date']) . "\r\n";
         }
         return $result;
     }

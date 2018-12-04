@@ -13,7 +13,7 @@ $fileListTable->prepare_items();
 
 ?>
 <div class="wrap">
-    <h2><?php echo lws__('Export/Import files', 'live-weather-station');?></h2>
+    <h2><?php echo __('Export/Import files', 'live-weather-station');?></h2>
     <?php $fileListTable->views(); ?>
     <form id="files-filter" method="get">
         <input type="hidden" name="page" value="lws-files" />
