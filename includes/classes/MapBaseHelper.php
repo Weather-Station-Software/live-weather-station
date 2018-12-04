@@ -3,6 +3,7 @@
 namespace WeatherStation\UI\Map;
 
 use WeatherStation\Data\Output;
+use WeatherStation\Data\Arrays\Generator;
 
 /**
  * This class is the base class for all map handler.
@@ -15,7 +16,16 @@ use WeatherStation\Data\Output;
 
 abstract class BaseHandling {
 
-    use Output;
+    use Output, Generator {
+        Output::get_service_name insteadof Generator;
+        Output::get_comparable_dimensions insteadof Generator;
+        Output::get_module_type insteadof Generator;
+        Output::get_fake_module_name insteadof Generator;
+        Output::get_measurement_type insteadof Generator;
+        Output::get_dimension_name insteadof Generator;
+        Output::get_operation_name insteadof Generator;
+        Output::get_extension_description insteadof Generator;
+    }
 
     protected $type = 0;
     public $service = '';
@@ -79,13 +89,17 @@ abstract class BaseHandling {
         $params = array();
         $params['common'] = $common;
         $params['stations'] = array();
+        $params['marker'] = array();
+        $params['marker']['type'] = 'pin';
+        $params['marker']['data'] = 'current';
+        $params['marker']['style'] = 'standard';
         $params['specific'] = $this->specific_params();
-        return $this->add_new_map($this->type, lws__('New Windy map', 'live-weather-station'), $params);
+        return $this->add_new_map($this->type, sprintf(lws__('New %s map', 'live-weather-station'), $this->service), $params);
     }
 
     /**
      * Initialize the map and set its properties.
-     *
+     *%
      * @param array $common The common parameters to add.
      * @since 3.7.0
      */
@@ -122,6 +136,7 @@ abstract class BaseHandling {
     protected function output_resources() {
         $result = '';
         wp_enqueue_script('lws-leaflet');
+        wp_enqueue_style('lws-leaflet');
         $result .= $this->specific_resources();
         return $result;
     }
@@ -164,8 +179,9 @@ abstract class BaseHandling {
     protected function output_container() {
         $heigth = ($this->size === 'auto' ? $this->map_params['common']['height'] : $this->size);
         $width = ($this->size === 'auto' ? $this->map_params['common']['width'] : '100%');
-        $result = '<div id="' . $this->uniq . '" class="lws-map lws-map-windy" style="width:' . $width . ';height:' . $heigth . ';"><div id="windy" style="width:100%;height:100%;"></div></div>' . PHP_EOL;
-        $result .= $this->specific_container();
+        $result = '<div id="' . $this->uniq . '" class="lws-map" style="width:' . $width . ';height:' . $heigth . ';">' . PHP_EOL;
+        $result .= $this->specific_container() . PHP_EOL;
+        $result .= '</div>';
         return $result;
     }
 
@@ -189,6 +205,56 @@ abstract class BaseHandling {
         $result .= $this->specific_script();
         $result .= '});';
         $result .= '</script>';
+        return $result;
+    }
+
+    /**
+     * Output markers.
+     *
+     * @return string The output of the script, ready to print.
+     * @since 3.7.0
+     */
+    protected function output_markers() {
+        $result = '';
+        $stations = array();
+        $st = array();
+        if ($this->map_params['common']['all']) {
+            $stations = $this->get_stations_list();
+        }
+        else {
+
+        }
+        foreach ($stations as $station) {
+            $s = array();
+            $s['id'] = $station['guid'];
+            $s['lat'] = $station['loc_latitude'];
+            $s['lon'] = $station['loc_longitude'];
+            $s['name'] = $station['station_name'];
+
+            $st[] = $s;
+        }
+
+
+
+
+        if (count($st) > 0) {
+            $result = 'var stations = {';
+            foreach ($st as $s) {
+                $result .= $s['id'] . ':{"lat":' . $s['lat'] . ',"lon":' . $s['lon'] . '},';
+            }
+            $result .= "};";
+            $result .= "for (id in stations) {";
+            $result .= " var marker = L.marker([stations[id].lat, stations[id].lon]).addTo(map).addTo(map).bindPopup('<p>Hello world!<br />This is a nice popup.</p>', {className:'test'});" . PHP_EOL;
+            $result .= "}";
+            $result .= "";
+            $result .= "";
+            $result .= "";
+            $result .= "";
+
+
+        }
+
+        $result .= '';
         return $result;
     }
 
@@ -224,10 +290,11 @@ abstract class BaseHandling {
      * @param boolean $label Optional. Display the th of the table.
      * @param boolean $hidden Optional. Hide the select option.
      * @param boolean $displayed Optional. Display the select option.
+     * @param boolean $multiple Optional. Display multi select.
      * @return string The control ready to print.
      * @since 3.7.0
      */
-    protected function get_option_select($id, $title, $options='', $label=true, $hidden=false, $displayed=true) {
+    protected function get_option_select($id, $title, $options='', $label=true, $hidden=false, $displayed=true, $multiple=false) {
         $visibility = '';
         if ($id == '') {
             $visibility = ' class="lws-placeholder" style="visibility:hidden;"';
@@ -252,7 +319,12 @@ abstract class BaseHandling {
         }
         $result .= '<td align="left" class="lws-option-setting">';
         $result .= '<span class="select-option">';
-        $result .= '<select class="option-select" id="' . $id .'" name="' . $id .'">';
+        if ($multiple) {
+            $result .= '<select multiple class="option-select" id="' . $id .'" name="' . $id .'">';
+        }
+        else {
+            $result .= '<select class="option-select" id="' . $id .'" name="' . $id .'">';
+        }
         if ($options != '') {
             $result .= $options;
         }
@@ -306,6 +378,48 @@ abstract class BaseHandling {
     }
 
     /**
+     * Get an option select control.
+     *
+     * @param string $id The control id.
+     * @param string $title The control title.
+     * @param array $items The array of items.
+     * @param boolean $label Optional. Display the th of the table.
+     * @param array $selected Optional. Set the selected item.
+     * @param boolean $hidden Optional. Hide the select option.
+     * @param boolean $displayed Optional. Display the select option.
+     * @return string The control ready to print.
+     * @since 3.4.0
+     */
+    protected function get_key_value_option_multiselect($id, $title, $items, $label=true, $selected=array(), $hidden=false, $displayed=true) {
+        $result = '';
+        $cpt = 0;
+        foreach ($items as $item) {
+            if (strlen($item[1]) > $cpt && strpos($item[1], '//->') === false) {
+                $cpt = strlen($item[1]);
+            }
+        }
+        $b = '';
+        for ($i=1; $i<$cpt/2; $i++) {
+            $b .= '█';
+        }
+        foreach ($items as $item) {
+            $sel = '';
+            if (!is_null($selected)){
+                if (in_array($item[0], $selected)) {
+                    $sel = ' SELECTED';
+                }
+            }
+            if (strpos($item[1], '//->') === 0) {
+                $sel = ' DISABLED';
+                $item[1] = str_replace('//->', '', $item[1]);
+                $item[1] = $b . ' ' . $item[1];
+            }
+            $result .= '<option value="' . $item[0] . '"' . $sel . '>' . $item[1] . '</option>';
+        }
+        return $this->get_option_select($id, $title, $result, $label, $hidden, $displayed, true);
+    }
+
+    /**
      * Verify if the map has feature box.
      *
      * @return boolean True if the map has feature box, false otherwise.
@@ -345,6 +459,21 @@ abstract class BaseHandling {
      */
     abstract public function get_specific_post_values();
 
-
+    /**
+     * Output the station box.
+     *
+     * @return string The control ready to print.
+     * @since 3.7.0
+     */
+    public function output_stations() {
+        $content = '<table cellspacing="0" style="display:table;" class="lws-settings"><tbody>';
+        $content .= $this->get_key_value_option_select('common-station-selector', lws__('Sources', 'live-weather-station'), $this->get_station_selector_js_array(), true, $this->map_params['common']['all'] ? 'all' : 'select');
+        $content .= $this->get_key_value_option_multiselect('stations-selector', lws__('Selection', 'live-weather-station'), $this->get_stations_selector_js_array(), true, $this->map_params['stations']);
+        $content .= $this->get_key_value_option_select('marker_type', lws__('Marker', 'live-weather-station'), $this->get_map_marker_js_array(), true, $this->map_params['marker']['type']);
+        $content .= $this->get_key_value_option_select('marker_data', lws__('Data', 'live-weather-station'), $this->get_map_data_js_array(), true, $this->map_params['marker']['data']);
+        $content .= $this->get_key_value_option_select('marker_style', lws__('Style', 'live-weather-station'), $this->get_map_style_js_array(), true, $this->map_params['marker']['style']);
+        $content .= '</tbody></table>';
+        return $content;
+    }
 
 }

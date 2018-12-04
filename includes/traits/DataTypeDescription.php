@@ -54,6 +54,9 @@ trait Description {
             case 101:
                 $result = 'Windy';
                 break;
+            case 102:
+                $result = 'Stamen';
+                break;
             default:
                 $result = null;
         }

@@ -79,7 +79,7 @@ class Admin {
 	private $reload = false;
 
     private $settings = array('general', 'services', 'display', 'thresholds', 'history', 'system');
-    private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground', 'Bloomsky', 'Ambient', 'Windy');
+    private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground', 'Bloomsky', 'Ambient', 'Windy', 'Stamen');
     private $service = 'Backend';
 
     private $_station = null;
@@ -118,6 +118,7 @@ class Admin {
         lws_register_style('lws-weather-icons-wind', LWS_PUBLIC_URL, 'css/weather-icons-wind.min.css');
         lws_register_style('lws-nvd3', LWS_PUBLIC_URL, 'css/nv.d3.min.css', array(), false);
         lws_register_style('lws-cal-heatmap', LWS_PUBLIC_URL, 'css/cal-heatmap.min.css');
+        lws_register_style('lws-leaflet', LWS_PUBLIC_URL, 'css/leaflet.min.css');
     }
 
     /**
@@ -183,6 +184,7 @@ class Admin {
         lws_register_script('lws-fa-regular', LWS_PUBLIC_URL , 'js/fa-regular.min.js', array('lws-fa-loader'));
         lws_register_script('lws-fa-solid', LWS_PUBLIC_URL , 'js/fa-solid.min.js', array('lws-fa-loader'));
         lws_register_script('lws-leaflet', LWS_PUBLIC_URL, 'js/leaflet.min.js');
+        lws_register_script('lws-stamen-boot', LWS_PUBLIC_URL, 'js/stamen.min.js');
         wp_register_script('lws-windy-boot', 'https://api4.windy.com/assets/libBoot.js');
     }
 
