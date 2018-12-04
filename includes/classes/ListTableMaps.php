@@ -34,7 +34,7 @@ class Maps extends Base {
     private function get_icon($type) {
         $result = '';
         switch ($type) {
-            case 0 :
+            case 1 :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_windy_grey_logo()) . '" />';
                 break;
         }

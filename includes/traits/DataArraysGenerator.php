@@ -3005,4 +3005,95 @@ trait Generator {
         $result[] = array('off',  lws__('Disabled', 'live-weather-station'));
         return $result;
     }
+
+    /**
+     * Get station selector array for maps.
+     *
+     * @return array An array containing stations selector to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_station_selector_js_array() {
+        $result = array();
+        $result[] = array('all',  lws__('All', 'live-weather-station'));
+        $result[] = array('select',  lws__('Selection', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get all stations array for maps.
+     *
+     * @return array An array containing all stations selector to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_stations_selector_js_array() {
+        $result = array();
+        $stations = $this->get_stations_list();
+        if (count($stations) > 0) {
+            foreach ($stations as $station) {
+                $result[] = array($station['guid'], $station['station_name']);
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get marker type array for maps.
+     *
+     * @return array An array containing marker type to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_map_marker_js_array() {
+        $result = array();
+        $result[] = array('none',  lws__('None', 'live-weather-station'));
+        $result[] = array('pin',  lws__('Pin', 'live-weather-station'));
+        $result[] = array('logo',  lws__('Logo', 'live-weather-station'));
+        $result[] = array('brand',  lws__('Station\'s brand', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get marker data array for maps.
+     *
+     * @return array An array containing marker data to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_map_data_js_array() {
+        $result = array();
+        $result[] = array('current',  lws__('Current records', 'live-weather-station'));
+        $result[] = array('calendar',  lws__('Calendar', 'live-weather-station'));
+        $result[] = array('station',  lws__('Station\'s information', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get marker style array for maps.
+     *
+     * @return array An array containing marker style to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_map_style_js_array() {
+        $result = array();
+        $result[] = array('minimalist',  lws__('Minimalist', 'live-weather-station'));
+        $result[] = array('standard',  lws__('Standard', 'live-weather-station'));
+        $result[] = array('extended',  lws__('Extended', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get map overlay array for Stamen.
+     *
+     * @return array An array containing map overlay for Windy ready to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_stamenmap_overlay_js_array() {
+        $result = array();
+        $result[] = array('terrain',  lws__('Terrain', 'live-weather-station'));
+        $result[] = array('terrain-background',  lws__('Terrain (background)', 'live-weather-station'));
+        $result[] = array('terrain-classic',  lws__('Terrain (classical)', 'live-weather-station'));
+        $result[] = array('toner',  lws__('Toner', 'live-weather-station'));
+        $result[] = array('toner-background',  lws__('Toner (background)', 'live-weather-station'));
+        $result[] = array('toner-lite',  lws__('Toner (lite)', 'live-weather-station'));
+        $result[] = array('watercolor',  lws__('Watercolor', 'live-weather-station'));
+        return $result;
+    }
 }

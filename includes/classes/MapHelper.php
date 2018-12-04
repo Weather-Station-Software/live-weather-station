@@ -70,6 +70,10 @@ class Handling {
                 $this->map_type = 1;
                 $this->aux_handler = new WindyHandling();
                 break;
+            case 'stamen':
+                $this->map_type = 2;
+                $this->aux_handler = new StamenHandling();
+                break;
         }
 
         if ($this->map_id === 0 && $this->arg_action === 'form' && $this->arg_tab === 'add-edit') {
@@ -181,6 +185,10 @@ class Handling {
         $result .= "        $('.if-js-closed').removeClass('if-js-closed').addClass('closed');";
         $result .= "        if(typeof postboxes !== 'undefined')";
         $result .= "            postboxes.add_postbox_toggles('" . $this->screen_id . "');";
+        $result .= "        $('#common-station-selector').change(function() {";
+        $result .= "            $('#stations-selector').prop('disabled', $('#common-station-selector').val() == 'all');";
+        $result .= "        });";
+        $result .= "        $('#common-station-selector').change()";
         $result .= "    });";
         $result .= '</script>';
         echo $result;
@@ -350,6 +358,7 @@ class Handling {
             // Left column
             add_meta_box('lws-maps', lws__('Map', 'live-weather-station' ), array($this, 'summary_widget'), $this->screen_id, 'advanced', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
             add_meta_box('lws-actions', lws__('Actions', 'live-weather-station' ), array($this, 'action_widget'), $this->screen_id, 'advanced', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
+            add_meta_box('lws-stations', lws__('Stations', 'live-weather-station' ), array($this, 'station_widget'), $this->screen_id, 'side', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
 
             // Right column
             if ($this->aux_handler->has_feature()) {
@@ -387,6 +396,15 @@ class Handling {
      */
     public function action_widget($n, $args) {
         echo '<div style="text-align:center;"><input type="submit" name="save-map" id="save-map" class="button button-primary" value="' . lws__('Save & Refresh Preview', 'live-weather-station') . '"  /></div>';
+    }
+
+    /**
+     * Get content of the stations box.
+     *
+     * @since 3.7.0
+     */
+    public function station_widget($n, $args) {
+        echo $this->aux_handler->output_stations();
     }
 
     /**

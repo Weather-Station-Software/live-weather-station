@@ -5,7 +5,6 @@ namespace WeatherStation\UI\Map;
 use WeatherStation\Data\Output;
 use WeatherStation\System\Quota\Quota;
 use WeatherStation\Data\Arrays\Generator;
-use WeatherStation\UI\SVG\Handling as SVG;
 
 /**
  * This class builds elements of the map view for Windy maps.
@@ -145,7 +144,7 @@ class WindyHandling extends BaseHandling {
      * @since 3.7.0
      */
     protected function specific_container(){
-        $result = '';
+        $result = '<div id="windy" style="width:100%;height:100%;"></div>';
         return $result;
     }
 
@@ -181,6 +180,11 @@ class WindyHandling extends BaseHandling {
         $result .= "  overlays.waves.setMetric('" . $this->get_altitude_unit(get_option('live_weather_station_unit_altitude')) ."')" . PHP_EOL;
         $result .= "  overlays.pressure.setMetric('" . $this->get_pressure_unit(get_option('live_weather_station_unit_pressure')) ."')" . PHP_EOL;
         //$result .= "  overlays.altitude.setMetric('" . $this->get_altitude_unit(get_option('live_weather_station_unit_altitude')) ."')" . PHP_EOL;
+        //if ($this->map_params['marker']['type'] != 'none') {
+            $result .= "" . PHP_EOL;
+            $result .= $this->output_markers();
+            $result .= "" . PHP_EOL;
+        //}
 
 
         //$result .= "  var myIcon = L.icon({iconUrl: '" . SVG::get_base64_lws_icon() ."', iconSize: 40});" . PHP_EOL;

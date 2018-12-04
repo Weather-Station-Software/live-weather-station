@@ -19,6 +19,10 @@ else {
     $windy_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
 
+$stamen_s = ucfirst(addslashes(lws__('a beautiful static map.', 'live-weather-station')));
+$stamen_l = lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'stamen');
+$stamen_t = '_self';
+
 ?>
 
 <div id="normal-sortables" class="meta-box-sortables ui-sortable" style="overflow: hidden;">
@@ -31,6 +35,7 @@ else {
                     .actionable {border-radius:6px;cursor:pointer; -moz-transition: all .5s ease-in; -o-transition: all .5s ease-in; -webkit-transition: all .5s ease-in; transition: all .5s ease-in; background: transparent;border:1px solid transparent;}
                 </style>
                 <div style="flex:auto;padding:14px;"><img id="windy" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_windy_color_logo());?>" /></div>
+                <div style="flex:auto;padding:14px;"><img id="stamen" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_windy_color_logo());?>" /></div>
             </div>
         </div>
         <div id="major-publishing-actions">
@@ -48,6 +53,12 @@ else {
             });
             $("#windy").click(function() {
                 window.open('<?php echo $windy_l; ?>', '<?php echo $windy_t; ?>');
+            });
+            $("#stamen").mouseover(function() {
+                $("#tip-text").html("<?php echo $stamen_s; ?>");
+            });
+            $("#stamen").click(function() {
+                window.open('<?php echo $stamen_l; ?>', '<?php echo $stamen_t; ?>');
             });
         });
     </script>
