@@ -45,9 +45,9 @@ if (isset($mid) && $mid) {
             </div>
         </div>
         <div style="width: 100%;clear: both;">
-            <p><?php echo sprintf(lws__('Are you sure you want to remove this map from %s?', 'live-weather-station'), LWS_PLUGIN_NAME);?></p>
+            <p><?php echo sprintf(__('Are you sure you want to remove this map from %s?', 'live-weather-station'), LWS_PLUGIN_NAME);?></p>
             <p class="submit"><input type="submit" name="delete-map" id="delete-map" class="button button-primary" value="<?php esc_html_e( 'Confirm Removal', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp; <input type="submit" name="donot-delete-map" id="donot-delete-map" class="button" value="<?php esc_html_e( 'Cancel Removal', 'live-weather-station' );?>"  />
-                <span id="span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo lws__('Removing this map, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                <span id="span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Removing this map, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
         </div>
     </form>
 </div>

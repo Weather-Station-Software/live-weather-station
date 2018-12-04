@@ -24,7 +24,7 @@ class LineDsvsExporter extends LineXsvExporter {
      */
     protected function name($translated=true) {
         if ($translated) {
-            return lws__('DSV (semicolon) exporter', 'live-weather-station');
+            return __('DSV (semicolon) exporter', 'live-weather-station');
         }
         else {
             return 'DSV (semicolon) exporter';
@@ -38,7 +38,7 @@ class LineDsvsExporter extends LineXsvExporter {
      * @since 3.7.0
      */
     protected function description() {
-        return lws__('Exporting historical data from a weather station as a DSV file with semicolon separator.', 'live-weather-station');
+        return __('Exporting historical data from a weather station as a DSV file with semicolon separator.', 'live-weather-station');
     }
 
 }

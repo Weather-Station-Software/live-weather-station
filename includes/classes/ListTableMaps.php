@@ -34,8 +34,20 @@ class Maps extends Base {
     private function get_icon($type) {
         $result = '';
         switch ($type) {
-            case 1 :
+            case 'windy' :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_windy_grey_logo()) . '" />';
+                break;
+            case 'stamen' :
+                $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_stamen_grey_logo()) . '" />';
+                break;
+            case 'thunderforest' :
+                $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_thunderforest_grey_logo()) . '" />';
+                break;
+            case 'mapbox' :
+                $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_windy_grey_logo()) . '" />';
+                break;
+            case 'openweathermap' :
+                $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_owm_grey_logo()) . '" />';
                 break;
         }
         return $result;
@@ -46,7 +58,7 @@ class Maps extends Base {
         $actions['view'] = sprintf('<a href="?page=lws-maps&action=form&tab=view&service=' . $type . '&mid=%s">'.__('View', 'live-weather-station').'</a>', $item['id']);
         $actions['edit'] = sprintf('<a href="?page=lws-maps&action=form&tab=add-edit&service=' . $type . '&mid=%s">'.__('Modify', 'live-weather-station').'</a>', $item['id']);
         $actions['delete'] = sprintf('<a href="?page=lws-maps&action=form&tab=delete&service=map&mid=%s">'.__('Remove', 'live-weather-station').'</a>', $item['id']);
-        $id = sprintf(lws__('Map ID #%s'), $item['id']);
+        $id = sprintf(__('Map ID #%s'), $item['id']);
         $name = sprintf('<a class="row-title" href="?page=lws-maps&action=form&tab=add-edit&service=' . $type . '&mid=%s"' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>' . $item['name'] . '</a>', $item['id']);
         return $this->get_icon($type) . '&nbsp;' . sprintf('%1$s <br /><span style="color:silver">&nbsp;%2$s</span>%3$s', $name, $id, $this->row_actions($actions));
     }
@@ -71,7 +83,7 @@ class Maps extends Base {
             }
         }
         else {
-            $result = '- ' . lws__('all', 'live-weather-station') . ' -';
+            $result = '- ' . __('all', 'live-weather-station') . ' -';
         }
         return $result;
     }
@@ -100,8 +112,8 @@ class Maps extends Base {
                 $height = $params['common']['height'];
             }
         }
-        $s = '<span style="color:silver">' . lws__('Width:', 'live-weather-station') . '</span>&nbsp;' . $width . '<br/>';
-        $s .= '<span style="color:silver">' . lws__('Height:', 'live-weather-station') . '</span>&nbsp;' . $height;
+        $s = '<span style="color:silver">' . __('Width:', 'live-weather-station') . '</span>&nbsp;' . $width . '<br/>';
+        $s .= '<span style="color:silver">' . __('Height:', 'live-weather-station') . '</span>&nbsp;' . $height;
         return $s;
     }
 
@@ -126,11 +138,11 @@ class Maps extends Base {
 
     public function get_columns(){
         $columns = array(
-            'map' => lws__('Map', 'live-weather-station'),
-            'center' => lws__('Center', 'live-weather-station'),
-            'zoom' => lws__('Zoom', 'live-weather-station'),
-            'size' => lws__('Size', 'live-weather-station'),
-            'stations' => lws__('Stations', 'live-weather-station'));
+            'map' => __('Map', 'live-weather-station'),
+            'center' => __('Center', 'live-weather-station'),
+            'zoom' => __('Zoom', 'live-weather-station'),
+            'size' => __('Size', 'live-weather-station'),
+            'stations' => __('Stations', 'live-weather-station'));
         return $columns;
     }
 

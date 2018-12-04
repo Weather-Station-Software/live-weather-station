@@ -79,7 +79,7 @@ class Admin {
 	private $reload = false;
 
     private $settings = array('general', 'services', 'display', 'thresholds', 'history', 'system');
-    private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground', 'Bloomsky', 'Ambient', 'Windy', 'Stamen');
+    private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground', 'Bloomsky', 'Ambient', 'Windy', 'Stamen', 'Thunderforest', 'Mapbox');
     private $service = 'Backend';
 
     private $_station = null;
@@ -1306,16 +1306,16 @@ class Admin {
             $stations = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Stations', 'live-weather-station'), __('Stations', 'live-weather-station'), $manage_options_cap, 'lws-stations', array($this, 'lws_load_admin_page'));
             $this->_station = new Station(LWS_PLUGIN_NAME, LWS_VERSION, $stations);
             InlineHelp::$station_instance = $this->_station;
-            $maps = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . lws__('Maps', 'live-weather-station'), lws__('Maps', 'live-weather-station'), $manage_options_cap, 'lws-maps', array($this, 'lws_load_admin_page'));
+            $maps = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Maps', 'live-weather-station'), __('Maps', 'live-weather-station'), $manage_options_cap, 'lws-maps', array($this, 'lws_load_admin_page'));
             $this->_map = new Map(LWS_PLUGIN_NAME, LWS_VERSION, $maps);
             if ((bool)get_option('live_weather_station_advanced_mode')) {
-                $files = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . lws__('Files', 'live-weather-station'), lws__('Files', 'live-weather-station'), $manage_options_cap, 'lws-files', array($this, 'lws_load_admin_page'));
+                $files = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Files', 'live-weather-station'), __('Files', 'live-weather-station'), $manage_options_cap, 'lws-files', array($this, 'lws_load_admin_page'));
             }
             else {
                 $files = null;
             }
             if ((bool)get_option('live_weather_station_show_tasks')) {
-                $scheduler = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . lws__('Scheduler', 'live-weather-station'), lws__('Scheduler', 'live-weather-station'), $manage_options_cap, 'lws-scheduler', array($this, 'lws_load_admin_page'));
+                $scheduler = add_submenu_page('lws-dashboard', LWS_FULL_NAME . ' - ' . __('Scheduler', 'live-weather-station'), __('Scheduler', 'live-weather-station'), $manage_options_cap, 'lws-scheduler', array($this, 'lws_load_admin_page'));
             }
             else {
                 $scheduler = null;
@@ -2291,6 +2291,22 @@ class Admin {
                         $s = $this->connect_windy($key, $plan);
                     }
                 }
+                if ($service == 'Thunderforest') {
+                    if ($key == '') {
+                        $s = __('the API key can not be empty', 'live-weather-station');
+                    }
+                    else {
+                        $s = $this->connect_thunderforest($key, $plan);
+                    }
+                }
+                if ($service == 'Mapbox') {
+                    if ($key == '') {
+                        $s = __('the API key can not be empty', 'live-weather-station');
+                    }
+                    else {
+                        $s = $this->connect_mapbox($key, $plan);
+                    }
+                }
                 if ($s == '') {
                     $message = __('%s is now connected to %s.', 'live-weather-station');
                     $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . $service . '</em>');
@@ -2325,6 +2341,14 @@ class Admin {
                 }
                 if ($service == 'Windy') {
                     $this->disconnect_windy();
+                    $result = true;
+                }
+                if ($service == 'Thunderforest') {
+                    $this->disconnect_thunderforest();
+                    $result = true;
+                }
+                if ($service == 'Mapbox') {
+                    $this->disconnect_mapbox();
                     $result = true;
                 }
                 if ($service == 'Bloomsky') {
@@ -2366,7 +2390,15 @@ class Admin {
                     $result = true;
                 }
                 if ($service == 'Windy') {
-                    $this->disconnect_windy(false);
+                    $this->disconnect_windy();
+                    $result = true;
+                }
+                if ($service == 'Thunderforest') {
+                    $this->disconnect_thunderforest();
+                    $result = true;
+                }
+                if ($service == 'Mapbox') {
+                    $this->disconnect_mapbox();
                     $result = true;
                 }
                 if ($service == 'Bloomsky') {
@@ -2484,13 +2516,13 @@ class Admin {
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'delete-map')) {
                 $res = $this->delete_maps_table(array($mid));
                 if ($res) {
-                    $message = lws__('The map %s has been correctly removed.', 'live-weather-station');
+                    $message = __('The map %s has been correctly removed.', 'live-weather-station');
                     $message = sprintf($message, '<em>' . $map['name'] . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, $service, null, null, null, null, null, 'Map removed.');
                 }
                 else {
-                    $message = lws__('Unable to remove the map %s.', 'live-weather-station');
+                    $message = __('Unable to remove the map %s.', 'live-weather-station');
                     $message = sprintf($message, '<em>' . $map['name'] . '</em>');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::error($this->service, $service, null, null, null, null, null, 'Unable to remove this map.');
@@ -2870,7 +2902,7 @@ class Admin {
     }
 
     /**
-     * Connect to an WeatherUnderground account.
+     * Connect to a Windy account.
      *
      * @param string $key The API key of the account.
      * @param string $plan The plan of the account.
@@ -2882,6 +2914,38 @@ class Admin {
         update_option('live_weather_station_windy_apikey', $key);
         update_option('live_weather_station_windy_plan', $plan);
         Logger::notice('Authentication', 'Windy', null, null, null, null, null, 'API key correctly set.');
+        return '';
+    }
+
+    /**
+     * Connect to a Thunderforest account.
+     *
+     * @param string $key The API key of the account.
+     * @param string $plan The plan of the account.
+     * @return string The error string if an error occured, empty string if none.
+     *
+     * @since 3.7.0
+     */
+    protected function connect_thunderforest($key, $plan) {
+        update_option('live_weather_station_thunderforest_apikey', $key);
+        update_option('live_weather_station_thunderforest_plan', $plan);
+        Logger::notice('Authentication', 'Thunderforest', null, null, null, null, null, 'API key correctly set.');
+        return '';
+    }
+
+    /**
+     * Connect to a Mapbox account.
+     *
+     * @param string $key The API key of the account.
+     * @param string $plan The plan of the account.
+     * @return string The error string if an error occured, empty string if none.
+     *
+     * @since 3.7.0
+     */
+    protected function connect_mapbox($key, $plan) {
+        update_option('live_weather_station_mapbox_apikey', $key);
+        update_option('live_weather_station_mapbox_plan', $plan);
+        Logger::notice('Authentication', 'Mapbox', null, null, null, null, null, 'API key correctly set.');
         return '';
     }
 
@@ -2907,6 +2971,26 @@ class Admin {
     protected function disconnect_windy() {
         self::init_windy_options();
         Logger::notice('Authentication', 'Windy', null, null, null, null, null, 'Correctly disconnected from service.');
+    }
+
+    /**
+     * Disconnect from an Thunderforest API key.
+     *
+     * @since 3.7.0
+     */
+    protected function disconnect_thunderforest() {
+        self::init_thunderforest_options();
+        Logger::notice('Authentication', 'Thunderforest', null, null, null, null, null, 'Correctly disconnected from service.');
+    }
+
+    /**
+     * Disconnect from an Mapbox API key.
+     *
+     * @since 3.7.0
+     */
+    protected function disconnect_mapbox() {
+        self::init_mapbox_options();
+        Logger::notice('Authentication', 'Mapbox', null, null, null, null, null, 'Correctly disconnected from service.');
     }
 
     /**

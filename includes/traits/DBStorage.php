@@ -769,19 +769,19 @@ trait Storage {
             if (count($wug) > 0) {
                 $st = implode('", "', $wug);
                 $url = 'https://weather.station.software/blog/weather-underground-closes-its-doors-to-individual-users/';
-                Notifier::error(lws__('Weather Underground error', 'live-weather-station'),
+                Notifier::error(__('Weather Underground error', 'live-weather-station'),
                     $url,
-                    sprintf(lws__('As Weather Underground closed its API service, "%s" can not be collected anymore.', 'live-weather-station'), $st));
+                    sprintf(__('As Weather Underground closed its API service, "%s" can not be collected anymore.', 'live-weather-station'), $st));
 
                 $to = get_bloginfo('admin_email');
-                $subject = lws__('About your Weather Underground stations', 'live-weather-station');
+                $subject = __('About your Weather Underground stations', 'live-weather-station');
                 $message = __('Hello!', 'live-weather-station') . "\r\n" . "\r\n";
-                $message .= sprintf(lws__('%s informs you that Weather Underground closed its API service.', 'live-weather-station'), LWS_PLUGIN_NAME) . ' ';
-                $message .= lws__('As a result, the following stations will no longer be collected:', 'live-weather-station') . "\r\n" ;
+                $message .= sprintf(__('%s informs you that Weather Underground closed its API service.', 'live-weather-station'), LWS_PLUGIN_NAME) . ' ';
+                $message .= __('As a result, the following stations will no longer be collected:', 'live-weather-station') . "\r\n" ;
                 foreach ($wug as $station) {
                     $message .= '     - ' . $station . "\r\n";
                 }
-                $message .= "\r\n" . lws__('To know the reasons for this, and discover alternative methods to collect weather data with Weather Station, please read the following article:', 'live-weather-station') . ' ' . $url . ".\r\n" . "\r\n";
+                $message .= "\r\n" . __('To know the reasons for this, and discover alternative methods to collect weather data with Weather Station, please read the following article:', 'live-weather-station') . ' ' . $url . ".\r\n" . "\r\n";
                 if (function_exists('wp_mail')) {
                     wp_mail($to, $subject, $message);
                 }

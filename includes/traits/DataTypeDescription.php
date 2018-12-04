@@ -57,6 +57,15 @@ trait Description {
             case 102:
                 $result = 'Stamen';
                 break;
+            case 103:
+                $result = 'Thunderforest';
+                break;
+            case 104:
+                $result = 'Mapbox';
+                break;
+            case 105:
+                $result = 'OpenWeatherMap';
+                break;
             default:
                 $result = null;
         }
@@ -333,13 +342,13 @@ trait Description {
                 $result = ($abbr ? __('Wind chill', 'live-weather-station') : __('Wind chill', 'live-weather-station'));
                 break;
             case 'steadman':
-                $result = ($abbr ? lws__('Steadman', 'live-weather-station') : lws__('Steadman index', 'live-weather-station'));
+                $result = ($abbr ? __('Steadman', 'live-weather-station') : __('Steadman index', 'live-weather-station'));
                 break;
             case 'delta_t':
-                $result = ($abbr ? lws__('Delta-T', 'live-weather-station') : lws__('Delta-T', 'live-weather-station'));
+                $result = ($abbr ? __('Delta-T', 'live-weather-station') : __('Delta-T', 'live-weather-station'));
                 break;
             case 'summer_simmer':
-                $result = ($abbr ? lws__('Summer Simmer', 'live-weather-station') : lws__('Summer Simmer index', 'live-weather-station'));
+                $result = ($abbr ? __('Summer Simmer', 'live-weather-station') : __('Summer Simmer index', 'live-weather-station'));
                 break;
             case 'cloud_ceiling':
                 $result = ($abbr ? __('Cloud base', 'live-weather-station') : __('Cloud base altitude', 'live-weather-station'));
@@ -789,11 +798,11 @@ trait Description {
      */
     protected function get_extension_description($ext) {
         switch (strtolower($ext)) {
-            case 'csv' : $result = lws__('Comma-separated values','live-weather-station'); break;
-            case 'dsv' : $result = lws__('Delimiter-separated values', 'live-weather-station'); break;
-            case 'tsv' : $result = lws__('Tab-separated values', 'live-weather-station'); break;
-            case 'ndjson' : $result = lws__('Standard import/export values', 'live-weather-station'); break;
-            default : $result = lws__('Unknown format', 'live-weather-station');
+            case 'csv' : $result = __('Comma-separated values','live-weather-station'); break;
+            case 'dsv' : $result = __('Delimiter-separated values', 'live-weather-station'); break;
+            case 'tsv' : $result = __('Tab-separated values', 'live-weather-station'); break;
+            case 'ndjson' : $result = __('Standard import/export values', 'live-weather-station'); break;
+            default : $result = __('Unknown format', 'live-weather-station');
         }
         return $result;
     }

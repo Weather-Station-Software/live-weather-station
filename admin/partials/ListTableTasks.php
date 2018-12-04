@@ -14,7 +14,7 @@ $tasksListTable->prepare_items();
 ?>
 
     <div class="wrap">
-        <h2><?php echo lws__('Scheduled tasks', 'live-weather-station');?></h2>
+        <h2><?php echo __('Scheduled tasks', 'live-weather-station');?></h2>
         <?php settings_errors(); ?>
         <?php $tasksListTable->display(); ?>
     </div>

@@ -257,7 +257,7 @@ class Handling {
         add_meta_box('lws-signup', sprintf(__('Subscribe', 'live-weather-station'), LWS_PLUGIN_NAME), array($this, 'signup_widget'), 'lws-dashboard', 'side');
         add_meta_box('lws-about', __('About', 'live-weather-station'), array($this, 'about_widget'), 'lws-dashboard', 'side');
         add_meta_box('lws-licenses', __('Licenses', 'live-weather-station'), array($this, 'licenses_widget'), 'lws-dashboard', 'side');
-        add_meta_box('lws-disclaimer', lws__('Disclaimer', 'live-weather-station'), array($this, 'disclaimer_widget'), 'lws-dashboard', 'side');
+        add_meta_box('lws-disclaimer', __('Disclaimer', 'live-weather-station'), array($this, 'disclaimer_widget'), 'lws-dashboard', 'side');
     }
 
     /**

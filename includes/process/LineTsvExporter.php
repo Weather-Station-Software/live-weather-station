@@ -24,7 +24,7 @@ class LineTsvExporter extends LineXsvExporter {
      */
     protected function name($translated=true) {
         if ($translated) {
-            return lws__('TSV exporter', 'live-weather-station');
+            return __('TSV exporter', 'live-weather-station');
         }
         else {
             return 'TSV exporter';
@@ -38,7 +38,7 @@ class LineTsvExporter extends LineXsvExporter {
      * @since 3.7.0
      */
     protected function description() {
-        return lws__('Exporting historical data from a weather station as a TSV file.', 'live-weather-station');
+        return __('Exporting historical data from a weather station as a TSV file.', 'live-weather-station');
     }
 
 }

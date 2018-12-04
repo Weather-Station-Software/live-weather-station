@@ -519,4 +519,114 @@ class Handling {
     public static function get_base64_windy_color_logo() {
         return self::get_base64_windy_icon('#A32029');
     }
+
+    /**
+     * Returns a base64 svg resource for the Thunderforest icon.
+     *
+     * @param string $color Optional. Color of the icon.
+     * @return string The svg resource as a base64.
+     * @since 3.3.0
+     */
+    public static function get_base64_thunderforest_icon($color='#000') {
+        $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 144 144">';
+        $source .= '<g transform="translate(18,126) scale(0.075,-0.075)">';
+        $source .= '<path style="fill:' . $color . '" d="M575 1425 c-152 -32 -256 -88 -364 -196 -200 -200 -261 -470 -170 -754 45 -138 174 -295 308 -375 226 -134 516 -133 744 2 344 205 451 670 233 1011 -48 74 -158 180 -235 226 -152 90 -346 122 -516 86z m315 -120 c220 -72 343 -195 415 -415 78 -236 -23 -526 -234 -671 -160 -109 -358 -139 -534 -80 -47 16 -108 41 -134 56 -64 37 -181 158 -215 220 -104 195 -104 414 0 610 38 71 164 194 236 229 112 56 182 74 291 75 81 1 115 -4 175 -24z"/>';
+        $source .= '<path style="fill:' . $color . '" d="M300 1075 l0 -45 130 0 130 0 2 -337 3 -338 55 0 55 0 3 338 2 337 130 0 130 0 0 45 0 45 -320 0 -320 0 0 -45z"/>';
+        $source .= '<path style="fill:' . $color . '" d="M760 580 l0 -380 50 0 50 0 2 178 3 177 153 3 153 3 -3 42 -3 42 -152 3 -153 3 0 109 0 110 170 0 170 0 0 45 0 45 -220 0 -220 0 0 -380z"/>';
+        $source .= '</g>';
+        $source .= '</svg>';
+        return 'data:image/svg+xml;base64,' . base64_encode($source);
+    }
+
+    /**
+     * Returns a base64 svg resource for the monochrome Thunderforest logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.3.0
+     */
+    public static function get_base64_thunderforest_grey_logo() {
+        return self::get_base64_thunderforest_icon('#666666');
+    }
+
+    /**
+     * Returns a base64 svg resource for the colored Thunderforest logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.3.0
+     */
+    public static function get_base64_thunderforest_color_logo() {
+        return self::get_base64_thunderforest_icon();
+    }
+
+    /**
+     * Returns a base64 svg resource for the Stamen icon.
+     *
+     * @param string $color Optional. Color of the icon.
+     * @return string The svg resource as a base64.
+     * @since 3.3.0
+     */
+    public static function get_base64_stamen_icon($color='#000') {
+        $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 20 20">';
+        $source .= '<g transform="translate(4.2,3) scale(0.37,0.37)">';
+        $source .= '<path style="fill:' . $color . '" d="m 8.2,26.1 c 0.2,1.6 0.7,2.8 1.3,3.5 1.2,1.4 3.2,2.1 6.1,2.1 1.7,0 3.1,-0.2 4.2,-0.6 2.1,-0.7 3.1,-2.1 3.1,-4 0,-1.1 -0.5,-2 -1.5,-2.7 -1,-0.6 -2.6,-1.2 -4.8,-1.6 L 12.9,22.1 C 9.2,21.3 6.7,20.4 5.3,19.4 3,17.8 1.8,15.3 1.8,11.9 1.8,8.8 2.9,6.2 5.2,4.2 c 2.3,-2.1 5.6,-3.1 10,-3.1 3.7,0 6.8,1 9.4,2.9 2.6,1.9 4,4.7 4.1,8.4 l -6.9,0 C 21.7,10.3 20.7,8.8 19,8 17.9,7.4 16.4,7.1 14.7,7.1 12.8,7.1 11.3,7.5 10.2,8.2 9.1,9 8.5,10 8.5,11.3 c 0,1.2 0.6,2.2 1.7,2.8 0.7,0.4 2.2,0.9 4.6,1.4 l 6.1,1.4 c 2.7,0.6 4.6,1.5 6,2.5 2.1,1.6 3.1,4 3.1,7.1 0,3.2 -1.2,5.8 -3.7,7.9 -2.4,2.1 -5.9,3.1 -10.3,3.1 -4.5,0 -8.1,-1 -10.7,-3.1 C 2.7,32.3 1.4,29.5 1.4,25.9 l 6.8,0 z"/>';
+        $source .= '</g>';
+        $source .= '</svg>';
+        return 'data:image/svg+xml;base64,' . base64_encode($source);
+    }
+
+    /**
+     * Returns a base64 svg resource for the monochrome Stamen logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.3.0
+     */
+    public static function get_base64_stamen_grey_logo() {
+        return self::get_base64_stamen_icon('#666666');
+    }
+
+    /**
+     * Returns a base64 svg resource for the colored Stamen logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.3.0
+     */
+    public static function get_base64_stamen_color_logo() {
+        return self::get_base64_stamen_icon();
+    }
+
+    /**
+     * Returns a base64 svg resource for the Mapbox icon.
+     *
+     * @param string $color Optional. Color of the icon.
+     * @return string The svg resource as a base64.
+     * @since 3.3.0
+     */
+    public static function get_base64_mapbox_icon($color='#000') {
+        $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 256 256">';
+        $source .= '<g transform="translate(32,32) scale(0.75,0.75)">';
+        $source .= '<path style="fill:' . $color . '" d="M128,0 C57.3048369,0 0,57.3048369 0,128 C0,198.695163 57.3048369,256 128,256 C198.695163,256 256,198.695163 256,128 C256,57.3048369 198.695163,0 128,0 Z M188.760405,159.388076 C144.989876,203.158605 66.807649,189.192351 66.807649,189.192351 C66.807649,189.192351 52.6974128,111.154106 96.6119235,67.2395951 C120.944882,42.9066367 161.259843,43.9145107 186.744657,69.2553431 C212.229471,94.5961755 213.093363,135.055118 188.760405,159.388076 L188.760405,159.388076 Z M142.686164,75.0146232 L130.15973,100.787402 L104.386952,113.313836 L130.15973,125.84027 L142.686164,151.613048 L155.212598,125.84027 L180.985377,113.313836 L155.212598,100.787402 L142.686164,75.0146232 Z"/>';
+        $source .= '</g>';
+        $source .= '</svg>';
+        return 'data:image/svg+xml;base64,' . base64_encode($source);
+    }
+
+    /**
+     * Returns a base64 svg resource for the monochrome Mapbox logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.3.0
+     */
+    public static function get_base64_mapbox_grey_logo() {
+        return self::get_base64_mapbox_icon('#666666');
+    }
+
+    /**
+     * Returns a base64 svg resource for the colored Mapbox logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.3.0
+     */
+    public static function get_base64_mapbox_color_logo() {
+        return self::get_base64_mapbox_icon('#4264FB');
+    }
 }

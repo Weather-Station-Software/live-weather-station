@@ -22,7 +22,7 @@ class NetatmoHCImporter extends NetatmoImporter {
      */
     protected function name($translated=true) {
         if ($translated) {
-            return lws__('Netatmo "Healthy Home Coach" importer', 'live-weather-station');
+            return __('Netatmo "Healthy Home Coach" importer', 'live-weather-station');
         }
         else {
             return 'Netatmo "Healthy Home Coach" importer';
@@ -46,7 +46,7 @@ class NetatmoHCImporter extends NetatmoImporter {
      * @since 3.7.0
      */
     protected function description() {
-        return lws__('Importing old data from a Netatmo "Healthy Home Coach" station.', 'live-weather-station');
+        return __('Importing old data from a Netatmo "Healthy Home Coach" station.', 'live-weather-station');
     }
 
     /**
@@ -56,17 +56,17 @@ class NetatmoHCImporter extends NetatmoImporter {
      * @since 3.7.0
      */
     protected function message() {
-        $result = sprintf(lws__('Here are the details of importing old data from the Healthy Home Coach "%s":', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
+        $result = sprintf(__('Here are the details of importing old data from the Healthy Home Coach "%s":', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
         foreach ($this->params['summary'] as $module) {
             if ($module['measurements'] === 0 || $module['days_done'] === 0) {
-                $result .= '     - ' . sprintf(lws__('"%s": no measurements.', 'live-weather-station'), $module['name']) . "\r\n";
+                $result .= '     - ' . sprintf(__('"%s": no measurements.', 'live-weather-station'), $module['name']) . "\r\n";
             }
             else {
-                $result .= '     - ' . sprintf(lws__('"%s": %s measurements spread over %s days.', 'live-weather-station'), $module['name'], $module['measurements'], $module['days_done']) . "\r\n";
+                $result .= '     - ' . sprintf(__('"%s": %s measurements spread over %s days.', 'live-weather-station'), $module['name'], $module['measurements'], $module['days_done']) . "\r\n";
             }
         }
-        $result .= "\r\n" . sprintf(lws__('These measurements were compiled in %s.', 'live-weather-station'), $this->get_age_hours_from_seconds($this->exectime)) . ' ';
-        $result .= "\r\n" . sprintf(lws__('Historical data has been updated and is now usable in %s controls.', 'live-weather-station'), LWS_PLUGIN_NAME);
+        $result .= "\r\n" . sprintf(__('These measurements were compiled in %s.', 'live-weather-station'), $this->get_age_hours_from_seconds($this->exectime)) . ' ';
+        $result .= "\r\n" . sprintf(__('Historical data has been updated and is now usable in %s controls.', 'live-weather-station'), LWS_PLUGIN_NAME);
         return $result;
     }
 }

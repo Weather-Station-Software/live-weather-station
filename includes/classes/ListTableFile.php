@@ -41,15 +41,15 @@ class File extends Base {
         $actions = array();
         if ($item['state'] === 'none') {
             if ($item['ext'] !== 'ukn') {
-                $result = lws__('Ready', 'live-weather-station');
-                $actions = array('<a href="' . $item['url'] . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.lws__('Download file', 'live-weather-station').'</a>');
+                $result = __('Ready', 'live-weather-station');
+                $actions = array('<a href="' . $item['url'] . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Download file', 'live-weather-station').'</a>');
             }
             else {
-                $result = lws__('Ready', 'live-weather-station');
+                $result = __('Ready', 'live-weather-station');
             }
         }
         else {
-            $result = lws__('In progress...', 'live-weather-station') . ' ' . $item['progress'] . '%';
+            $result = __('In progress...', 'live-weather-station') . ' ' . $item['progress'] . '%';
         }
         return sprintf('%1$s %2$s', $result, $this->row_actions($actions));
     }
@@ -63,9 +63,9 @@ class File extends Base {
     public function get_columns(){
         $columns = array(
             'station' => __('Station', 'live-weather-station'),
-            'state' => lws__('State', 'live-weather-station'),
-            'from' => lws__('From', 'live-weather-station'),
-            'to' => lws__('To', 'live-weather-station'),
+            'state' => __('State', 'live-weather-station'),
+            'from' => __('From', 'live-weather-station'),
+            'to' => __('To', 'live-weather-station'),
             'date' => __('Freshness', 'live-weather-station'));
         return $columns;
     }

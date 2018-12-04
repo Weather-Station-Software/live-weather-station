@@ -209,7 +209,7 @@ abstract class Process {
      * @since 3.7.0
      */
     protected function error_notification() {
-        $s = sprintf(lws__('The background process named <em>%s</em> has NOT completed successfully.', 'live-weather-station'), $this->name());
+        $s = sprintf(__('The background process named <em>%s</em> has NOT completed successfully.', 'live-weather-station'), $this->name());
         Notifier::error($this->name(), $this->url(), $s, true);
     }
 
@@ -342,9 +342,9 @@ abstract class Process {
     public function send_error_on_process() {
         $detail = $this->message();
         $to = get_bloginfo('admin_email');
-        $subject = lws__('Error of the background process:', 'live-weather-station') . ' ' . $this->name();
+        $subject = __('Error of the background process:', 'live-weather-station') . ' ' . $this->name();
         $message = __('Hello!', 'live-weather-station') . "\r\n" . "\r\n";
-        $message .= sprintf(lws__('%s informs you that the background process named "%s" has NOT completed successfully.', 'live-weather-station'), LWS_PLUGIN_NAME, $this->name()) . "\r\n" . "\r\n";
+        $message .= sprintf(__('%s informs you that the background process named "%s" has NOT completed successfully.', 'live-weather-station'), LWS_PLUGIN_NAME, $this->name()) . "\r\n" . "\r\n";
         if ($detail !== '') {
             $message .= $detail . "\r\n" . "\r\n";
         }

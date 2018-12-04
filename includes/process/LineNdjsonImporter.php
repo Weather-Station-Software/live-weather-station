@@ -30,7 +30,7 @@ class LineNdjsonImporter extends LineImporter {
      */
     protected function name($translated=true) {
         if ($translated) {
-            return lws__('ND-JSON importer', 'live-weather-station');
+            return __('ND-JSON importer', 'live-weather-station');
         }
         else {
             return 'ND-JSON importer';
@@ -44,7 +44,7 @@ class LineNdjsonImporter extends LineImporter {
      * @since 3.7.0
      */
     protected function description() {
-        return lws__('Importing historical data from a ND-JSON file.', 'live-weather-station');
+        return __('Importing historical data from a ND-JSON file.', 'live-weather-station');
     }
 
     /**

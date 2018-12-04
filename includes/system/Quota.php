@@ -218,6 +218,20 @@ class Quota {
                         break;
                 }
                 break;
+            case 'Thunderforest':
+                switch ($verb) {
+                    case 'GET' :
+                        $quota = 5000;
+                        break;
+                }
+                break;
+            case 'Mapbox':
+                switch ($verb) {
+                    case 'GET' :
+                        $quota = 1610;
+                        break;
+                }
+                break;
             case 'Weather Underground':
                 switch ($verb) {
                     case 'GET' :

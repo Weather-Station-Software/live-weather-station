@@ -93,8 +93,9 @@ abstract class BaseHandling {
         $params['marker']['type'] = 'pin';
         $params['marker']['data'] = 'current';
         $params['marker']['style'] = 'standard';
+        $params['marker']['contrast'] = 'medium';
         $params['specific'] = $this->specific_params();
-        return $this->add_new_map($this->type, sprintf(lws__('New %s map', 'live-weather-station'), $this->service), $params);
+        return $this->add_new_map($this->type, sprintf(__('New %s map', 'live-weather-station'), $this->service), $params);
     }
 
     /**
@@ -111,6 +112,10 @@ abstract class BaseHandling {
         //$params['common'] = $common;
         //$params['stations'] = array(94, 96, 125);
 
+        $s = __('Width', 'live-weather-station');
+        $s = __('Heigth', 'live-weather-station');
+        $s = __('Name', 'live-weather-station');
+        $s = __('Zoom', 'live-weather-station');
 
 
 
@@ -254,6 +259,15 @@ abstract class BaseHandling {
 
         }
 
+
+
+
+
+
+
+        //$result .= "  var myIcon = L.icon({iconUrl: '" . SVG::get_base64_lws_icon() ."', iconSize: 40});" . PHP_EOL;
+        //$result .= "  L.marker([47.8, -2.7], {icon: myIcon}).addTo(map).bindPopup('<p>Hello world!<br />This is a nice popup.</p>', {className:'test'});" . PHP_EOL;
+
         $result .= '';
         return $result;
     }
@@ -277,7 +291,7 @@ abstract class BaseHandling {
             return $this->output_resources() . $this->output_styles() . $this->output_container() . $this->output_script();
         }
         else {
-            return lws__('This map can not be displayed due to exceeded quota.', 'live-weather-station');
+            return __('This map can not be displayed due to exceeded quota.', 'live-weather-station');
         }
     }
 
@@ -467,11 +481,12 @@ abstract class BaseHandling {
      */
     public function output_stations() {
         $content = '<table cellspacing="0" style="display:table;" class="lws-settings"><tbody>';
-        $content .= $this->get_key_value_option_select('common-station-selector', lws__('Sources', 'live-weather-station'), $this->get_station_selector_js_array(), true, $this->map_params['common']['all'] ? 'all' : 'select');
-        $content .= $this->get_key_value_option_multiselect('stations-selector', lws__('Selection', 'live-weather-station'), $this->get_stations_selector_js_array(), true, $this->map_params['stations']);
-        $content .= $this->get_key_value_option_select('marker_type', lws__('Marker', 'live-weather-station'), $this->get_map_marker_js_array(), true, $this->map_params['marker']['type']);
-        $content .= $this->get_key_value_option_select('marker_data', lws__('Data', 'live-weather-station'), $this->get_map_data_js_array(), true, $this->map_params['marker']['data']);
-        $content .= $this->get_key_value_option_select('marker_style', lws__('Style', 'live-weather-station'), $this->get_map_style_js_array(), true, $this->map_params['marker']['style']);
+        $content .= $this->get_key_value_option_select('common-station-selector', __('Sources', 'live-weather-station'), $this->get_station_selector_js_array(), true, $this->map_params['common']['all'] ? 'all' : 'select');
+        $content .= $this->get_key_value_option_multiselect('stations-selector', __('Selection', 'live-weather-station'), $this->get_stations_selector_js_array(), true, $this->map_params['stations']);
+        $content .= $this->get_key_value_option_select('marker-type', __('Marker', 'live-weather-station'), $this->get_map_marker_js_array(), true, $this->map_params['marker']['type']);
+        $content .= $this->get_key_value_option_select('marker-data', __('Data', 'live-weather-station'), $this->get_map_data_js_array(), true, $this->map_params['marker']['data']);
+        $content .= $this->get_key_value_option_select('marker-style', __('Style', 'live-weather-station'), $this->get_map_style_js_array(), true, $this->map_params['marker']['style']);
+        $content .= $this->get_key_value_option_select('marker-contrast', __('Contrast', 'live-weather-station'), $this->get_map_contrast_js_array(), true, $this->map_params['marker']['contrast']);
         $content .= '</tbody></table>';
         return $content;
     }
