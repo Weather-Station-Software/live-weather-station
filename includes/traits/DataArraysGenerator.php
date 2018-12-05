@@ -3124,6 +3124,20 @@ trait Generator {
     }
 
     /**
+     * Get shadow array for maps.
+     *
+     * @return array An array containing marker shadow to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_map_shadow_js_array() {
+        $result = array();
+        $result[] = array('none',  __('None', 'live-weather-station'));
+        $result[] = array('medium',  __('Medium', 'live-weather-station'));
+        $result[] = array('dark',  __('Dark', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
      * Get map overlay array for Stamen.
      *
      * @return array An array containing map overlay for Stamen ready to convert to a JS array.
@@ -3206,6 +3220,24 @@ trait Generator {
         //$result[] = array('vane:nir',  __('Vegetation: NIR', 'live-weather-station'));
         //$result[] = array('vane:ndvi',  __('Vegetation: NDVI', 'live-weather-station'));
         //$result[] = array('vane=ndwi',  __('Vegetation: NDWI', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get the basemaps.
+     *
+     * @return array An array containing basemaps ready to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_basemap_js_array() {
+        $result = array();
+        $result[] = array('none',  __('None', 'live-weather-station'));
+        $result[] = array('carto:light_all',  __('CARTO: light', 'live-weather-station'));
+        $result[] = array('carto:light_nolabels',  __('CARTO: light - no labels', 'live-weather-station'));
+        $result[] = array('carto:light_only_labels',  __('CARTO: light - only labels', 'live-weather-station'));
+        $result[] = array('carto:dark_all',  __('CARTO: dark', 'live-weather-station'));
+        $result[] = array('carto:dark_nolabels',  __('CARTO: dark - no labels', 'live-weather-station'));
+        $result[] = array('carto:dark_only_labels',  __('CARTO: dark - only labels', 'live-weather-station'));
         return $result;
     }
 }

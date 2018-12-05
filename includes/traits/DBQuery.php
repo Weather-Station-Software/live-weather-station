@@ -1085,6 +1085,10 @@ trait Query {
      * @since 3.7.0
      */
     protected function update_map($id, $type, $name, $params) {
+
+
+
+
         $val = array();
         $val['id'] = $id;
         $val['type'] = $type;

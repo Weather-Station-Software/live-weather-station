@@ -110,7 +110,7 @@ class MapboxHandling extends BaseHandling {
     protected function specific_script(){
         $result = '';
         $result .= "var layer = new L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {" . PHP_EOL;
-        $result .= '  attribution: "Map data &copy; <a href=\"https://www.openstreetmap.org/\">OpenStreetMap</a> contributors, <a href=\"https://creativecommons.org/licenses/by-sa/2.0/\">CC-BY-SA</a>, Imagery © <a href=\"https://www.mapbox.com/\">Mapbox</a>",' . PHP_EOL;
+        $result .= '  attribution: "Maps &copy; <a href=\"https://www.mapbox.com/\">Mapbox</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
         $result .= '  maxZoom: 18,' . PHP_EOL;
         $result .= '  minZoom: 2,' . PHP_EOL;
         $result .= '  id: "mapbox.' . $this->map_params['specific']['options']['overlay'] . '",' . PHP_EOL;

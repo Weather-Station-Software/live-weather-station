@@ -279,6 +279,13 @@ class InlineHelp {
         if ($number == -42) {
             $result = sprintf($message, '<a href="https://smartweather.weatherflow.com/map/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
+        if ($number == -43) {
+            $result = sprintf($message, '<a href="https://www.thunderforest.com/pricing/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+        }
+        if ($number == -44) {
+            $result = sprintf($message, '<a href="https://www.mapbox.com/pricing/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+        }
+
         return $result;
     }
 

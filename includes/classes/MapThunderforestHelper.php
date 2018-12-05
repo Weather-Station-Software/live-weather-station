@@ -110,7 +110,7 @@ class ThunderforestHandling extends BaseHandling {
     protected function specific_script(){
         $result = '';
         $result .= "var layer = new L.tileLayer('https://{s}.tile.thunderforest.com/" . $this->map_params['specific']['options']['overlay'] . "/{z}/{x}/{y}.png?apikey=" . get_option('live_weather_station_thunderforest_apikey') . "', {" . PHP_EOL;
-        $result .= '  attribution: "Maps &copy; <a href=\"https://www.thunderforest.com\">Thunderforest</a>, Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
+        $result .= '  attribution: "Maps &copy; <a href=\"https://www.thunderforest.com\">Thunderforest</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
         $result .= '  maxZoom: 22,' . PHP_EOL;
         $result .= '  minZoom: 2' . PHP_EOL;
         $result .= '});' . PHP_EOL;

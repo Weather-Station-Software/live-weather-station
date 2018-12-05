@@ -232,6 +232,13 @@ class Quota {
                         break;
                 }
                 break;
+            case 'Carto':
+                switch ($verb) {
+                    case 'GET' :
+                        $quota = 48350;
+                        break;
+                }
+                break;
             case 'Weather Underground':
                 switch ($verb) {
                     case 'GET' :
