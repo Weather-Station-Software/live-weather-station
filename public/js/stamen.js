@@ -12,12 +12,13 @@
                 "subdomains":   SUBDOMAINS.slice(),
                 "minZoom":      minZoom,
                 "maxZoom":      maxZoom,
-                "attribution":  [
-                    'Map tiles by <a href="http://stamen.com/">Stamen Design</a>, ',
-                    'under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. ',
-                    'Data by <a href="http://openstreetmap.org/">OpenStreetMap</a>, ',
-                    'under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.'
-                ].join("")
+                //"attribution":  [
+                //    'Map tiles by <a href="http://stamen.com/">Stamen Design</a>, ',
+                //    'under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. ',
+                //    'Data by <a href="http://openstreetmap.org/">OpenStreetMap</a>, ',
+                //    'under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.'
+                //].join("")
+                "attribution":"Maps &copy; <a href=\"http://stamen.com/\">Stamen Design</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>"
             };
         },
         PROVIDERS =  {
@@ -57,12 +58,13 @@
         var key = odbl[i];
 
         PROVIDERS[key].retina = true;
-        PROVIDERS[key].attribution = [
-            'Map tiles by <a href="http://stamen.com/">Stamen Design</a>, ',
-            'under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. ',
-            'Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, ',
-            'under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
-        ].join("");
+        //PROVIDERS[key].attribution = [
+        //    'Map tiles by <a href="http://stamen.com/">Stamen Design</a>, ',
+        //    'under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. ',
+        //    'Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, ',
+        //    'under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
+        //].join("");
+        PROVIDERS[key].attribution = "Maps &copy; <a href=\"http://stamen.com/\">Stamen Design</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>";
     }
 
     /*
