@@ -21,6 +21,7 @@
 * Improvement: FontAwesome 5 has been updated to version 5.5.0.
 * Improvement: the "scheduled tasks" tab is now replaced by a full admin page.
 * Improvement: better layout and icons alignment in the tasks scheduler.
+* Improvement: location (and coordinates) rendering is now consistent between views, widgets, maps and controls.
 * Improvement: inline help for the tasks scheduler.
 * Improvement: in the add form for WeatherFlow station, there's now a link to the [official WeatherFlow map](https://smartweather.weatherflow.com/map/).
 * Bug fix: in textual shortcode, trend for barometric pressure is not available in plain text (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).

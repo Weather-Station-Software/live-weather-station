@@ -139,9 +139,6 @@ abstract class BaseHandling {
                 //$tab = array();
             }
         }
-
-
-
         if (array_key_exists('marker-type', $_POST)) {
             if (in_array($_POST['marker-type'], array('none', 'pin', 'old', 'logo', 'brand'))) {
                 $params['marker']['type'] = $_POST['marker-type'];
@@ -208,6 +205,22 @@ abstract class BaseHandling {
      * @since 3.7.0
      */
     protected function output_styles() {
+        switch ($this->map_params['marker']['contrast']) {
+            case 'light':
+                $color1 = '#FFFFFF';
+                $color2 = '#ffd200';
+                $color3 = '#2d7dd2';
+                break;
+            case 'dark':
+                $color1 = '#273043';
+                $color2 = '#ffd200';
+                $color3 = '#ffd200';
+                break;
+            default:
+                $color1 = '#2d7dd2';
+                $color2 = '#ffd200';
+                $color3 = '#ffffff';
+        }
 
         // Popup
 
@@ -235,9 +248,15 @@ abstract class BaseHandling {
         $result .= '#' . $this->uniq .' .leaflet-marker-pane {';
         $result .= $shadow_marker_layer;
         $result .= '}';
-        $result .= '#' . $this->uniq .' .leaflet-popup-content-wrapper {';
+        $result .= '#' . $this->uniq .' .leaflet-popup {';
         $result .= $shadow_popup_layer;
+        $result .= '}';
+        $result .= '#' . $this->uniq .' .leaflet-popup-content-wrapper {';
         $result .= 'border-radius: 3px;';
+        $result .= 'background: ' . $color1 . ';';
+        $result .= '}';
+        $result .= '#' . $this->uniq .' .leaflet-popup-tip {';
+        $result .= 'background: ' . $color1 . ';';
         $result .= '}';
 
 
@@ -320,10 +339,10 @@ abstract class BaseHandling {
                 $color3 = '#ffffff';
         }
         if ($this->map_params['common']['all']) {
-            $stations = $this->get_stations_list();
+            $stations = $this->get_ordered_stations_list();
         }
         else {
-
+            $stations = $this->get_ordered_stations_list($this->map_params['stations']);
         }
         foreach ($stations as $station) {
             $s = array();
@@ -358,15 +377,15 @@ abstract class BaseHandling {
             }
             $result .= "};";
             if ($this->map_params['marker']['type'] == 'pin') {
-                $result .= "  var stationIcon = L.icon({iconUrl: '" . SVG::get_base64_pin_icon($color1) ."', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor:  [0, -18]});" . PHP_EOL;
+                $result .= "  var stationIcon = L.icon({iconUrl: '" . SVG::get_base64_pin_icon($color1) ."', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor:  [0, -34]});" . PHP_EOL;
             }
             if ($this->map_params['marker']['type'] == 'logo') {
-                $result .= "  var stationIcon = L.icon({iconUrl: '" . SVG::get_base64_menu_icon($color1, $color2) ."', iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor:  [0, -18]});" . PHP_EOL;
+                $result .= "  var stationIcon = L.icon({iconUrl: '" . SVG::get_base64_menu_icon($color1, $color2) ."', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor:  [0, -34]});" . PHP_EOL;
             }
             $result .= "for (id in stations) {";
             if ($this->map_params['marker']['type'] == 'brand') {
                 $result .= "";
-                $result .= "  var stationIcon = L.icon({iconUrl: stations[id].icn, iconSize: [32, 32], iconAnchor: [16, 24], shadowSize: [56, 56], shadowAnchor: [28, 28], popupAnchor:  [0, -30], shadowUrl: '" . SVG::get_base64_marker_icon($color1) ."',});" . PHP_EOL;
+                $result .= "  var stationIcon = L.icon({iconUrl: stations[id].icn, iconSize: [32, 32], iconAnchor: [16, 52], shadowSize: [56, 56], shadowAnchor: [28, 56], popupAnchor:  [0, -58], shadowUrl: '" . SVG::get_base64_marker_icon($color1) ."',});" . PHP_EOL;
             }
             $result .= " var marker = L.marker([stations[id].lat, stations[id].lon], {icon: stationIcon}).addTo(map).addTo(map).bindPopup(stations[id].cnt, {className:'" . $classname . "'});" . PHP_EOL;
             $result .= "}";

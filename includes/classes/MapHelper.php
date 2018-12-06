@@ -150,8 +150,6 @@ class Handling {
      */
     public function edit_map() {
        if ($this->arg_service != 'map' && $this->arg_tab == 'add-edit' && $this->arg_action == 'form') {
-            error_log(print_r($_POST, true));
-
             if (array_key_exists('lws-map-' . $this->map_id . '-nonce', $_POST)) {
                 if (wp_verify_nonce($_POST['lws-map-' . $this->map_id . '-nonce'], 'lws-map-' . $this->map_id)) {
                     if (array_key_exists('save-map', $_POST)) {

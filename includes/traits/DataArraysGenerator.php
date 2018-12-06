@@ -3056,7 +3056,7 @@ trait Generator {
      */
     protected function get_stations_selector_js_array() {
         $result = array();
-        $stations = $this->get_stations_list();
+        $stations = $this->get_ordered_stations_list();
         if (count($stations) > 0) {
             foreach ($stations as $station) {
                 $result[] = array($station['guid'], $station['station_name']);
