@@ -140,7 +140,7 @@ abstract class BaseHandling {
             }
         }
         if (array_key_exists('marker-type', $_POST)) {
-            if (in_array($_POST['marker-type'], array('none', 'pin', 'old', 'logo', 'brand'))) {
+            if (in_array($_POST['marker-type'], array('none', 'pin', 'old', 'logo', 'brand', 'weather:current', 'weather:wind'))) {
                 $params['marker']['type'] = $_POST['marker-type'];
             }
         }
@@ -201,32 +201,36 @@ abstract class BaseHandling {
     /**
      * Output the styles.
      *
+     * @param integer $id Id of the color.
+     * @return string The color of the id.
+     * @since 3.7.0
+     */
+    protected function color($id) {
+        switch ($this->map_params['marker']['contrast']) {
+            case 'light':
+                if ($id === 1) {return '#FFFFFF';}
+                if ($id === 2) {return '#ffd200';}
+                if ($id === 3) {return '#2d7dd2';}
+                break;
+            case 'dark':
+                if ($id === 1) {return '#273043';}
+                if ($id === 2) {return '#ffd200';}
+                if ($id === 3) {return '#ffd200';}
+                break;
+            default:
+                if ($id === 1) {return '#2d7dd2';}
+                if ($id === 2) {return '#ffd200';}
+                if ($id === 3) {return '#ffffff';}
+        }
+    }
+
+    /**
+     * Output the styles.
+     *
      * @return string The output of the styles, ready to print.
      * @since 3.7.0
      */
     protected function output_styles() {
-        switch ($this->map_params['marker']['contrast']) {
-            case 'light':
-                $color1 = '#FFFFFF';
-                $color2 = '#ffd200';
-                $color3 = '#2d7dd2';
-                break;
-            case 'dark':
-                $color1 = '#273043';
-                $color2 = '#ffd200';
-                $color3 = '#ffd200';
-                break;
-            default:
-                $color1 = '#2d7dd2';
-                $color2 = '#ffd200';
-                $color3 = '#ffffff';
-        }
-
-        // Popup
-
-
-
-        // Marker
         $shadow_shadow_layer = '';
         $shadow_marker_layer = '';
         if ($this->map_params['marker']['shadow'] == 'medium') {
@@ -239,7 +243,6 @@ abstract class BaseHandling {
             $shadow_marker_layer = $shadow_shadow_layer;
         }
         $shadow_popup_layer = $shadow_shadow_layer;
-
         $result = '<style>';
         $result .= $this->specific_styles();
         $result .= '#' . $this->uniq .' .leaflet-shadow-pane {';
@@ -252,15 +255,77 @@ abstract class BaseHandling {
         $result .= $shadow_popup_layer;
         $result .= '}';
         $result .= '#' . $this->uniq .' .leaflet-popup-content-wrapper {';
+        $result .= 'opacity: 1;';
         $result .= 'border-radius: 3px;';
-        $result .= 'background: ' . $color1 . ';';
+        $result .= 'background: ' . $this->color(1) . ';';
+        $result .= 'color: ' . $this->color(3) . ';';
         $result .= '}';
         $result .= '#' . $this->uniq .' .leaflet-popup-tip {';
-        $result .= 'background: ' . $color1 . ';';
+        $result .= 'opacity: 1;';
+        $result .= 'background: ' . $this->color(1) . ';';
         $result .= '}';
-
-
-
+        $result .= '#' . $this->uniq .' .leaflet-div-icon {';
+        $result .= 'background: ' . $this->color(1) . ' !important;';
+        $result .= 'border: none !important;';
+        $result .= 'border-radius: 50%;';
+        $result .= '}';
+        if (strpos($this->map_params['marker']['type'], 'weather:') === 0) {
+            $result .= '#' . $this->uniq .' .leaflet-popup-pane {';
+            $result .= 'top: -24px;';
+            $result .= '}';
+        }
+        if ($this->map_params['marker']['style'] === 'minimalist') {
+            $result .= '#' . $this->uniq .' .leaflet-popup-content {';
+            $result .= 'margin: 6px;';
+            $result .= 'text-align: center;';
+            $result .= '}';
+            $result .= '#' . $this->uniq .' .leaflet-popup-content .title {';
+            $result .= 'font-size:10px;';
+            $result .= 'padding-bottom:4px;';
+            $result .= 'border-bottom: 1px solid ' . $this->color(3) . ';';
+            $result .= '}';
+            $result .= '#' . $this->uniq .' .leaflet-popup-content .values {';
+            $result .= 'font-size:10px;';
+            $result .= 'padding-top:4px;';
+            $result .= '}';
+        }
+        if ($this->map_params['marker']['style'] === 'standard' || $this->map_params['marker']['style'] === 'extended') {
+            $result .= '#' . $this->uniq .' .leaflet-popup-content {';
+            $result .= 'margin: 10px;';
+            $result .= 'text-align: center;';
+            $result .= '}';
+            $result .= '#' . $this->uniq .' .leaflet-popup-content .title {';
+            $result .= 'font-size:14px;';
+            $result .= 'padding-bottom:14px;';
+            $result .= 'padding-top:4px;';
+            $result .= 'border-bottom: 1px solid ' . $this->color(3) . ';';
+            $result .= 'font-weight:bold;';
+            $result .= 'margin-bottom: 6px;';
+            $result .= '}';
+            $result .= '#' . $this->uniq .' .leaflet-popup-content .subsubtitle {';
+            $result .= 'font-size:12px;';
+            $result .= 'padding-bottom:12px;';
+            $result .= 'padding-top:4px;';
+            $result .= 'border-bottom: 1px solid ' . $this->color(3) . ';';
+            $result .= 'margin-bottom: 6px;';
+            $result .= '}';
+            $result .= '#' . $this->uniq .' .leaflet-popup-content .logo {';
+            $result .= 'float:left;';
+            $result .= 'margin-top:-6px;';
+            $result .= 'width:30px;';
+            $result .= 'height:30px;';
+            $result .= 'background: #FFF !important;';
+            $result .= 'border: none !important;';
+            $result .= 'border-radius: 50%;';
+            $result .= '}';
+            $result .= '#' . $this->uniq .' .leaflet-popup-content .text {';
+            $result .= '}';
+            $result .= '#' . $this->uniq .' .leaflet-popup-content .values {';
+            $result .= 'font-size:14px;';
+            $result .= 'padding-top:8px;';
+            $result .= 'line-height: 1.8em;';
+            $result .= '}';
+        }
         $result .= '</style>';
         return $result;
     }
@@ -319,25 +384,10 @@ abstract class BaseHandling {
      */
     protected function output_markers() {
         $result = '';
-        $stations = array();
+        $sep = ' • ';
         $st = array();
         $classname = 'lws-popup-' . $this->map_params['marker']['contrast'] . ' ' . 'lws-popup-' . $this->map_params['marker']['style'];
-        switch ($this->map_params['marker']['contrast']) {
-            case 'light':
-                $color1 = '#FFFFFF';
-                $color2 = '#ffd200';
-                $color3 = '#2d7dd2';
-                break;
-            case 'dark':
-                $color1 = '#273043';
-                $color2 = '#ffd200';
-                $color3 = '#ffd200';
-                break;
-            default:
-                $color1 = '#2d7dd2';
-                $color2 = '#ffd200';
-                $color3 = '#ffffff';
-        }
+
         if ($this->map_params['common']['all']) {
             $stations = $this->get_ordered_stations_list();
         }
@@ -349,53 +399,219 @@ abstract class BaseHandling {
             $s['id'] = $station['guid'];
             $s['lat'] = $station['loc_latitude'];
             $s['lon'] = $station['loc_longitude'];
-            $s['iconUrl'] = SVG::get_base64_station_icon($station['station_type'], $color3);
-            $image = "<img style='width:34px;float:left;padding-right:6px;' src='" . set_url_scheme(SVG::get_base64_station_color_logo($station['station_type'])) . "' />";
-            $s['content'] = '<div><div>' . $image . $station['station_name'] . '</div>';
-
-            if ($this->map_params['marker']['data'] == 'current') {
-                $data = $this->get_widget_data($station['station_id'], 'outdoor');
-
-
+            $s['iconUrl'] = SVG::get_base64_station_icon($station['station_type'], $this->color(3));
+            $image = "<img style='width:28px;padding-top: 0px' src='" . set_url_scheme(SVG::get_base64_station_color_logo($station['station_type'])) . "' />";
+            if ($this->map_params['marker']['data'] == 'current' || $this->map_params['marker']['data'] == 'station' || $this->map_params['marker']['type'] == 'weather:current' || $this->map_params['marker']['type'] == 'weather:wind') {
+                $modules = $this->get_widget_data($station['station_id'], 'outdoor');
+                $day = null;
+                $weather = null;
+                $wind_angle = null;
+                $wind_force = null;
+                $wind_strength = null;
+                $temperature = null;
+                $humidity = null;
+                $pressure = null;
+                $params = null;
+                $alt = $this->output_value($station['loc_altitude'], 'loc_altitude', true);
+                $lat = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6);
+                $lon = $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
+                $timezone = $this->output_value($station['loc_timezone'], 'loc_timezone', true);
+                if (array_key_exists('modules', $modules)) {
+                    foreach ($modules['modules'] as $module) {
+                        switch ($module['type']) {
+                            case 'NACurrent':
+                                if (array_key_exists('is_day', $module['datas'])) {
+                                    $day = ($module['datas']['is_day']['value'] == 1 ? 'day' : 'night');
+                                }
+                                if (array_key_exists('weather', $module['datas'])) {
+                                    $weather = $module['datas']['weather']['value'];
+                                }
+                                if (array_key_exists('windangle', $module['datas']) && array_key_exists('windstrength', $module['datas']) && !isset($wind_force)) {
+                                    $wind_angle = $this->get_angle_text($module['datas']['windangle']['value']);
+                                    $wind_strength = $this->output_value($module['datas']['windstrength']['value'], 'windstrength', true);
+                                    $wind_force = $this->get_wind_speed($module['datas']['windstrength']['value'], 3);
+                                }
+                                if (array_key_exists('humidity', $module['datas']) && !isset($humidity)) {
+                                    $humidity = $this->output_value($module['datas']['humidity']['value'], 'humidity', true);
+                                }
+                                if (array_key_exists('temperature', $module['datas']) && !isset($temperature)) {
+                                    $temperature = $this->output_value($module['datas']['temperature']['value'], 'temperature', true);
+                                }
+                                if (array_key_exists('pressure_sl', $module['datas']) && !isset($pressure)){
+                                    $pressure = $this->output_value($module['datas']['pressure_sl']['value'], 'pressure_sl', true);
+                                }
+                                if (array_key_exists('rain', $module['datas']) && !isset($rain)) {
+                                    $rain = $this->output_value($module['datas']['rain']['value'], 'rain', true, false, 'NACurrent');
+                                }
+                                break;
+                            case 'NAModule3': // Rain gauge
+                                if (array_key_exists('rain', $module['datas'])) {
+                                    $rain = $this->output_value($module['datas']['rain']['value'], 'rain', true, false, 'NAModule3');
+                                }
+                                break;
+                            case 'NAModule2': // Wind gauge
+                                if (array_key_exists('windangle', $module['datas']) && array_key_exists('windstrength', $module['datas'])) {
+                                    $wind_angle = $this->get_angle_text($module['datas']['windangle']['value']);
+                                    $wind_strength = $this->output_value($module['datas']['windstrength']['value'], 'windstrength', true);
+                                    $wind_force = $this->get_wind_speed($module['datas']['windstrength']['value'], 3);
+                                }
+                                break;
+                            case 'NAModule1': // Outdoor module
+                                if (array_key_exists('humidity', $module['datas'])) {
+                                    $humidity = $this->output_value($module['datas']['humidity']['value'], 'humidity', true);
+                                }
+                                if (array_key_exists('temperature', $module['datas'])) {
+                                    $temperature = $this->output_value($module['datas']['temperature']['value'], 'temperature', true);
+                                }
+                                break;
+                            case 'NAMain':
+                                if (array_key_exists('pressure_sl', $module['datas'])){
+                                    $pressure = $this->output_value($module['datas']['pressure_sl']['value'], 'pressure_sl', true);
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+            if ($this->map_params['marker']['data'] == 'calendar') {
+                $modules = $this->get_widget_data($station['station_id'], 'ephemeris');
+                $moonrise = null;
+                $moonset = null;
+                $sunrise = null;
+                $sunset = null;
+                if (array_key_exists('modules', $modules)) {
+                    foreach ($modules['modules'] as $module) {
+                        switch ($module['type']) {
+                            case 'NAEphemer':
+                                if (array_key_exists('sunrise', $module['datas']) && array_key_exists('sunset', $module['datas'])) {
+                                    $sunrise = $this->output_value($module['datas']['sunrise']['raw_value'], 'sunrise', true, false, '', $station['loc_timezone']);
+                                    $sunset = $this->output_value($module['datas']['sunset']['raw_value'], 'sunset', true, false, '', $station['loc_timezone']);
+                                }
+                                if (array_key_exists('moonrise', $module['datas']) && array_key_exists('moonset', $module['datas'])) {
+                                    $moonrise = $this->output_value($module['datas']['moonrise']['raw_value'], 'moonrise', true, false, '', $station['loc_timezone']);
+                                    $moonset = $this->output_value($module['datas']['moonset']['raw_value'], 'moonset', true, false, '', $station['loc_timezone']);
+                                }
+                                break;
+                        }
+                    }
+                }
+            }
+            if (isset($day) && isset($weather)) {
+                $s['weatherDiv'] = '<i class=\'wi wi-owm-' . $day .'-' . $weather . '\' style=\'color:' . $this->color(3) . ';font-size:2em;margin-top: 10px;\'></i>';
+            }
+            else {
+                $s['weatherDiv'] = '';
+            }
+            if (isset($wind_force)) {
+                $s['windDiv'] = '<i class=\'wi wi-wind-beaufort-' . $wind_force . '\' style=\'color:' . $this->color(3) . ';font-size:2em;margin-top: 10px;\'></i>';
+            }
+            else {
+                $s['windDiv'] = '';
             }
 
+            switch ($this->map_params['marker']['style']) {
+                case 'minimalist':
+                    $content = '<div class="title">' . $station['station_name'] . '</div>';
+                    $minwidth = '';
+                    switch ($this->map_params['marker']['data']) {
+                        case 'current':
+                            $content .= '<div class="values">&nbsp;' . $temperature . $sep . $humidity . '&nbsp;</div>';
+                            $content .= '<div class="values">&nbsp;' . $pressure . '&nbsp;</div>';
+                            break;
+                        case 'calendar':
+                            $content .= '<div class="values">' . $sunrise . '&nbsp;<i class="wi fa-fw wi-day-sunny" style="font-size: 10px;"></i>&nbsp;' . $sunset . '</div>';
+                            $content .= '<div class="values">' . $moonrise . '&nbsp;<i class="wi fa-fw wi-night-clear" style="font-size: 10px;"></i>&nbsp;' . $moonset . '</div>';
+                            break;
+                        case 'station':
+                            $content .= '<div class="values">&nbsp;' . $lat . '&nbsp;</div>';
+                            $content .= '<div class="values">&nbsp;' . $lon . '&nbsp;</div>';
+                            $content .= '<div class="values">&nbsp;' . $alt . '&nbsp;</div>';
+                            break;
+                    }
+                    break;
+                case 'extended':
+                    $minwidth = 'minWidth: 200, ';
+                    $content = '<div class="title"><div class="logo">' . $image . '</div><div class="text">' . str_replace(' ', '&nbsp;', $station['station_name']) . '</div></div>';
+                    switch ($this->map_params['marker']['data']) {
+                        case 'current':
+                            $content .= '<div class="values"><i class="wi fa-fw wi-thermometer" style="font-size: 16px;"></i>' . $temperature . '&nbsp; &nbsp;<i class="wi fa-fw wi-humidity" style="font-size: 16px;"></i>' . $humidity . '&nbsp;</div>';
+                            $content .= '<div class="values"><i class="wi fa-fw wi-barometer" style="font-size: 16px;"></i>' . $pressure . '&nbsp;</div>';
+                            $content .= '<div class="values"><i class="wi fa-fw wi-strong-wind" style="font-size: 16px;"></i>&nbsp;' . $wind_angle . $sep . $wind_strength . '&nbsp;</div>';
+                            $content .= '<div class="values"><i class="wi fa-fw wi-umbrella" style="font-size: 16px;"></i>&nbsp;' . $rain . '&nbsp;</div>';
+                            break;
+                        case 'calendar':
+                            $content .= '<div class="values"><i class="wi fa-fw wi-sunrise" style="font-size: 16px;"></i>&nbsp;' . $sunrise . '&nbsp;</div>';
+                            $content .= '<div class="values"><i class="wi fa-fw wi-sunset" style="font-size: 16px;"></i>&nbsp;' . $sunset . '&nbsp;</div>';
+                            $content .= '<div class="values"><i class="wi fa-fw wi-moonrise" style="font-size: 16px;"></i>&nbsp;' . $moonrise . '&nbsp;</div>';
+                            $content .= '<div class="values"><i class="wi fa-fw wi-moonset" style="font-size: 16px;"></i>&nbsp;' . $moonset . '&nbsp;</div>';
+                            break;
+                        case 'station':
+                            $content .= '<div class="subsubtitle">' . $station['station_model'] . '</div>';
+                            $content .= '<div class="values">' . $lat . '&nbsp;<i style="font-size: 14px;" class="' . LWS_FAS . ' fa-fw ' . (LWS_FA5?'fa-map-marker-alt':'fa-map-marker') . '"></i>&nbsp;' . $lon . '</div>';
+                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LWS_FAS . ' fa-fw fa-rotate-315 fa-location-arrow"></i>&nbsp;' . $alt . '</div>';
+                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LWS_FAR . ' fa-fw ' . (LWS_FA5?'fa-clock ':'fa-clock-o') . '"></i>&nbsp;' . $timezone . '</div>';
+                            break;
+                    }
 
-
-
-            //$s['content'] = '<p>Hello world!<br />This is a nice popup.</p>';//SVG::get_base64_station_color_logo($station['station_type']);
-
+                    break;
+                default:
+                    $minwidth = 'minWidth: 180, ';
+                    $content = '<div class="title"><div class="logo">' . $image . '</div><div class="text">' . str_replace(' ', '&nbsp;', $station['station_name']) . '</div></div>';
+                    switch ($this->map_params['marker']['data']) {
+                        case 'current':
+                            $content .= '<div class="values"><i class="wi fa-fw wi-thermometer" style="font-size: 16px;"></i>' . $temperature . '&nbsp;</div>';
+                            $content .= '<div class="values"><i class="wi fa-fw wi-humidity" style="font-size: 16px;"></i>' . $humidity . '&nbsp;</div>';
+                            $content .= '<div class="values"><i class="wi fa-fw wi-barometer" style="font-size: 16px;"></i>' . $pressure . '&nbsp;</div>';
+                            break;
+                        case 'calendar':
+                            $content .= '<div class="values">' . $sunrise . '&nbsp;<i class="wi fa-fw wi-day-sunny" style="font-size: 16px;"></i>&nbsp;' . $sunset . '</div>';
+                            $content .= '<div class="values">' . $moonrise . '&nbsp;<i class="wi fa-fw wi-night-clear" style="font-size: 16px;"></i>&nbsp;' . $moonset . '</div>';
+                            break;
+                        case 'station':
+                            $content .= '<div class="values">' . $lat . '&nbsp;<i style="font-size: 14px;" class="' . LWS_FAS . ' fa-fw ' . (LWS_FA5?'fa-map-marker-alt':'fa-map-marker') . '"></i>&nbsp;' . $lon . '</div>';
+                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LWS_FAS . ' fa-fw fa-rotate-315 fa-location-arrow"></i>&nbsp;' . $alt . '</div>';
+                            $content .= '<div class="values"><i style="font-size: 14px;" class="' . LWS_FAR . ' fa-fw ' . (LWS_FA5?'fa-clock ':'fa-clock-o') . '"></i>&nbsp;' . $timezone . '</div>';
+                            break;
+                    }
+                    break;
+            }
+            if (array_key_exists('marker-style', $_POST)) {
+                if (in_array($_POST['marker-style'], array('minimalist', 'standard', 'extended'))) {
+                    $params['marker']['style'] = $_POST['marker-style'];
+                }
+            }
+            $s['content'] = str_replace('"', '\'', $content);
             $st[] = $s;
         }
-
-
-
-
         if (count($st) > 0) {
             $result = 'var stations = {';
             foreach ($st as $s) {
-                $result .= $s['id'] . ':{"lat":' . $s['lat'] . ',"lon":' . $s['lon'] . ',"icn":"' . $s['iconUrl'] . '","cnt":"' . $s['content'] . '"},';
+                $result .= $s['id'] . ':{"lat":' . $s['lat'] . ', "lon":' . $s['lon'] . ', "icn":"' . $s['iconUrl'] . '", "wtr":"' . $s['weatherDiv'] . '","wnd":"' . $s['windDiv'] . '","cnt":"' . $s['content'] . '"},';
             }
             $result .= "};";
             if ($this->map_params['marker']['type'] == 'pin') {
-                $result .= "  var stationIcon = L.icon({iconUrl: '" . SVG::get_base64_pin_icon($color1) ."', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor:  [0, -34]});" . PHP_EOL;
+                $result .= "  var stationIcon = L.icon({iconUrl: '" . SVG::get_base64_pin_icon($this->color(1)) ."', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor:  [0, -34]});" . PHP_EOL;
             }
             if ($this->map_params['marker']['type'] == 'logo') {
-                $result .= "  var stationIcon = L.icon({iconUrl: '" . SVG::get_base64_menu_icon($color1, $color2) ."', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor:  [0, -34]});" . PHP_EOL;
+                $result .= "  var stationIcon = L.icon({iconUrl: '" . SVG::get_base64_menu_icon($this->color(1), $this->color(2)) ."', iconSize: [32, 32], iconAnchor: [16, 32], popupAnchor:  [0, -34]});" . PHP_EOL;
             }
             $result .= "for (id in stations) {";
             if ($this->map_params['marker']['type'] == 'brand') {
-                $result .= "";
-                $result .= "  var stationIcon = L.icon({iconUrl: stations[id].icn, iconSize: [32, 32], iconAnchor: [16, 52], shadowSize: [56, 56], shadowAnchor: [28, 56], popupAnchor:  [0, -58], shadowUrl: '" . SVG::get_base64_marker_icon($color1) ."',});" . PHP_EOL;
+                $result .= "  var stationIcon = L.icon({iconUrl: stations[id].icn, iconSize: [32, 32], iconAnchor: [16, 52], shadowSize: [56, 56], shadowAnchor: [28, 56], popupAnchor:  [0, -58], shadowUrl: '" . SVG::get_base64_marker_icon($this->color(1)) ."',});" . PHP_EOL;
             }
-            $result .= " var marker = L.marker([stations[id].lat, stations[id].lon], {icon: stationIcon}).addTo(map).addTo(map).bindPopup(stations[id].cnt, {className:'" . $classname . "'});" . PHP_EOL;
+            if ($this->map_params['marker']['type'] == 'weather:current') {
+                $result .= "  var stationIcon = L.divIcon({html: stations[id].wtr, iconSize: [44, 44]});" . PHP_EOL;
+            }
+            if ($this->map_params['marker']['type'] == 'weather:wind') {
+                $result .= "  var stationIcon = L.divIcon({html: stations[id].wnd, iconSize: [44, 44]});" . PHP_EOL;
+            }
+            $result .= " var marker = L.marker([stations[id].lat, stations[id].lon], {icon: stationIcon}).addTo(map).addTo(map).bindPopup(stations[id].cnt, {" . $minwidth . "keepInView: true, closeButton: false, autoClose: true, className:'" . $classname . "'});" . PHP_EOL;
             $result .= "}";
-            $result .= "";
-            $result .= "";
-            $result .= "";
-            $result .= "";
-
-
         }
+
+
+
+
         $result .= '';
         return $result;
     }

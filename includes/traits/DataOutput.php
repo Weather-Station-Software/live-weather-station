@@ -20,6 +20,10 @@ use WeatherStation\Utilities\ColorBrewer;
 use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Options\Handling as Options;
 use WeatherStation\UI\Map\WindyHandling;
+use WeatherStation\UI\Map\ThunderforestHandling;
+use WeatherStation\UI\Map\StamenHandling;
+use WeatherStation\UI\Map\OpenweathermapHandling;
+use WeatherStation\UI\Map\MapboxHandling;
 
 /**
  * Outputing / shortcoding functionalities for Weather Station plugin.
@@ -78,6 +82,22 @@ trait Output {
                 switch ($map['type']) {
                     case 1 :
                         $mapping_service = new WindyHandling($map, $_attributes['size']);
+                        return $mapping_service->output();
+                        break;
+                    case 2 :
+                        $mapping_service = new StamenHandling($map, $_attributes['size']);
+                        return $mapping_service->output();
+                        break;
+                    case 3 :
+                        $mapping_service = new ThunderforestHandling($map, $_attributes['size']);
+                        return $mapping_service->output();
+                        break;
+                    case 4 :
+                        $mapping_service = new MapboxHandling($map, $_attributes['size']);
+                        return $mapping_service->output();
+                        break;
+                    case 5 :
+                        $mapping_service = new OpenweathermapHandling($map, $_attributes['size']);
                         return $mapping_service->output();
                         break;
                     default:

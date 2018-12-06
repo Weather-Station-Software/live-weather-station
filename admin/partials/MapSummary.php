@@ -13,7 +13,7 @@
         <span style="width:100%;"><?php echo $map_icn; ?>&nbsp;<?php echo $map_name; ?></span>
     </div>
     <div style="margin-bottom: 10px;">
-        <span style="width:50%;float: left;"><?php echo $location_icn; ?>&nbsp;<?php echo $map_location; ?></span>
-        <span style="width:50%;"><?php echo $zoom_icn; ?>&nbsp;<?php echo $map_zoom; ?></span>
+        <span style="width:70%;float: left;"><?php echo $location_icn; ?>&nbsp;<?php echo $map_location; ?></span>
+        <span style="width:30%;"><?php echo $zoom_icn; ?>&nbsp;<?php echo $map_zoom; ?></span>
     </div>
 </div>
