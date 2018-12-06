@@ -215,7 +215,7 @@ class Core {
         add_shortcode( 'live-weather-station-historical-capabilities', array($plugin_public, 'admin_historical_capabilities_shortcodes'));
         add_shortcode( 'live-weather-station-statistics', array($plugin_public, 'admin_statistics_shortcodes'));
         add_shortcode( 'live-weather-station-translations', array($plugin_public, 'admin_translations_shortcodes'));
-        add_shortcode( 'live-weather-station-maps', array($plugin_public, 'maps_shortcodes'));
+        add_shortcode( 'live-weather-station-map', array($plugin_public, 'maps_shortcodes'));
 	}
 
     /**

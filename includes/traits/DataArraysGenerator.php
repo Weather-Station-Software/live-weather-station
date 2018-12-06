@@ -3078,6 +3078,8 @@ trait Generator {
         //$result[] = array('old',  __('Oldies', 'live-weather-station'));
         $result[] = array('logo',  __('Logo', 'live-weather-station'));
         $result[] = array('brand',  __('Station\'s brand', 'live-weather-station'));
+        $result[] = array('weather:current',  __('Weather: current condition', 'live-weather-station'));
+        $result[] = array('weather:wind',  __('Weather: wind', 'live-weather-station'));
         return $result;
     }
 
