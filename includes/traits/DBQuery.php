@@ -1085,10 +1085,14 @@ trait Query {
      * @since 3.7.0
      */
     protected function update_map($id, $type, $name, $params) {
-
-
-
-
+        if ($params['common']['all']) {
+            $barycenter = self::get_all_stations_barycenter();
+        }
+        else {
+            $barycenter = self::get_all_stations_barycenter($params['stations']);
+        }
+        $params['common']['loc_latitude'] = $barycenter['latitude'];
+        $params['common']['loc_longitude'] = $barycenter['longitude'];
         $val = array();
         $val['id'] = $id;
         $val['type'] = $type;
@@ -1180,15 +1184,23 @@ trait Query {
     /**
      * Get the barycenter of all the stations coordinates.
      *
+     * @param array $guids Optional. The guids to take into account.
      * @return array An array containing the lat & lon of the barycenter.
      * @since 3.0.0
      */
-    protected static function get_all_stations_barycenter() {
+    protected static function get_all_stations_barycenter($guids=array()) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-        $sql = "SELECT AVG(loc_latitude) as latitude, AVG(loc_longitude) as longitude FROM " . $table_name . ";";
-        try {
+        if (count($guids) === 0) {
+            $sql = "SELECT AVG(loc_latitude) as latitude, AVG(loc_longitude) as longitude FROM " . $table_name . ";";
             $cache_id = 'stations_barycenter';
+        }
+        else {
+            $sql = "SELECT AVG(loc_latitude) as latitude, AVG(loc_longitude) as longitude FROM " . $table_name . " WHERE guid IN (" . implode(',', $guids).");";
+            $cache_id = 'stations_barycenter_' . implode('', $guids);
+        }
+        try {
+
             $query = Cache::get_query($cache_id);
             if ($query === false) {
                 $query = $wpdb->get_results($sql, ARRAY_A);
@@ -1512,6 +1524,30 @@ trait Query {
                 $result[] = (array)$val;
             }
             return $result;
+        }
+        catch(\Exception $ex) {
+            return array() ;
+        }
+    }
+
+    /**
+     * Get the full list of stations - ordered.
+     *
+     * @param array $guids Optional. The guids to search for.
+     * @return array An array containing the stations.
+     * @since 3.7.0
+     */
+    protected function get_ordered_stations_list($guids=array()) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+        if (count($guids) === 0) {
+            $sql = "SELECT * FROM " . $table_name . " ORDER BY station_name ASC;";
+        }
+        else {
+            $sql = "SELECT * FROM " . $table_name . " WHERE guid IN (" . implode(',', $guids).") ORDER BY station_name ASC;";
+        }
+        try {
+            return $wpdb->get_results($sql, ARRAY_A);
         }
         catch(\Exception $ex) {
             return array() ;
