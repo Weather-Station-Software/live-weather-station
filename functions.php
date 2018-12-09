@@ -393,7 +393,7 @@ function lws_send_alert_message() {
  */
 function lws_print_begin_script() {
     $result = '<script language="javascript" type="text/javascript">';
-    if ((bool)get_option('live_weather_station_wait_for_dom', 1)) {
+    if ((bool)get_option('live_weather_station_wait_for_dom', 1) && !is_admin()) {
         $result .= 'document.addEventListener("DOMContentLoaded", function(event) {';
     }
     return $result;
@@ -406,7 +406,7 @@ function lws_print_begin_script() {
  */
 function lws_print_end_script() {
     $result = '';
-    if ((bool)get_option('live_weather_station_wait_for_dom', 1)) {
+    if ((bool)get_option('live_weather_station_wait_for_dom', 1) && !is_admin()) {
         $result .= '});';
     }
     $result .= '</script>';

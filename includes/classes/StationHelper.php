@@ -373,7 +373,8 @@ class Handling {
 
                             if (array_key_exists('do-import-data', $_POST)) {
                                 $success = false;
-                                if (array_key_exists('lws-date-start', $_POST) && array_key_exists('lws-date-end', $_POST) && array_key_exists('lws-format', $_POST) && array_key_exists('lws-ndjson', $_POST)) {
+                                if (array_key_exists('lws-date-start', $_POST) && array_key_exists('lws-date-end', $_POST) && array_key_exists('lws-format', $_POST)) {
+                                    $go = true;
                                     $args = array();
                                     $args['init'] = array();
                                     $args['init']['station_id'] = $station['station_id'];
@@ -391,12 +392,20 @@ class Handling {
                                         $format = 'Pioupiou';
                                     }
                                     if ($format === 'ndjson') {
-                                        $args['init']['uuid'] = sanitize_text_field($_POST['lws-ndjson']);
+                                        if (array_key_exists('lws-ndjson', $_POST)) {
+                                            $args['init']['uuid'] = sanitize_text_field($_POST['lws-ndjson']);
+                                        }
+                                        else {
+                                            $go = false;
+                                        }
                                         $format = 'LineNdjson';
                                     }
-                                    $classname = $format . 'Importer';
-                                    ProcessManager::register($classname, $args);
-                                    $success = true;
+                                    if ($go) {
+                                        $classname = $format . 'Importer';
+                                        ProcessManager::register($classname, $args);
+                                        $success = true;
+                                    }
+
                                 }
                                 if ($success) {
                                     $message = __('Data import for the station %s has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');

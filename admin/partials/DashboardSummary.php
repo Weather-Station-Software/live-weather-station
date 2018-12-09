@@ -39,14 +39,23 @@ if (REQUIREMENTS_OK) {
     if (get_option('live_weather_station_bloomsky_connected')) {
         $services[] = 'BloomSky';
     }
+    if (get_option('live_weather_station_mapbox_apikey') != '') {
+        $services[] = 'Mapbox';
+    }
     if ((bool)get_option('live_weather_station_netatmo_connected') || (bool)get_option('live_weather_station_netatmohc_connected')) {
         $services[] = 'Netatmo';
     }
     if (get_option('live_weather_station_owm_apikey') != '') {
         $services[] = 'OpenWeatherMap';
     }
+    if (get_option('live_weather_station_thunderforest_apikey') != '') {
+        $services[] = 'ThunderForest';
+    }
     if (get_option('live_weather_station_wug_apikey') != '') {
         $services[] = 'Weather Underground';
+    }
+    if (get_option('live_weather_station_windy_apikey') != '') {
+        $services[] = 'Windy';
     }
     if (count($services) > 0) {
         $services_str = implode(', ', $services);
