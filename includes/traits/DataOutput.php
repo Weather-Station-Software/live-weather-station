@@ -2879,7 +2879,7 @@ trait Output {
                 $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
-            $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
+            //-//$body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '    nv.addGraph(function() {' . PHP_EOL;
             $body .= '       chart'.$uniq.' = nv.models.candlestickBarChart()' . PHP_EOL;
             $body .= '               .x(function(d) {return x' . $uniq . ' + d["date"] + 43200000})' . PHP_EOL;
@@ -3031,7 +3031,7 @@ trait Output {
                 }
             }
 
-            $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
+            //-//$body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '      nv.addGraph(function() {' . PHP_EOL;
             $body .= '         chart'.$uniq.' = nv.models.stackedAreaChart()' . PHP_EOL;
             $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
@@ -3136,7 +3136,7 @@ trait Output {
                     $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
                 }
             }
-            $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
+            //-//$body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '      nv.addGraph(function() {' . PHP_EOL;
             $body .= '         chart'.$uniq.' = nv.models.stackedAreaChart()' . PHP_EOL;
             $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
@@ -3250,7 +3250,7 @@ trait Output {
                 $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
             }
 
-            $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
+            //-//$body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '      nv.addGraph(function() {' . PHP_EOL;
             $body .= '         chart'.$uniq.' = nv.models.multiBarChart()' . PHP_EOL;
             $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
@@ -3405,7 +3405,7 @@ trait Output {
             else {
                 $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
             }
-            $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
+            //-//$body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '    nv.addGraph(function() {' . PHP_EOL;
             $body .= '       chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
             $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
@@ -3615,7 +3615,7 @@ trait Output {
                 $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
                 $refcolor = str_replace('"', '', $legendColors[0]);
             }
-            $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
+            //-//$body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '      nv.addGraph(function() {' . PHP_EOL;
             $body .= '        chart'.$uniq.' = nv.models.bilineChart()' . PHP_EOL;
             $body .= '               .x(function(d,i) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
@@ -3812,7 +3812,7 @@ trait Output {
             else{
                 $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
             }
-            $body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
+            //-//$body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
             $body .= '      nv.addGraph(function() {' . PHP_EOL;
             $body .= '        chart'.$uniq.' = nv.models.linePlusBarChart()' . PHP_EOL;
             if ($label == 'none') {
@@ -4018,7 +4018,8 @@ trait Output {
             $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
             $body .= '      var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
             $body .= '      var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
-            $body .= '      var chart'.$uniq.'= new CalHeatMap();' . PHP_EOL;
+            //-//
+            $body .= '      chart'.$uniq.' = new CalHeatMap();' . PHP_EOL;
             $body .= '      var min_date= new Date(minDomain' . $uniq . ');' . PHP_EOL;
             $body .= '      var start_date= new Date(minDomain' . $uniq . ');' . PHP_EOL;
             $body .= '      chart'.$uniq.'.init({' . PHP_EOL;
@@ -4203,6 +4204,7 @@ trait Output {
         $result .= '</div>' . PHP_EOL;
         $result .= lws_print_begin_script() . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+        $result .= '    var chart'.$uniq.' = null;' . PHP_EOL;
         if ($data == 'inline') {
             $result .= '    var data'.$uniq.' =' . $values['values'] . ';' . PHP_EOL;
             $result .= $body;
@@ -4529,7 +4531,7 @@ trait Output {
                 $result .= '<div id="' . $uniq . '" ></div>' . PHP_EOL;
                 $result .= lws_print_begin_script() . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '      var chart'.$uniq.'= new CalHeatMap();' . PHP_EOL;
+                $result .= '      var chart'.$uniq.' = new CalHeatMap();' . PHP_EOL;
                 $result .= '      var today_date= new Date();' . PHP_EOL;
                 $result .= '      var min_date= new Date(' . $min_date. ');' . PHP_EOL;
                 $result .= '      var start_date= new Date(' . $start_date . ');' . PHP_EOL;

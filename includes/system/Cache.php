@@ -358,13 +358,13 @@ class Cache {
      * it will be serialized before it is set.
      *
      * @param string $cache_id The cached element slug. Expected to not be SQL-escaped.
-     * @param string $mode Optional. The mode in which searching for.
+     * @param string $mode The mode in which searching for.
      * @param mixed $value Cached element value, must be serializable if non-scalar. Expected to not be SQL-escaped.
      * @return bool False if value was not set and true if value was set.
      * @since 3.4.0
      *
      */
-    public static function set_graph($cache_id, $mode='daily', $value) {
+    public static function set_graph($cache_id, $mode, $value) {
         $cache_id = Env::get_cache_prefix() . $cache_id;
         if ($mode == 'yearly') {
             $id = self::$ygraph.'_'.$cache_id;
