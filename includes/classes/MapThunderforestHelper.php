@@ -111,8 +111,8 @@ class ThunderforestHandling extends BaseHandling {
         $result = '';
         $result .= "var layer = new L.tileLayer('https://{s}.tile.thunderforest.com/" . $this->map_params['specific']['options']['overlay'] . "/{z}/{x}/{y}.png?apikey=" . get_option('live_weather_station_thunderforest_apikey') . "', {" . PHP_EOL;
         $result .= '  attribution: "Maps &copy; <a href=\"https://www.thunderforest.com\">Thunderforest</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
-        $result .= '  maxZoom: 22,' . PHP_EOL;
-        $result .= '  minZoom: 2' . PHP_EOL;
+        $result .= '  maxZoom: ' . $this->maxzoom . ',' . PHP_EOL;
+        $result .= '  minZoom: ' . $this->minzoom . '' . PHP_EOL;
         $result .= '});' . PHP_EOL;
         $result .= "var map = new L.Map('thunderforest-" . $this->uniq . "', {" . PHP_EOL;
         $result .= "  center: new L.LatLng(" . $this->map_params['common']['loc_latitude'] . ", " . $this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;

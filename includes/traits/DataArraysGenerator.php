@@ -3218,10 +3218,10 @@ trait Generator {
         $result[] = array('owm:temp_new',  __('Weather: temperature', 'live-weather-station'));
         $result[] = array('owm:snow',  __('Weather: snow', 'live-weather-station'));
         $result[] = array('owm:wind_new',  __('Weather: wind', 'live-weather-station'));
-        //$result[] = array('vane:rgb',  __('Vegetation: RGB', 'live-weather-station'));
-        //$result[] = array('vane:nir',  __('Vegetation: NIR', 'live-weather-station'));
-        //$result[] = array('vane:ndvi',  __('Vegetation: NDVI', 'live-weather-station'));
-        //$result[] = array('vane=ndwi',  __('Vegetation: NDWI', 'live-weather-station'));
+        $result[] = array('vane:rgb',  __('Vegetation: RGB', 'live-weather-station'));
+        $result[] = array('vane:nir',  __('Vegetation: NIR', 'live-weather-station'));
+        $result[] = array('vane:ndvi',  __('Vegetation: NDVI', 'live-weather-station'));
+        $result[] = array('vane:ndwi',  __('Vegetation: NDWI', 'live-weather-station'));
         return $result;
     }
 
@@ -3240,6 +3240,20 @@ trait Generator {
         $result[] = array('carto:dark_all',  __('CARTO: dark', 'live-weather-station'));
         $result[] = array('carto:dark_nolabels',  __('CARTO: dark - no labels', 'live-weather-station'));
         $result[] = array('carto:dark_only_labels',  __('CARTO: dark - only labels', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get the zoom map.
+     *
+     * @return array An array containing zooms ready to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_zoom_js_array($min, $max) {
+        $result = array();
+        for ($i=$min; $i<=$max; $i++) {
+            $result[] = array($i,  sprintf(__('Level %s', 'live-weather-station'), $i));
+        }
         return $result;
     }
 }

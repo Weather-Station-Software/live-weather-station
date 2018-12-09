@@ -27,10 +27,9 @@ class Cache {
     public static $frontend_expiry = 119;  // 2 minutes - 1 second
     public static $widget_expiry = 119;    // 2 minutes - 1 second
     public static $dgraph_expiry = 119;    // 2 minutes - 1 second
-    public static $ygraph_expiry = 3599;   // 1 hour - 1 second
+    public static $ygraph_expiry = 43200;  // 12 hours
     public static $wp_expiry = 7200;       // 2 hours
     public static $i18n_expiry = 43200;    // 12 hours
-
     public static $db_stat = 'stat';
     public static $db_stat_log = 'stat_log';
     public static $db_bg_processes = 'stat_bgp';

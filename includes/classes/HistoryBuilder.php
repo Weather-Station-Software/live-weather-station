@@ -239,7 +239,6 @@ class Builder
                             $d[] = $m;
                         }
                     }
-                    //error_log(print_r($d,true));
                     if (count($d) > 0) {
                         if ($type === 'sum_rain') {
                             $sets[] = array('SUM' => 'agg');

@@ -30,6 +30,7 @@ class StamenHandling extends BaseHandling {
 
     protected $type = 2;
     public $service = 'Stamen';
+    protected $maxzoom = 16;
 
     /**
      * Initialize the map and set its specific properties.
@@ -113,6 +114,8 @@ class StamenHandling extends BaseHandling {
         $result .= "var layer = new L.StamenTileLayer('" . $this->map_params['specific']['options']['overlay'] . "');" . PHP_EOL;
         $result .= "var map = new L.Map('stamen-" . $this->uniq . "', {" . PHP_EOL;
         $result .= "  center: new L.LatLng(" . $this->map_params['common']['loc_latitude'] . ", " . $this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
+        $result .= '  maxZoom: ' . $this->maxzoom . ',' . PHP_EOL;
+        $result .= '  minZoom: ' . $this->minzoom . ',' . PHP_EOL;
         $result .= "  zoom: " . $this->map_params['common']['loc_zoom'] . PHP_EOL;
         $result .= "});" . PHP_EOL;
         $result .= "map.attributionControl.setPrefix('');" . PHP_EOL;

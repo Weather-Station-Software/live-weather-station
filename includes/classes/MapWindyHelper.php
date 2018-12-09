@@ -30,6 +30,7 @@ class WindyHandling extends BaseHandling {
 
     protected $type = 1;
     public $service = 'Windy';
+    protected $maxzoom = 11;
 
     /**
      * Initialize the map and set its specific properties.

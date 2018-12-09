@@ -100,7 +100,7 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_key_value_option_select('current-textual-datas-speed-'. $this->station_guid, __('Animation speed', 'live-weather-station'), $this->get_lcd_speed_js_array(), true, '2000');
         $content .= $this->get_color_picker('current-textual-datas-color-'. $this->station_guid, __('Animation color', 'live-weather-station'));
         $content .= '<style>.wp-picker-container .wp-color-result.button {width: 100% !important;}</style>';
-        $content .= '<script>';
+        $content .= lws_print_begin_script();
         $content .= '    ( function( $ ){';
         $content .= '        function initColorPicker( widget ) {';
         $content .= '            widget.find( ".wp-color-picker" ).wpColorPicker( {';
@@ -124,7 +124,7 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '            }';
         $content .= '        } );';
         $content .= '    }( jQuery ) );';
-        $content .= '</script>';
+        $content .= lws_print_end_script();
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }

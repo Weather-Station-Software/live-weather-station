@@ -1,6 +1,9 @@
 
 #3.7.0 / December 27th, 2018
 
+* New: mapping service allowing to generate maps with selected station(s) on weather and agricultural layers (OpenWeatherMap).
+* New: mapping service allowing to generate maps with selected station(s) on animated weather layers (Windy.com).
+* New: mapping service allowing to generate maps with selected station(s) on beautiful static layers (Mapbox, Stamen, Thunderforest).
 * New: historical data import from Netatmo cloud services for weather stations and "Healthy Home Coaches".
 * New: historical data import from Pioupiou servers for V1 & V2 sensors.
 * New: historical data export as CSV, DSV, TSV or ND-JSON file.
@@ -23,6 +26,9 @@
 * Improvement: better layout and icons alignment in the tasks scheduler.
 * Improvement: location (and coordinates) rendering is now consistent between views, widgets, maps and controls.
 * Improvement: inline help for the tasks scheduler.
+* Improvement: cache duration for historical graphs has been increased to 12 hours.
+* Improvement: for better compatibility and reactivity improvement, the script loader now wait for the whole document is loaded to launch.
+* Improvement: loading of daily and historical graphs (in ajax preload and ajax refresh mode) has been greatly improved for pages where there are many graphs.
 * Improvement: in the add form for WeatherFlow station, there's now a link to the [official WeatherFlow map](https://smartweather.weatherflow.com/map/).
 * Bug fix: in textual shortcode, trend for barometric pressure is not available in plain text (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
 * Bug fix: in distribution radial charts, legend is wrong when values are rain rates.

@@ -417,7 +417,7 @@ abstract class Maintainer {
         }
         $result .= '</td>';
         $result .= '</tr>';
-        $result .= '<script language="javascript" type="text/javascript">';
+        $result .= lws_print_begin_script();
         $result .= 'jQuery(document).ready(function($) {';
         for ($i=1 ; $i<=count($args) ; $i++) {
             $result .= '$(".' . $tab_id . $i . '").click(function() {';
@@ -428,7 +428,7 @@ abstract class Maintainer {
             $result .= '});';
         }
         $result .= '});' . PHP_EOL;
-        $result .= '</script>' . PHP_EOL;
+        $result .= lws_print_end_script() . PHP_EOL;
         return $result;
     }
 
@@ -565,7 +565,7 @@ abstract class Maintainer {
      */
     protected function get_script_box($content) {
         $result = '';
-        $result .= '<script language="javascript" type="text/javascript">';
+        $result .= lws_print_begin_script();
         $result .= 'jQuery(document).ready(function($) {';
         // copy button attach action
         $result .= 'new Clipboard(".' . $this->module_id . '-cpy-' . $this->station_guid . '");';
@@ -589,7 +589,7 @@ abstract class Maintainer {
         // content
         $result .= $content;
         $result .= '});';
-        $result .= '</script>';
+        $result .= lws_print_end_script();
         return $result;
     }
 

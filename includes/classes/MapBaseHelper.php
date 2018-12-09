@@ -38,6 +38,8 @@ abstract class BaseHandling {
     protected $map_params;
     protected $uniq;
     protected $size = 'auto';
+    protected $minzoom = 2;
+    protected $maxzoom = 22;
 
     /**
      * Initialize the class and set its properties.
@@ -103,23 +105,29 @@ abstract class BaseHandling {
     /**
      * Initialize the map and set its properties.
      *%
-     * @param array $common The common parameters to add.
      * @since 3.7.0
      */
     public function save_map() {
         $params = $this->map_params;
-
-
-
-        //$params['common'] = $common;
-        //$params['stations'] = array(94, 96, 125);
-
-        $s = __('Width', 'live-weather-station');
-        $s = __('Heigth', 'live-weather-station');
-        $s = __('Name', 'live-weather-station');
-        $s = __('Zoom', 'live-weather-station');
-
-
+        if (array_key_exists('common-name', $_POST)) {
+            $this->map_name = sanitize_text_field($_POST['common-name']);
+        }
+        if (array_key_exists('common-width', $_POST)) {
+            $params['common']['width'] = lws_sanitize_width_field($_POST['common-width']);
+        }
+        if (array_key_exists('common-height', $_POST)) {
+            $params['common']['height'] = lws_sanitize_height_field($_POST['common-height']);
+        }
+        if (array_key_exists('common-loc_zoom', $_POST)) {
+            $i = (int)sanitize_text_field($_POST['common-loc_zoom']);
+            if ($i < $this->minzoom) {
+                $i = $this->minzoom;
+            }
+            if ($i > $this->maxzoom) {
+                $i = $this->maxzoom;
+            }
+            $params['common']['loc_zoom'] = $i;
+        }
         if (array_key_exists('common-station-selector', $_POST)) {
             if (in_array($_POST['common-station-selector'], array('all', 'select'))) {
                 $params['common']['all'] = $_POST['common-station-selector'] == 'all';
@@ -184,6 +192,7 @@ abstract class BaseHandling {
      */
     protected function output_resources() {
         $result = '';
+        wp_enqueue_script('jquery');
         wp_enqueue_script('lws-leaflet');
         wp_enqueue_style('lws-leaflet');
         $result .= $this->specific_resources();
@@ -268,6 +277,7 @@ abstract class BaseHandling {
         $result .= 'background: ' . $this->color(1) . ' !important;';
         $result .= 'border: none !important;';
         $result .= 'border-radius: 50%;';
+        $result .= 'text-align: center;';
         $result .= '}';
         if (strpos($this->map_params['marker']['type'], 'weather:') === 0) {
             $result .= '#' . $this->uniq .' .leaflet-popup-pane {';
@@ -368,11 +378,11 @@ abstract class BaseHandling {
      * @since 3.7.0
      */
     protected function output_script() {
-        $result = '<script language="javascript" type="text/javascript">';
+        $result = lws_print_begin_script();
         $result .= 'jQuery(document).ready(function($) {';
         $result .= $this->specific_script();
         $result .= '});';
-        $result .= '</script>';
+        $result .= lws_print_end_script();
         return $result;
     }
 
@@ -534,8 +544,8 @@ abstract class BaseHandling {
                     $content = '<div class="title"><div class="logo">' . $image . '</div><div class="text">' . str_replace(' ', '&nbsp;', $station['station_name']) . '</div></div>';
                     switch ($this->map_params['marker']['data']) {
                         case 'current':
-                            $content .= '<div class="values"><i class="wi fa-fw wi-thermometer" style="font-size: 16px;"></i>' . $temperature . '&nbsp; &nbsp;<i class="wi fa-fw wi-humidity" style="font-size: 16px;"></i>' . $humidity . '&nbsp;</div>';
-                            $content .= '<div class="values"><i class="wi fa-fw wi-barometer" style="font-size: 16px;"></i>' . $pressure . '&nbsp;</div>';
+                            $content .= '<div class="values"><i class="wi fa-fw wi-thermometer" style="font-size: 16px;"></i>&nbsp;' . $temperature . '&nbsp; &nbsp;<i class="wi fa-fw wi-humidity" style="font-size: 16px;"></i>&nbsp;' . $humidity . '&nbsp;</div>';
+                            $content .= '<div class="values"><i class="wi fa-fw wi-barometer" style="font-size: 16px;"></i>&nbsp;' . $pressure . '&nbsp;</div>';
                             $content .= '<div class="values"><i class="wi fa-fw wi-strong-wind" style="font-size: 16px;"></i>&nbsp;' . $wind_angle . $sep . $wind_strength . '&nbsp;</div>';
                             $content .= '<div class="values"><i class="wi fa-fw wi-umbrella" style="font-size: 16px;"></i>&nbsp;' . $rain . '&nbsp;</div>';
                             break;
@@ -559,9 +569,9 @@ abstract class BaseHandling {
                     $content = '<div class="title"><div class="logo">' . $image . '</div><div class="text">' . str_replace(' ', '&nbsp;', $station['station_name']) . '</div></div>';
                     switch ($this->map_params['marker']['data']) {
                         case 'current':
-                            $content .= '<div class="values"><i class="wi fa-fw wi-thermometer" style="font-size: 16px;"></i>' . $temperature . '&nbsp;</div>';
-                            $content .= '<div class="values"><i class="wi fa-fw wi-humidity" style="font-size: 16px;"></i>' . $humidity . '&nbsp;</div>';
-                            $content .= '<div class="values"><i class="wi fa-fw wi-barometer" style="font-size: 16px;"></i>' . $pressure . '&nbsp;</div>';
+                            $content .= '<div class="values"><i class="wi fa-fw wi-thermometer" style="font-size: 16px;"></i>&nbsp;' . $temperature . '&nbsp;</div>';
+                            $content .= '<div class="values"><i class="wi fa-fw wi-humidity" style="font-size: 16px;"></i>&nbsp;' . $humidity . '&nbsp;</div>';
+                            $content .= '<div class="values"><i class="wi fa-fw wi-barometer" style="font-size: 16px;"></i>&nbsp;' . $pressure . '&nbsp;</div>';
                             break;
                         case 'calendar':
                             $content .= '<div class="values">' . $sunrise . '&nbsp;<i class="wi fa-fw wi-day-sunny" style="font-size: 16px;"></i>&nbsp;' . $sunset . '</div>';
@@ -701,13 +711,57 @@ abstract class BaseHandling {
      *
      * @param string $id The control id.
      * @param string $title The control title.
+     * @param string $value The current value.
+     * @param boolean $label Optional. Display the th of the table.
+     * @param boolean $hidden Optional. Hide the select option.
+     * @param boolean $displayed Optional. Display the select option.
+     * @return string The control ready to print.
+     * @since 3.7.0
+     */
+    protected function get_input_text($id, $title, $value, $label=true, $hidden=false, $displayed=true) {
+        $visibility = '';
+        if ($id == '') {
+            $visibility = ' class="lws-placeholder" style="visibility:hidden;"';
+            $id = 'o' . md5(random_bytes(20));
+            $title = '';
+        }
+        $style = array();
+        if ($hidden) {
+            $style[] = 'visibility:hidden';
+        }
+        if (!$displayed) {
+            $style[] = 'display:none';
+        }
+        if (count($style) > 0) {
+            $visibility .= ' style="' . implode(';', $style) . '"';
+        }
+        $result = '';
+        $result .= '<tr' . $visibility .'>';
+        if ($label) {
+            $result .= '<th class="lws-option" width="35%" align="left" scope="row">' . $title . '</th>';
+            $result .= '<td width="2%"></td>';
+        }
+        $result .= '<td align="left" class="lws-option-setting">';
+        $result .= '<span class="select-option">';
+        $result .= '<input id="' . $id . '" name="' . $id . '" type="text" size="60" value="' . $value . '" class="regular-text" />';
+        $result .= '</span>';
+        $result .= '</td>';
+        $result .= '</tr>';
+        return $result;
+    }
+
+    /**
+     * Get an option select control.
+     *
+     * @param string $id The control id.
+     * @param string $title The control title.
      * @param array $items The array of items.
      * @param boolean $label Optional. Display the th of the table.
      * @param mixed $selected Optional. Set the selected item.
      * @param boolean $hidden Optional. Hide the select option.
      * @param boolean $displayed Optional. Display the select option.
      * @return string The control ready to print.
-     * @since 3.4.0
+     * @since 3.7.0
      */
     protected function get_key_value_option_select($id, $title, $items, $label=true, $selected=null, $hidden=false, $displayed=true) {
         $result = '';
@@ -749,7 +803,7 @@ abstract class BaseHandling {
      * @param boolean $hidden Optional. Hide the select option.
      * @param boolean $displayed Optional. Display the select option.
      * @return string The control ready to print.
-     * @since 3.4.0
+     * @since 3.7.0
      */
     protected function get_key_value_option_multiselect($id, $title, $items, $label=true, $selected=array(), $hidden=false, $displayed=true) {
         $result = '';
@@ -819,6 +873,22 @@ abstract class BaseHandling {
      * @since 3.7.0
      */
     abstract public function get_specific_post_values();
+
+    /**
+     * Output the map detail box.
+     *
+     * @return string The control ready to print.
+     * @since 3.7.0
+     */
+    public function output_detail() {
+        $content = '<table cellspacing="0" style="display:table;" class="lws-settings"><tbody>';
+        $content .= $this->get_input_text('common-name', __('Name', 'live-weather-station'), $this->map_name, true);
+        $content .= $this->get_input_text('common-width', __('Width', 'live-weather-station'), $this->map_params['common']['width'], true);
+        $content .= $this->get_input_text('common-height', __('Height', 'live-weather-station'), $this->map_params['common']['height'], true);
+        $content .= $this->get_key_value_option_select('common-loc_zoom', __('Zoom', 'live-weather-station'), $this->get_zoom_js_array($this->minzoom, $this->maxzoom), true, $this->map_params['common']['loc_zoom']);
+        $content .= '</tbody></table>';
+        return $content;
+    }
 
     /**
      * Output the station box.

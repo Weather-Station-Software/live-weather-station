@@ -387,6 +387,90 @@ function lws_send_alert_message() {
 }
 
 /**
+ * Print the begining of the script tag.
+ *
+ * @since 3.7.0
+ */
+function lws_print_begin_script() {
+    $result = '<script language="javascript" type="text/javascript">';
+    if ((bool)get_option('live_weather_station_wait_for_dom', 1)) {
+        $result .= 'document.addEventListener("DOMContentLoaded", function(event) {';
+    }
+    return $result;
+}
+
+/**
+ * Print the end of the script tag.
+ *
+ * @since 3.7.0
+ */
+function lws_print_end_script() {
+    $result = '';
+    if ((bool)get_option('live_weather_station_wait_for_dom', 1)) {
+        $result .= '});';
+    }
+    $result .= '</script>';
+    return $result;
+}
+
+/**
+ * Sanitize width.
+ *
+ * @param string $s The size element.
+ * @param array $u Optional. The accepted units
+ * @return string The sanitized size.
+ * @since 3.7.0
+ */
+function lws_sanitize_width_heigth_field($s, $u=array('px')) {
+    $s = trim(strtolower(sanitize_text_field($s)));
+    switch ($s) {
+        case 'auto':
+        case 'initial':
+        case 'inherit':
+            $result = $s;
+            break;
+        default:
+            $i = (int)$s;
+            if ($i != 0 && $i < 2000) {
+                $t = trim(strtolower(substr($s, strpos($s, (string)$i) + strlen((string)$i))));
+                if (!in_array($t, $u)) {
+                    $t = 'px';
+                }
+                $result = $i . $t;
+            }
+            else {
+                $result = '100px';
+            }
+            break;
+    }
+    return $result;
+}
+
+/**
+ * Sanitize width.
+ *
+ * @param string $w The width.
+ * @return string The sanitized width.
+ * @since 3.7.0
+ */
+function lws_sanitize_width_field($w) {
+    return lws_sanitize_width_heigth_field($w, array('cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax', '%'));
+}
+
+/**
+ * Sanitize width.
+ *
+ * @param string $h The width.
+ * @return string The sanitized width.
+ * @since 3.7.0
+ */
+function lws_sanitize_height_field($h) {
+    return lws_sanitize_width_heigth_field($h, array('cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax'));
+}
+
+
+
+/**
  * Fake __() function for debugging / developing purpose.
  *
  * @since 3.6.1
