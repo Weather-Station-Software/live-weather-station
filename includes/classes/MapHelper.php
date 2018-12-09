@@ -193,7 +193,7 @@ class Handling {
      */
     public function map_add_footer() {
         $result = '';
-        $result .= '<script type="text/javascript">';
+        $result .= lws_print_begin_script();
         $result .= "    jQuery(document).ready( function($) {";
         $result .= "        $('.if-js-closed').removeClass('if-js-closed').addClass('closed');";
         $result .= "        if(typeof postboxes !== 'undefined')";
@@ -203,7 +203,7 @@ class Handling {
         $result .= "        });";
         $result .= "        $('#common-station-selector').change()";
         $result .= "    });";
-        $result .= '</script>';
+        $result .= lws_print_end_script();
         echo $result;
     }
 
@@ -299,11 +299,11 @@ class Handling {
     protected function get_shortcode_box() {
         wp_enqueue_script('lws-clipboard');
         $id = 'lws-map-sc-' . $this->map_id;
-        $result = '<script language="javascript" type="text/javascript">';
+        $result = lws_print_begin_script();
         $result .= 'jQuery(document).ready(function($) {';
         $result .= '  new Clipboard(".copy-sc-map-button");';
         $result .= '});';
-        $result .= '</script>';
+        $result .= lws_print_end_script();
         $title = __('Shortcode', 'live-weather-station');
         $content = '<textarea readonly rows="1" style="width:100%;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="' . $id . '">[live-weather-station-map id="' . $this->map_id . '"]</textarea>';
         $footer = '<button data-clipboard-target="#' . $id . '" class="button button-primary copy-sc-map-button">' . __('Copy', 'live-weather-station'). '</button>';
@@ -371,6 +371,7 @@ class Handling {
         if (isset($this->aux_handler)) {
             // Left column
             add_meta_box('lws-maps', __('Map', 'live-weather-station' ), array($this, 'summary_widget'), $this->screen_id, 'advanced', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
+            add_meta_box('lws-misc', __('Misc', 'live-weather-station' ), array($this, 'detail_widget'), $this->screen_id, 'advanced', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
             add_meta_box('lws-actions', __('Actions', 'live-weather-station' ), array($this, 'action_widget'), $this->screen_id, 'advanced', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
             add_meta_box('lws-stations', __('Stations', 'live-weather-station' ), array($this, 'station_widget'), $this->screen_id, 'side', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
 
@@ -410,6 +411,15 @@ class Handling {
      */
     public function action_widget($n, $args) {
         echo '<div style="text-align:center;"><input type="submit" name="save-map" id="save-map" class="button button-primary" value="' . __('Save & Refresh Preview', 'live-weather-station') . '"  /></div>';
+    }
+
+    /**
+     * Get content of the map detail box.
+     *
+     * @since 3.7.0
+     */
+    public function detail_widget($n, $args) {
+        echo $this->aux_handler->output_detail();
     }
 
     /**

@@ -30,6 +30,7 @@ class MapboxHandling extends BaseHandling {
 
     protected $type = 4;
     public $service = 'Mapbox';
+    protected $maxzoom = 21;
 
     /**
      * Initialize the map and set its specific properties.
@@ -111,8 +112,8 @@ class MapboxHandling extends BaseHandling {
         $result = '';
         $result .= "var layer = new L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {" . PHP_EOL;
         $result .= '  attribution: "Maps &copy; <a href=\"https://www.mapbox.com/\">Mapbox</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
-        $result .= '  maxZoom: 18,' . PHP_EOL;
-        $result .= '  minZoom: 2,' . PHP_EOL;
+        $result .= '  maxZoom: ' . $this->maxzoom . ',' . PHP_EOL;
+        $result .= '  minZoom: ' . $this->minzoom . ',' . PHP_EOL;
         $result .= '  id: "mapbox.' . $this->map_params['specific']['options']['overlay'] . '",' . PHP_EOL;
         $result .= '  accessToken: "' . get_option('live_weather_station_mapbox_apikey') . '"' . PHP_EOL;
         $result .= '});' . PHP_EOL;

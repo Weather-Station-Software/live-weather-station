@@ -51,13 +51,13 @@ class Handling {
      */
     public function analytics_add_footer() {
         $result = '';
-        $result .= '<script type="text/javascript">';
+        $result .= lws_print_begin_script();
         $result .= "    jQuery(document).ready( function($) {";
         $result .= "        $('.if-js-closed').removeClass('if-js-closed').addClass('closed');";
         $result .= "        if(typeof postboxes !== 'undefined')";
         $result .= "            postboxes.add_postbox_toggles('lws-analytics');";
         $result .= "    });";
-        $result .= '</script>';
+        $result .= lws_print_end_script();
         echo $result;
     }
 

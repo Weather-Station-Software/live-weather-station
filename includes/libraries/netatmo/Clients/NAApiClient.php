@@ -640,7 +640,6 @@ class NAApiClient
                 $res["body"]["time_server"] = $res["time_server"];
             }
         }
-        //error_log(print_r($res, true));
         if(isset($res["body"])) return $res["body"];
         else return $res;
     }

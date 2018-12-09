@@ -44,7 +44,7 @@ class Maps extends Base {
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_thunderforest_grey_logo()) . '" />';
                 break;
             case 'mapbox' :
-                $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_windy_grey_logo()) . '" />';
+                $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_mapbox_grey_logo()) . '" />';
                 break;
             case 'openweathermap' :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_owm_grey_logo()) . '" />';
@@ -152,7 +152,7 @@ class Maps extends Base {
 
     public function usort_reorder($a,$b){
         $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'name';
-        $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'desc';
+        $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
         $result = strcmp(strtolower($a[$orderby]), strtolower($b[$orderby]));
         return ($order==='asc') ? $result : -$result;
     }

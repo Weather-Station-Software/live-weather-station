@@ -104,7 +104,7 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_color_picker('current-justgage-datas-fc-label-'. $this->station_guid, __('Override label color', 'live-weather-station'));
         $content .= $this->get_color_picker('current-justgage-datas-fc-value-'. $this->station_guid, __('Override value color', 'live-weather-station'));
         $content .= '<style>.wp-picker-container .wp-color-result.button {width: 100% !important;}</style>';
-        $content .= '<script>';
+        $content .= lws_print_begin_script();
         $content .= '    ( function( $ ){';
         $content .= '        function initColorPicker( widget ) {';
         $content .= '            widget.find( ".wp-color-picker" ).wpColorPicker( {';
@@ -128,7 +128,7 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '            }';
         $content .= '        } );';
         $content .= '    }( jQuery ) );';
-        $content .= '</script>';
+        $content .= lws_print_end_script();
         $content .= $this->get_placeholder_option_select();
         $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
