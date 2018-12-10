@@ -4280,10 +4280,10 @@ trait Output {
                 $result .= '      }' . PHP_EOL;
                 $result .= '    }' . PHP_EOL;
                 $result .= 'var callback' . $uniq . ' = function(mutationsList) {' . PHP_EOL;
-                $result .= '    for(var mutation of mutationsList) {' . PHP_EOL;
+                $result .= '    mutationsList.forEach(function (mutation, index) {' . PHP_EOL;
                 $result .= '        if (modeStandard) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display != "none") {if (mutation.oldValue !== null) {if (mutation.oldValue.indexOf("display: none") != -1) {chart'.$uniq.'.update();}}}}}}' . PHP_EOL;
                 $result .= '        if (modeElementorPopbox) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display == "block") {chart'.$uniq.'.update();}}}}' . PHP_EOL;
-                $result .= '    }' . PHP_EOL;
+                $result .= '    })' . PHP_EOL;
                 $result .= '};' . PHP_EOL;
                 $result .= 'observer' . $uniq . ' = new MutationObserver(callback' . $uniq . ');' . PHP_EOL;
                 $result .= 'observer' . $uniq . '.observe(targetNode' . $uniq . ',{attributes: true, subtree: true, attributeOldValue: true});' . PHP_EOL;
@@ -4313,10 +4313,10 @@ trait Output {
             $result .= '    }' . PHP_EOL;
             $result .= '  }' . PHP_EOL;
             $result .= 'var callback' . $uniq . ' = function(mutationsList) {' . PHP_EOL;
-            $result .= '    for(var mutation of mutationsList) {' . PHP_EOL;
+            $result .= '    mutationsList.forEach(function (mutation, index) {' . PHP_EOL;
             $result .= '        if (modeStandard) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display != "none") {if (mutation.oldValue !== null) {if (mutation.oldValue.indexOf("display: none") != -1) {chart'.$uniq.'.update();}}}}}}' . PHP_EOL;
             $result .= '        if (modeElementorPopbox) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display == "block") {chart'.$uniq.'.update();}}}}' . PHP_EOL;
-            $result .= '    }' . PHP_EOL;
+            $result .= '    })' . PHP_EOL;
             $result .= '};' . PHP_EOL;
             $result .= 'var observer' . $uniq . ' = new MutationObserver(callback' . $uniq . ');' . PHP_EOL;
             $result .= 'observer' . $uniq . '.observe(targetNode' . $uniq . ',{attributes: true, subtree: true, attributeOldValue: true});' . PHP_EOL;
