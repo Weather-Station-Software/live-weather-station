@@ -2609,9 +2609,10 @@ trait Generator {
         $theme = wp_get_theme();
         $result = array();
         $result[] = array(0, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), LWS_PLUGIN_NAME, 4));
-        $result[] = array(1, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), LWS_PLUGIN_NAME, 5));
-        $result[] = array(2, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), $theme->name, 4));
-        $result[] = array(3, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), $theme->name, 5));
+        $result[] = array(1, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LWS_PLUGIN_NAME, 5, 'CSS'));
+        $result[] = array(2, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LWS_PLUGIN_NAME, 5, 'JS+SVG'));
+        $result[] = array(3, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), $theme->name, 4));
+        $result[] = array(4, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), $theme->name, 5));
         return $result;
     }
 

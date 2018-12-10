@@ -223,12 +223,41 @@ function lws_register_script($handle, $source, $file, $deps = array(), $cdn_avai
  */
 function lws_font_awesome($all=false) {
     switch (get_option('live_weather_station_fa_mode')) {
-        case 1:
+        case 0:                                             // Font Awesome 4 outputed by Weather Station
+            wp_enqueue_style('lws-font-awesome-4');
+            if (!defined('LWS_FAR')) {
+                define('LWS_FAR', 'fa');
+            }
+            if (!defined('LWS_FAB')) {
+                define('LWS_FAB', 'fa');
+            }
+            if (!defined('LWS_FAS')) {
+                define('LWS_FAS', 'fa');
+            }
+            if (!defined('LWS_FA5')) {
+                define('LWS_FA5', false);
+            }
+            break;
+        case 1:                                             // Font Awesome 4 outputed by Weather Station as CSS
+            wp_enqueue_style('lws-font-awesome-5');
+            if (!defined('LWS_FAR')) {
+                define('LWS_FAR', 'far');
+            }
+            if (!defined('LWS_FAB')) {
+                define('LWS_FAB', 'fab');
+            }
+            if (!defined('LWS_FAS')) {
+                define('LWS_FAS', 'fas');
+            }
+            if (!defined('LWS_FA5')) {
+                define('LWS_FA5', true);
+            }
+            break;
+        case 2:                                             // Font Awesome 4 outputed by Weather Station as JS+SVG
             if ($all) {
                 wp_enqueue_script('lws-fa-all');
             }
             else {
-                //wp_enqueue_script('lws-fa-brands');
                 wp_enqueue_script('lws-fa-regular');
                 wp_enqueue_script('lws-fa-solid');
             }
@@ -245,8 +274,12 @@ function lws_font_awesome($all=false) {
                 define('LWS_FA5', true);
             }
             break;
-        case 2:
-            wp_dequeue_style('lws-font-awesome');
+        case 3:                                             // Font Awesome 4 outputed by theme or other plugin
+            wp_dequeue_style('lws-font-awesome-4');
+            wp_dequeue_style('lws-font-awesome-5');
+            wp_dequeue_script('lws-fa-all');
+            wp_dequeue_script('lws-fa-regular');
+            wp_dequeue_script('lws-fa-solid');
             if (!defined('LWS_FAR')) {
                 define('LWS_FAR', 'fa');
             }
@@ -260,15 +293,13 @@ function lws_font_awesome($all=false) {
                 define('LWS_FA5', false);
             }
             break;
-        case 3:
-            if ($all) {
-                wp_dequeue_script('lws-fa-all');
-            }
-            else {
-                //wp_dequeue_script('lws-fa-brands');
-                wp_dequeue_script('lws-fa-regular');
-                wp_dequeue_script('lws-fa-solid');
-            }
+        case 4:                                             // Font Awesome 5 outputed by theme or other plugin
+            wp_dequeue_style('lws-font-awesome-4');
+            wp_dequeue_style('lws-font-awesome-5');
+            wp_dequeue_script('lws-fa-all');
+            wp_dequeue_script('lws-fa-brands');
+            wp_dequeue_script('lws-fa-regular');
+            wp_dequeue_script('lws-fa-solid');
             if (!defined('LWS_FAR')) {
                 define('LWS_FAR', 'far');
             }
@@ -282,20 +313,6 @@ function lws_font_awesome($all=false) {
                 define('LWS_FA5', true);
             }
             break;
-        default:
-            wp_enqueue_style('lws-font-awesome');
-            if (!defined('LWS_FAR')) {
-                define('LWS_FAR', 'fa');
-            }
-            if (!defined('LWS_FAB')) {
-                define('LWS_FAB', 'fa');
-            }
-            if (!defined('LWS_FAS')) {
-                define('LWS_FAS', 'fa');
-            }
-            if (!defined('LWS_FA5')) {
-                define('LWS_FA5', false);
-            }
     }
 }
 
