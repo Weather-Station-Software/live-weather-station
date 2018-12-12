@@ -279,6 +279,9 @@ abstract class BaseHandling {
         $result .= 'border-radius: 50%;';
         $result .= 'text-align: center;';
         $result .= '}';
+        $result .= '#' . $this->uniq .' .leaflet-control-container a {';
+        $result .= 'text-decoration: none;';
+        $result .= '}';
         if (strpos($this->map_params['marker']['type'], 'weather:') === 0) {
             $result .= '#' . $this->uniq .' .leaflet-popup-pane {';
             $result .= 'top: -24px;';

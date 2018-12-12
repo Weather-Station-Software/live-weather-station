@@ -22,11 +22,13 @@
 * Improvement: added inline help for modules management.
 * Improvement: weather condition (as numerical ID) is now rightly truncated in historical data.
 * Improvement: FontAwesome 5 has been updated to version 5.5.0.
+* Improvement: it's now possible to choose the outputting method for Font Awesome: CSS or JS+SVG.
 * Improvement: the "scheduled tasks" tab is now replaced by a full admin page.
 * Improvement: better layout and icons alignment in the tasks scheduler.
 * Improvement: location (and coordinates) rendering is now consistent between views, widgets, maps and controls.
 * Improvement: inline help for the tasks scheduler.
 * Improvement: cache duration for historical graphs has been increased to 12 hours.
+* Improvement: huge speed optimization when loading graphs in some browsers.
 * Improvement: for better compatibility and reactivity improvement, the script loader now wait for the whole document is loaded to launch.
 * Improvement: loading of daily and historical graphs (in ajax preload and ajax refresh mode) has been greatly improved for pages where there are many graphs.
 * Improvement: in the add form for WeatherFlow station, there's now a link to the [official WeatherFlow map](https://smartweather.weatherflow.com/map/).
