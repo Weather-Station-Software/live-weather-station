@@ -67,7 +67,7 @@ trait Output {
 
 
     /**
-     * Get the changelog.
+     * Get a map.
      *
      * @param array $attributes The type of map queryed by the shortcode.
      * @return string The output of the shortcode.
@@ -147,11 +147,11 @@ trait Output {
             $result = str_replace('</ul>', '', $result);
             $result = str_replace('<li>', '', $result);
             $result = str_replace('</li>', '<br/>', $result);
-            $result = str_replace('New: ', '<i class="'. LWS_FAS . ' fa-fw fa-plus-square" aria-hidden="true">&nbsp;</i>&nbsp;', $result);
-            $result = str_replace('Removed: ', '<i class="'. LWS_FAS . ' fa-fw fa-minus-square" aria-hidden="true">&nbsp;</i>&nbsp;', $result);
-            $result = str_replace('New language: ', '<i class="'. LWS_FAS . ' fa-fw fa-language" aria-hidden="true">&nbsp;</i>&nbsp;new translation: ', $result);
-            $result = str_replace('Improvement: ', '<i class="'. LWS_FAS . ' fa-fw fa-check-square" aria-hidden="true">&nbsp;</i>&nbsp;', $result);
-            $result = str_replace('Bug fix: ', '<i class="'. LWS_FAS . ' fa-fw fa-bug" aria-hidden="true">&nbsp;</i>&nbsp;fixed: ', $result);
+            $result = str_replace('New: ', '<i class="'. LWS_FAS . ' fa-plus-square" aria-hidden="true"></i>&nbsp;', $result);
+            $result = str_replace('Removed: ', '<i class="'. LWS_FAS . ' fa-minus-square" aria-hidden="true"></i>&nbsp;', $result);
+            $result = str_replace('New language: ', '<i class="'. LWS_FAS . ' fa-language" aria-hidden="true"></i>&nbsp;new translation: ', $result);
+            $result = str_replace('Improvement: ', '<i class="'. LWS_FAS . ' fa-check-square" aria-hidden="true"></i>&nbsp;', $result);
+            $result = str_replace('Bug fix: ', '<i class="'. LWS_FAS . ' fa-bug" aria-hidden="true"></i>&nbsp;fixed: ', $result);
         }
 
         if ($style == 'divi_accordion') {

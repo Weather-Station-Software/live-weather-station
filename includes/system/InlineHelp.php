@@ -525,7 +525,7 @@ class InlineHelp {
             'content' => '<p>' . $s1 . '</p>' . $s);
 
         $s1 = __('From this screen, you can:', 'live-weather-station');
-        $s2 = '<strong>' . __('Force execution now', 'live-weather-station') . '</strong> &mdash; ' . __('Allows not to wait for the actual scheduling of the task to execute it.', 'live-weather-station');
+        $s2 = '<strong>' . __('Force execution now', 'live-weather-station') . '</strong> &mdash; ' . __('Allows to execute the task prior to the actual scheduling.', 'live-weather-station');
         $s3 = '<strong>' . __('Reschedule', 'live-weather-station') . '</strong> &mdash; ' . __('Allows to postpone the execution of the task until the next cycle.', 'live-weather-station');
         $tabs[] = array(
             'title' => __('Features', 'live-weather-station'),
@@ -581,7 +581,7 @@ class InlineHelp {
             $s9 = '<strong>' . __('Subscribe', 'live-weather-station') . '</strong> &mdash; ' . __('Displays a form to subscribe for latest news by mail.', 'live-weather-station');
             $s10 = '<strong>' . __('Translation', 'live-weather-station') . '</strong> &mdash; ' . __('If displayed, shows translations status.', 'live-weather-station');
             $s11= '<strong>' . __('About', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Displays information about %s and contributors.', 'live-weather-station'), LWS_PLUGIN_NAME);
-            $s12= '<strong>' . __('Licenses', 'live-weather-station') . '</strong> &mdash; ' . __('Displays important information about the licenses under which are published some weather data.', 'live-weather-station');
+            $s12= '<strong>' . __('Licenses', 'live-weather-station') . '</strong> &mdash; ' . __('Displays important information about the licenses under which some weather data are published.', 'live-weather-station');
             $s13= '<strong>' . __('Disclaimer', 'live-weather-station') . '</strong> &mdash; ' . __('Displays a warning stating who is responsible for what.', 'live-weather-station');
             $tabs[] = array(
                 'title' => __('Content', 'live-weather-station'),

@@ -238,7 +238,7 @@ function lws_font_awesome($all=false) {
                 define('LWS_FA5', false);
             }
             break;
-        case 1:                                             // Font Awesome 4 outputed by Weather Station as CSS
+        case 1:                                             // Font Awesome 5 outputed by Weather Station as CSS
             wp_enqueue_style('lws-font-awesome-5');
             if (!defined('LWS_FAR')) {
                 define('LWS_FAR', 'far');
@@ -253,7 +253,7 @@ function lws_font_awesome($all=false) {
                 define('LWS_FA5', true);
             }
             break;
-        case 2:                                             // Font Awesome 4 outputed by Weather Station as JS+SVG
+        case 2:                                             // Font Awesome 5 outputed by Weather Station as JS+SVG
             if ($all) {
                 wp_enqueue_script('lws-fa-all');
             }

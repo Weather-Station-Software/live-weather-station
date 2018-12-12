@@ -570,6 +570,10 @@ class Admin {
             'id' => 'lws_system_footer_scripts',
             'checked' => (bool)get_option('live_weather_station_footer_scripts'),
             'description' => __('Accelerate render time for pages with controls or graphs.', 'live-weather-station'));
+        $cbxs[] = array('text' => __('Wait for DOM', 'live-weather-station'),
+            'id' => 'lws_system_wait_for_dom',
+            'checked' => (bool)get_option('live_weather_station_wait_for_dom'),
+            'description' => __('Force script loader to wait the DOM is fully loaded before activating.', 'live-weather-station'));
         $cbxs[] = array('text' => __('Use public CDN', 'live-weather-station'),
             'id' => 'lws_system_use_cdn',
             'checked' => (bool)get_option('live_weather_station_use_cdn'),
@@ -1101,6 +1105,7 @@ class Admin {
                 update_option('live_weather_station_logger_retention', (integer)$_POST['lws_system_log_retention']);
                 update_option('live_weather_station_use_cdn', (array_key_exists('lws_system_use_cdn', $_POST) ? 1 : 0));
                 update_option('live_weather_station_footer_scripts', (array_key_exists('lws_system_footer_scripts', $_POST) ? 1 : 0));
+                update_option('live_weather_station_wait_for_dom', (array_key_exists('lws_system_wait_for_dom', $_POST) ? 1 : 0));
                 update_option('live_weather_station_txt_cache_bypass', (array_key_exists('lws_system_txt_cache_bypass', $_POST) ? 1 : 0));
                 update_option('live_weather_station_frontend_cache', (array_key_exists('lws_system_frontend_cache', $_POST) ? 1 : 0));
                 update_option('live_weather_station_widget_cache', (array_key_exists('lws_system_widget_cache', $_POST) ? 1 : 0));
