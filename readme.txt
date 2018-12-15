@@ -12,7 +12,7 @@ Donate link: https://support.laquadrature.net/
 Display on your WordPress site, in many elegant ways, the meteorological data collected by public or personal weather stations.
 
 == Description ==
-Weather Station is a plugin that allows you to display, on your WordPress site, meteorological data from weather stations you have access to. It provides full support for many models of weather stations and for free or paid OpenWeatherMap and Weather Underground services&hellip;
+Weather Station is a plugin that allows you to display, on your WordPress site, meteorological data from weather stations you have access to. It provides full support for [many models of weather stations and for free or paid services](https://weather.station.software/handbook/technical-specifications/)&hellip;
 Whether you own a weather station or not, you can enjoy the power of Weather Station!
 
 You can find many demos and documentation on the [official website](https://weather.station.software/).
@@ -38,15 +38,13 @@ Weather Station supports:
 * the Pioupiou wind stations (V1 & V2)
 * all stations published on Ambient Weather Network
 * all stations supported by softwares like Cumulus, Weather Display, WeeWX, etc. (so, yes, stations from Davis, La Crosse, Oregon Scientific, RainWise, etc. are supported)
-* all stations supported by softwares like WeatherLink, WsWin32, MeteoBridge (with stickertags export) 
-* all stations published on Weather Underground (regardless which model it is)
+* all stations supported by softwares like WeatherLink, WsWin32, MeteoBridge (with stickertags export)
 * all geolocation from OpenWeatherMap
 
 If you want, Weather Station can send outdoor data to the following services:
 
 * [Met Office](http://wow.metoffice.gov.uk/) weather observations website
 * [PWS Weather](http://www.pwsweather.com/)
-* [Weather Underground](https://www.wunderground.com/)
 
 = Instructions =
 You can find a more in-depth description and instructions to configure [in the handbook](https://weather.station.software/handbook/).
