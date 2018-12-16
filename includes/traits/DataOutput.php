@@ -9643,6 +9643,7 @@ trait Output {
                             break;
                         case 'cloudiness':
                             if (!$outdoor) {
+                                /* translators: appears in LCD display, so must not be longer than 6 characters, including punctuation  */
                                 $measure['sub_unit'] = __('clouds', 'live-weather-station');
                                 $measure['show_sub_unit'] = true;
                             }
