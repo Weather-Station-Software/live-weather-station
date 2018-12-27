@@ -50,8 +50,9 @@ class InlineHelp {
             'handbook/stations-management/module-management/',  //21
             'handbook/stations-management/data-export/',  //22
             'handbook/stations-management/data-import/',  //23
-            'handbook/files/',  //24
-            'handbook/maps/',  //25
+            'handbook/files-management/',  //24
+            'handbook/maps-management/',  //25
+            'handbook/maps-management/adding-a-map/',  //26
             ),
         /*'fr' => array (
             'documentation/reglages', //0  source: settings - general tab
@@ -431,7 +432,6 @@ class InlineHelp {
                 'content' => '<p>' . $s . '</p>');
 
             $s1 = sprintf(__('You can use the following controls to arrange the map screen to suit your workflow:', 'live-weather-station'), LWS_PLUGIN_NAME);
-            $s2 = '<strong>' . __('Screen Options', 'live-weather-station') . '</strong> &mdash; ' . sprintf(__('Use the Screen Options tab to choose which %s Dashboard boxes to show.', 'live-weather-station'), LWS_PLUGIN_NAME);
             $s3 = '<strong>' . __('Drag and Drop', 'live-weather-station') . '</strong> &mdash; ' . __('To rearrange the boxes, drag and drop by clicking on the title bar of the selected box and releasing when you see a gray dotted-line rectangle appear in the location you want to place the box.', 'live-weather-station');
             $s4 = '<strong>' . __('Box Controls', 'live-weather-station') . '</strong> &mdash; ' . __('Click the title bar of the box to expand or collapse it.', 'live-weather-station');
             $tabs[] = array(
@@ -447,10 +447,18 @@ class InlineHelp {
         foreach ($tabs as $tab) {
             $screen->add_help_tab($tab);
         }
-        $screen->set_help_sidebar(
-            '<p><strong>' . __('For more information:', 'live-weather-station') . '</strong></p>' .
-            '<p>' . self::get(25, '%s', __('Maps management', 'live-weather-station')) . '</p>' .
-            self::get_standard_help_sidebar());
+        if (isset($action) && $action == 'form') {
+            $screen->set_help_sidebar(
+                '<p><strong>' . __('For more information:', 'live-weather-station') . '</strong></p>' .
+                '<p>' . self::get(26, '%s', __('Maps', 'live-weather-station')) . '</p>' .
+                self::get_standard_help_sidebar());
+        }
+        else {
+            $screen->set_help_sidebar(
+                '<p><strong>' . __('For more information:', 'live-weather-station') . '</strong></p>' .
+                '<p>' . self::get(25, '%s', __('Maps management', 'live-weather-station')) . '</p>' .
+                self::get_standard_help_sidebar());
+        }
     }
 
     /**

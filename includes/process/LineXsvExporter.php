@@ -25,7 +25,7 @@ abstract class LineXsvExporter extends LineExporter {
      * @since 3.6.0
      */
     protected function url() {
-        return 'https://weather.station.software/handbook/background-processes/xsv-export/';
+        return 'https://weather.station.software/handbook/background-processes/xsv-exporter/';
     }
 
     /**

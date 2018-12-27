@@ -4,14 +4,12 @@
 
  * 3.x - Services availability (as analytics tab)
  * 3.x - Wind state
- * 3.x - Stations map
  * 3.x - Sun (meridian) transit time
  * 3.x - Querying icons texts via shortcodes
  * 3.x - Forest fire weather index computing
  * 3.x - Aridity index computing
  * 3.x - Pushing data to twitter / slack / fb / ...
  * 3.x - Number formating
- * 3.x - Historical data import
  * 3.x - Astronomical seasons for period control
  * 4.x - Agricultural indexes (EMC for grains)
  * 4.x - 4 hours forecasting
@@ -79,20 +77,12 @@ Fully delete a station in fast collect mode
 * DOCUMENTATION       *
 ***********************
 
-import data page
-export data page
-manage modules page
-file manager page
-add export manager and import manager as events systems
-add storage manager as events system
-windy, stame, mapbox, thunderforest as event source
-add windy, stame, mapbox, thunderforest  in service page
 
 ***********************
 * 3.6.x               *
 ***********************
 
-Station compatibility list
+
 
 GREEK TRANSLATION
 
@@ -111,6 +101,10 @@ use wind classification (textual, charts, )
 add Zambretti forecast
 
 min/max for new indexes
+
+MapTiler.com
+
+avg / mean / ... for angular values
 
 
 
