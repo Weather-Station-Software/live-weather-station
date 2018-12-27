@@ -781,7 +781,7 @@ trait Storage {
                 foreach ($wug as $station) {
                     $message .= '     - ' . $station . "\r\n";
                 }
-                $message .= "\r\n" . __('To know the reasons for this, and discover alternative methods to collect weather data with %s, please read the following article:', 'live-weather-station') . ' ' . $url . ".\r\n" . "\r\n";
+                $message .= "\r\n" . sprintf(__('To know the reasons for this, and discover alternative methods to collect weather data with %s, please read the following article:', 'live-weather-station'), LWS_PLUGIN_NAME) . ' ' . $url . ".\r\n" . "\r\n";
                 if (function_exists('wp_mail')) {
                     wp_mail($to, $subject, $message);
                 }

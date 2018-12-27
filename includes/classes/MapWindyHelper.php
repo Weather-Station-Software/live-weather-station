@@ -114,8 +114,9 @@ class WindyHandling extends BaseHandling {
      * @since 3.7.0
      */
     protected function specific_styles(){
-        $result = "#" . $this->uniq . " #windy #logo-wrapper {left: -18px !important;top: -4px !important;}" . PHP_EOL;
+        $result = "#" . $this->uniq . " #windy #logo-wrapper {left: -18px !important;top: 0px !important;}" . PHP_EOL;
         $result .= "#" . $this->uniq . " #windy #logo {left: 0 !important;margin-left: 0 !important;}" . PHP_EOL;
+        $result .= "#" . $this->uniq . " #windy #logo img {pointer-events: auto !important;}" . PHP_EOL;
         if (!$this->map_params['specific']['controls']['zoom']) {
             $result .= "#" . $this->uniq . " #windy #embed-zoom {display: none !important;}" . PHP_EOL;
         }

@@ -4,7 +4,7 @@
 * New: mapping service allowing to generate maps with selected station(s) on weather and agricultural layers (OpenWeatherMap).
 * New: mapping service allowing to generate maps with selected station(s) on animated weather layers (Windy.com).
 * New: mapping service allowing to generate maps with selected station(s) on beautiful static layers (Mapbox, Stamen, Thunderforest).
-* New: historical data import from Netatmo cloud services for weather stations and "Healthy Home Coaches".
+* New: historical data import from Netatmo cloud services for personal weather stations and "Healthy Home Coaches".
 * New: historical data import from Pioupiou servers for V1 & V2 sensors.
 * New: historical data export as CSV, DSV, TSV or ND-JSON file.
 * New: historical data import from previously saved file (ND-JSON).
@@ -23,6 +23,7 @@
 * Improvement: weather condition (as numerical ID) is now rightly truncated in historical data.
 * Improvement: FontAwesome 5 has been updated to version 5.5.0.
 * Improvement: it's now possible to choose the outputting method for Font Awesome: CSS or JS+SVG.
+* Improvement: default mode for outputting FontAwesome is now "FontAwesome 5 as CSS".
 * Improvement: the "scheduled tasks" tab is now replaced by a full admin page.
 * Improvement: better layout and icons alignment in the tasks scheduler.
 * Improvement: location (and coordinates) rendering is now consistent between views, widgets, maps and controls.
