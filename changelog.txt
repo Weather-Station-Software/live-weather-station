@@ -1,4 +1,12 @@
 
+#3.7.1 / December 28th, 2018
+
+* Improvement: the precision of average and standard deviation computation for angles (wind and gust) have been drastically improved.
+* Improvement: better handling for error 500 _sometimes_ sent by Netatmmo servers.
+* Bug fix: some modules have "unknown" as displayed name (thanks to [@gerhard](https://weather.station.software/community/profile/gerhard/)).
+* Bug fix: in some cases, maps are displayed without icons.
+* Bug fix: the files manager generates PHP warnings when WordPress is hosted on a Windows server (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+
 #3.7.0 / December 27th, 2018
 
 * New: mapping service allowing to generate maps with selected station(s) on weather and agricultural layers (OpenWeatherMap).

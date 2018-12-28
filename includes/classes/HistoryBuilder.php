@@ -18,6 +18,31 @@ use WeatherStation\Data\DateTime\Conversion;
  * @since 3.3.2
  */
 
+function lws_array_average($arr, $type) {
+    $result = 0;
+    if (count($arr) > 0) {
+        if (in_array($type, array('winddirection', 'gustdirection','windangle', 'gustangle'))) {
+            $angles = array_map('deg2rad', $arr);
+            $s_ = 0;
+            $c_ = 0;
+            $len = count($angles);
+            for ($i = 0; $i < $len; $i++) {
+                $s_ += sin($angles[$i]);
+                $c_ += cos($angles[$i]);
+            }
+            $result = rad2deg(atan2($s_, $c_));
+            if ($result < 0) {
+                $result = 360 + $result;
+            }
+            //error_log($type . ' : angular='.$result. ' / avg='.array_sum($arr) / count($arr));
+        }
+        else {
+            $result = array_sum($arr) / count($arr);
+        }
+    }
+    return $result;
+}
+
 function lws_array_median($arr) {
     if($arr && is_array($arr)){
         $count = count($arr);
@@ -28,19 +53,40 @@ function lws_array_median($arr) {
     return 0;
 }
 
-function lws_array_sd($arr) {
-    $no_value = -123456789;
+function lws_array_sd($arr, $type) {
     $n = count($arr);
     if ($n < 2) {
-        return $no_value;
+        return 0;
     }
-    $mean = array_sum($arr) / $n;
-    $carry = 0.0;
-    foreach ($arr as $val) {
-        $d = ((double) $val) - $mean;
-        $carry += $d * $d;
+    if (in_array($type, array('winddirection', 'gustdirection','windangle', 'gustangle'))) {
+        $angles = array_map('deg2rad', $arr);
+        $s_ = 0;
+        $c_ = 0;
+        $len = count($angles);
+        for ($i = 0; $i < $len; $i++) {
+            $s_ += sin($angles[$i]);
+            $c_ += cos($angles[$i]);
+        }
+        $s_ = $s_ / $n;
+        $c_ = $c_ / $n;
+        $v = -log($s_ * $s_ + $c_ * $c_);
+        if ($v > 0) {
+            $result = rad2deg(sqrt($v));
+        }
+        else {
+            $result = 0;
+        }
     }
-    return sqrt($carry / $n);
+    else {
+        $mean = lws_array_average($arr, $type);
+        $carry = 0.0;
+        foreach ($arr as $val) {
+            $d = ((double)$val) - $mean;
+            $carry += $d * $d;
+        }
+        $result =  sqrt($carry / $n);
+    }
+    return $result;
 }
 
 class Builder
@@ -264,13 +310,13 @@ class Builder
                                     $v = min($d);
                                     break;
                                 case 'avg':
-                                    $v = array_sum($d) / count($d);
+                                    $v = lws_array_average($d, $type);
                                     break;
                                 case 'med':
                                     $v = lws_array_median($d);
                                     break;
                                 case 'dev':
-                                    $v = lws_array_sd($d);
+                                    $v = lws_array_sd($d, $type);
                                     break;
                                 default:
                                     $v = $no_value;

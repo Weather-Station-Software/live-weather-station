@@ -195,6 +195,11 @@ abstract class BaseHandling {
         wp_enqueue_script('jquery');
         wp_enqueue_script('lws-leaflet');
         wp_enqueue_style('lws-leaflet');
+        if ($this->map_params['marker']['type'] != 'none') {
+            wp_enqueue_style('lws-weather-icons');
+            wp_enqueue_style('lws-weather-icons-wind');
+            lws_font_awesome();
+        }
         $result .= $this->specific_resources();
         return $result;
     }

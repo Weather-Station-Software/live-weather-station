@@ -360,7 +360,7 @@ trait Handling {
         $hi_co2 = null;
         $hi_nse = null;
         foreach($types as $type) {
-            if (array_key_exists($type, $datas)) {
+            if (isset($datas) && is_array($datas) && array_key_exists($type, $datas)) {
                 $updates = array();
                 $updates['device_id'] = $device_id;
                 $updates['device_name'] = $device_name;
