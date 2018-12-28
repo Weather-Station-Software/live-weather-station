@@ -92,13 +92,12 @@ class Manager
      *
      * @param string $device_id The device id.
      * @param string $module_id The module id.
-     * @param string $module_name Optional. The original name of the module.
      * @return string The module name.
      *
      * @since 3.5.0
      */
-    public static function get_module_name($device_id, $module_id, $module_name = 'unknown') {
-        $result = $module_name;
+    public static function get_module_name($device_id, $module_id) {
+        $result = 'unknown';
         $list = self::get_modules_details($device_id);
         foreach ($list as $module) {
             if ($module['module_id'] == $module_id) {
@@ -107,6 +106,26 @@ class Manager
                     $result = $module['module_name'];
                 }
                 break;
+            }
+        }
+        if ($result === 'unknown') {
+            global $wpdb;
+            $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+            $sql = "SELECT DISTINCT module_type, module_name FROM " . $table_name . " WHERE device_id='" . $device_id . "' AND module_id='" . $module_id . "';";
+            $query = $wpdb->get_results($sql, ARRAY_A);
+            if (count($query) > 0) {
+                $m = array();
+                $m['device_id'] = $device_id;
+                $m['module_id'] = $module_id;
+                $m['module_type'] = $query[0]['module_type'];
+                $m['module_name'] = $query[0]['module_name'];
+                $m['screen_name'] = '';
+                $m['hidden'] = 0;
+                $modules = array();
+                $modules[] = $m;
+                if (self::set_modules_details($modules)) {
+                    $result = $query[0]['module_name'];
+                }
             }
         }
         return $result;

@@ -240,9 +240,11 @@ class Manager {
      */
     public static function raw_list_dir() {
         $result = array();
-        foreach (array_diff(scandir(self::$dir), array('..', '.')) as $item) {
-            if (!is_dir(self::$dir . $item)) {
-                $result[] = $item;
+        if (self::check_for_write()) {
+            foreach (array_diff(scandir(self::$dir), array('..', '.')) as $item) {
+                if (!is_dir(self::$dir . $item)) {
+                    $result[] = $item;
+                }
             }
         }
         return $result;

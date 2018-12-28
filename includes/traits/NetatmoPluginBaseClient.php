@@ -50,14 +50,24 @@ trait BaseClient {
                 }
             }
             if ($store) {
-                $this->get_netatmo_dashboard($device['_id'], $device['station_name'], $device['_id'], $device['module_name'],
-                    $device['type'], $device['data_type'], $device['dashboard_data'], $device['place'], $device['wifi_status'], $device['firmware'], $device['last_status_store'], 0, $device['date_setup'], $device['last_setup'], $device['last_upgrade'], $is_hc);
-                Logger::debug($this->facility, $this->service_name, $device['_id'], $device['station_name'], $device['_id'], $device['module_name'], 0, 'Success while collecting module records.');
-                foreach($device['modules'] as &$module)
-                {
-                    $this->get_netatmo_dashboard($device['_id'], $device['station_name'], $module['_id'], $module['module_name'],
-                        $module['type'], $module['data_type'], $module['dashboard_data'], $device['place'], $module['rf_status'], $module['firmware'], $module['last_seen'], $module['battery_vp'], null, $module['last_setup'], null, $is_hc);
-                    Logger::debug($this->facility, $this->service_name, $device['_id'], $device['station_name'], $module['_id'], $module['module_name'], 0, 'Success while collecting module records.');
+                if (isset($device) && is_array($device) && array_key_exists('dashboard_data', $device)) {
+                    $this->get_netatmo_dashboard($device['_id'], $device['station_name'], $device['_id'], $device['module_name'],
+                        $device['type'], $device['data_type'], $device['dashboard_data'], $device['place'], $device['wifi_status'], $device['firmware'], $device['last_status_store'], 0, $device['date_setup'], $device['last_setup'], $device['last_upgrade'], $is_hc);
+                    Logger::debug($this->facility, $this->service_name, $device['_id'], $device['station_name'], $device['_id'], $device['module_name'], 0, 'Success while collecting device records.');
+                    foreach($device['modules'] as &$module)
+                    {
+                        if (isset($module) && is_array($module) && array_key_exists('dashboard_data', $module)) {
+                            $this->get_netatmo_dashboard($device['_id'], $device['station_name'], $module['_id'], $module['module_name'],
+                                $module['type'], $module['data_type'], $module['dashboard_data'], $device['place'], $module['rf_status'], $module['firmware'], $module['last_seen'], $module['battery_vp'], null, $module['last_setup'], null, $is_hc);
+                            Logger::debug($this->facility, $this->service_name, $device['_id'], $device['station_name'], $module['_id'], $module['module_name'], 0, 'Success while collecting module records.');
+                        }
+                        else {
+                            Logger::warning($this->facility, $this->service_name, $device['_id'], $device['station_name'], null, null, 500, 'Inconsistent data in a module.');
+                        }
+                    }
+                }
+                else {
+                    Logger::warning($this->facility, $this->service_name, null, null, null, null, 500, 'Inconsistent data in a station.');
                 }
             }
         }

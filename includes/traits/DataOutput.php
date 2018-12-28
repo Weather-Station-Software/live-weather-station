@@ -639,7 +639,7 @@ trait Output {
                                     $ranges[$i] = '"' . $this->get_angle_text($i * $angle_val) . '":[' . (float)$rmin . ',' . (float)$rmax . ']';
                                 }
                                 $range= implode(',', $ranges);
-                                $modulename = DeviceManager::get_module_name($args[2]['device_id'], $args[2]['module_id'], 'unknown');
+                                $modulename = DeviceManager::get_module_name($args[2]['device_id'], $args[2]['module_id']);
                                 $l = array();
                                 if ($mode == 'yearly') {
                                     $l['key'] = $this->get_measurement_type($args[2]['measurement'], false, $module_type) . ' - ' . ucfirst($this->get_operation_name('max', true)) . ' - ' . $modulename;
@@ -1248,7 +1248,7 @@ trait Output {
                                     $a['value'] = $v;
                                     $t[] = $a;
                                 }
-                                $modulename = DeviceManager::get_module_name($arg['device_id'], $arg['module_id'], 'unknown');
+                                $modulename = DeviceManager::get_module_name($arg['device_id'], $arg['module_id']);
                                 $l = array();
                                 if ($mode == 'yearly') {
                                     $l['key'] = $this->get_measurement_type($arg['measurement']) . ' - ' . ucfirst($this->get_operation_name($arg['set'], true)) . ' - ' . $modulename;
