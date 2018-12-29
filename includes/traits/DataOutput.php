@@ -6820,6 +6820,8 @@ trait Output {
             case 'steadman':
             case 'wind_chill':
             case 'soil_temperature':
+            case 'soil_temperature_min':
+            case 'soil_temperature_max':
                 $result = true;
         }
         return $result;
@@ -6880,6 +6882,8 @@ trait Output {
                 }
                 break;
             case 'co2':
+            case 'co2_min':
+            case 'co2_max':
                 $ref = get_option('live_weather_station_unit_gas');
                 $result = $this->get_co2($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_co2_unit($ref) : '');
@@ -6907,6 +6911,8 @@ trait Output {
                 $result .= ($unit ? $this->unit_espace.$this->get_cloudiness_unit() : '');
                 break;
             case 'noise':
+            case 'noise_min':
+            case 'noise_max':
                 $result = $this->get_noise($value);
                 $result .= ($unit ? $this->unit_espace.$this->get_noise_unit() : '');
                 break;
@@ -7002,9 +7008,19 @@ trait Output {
                 $result = $this->get_cloud_ceiling($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_altitude_unit($ref) : '');
                 break;
-            case 'temperature_trend':
+            case 'co2_trend':
+            case 'humidity_trend':
+            case 'noise_trend':
             case 'pressure_trend':
             case 'pressure_sl_trend':
+            case 'temperature_trend':
+            case 'irradiance_trend':
+            case 'uv_index_trend':
+            case 'illuminance_trend':
+            case 'soil_temperature_trend':
+            case 'moisture_content_trend':
+            case 'moisture_tension_trend':
+            case 'windstrength_trend':
                 if ($textual) {
                     $result = $this->get_trend_text($value);
                 }
@@ -7172,28 +7188,40 @@ trait Output {
 
             // SOLAR
             case 'irradiance':
+            case 'irradiance_min':
+            case 'irradiance_max':
                 $result = $this->get_irradiance($value);
                 $result .= ($unit ? $this->unit_espace.$this->get_irradiance_unit() : '');
                 break;
             case 'uv_index':
+            case 'uv_index_min':
+            case 'uv_index_max':
                 $result = (string)$value;
                 break;
             case 'illuminance':
+            case 'illuminance_min':
+            case 'illuminance_max':
                 $result = $this->get_illuminance($value);
                 $result .= ($unit ? $this->unit_espace.$this->get_illuminance_unit() : '');
                 break;
             // SOIL
             case 'soil_temperature':
+            case 'soil_temperature_min':
+            case 'soil_temperature_max':
                 $ref = get_option('live_weather_station_unit_temperature') ;
                 $result = $this->get_temperature($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_temperature_unit($ref) : '');
                 break;
             case 'leaf_wetness':
             case 'moisture_content':
+            case 'moisture_content_min':
+            case 'moisture_content_max':
                 $result = $this->get_humidity($value);
                 $result .= ($unit ? $this->unit_espace.$this->get_humidity_unit() : '');
                 break;
             case 'moisture_tension':
+            case 'moisture_tension_min':
+            case 'moisture_tension_max':
                 $ref = get_option('live_weather_station_unit_pressure') ;
                 $result = $this->get_pressure($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_pressure_unit($ref) : '');
@@ -7879,6 +7907,8 @@ trait Output {
                 $result['dimension'] = 'percentage';
                 break;
             case 'co2':
+            case 'co2_min':
+            case 'co2_max':
                 $ref = get_option('live_weather_station_unit_gas');
                 if ($force_ref != 0) {
                     $ref = $force_ref;
@@ -7931,6 +7961,8 @@ trait Output {
                 $result['dimension'] = 'percentage';
                 break;
             case 'noise':
+            case 'noise_min':
+            case 'noise_max':
                 $ref = 0;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
@@ -8270,6 +8302,8 @@ trait Output {
                 break;
             // SOLAR
             case 'irradiance':
+            case 'irradiance_min':
+            case 'irradiance_max':
                 $ref = 0;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
@@ -8288,6 +8322,8 @@ trait Output {
                 $result['dimension'] = 'duration';
                 break;
             case 'illuminance':
+            case 'illuminance_min':
+            case 'illuminance_max':
                 $ref = 0;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
@@ -8297,11 +8333,15 @@ trait Output {
                 $result['dimension'] = 'illuminance';
                 break;
             case 'uv_index':
+            case 'uv_index_min':
+            case 'uv_index_max':
                 $result['comp'] = __('UV', 'live-weather-station') ;
                 $result['dimension'] = 'base-11';
                 break;
             // SOIL
             case 'soil_temperature':
+            case 'soil_temperature_min':
+            case 'soil_temperature_max':
                 $ref = get_option('live_weather_station_unit_temperature') ;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
@@ -8321,6 +8361,8 @@ trait Output {
                 $result['dimension'] = 'percentage';
                 break;
             case 'moisture_content':
+            case 'moisture_content_min':
+            case 'moisture_content_max':
                 $ref = 0;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
@@ -8331,6 +8373,8 @@ trait Output {
                 $result['dimension'] = 'percentage';
                 break;
             case 'moisture_tension':
+            case 'moisture_tension_min':
+            case 'moisture_tension_max':
                 $ref = get_option('live_weather_station_unit_pressure') ;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
@@ -8566,6 +8610,8 @@ trait Output {
                 $result = __('CBi', 'live-weather-station') ;
                 break;
             case 'co2':
+            case 'co2_min':
+            case 'co2_max':
                 $result = __('CO₂', 'live-weather-station') ;
                 break;
             case 'co':
@@ -8583,6 +8629,8 @@ trait Output {
                 $result = __('humidity', 'live-weather-station') ;
                 break;
             case 'noise':
+            case 'noise_min':
+            case 'noise_max':
                 $result = __('noise', 'live-weather-station') ;
                 break;
             case 'rain':
@@ -8665,6 +8713,8 @@ trait Output {
             case 'potential_temperature':
             case 'equivalent_potential_temperature':
             case 'soil_temperature':
+            case 'soil_temperature_min':
+            case 'soil_temperature_max':
                 $result = __('temperature', 'live-weather-station') ;
                 break;
             case 'dawn':
@@ -8692,19 +8742,27 @@ trait Output {
                 $result = __('vapor', 'live-weather-station') ;
                 break;
             case 'irradiance':
+            case 'irradiance_min':
+            case 'irradiance_max':
                 $result = __('irradiance', 'live-weather-station') ;
                 break;
             case 'sunshine':
                 $result = __('sunshine', 'live-weather-station') ;
                 break;
             case 'illuminance':
+            case 'illuminance_min':
+            case 'illuminance_max':
                 $result = __('illuminance', 'live-weather-station') ;
                 break;
             case 'leaf_wetness':
                 $result = __('wetness', 'live-weather-station') ;
                 break;
             case 'moisture_content':
+            case 'moisture_content_min':
+            case 'moisture_content_max':
             case 'moisture_tension':
+            case 'moisture_tension_min':
+            case 'moisture_tension_max':
                 $result = __('moisture', 'live-weather-station') ;
                 break;
             case 'evapotranspiration':

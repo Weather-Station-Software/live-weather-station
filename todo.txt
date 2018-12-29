@@ -112,3 +112,19 @@ avg / mean / ... for angular values
 -- Comparison
 
 Bonus : min/max, banner
+
+
+Extension :
+co2
+humidity
+noise
+pressure
+pressure_sl
+temperature
+irradiance
+uv_index
+illuminance
+soil_temperature
+moisture_content
+moisture_tension
+windstrength (only trend)
