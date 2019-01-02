@@ -57,7 +57,7 @@
 * IMPROVEMENTS TO DO  *
 ***********************
 
-Warning box (locale, php version, WP version)
+Warning box (locale, WP version)
 Misc display options (widgets, charts, etc.)
 
 ***********************
@@ -84,7 +84,7 @@ Fully delete a station in fast collect mode
 
 
 
-GREEK TRANSLATION
+
 
 Chart for station comparison
 
@@ -103,8 +103,6 @@ add Zambretti forecast
 min/max for new indexes
 
 MapTiler.com
-
-avg / mean / ... for angular values
 
 
 

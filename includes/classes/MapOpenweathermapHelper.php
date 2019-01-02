@@ -165,6 +165,9 @@ class OpenweathermapHandling extends BaseHandling {
         $result .= "  center: new L.LatLng(" . $this->map_params['common']['loc_latitude'] . ", " . $this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
         $result .= '  maxZoom: ' . $this->maxzoom . ',' . PHP_EOL;
         $result .= '  minZoom: ' . $this->minzoom . ',' . PHP_EOL;
+        if (!$this->map_params['specific']['controls']['zoom']) {
+            $result .= "  scrollWheelZoom: false," . PHP_EOL;
+        }
         $result .= "  zoom: " . $this->map_params['common']['loc_zoom'] . PHP_EOL;
         $result .= "});" . PHP_EOL;
         $result .= "map.attributionControl.setPrefix('');";

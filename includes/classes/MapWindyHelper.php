@@ -167,6 +167,7 @@ class WindyHandling extends BaseHandling {
         $result .= "  zoom: " . $this->map_params['common']['loc_zoom'] . "," . PHP_EOL;
         $result .= "  hourFormat: '24h'," . PHP_EOL;
         $result .= "  latlon: true," . PHP_EOL;
+
         $result .= "  overlay: '" . $this->map_params['specific']['options']['overlay'] . "'," . PHP_EOL;
         if ($this->map_params['specific']['options']['isolines'] !== 'none') {
             $result .= "  isolines: '" . $this->map_params['specific']['options']['isolines'] . "'," . PHP_EOL;
@@ -183,6 +184,9 @@ class WindyHandling extends BaseHandling {
         $result .= "  overlays.waves.setMetric('" . $this->get_altitude_unit(get_option('live_weather_station_unit_altitude')) ."')" . PHP_EOL;
         $result .= "  overlays.pressure.setMetric('" . $this->get_pressure_unit(get_option('live_weather_station_unit_pressure')) ."')" . PHP_EOL;
         //$result .= "  overlays.altitude.setMetric('" . $this->get_altitude_unit(get_option('live_weather_station_unit_altitude')) ."')" . PHP_EOL;
+        if (!$this->map_params['specific']['controls']['zoom']) {
+            $result .= "  map.scrollWheelZoom.disable()" . PHP_EOL;
+        }
         if ($this->map_params['marker']['type'] != 'none') {
             $result .= "" . PHP_EOL;
             $result .= $this->output_markers();

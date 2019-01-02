@@ -55,7 +55,11 @@ class I18n {
                 $i18n = new Intl();
                 $i18n->cron_run();
             }
+            //error_log('USE PARTIAL TRANSLATION');
             return load_textdomain($domain, $file);
+        }
+        else {
+            //error_log('DONT USE PARTIAL TRANSLATION');
         }
         return $override;
     }

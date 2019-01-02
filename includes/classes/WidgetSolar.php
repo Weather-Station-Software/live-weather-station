@@ -363,7 +363,7 @@ class Solar extends \WP_Widget {
                             $datas['sunshine']['munit'] = __('min.', 'live-weather-station');
                         }
                         else {
-                            $sunshine = false;
+                            $show_sunshine = false;
                         }
                         if (array_key_exists('illuminance', $module['datas'])) {
                             $NAModule5 = true;

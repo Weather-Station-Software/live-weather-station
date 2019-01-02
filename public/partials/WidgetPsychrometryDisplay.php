@@ -167,7 +167,7 @@ else {
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"><?php echo $datas['partial_vapor_pressure']['unit']; ?></div>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x32-<?php echo $id ?> wi-barometer"></i><i class="<?php echo LWS_FAS;?> fa-ellipsis-v" <?php echo LWS_FA5?'style="font-size:26px!important;' . $sh . '"':'style="font-size:30px!important;"';?>></i>&nbsp;
+                        <i class="wi wi-x32-<?php echo $id ?> wi-barometer"></i><i class="<?php echo LWS_FAS;?> fa-ellipsis-v" <?php echo LWS_FA_SVG?'style="font-size:26px!important;' . $sh . '"':'style="font-size:30px!important;"';?>></i>&nbsp;
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
@@ -188,7 +188,7 @@ else {
                 <!-- AIR DENSITY -->
                 <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Air density', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="<?php echo LWS_FAS;?> wi-x26-<?php echo $id ?> fa-adjust" <?php echo LWS_FA5?'style="font-size:30px!important;' . $sh . '"':'';?>></i>
+                        <i class="<?php echo LWS_FAS;?> wi-x26-<?php echo $id ?> fa-adjust" <?php echo LWS_FA_SVG?'style="font-size:30px!important;' . $sh . '"':'';?>></i>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
@@ -222,7 +222,7 @@ else {
                 <!-- EMC -->
                 <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Equilibrium moisture content', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="<?php echo LWS_FAS;?> wi-x26-<?php echo $id ?> fa-tree" <?php echo LWS_FA5?'style="font-size:32px!important;' . $sh . '"':'style="font-size:22px!important;"';?>></i>
+                        <i class="<?php echo LWS_FAS;?> wi-x26-<?php echo $id ?> fa-tree" <?php echo LWS_FA_SVG?'style="font-size:32px!important;' . $sh . '"':'style="font-size:22px!important;"';?>></i>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">

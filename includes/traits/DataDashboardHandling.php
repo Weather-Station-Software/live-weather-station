@@ -31,7 +31,7 @@ trait Handling {
      * @param array $types The data types available in the $datas array.
      * @param array $datas The dashboard datas.
      * @param array $place Optional. The place datas.
-     * @param array $last_seen Optional. Must add the last_seen value.
+     * @param boolean $last_seen Optional. Must add the last_seen value.
      * @since 2.0.0
      */
     private function get_dashboard($station_type, $device_id, $device_name, $module_id, $module_name, $module_type, $types, $datas, $place=null, $last_seen=false) {
