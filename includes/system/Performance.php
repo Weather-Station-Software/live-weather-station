@@ -85,7 +85,7 @@ class Performance {
         $metrics = array('count', 'time');
         $aggregates = array('efficiency', 'time_saving');
         global $wpdb;
-        $sql = "SELECT * FROM " . $wpdb->prefix.Cache::live_weather_station_performance_cache_table() . " ;";
+        $sql = "SELECT * FROM " . $wpdb->prefix.Cache::live_weather_station_performance_cache_table() . " ORDER BY `timestamp` ASC ;";
         $cutoff = time() - (get_option('live_weather_station_analytics_cutoff', 7)*DAY_IN_SECONDS);
         $cutoff24 = time() - (DAY_IN_SECONDS);
         $cutoff30 = time() - (30*DAY_IN_SECONDS);
@@ -288,7 +288,7 @@ class Performance {
         }
         $fields = array('system', 'push', 'pull', 'history');
         global $wpdb;
-        $sql = "SELECT * FROM " . $wpdb->prefix.Cache::live_weather_station_performance_cron_table() . " ;";
+        $sql = "SELECT * FROM " . $wpdb->prefix.Cache::live_weather_station_performance_cron_table() . " ORDER BY `timestamp` ASC ;";
         $cutoff = time() - (get_option('live_weather_station_analytics_cutoff', 7)*DAY_IN_SECONDS);
         $cutoff24 = time() - (DAY_IN_SECONDS);
         $cutoff30 = time() - (30*DAY_IN_SECONDS);
@@ -466,7 +466,7 @@ class Performance {
             return $result;
         }
         global $wpdb;
-        $sql = "SELECT * FROM " . $wpdb->prefix.Cache::live_weather_station_data_year_table() . " ;";
+        $sql = "SELECT * FROM " . $wpdb->prefix.Cache::live_weather_station_data_year_table() . " ORDER BY `timestamp` ASC ;";
         $cutoff = time() - (get_option('live_weather_station_analytics_cutoff', 7)*DAY_IN_SECONDS);
         $values = array();
         $jsoned = array();
@@ -549,7 +549,7 @@ class Performance {
             }
         }
         foreach ($counts as $count) {
-            $sql = "SELECT `level`, count(*) as cpt FROM " . $wpdb->prefix . Cache::live_weather_station_log_table() . " WHERE timestamp > '" . $cutoff[$count] . "'GROUP BY `level`;";
+            $sql = "SELECT `level`, count(*) as cpt FROM " . $wpdb->prefix . Cache::live_weather_station_log_table() . " WHERE timestamp > '" . $cutoff[$count] . "'GROUP BY `level` ORDER BY `timestamp` ASC;";
             try {
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
@@ -697,7 +697,7 @@ class Performance {
 
         // General values
         $service24 = array();
-        $sql = "SELECT DISTINCT(service) FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . ' ORDER BY service ASC';
+        $sql = "SELECT DISTINCT(service) FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . ' ORDER BY service ASC, `timestamp` ASC';
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -712,7 +712,7 @@ class Performance {
         $data['service24'] = $service24;
 
         $service30 = array();
-        $sql = "SELECT DISTINCT(service) FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . ' ORDER BY service ASC';
+        $sql = "SELECT DISTINCT(service) FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . ' ORDER BY service ASC, `timestamp` ASC';
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -738,7 +738,7 @@ class Performance {
         $cutoff = date('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
         $where = "timestamp>='" . $cutoff . "'";
         $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ";
-        $sql .= $where . " GROUP BY service;";
+        $sql .= $where . " GROUP BY service ORDER BY `timestamp` ASC;";
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -788,7 +788,7 @@ class Performance {
         $today = date('Y-m-d') . ' 00:00:00';
         $where = "timestamp>='" . $cutoff . "' AND timestamp<'" . $today . "'";
         $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ";
-        $sql .= $where . " GROUP BY service;";
+        $sql .= $where . " GROUP BY service ORDER BY `timestamp` ASC;";
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -833,7 +833,7 @@ class Performance {
             }
         }
         $select = "service, " . implode(', ', $fields);
-        $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " GROUP BY service;";
+        $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " GROUP BY service ORDER BY `timestamp` ASC;";
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -864,7 +864,7 @@ class Performance {
         $values = array();
         $cutoff = date('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
         $where = "timestamp>='" . $cutoff . "'";
-        $sql = "SELECT DISTINCT(timestamp) FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ". $where ;
+        $sql = "SELECT DISTINCT(timestamp) FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ". $where . " ORDER BY `timestamp` ASC;";
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -885,7 +885,7 @@ class Performance {
         catch (\Exception $ex) {
             //
         }
-        $sql = "SELECT * FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ". $where ;
+        $sql = "SELECT * FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ". $where . " ORDER BY `timestamp` ASC;";
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -941,7 +941,7 @@ class Performance {
         $values = array();
         $cutoff = date('Y-m-d',time()). ' 00:00:00';
         $where = "timestamp<'" . $cutoff . "'";
-        $sql = "SELECT DISTINCT(timestamp) FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where;
+        $sql = "SELECT DISTINCT(timestamp) FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where. " ORDER BY `timestamp` ASC;";
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -964,7 +964,7 @@ class Performance {
         }
         $cutoff = date('Y-m-d',time()). ' 00:00:00';
         $where = "timestamp<'" . $cutoff . "'";
-        $sql = "SELECT * FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where;
+        $sql = "SELECT * FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where. " ORDER BY `timestamp` ASC;";
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -1096,7 +1096,7 @@ class Performance {
         $cutoff = date('Y-m-d',time()). ' 00:00:00';
         $where = "timestamp<'" . $cutoff . "'";
         $select = "service, " . implode(', ', $fields);
-        $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where . " GROUP BY service;";
+        $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where . " GROUP BY service ORDER BY `timestamp` ASC;";
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;

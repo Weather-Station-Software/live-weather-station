@@ -38,11 +38,26 @@ trait StationClient {
      * @since 3.3.0
      */
     private function format_and_store($raw_data, $station) {
+        $raw_data = str_replace(array("\n\r", "\n", "\r"), '', $raw_data);
         $weather = $this->explode_data($raw_data);
         if (!$weather) {
             throw new \Exception('Bad file format.');
         }
         Logger::debug($this->facility, $this->service, null, null, null, null, null, print_r($weather, true));
+        $ttime = strtolower($weather[0]);
+        foreach (array('am', 'a') as $ampm) {
+            if (strpos($ttime, $ampm) !== false) {
+                $ttime = str_replace($ampm, '', $ttime);
+            }
+        }
+        foreach (array('pm', 'p') as $ampm) {
+            if (strpos($ttime, $ampm) !== false) {
+                $ttime = str_replace($ampm, '', $ttime);
+                $hm = explode(':', $ttime);
+                $ttime = (string)($hm[0] + 12) . ':' . $hm[1];
+            }
+        }
+        $weather[0] = str_replace(' ', '0', $ttime);
         $locat_ts = gmmktime($weather[0][0].$weather[0][1], $weather[0][3].$weather[0][4], '00', $weather[1][3].$weather[1][4], $weather[1][0].$weather[1][1], '20'.$weather[1][strlen($weather[1])-2].$weather[1][strlen($weather[1])-1]);
         $timestamp = date('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $station['loc_timezone']));
         $units = explode('|', strtolower($weather[17]));
@@ -62,21 +77,26 @@ trait StationClient {
                     $wind_unit = 4;
                     break;
             }
-            switch ($units[0]) {
+            switch (strtolower($units[0])) {
                 case 'f':
+                case '°f':
                     $temperature_unit = 1;
                     break;
                 case 'k':
                     $temperature_unit = 2;
                     break;
             }
-            if ($units[2] == 'in') {
+            if (strlen(strtolower($units[0])) > 1) {
+                if (strtolower($units[0])[1] == 'f') {
+                    $temperature_unit = 1;
+                }
+            }
+            if (strtolower($units[2]) == 'in') {
                 $pressure_unit = 1;
             }
-            if ($units[3] == 'in') {
+            if (strtolower($units[3]) == 'in') {
                 $rain_unit = 2;
             }
-
         }
 
         // NAMain
@@ -211,6 +231,9 @@ trait StationClient {
         }
         if (isset($weather[16])) {
             $updates['measure_type'] = 'guststrength';
+            if (!is_numeric($weather[16])) {
+                $weather[16] = 0;
+            }
             $updates['measure_value'] = $this->get_reverse_wind_speed($weather[16], $wind_unit);
             $this->update_data_table($updates);
         }

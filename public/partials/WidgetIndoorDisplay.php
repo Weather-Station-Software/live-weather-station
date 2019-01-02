@@ -19,7 +19,7 @@ else {
             <?php if ( $show_current ):?>
                 <!-- HEALTH INDEX -->
                 <div class="lws-widget-header lws-widget-header-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Health index', 'live-weather-station').'"' : ''); ?>>
-                    <i class="<?php echo LWS_FAS;?> fa-leaf health-idx-<?php echo $id ?>" <?php echo LWS_FA5?'style="' . $sh . '"':'';?>></i>
+                    <i class="<?php echo LWS_FAS;?> fa-leaf health-idx-<?php echo $id ?>" <?php echo LWS_FA_SVG?'style="' . $sh . '"':'';?>></i>
                 </div>
                 <?php if (($show_title || $show_status || $subtitle != 0) || $show_co2 || $show_noise || $show_humidity || $show_temperature):?>
                     <div class="lws-widget-bevel lws-widget-bevel-<?php echo $id ?>"></div>
@@ -124,7 +124,7 @@ else {
                 <!-- NOISE -->
                 <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Noise level', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="<?php echo LWS_FAS;?> fa-volume-down wi-x26" <?php echo LWS_FA5?'style="font-size:32px!important;' . $sh . '"':'style="font-size:32px!important;"';?>>&nbsp;</i>
+                        <i class="<?php echo LWS_FAS;?> fa-volume-down wi-x26" <?php echo LWS_FA_SVG?'style="font-size:32px!important;' . $sh . '"':'style="font-size:32px!important;"';?>>&nbsp;</i>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">

@@ -1,4 +1,15 @@
 
+#3.7.2 / January 2nd, 2018
+
+* Improvement: better icon sizes in widget when Awesome Font 5 as CSS is choosen as rendering method.
+* Improvement: when zoom control is set to _disabled_ for a map, it disables now the mouse scroll wheel too (thanks to [@hwim](https://weather.station.software/community/profile/hwim/) for the suggestion).
+* Improvement: stickertags file can now be parsed, even if times and dates formats are not standard.
+* Improvement: rendering of analytics graph has been optimized.
+* Improvement: when the language is available with a translation greater than 95%, Weather Station no longer uses partial translations.
+* Bug fix: in solar widget, sunshine duration may be displayed even if it's not checked in widget settings (thanks to [@gerhard](https://weather.station.software/community/profile/gerhard/)).
+* Bug fix: when stickertags file is not an UTF file (as it should be), Weather Station can't read the used temperature unit (thanks to [@thomas](https://weather.station.software/community/profile/thomas/)).
+* Bug fix: in some cases, the language of Weather Station backend is the main language site, not the user selected language.
+
 #3.7.1 / December 28th, 2018
 
 * Improvement: the precision of average and standard deviation computation for angles (wind and gust) have been drastically improved.

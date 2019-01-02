@@ -119,6 +119,9 @@ class MapboxHandling extends BaseHandling {
         $result .= '});' . PHP_EOL;
         $result .= "var map = new L.Map('mapbox-" . $this->uniq . "', {" . PHP_EOL;
         $result .= "  center: new L.LatLng(" . $this->map_params['common']['loc_latitude'] . ", " . $this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
+        if (!$this->map_params['specific']['controls']['zoom']) {
+            $result .= "  scrollWheelZoom: false," . PHP_EOL;
+        }
         $result .= "  zoom: " . $this->map_params['common']['loc_zoom'] . PHP_EOL;
         $result .= "});" . PHP_EOL;
         $result .= "map.attributionControl.setPrefix('');" . PHP_EOL;

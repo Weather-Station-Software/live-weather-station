@@ -70,6 +70,15 @@ function lws_re_get_admin_page_url($params) {
  * @since 3.0.8
  */
 function lws_get_display_locale($user_id = 0) {
+    global $current_user;
+    if (!empty($current_user) && $user_id === 0) {
+        if ($current_user instanceof WP_User) {
+            $user_id = $current_user->ID;
+        }
+        if (is_object($current_user) && isset($current_user->ID)) {
+            $user_id = $current_user->ID;
+        }
+    }
     /*
     * @fixme how to manage ajax calls made from frontend?
     */
@@ -237,6 +246,9 @@ function lws_font_awesome($all=false) {
             if (!defined('LWS_FA5')) {
                 define('LWS_FA5', false);
             }
+            if (!defined('LWS_FA_SVG')) {
+                define('LWS_FA_SVG', false);
+            }
             break;
         case 1:                                             // Font Awesome 5 outputed by Weather Station as CSS
             wp_enqueue_style('lws-font-awesome-5');
@@ -251,6 +263,9 @@ function lws_font_awesome($all=false) {
             }
             if (!defined('LWS_FA5')) {
                 define('LWS_FA5', true);
+            }
+            if (!defined('LWS_FA_SVG')) {
+                define('LWS_FA_SVG', false);
             }
             break;
         case 2:                                             // Font Awesome 5 outputed by Weather Station as JS+SVG
@@ -273,6 +288,9 @@ function lws_font_awesome($all=false) {
             if (!defined('LWS_FA5')) {
                 define('LWS_FA5', true);
             }
+            if (!defined('LWS_FA_SVG')) {
+                define('LWS_FA_SVG', true);
+            }
             break;
         case 3:                                             // Font Awesome 4 outputed by theme or other plugin
             wp_dequeue_style('lws-font-awesome-4');
@@ -291,6 +309,9 @@ function lws_font_awesome($all=false) {
             }
             if (!defined('LWS_FA5')) {
                 define('LWS_FA5', false);
+            }
+            if (!defined('LWS_FA_SVG')) {
+                define('LWS_FA_SVG', false);
             }
             break;
         case 4:                                             // Font Awesome 5 outputed by theme or other plugin
@@ -311,6 +332,9 @@ function lws_font_awesome($all=false) {
             }
             if (!defined('LWS_FA5')) {
                 define('LWS_FA5', true);
+            }
+            if (!defined('LWS_FA_SVG')) {
+                define('LWS_FA_SVG', false);
             }
             break;
     }

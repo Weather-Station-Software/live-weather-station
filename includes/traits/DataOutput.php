@@ -6838,7 +6838,6 @@ trait Output {
      * @param   string      $tz             Optional. The timezone.
      * @return  string      The value outputed with the right unit.
      * @since    1.0.0
-     * @access   protected
      */
     protected function output_value($value, $type, $unit=false , $textual=false, $module_type='NAMain', $tz='') {
         $not = __('N/A', 'live-weather-station');
