@@ -95,7 +95,7 @@ trait StationClient {
                 $pressure_unit = 1;
             }
             if (strtolower($units[3]) == 'in') {
-                $rain_unit = 2;
+                $rain_unit = 1;
             }
         }
 

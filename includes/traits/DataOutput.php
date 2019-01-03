@@ -10600,7 +10600,7 @@ trait Output {
                     $id = $data['module_id'];
                 }
                 $module['module_id'] = $data['module_id'];
-                $module['self_name'] = DeviceManager::get_module_name($station['station_id'], $id, $data['module_name']);
+                $module['self_name'] = DeviceManager::get_module_name($station['station_id'], $id);
                 $module['self_visibility'] = (DeviceManager::is_visible($station['station_id'], $id)?__('visible', 'live-weather-station'):__('hidden', 'live-weather-station'));
                 $module['module_name'] = $data['module_name'];
                 $module['module_type'] = $data['module_type'];
@@ -10671,7 +10671,7 @@ trait Output {
                         $extra = 'fa-lg fa-fw';
 
                     }
-                    $val['measure_value_txt'] = $this->output_value($val['measure_value'], $val['measure_type'], true, $textual, $module['module_type']);
+                    $val['measure_value_txt'] = $this->output_value($val['measure_value'], $val['measure_type'], true, $textual, $module['module_type'], $station['loc_timezone']);
                     $val['measure_value_icn'] = $this->output_iconic_value($val['measure_value'], $val['measure_type'], $module['module_type'], false, $style, $extra);
                     if (strpos($val['measure_type'], 'angle') > 0) {
                         $val['measure_value_txt'] = $this->get_angle_text($val['measure_value']);

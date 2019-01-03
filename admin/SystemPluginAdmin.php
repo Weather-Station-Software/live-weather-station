@@ -1044,7 +1044,7 @@ class Admin {
                 update_option('live_weather_station_unit_rain_snow', (integer)$_POST['lws_display_rain_snow_unit']);
                 update_option('live_weather_station_measure_only', (!array_key_exists('lws_display_viewing_options', $_POST) ? 1 : 0));
                 update_option('live_weather_station_wind_semantics', (integer)$_POST['lws_display_windsemantics']);
-                update_option('live_weather_station_angle_semantics', (integer)$_POST['lws_display_anglesemantics']);
+                //update_option('live_weather_station_angle_semantics', (integer)$_POST['lws_display_anglesemantics']);
                 update_option('live_weather_station_moon_icons', (integer)$_POST['lws_display_moonicons']);
                 update_option('live_weather_station_min_max_mode', (array_key_exists('lws_display_minmax', $_POST) ? 1 : 0));
                 update_option('live_weather_station_obsolescence', (integer)$_POST['lws_display_obsolescence']);
