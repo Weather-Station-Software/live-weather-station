@@ -439,52 +439,52 @@ abstract class BaseHandling {
                         switch ($module['type']) {
                             case 'NACurrent':
                                 if (array_key_exists('is_day', $module['datas'])) {
-                                    $day = ($module['datas']['is_day']['value'] == 1 ? 'day' : 'night');
+                                    $day = ($module['datas']['is_day']['raw_value'] == 1 ? 'day' : 'night');
                                 }
                                 if (array_key_exists('weather', $module['datas'])) {
-                                    $weather = $module['datas']['weather']['value'];
+                                    $weather = $module['datas']['weather']['raw_value'];
                                 }
                                 if (array_key_exists('windangle', $module['datas']) && array_key_exists('windstrength', $module['datas']) && !isset($wind_force)) {
-                                    $wind_angle = $this->get_angle_text($module['datas']['windangle']['value']);
-                                    $wind_strength = $this->output_value($module['datas']['windstrength']['value'], 'windstrength', true);
-                                    $wind_force = $this->get_wind_speed($module['datas']['windstrength']['value'], 3);
+                                    $wind_angle = $this->get_angle_text($module['datas']['windangle']['raw_value']);
+                                    $wind_strength = $this->output_value($module['datas']['windstrength']['raw_value'], 'windstrength', true);
+                                    $wind_force = $this->get_wind_speed($module['datas']['windstrength']['raw_value'], 3);
                                 }
                                 if (array_key_exists('humidity', $module['datas']) && !isset($humidity)) {
-                                    $humidity = $this->output_value($module['datas']['humidity']['value'], 'humidity', true);
+                                    $humidity = $this->output_value($module['datas']['humidity']['raw_value'], 'humidity', true);
                                 }
                                 if (array_key_exists('temperature', $module['datas']) && !isset($temperature)) {
-                                    $temperature = $this->output_value($module['datas']['temperature']['value'], 'temperature', true);
+                                    $temperature = $this->output_value($module['datas']['temperature']['raw_value'], 'temperature', true);
                                 }
                                 if (array_key_exists('pressure_sl', $module['datas']) && !isset($pressure)){
-                                    $pressure = $this->output_value($module['datas']['pressure_sl']['value'], 'pressure_sl', true);
+                                    $pressure = $this->output_value($module['datas']['pressure_sl']['raw_value'], 'pressure_sl', true);
                                 }
                                 if (array_key_exists('rain', $module['datas']) && !isset($rain)) {
-                                    $rain = $this->output_value($module['datas']['rain']['value'], 'rain', true, false, 'NACurrent');
+                                    $rain = $this->output_value($module['datas']['rain']['raw_value'], 'rain', true, false, 'NACurrent');
                                 }
                                 break;
                             case 'NAModule3': // Rain gauge
                                 if (array_key_exists('rain', $module['datas'])) {
-                                    $rain = $this->output_value($module['datas']['rain']['value'], 'rain', true, false, 'NAModule3');
+                                    $rain = $this->output_value($module['datas']['rain']['raw_value'], 'rain', true, false, 'NAModule3');
                                 }
                                 break;
                             case 'NAModule2': // Wind gauge
                                 if (array_key_exists('windangle', $module['datas']) && array_key_exists('windstrength', $module['datas'])) {
-                                    $wind_angle = $this->get_angle_text($module['datas']['windangle']['value']);
-                                    $wind_strength = $this->output_value($module['datas']['windstrength']['value'], 'windstrength', true);
-                                    $wind_force = $this->get_wind_speed($module['datas']['windstrength']['value'], 3);
+                                    $wind_angle = $this->get_angle_text($module['datas']['windangle']['raw_value']);
+                                    $wind_strength = $this->output_value($module['datas']['windstrength']['raw_value'], 'windstrength', true);
+                                    $wind_force = $this->get_wind_speed($module['datas']['windstrength']['raw_value'], 3);
                                 }
                                 break;
                             case 'NAModule1': // Outdoor module
                                 if (array_key_exists('humidity', $module['datas'])) {
-                                    $humidity = $this->output_value($module['datas']['humidity']['value'], 'humidity', true);
+                                    $humidity = $this->output_value($module['datas']['humidity']['raw_value'], 'humidity', true);
                                 }
                                 if (array_key_exists('temperature', $module['datas'])) {
-                                    $temperature = $this->output_value($module['datas']['temperature']['value'], 'temperature', true);
+                                    $temperature = $this->output_value($module['datas']['temperature']['raw_value'], 'temperature', true);
                                 }
                                 break;
                             case 'NAMain':
                                 if (array_key_exists('pressure_sl', $module['datas'])){
-                                    $pressure = $this->output_value($module['datas']['pressure_sl']['value'], 'pressure_sl', true);
+                                    $pressure = $this->output_value($module['datas']['pressure_sl']['raw_value'], 'pressure_sl', true);
                                 }
                                 break;
                         }

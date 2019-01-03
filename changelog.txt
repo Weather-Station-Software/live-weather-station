@@ -1,4 +1,12 @@
 
+#3.7.3 / January 3th, 2018
+
+* Improvement: the ephemeris module (in station view) now displays local times rather than UTC.
+* Improvement: optimized edge cases handling in ephemeris computation.
+* Bug fix: maps display wrong values in popup boxes when non-metric systems are chosen.
+* Bug fix: rain is wrongly collected in stickertags files when not in metric system (thanks to [@thomas](https://weather.station.software/community/profile/thomas/)).
+* Bug fix: there's a PHP notice when saving display settings.
+
 #3.7.2 / January 2nd, 2018
 
 * Improvement: better icon sizes in widget when Awesome Font 5 as CSS is choosen as rendering method.

@@ -31,7 +31,7 @@ trait Client {
      *
      * @param mixed $station_type Optional. The station type to compute.
      * @return array Computed values.
-     * @since    2.0.0
+     * @since 2.0.0
      */
     public function compute($station_type=false) {
         $result = array();

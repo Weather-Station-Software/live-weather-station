@@ -38,6 +38,17 @@ trait Conversion {
     }
 
     /**
+     * Get the timestamp corresponding to the middle of today in a specific timezone.
+     *
+     * @param string  $tz The timezone.
+     * @return integer The timestamp corresponding to the middle of today in this timezone.
+     * @since 3.7.3
+     */
+    public static function get_local_today_middle($tz) {
+        return self::get_local_today_midnight($tz)+43200;
+    }
+
+    /**
      * Get the timestamp corresponding to midnight of yesterday in a specific timezone.
      *
      * @param string  $tz The timezone.
