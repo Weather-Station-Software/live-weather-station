@@ -53,3 +53,7 @@ td.value {
 div.module-daily-windrose div div svg:not(:root){
     overflow: visible !important;
 }
+
+.fa-xlg {
+    font-size: 1.9em;
+}

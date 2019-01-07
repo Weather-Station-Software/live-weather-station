@@ -750,10 +750,10 @@ class Handling {
                 $station['oldest_data_txt'] = false;
             }
         }
-        $station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-        $location_icn = $this->output_iconic_value(0, 'city', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-        $timezone_icn = $this->output_iconic_value(0, 'timezone', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-        $histo_icn = $this->output_iconic_value(0, 'historical', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, '#999');
+        $location_icn = $this->output_iconic_value(0, 'city', false, false, '#999');
+        $timezone_icn = $this->output_iconic_value(0, 'timezone', false, false, '#999');
+        $histo_icn = $this->output_iconic_value(0, 'historical', false, false, '#999');
         include(LWS_ADMIN_DIR.'partials/StationStation.php');
     }
 
@@ -770,8 +770,8 @@ class Handling {
             $station['txt_coordinates'] .= ' ⁛ ' . $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 5, true);
             $station['txt_altitude'] = $this->output_value($station['loc_altitude'], 'loc_altitude', true, true);
         }
-        $location_icn = $this->output_iconic_value(0, 'location', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-        $altitude_icn = $this->output_iconic_value(0, 'altitude', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $location_icn = $this->output_iconic_value(0, 'location', false, false, '#999');
+        $altitude_icn = $this->output_iconic_value(0, 'altitude', false, false, '#999');
         include(LWS_ADMIN_DIR.'partials/StationLocation.php');
     }
 
@@ -781,11 +781,11 @@ class Handling {
      * @since 3.5.0
      */
     public function tools_widget($n, $args) {
-        $manage_link_icn = $this->output_iconic_value(0, 'module', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $manage_link_icn = $this->output_iconic_value(0, 'module', false, false, '#999');
         $manage_link = sprintf('<a href="?page=lws-stations&action=form&tab=manage&service=modules&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Manage modules', 'live-weather-station').'</a>', $this->station_guid);
-        $import_link_icn = $this->output_iconic_value(0, 'import', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $import_link_icn = $this->output_iconic_value(0, 'import', false, false, '#999');
         $import_link = sprintf('<a href="?page=lws-stations&action=form&tab=import&service=data&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Import historical data', 'live-weather-station').'</a>', $this->station_guid);
-        $export_link_icn = $this->output_iconic_value(0, 'export', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $export_link_icn = $this->output_iconic_value(0, 'export', false, false, '#999');
         $export_link = sprintf('<a href="?page=lws-stations&action=form&tab=export&service=data&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Export historical data', 'live-weather-station').'</a>', $this->station_guid);
         include(LWS_ADMIN_DIR.'partials/StationTools.php');
     }
@@ -852,11 +852,11 @@ class Handling {
         if (array_key_exists('module', $args['args'])) {
             $module = $args['args']['module'];
         }
-        $module_icn = $this->output_iconic_value(0, 'module', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-        $last_seen_icn = $this->output_iconic_value(0, 'last_seen', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-        $firmware_icn = $this->output_iconic_value(0, 'firmware', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-        $setup_icn = $this->output_iconic_value(0, 'first_setup', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-        $refresh_icn = $this->output_iconic_value(0, 'refresh', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+        $module_icn = $this->output_iconic_value(0, 'module', false, false, '#999');
+        $last_seen_icn = $this->output_iconic_value(0, 'last_seen', false, false, '#999');
+        $firmware_icn = $this->output_iconic_value(0, 'firmware', false, false, '#999');
+        $setup_icn = $this->output_iconic_value(0, 'first_setup', false, false, '#999');
+        $refresh_icn = $this->output_iconic_value(0, 'refresh', false, false, '#999');
         $static_display = true;
         include(LWS_ADMIN_DIR.'partials/StationModule.php');
     }

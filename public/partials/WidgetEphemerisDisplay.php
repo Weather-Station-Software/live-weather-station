@@ -45,8 +45,8 @@
                         <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"></div>
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"></div>
                     </div>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x32-<?php echo $id ?> wi-day-sunny" style="padding-top: 6px;"></i>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['sun']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
@@ -70,8 +70,8 @@
                         <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"></div>
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"></div>
                     </div>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x32-<?php echo $id ?> wi-moon-<?php echo $datas['moon_phase']['value']; ?>" style="padding-top: 6px;"></i>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['moon_phase']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
@@ -93,11 +93,11 @@
         <?php if ( $format == 1 || $format == 2):?>
             <?php if ($show_sun):?>
                 <!-- SUNRISE -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Sunrise', 'live-weather-station').'"' : ''); ?>>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x26-<?php echo $id ?> wi-sunrise"></i>
+                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Sunrise', 'live-weather-station').'"' : ''); ?>>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['sunrise']['icon'] ?>
                     </div>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                             <div class="lws-widget-med-value lws-widget-med-value-<?php echo $id ?>"><?php echo $datas['sunrise']['value']; ?></div>
                             <div class="lws-widget-med-unit lws-widget-med-unit-<?php echo $id ?>"></div>
@@ -106,9 +106,9 @@
                 </div>
                 <div class="lws-widget-bevel lws-widget-bevel-<?php echo $id ?>"></div>
                 <!-- SUNSET -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Sunset', 'live-weather-station').'"' : ''); ?>>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x26-<?php echo $id ?> wi-sunset"></i>
+                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Sunset', 'live-weather-station').'"' : ''); ?>>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['sunset']['icon'] ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
@@ -128,8 +128,8 @@
                         <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"></div>
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"></div>
                     </div>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x32-<?php echo $id ?> wi-day-sunny" style="padding-top: 6px;"></i>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['sun_distance']['icon'] ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
@@ -147,14 +147,14 @@
                 <?php endif;?>
             <?php endif;?>
             <?php if ($show_moonphase):?>
-                <!-- MOONRISE / MOONSET -->
+                <!-- MOON DETAILS -->
                 <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Moon illumination, phase & age', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"><?php echo $datas['moon_illumination']['value']; ?></div>
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"><?php echo $datas['moon_illumination']['unit']; ?></div>
                     </div>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x32-<?php echo $id ?> wi-moon-<?php echo $datas['moon_phase']['value']; ?>" style="padding-top: 6px;"></i>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['moon_phase']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
@@ -173,9 +173,9 @@
             <?php endif;?>
             <?php if ($show_moon):?>
                 <!-- MOONSET -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Moonset', 'live-weather-station').'"' : ''); ?>>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x26-<?php echo $id ?> wi-moonset"></i>
+                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Moonset', 'live-weather-station').'"' : ''); ?>>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['moonset']['icon'] ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
@@ -186,9 +186,9 @@
                 </div>
                 <div class="lws-widget-bevel lws-widget-bevel-<?php echo $id ?>"></div>
                 <!-- MOONRISE -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Moonrise', 'live-weather-station').'"' : ''); ?>>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x26-<?php echo $id ?> wi-moonrise"></i>
+                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Moonrise', 'live-weather-station').'"' : ''); ?>>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['moonrise']['icon'] ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
@@ -202,14 +202,14 @@
                 <?php endif;?>
             <?php endif;?>
             <?php if ($show_moondetails && $show_moonphase && $format == 2):?>
-                <!-- SUN DETAILS -->
+                <!-- MOON DETAILS -->
                 <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Moon distance and angular size', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"></div>
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"></div>
                     </div>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x32-<?php echo $id ?> wi-moon-<?php echo $datas['moon_phase']['value']; ?>" style="padding-top: 6px;"></i>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['moon_phase']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">

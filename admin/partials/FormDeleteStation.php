@@ -6,10 +6,10 @@
  * @since 3.0.0
  */
 
-$station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-$location_icn = $this->output_iconic_value(0, 'city', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-$timezone_icn = $this->output_iconic_value(0, 'timezone', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-$histo_icn = $this->output_iconic_value(0, 'historical', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+$station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, '#999');
+$location_icn = $this->output_iconic_value(0, 'city', false, false, '#999');
+$timezone_icn = $this->output_iconic_value(0, 'timezone', false, false, '#999');
+$histo_icn = $this->output_iconic_value(0, 'historical', false, false, '#999');
 
 
 ?>

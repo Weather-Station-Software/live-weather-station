@@ -738,6 +738,56 @@ class Handling {
     }
 
     /**
+     * Returns a base64 svg resource for the Maptiler icon.
+     *
+     * @param string $color1 Optional. Color of the icon.
+     * @param string $color2 Optional. Color of the icon.
+     * @param string $color3 Optional. Color of the icon.
+     * @param string $color4 Optional. Color of the icon.
+     * @param string $color5 Optional. Color of the icon.
+     * @param string $color6 Optional. Color of the icon.
+     * @param string $color7 Optional. Color of the icon.
+     * @param string $color8 Optional. Color of the icon.
+     * @return string The svg resource as a base64.
+     * @since 3.7.0
+     */
+    public static function get_base64_maptiler_icon($color1='#000', $color2='#000', $color3='#000', $color4='#000', $color5='#000', $color6='#000', $color7='#000', $color8='#000') {
+        $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 2000 2000">';
+        $source .= '<g transform="translate(32,32) scale(0.75,0.75)">';
+        $source .= '<path style="fill:' . $color1 . '" d="M714.993,1505.704c77.303,77.287,283.078,287.052,282.98,287.265 c-0.751,1.369,204.42-204.633,286.141-286.303l-285.049-285.032L714.993,1505.704z"/>';
+        $source .= '<path style="fill:' . $color2 . '" d="M999.064,1221.634l285.049,285.032c0.423-0.474,0.944-1.011,1.401-1.435l284.771-284.788L1285.27,935.429 L999.064,1221.634z"/>';
+        $source .= '<path style="fill:' . $color3 . '" d="M1570.285,1220.443l0.732-0.732c157.523-157.509,157.656-412.784,0.474-570.488L1285.27,935.429 L1570.285,1220.443z"/>';
+        $source .= '<path style="fill:' . $color4 . '" d="M712.843,935.429L428.82,1219.434c0.082,0.098,0.13,0.195,0.228,0.277l285.472,285.521 c0.163,0.146,0.326,0.295,0.472,0.473l284.072-284.07L712.843,935.429z"/>';
+        $source .= '<path style="fill:' . $color5 . '" d="M999.064,649.19l286.205,286.238l286.222-286.206c-0.228-0.164-0.309-0.327-0.474-0.489l-285.503-285.496 c-0.066-0.082-0.163-0.164-0.245-0.245L999.064,649.19z"/>';
+        $source .= '<path style="fill:' . $color6 . '" d="M427.614,650.201c-156.122,157.703-155.73,412.035,1.206,569.233l284.022-284.005L427.614,650.201z"/>';
+        $source .= '<path style="fill:' . $color7 . '" d="M999.064,649.19L713.819,363.954l-284.771,284.78c-0.489,0.489-0.929,1.01-1.434,1.467l285.229,285.228 L999.064,649.19z"/>';
+        $source .= '<path style="fill:' . $color8 . '" d="M1285.27,362.993c-157.719-157.426-413.144-157.345-570.749,0.245l-0.701,0.716L999.064,649.19 L1285.27,362.993z"/>';
+        $source .= '</g>';
+        $source .= '</svg>';
+        return 'data:image/svg+xml;base64,' . base64_encode($source);
+    }
+
+    /**
+     * Returns a base64 svg resource for the monochrome Maptiler logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.7.0
+     */
+    public static function get_base64_maptiler_grey_logo() {
+        return self::get_base64_maptiler_icon('#666666', '#666666', '#666666', '#666666', '#666666', '#666666', '#666666', '#666666');
+    }
+
+    /**
+     * Returns a base64 svg resource for the colored Maptiler logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.7.0
+     */
+    public static function get_base64_maptiler_color_logo() {
+        return self::get_base64_maptiler_icon('#3A1888', '#03A1C4', '#05D0DF', '#761FE8', '#FFAA01', '#F1175D', '#FB3A1B', '#FBC935');
+    }
+
+    /**
      * Returns a base64 svg resource for the Mapbox icon.
      *
      * @param string $color Optional. Color of the icon.

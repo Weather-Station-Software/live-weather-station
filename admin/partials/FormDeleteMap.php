@@ -16,9 +16,9 @@ if (isset($mid) && $mid) {
     $map_location = $this->output_coordinate($params['common']['loc_latitude'], 'loc_latitude', 5, true);
     $map_location .= ' ⁛ ' . $this->output_coordinate($params['common']['loc_longitude'], 'loc_longitude', 5, true);
     $map_zoom = $params['common']['loc_zoom'];
-    $map_icn = $this->output_iconic_value(0, 'map', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-    $location_icn = $this->output_iconic_value(0, 'location', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-    $zoom_icn = $this->output_iconic_value(0, 'zoom', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+    $map_icn = $this->output_iconic_value(0, 'map', false, false, '#999');
+    $location_icn = $this->output_iconic_value(0, 'location', false, false, '#999');
+    $zoom_icn = $this->output_iconic_value(0, 'zoom', false, false, '#999');
 }
 
 ?>

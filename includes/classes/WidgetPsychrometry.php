@@ -409,7 +409,7 @@ class Psychrometry extends \WP_Widget {
                         if (array_key_exists('temperature_ref', $module['datas']) &&
                             array_key_exists('dew_point', $module['datas']) &&
                             array_key_exists('frost_point', $module['datas'])) {
-                            $temp_ref = $module['datas']['temperature_ref']['value'];
+                            $temp_ref = $module['datas']['temperature_ref']['raw_value'];
                             $datas['dew'] = array();
                             $datas['dew']['value'] = $module['datas']['dew_point']['value'];
                             $datas['dew']['unit'] = $module['datas']['dew_point']['unit']['unit'];

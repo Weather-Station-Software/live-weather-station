@@ -46,6 +46,9 @@ class Maps extends Base {
             case 'mapbox' :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_mapbox_grey_logo()) . '" />';
                 break;
+            case 'maptiler' :
+                $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_maptiler_grey_logo()) . '" />';
+                break;
             case 'openweathermap' :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_owm_grey_logo()) . '" />';
                 break;
