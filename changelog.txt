@@ -1,5 +1,5 @@
 
-#3.7.4 / January 9th, 2018
+#3.7.4 / January 7th, 2018
 
 * Improvement: optimized quota management for Mapbox and ThunderForest maps.
 * Improvement: "theme-proof" standardized layout for ephemeris widget.
