@@ -19,9 +19,14 @@ trait Query {
     
     use Storage;
 
-    private $dont_filter = array('temperature_max', 'temperature_min', 'temperature_trend', 'pressure_trend', 'loc_latitude',
-                                 'loc_longitude', 'loc_altitude', 'windstrength_hour_max', 'windstrength_day_max', 'windangle_hour_max',
-                                 'windangle_day_max', 'winddirection_hour_max', 'winddirection_day_max','last_seen', 'date_setup', 'last_upgrade');
+    private $dont_filter = array('loc_latitude', 'loc_longitude', 'loc_altitude', 'windstrength_hour_max', 'windstrength_day_max', 'windangle_hour_max',
+                                 'windangle_day_max', 'winddirection_hour_max', 'winddirection_day_max','last_seen', 'date_setup', 'last_upgrade',
+                                 'co2_min', 'co2_max', 'co2_trend', 'humidity_min', 'humidity_max', 'humidity_trend', 'noise_min', 'noise_max', 'noise_trend',
+                                 'pressure_min', 'pressure_max', 'pressure_trend', 'pressure_sl_min', 'pressure_sl_max', 'pressure_sl_trend', 'temperature_min',
+                                 'temperature_max', 'temperature_trend', 'irradiance_min', 'irradiance_max', 'irradiance_trend', 'uv_index_min', 'uv_index_max',
+                                 'uv_index_trend', 'illuminance_min', 'illuminance_max', 'illuminance_trend', 'soil_temperature_min', 'soil_temperature_max',
+                                 'soil_temperature_trend', 'moisture_content_min', 'moisture_content_max', 'moisture_content_trend', 'moisture_tension_min',
+                                 'moisture_tension_max', 'moisture_tension_trend', 'windstrength_trend');
 
     /**
      * Filter data regarding its timestamp.

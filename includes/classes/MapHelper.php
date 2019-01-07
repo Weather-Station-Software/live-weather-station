@@ -82,6 +82,10 @@ class Handling {
                 $this->map_type = 4;
                 $this->aux_handler = new MapboxHandling();
                 break;
+            case 'maptiler':
+                $this->map_type = 6;
+                $this->aux_handler = new MaptilerHandling();
+                break;
             case 'openweathermap':
                 $this->map_type = 5;
                 $this->aux_handler = new OpenweathermapHandling();
@@ -397,9 +401,9 @@ class Handling {
             $map_location .= ' ⁛ ' . $this->output_coordinate($args['args']['params']['common']['loc_longitude'], 'loc_longitude', 5, true);
             $map_location = str_replace(' ', '&nbsp;', $map_location);
             $map_zoom = $args['args']['params']['common']['loc_zoom'];
-            $map_icn = $this->output_iconic_value(0, 'map', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-            $location_icn = $this->output_iconic_value(0, 'location', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-            $zoom_icn = $this->output_iconic_value(0, 'zoom', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+            $map_icn = $this->output_iconic_value(0, 'map', false, false, '#999');
+            $location_icn = $this->output_iconic_value(0, 'location', false, false, '#999');
+            $zoom_icn = $this->output_iconic_value(0, 'zoom', false, false, '#999');
         }
         include(LWS_ADMIN_DIR.'partials/MapSummary.php');
     }

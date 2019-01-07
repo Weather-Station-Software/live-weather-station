@@ -2740,6 +2740,20 @@ trait Generator {
     }
 
     /**
+     * Get plans for Maptiler API access.
+     *
+     * @return array An array containing the available plans for API access.
+     * @since 3.7.4
+     */
+    public function get_maptiler_plan_array() {
+        $result = array();
+        $result[] = array(0, __('Free', 'live-weather-station'));
+        $result[] = array(1, lws__('Flex', 'live-weather-station'));
+        $result[] = array(2, __('Unlimited', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
      * Get models for stations.
      *
      * @return array An array containing the available models.

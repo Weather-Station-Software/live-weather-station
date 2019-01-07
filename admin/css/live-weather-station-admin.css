@@ -131,6 +131,11 @@ select.option-at-100 {
     padding: 0;
 }
 
+#lws-connect-maptiler .inside {
+    margin: 0;
+    padding: 0;
+}
+
 #lws-datapublishing .inside {
     margin: 0;
     padding: 0;
@@ -188,7 +193,7 @@ select.option-at-100 {
     transform: rotate(315deg);
 }
 
-#span-sync, #netatmo-span-sync, #netatmohc-span-sync, #owm-span-sync, #wug-span-sync, #windy-span-sync, #thunderforest-span-sync, #mapbox-span-sync, #bloomsky-span-sync, #ambient-span-sync {
+#span-sync, #netatmo-span-sync, #netatmohc-span-sync, #owm-span-sync, #wug-span-sync, #windy-span-sync, #thunderforest-span-sync, #mapbox-span-sync, #maptiler-span-sync, #bloomsky-span-sync, #ambient-span-sync {
     color: #666;
 }
 
@@ -308,4 +313,8 @@ div.lws-brandicon {
 
 .bg-notice-error {
     background: rgba(220,50,50,.06) !important;
+}
+
+.fa-xlg {
+    font-size: 1.9em;
 }

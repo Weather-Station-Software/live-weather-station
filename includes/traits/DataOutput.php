@@ -43,10 +43,10 @@ trait Output {
         'rain_month_aggregated','rain_season_aggregated', 'rain_year_aggregated','snow', 'windangle', 'gustangle',
         'windangle_max', 'windangle_day_max', 'windangle_hour_max', 'windstrength', 'guststrength', 'windstrength_max',
         'windstrength_day_max', 'windstrength_hour_max', 'wind_ref', 'pressure_sl', 'temperature', 'tempint', 'tempext',
-        'temperature_min', 'temperature_max', 'temperature_ref', 'dew_point', 'frost_point', 'heat_index', 'humidex',
-        'wind_chill', 'cloud_ceiling', 'temperature_trend', 'pressure_sl_trend', 'sunrise', 'sunset', 'moonrise',
+        'temperature_ref', 'dew_point', 'frost_point', 'heat_index', 'humidex',
+        'wind_chill', 'cloud_ceiling', 'sunrise', 'sunset', 'moonrise',
         'moonset', 'moon_illumination', 'moon_diameter', 'sun_diameter', 'moon_distance', 'sun_distance', 'moon_phase',
-        'moon_age', 'o3_distance', 'co_distance', 'humidity_min', 'humidity_max', 'pressure_sl_min', 'pressure_sl_max',
+        'moon_age', 'o3_distance', 'co_distance',
         'day_length', 'health_idx', 'cbi', 'pressure_ref', 'wet_bulb', 'air_density', 'wood_emc',
         'equivalent_temperature', 'potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
         'partial_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 'sunshine', 'soil_temperature', 'leaf_wetness',
@@ -59,7 +59,13 @@ trait Output {
         'day_length_a', 'dawn_length_a','dawn_length_n', 'dawn_length_c', 'dusk_length_a', 'dusk_length_n',
         'dusk_length_c','saturation_vapor_pressure','saturation_absolute_humidity','equivalent_potential_temperature',
         'winddirection_max', 'winddirection_day_max', 'winddirection_hour_max', 'winddirection', 'gustdirection',
-        'pressure', 'pressure_trend', 'pressure_min', 'pressure_trend');
+        'pressure', 'co2_min', 'co2_max', 'co2_trend', 'humidity_min', 'humidity_max', 'humidity_trend', 'noise_min',
+        'noise_max', 'noise_trend', 'pressure_min', 'pressure_max', 'pressure_trend', 'pressure_sl_min', 'pressure_sl_max',
+        'pressure_sl_trend', 'temperature_min', 'temperature_max', 'temperature_trend', 'irradiance_min', 'irradiance_max',
+        'irradiance_trend', 'uv_index_min', 'uv_index_max', 'uv_index_trend', 'illuminance_min', 'illuminance_max',
+        'illuminance_trend', 'soil_temperature_min', 'soil_temperature_max', 'soil_temperature_trend', 'moisture_content_min',
+        'moisture_content_max', 'moisture_content_trend', 'moisture_tension_min', 'moisture_tension_max', 'moisture_tension_trend',
+        'windstrength_trend');
     private $graph_allowed_serie = array('device_id', 'module_id', 'measurement', 'line_mode', 'dot_style', 'line_style', 'line_size');
     private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
 
@@ -6789,7 +6795,7 @@ trait Output {
         switch ($_attributes['type']) {
             case 'simple':
                 $style = '';
-                $result = $this->output_iconic_value(0, $_attributes['measurement'], null, false, $style);
+                $result = ''; //$this->output_iconic_value(0, $_attributes['measurement'], null, false, $style);
                 break;
         }
         return $result;
@@ -7260,255 +7266,251 @@ trait Output {
      * @param string $type The type of the value.
      * @param string $module_type Optional. The type of the module.
      * @param boolean $show_value Optional. The value must represent the true value if possible.
-     * @param string $style Optional. The style of the icon.
-     * @param string $extra Optional. Class of the icon.
+     * @param string $main_color Optional. Main color of the icon.
+     * @param string $extraclass Optional. Extra class for the main container.
      * @return string The HTML tag for icon.
      * @since 3.0.0
      */
-    protected function output_iconic_value($value, $type, $module_type='NAMain', $show_value=false, $style='', $extra='') {
+    protected function output_iconic_value($value, $type, $module_type='NAMain', $show_value=false, $main_color=null, $extraclass='') {
         lws_font_awesome();
+        $type = strtolower($type);
+        if (strpos($type, 'sunrise') === 0) {
+            $type = 'sunrise';
+        }
+        if (strpos($type, 'sunset') === 0) {
+            $type = 'sunset';
+        }
+        if (strpos($type, 'moonrise') === 0) {
+            $type = 'moonrise';
+        }
+        if (strpos($type, 'moonset') === 0) {
+            $type = 'moonset';
+        }
+        if (strpos($type, 'day_length') === 0) {
+            $type = 'day_trend';
+        }
+        if (strpos($type, 'dawn_length') === 0) {
+            $type = 'sunrise_trend';
+        }
+        if (strpos($type, 'dusk_length') === 0) {
+            $type = 'sunset_trend';
+        }
+        $marker = array('none' => '',
+                        'min' => LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down':'fa-long-arrow-down'),
+                        'max' => LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-up':'fa-long-arrow-up'),
+                        'trend' => LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v':'fa-arrows-v'),
+                        'ppressure' => LWS_FAS . ' fa-ellipsis-v fa-lg',
+                        'degrees' => 'wi wi-degrees');
+        $markerstyle = array('none' => 'inherit',
+                        'min' => 'text-top',
+                        'max' => 'text-top',
+                        'trend' => 'text-top',
+                        'ppressure' => 'baseline',
+                        'degrees' => 'text-top',);
+        $icons = array( 'absolute_humidity' => 'wi-raindrop',
+                        'air_density' => 'fa-adjust',
+                        'altitude' => 'fa-rotate-315 fa-location-arrow',
+                        'cbi' => 'wi-fire',
+                        'city' => 'fa-globe',
+                        'cloud_ceiling' => 'wi-cloud-up',
+                        'co' => 'wi-smoke',
+                        'co_distance' => 'fa-crosshairs',
+                        'cloudiness' => 'wi-cloud',
+                        'co2' => 'wi-smoke',
+                        'country' => 'fa-globe',
+                        'day' => 'wi-day-sunny',
+                        'delta_t' => 'wi-thermometer',
+                        'dew_point' => 'wi-raindrops',
+                        'emc' => 'fa-tree',
+                        'equivalent_potential_temperature' => 'wi-thermometer-exterior',
+                        'equivalent_temperature' => 'wi-thermometer-exterior',
+                        'evapotranspiration' => 'wi-flood',
+                        'export' => 'fa-upload',
+                        'firmware' => 'fa-cog',
+                        'first_setup' => 'fa-wrench',
+                        'frost_point' => 'wi-stars',
+                        'health_idx' => 'fa-heartbeat',
+                        'heat_index' => 'wi-thermometer-internal',
+                        'historical' => 'fa-history',
+                        'humidex' => 'wi-thermometer-internal',
+                        'humidity' => 'wi-humidity',
+                        'humint' => 'wi-humidity',
+                        'humext' => 'wi-humidity',
+                        'humidity_ref' => 'wi-humidity',
+                        'illuminance' => 'fa-' . (LWS_FA5?'long-arrow-alt-down':'long-arrow-down'),
+                        'import' => 'fa-download',
+                        'irradiance' => 'fa-rotate-90 fa-' . (LWS_FA5?'sign-in-alt':'sign-in'),
+                        'last_upgrade' => 'fa-cog',
+                        'last_seen' => 'fa-eye',
+                        'last_setup' => 'fa-wrench',
+                        'leaf_wetness' => 'fa-' . (LWS_FA5?'leaf ':'envira'),
+                        'loc_altitude' => 'fa-rotate-315 fa-location-arrow',
+                        'loc_timezone' => 'fa-' . (LWS_FA5?'clock ':'clock-o'),
+                        'location' => 'fa-' . (LWS_FA5?'map-marker-alt':'map-marker'),
+                        'map' => 'fa-map',
+                        'module' => 'fa-database',
+                        'moisture_content' => 'wi-humidity',
+                        'moisture_tension' => 'wi-barometer',
+                        'moon_diameter' => 'wi-moon-waxing-crescent-4',
+                        'moon_distance' => 'wi-moon-waxing-crescent-4',
+                        'moon_illumination' => 'wi-moon-waxing-crescent-4',
+                        'moonrise' => 'wi-moonrise',
+                        'moonset' => 'wi-moonset',
+                        'no2' => 'wi-smoke',
+                        'noise' => 'fa-volume-down',
+                        'partial_absolute_humidity' => 'wi-raindrop',
+                        'pressure' => 'wi-barometer',
+                        'pressure_sl' => 'wi-barometer',
+                        'pressure_trend' => 'wi-barometer',
+                        'o3' => 'fa-' . (LWS_FA5?'circle-notch':'circle-o-notch'),
+                        'o3_distance' => 'fa-crosshairs',
+                        'picture' => 'fa-image',
+                        'potential_temperature' => 'wi-thermometer-exterior',
+                        'rain' => 'wi-umbrella',
+                        'rain_hour_aggregated' => 'wi-umbrella',
+                        'rain_day_aggregated' => 'wi-umbrella',
+                        'rain_month_aggregated' => 'wi-umbrella',
+                        'rain_season_aggregated' => 'wi-umbrella',
+                        'rain_year_aggregated' => 'wi-umbrella',
+                        'rain_yesterday_aggregated' => 'wi-umbrella',
+                        'saturation_absolute_humidity' => 'wi-raindrop',
+                        'so2' => 'wi-smoke',
+                        'refresh' => 'fa-' . (LWS_FA5?'sync-alt ':'refresh'),
+                        'snow' => 'wi-snowflake-cold',
+                        'soil_temperature' => 'wi-thermometer',
+                        'specific_enthalpy' => 'wi-refresh-alt',
+                        'station_name' => 'fa-tags',
+                        'steadman' => 'wi-thermometer-internal',
+                        'strike_count' => 'wi-lightning',
+                        'strike_distance' => 'fa-crosshairs',
+                        'strike_instant' => 'wi-lightning',
+                        'summer_simmer' => 'wi-thermometer-internal',
+                        'sun_diameter' => 'wi-day-sunny',
+                        'sun_distance' => 'wi-day-sunny',
+                        'sun' => 'wi-day-sunny',
+                        'sunrise' => 'wi-sunrise',
+                        'sunset' => 'wi-sunset',
+                        'sunshine' => 'fa-' . (LWS_FA5?'umbrella-beach':'sun-o'),
+                        'temperature' => 'wi-thermometer',
+                        'tempint' => 'wi-thermometer',
+                        'tempext' => 'wi-thermometer',
+                        'temperature_ref' => 'wi-thermometer',
+                        'timezone' => 'fa-' . (LWS_FA5?'clock ':'clock-o'),
+                        'uv_index' => 'wi-horizon-alt',
+                        'video' => 'fa-film',
+                        'video_imperial' => 'fa-film',
+                        'video_metric' => 'fa-film',
+                        'visibility' => 'fa-eye',
+                        'wet_bulb' => 'wi-thermometer',
+                        'wind_chill' => 'wi-thermometer-internal',
+                        'wood_emc' => 'fa-tree',
+                        'zoom' => 'fa-search'
+            );
+
+        $live = array('weather', 'signal', 'battery', 'wind', 'gust', 'moon_age', 'moon_phase', 'strike_bearing');
+        $tmm = 'none';
+        if (strpos(strtolower($type), '_min') !== false) {
+            $tmm = 'min';
+        }
+        if (strpos(strtolower($type), '_max') !== false) {
+            $tmm = 'max';
+        }
+        if (strpos(strtolower($type), '_trend') !== false) {
+            $tmm = 'trend';
+        }
+        if (strpos(strtolower($type), '_wetness') !== false) {
+            $tmm = 'degrees';
+        }
+        if (strpos(strtolower($type), '_tension') !== false) {
+            $tmm = 'degrees';
+        }
+        if (strpos(strtolower($type), '_pressure') !== false) {
+            $tmm = 'ppressure';
+            $type = 'pressure';
+        }
+        $variable = false;
+        foreach ($live as $l) {
+            $variable = $variable || (strpos($type, $l) !== false);
+        }
+        if ($type === 'wind_chill') {
+            $variable = false;
+        }
+        $result = '';
+        $size = '';
+        $icon = 'fa-question';
+        $class = LWS_FAS . ' ';
+        $align = 'text-top';
+        if (!$variable) {
+            $type = str_replace(array('_min', '_max', '_trend'), '', $type);
+            if (array_key_exists($type, $icons)) {
+                $icon = $icons[$type];
+                if (strpos($icon, 'wi-') === 0) {
+                    $class = 'wi ';
+                    $size = ' fa-lg';
+                    $align = 'baseline';
+                } else {
+                    $class = LWS_FAS . ' ';
+                }
+            }
+        }
+        // Other cases
         switch (strtolower($type)) {
             case 'weather':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-day-cloudy" aria-hidden="true"></i>';
-                break;
-            case 'battery':
-                $level = $this->get_battery_level($value, $module_type);
-                switch ($level) {
-                    case 4:
-                        if ($show_value) {
-                            $result ='<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-empty" aria-hidden="true"></i>';
-                        }
-                        else  {
-                            $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-full" aria-hidden="true"></i>';
-                        }
-                        break;
-                    case 3:
-                        if ($show_value) {
-                            $result ='<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-quarter" aria-hidden="true"></i>';
-                        }
-                        else  {
-                            $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-full" aria-hidden="true"></i>';
-                        }
-                        break;
-                    case 2:
-                        if ($show_value) {
-                            $result ='<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-half" aria-hidden="true"></i>';
-                        }
-                        else  {
-                            $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-full" aria-hidden="true"></i>';
-                        }
-                        break;
-                    case 1:
-                        if ($show_value) {
-                            $result ='<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-three-quarters" aria-hidden="true"></i>';
-                        }
-                        else  {
-                            $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-full" aria-hidden="true"></i>';
-                        }
-                        break;
-                    case 0:
-                        $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-battery-full" aria-hidden="true"></i>';
-                        break;
-                    default:
-                        $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-plug" aria-hidden="true"></i>';
+                if ($show_value) {
+                    $icon = 'wi-owm-' . $value;
+                    $class = 'wi ';
+                    $size = ' fa-lg';
+                }
+                else {
+                    $icon = 'wi-day-cloudy';
+                    $class = 'wi ';
+                    $size = ' fa-lg';
                 }
                 break;
             case 'signal':
                 if (strtolower($module_type) == 'namain') {
-                    $result ='<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-wifi" aria-hidden="true"></i>';
+                    $icon = 'fa-wifi';
+                    $class = LWS_FAS . ' ';
                 }
                 else  {
-                    $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-signal" aria-hidden="true"></i>';
+                    $icon = 'fa-signal';
+                    $class = LWS_FAS . ' ';
                 }
                 break;
-            case 'health_idx':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-heartbeat" aria-hidden="true"></i>';
-                break;
-            case 'cbi':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-fire" aria-hidden="true"></i>';
-                break;
-            case 'co2':
-            case 'co':
-            case 'so2':
-            case 'no2':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-smoke" aria-hidden="true"></i>';
-                break;
-            case 'o3':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-' . (LWS_FA5?'circle-notch':'circle-o-notch') . '" aria-hidden="true"></i>';
-                break;
-            case 'humidity':
-            case 'humint':
-            case 'humext':
-            case 'humidity_ref':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-humidity" aria-hidden="true"></i>';
-                break;
-            case 'noise':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-volume-down" aria-hidden="true"></i>';
-                break;
-            case 'pressure':
-            case 'pressure_sl':
-            case 'pressure_ref':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-barometer" aria-hidden="true"></i>';
-                break;
-            case 'pressure_trend':
-            case 'pressure_sl_trend':
-                if (LWS_FA5) {
-                    $result = '<i %1$s class="wi wi-barometer %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v ':'fa-arrows-v') . ' %2$s"></i>';
+            case 'battery':
+                $level = $this->get_battery_level($value, $module_type);
+                $icon = 'fa-plug';
+                $class = LWS_FAS . ' ';
+                if ($show_value) {
+                    switch ($level) {
+                        case 4:
+                            $icon = 'fa-battery-empty';
+                            break;
+                        case 3:
+                            $icon = 'fa-battery-quarter';
+                            break;
+                        case 2:
+                            $icon = 'fa-battery-half';
+                            break;
+                        case 1:
+                            $icon = 'fa-battery-three-quarter';
+                            break;
+                        case 0:
+                            $icon = 'fa-battery-full';
+                            break;
+                    }
                 }
                 else {
-                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-arrows-v"></i></span>';
+                    switch ($level) {
+                        case 4:
+                        case 3:
+                        case 2:
+                        case 1:
+                        case 0:
+                            $icon = 'fa-battery-full';
+                            break;
+                    }
                 }
-                break;
-            case 'pressure_max':
-            case 'pressure_sl_max':
-                if (LWS_FA5) {
-                    $result = '<i %1$s class="wi wi-barometer %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-up ':'fa-long-arrow-up') . ' %2$s"></i>';
-                }
-                else {
-                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-long-arrow-up"></i></span>';
-                }
-                break;
-            case 'pressure_min':
-            case 'pressure_sl_min':
-                if (LWS_FA5) {
-                    $result = '<i %1$s class="wi wi-barometer %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down ':'fa-long-arrow-down') . ' %2$s"></i>';
-                }
-                else {
-                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-long-arrow-down"></i></span>';
-                }
-                break;
-            case 'temperature':
-            case 'tempint':
-            case 'tempext':
-            case 'temperature_ref':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer" aria-hidden="true"></i>';
-                break;
-            case 'temperature_trend':
-                if (LWS_FA5) {
-                    $result = '<i %1$s class="wi wi-thermometer %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v ':'fa-arrows-v') . ' %2$s"></i>';
-                }
-                else {
-                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-thermometer"></i><i %1$s class="fa fa-arrows-v"></i></span>';
-                }
-                break;
-            case 'temperature_max':
-                if (LWS_FA5) {
-                    $result = '<i %1$s class="wi wi-thermometer %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-up ':'fa-long-arrow-up') . ' %2$s"></i>';
-                }
-                else {
-                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-thermometer"></i><i %1$s class="fa fa-long-arrow-up"></i></span>';
-                }
-                break;
-            case 'temperature_min':
-                if (LWS_FA5) {
-                    $result = '<i %1$s class="wi wi-thermometer %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down ':'fa-long-arrow-down') . ' %2$s"></i>';
-                }
-                else {
-                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-thermometer"></i><i %1$s class="fa fa-long-arrow-down"></i></span>';
-                }
-                break;
-            case 'humidity_trend':
-                if (LWS_FA5) {
-                    $result = '<i %1$s class="wi wi-humidity %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v ':'fa-arrows-v') . ' %2$s"></i>';
-                }
-                else {
-                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-humidity"></i><i %1$s class="fa fa-arrows-v"></i></span>';
-                }
-                break;
-            case 'humidity_max':
-                if (LWS_FA5) {
-                    $result = '<i %1$s class="wi wi-humidity %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-up ':'fa-long-arrow-up') . ' %2$s"></i>';
-                }
-                else {
-                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-humidity"></i><i %1$s class="fa fa-long-arrow-up"></i></span>';
-                }
-                break;
-            case 'humidity_min':
-                if (LWS_FA5) {
-                    $result = '<i %1$s class="wi wi-humidity %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down ':'fa-long-arrow-down') . ' %2$s"></i>';
-                }
-                else {
-                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-humidity "></i><i %1$s class="fa fa-long-arrow-down"></i></span>';
-                }
-                break;
-            case 'cloudiness':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-cloud" aria-hidden="true"></i>';
-                break;
-            case 'rain':
-            case 'rain_hour_aggregated':
-            case 'rain_day_aggregated':
-            case 'rain_month_aggregated':
-            case 'rain_season_aggregated':
-            case 'rain_year_aggregated':
-            case 'rain_yesterday_aggregated':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-umbrella" aria-hidden="true"></i>';
-                break;
-            case 'snow':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-snowflake-cold" aria-hidden="true"></i>';
-                break;
-            case 'dew_point':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-raindrops" aria-hidden="true"></i>';
-                break;
-            case 'frost_point':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-stars" aria-hidden="true"></i>';
-                break;
-            case 'heat_index':
-            case 'humidex':
-            case 'wind_chill':
-            case 'steadman':
-            case 'summer_simmer':
-            /*
-             * @fixme find better icons
-             */
-            $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer-internal" aria-hidden="true"></i>';
-            break;
-            case 'cloud_ceiling':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-cloud-up" aria-hidden="true"></i>';
-                break;
-            case 'o3_distance':
-            case 'co_distance':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-crosshairs" aria-hidden="true"></i>';
-                break;
-            case 'loc_timezone':
-            case 'timezone':
-                $result = '<i %1$s class="' . LWS_FAR . ' ' . (LWS_FA5?'fa-clock ':'fa-clock-o') . ' %2$s" aria-hidden="true"></i>';
-                break;
-            case 'city':
-            case 'country':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-globe" aria-hidden="true"></i>';
-                break;
-            case 'station_name':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-tags" aria-hidden="true"></i>';
-                break;
-            case 'module':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-database" aria-hidden="true"></i>';
-                break;
-            case 'import':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-download" aria-hidden="true"></i>';
-                break;
-            case 'export':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-upload" aria-hidden="true"></i>';
-                break;
-            case 'location':
-                $result = '<i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-map-marker-alt':'fa-map-marker') . ' %2$s" aria-hidden="true"></i>';
-                break;
-            case 'altitude':
-            case 'loc_altitude':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-rotate-315 fa-location-arrow" aria-hidden="true"></i>';
-                break;
-            case 'last_seen':
-                $result = '<i %1$s class="' . LWS_FAR . ' fa-fw %2$s fa-eye" aria-hidden="true"></i>';
-                break;
-            case 'refresh':
-                $result = '<i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-sync-alt':'fa-refresh') . ' %2$s" aria-hidden="true"></i>';
-                break;
-            case 'last_upgrade':
-            case 'firmware':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-cog" aria-hidden="true"></i>';
-                break;
-            case 'last_setup':
-            case 'first_setup':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-wrench" aria-hidden="true"></i>';
                 break;
             case 'windstrength':
             case 'guststrength':
@@ -7517,11 +7519,14 @@ trait Output {
             case 'windstrength_hour_max':
             case 'wind_ref':
                 $level = $this->get_wind_speed($value, 3);
+                $class = 'wi ';
+                $size = ' fa-lg';
+                $align = 'baseline';
                 if ($show_value) {
-                    $result ='<i %1$s class="wi wi-fw %2$s wi-wind-beaufort-'. $level . '" aria-hidden="true"></i>';
+                    $icon = 'wi-strong-beaufort-'. $level;
                 }
                 else {
-                    $result ='<i %1$s class="wi wi-fw %2$s wi-strong-wind" aria-hidden="true"></i>';
+                    $icon = 'wi-strong-wind';
                 }
                 break;
             case 'warn_windstrength':
@@ -7531,26 +7536,27 @@ trait Output {
             case 'warn_windstrength_hour_max':
             case 'warn_wind_ref':
                 $level = $this->get_wind_state($value);
+                $icon = 'wi-strong-wind';
+                $class = 'wi ';
+                $size = ' fa-lg';
+                $align = 'baseline';
                 if ($show_value) {
                     switch ($level) {
                         case 1:
-                            $result ='<i %1$s class="wi wi-fw %2$s wi-small-craft-advisory" aria-hidden="true"></i>';
+                            $icon = 'wi-small-craft-advisory';
                             break;
                         case 2:
-                            $result ='<i %1$s class="wi wi-fw %2$s wi-gale-warning" aria-hidden="true"></i>';
+                            $icon = 'wi-gale-warning';
                             break;
                         case 3:
-                            $result ='<i %1$s class="wi wi-fw %2$s wi-storm-warning" aria-hidden="true"></i>';
+                            $icon = 'wi-storm-warning';
                             break;
                         case 4:
-                            $result ='<i %1$s class="wi wi-fw %2$s wi-hurricane-warning" aria-hidden="true"></i>';
+                            $icon = 'wi-hurricane-warning';
                             break;
                         default:
-                            $result ='<i %1$s class="wi wi-fw %2$s wi-strong-wind" aria-hidden="true"></i>';
+                            $icon = 'wi-strong-wind';
                     }
-                }
-                else {
-                    $result ='<i %1$s class="wi wi-fw %2$s wi-strong-wind" aria-hidden="true"></i>';
                 }
                 break;
             case 'windangle':
@@ -7563,203 +7569,58 @@ trait Output {
             case 'winddirection_max':
             case 'winddirection_day_max':
             case 'winddirection_hour_max':
+                $icon = 'wi-wind towards-0-deg';
+                $class = 'wi ';
+                $size = ' fa-xlg';
+                $align = '-10%';
                 if ($show_value) {
                     $s = (get_option('live_weather_station_wind_semantics') == 0 ? 'towards' : 'from') . '-' . $value . '-deg';
-                    $result = '<i %1$s class="wi wi-fw %2$s wi-wind ' . $s . '" aria-hidden="true"></i>';
+                    $icon = 'wi-wind ' . $s ;
                 }
-                else {
-                    $result = '<i %1$s class="wi wi-fw %2$s wi-wind towards-0-deg" aria-hidden="true"></i>';
-                }
-                break;
-            case 'sunrise':
-            case 'sunset':
-            case 'moonrise':
-            case 'moonset':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-' . strtolower($type) . '" aria-hidden="true"></i>';
                 break;
             case 'moon_phase':
+                $icon = 'wi-moon-waxing-crescent-4';
+                $class = 'wi ';
+                $size = ' fa-xlg';
+                $align = 'baseline';
                 if ($show_value) {
-                    $result = '<i %1$s class="wi wi-fw %2$s wi-moon-' . $this->get_moon_phase_icon($value) . '" aria-hidden="true"></i>';
-                }
-                else {
-                    $result = '<i %1$s class="wi wi-fw %2$s wi-moon-waxing-crescent-4" aria-hidden="true"></i>';
+                    $icon = 'wi-moon-' . $this->get_moon_phase_icon($value);
                 }
                 break;
             case 'moon_age':
+                $icon = 'wi-moon-waxing-crescent-4';
+                $class = 'wi ';
+                $size = ' fa-xlg';
+                $align = 'baseline';
                 if ($show_value) {
-                    $result = '<i %1$s class="wi wi-fw %2$s wi-moon-' . $this->get_lunation_icon($value) . '" aria-hidden="true"></i>';
+                    $icon = 'wi-moon-' . $this->get_lunation_icon($value);
                 }
-                else {
-                    $result = '<i %1$s class="wi wi-fw %2$s wi-moon-waxing-crescent-4" aria-hidden="true"></i>';
-                }
-                break;
-            case 'moon_illumination':
-            case 'moon_diameter':
-            case 'moon_distance':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-moon-waxing-crescent-4" aria-hidden="true"></i>';
-                break;
-            case 'sun_diameter':
-            case 'sun_distance':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-day-sunny" aria-hidden="true"></i>';
-                break;
-            case 'sunrise_c':
-            case 'sunrise_n':
-            case 'sunrise_a':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-sunrise" aria-hidden="true"></i>';
-                break;
-            case 'sunset_c':
-            case 'sunset_n':
-            case 'sunset_a':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-sunset" aria-hidden="true"></i>';
-                break;
-            case 'day_length':
-            case 'day_length_c':
-            case 'day_length_n':
-            case 'day_length_a':
-                if (LWS_FA5) {
-                    $result = '<i %1$s class="wi wi-day-sunny %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v ':'fa-arrows-v') . ' %2$s"></i>';
-                }
-                else {
-                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-day-sunny"></i><i %1$s class="fa fa-arrows-v"></i></span>';
-                }
-                break;
-            case 'dawn_length_a':
-            case 'dawn_length_n':
-            case 'dawn_length_c':
-                if (LWS_FA5) {
-                    $result = '<i %1$s class="wi wi-sunrise %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v ':'fa-arrows-v') . ' %2$s"></i>';
-                }
-                else {
-                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-sunrise"></i><i %1$s class="fa fa-arrows-v"></i></span>';
-                }
-                break;
-            case 'dusk_length_a':
-            case 'dusk_length_n':
-            case 'dusk_length_c':
-            if (LWS_FA5) {
-                $result = '<i %1$s class="wi wi-sunset %2$s"></i><i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v ':'fa-arrows-v') . ' %2$s"></i>';
-            }
-            else {
-                $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-sunset"></i><i %1$s class="fa fa-arrows-v"></i></span>';
-            }
-                break;
-            // PSYCHROMETRIC
-            case 'air_density':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-adjust" aria-hidden="true"></i>';
-                break;
-            case 'wet_bulb':
-            case 'delta_t':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer" aria-hidden="true"></i>';
-                break;
-            case 'wood_emc':
-            case 'emc':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-tree" aria-hidden="true"></i>';
-                break;
-            case 'specific_enthalpy':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-refresh-alt" aria-hidden="true"></i>';
-                break;
-            case 'equivalent_temperature':
-            case 'potential_temperature':
-            case 'equivalent_potential_temperature':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer-exterior" aria-hidden="true"></i>';
-                break;
-            case 'partial_vapor_pressure':
-            case 'saturation_vapor_pressure':
-            case 'vapor_pressure':
-                if (LWS_FA5) {
-                    $result = '<i %1$s class="wi wi-barometer %2$s"></i><i %1$s class="' . LWS_FAS . ' fa-ellipsis-v %2$s"></i>';
-                }
-                else {
-                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="fa fa-ellipsis-v"></i></span>';
-                }
-                break;
-            case 'partial_absolute_humidity':
-            case 'saturation_absolute_humidity':
-            case 'absolute_humidity':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-raindrop" aria-hidden="true"></i>';
-                break;
-            // SOLAR
-            case 'irradiance':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-' . (LWS_FA5?'sign-in-alt':'sign-in') . ' %2$s fa-rotate-90" aria-hidden="true"></i>';
-                break;
-            case 'sunshine':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-' . (LWS_FA5?'umbrella-beach':'sun-o') . ' %2$s" aria-hidden="true"></i>';
-                break;
-            case 'uv_index':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-horizon-alt" aria-hidden="true"></i>';
-                break;
-            case 'illuminance':
-                $result = '<i %1$s class="' . LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down':'fa-long-arrow-down') . ' %2$s" aria-hidden="true"></i>';
-                break;
-            // SOIL
-            case 'soil_temperature':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-thermometer" aria-hidden="true"></i>';
-                break;
-            case 'leaf_wetness':
-                if (LWS_FA5) {
-                    $result = '<i %1$s class="' . LWS_FAS . ' fa-leaf %2$s"></i><i %1$s class="wi wi-degrees %2$s"></i>';
-                }
-                else {
-                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="fa fa-envira"></i><i %1$s class="wi wi-degrees"></i></span>';
-                }
-                break;
-                break;
-            case 'moisture_content':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-humidity" aria-hidden="true"></i>';
-                break;
-            case 'moisture_tension':
-                if (LWS_FA5) {
-                    $result = '<i %1$s class="wi wi-barometer %2$s"></i><i %1$s class="wi wi-degrees %2$s"></i>';
-                }
-                else {
-                    $result = '<span class="fa-stack fa-fw %2$s"><i %1$s class="wi wi-barometer"></i><i %1$s class="wi wi-degrees"></i></span>';
-                }
-                break;
-                break;
-            case 'evapotranspiration':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-flood" aria-hidden="true"></i>';
-                break;
-            // THUNDERSTORM
-            case 'strike_count':
-            case 'strike_instant':
-                $result = '<i %1$s class="wi wi-fw %2$s wi-lightning" aria-hidden="true"></i>';
-                break;
-            case 'strike_distance':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-crosshairs" aria-hidden="true"></i>';
-                break;
-            case 'visibility':
-                $result = '<i %1$s class="' . LWS_FAR . ' fa-fw %2$s fa-eye" aria-hidden="true"></i>';
                 break;
             case 'strike_bearing':
+                $icon = 'wi-wind towards-0-deg';
+                $class = 'wi ';
+                $size = ' fa-xlg';
+                $align = '-10%';
                 if ($show_value) {
                     $s = 'towards-' . $value . '-deg';
-                    $result = '<i %1$s class="wi wi-fw %2$s wi-wind ' . $s . '" aria-hidden="true"></i>';
-                }
-                else {
-                    $result = '<i %1$s class="wi wi-fw %2$s wi-wind towards-0-deg" aria-hidden="true"></i>';
+                    $icon = 'wi-wind ' . $s ;
                 }
                 break;
-            case 'historical':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-history" aria-hidden="true"></i>';
-                break;
-            case 'picture':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-image" aria-hidden="true"></i>';
-                break;
-            case 'video':
-            case 'video_imperial':
-            case 'video_metric':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-film" aria-hidden="true"></i>';
-                break;
-            case 'map':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-map" aria-hidden="true"></i>';
-                break;
-            case 'zoom':
-                $result = '<i %1$s class="' . LWS_FAS . ' fa-fw %2$s fa-search" aria-hidden="true"></i>';
-                break;
-            default:
-                $result = '<i %1$s class="' . LWS_FAR . ' ' . (LWS_FA5?'fa-sun':'fa-sun-o') . ' %2$s" aria-hidden="true"></i>';
-    }
-        return sprintf($result, $style, $extra);
+        }
+        // Fix for size
+        if ($icon === 'wi-thermometer') {
+            $align = 'text-bottom';
+        }
+        if (strpos($icon, 'wi-moon-') !== false) {
+            $size = ' fa-xlg';
+        }
+        // Output
+        if ($tmm === 'none') {
+            $result = '<span class="lws-icon lws-single-icon ' . $extraclass . '" style="vertical-align: middle;padding: 0;margin: 0;"><i style="vertical-align: ' . $align . ';color:' . $main_color .';" class="' . $class . $icon . $size . '" aria-hidden="true"></i></span>';
+        } else {
+            $result = '<span class="lws-icon lws-stacked-icon ' . $extraclass . '" style="vertical-align: middle;padding: 0;margin: 0;"><i style="vertical-align: ' . $align . ';color:' . $main_color .';" class="' . $class . $icon . $size . '"></i><i style="color:' . $main_color .';vertical-align:' . $markerstyle[$tmm] .';opacity: 0.7;" class="' . $marker[$tmm] . '"></i></span>';
+        }
+        return $result;
 }
 
     /**
@@ -10349,7 +10210,7 @@ trait Output {
      */
     protected function is_valid_heat_index($temp_ref, $hum_ref, $dew_ref) {
         $result = false;
-        if ( ($temp_ref >= 27) && ($hum_ref>=40) && ($dew_ref>=12)) {
+        if (($temp_ref >= 27) && ($hum_ref>=40) && ($dew_ref>=12)) {
             $result = true;
         }
         return $result;
@@ -10640,12 +10501,12 @@ trait Output {
                     if ($data['measure_type'] == 'battery' && DeviceManager::is_hardware($data['module_type'])) {
                         $module['battery'] = $data['measure_value'];
                         $module['battery_txt'] = $this->get_battery_level_text($data['measure_value'], $data['module_type']);
-                        $module['battery_icn'] = $this->output_iconic_value($data['measure_value'], $data['measure_type'], $data['module_type'], false, 'style="color:#999"', 'fa-lg fa-fw');
+                        $module['battery_icn'] = $this->output_iconic_value($data['measure_value'], $data['measure_type'], $data['module_type'], false, '#999');
                     }
                     if ($data['measure_type'] == 'signal' && DeviceManager::is_hardware($data['module_type'])) {
                         $module['signal'] = $data['measure_value'];
                         $module['signal_txt'] = $this->get_signal_level_text($data['measure_value'], $data['module_type']);
-                        $module['signal_icn'] = $this->output_iconic_value($data['measure_value'], $data['measure_type'], $data['module_type'], false, 'style="color:#999"', 'fa-lg fa-fw');
+                        $module['signal_icn'] = $this->output_iconic_value($data['measure_value'], $data['measure_type'], $data['module_type'], false, '#999');
                     }
                 }
 
@@ -10663,16 +10524,8 @@ trait Output {
                     $val['measure_value'] = $data['measure_value'];
                     $val['measure_timestamp'] = $data['measure_timestamp'];
                     $textual = (strpos($val['measure_type'], '_trend') > 0);
-                    $style = 'style="color:#999"';
-                    if (strpos($val['measure_type'], 'angle') > 0) {
-                        $extra = 'fa-xlg';
-                    }
-                    else {
-                        $extra = 'fa-lg fa-fw';
-
-                    }
                     $val['measure_value_txt'] = $this->output_value($val['measure_value'], $val['measure_type'], true, $textual, $module['module_type'], $station['loc_timezone']);
-                    $val['measure_value_icn'] = $this->output_iconic_value($val['measure_value'], $val['measure_type'], $module['module_type'], false, $style, $extra);
+                    $val['measure_value_icn'] = $this->output_iconic_value($val['measure_value'], $val['measure_type'], $module['module_type'], false, '#999');
                     if (strpos($val['measure_type'], 'angle') > 0) {
                         $val['measure_value_txt'] = $this->get_angle_text($val['measure_value']);
                     }
@@ -10863,7 +10716,7 @@ trait Output {
                 continue;
             }
             $result[$id]['name'] = $name;
-            $result[$id]['icon'] = $this->output_iconic_value(0, $id, false, false, 'style="color:#666666;"');
+            $result[$id]['icon'] = $this->output_iconic_value(0, $id, false, false, '#666');
             $result[$id]['type'] = $type;
             $result[$id]['compiled'] = $compiled;
             $result[$id]['aggregated'] = $aggregated;

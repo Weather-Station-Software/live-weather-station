@@ -9,8 +9,8 @@
 use WeatherStation\System\Device\Manager as DeviceManager;
 
 $tech = get_option('live_weather_station_show_technical');
-$module_icn = $this->output_iconic_value(0, 'module', false, false, 'style="color:#999"', 'fa-lg fa-fw');
-$station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+$module_icn = $this->output_iconic_value(0, 'module', false, false, '#999');
+$station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, '#999');
 
 ?>
 <?php if ($static_display) { ?>

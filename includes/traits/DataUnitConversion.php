@@ -831,7 +831,6 @@ trait Conversion {
      * @param   integer $id     Optional. The unit id.
      * @return  string  The temperature expressed in specific unit.
      * @since    1.0.0
-     * @access   protected
      */
     protected function get_temperature($value, $id = 0)
     {

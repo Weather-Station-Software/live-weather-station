@@ -221,7 +221,37 @@ class Quota {
             case 'Thunderforest':
                 switch ($verb) {
                     case 'GET' :
-                        $quota = 5000;
+                        switch (get_option('live_weather_station_thunderforest_plan', 0)) {
+                            case 0:
+                                $quota = 5000;
+                                break;
+                            case 1:
+                                $quota = 50000;
+                                break;
+                            case 2:
+                                $quota = 500000;
+                                break;
+                            case 3:
+                                $quota = 5000000;
+                                break;
+                        }
+                        break;
+                }
+                break;
+            case 'Maptiler':
+                switch ($verb) {
+                    case 'GET' :
+                        switch (get_option('live_weather_station_maptiler_plan', 0)) {
+                            case 0:
+                                $quota = 10000;
+                                break;
+                            case 1:
+                                $quota = 50000;
+                                break;
+                            case 2:
+                                $quota = 500000;
+                                break;
+                        }
                         break;
                 }
                 break;

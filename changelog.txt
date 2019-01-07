@@ -1,4 +1,15 @@
 
+#3.7.4 / January 9th, 2018
+
+* Improvement: optimized quota management for Mapbox and ThunderForest maps.
+* Improvement: "theme-proof" standardized layout for ephemeris widget.
+* Improvement: standardized icon sizes in admin station view.
+* Improvement: optimized meaning range computation (in non-metric systems) for dew and frost points, humidex, heat index, wind chill, Steadman index and summer simmer.
+* Improvement: min, max and trend have been removed from admin station view for better readability.
+* Bug fix: heat index is shown in widgets when temperature is below 27°C (thanks to [@thomas](https://weather.station.software/community/profile/thomas/)).
+* Bug fix: in some cases, the moon logo in ephemeris widget has a wrong size.
+* Bug fix: with some WordPress themes, the Windy logo inherit of CSS properties.
+
 #3.7.3 / January 3th, 2018
 
 * Improvement: the ephemeris module (in station view) now displays local times rather than UTC.

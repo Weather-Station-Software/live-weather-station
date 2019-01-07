@@ -355,6 +355,20 @@ jQuery(document).ready( function($) {
         }
     });
 
+    $('#maptiler-connect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#maptiler-span-sync').show();
+    });
+
+    $('#maptiler-disconnect').click( function() {
+        if (lws_maptiler_confirmation) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#maptiler-span-sync').show();
+        }
+    });
+
     $('#thunderforest-connect').click( function() {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });

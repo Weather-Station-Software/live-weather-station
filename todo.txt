@@ -79,7 +79,7 @@ Fully delete a station in fast collect mode
 
 
 ***********************
-* 3.6.x               *
+* 3.8.x               *
 ***********************
 
 
@@ -126,3 +126,10 @@ soil_temperature
 moisture_content
 moisture_tension
 windstrength (only trend)
+
+
+
+
+'co2_min', 'co2_max', 'co2_trend', 'humidity_min', 'humidity_max', 'humidity_trend', 'noise_min', 'noise_max', 'noise_trend', 'pressure_min', 'pressure_max', 'pressure_trend', 'pressure_sl_min', 'pressure_sl_max', 'pressure_sl_trend', 'temperature_min', 'temperature_max', 'temperature_trend', 'irradiance_min', 'irradiance_max', 'irradiance_trend', 'uv_index_min', 'uv_index_max', 'uv_index_trend', 'illuminance_min', 'illuminance_max', 'illuminance_trend', 'soil_temperature_min', 'soil_temperature_max', 'soil_temperature_trend', 'moisture_content_min', 'moisture_content_max', 'moisture_content_trend', 'moisture_tension_min', 'moisture_tension_max', 'moisture_tension_trend', 'windstrength_trend', 
+
+

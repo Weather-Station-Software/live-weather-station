@@ -581,7 +581,7 @@ class Outdoor extends \WP_Widget {
                         if (array_key_exists('temperature_ref', $module['datas']) &&
                             array_key_exists('dew_point', $module['datas']) &&
                             array_key_exists('frost_point', $module['datas'])) {
-                            $temp_ref = $module['datas']['temperature_ref']['value'];
+                            $temp_ref = $module['datas']['temperature_ref']['raw_value'];
                             $datas['dew'] = array();
                             $datas['dew']['value'] = $module['datas']['dew_point']['value'];
                             $datas['dew']['unit'] = $module['datas']['dew_point']['unit']['unit'];
@@ -597,14 +597,15 @@ class Outdoor extends \WP_Widget {
                         // Heat index, humidex, Summer Simmer & Steadman
                         if (array_key_exists('temperature_ref', $module['datas']) &&
                             array_key_exists('humidity_ref', $module['datas']) &&
+                            array_key_exists('dew_point', $module['datas']) &&
                             array_key_exists('heat_index', $module['datas']) &&
                             array_key_exists('summer_simmer', $module['datas']) &&
                             array_key_exists('steadman', $module['datas']) &&
                             array_key_exists('humidex', $module['datas'])
                         ) {
-                            $temp_ref = $module['datas']['temperature_ref']['value'];
-                            $hum_ref = $module['datas']['humidity_ref']['value'];
-                            $dew_ref = $module['datas']['dew_point']['value'];
+                            $temp_ref = $module['datas']['temperature_ref']['raw_value'];
+                            $hum_ref = $module['datas']['humidity_ref']['raw_value'];
+                            $dew_ref = $module['datas']['dew_point']['raw_value'];
                             $datas['heat'] = array();
                             $datas['heat']['value'] = $module['datas']['heat_index']['value'];
                             $datas['humidex'] = array();
@@ -627,7 +628,7 @@ class Outdoor extends \WP_Widget {
                         if (array_key_exists('temperature_ref', $module['datas']) &&
                             array_key_exists('wind_chill', $module['datas'])
                         ) {
-                            $temp_ref = $module['datas']['temperature_ref']['value'];
+                            $temp_ref = $module['datas']['temperature_ref']['raw_value'];
                             $datas['windchill'] = array();
                             $datas['windchill']['value'] = $module['datas']['wind_chill']['value'];
                             $show_windchill = $show_windchill && $this->is_valid_wind_chill($temp_ref, $datas['windchill']['value']);

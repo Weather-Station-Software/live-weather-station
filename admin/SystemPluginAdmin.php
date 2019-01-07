@@ -79,7 +79,7 @@ class Admin {
 	private $reload = false;
 
     private $settings = array('general', 'services', 'display', 'thresholds', 'history', 'system');
-    private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground', 'Bloomsky', 'Ambient', 'Windy', 'Stamen', 'Thunderforest', 'Mapbox');
+    private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground', 'Bloomsky', 'Ambient', 'Windy', 'Stamen', 'Thunderforest', 'Mapbox', 'Maptiler');
     private $service = 'Backend';
 
     private $_station = null;
@@ -2313,6 +2313,14 @@ class Admin {
                         $s = $this->connect_mapbox($key, $plan);
                     }
                 }
+                if ($service == 'Maptiler') {
+                    if ($key == '') {
+                        $s = __('the API key can not be empty', 'live-weather-station');
+                    }
+                    else {
+                        $s = $this->connect_maptiler($key, $plan);
+                    }
+                }
                 if ($s == '') {
                     $message = __('%s is now connected to %s.', 'live-weather-station');
                     $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . $service . '</em>');
@@ -2355,6 +2363,10 @@ class Admin {
                 }
                 if ($service == 'Mapbox') {
                     $this->disconnect_mapbox();
+                    $result = true;
+                }
+                if ($service == 'Maptiler') {
+                    $this->disconnect_maptiler();
                     $result = true;
                 }
                 if ($service == 'Bloomsky') {
@@ -2405,6 +2417,10 @@ class Admin {
                 }
                 if ($service == 'Mapbox') {
                     $this->disconnect_mapbox();
+                    $result = true;
+                }
+                if ($service == 'Maptiler') {
+                    $this->disconnect_maptiler();
                     $result = true;
                 }
                 if ($service == 'Bloomsky') {
@@ -2952,6 +2968,22 @@ class Admin {
         update_option('live_weather_station_mapbox_apikey', $key);
         update_option('live_weather_station_mapbox_plan', $plan);
         Logger::notice('Authentication', 'Mapbox', null, null, null, null, null, 'API key correctly set.');
+        return '';
+    }
+
+    /**
+     * Connect to a Maptiler account.
+     *
+     * @param string $key The API key of the account.
+     * @param string $plan The plan of the account.
+     * @return string The error string if an error occured, empty string if none.
+     *
+     * @since 3.7.0
+     */
+    protected function connect_maptiler($key, $plan) {
+        update_option('live_weather_station_maptiler_apikey', $key);
+        update_option('live_weather_station_maptiler_plan', $plan);
+        Logger::notice('Authentication', 'Maptiler', null, null, null, null, null, 'API key correctly set.');
         return '';
     }
 

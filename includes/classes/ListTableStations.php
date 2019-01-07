@@ -252,13 +252,13 @@ class Stations extends Base {
     protected function column_time($item){
         $result = '';
         if (array_key_exists('last_refresh', $item) && $item['last_refresh'] != '0000-00-00 00:00:00') {
-            $last_refresh_icn = $this->output_iconic_value(0, 'refresh', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+            $last_refresh_icn = $this->output_iconic_value(0, 'refresh', false, false, '#999');
             $last_refresh_txt = $this->output_value($item['last_refresh'], 'last_refresh', false, false, 'NAMain', $item['loc_timezone']);
             $last_refresh_diff_txt = ucfirst(self::get_positive_time_diff_from_mysql_utc($item['last_refresh']));
             $result .= '<span style="width:100%;cursor: default;">' . $last_refresh_icn . '&nbsp;' . $last_refresh_txt . '</span><br/><span style="padding-left:28px;color:silver">' . $last_refresh_diff_txt . '</span><br/>';
         }
         if (array_key_exists('last_seen', $item) && $item['last_seen'] != '0000-00-00 00:00:00') {
-            $last_seen_icn = $this->output_iconic_value(0, 'last_seen', false, false, 'style="color:#999"', 'fa-lg fa-fw');
+            $last_seen_icn = $this->output_iconic_value(0, 'last_seen', false, false, '#999');
             $last_seen_txt = $this->output_value($item['last_seen'], 'last_seen', false, false, 'NAMain', $item['loc_timezone']);
             $last_seen_diff_txt = ucfirst(self::get_positive_time_diff_from_mysql_utc($item['last_seen']));
             $result .= '<span style="width:100%;cursor: default;">' . $last_seen_icn . '&nbsp;' . $last_seen_txt . '</span><br/><span style="padding-left:28px;color:silver">' . $last_seen_diff_txt . '</span>';
