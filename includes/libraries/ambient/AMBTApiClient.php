@@ -4,7 +4,7 @@ namespace WeatherStation\SDK\Ambient;
 
 use WeatherStation\SDK\Ambient\AbstractCache;
 use WeatherStation\SDK\Ambient\Exception as AMBTException;
-use WeatherStation\SDK\Ambient\Fetcher\CurlFetcher;
+use WeatherStation\SDK\Ambient\Fetcher\WPFetcher;
 use WeatherStation\SDK\Ambient\Fetcher\FetcherInterface;
 use WeatherStation\SDK\Ambient\Fetcher\FileGetContentsFetcher;
 
@@ -54,7 +54,7 @@ class AMBTApiClient
      * Constructs the Ambient object.
      *
      * @param null|FetcherInterface $fetcher    The interface to fetch the data from Ambient. Defaults to
-     *                                          CurlFetcher() if cURL is available. Otherwise defaults to
+     *                                          WPFetcher() . Otherwise defaults to
      *                                          FileGetContentsFetcher() using 'file_get_contents()'.
      * @param bool|string           $cacheClass If set to false, caching is disabled. Otherwise this must be a class
      *                                          extending AbstractCache. Defaults to false.
@@ -72,7 +72,7 @@ class AMBTApiClient
             throw new \Exception("\$seconds must be numeric.");
         }
         if (!isset($fetcher)) {
-            $fetcher = (function_exists('curl_version')) ? new CurlFetcher() : new FileGetContentsFetcher();
+            $fetcher = new WPFetcher();
         }
         if ($seconds == 0) {
             $cacheClass = false;

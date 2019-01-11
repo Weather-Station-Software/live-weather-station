@@ -47,8 +47,8 @@ class NAApiErrorType extends NAClientException
             }
             else
             {
-                if ($this->result == CURL_ERROR_TYPE) {
-                    $r = 'cURL';
+                if ($this->result == WP_ERROR_TYPE) {
+                    $r = 'WordPress HTTP API';
                 }
                 if ($this->result == JSON_ERROR_TYPE) {
                     $r = 'JSON';

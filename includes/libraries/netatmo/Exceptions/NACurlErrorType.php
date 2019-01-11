@@ -8,11 +8,11 @@ namespace WeatherStation\SDK\Netatmo\Exceptions;
  * @author Modified by Pierre Lannoy <https://pierre.lannoy.fr/>.
  * @since 3.0.0
  */
-class NACurlErrorType extends NAClientException
+class NAWPErrorType extends NAClientException
 {
     function __construct($code, $message)
     {
-        parent::__construct($code, $message, CURL_ERROR_TYPE);
+        parent::__construct($code, $message, WP_ERROR_TYPE);
     }
 }
 

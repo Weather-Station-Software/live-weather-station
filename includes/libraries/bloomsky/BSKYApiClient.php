@@ -4,7 +4,7 @@ namespace WeatherStation\SDK\BloomSky;
 
 use WeatherStation\SDK\BloomSky\AbstractCache;
 use WeatherStation\SDK\BloomSky\Exception as BSKYException;
-use WeatherStation\SDK\BloomSky\Fetcher\CurlFetcher;
+use WeatherStation\SDK\BloomSky\Fetcher\WPFetcher;
 use WeatherStation\SDK\BloomSky\Fetcher\FetcherInterface;
 use WeatherStation\SDK\BloomSky\Fetcher\FileGetContentsFetcher;
 
@@ -47,7 +47,7 @@ class BSKYApiClient
      * Constructs the BloomSky object.
      *
      * @param null|FetcherInterface $fetcher    The interface to fetch the data from BloomSky. Defaults to
-     *                                          CurlFetcher() if cURL is available. Otherwise defaults to
+     *                                          WPFetcher(). Otherwise defaults to
      *                                          FileGetContentsFetcher() using 'file_get_contents()'.
      * @param bool|string           $cacheClass If set to false, caching is disabled. Otherwise this must be a class
      *                                          extending AbstractCache. Defaults to false.
@@ -65,7 +65,7 @@ class BSKYApiClient
             throw new \Exception("\$seconds must be numeric.");
         }
         if (!isset($fetcher)) {
-            $fetcher = (function_exists('curl_version')) ? new CurlFetcher($config) : new FileGetContentsFetcher();
+            $fetcher = new WPFetcher($config);
         }
         if ($seconds == 0) {
             $cacheClass = false;

@@ -177,19 +177,6 @@ class Indoor extends \WP_Widget {
      * @since 3.1.0
      */
     public function css($instance, $uid, $flat_design, $health_idx, $background='', $attachment='local') {
-        $health_idx_color = '#1DADEA';
-        if ($health_idx < 80) {
-            $health_idx_color = '#7CBE4D';
-        }
-        if ($health_idx < 60) {
-            $health_idx_color = '#EFE032';
-        }
-        if ($health_idx < 40) {
-            $health_idx_color = '#F69738';
-        }
-        if ($health_idx < 20) {
-            $health_idx_color = '#EB302E';
-        }
         try {
             $maxwidth = round ($instance['width']);
 
@@ -266,7 +253,8 @@ class Indoor extends \WP_Widget {
         $borders = $instance['show_borders'];
         $background_attachment = $attachment;
         $bg_url = $background;
-        include(LWS_PUBLIC_DIR.'partials/WidgetIndoorDisplayCSS.php');
+        $wtype = 'indoor';
+        include(LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php');
     }
 
     /**
@@ -277,9 +265,8 @@ class Indoor extends \WP_Widget {
      * @since 3.1.0
      */
     public function widget($args, $instance) {
-        wp_enqueue_style('lws-weather-icons');
-        wp_enqueue_style('lws-weather-icons-wind');
         lws_font_awesome();
+        $id = uniqid();
         $instance = $this->_get_instance($instance);
         $title = $instance['title'];
         $show_title = !($title=='');
@@ -340,6 +327,7 @@ class Indoor extends \WP_Widget {
                             $datas['humidity'] = array();
                             $datas['humidity']['value'] = $module['datas']['humidity']['value'];
                             $datas['humidity']['unit'] = $module['datas']['humidity']['unit']['unit'];
+                            $datas['humidity']['icon'] = $this->output_iconic_value($module['datas']['humidity']['raw_value'], 'humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_humidity = false;
@@ -348,6 +336,7 @@ class Indoor extends \WP_Widget {
                             $datas['co2'] = array();
                             $datas['co2']['value'] = $module['datas']['co2']['value'];
                             $datas['co2']['unit'] = $module['datas']['co2']['unit']['unit'];
+                            $datas['co2']['icon'] = $this->output_iconic_value($module['datas']['co2']['raw_value'], 'co2', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_co2 = false;
@@ -356,6 +345,7 @@ class Indoor extends \WP_Widget {
                             $datas['noise'] = array();
                             $datas['noise']['value'] = $module['datas']['noise']['value'];
                             $datas['noise']['unit'] = $module['datas']['noise']['unit']['unit'];
+                            $datas['noise']['icon'] = $this->output_iconic_value($module['datas']['noise']['raw_value'], 'noise', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_noise = false;
@@ -364,6 +354,7 @@ class Indoor extends \WP_Widget {
                             $datas['temperature'] = array();
                             $datas['temperature']['value'] = $module['datas']['temperature']['value'];
                             $datas['temperature']['unit'] = $module['datas']['temperature']['unit']['unit'];
+                            $datas['temperature']['icon'] = $this->output_iconic_value($module['datas']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
                             if (array_key_exists('temperature_max', $module['datas']) && array_key_exists('temperature_min', $module['datas'])) {
                                 $datas['temperature_max'] = array();
                                 $datas['temperature_max']['value'] = $module['datas']['temperature_max']['value'];
@@ -433,12 +424,12 @@ class Indoor extends \WP_Widget {
                 $bg_url = 'background-image: url("' . $good_url . '");';
             }
         }
+        $datas['health_idx']['icon'] = $this->output_iconic_value($health_idx, 'health_idx', null, true, $this->get_health_idx_color($health_idx), 'lws-widget-big-icon-' . $id);
         $status = __('Comfort: ', 'live-weather-station') . strtolower($this->get_health_index_text($health_idx));
         if (($factor_text != '') && ($health_idx < 40)) {
             $status .= ' (' . $factor_text . ')';
         }
         echo $args['before_widget'];
-        $id = uniqid();
         $this->css($instance, $id, $flat_design, $health_idx, $bg_url, $background_attachment);
         include(LWS_PUBLIC_DIR.'partials/WidgetIndoorDisplay.php');
         echo $args['after_widget'];

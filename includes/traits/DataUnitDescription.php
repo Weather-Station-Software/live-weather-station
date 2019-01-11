@@ -3,7 +3,7 @@
 namespace WeatherStation\Data\Unit;
 
 /**
- * Units conversions functionalities for Weather Station plugin.
+ * Units descriptions functionalities for Weather Station plugin.
  *
  * @package Includes\Traits
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.

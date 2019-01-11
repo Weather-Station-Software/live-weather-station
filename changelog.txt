@@ -1,4 +1,13 @@
 
+#3.7.5 / January 7th, 2018
+
+* Improvement: all the API calls have been redesigned to be compliant with newly enforced WordPress security rules.
+* Improvement: greater speed while collecting data.
+* Improvement: logged events about refresh token for Netatmo APIs are more precise (and less anxiogenic).
+* Improvement: the health index icon is now consistent between widgets and admin station view.
+* Bug fix: in some cases, daily windrose may be wrongly refreshed (thanks to [@grosnenesse](https://weather.station.software/community/profile/grosnenesse/)).
+* Removed: cUrl dependencies. Weather Station is now fully operational even if cUrl support is not installed.
+
 #3.7.4 / January 7th, 2018
 
 * Improvement: optimized quota management for Mapbox and ThunderForest maps.

@@ -82,8 +82,26 @@ Fully delete a station in fast collect mode
 * 3.8.x               *
 ***********************
 
+MapTiler for maps
+min/max/trend
+Shortened types for textual and gauge
+Icons via shortcodes
+Textual climatological shortcodes
+Weather radial
+Widget styles
+Use of live_weather_station_mutation_observer
+
+New indexes:
+Pressure altitude
+Density altitude
+Hellman's index
+
+Translations:
+at a glance box: singular/plural for station(s)
+First upper case letter for German
 
 
+-----
 
 
 Chart for station comparison
@@ -100,16 +118,14 @@ use wind classification (textual, charts, )
 
 add Zambretti forecast
 
-min/max for new indexes
 
-MapTiler.com
 
 
 
 
 -- Comparison
 
-Bonus : min/max, banner
+Bonus : banner
 
 
 Extension :

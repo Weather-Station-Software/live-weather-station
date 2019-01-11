@@ -4,7 +4,7 @@ namespace WeatherStation\SDK\WeatherUnderground;
 
 use WeatherStation\SDK\WeatherUnderground\AbstractCache;
 use WeatherStation\SDK\WeatherUnderground\Exception as WUGException;
-use WeatherStation\SDK\WeatherUnderground\Fetcher\CurlFetcher;
+use WeatherStation\SDK\WeatherUnderground\Fetcher\WPFetcher;
 use WeatherStation\SDK\WeatherUnderground\Fetcher\FetcherInterface;
 use WeatherStation\SDK\WeatherUnderground\Fetcher\FileGetContentsFetcher;
 
@@ -47,7 +47,7 @@ class WUGApiClient
      * Constructs the WeatherUnderground object.
      *
      * @param null|FetcherInterface $fetcher    The interface to fetch the data from WeatherUnderground. Defaults to
-     *                                          CurlFetcher() if cURL is available. Otherwise defaults to
+     *                                          WPFetcher(). Otherwise defaults to
      *                                          FileGetContentsFetcher() using 'file_get_contents()'.
      * @param bool|string           $cacheClass If set to false, caching is disabled. Otherwise this must be a class
      *                                          extending AbstractCache. Defaults to false.
@@ -65,7 +65,7 @@ class WUGApiClient
             throw new \Exception("\$seconds must be numeric.");
         }
         if (!isset($fetcher)) {
-            $fetcher = (function_exists('curl_version')) ? new CurlFetcher() : new FileGetContentsFetcher();
+            $fetcher = new WPFetcher();
         }
         if ($seconds == 0) {
             $cacheClass = false;

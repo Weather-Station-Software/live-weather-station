@@ -4,7 +4,7 @@ namespace WeatherStation\SDK\Pioupiou;
 
 use WeatherStation\SDK\Pioupiou\AbstractCache;
 use WeatherStation\SDK\Pioupiou\Exception as PIOUException;
-use WeatherStation\SDK\Pioupiou\Fetcher\CurlFetcher;
+use WeatherStation\SDK\Pioupiou\Fetcher\WPFetcher;
 use WeatherStation\SDK\Pioupiou\Fetcher\FetcherInterface;
 use WeatherStation\SDK\Pioupiou\Fetcher\FileGetContentsFetcher;
 
@@ -52,7 +52,7 @@ class PIOUApiClient
      * Constructs the Pioupiou object.
      *
      * @param null|FetcherInterface $fetcher    The interface to fetch the data from Pioupiou. Defaults to
-     *                                          CurlFetcher() if cURL is available. Otherwise defaults to
+     *                                          WPFetcher(). Otherwise defaults to
      *                                          FileGetContentsFetcher() using 'file_get_contents()'.
      * @param bool|string           $cacheClass If set to false, caching is disabled. Otherwise this must be a class
      *                                          extending AbstractCache. Defaults to false.
@@ -70,7 +70,7 @@ class PIOUApiClient
             throw new \Exception("\$seconds must be numeric.");
         }
         if (!isset($fetcher)) {
-            $fetcher = (function_exists('curl_version')) ? new CurlFetcher() : new FileGetContentsFetcher();
+            $fetcher = new WPFetcher();
         }
         if ($seconds == 0) {
             $cacheClass = false;

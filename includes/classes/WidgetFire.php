@@ -184,19 +184,6 @@ class Fire extends \WP_Widget {
      * @since 3.1.0
      */
     public function css($instance, $uid, $flat_design, $cbi=-99999, $background='', $attachment) {
-        $cbi_color = '#EB302E';
-        if ($cbi <= 97.5) {
-            $cbi_color = '#F69738';
-        }
-        if ($cbi <= 90) {
-            $cbi_color = '#EFE032';
-        }
-        if ($cbi <= 75) {
-            $cbi_color = '#1DADEA';
-        }
-        if ($cbi < 50) {
-            $cbi_color = '#7CBE4D';
-        }
         try
         {
             $maxwidth = round ($instance['width']);
@@ -276,7 +263,8 @@ class Fire extends \WP_Widget {
         $borders = $instance['show_borders'];
         $background_attachment = $attachment;
         $bg_url = $background;
-        include(LWS_PUBLIC_DIR.'partials/WidgetFireDisplayCSS.php');
+        $wtype = 'fire';
+        include(LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php');
     }
 
     /**
@@ -289,6 +277,7 @@ class Fire extends \WP_Widget {
     public function widget($args, $instance) {
         wp_enqueue_style('lws-weather-icons');
         wp_enqueue_style('lws-weather-icons-wind');
+        $id = uniqid();
         $instance = $this->_get_instance($instance);
         $title = $instance['title'];
         $show_title = !($title=='');
@@ -356,6 +345,7 @@ class Fire extends \WP_Widget {
                             $datas['humidity'] = array();
                             $datas['humidity']['value'] = $module['datas']['humidity']['value'];
                             $datas['humidity']['unit'] = $module['datas']['humidity']['unit']['unit'];
+                            $datas['humidity']['icon'] = $this->output_iconic_value($module['datas']['humidity']['raw_value'], 'humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_humidity = false;
@@ -365,6 +355,7 @@ class Fire extends \WP_Widget {
                             $datas['temperature'] = array();
                             $datas['temperature']['value'] = $module['datas']['temperature']['value'];
                             $datas['temperature']['unit'] = $module['datas']['temperature']['unit']['unit'];
+                            $datas['temperature']['icon'] = $this->output_iconic_value($module['datas']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
                             if (array_key_exists('temperature_max', $module['datas']) && array_key_exists('temperature_min', $module['datas'])) {
                                 $datas['temperature_max'] = array();
                                 $datas['temperature_max']['value'] = $module['datas']['temperature_max']['value'];
@@ -386,6 +377,7 @@ class Fire extends \WP_Widget {
                             $datas['rain'] = array();
                             $datas['rain']['value'] = $module['datas']['rain']['value'];
                             $datas['rain']['unit'] = $module['datas']['rain']['unit']['unit'];
+                            $datas['rain']['icon'] = $this->output_iconic_value($module['datas']['rain']['raw_value'], 'rain', null, true, 'inherit', 'lws-widget-icon-' . $id);
                             if (array_key_exists('rain_day_aggregated', $module['datas'])) {
                                 $datas['rain_day_aggregated'] = array();
                                 $datas['rain_day_aggregated']['value'] = $module['datas']['rain_day_aggregated']['value'];
@@ -412,6 +404,7 @@ class Fire extends \WP_Widget {
                             $datas['windstrength'] = array();
                             $datas['windstrength']['value'] = $module['datas']['windstrength']['value'];
                             $datas['windstrength']['unit'] = $module['datas']['windstrength']['unit']['unit'];
+                            $datas['windangle']['icon'] = $this->output_iconic_value($module['datas']['windangle']['raw_value'], 'windangle', null, true, 'inherit', 'lws-widget-icon-' . $id);
                             if (array_key_exists('windstrength_day_max', $module['datas'])) {
                                 $datas['windstrength_max'] = array();
                                 $datas['windstrength_max']['value'] = $module['datas']['windstrength_day_max']['value'];
@@ -434,6 +427,8 @@ class Fire extends \WP_Widget {
                             $datas['cbi']['value'] = $module['datas']['cbi']['value'];
                             $cbi = $module['datas']['cbi']['value'];
                             $datas['cbi']['unit'] = $this->get_cbi_text($cbi);
+                            $datas['header_cbi']['icon'] = $this->output_iconic_value($module['datas']['cbi']['raw_value'], 'cbi', null, true, $this->get_cbi_color($cbi), 'lws-widget-big-icon-' . $id);
+                            $datas['cbi']['icon'] = $this->output_iconic_value($module['datas']['cbi']['raw_value'], 'cbi', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         } else {
                             $show_cbi = false;
                         }
@@ -457,6 +452,7 @@ class Fire extends \WP_Widget {
                 $datas['humidity'] = array();
                 $datas['humidity']['value'] = $current['datas']['humidity']['value'];
                 $datas['humidity']['unit'] = $current['datas']['humidity']['unit']['unit'];
+                $datas['humidity']['icon'] = $this->output_iconic_value($current['datas']['humidity']['raw_value'], 'humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
             } else {
                 $show_humidity = false;
             }
@@ -464,6 +460,7 @@ class Fire extends \WP_Widget {
                 $datas['temperature'] = array();
                 $datas['temperature']['value'] = $current['datas']['temperature']['value'];
                 $datas['temperature']['unit'] = $current['datas']['temperature']['unit']['unit'];
+                $datas['temperature']['icon'] = $this->output_iconic_value($current['datas']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
             } else {
                 $show_temperature = false;
             }
@@ -477,6 +474,7 @@ class Fire extends \WP_Widget {
                 $datas['windstrength'] = array();
                 $datas['windstrength']['value'] = $current['datas']['windstrength']['value'];
                 $datas['windstrength']['unit'] = $current['datas']['windstrength']['unit']['unit'];
+                $datas['windangle']['icon'] = $this->output_iconic_value($current['datas']['windangle']['raw_value'], 'windangle', null, true, 'inherit', 'lws-widget-icon-' . $id);
             } else {
                 $show_wind = false;
             }
@@ -487,6 +485,7 @@ class Fire extends \WP_Widget {
                 $datas['rain'] = array();
                 $datas['rain']['value'] = $current['datas']['rain']['value'];
                 $datas['rain']['unit'] = $current['datas']['rain']['unit']['unit'];
+                $datas['rain']['icon'] = $this->output_iconic_value($current['datas']['rain']['raw_value'], 'rain', null, true, 'inherit', 'lws-widget-icon-' . $id);
             } else {
                 $show_rain = false;
             }
@@ -534,7 +533,6 @@ class Fire extends \WP_Widget {
             }
         }
         echo $args['before_widget'];
-        $id = uniqid();
         $this->css($instance, $id, $flat, $cbi, $bg_url, $background_attachment);
         include(LWS_PUBLIC_DIR.'partials/WidgetFireDisplay.php');
         echo $args['after_widget'];

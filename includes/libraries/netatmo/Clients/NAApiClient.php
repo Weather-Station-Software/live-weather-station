@@ -5,7 +5,7 @@ namespace WeatherStation\SDK\Netatmo\Clients;
 use WeatherStation\SDK\Netatmo\Exceptions\NASDKException;
 use WeatherStation\SDK\Netatmo\Exceptions\NAClientException;
 use WeatherStation\SDK\Netatmo\Exceptions\NAApiErrorType;
-use WeatherStation\SDK\Netatmo\Exceptions\NACurlErrorType;
+use WeatherStation\SDK\Netatmo\Exceptions\NAWPErrorType;
 use WeatherStation\SDK\Netatmo\Exceptions\NAJsonErrorType;
 use WeatherStation\SDK\Netatmo\Exceptions\NAInternalErrorType;
 use WeatherStation\SDK\Netatmo\Exceptions\NANotLoggedErrorType;
@@ -188,154 +188,63 @@ class NAApiClient
         }
   }
 
-    /**
-   * Default options for cURL.
-   */
-    public static $CURL_OPTS = array(
-        CURLOPT_CONNECTTIMEOUT => 10,
-        CURLOPT_RETURNTRANSFER => TRUE,
-        CURLOPT_HEADER         => TRUE,
-        CURLOPT_TIMEOUT        => 60,
-        //CURLOPT_USERAGENT      => 'netatmoclient',
-        CURLOPT_USERAGENT      => LWS_PLUGIN_AGENT,
-        CURLOPT_SSL_VERIFYPEER => TRUE,
-        CURLOPT_HTTPHEADER     => array("Accept: application/json"),
-    );
-
 
     /**
     * Makes an HTTP request.
     *
-    * This method can be overriden by subclasses if developers want to do
-    * fancier things or use something other than cURL to make the request.
+    * @param string $path The target path, relative to base_path/service_uri or an absolute URI.
+    * @param string $method Optional. The HTTP method.
+    * @param string $params Optional. The GET/POST parameters.
     *
-    * @param $path
-    *   The target path, relative to base_path/service_uri or an absolute URI.
-    * @param $method
-    *   (optional) The HTTP method (default 'GET').
-    * @param $params
-    *   (optional The GET/POST parameters.
-    * @param $ch
-    *   (optional) An initialized curl handle
-    *
-    * @return
-    *   The json_decoded result or NAClientException if pb happend
+    * @return string The json_decoded...
     */
-    public function makeRequest($path, $method = 'GET', $params = array())
-    {
-        $ch = curl_init();
-        //$opts = self::$CURL_OPTS;
-        $opts = array(
-            CURLOPT_CONNECTTIMEOUT => get_option('live_weather_station_collection_http_timeout'),
-            CURLOPT_RETURNTRANSFER => TRUE,
-            CURLOPT_HEADER         => TRUE,
-            CURLOPT_TIMEOUT        => get_option('live_weather_station_collection_http_timeout'),
-            CURLOPT_USERAGENT      => LWS_PLUGIN_AGENT,
-            CURLOPT_SSL_VERIFYPEER => TRUE,
-            CURLOPT_HTTPHEADER     => array("Accept: application/json"),
+    public function makeRequest($path, $method = 'GET', $params = array()) {
+        $response = null;
+        $args = array(
+            'user-agent' => LWS_PLUGIN_AGENT,
+            'timeout' => get_option('live_weather_station_collection_http_timeout'),
+            'blocking'    => true,
         );
-
-        if ($params)
-        {
-            if(isset($params['access_token']))
-            {
-                $opts[CURLOPT_HTTPHEADER][] = 'Authorization: Bearer ' . $params['access_token'];
+        if ($params) {
+            if (isset($params['access_token'])) {
+                $args['headers']['Authorization'] = 'Bearer ' . $params['access_token'];
                 unset($params['access_token']);
             }
 
-            switch ($method)
-            {
+            switch ($method) {
                 case 'GET':
                     $path .= '?' . http_build_query($params, NULL, '&');
-                break;
-                // Method override as we always do a POST.
+                    $response = wp_remote_get($path, $args);
+                    break;
+                case 'POST':
+                    $args['body'] = $params;
+                    $response = wp_remote_post($path, $args);
+                    break;
                 default:
-                    if ($this->getVariable('file_upload_support'))
-                    {
-                        $opts[CURLOPT_POSTFIELDS] = $params;
+                    Logger::critical('API / SDK', 'Netatmo', null, null, null, null, 800, 'Unsupported method: ' . $method . '.');
+                    if ($this->getVariable('file_upload_support')) {
+                        // NOT SUPPORTED FOR NOW
                     }
-                    else
-                    {
-                        $opts[CURLOPT_POSTFIELDS] = http_build_query($params, NULL, '&');
+                    else {
+                        //$postFields = http_build_query($params, NULL, '&');
+                        // NOT SUPPORTED FOR NOW
                     }
-                break;
+                    break;
             }
         }
-        $opts[CURLOPT_URL] = $path;
-        // Disable the 'Expect: 100-continue' behaviour. This causes CURL to wait
-        // for 2 seconds if the server does not support this header.
-        if (isset($opts[CURLOPT_HTTPHEADER]))
-        {
-            $existing_headers = $opts[CURLOPT_HTTPHEADER];
-            $existing_headers[] = 'Expect:';
-            $ip = $this->getVariable("ip");
-            if($ip)
-                $existing_headers[] = 'CLIENT_IP: '.$ip;
-            $opts[CURLOPT_HTTPHEADER] = $existing_headers;
-        }
-        else
-        {
-            $opts[CURLOPT_HTTPHEADER] = array('Expect:');
-        }
-        curl_setopt_array($ch, $opts);
-        $result = curl_exec($ch);
-
-
-        $errno = curl_errno($ch);
-        // CURLE_SSL_CACERT
-        if ($errno == 60)
-        {
-            Logger::error('API / SDK', 'Netatmo', null, null, null, null, $errno, 'Error while executing cURL: peer certificate cannot be authenticated with known CA certificates.');
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            Logger::warning('API / SDK', 'Netatmo', null, null, null, null, $errno, 'SSL verification has been temporarily disabled.');
-            $result = curl_exec($ch);
-        }
-        // CURLE_SSL_CACERT_BADFILE
-        if ($errno == 77)
-        {
-            Logger::error('API / SDK', 'Netatmo', null, null, null, null, $errno, 'Error while executing cURL: problem with reading the SSL CA cert.');
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, FALSE);
-            Logger::warning('API / SDK', 'Netatmo', null, null, null, null, $errno, 'SSL verification has been temporarily disabled.');
-            $result = curl_exec($ch);
-        }
-
-        if ($result === FALSE)
-        {
-            $e = new NACurlErrorType(curl_errno($ch), curl_error($ch));
-            curl_close($ch);
-            throw $e;
-        }
-        curl_close($ch);
-
-        // Split the HTTP response into header and body.
-        list($headers, $body) = explode("\r\n\r\n", $result);
-        $headers = explode("\r\n", $headers);
-        //Only 2XX response are considered as a success
-        if(strpos($headers[0], 'HTTP/1.1 2') !== FALSE)
-        {
-            $decode = json_decode($body, TRUE);
-            if(!$decode)
-            {
-                if (preg_match('/^HTTP\/1.1 ([0-9]{3,3}) (.*)$/', $headers[0], $matches))
-                {
-                    throw new NAJsonErrorType($matches[1], $matches[2]);
-                }
-                else throw new NAJsonErrorType(200, "OK");
+        if (isset($response)) {
+            $http_code = wp_remote_retrieve_response_code($response);
+            $body = wp_remote_retrieve_body($response);
+            $decode = json_decode($body, true);
+            if ($http_code === 200) {
+                return $decode;
             }
-            return $decode;
+            else {
+                throw new  NAApiErrorType($http_code, 'HTTP error', $decode);
+            }
         }
-        else
-        {
-            if (!preg_match('/^HTTP\/1.1 ([0-9]{3,3}) (.*)$/', $headers[0], $matches))
-            {
-                $matches = array("", 400, "bad request");
-            }
-            $decode = json_decode($body, TRUE);
-            if(!$decode)
-            {
-                throw new NAApiErrorType($matches[1], $matches[2], null);
-            }
-            throw new NAApiErrorType($matches[1], $matches[2], $decode);
+        else {
+            Logger::warning('API / SDK', 'Netatmo', null, null, null, null, 9, 'Empty response.');
         }
     }
 

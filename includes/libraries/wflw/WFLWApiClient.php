@@ -4,7 +4,7 @@ namespace WeatherStation\SDK\WeatherFlow;
 
 use WeatherStation\SDK\WeatherFlow\AbstractCache;
 use WeatherStation\SDK\WeatherFlow\Exception as WFLWException;
-use WeatherStation\SDK\WeatherFlow\Fetcher\CurlFetcher;
+use WeatherStation\SDK\WeatherFlow\Fetcher\WPFetcher;
 use WeatherStation\SDK\WeatherFlow\Fetcher\FetcherInterface;
 use WeatherStation\SDK\WeatherFlow\Fetcher\FileGetContentsFetcher;
 
@@ -47,7 +47,7 @@ class WFLWApiClient
      * Constructs the WeatherFlow object.
      *
      * @param null|FetcherInterface $fetcher    The interface to fetch the data from WeatherFlow. Defaults to
-     *                                          CurlFetcher() if cURL is available. Otherwise defaults to
+     *                                          WPFetcher(). Otherwise defaults to
      *                                          FileGetContentsFetcher() using 'file_get_contents()'.
      * @param bool|string           $cacheClass If set to false, caching is disabled. Otherwise this must be a class
      *                                          extending AbstractCache. Defaults to false.
@@ -65,7 +65,7 @@ class WFLWApiClient
             throw new \Exception("\$seconds must be numeric.");
         }
         if (!isset($fetcher)) {
-            $fetcher = (function_exists('curl_version')) ? new CurlFetcher() : new FileGetContentsFetcher();
+            $fetcher = new WPFetcher();
         }
         if ($seconds == 0) {
             $cacheClass = false;

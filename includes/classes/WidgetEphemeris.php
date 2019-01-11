@@ -203,7 +203,8 @@ class Ephemeris extends \WP_Widget {
         $borders = $instance['show_borders'];
         $background_attachment = $attachment;
         $bg_url = $background;
-        include(LWS_PUBLIC_DIR.'partials/WidgetEphemerisDisplayCSS.php');
+        $wtype = 'ephemeris';
+        include(LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php');
     }
 
     /**
@@ -309,13 +310,13 @@ class Ephemeris extends \WP_Widget {
                         }
                         break;
                     case 'NAEphemer':
-                        $datas['sun']['icon'] = $this->output_iconic_value(0, 'sun', null, false, 'inherit', 'lws-widget-icon-' . $id);
+                        $datas['sun']['icon'] = $this->output_iconic_value(0, 'sun', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         if (array_key_exists('sunrise', $module['datas']) && array_key_exists('sunset', $module['datas'])) {
                             if ($mode==0) {
                                 $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise']['raw_value'], 'sunrise', true, false, '', $tz);
                                 $datas['sunset']['value'] = $this->output_value($module['datas']['sunset']['raw_value'], 'sunset', true, false, '', $tz);
-                                $datas['sunrise']['icon'] = $this->output_iconic_value($module['datas']['sunrise']['raw_value'], 'sunrise', null, false, 'inherit', 'lws-widget-icon-' . $id);
-                                $datas['sunset']['icon'] = $this->output_iconic_value($module['datas']['sunset']['raw_value'], 'sunset', null, false, 'inherit', 'lws-widget-icon-' . $id);
+                                $datas['sunrise']['icon'] = $this->output_iconic_value($module['datas']['sunrise']['raw_value'], 'sunrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                                $datas['sunset']['icon'] = $this->output_iconic_value($module['datas']['sunset']['raw_value'], 'sunset', null, true, 'inherit', 'lws-widget-icon-' . $id);
                                 $show_sun = true;
                             }
                             $sunrise = $module['datas']['sunrise']['raw_value'];
@@ -325,8 +326,8 @@ class Ephemeris extends \WP_Widget {
                             if ($mode==1) {
                                 $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise_c']['raw_value'], 'sunrise_c', true, false, '', $tz);
                                 $datas['sunset']['value'] = $this->output_value($module['datas']['sunset_c']['raw_value'], 'sunset_c', true, false, '', $tz);
-                                $datas['sunrise']['icon'] = $this->output_iconic_value($module['datas']['sunrise_c']['raw_value'], 'sunrise', null, false, 'inherit', 'lws-widget-icon-' . $id);
-                                $datas['sunset']['icon'] = $this->output_iconic_value($module['datas']['sunset_c']['raw_value'], 'sunset', null, false, 'inherit', 'lws-widget-icon-' . $id);
+                                $datas['sunrise']['icon'] = $this->output_iconic_value($module['datas']['sunrise_c']['raw_value'], 'sunrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                                $datas['sunset']['icon'] = $this->output_iconic_value($module['datas']['sunset_c']['raw_value'], 'sunset', null, true, 'inherit', 'lws-widget-icon-' . $id);
                                 $show_sun = true;
                             }
                         }
@@ -334,8 +335,8 @@ class Ephemeris extends \WP_Widget {
                             if ($mode==2) {
                                 $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise_n']['raw_value'], 'sunrise_n', true, false, '', $tz);
                                 $datas['sunset']['value'] = $this->output_value($module['datas']['sunset_n']['raw_value'], 'sunset_n', true, false, '', $tz);
-                                $datas['sunrise']['icon'] = $this->output_iconic_value($module['datas']['sunrise_n']['raw_value'], 'sunrise', null, false, 'inherit', 'lws-widget-icon-' . $id);
-                                $datas['sunset']['icon'] = $this->output_iconic_value($module['datas']['sunset_n']['raw_value'], 'sunset', null, false, 'inherit', 'lws-widget-icon-' . $id);
+                                $datas['sunrise']['icon'] = $this->output_iconic_value($module['datas']['sunrise_n']['raw_value'], 'sunrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                                $datas['sunset']['icon'] = $this->output_iconic_value($module['datas']['sunset_n']['raw_value'], 'sunset', null, true, 'inherit', 'lws-widget-icon-' . $id);
                                 $show_sun = true;
                             }
                         }
@@ -343,8 +344,8 @@ class Ephemeris extends \WP_Widget {
                             if ($mode==3) {
                                 $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise_a']['raw_value'], 'sunrise_a', true, false, '', $tz);
                                 $datas['sunset']['value'] = $this->output_value($module['datas']['sunset_a']['raw_value'], 'sunset_a', true, false, '', $tz);
-                                $datas['sunrise']['icon'] = $this->output_iconic_value($module['datas']['sunrise_a']['raw_value'], 'sunrise', null, false, 'inherit', 'lws-widget-icon-' . $id);
-                                $datas['sunset']['icon'] = $this->output_iconic_value($module['datas']['sunset_a']['raw_value'], 'sunset', null, false, 'inherit', 'lws-widget-icon-' . $id);
+                                $datas['sunrise']['icon'] = $this->output_iconic_value($module['datas']['sunrise_a']['raw_value'], 'sunrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                                $datas['sunset']['icon'] = $this->output_iconic_value($module['datas']['sunset_a']['raw_value'], 'sunset', null, true, 'inherit', 'lws-widget-icon-' . $id);
                                 $show_sun = true;
                             }
                             $sunrise_a = $module['datas']['sunrise_a']['raw_value'];
@@ -355,15 +356,15 @@ class Ephemeris extends \WP_Widget {
                             $datas['sun_distance']['unit'] = $module['datas']['sun_distance']['unit']['unit'];
                             $datas['sun_diameter']['value'] = $this->output_value($module['datas']['sun_diameter']['raw_value'], 'sun_diameter');
                             $datas['sun_diameter']['unit'] = $module['datas']['sun_diameter']['unit']['unit'];
-                            $datas['sun_distance']['icon'] = $this->output_iconic_value($module['datas']['sun_distance']['raw_value'], 'sun_distance', null, false, 'inherit', 'lws-widget-icon-' . $id);
-                            $datas['sun_diameter']['icon'] = $this->output_iconic_value($module['datas']['sun_diameter']['raw_value'], 'sun_diameter', null, false, 'inherit', 'lws-widget-icon-' . $id);
+                            $datas['sun_distance']['icon'] = $this->output_iconic_value($module['datas']['sun_distance']['raw_value'], 'sun_distance', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $datas['sun_diameter']['icon'] = $this->output_iconic_value($module['datas']['sun_diameter']['raw_value'], 'sun_diameter', null, true, 'inherit', 'lws-widget-icon-' . $id);
                             $show_sundetails = true;
                         }
                         if (array_key_exists('moonrise', $module['datas']) && array_key_exists('moonset', $module['datas'])) {
                             $datas['moonrise']['value'] = $this->output_value($module['datas']['moonrise']['raw_value'], 'moonrise', true, false, '', $tz);
                             $datas['moonset']['value'] = $this->output_value($module['datas']['moonset']['raw_value'], 'moonset', true, false, '', $tz);
-                            $datas['moonrise']['icon'] = $this->output_iconic_value($module['datas']['moonrise']['raw_value'], 'moonrise', null, false, 'inherit', 'lws-widget-icon-' . $id);
-                            $datas['moonset']['icon'] = $this->output_iconic_value($module['datas']['moonset']['raw_value'], 'moonset', null, false, 'inherit', 'lws-widget-icon-' . $id);
+                            $datas['moonrise']['icon'] = $this->output_iconic_value($module['datas']['moonrise']['raw_value'], 'moonrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $datas['moonset']['icon'] = $this->output_iconic_value($module['datas']['moonset']['raw_value'], 'moonset', null, true, 'inherit', 'lws-widget-icon-' . $id);
                             $show_moon = true;
                         }
                         if (array_key_exists('moon_phase', $module['datas'])) {

@@ -2,7 +2,7 @@
 
 namespace WeatherStation\SDK\Netatmo\Exceptions;
 
-define('CURL_ERROR_TYPE', 0);
+define('WP_ERROR_TYPE', 0);
 define('API_ERROR_TYPE',1);//error return from api
 define('INTERNAL_ERROR_TYPE', 2); //error because internal state is not consistent
 define('JSON_ERROR_TYPE',3);
