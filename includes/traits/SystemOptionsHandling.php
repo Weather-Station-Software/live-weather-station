@@ -26,6 +26,7 @@ trait Handling {
 
     private static $live_weather_station_quota_mode = 2 ;
     private static $live_weather_station_force_frontend_styling = true;
+    private static $live_weather_station_mutation_observer = true;
 
     private static $live_weather_station_file_retention = 7 ;
     private static $live_weather_station_only_valid_files = true;
@@ -671,6 +672,7 @@ trait Handling {
         delete_option('live_weather_station_full_history');
         delete_option('live_weather_station_retention_history');
         delete_option('live_weather_station_purge_cache');
+        delete_option('live_weather_station_mutation_observer');
         self::delete_thresholds_options();
         self::delete_cschemes_options();
     }
@@ -822,6 +824,7 @@ trait Handling {
         update_option('live_weather_station_system_http_timeout', self::$live_weather_station_system_http_timeout);
         update_option('live_weather_station_picture_retention', self::$live_weather_station_picture_retention);
         update_option('live_weather_station_video_retention', self::$live_weather_station_video_retention);
+        update_option('live_weather_station_mutation_observer', self::$live_weather_station_mutation_observer);
     }
 
     /**
@@ -1118,6 +1121,7 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_build_history', self::$live_weather_station_build_history);
         self::verify_option_boolean('live_weather_station_full_history', self::$live_weather_station_full_history);
         self::verify_option_integer('live_weather_station_retention_history', self::$live_weather_station_retention_history);
+        self::verify_option_boolean('live_weather_station_mutation_observer', self::$live_weather_station_mutation_observer);
 
     }
 

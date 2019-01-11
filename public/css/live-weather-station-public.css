@@ -54,6 +54,21 @@ div.module-daily-windrose div div svg:not(:root){
     overflow: visible !important;
 }
 
-.fa-xlg {
+.fa-s0 {
+    font-size: 1.25em;
+    line-height: 1em !important;
+}
+
+.fa-s1 {
+    font-size: 1.3em;
+    line-height: 1em !important;
+}
+.fa-s2 {
     font-size: 1.9em;
+    line-height: 1em !important;
+}
+
+.fa-s3 {
+    font-size: 2.1em;
+    line-height: 1em !important;
 }

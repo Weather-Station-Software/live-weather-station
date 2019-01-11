@@ -5,7 +5,7 @@ namespace WeatherStation\SDK\OpenWeatherMap;
 use WeatherStation\SDK\OpenWeatherMap\AbstractCache;
 use WeatherStation\SDK\OpenWeatherMap\CurrentWeather;
 use WeatherStation\SDK\OpenWeatherMap\Exception as OWMException;
-use WeatherStation\SDK\OpenWeatherMap\Fetcher\CurlFetcher;
+use WeatherStation\SDK\OpenWeatherMap\Fetcher\WPFetcher;
 use WeatherStation\SDK\OpenWeatherMap\Fetcher\FetcherInterface;
 use WeatherStation\SDK\OpenWeatherMap\Fetcher\FileGetContentsFetcher;
 use WeatherStation\SDK\OpenWeatherMap\WeatherForecast;
@@ -73,7 +73,7 @@ class OWMApiClient
      * Constructs the OpenWeatherMap object.
      *
      * @param null|FetcherInterface $fetcher    The interface to fetch the data from OpenWeatherMap. Defaults to
-     *                                          CurlFetcher() if cURL is available. Otherwise defaults to
+     *                                          WPFetcher(). Otherwise defaults to
      *                                          FileGetContentsFetcher() using 'file_get_contents()'.
      * @param bool|string           $cacheClass If set to false, caching is disabled. Otherwise this must be a class
      *                                          extending AbstractCache. Defaults to false.
@@ -91,7 +91,7 @@ class OWMApiClient
             throw new \Exception("\$seconds must be numeric.");
         }
         if (!isset($fetcher)) {
-            $fetcher = (function_exists('curl_version')) ? new CurlFetcher() : new FileGetContentsFetcher();
+            $fetcher = new WPFetcher();
         }
         if ($seconds == 0) {
             $cacheClass = false;

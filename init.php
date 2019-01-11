@@ -54,7 +54,6 @@ define('LWS_LANGUAGES_DIR', plugin_dir_path(__FILE__).'languages/');
 define('LWS_ADMIN_PHP_URL', EnvManager::admin_dir_relative_url());
 define('LWS_AJAX_URL', EnvManager::ajax_dir_relative_url());
 define('LWS_I18N_LOADED', EnvManager::is_i18n_loaded());
-define('LWS_CURL_LOADED', EnvManager::is_curl_loaded());
 define('LWS_JSON_LOADED', EnvManager::is_json_loaded());
 define('LWS_ICONV_LOADED', EnvManager::is_iconv_loaded());
 define('LWS_PHPVERSION_OK', EnvManager::is_php_version_ok());

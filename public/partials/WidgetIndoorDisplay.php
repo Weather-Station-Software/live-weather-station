@@ -5,13 +5,6 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.1.0
  */
-
-if ($shadows) {
-    $sh = 'filter:drop-shadow(1px 1px 1px rgba(0,0,0,.1));';
-}
-else {
-    $sh = '';
-}
 ?>
 <div class="lws-widget-container lws-widget-container-<?php echo $id ?>">
     <div class="lws-widget-outer-indoor lws-widget-outer-indoor-<?php echo $id ?>">
@@ -19,7 +12,7 @@ else {
             <?php if ( $show_current ):?>
                 <!-- HEALTH INDEX -->
                 <div class="lws-widget-header lws-widget-header-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Health index', 'live-weather-station').'"' : ''); ?>>
-                    <i class="<?php echo LWS_FAS;?> fa-leaf health-idx-<?php echo $id ?>" <?php echo LWS_FA_SVG?'style="' . $sh . '"':'';?>></i>
+                    <?php echo $datas['health_idx']['icon']; ?>
                 </div>
                 <?php if (($show_title || $show_status || $subtitle != 0) || $show_co2 || $show_noise || $show_humidity || $show_temperature):?>
                     <div class="lws-widget-bevel lws-widget-bevel-<?php echo $id ?>"></div>
@@ -46,9 +39,9 @@ else {
             <?php endif;?>
             <?php if ($show_co2):?>
                 <!-- CO2 -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Carbon dioxide', 'live-weather-station').'"' : ''); ?>>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x26-<?php echo $id ?> wi-smoke"></i>
+                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Carbon dioxide', 'live-weather-station').'"' : ''); ?>>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['co2']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
@@ -68,8 +61,8 @@ else {
                         <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"><?php echo $datas['temperature']['value']; ?></div>
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"><?php echo $datas['temperature']['unit']; ?></div>
                     </div>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x32-<?php echo $id ?> wi-thermometer" style="padding-top: 6px;"></i>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['temperature']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
@@ -88,9 +81,9 @@ else {
             <?php endif;?>
             <?php if ($show_temperature && !$temp_multipart):?>
                 <!-- TEMPERATURE -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Temperature', 'live-weather-station').'"' : ''); ?>>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x26-<?php echo $id ?> wi-thermometer"></i>
+                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Temperature', 'live-weather-station').'"' : ''); ?>>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['temperature']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
@@ -105,9 +98,9 @@ else {
             <?php endif;?>
             <?php if ($show_humidity):?>
                 <!-- HUMIDITY -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Humidity', 'live-weather-station').'"' : ''); ?>>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x26-<?php echo $id ?> wi-humidity"></i>
+                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Humidity', 'live-weather-station').'"' : ''); ?>>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['humidity']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
@@ -122,9 +115,9 @@ else {
             <?php endif;?>
             <?php if ($show_noise):?>
                 <!-- NOISE -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Noise level', 'live-weather-station').'"' : ''); ?>>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="<?php echo LWS_FAS;?> fa-volume-down wi-x26" <?php echo LWS_FA_SVG?'style="font-size:32px!important;' . $sh . '"':'style="font-size:32px!important;"';?>>&nbsp;</i>
+                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Noise level', 'live-weather-station').'"' : ''); ?>>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['noise']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">

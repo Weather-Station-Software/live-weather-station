@@ -66,6 +66,9 @@ trait Description {
             case 105:
                 $result = 'OpenWeatherMap';
                 break;
+            case 106:
+                $result = 'MapTiler';
+                break;
             default:
                 $result = null;
         }

@@ -4,7 +4,7 @@ namespace WeatherStation\SDK\Generic;
 
 use WeatherStation\SDK\Generic\AbstractCache;
 use WeatherStation\SDK\Generic\Exception as FileException;
-use WeatherStation\SDK\Generic\Fetcher\CurlFetcher;
+use WeatherStation\SDK\Generic\Fetcher\WPFetcher;
 use WeatherStation\SDK\Generic\Fetcher\FetcherInterface;
 use WeatherStation\SDK\Generic\Fetcher\FileGetContentsFetcher;
 
@@ -45,7 +45,7 @@ class FileClient
      *
      * @param integer $connection_type The type of fetcher to create if needed.
      * @param null|FetcherInterface $fetcher    The interface to fetch the data from HTTP. Defaults to
-     *                                          CurlFetcher() if cURL is available. Otherwise defaults to
+     *                                          WPFetcher(). Otherwise defaults to
      *                                          FileGetContentsFetcher() using 'file_get_contents()'.
      * @param bool|string           $cacheClass If set to false, caching is disabled. Otherwise this must be a class
      *                                          extending AbstractCache. Defaults to false.
@@ -64,7 +64,7 @@ class FileClient
         }
         if (!isset($fetcher)) {
             if ($connection_type == 2 || $connection_type == 3) {
-                $fetcher = (function_exists('curl_version')) ? new CurlFetcher() : new FileGetContentsFetcher();
+                $fetcher = new WPFetcher();
             }
             else {
                 $fetcher = new FileGetContentsFetcher();

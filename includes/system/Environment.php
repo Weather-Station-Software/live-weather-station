@@ -291,15 +291,6 @@ class Manager {
     }
 
     /**
-     * Verification of mandatory cURL extension.
-     *
-     * @since 3.0.0
-     */
-    public static function is_curl_loaded() {
-        return (function_exists('curl_version'));
-    }
-
-    /**
      * Verification of mandatory json extension.
      *
      * @since 3.0.0

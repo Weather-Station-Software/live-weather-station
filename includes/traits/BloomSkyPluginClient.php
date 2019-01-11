@@ -61,7 +61,7 @@ trait Client {
                 $currentkey = $apikey;
             }
             $header = array();
-            $header[] = 'Authorization: ' . $currentkey;
+            $header['Authorization'] = $currentkey;
             $this->bloomsky_client = new BSKYApiClient($header);
             try {
                 if (Quota::verify($this->service_name, 'GET')) {

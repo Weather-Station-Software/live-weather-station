@@ -57,10 +57,10 @@ abstract class Pusher {
     abstract protected function get_post_url();
 
     /**
-     * Get the user/pwd string for CURLOPT_USERPWD option.
+     * Get the user/pwd string.
      *
      * @param   array   $station      Station details.
-     * @return  string   User and password ready to use by curl_setopt.
+     * @return  string   User and password ready to use.
      * @since   2.5.0
      */
     abstract protected function get_userpwd($station);

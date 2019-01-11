@@ -2574,7 +2574,7 @@ trait Output {
         else {
             $refresh = 3600000 + random_int(-90000, 90000);
         }
-        $startdelay = random_int(100, 30000);
+        $startdelay = random_int(100, 10000);
 
         // prepare query params
         $value_params = $this->graph_prepare($attributes);
@@ -4187,7 +4187,7 @@ trait Output {
                     $body .= '            color: color' . $uniq . ',' . PHP_EOL;
                 }
                 $body .= '            size: ' . $size . '}' . PHP_EOL;
-                $body .= '      var chart' . $uniq . ' = Windrose();' . PHP_EOL;
+                $body .= '        chart' . $uniq . ' = Windrose();' . PHP_EOL;
                 $body .= '        d3.select("#' . $svg . '").call(chart' . $uniq . ');' . PHP_EOL;
                 $body .= '        chart' . $uniq . '.options(chartOption' . $uniq . ').data(data' . $uniq . ').update();' . PHP_EOL;
             }
@@ -4251,7 +4251,6 @@ trait Output {
             $result .= $body;
             $result .= '    ' . $spinner . '.stop();' . PHP_EOL;
             $result .= '}, ' . $startdelay . '); ' . PHP_EOL;
-
             if ($data == 'ajax_refresh') {
                 $result .= '    var ' . $inter . ' = setInterval(function() {';
                 $result .= '    ' . $spinner . '.spin(target);' . PHP_EOL;
@@ -4266,7 +4265,7 @@ trait Output {
                 $result .= '    ' . $spinner . '.stop();})' . PHP_EOL;
                 $result .= '}, ' . $refresh . '); ' . PHP_EOL;
             }
-            if ($type != 'calendarhm') {
+            if ((bool)get_option('live_weather_station_mutation_observer') && $type != 'calendarhm' && $type != 'windrose') {
                 $result .= 'if (observer' . $uniq . ' === null) { ' . PHP_EOL;
                 $result .= '  var target' . $uniq . ' = document.getElementById("' . $uniq . '");' . PHP_EOL;
                 $result .= '  var targetNode' . $uniq . ' = target' . $uniq . '.parentElement.parentElement.parentElement.parentElement;' . PHP_EOL;
@@ -4287,8 +4286,8 @@ trait Output {
                 $result .= '    }' . PHP_EOL;
                 $result .= 'var callback' . $uniq . ' = function(mutationsList) {' . PHP_EOL;
                 $result .= '    mutationsList.forEach(function (mutation, index) {' . PHP_EOL;
-                $result .= '        if (modeStandard) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display != "none") {if (mutation.oldValue !== null) {if (mutation.oldValue.indexOf("display: none") != -1) {chart'.$uniq.'.update();}}}}}}' . PHP_EOL;
-                $result .= '        if (modeElementorPopbox) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display == "block") {chart'.$uniq.'.update();}}}}' . PHP_EOL;
+                $result .= '        if (modeStandard) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display != "none") {if (mutation.oldValue !== null) {if (mutation.oldValue.indexOf("display: none") != -1) {if (chart' . $uniq . ') {chart' . $uniq . '.update();}}}}}}}' . PHP_EOL;
+                $result .= '        if (modeElementorPopbox) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display == "block") {if (chart' . $uniq . ') {chart' . $uniq . '.update();}}}}}' . PHP_EOL;
                 $result .= '    })' . PHP_EOL;
                 $result .= '};' . PHP_EOL;
                 $result .= 'observer' . $uniq . ' = new MutationObserver(callback' . $uniq . ');' . PHP_EOL;
@@ -4297,10 +4296,9 @@ trait Output {
                 $result .= '' . PHP_EOL;
                 $result .= '' . PHP_EOL;
             }
-
             $result .= '});' . PHP_EOL;
         }
-        if ($type != 'calendarhm' && $data != 'ajax' && $data != 'ajax_refresh') {
+        if ((bool)get_option('live_weather_station_mutation_observer') && $type != 'calendarhm' && $type != 'windrose' && $data != 'ajax' && $data != 'ajax_refresh') {
             $result .= 'var target' . $uniq . ' = document.getElementById("' . $uniq . '");' . PHP_EOL;
             $result .= 'var targetNode' . $uniq . ' = target' . $uniq . '.parentElement.parentElement.parentElement.parentElement;' . PHP_EOL;
             $result .= 'var modeStandard = true;' . PHP_EOL;
@@ -4320,8 +4318,8 @@ trait Output {
             $result .= '  }' . PHP_EOL;
             $result .= 'var callback' . $uniq . ' = function(mutationsList) {' . PHP_EOL;
             $result .= '    mutationsList.forEach(function (mutation, index) {' . PHP_EOL;
-            $result .= '        if (modeStandard) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display != "none") {if (mutation.oldValue !== null) {if (mutation.oldValue.indexOf("display: none") != -1) {chart'.$uniq.'.update();}}}}}}' . PHP_EOL;
-            $result .= '        if (modeElementorPopbox) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display == "block") {chart'.$uniq.'.update();}}}}' . PHP_EOL;
+            $result .= '        if (modeStandard) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display != "none") {if (mutation.oldValue !== null) {if (mutation.oldValue.indexOf("display: none") != -1) {if (chart'.$uniq.') {chart'.$uniq.'.update();}}}}}}}' . PHP_EOL;
+            $result .= '        if (modeElementorPopbox) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display == "block") {if (chart'.$uniq.') {chart'.$uniq.'.update();}}}}}' . PHP_EOL;
             $result .= '    })' . PHP_EOL;
             $result .= '};' . PHP_EOL;
             $result .= 'var observer' . $uniq . ' = new MutationObserver(callback' . $uniq . ');' . PHP_EOL;
@@ -7299,7 +7297,7 @@ trait Output {
                         'min' => LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down':'fa-long-arrow-down'),
                         'max' => LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-up':'fa-long-arrow-up'),
                         'trend' => LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v':'fa-arrows-v'),
-                        'ppressure' => LWS_FAS . ' fa-ellipsis-v fa-lg',
+                        'ppressure' => LWS_FAS . ' fa-ellipsis-v fa-s1',
                         'degrees' => 'wi wi-degrees');
         $markerstyle = array('none' => 'inherit',
                         'min' => 'text-top',
@@ -7351,13 +7349,13 @@ trait Output {
                         'module' => 'fa-database',
                         'moisture_content' => 'wi-humidity',
                         'moisture_tension' => 'wi-barometer',
-                        'moon_diameter' => 'wi-moon-waxing-crescent-4',
-                        'moon_distance' => 'wi-moon-waxing-crescent-4',
-                        'moon_illumination' => 'wi-moon-waxing-crescent-4',
+                        'moon_diameter' => 'wi-night-clear',
+                        'moon_distance' => 'wi-night-clear',
+                        'moon_illumination' => 'wi-night-clear',
                         'moonrise' => 'wi-moonrise',
                         'moonset' => 'wi-moonset',
                         'no2' => 'wi-smoke',
-                        'noise' => 'fa-volume-down',
+                        'noise' => 'fa-volume-up',
                         'partial_absolute_humidity' => 'wi-raindrop',
                         'pressure' => 'wi-barometer',
                         'pressure_sl' => 'wi-barometer',
@@ -7446,8 +7444,14 @@ trait Output {
                 $icon = $icons[$type];
                 if (strpos($icon, 'wi-') === 0) {
                     $class = 'wi ';
-                    $size = ' fa-lg';
-                    $align = 'baseline';
+                    $size = ' fa-s1';
+                    if ($icon == 'wi-thermometer') {
+                        $size = ' fa-s0';
+                    }
+                    $align = '8%';
+                    if (strpos($icon, 'wi-night-clear') === 0) {
+                        $align = 'baseline';
+                    }
                 } else {
                     $class = LWS_FAS . ' ';
                 }
@@ -7459,12 +7463,12 @@ trait Output {
                 if ($show_value) {
                     $icon = 'wi-owm-' . $value;
                     $class = 'wi ';
-                    $size = ' fa-lg';
+                    $size = ' fa-s1';
                 }
                 else {
                     $icon = 'wi-day-cloudy';
                     $class = 'wi ';
-                    $size = ' fa-lg';
+                    $size = ' fa-s1';
                 }
                 break;
             case 'signal':
@@ -7520,7 +7524,7 @@ trait Output {
             case 'wind_ref':
                 $level = $this->get_wind_speed($value, 3);
                 $class = 'wi ';
-                $size = ' fa-lg';
+                $size = ' fa-s1';
                 $align = 'baseline';
                 if ($show_value) {
                     $icon = 'wi-strong-beaufort-'. $level;
@@ -7538,7 +7542,7 @@ trait Output {
                 $level = $this->get_wind_state($value);
                 $icon = 'wi-strong-wind';
                 $class = 'wi ';
-                $size = ' fa-lg';
+                $size = ' fa-s1';
                 $align = 'baseline';
                 if ($show_value) {
                     switch ($level) {
@@ -7571,7 +7575,7 @@ trait Output {
             case 'winddirection_hour_max':
                 $icon = 'wi-wind towards-0-deg';
                 $class = 'wi ';
-                $size = ' fa-xlg';
+                $size = ' fa-s2';
                 $align = '-10%';
                 if ($show_value) {
                     $s = (get_option('live_weather_station_wind_semantics') == 0 ? 'towards' : 'from') . '-' . $value . '-deg';
@@ -7579,27 +7583,29 @@ trait Output {
                 }
                 break;
             case 'moon_phase':
-                $icon = 'wi-moon-waxing-crescent-4';
+                $icon = 'wi-night-clear';
                 $class = 'wi ';
-                $size = ' fa-xlg';
+                $size = ' fa-s1';
                 $align = 'baseline';
                 if ($show_value) {
                     $icon = 'wi-moon-' . $this->get_moon_phase_icon($value);
+                    $size = ' fa-s2';
                 }
                 break;
             case 'moon_age':
-                $icon = 'wi-moon-waxing-crescent-4';
+                $icon = 'wi-night-clear';
                 $class = 'wi ';
-                $size = ' fa-xlg';
+                $size = ' fa-s1';
                 $align = 'baseline';
                 if ($show_value) {
                     $icon = 'wi-moon-' . $this->get_lunation_icon($value);
+                    $size = ' fa-s2';
                 }
                 break;
             case 'strike_bearing':
                 $icon = 'wi-wind towards-0-deg';
                 $class = 'wi ';
-                $size = ' fa-xlg';
+                $size = ' fa-s2';
                 $align = '-10%';
                 if ($show_value) {
                     $s = 'towards-' . $value . '-deg';
@@ -7608,11 +7614,15 @@ trait Output {
                 break;
         }
         // Fix for size
-        if ($icon === 'wi-thermometer') {
+        if ($icon === 'wi-thermometer' || $icon === 'wi-thermometer-exterior') {
             $align = 'text-bottom';
         }
+        if ($icon === 'wi-sunrise') {
+            $align = '-8%';
+        }
         if (strpos($icon, 'wi-moon-') !== false) {
-            $size = ' fa-xlg';
+            $size = ' fa-s2';
+            $align = 'baseline';
         }
         // Output
         if ($tmm === 'none') {
@@ -10987,6 +10997,53 @@ trait Output {
                 break;
             default:
                 $result = 0;
+        }
+        return $result;
+    }
+    /**
+     * Get the cbi color.
+     *
+     * @param integer $cbi Chandler Burning index.
+     * @return string The css value of the color.
+     * @since 3.7.5
+     */
+    public function get_cbi_color($cbi) {
+        $result = '#EB302E';
+        if ($cbi <= 97.5) {
+            $result = '#F69738';
+        }
+        if ($cbi <= 90) {
+            $result = '#EFE032';
+        }
+        if ($cbi <= 75) {
+            $result = '#1DADEA';
+        }
+        if ($cbi < 50) {
+            $result = '#7CBE4D';
+        }
+        return $result;
+    }
+
+    /**
+     * Get the health_idx color.
+     *
+     * @param integer $health_idx Health index from 0%(poor) to 100%(good).
+     * @return string The css value of the color.
+     * @since 3.7.5
+     */
+    public function get_health_idx_color($health_idx) {
+        $result = '#1DADEA';
+        if ($health_idx < 80) {
+            $result = '#7CBE4D';
+        }
+        if ($health_idx < 60) {
+            $result = '#EFE032';
+        }
+        if ($health_idx < 40) {
+            $result = '#F69738';
+        }
+        if ($health_idx < 20) {
+            $result = '#EB302E';
         }
         return $result;
     }
