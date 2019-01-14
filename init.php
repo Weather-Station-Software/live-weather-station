@@ -25,7 +25,7 @@ use WeatherStation\System\Storage\Manager as FS;
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.7.6');
+define('LWS_VERSION', '3.7.7');
 define('LWS_CODENAME', '"Déportivo"');
 define('LWS_WHATSNEW', 'https://weather.station.software/blog/weather-station-3-7-deportivo/');
 define('LWS_SHOW_CHANGELOG', false);

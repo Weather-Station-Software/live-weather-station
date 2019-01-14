@@ -670,11 +670,17 @@ trait Conversion {
         if ($sunrise_a == -1 || $sunrise == -1) {
             return 0;
         }
+        if (!is_numeric($sunrise) || !is_numeric($sunrise_a)) {
+            return 0;
+        }
+        if ($sunrise_a - $sunrise === 0) {
+            return 100;
+        }
         if (is_null($time)) {
             $time = time();
         }
         $result = ($sunrise - $time) / ($sunrise - $sunrise_a);
-        return round(100*$result, 0);
+        return round(100 * $result, 0);
     }
 
     /**
@@ -690,11 +696,17 @@ trait Conversion {
         if ($sunset == -1 || $sunset_a == -1) {
             return 0;
         }
+        if (!is_numeric($sunset) || !is_numeric($sunset_a)) {
+            return 0;
+        }
+        if ($sunset_a - $sunset === 0) {
+            return 100;
+        }
         if (is_null($time)) {
             $time = time();
         }
         $result = ($sunset_a - $time) / ($sunset_a - $sunset);
-        return round(100*$result, 0);
+        return round(100 * $result, 0);
     }
 
 }

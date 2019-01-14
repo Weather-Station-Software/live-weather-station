@@ -91,32 +91,13 @@ function lws_get_display_locale($user_id = 0) {
 }
 
 /**
- * Get the displaylanguage id.
- *
- * @return string The id of the language.
- * @since 3.3.0
- */
-function lws_get_display_language_id() {
-    $lang = 'en';
-    $extra_language = array('fr');
-    $l = strtolower(lws_get_display_locale());
-    foreach ($extra_language as $extra) {
-        if (strpos($l, $extra) === 0) {
-            $lang = $extra;
-            break;
-        }
-    }
-    return $lang;
-}
-
-/**
  * Make a string's first character lowercase the Weather Station's way.
  * @param string $str The input string.
  * @return string the resulting string.
  * @since 3.7.5
  */
 function lws_lcfirst($str) {
-    if (strpos(strtolower(lws_get_display_language_id()), 'de') === 0) {
+    if (strpos(strtolower(lws_get_display_locale()), 'de') === 0) {
         return ucfirst($str);
     }
     else {
