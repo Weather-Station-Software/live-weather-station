@@ -11,7 +11,7 @@
         <div class="lws-widget-outdoor lws-widget-outdoor-<?php echo $id ?> noTypo">
         <?php if ( $show_current ):?>
             <!-- CURRENT CONDITIONS -->
-            <div class="lws-widget-header lws-widget-header-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Current weather conditions', 'live-weather-station').'"' : ''); ?>>
+            <div class="lws-widget-header lws-widget-wiheader-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Current weather conditions', 'live-weather-station').'"' : ''); ?>>
                 <?php echo $datas['weather']['icon']; ?>
             </div>
             <?php if (($show_title || $subtitle != 0) || $show_temperature || $show_pressure || $show_humidity || $show_uv || $show_wind || $show_rain || $show_strike || $show_snow || $show_cloud_cover || $show_cloud_ceiling || $show_windchill || $show_humidex || $show_steadman || $show_summer_simmer || $show_heat || $show_frost || $show_dew):?>
@@ -214,13 +214,13 @@
         <?php endif;?>
 
         <?php if ($show_strike):?>
-            <!-- WIND -->
+            <!-- THUNDERSTORM -->
             <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Thunderstorm', 'live-weather-station').'"' : ''); ?>>
                 <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                     <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"><?php echo $datas['strike']['value']; ?></div>
                     <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"><?php echo $datas['strike']['unit']; ?></div>
                 </div>
-                <div class="lws-widget-column lws-widget-column-icon<?php echo $id ?>">
+                <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
                     <?php echo $datas['strike']['icon']; ?>
                 </div>
                 <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
@@ -239,7 +239,7 @@
         <?php endif;?>
 
         <?php if ($show_snow):?>
-            <!-- RAIN -->
+            <!-- SNOW -->
             <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Snowfall', 'live-weather-station').'"' : ''); ?>>
                 <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
                     <?php echo $datas['snow']['icon']; ?>

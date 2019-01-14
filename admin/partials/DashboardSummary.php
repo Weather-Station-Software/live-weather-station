@@ -42,6 +42,9 @@ if (REQUIREMENTS_OK) {
     if (get_option('live_weather_station_mapbox_apikey') != '') {
         $services[] = 'Mapbox';
     }
+    if (get_option('live_weather_station_maptiler_apikey') != '') {
+        $services[] = 'MapTiler';
+    }
     if ((bool)get_option('live_weather_station_netatmo_connected') || (bool)get_option('live_weather_station_netatmohc_connected')) {
         $services[] = 'Netatmo';
     }
@@ -61,7 +64,7 @@ if (REQUIREMENTS_OK) {
         $services_str = implode(', ', $services);
     }
     $services_str = __('Connected services:', 'live-weather-station') . ' ' . $services_str . '.';
-    $log_url = '<a href="' . LWS_ADMIN_PHP_URL . '?page=lws-events&level=error" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>' . lcfirst(__('Events log', 'live-weather-station')) . '</a>';
+    $log_url = '<a href="' . LWS_ADMIN_PHP_URL . '?page=lws-events&level=error" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>' . lws_lcfirst(__('Events log', 'live-weather-station')) . '</a>';
     $a = $stats->get_log();
     if ($a['emergency'] > 0) {
         $run_str = sprintf(__('%1$s has encountered operating issues in the last 3 days. You should check the %2$s to know the cause of this problem.', 'live-weather-station'), LWS_PLUGIN_NAME, $log_url);

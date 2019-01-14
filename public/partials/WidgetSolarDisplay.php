@@ -5,20 +5,15 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
-if ($shadows) {
-    $sh = 'filter:drop-shadow(1px 1px 1px rgba(0,0,0,.1));';
-}
-else {
-    $sh = '';
-}
+
 ?>
 <div class="lws-widget-container lws-widget-container-<?php echo $id ?>">
     <div class="lws-widget-outer-solar lws-widget-outer-solar-<?php echo $id ?>">
         <div class="lws-widget-solar lws-widget-solar-<?php echo $id ?> noTypo">
             <?php if ( $show_current ):?>
                 <!-- CURRENT CONDITIONS -->
-                <div class="lws-widget-header lws-widget-header-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Current weather conditions', 'live-weather-station').'"' : ''); ?>>
-                    <i class="wi wi-owm<?php echo $datas['day']['value']; ?>-<?php echo $datas['weather']['value']; ?>"></i>
+                <div class="lws-widget-header lws-widget-wiheader-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Current weather conditions', 'live-weather-station').'"' : ''); ?>>
+                    <?php echo $datas['weather']['icon']; ?>
                 </div>
                 <?php if (($show_title || $subtitle != 0) || $show_illuminance || $show_irradiance || $show_sunshine || $show_uv):?>
                     <div class="lws-widget-bevel lws-widget-bevel-<?php echo $id ?>"></div>
@@ -46,9 +41,9 @@ else {
 
             <?php if ($show_irradiance):?>
                 <!-- IRRADIANCE -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Irradiance', 'live-weather-station').'"' : ''); ?>>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="<?php echo LWS_FAS;?> wi-x32-<?php echo $id ?> fa-rotate-90 fa-<?php echo LWS_FA5?'sign-in-alt':'sign-in';?>" <?php echo LWS_FA_SVG?'style="font-size:42px!important;' . $sh . '"':'';?>></i>
+                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Irradiance', 'live-weather-station').'"' : ''); ?>>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['irradiance']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
@@ -63,9 +58,9 @@ else {
             <?php endif;?>
             <?php if ($show_illuminance):?>
                 <!-- ILLUMINANCE -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Illuminance', 'live-weather-station').'"' : ''); ?>>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="<?php echo LWS_FAS;?> wi-x26-<?php echo $id ?> fa-rotate-30 fa-<?php echo LWS_FA5?'long-arrow-alt-down':'long-arrow-down';?>" <?php echo LWS_FA_SVG?'style="font-size:42px!important;' . $sh . '"':'';?>></i>
+                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Illuminance', 'live-weather-station').'"' : ''); ?>>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['illuminance']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
@@ -80,9 +75,9 @@ else {
             <?php endif;?>
             <?php if ($show_uv):?>
                 <!-- UV -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('UV', 'live-weather-station').'"' : ''); ?>>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x26-<?php echo $id ?> wi-horizon-alt"></i>
+                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('UV', 'live-weather-station').'"' : ''); ?>>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['uv_index']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
@@ -103,7 +98,7 @@ else {
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"></div>
                     </div>
                     <div style="padding-right: 6px;" class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="<?php echo LWS_FAS;?> wi-x32-<?php echo $id ?> fa-<?php echo LWS_FA5?'umbrella-beach':'sun-o';?>" <?php echo LWS_FA_SVG?'style="font-size:36px!important;' . $sh . '"':'';?>></i>
+                        <?php echo $datas['sunshine']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">

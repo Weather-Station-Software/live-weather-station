@@ -2612,7 +2612,8 @@ trait Generator {
         $result[] = array(1, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LWS_PLUGIN_NAME, 5, 'CSS'));
         $result[] = array(2, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LWS_PLUGIN_NAME, 5, 'JS+SVG'));
         $result[] = array(3, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), $theme->name, 4));
-        $result[] = array(4, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), $theme->name, 5));
+        $result[] = array(4, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), $theme->name, 5, 'CSS'));
+        $result[] = array(5, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), $theme->name, 5, 'JS+SVG'));
         return $result;
     }
 
@@ -3269,6 +3270,84 @@ trait Generator {
         for ($i=$min; $i<=$max; $i++) {
             $result[] = array($i,  sprintf(__('Level %s', 'live-weather-station'), $i));
         }
+        return $result;
+    }
+
+    /**
+     * Get shadow position.
+     *
+     * @return array An array containing shadow position ready to convert to a JS array.
+     * @since 3.7.5
+     */
+    protected function get_shadow_position_js_array() {
+        $result = array();
+        $result[] = array('none',  lws__('None', 'live-weather-station'));
+        $result[] = array('top-left',  lws__('Top left', 'live-weather-station'));
+        $result[] = array('top-center',  lws__('Top center', 'live-weather-station'));
+        $result[] = array('top-right',  lws__('Top right', 'live-weather-station'));
+        $result[] = array('middle-left',  lws__('Middle left', 'live-weather-station'));
+        $result[] = array('middle-right',  lws__('Middle right', 'live-weather-station'));
+        $result[] = array('bottom-left',  lws__('Bottom left', 'live-weather-station'));
+        $result[] = array('bottom-center',  lws__('Bottom center', 'live-weather-station'));
+        $result[] = array('bottom-right',  lws__('Bottom right', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get shadow length.
+     *
+     * @return array An array containing shadow length ready to convert to a JS array.
+     * @since 3.7.5
+     */
+    protected function get_shadow_length_js_array() {
+        $result = array();
+        $result[] = array('close',  lws__('Close', 'live-weather-station'));
+        $result[] = array('medium',  lws__('Medium', 'live-weather-station'));
+        $result[] = array('distant',  lws__('Distant', 'live-weather-station'));
+        $result[] = array('faraway',  lws__('Faraway', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get shadow diffusion.
+     *
+     * @return array An array containing shadow diffusion ready to convert to a JS array.
+     * @since 3.7.5
+     */
+    protected function get_shadow_diffusion_js_array() {
+        $result = array();
+        $result[] = array('precise',  lws__('Precise', 'live-weather-station'));
+        $result[] = array('medium',  lws__('Medium', 'live-weather-station'));
+        $result[] = array('soft',  lws__('Soft', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get shadow obscurity.
+     *
+     * @return array An array containing shadow obscurity ready to convert to a JS array.
+     * @since 3.7.5
+     */
+    protected function get_shadow_obscurity_js_array() {
+        $result = array();
+        $result[] = array('light',  lws__('Light', 'live-weather-station'));
+        $result[] = array('medium',  lws__('Medium', 'live-weather-station'));
+        $result[] = array('strong',  lws__('Strong', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get radius.
+     *
+     * @return array An array containing radius ready to convert to a JS array.
+     * @since 3.7.5
+     */
+    protected function get_radius_js_array() {
+        $result = array();
+        $result[] = array('none',  lws__('None', 'live-weather-station'));
+        $result[] = array('short',  lws__('Short', 'live-weather-station'));
+        $result[] = array('medium',  lws__('Medium', 'live-weather-station'));
+        $result[] = array('large',  lws__('Large', 'live-weather-station'));
         return $result;
     }
 }

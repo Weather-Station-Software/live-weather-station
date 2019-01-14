@@ -1145,10 +1145,105 @@ trait Storage {
     }
 
     /**
+     * Get the measurement boundary.
+     *
+     * @param string $type The type of the value.
+     * @param string $module_type The type of the module.
+     * @param string $opt The specific type of option.
+     * @return string The measurement boundary.
+     * @since 3.7.5
+     */
+    protected function get_measurement_boundary ($type, $module_type, $opt) {
+        switch (strtolower($type)) {
+            case 'temperature':
+            case 'temperature_min':
+            case 'temperature_max':
+            case 'temperature_ref':
+            case 'dew_point':
+            case 'frost_point':
+            case 'wind_chill':
+            case 'humidex':
+            case 'heat_index':
+            case 'steadman':
+            case 'summer_simmer':
+            case 'wet_bulb':
+            case 'delta_t':
+            case 'equivalent_temperature':
+            case 'potential_temperature':
+            case 'equivalent_potential_temperature':
+                if (strtolower($module_type)=='namodule4' || strtolower($module_type)=='namain') {
+                    $t = 'tempint';
+                }
+                else {
+                    $t = 'tempext';
+                }
+                break;
+            case 'humidity':
+            case 'humidity_min':
+            case 'humidity_max':
+                if (strtolower($module_type)=='namodule4' || strtolower($module_type)=='namain') {
+                    $t = 'humint';
+                }
+                else {
+                    $t = 'humext';
+                }
+                break;
+            case 'pressure_min':
+            case 'pressure_max':
+            case 'pressure_sl_min':
+            case 'pressure_sl_max':
+            case 'pressure_ref':
+                $t = 'pressure';
+                break;
+            case 'rain_yesterday_aggregated':
+                $t = 'rain_day_aggregated';
+                break;
+            case 'rain_season_aggregated':
+                $t = 'rain_year_aggregated';
+                break;
+            case 'cloudiness':
+                $t = 'cloud_cover';
+                break;
+            case 'gustangle':
+            case 'windangle_hour_max':
+            case 'windangle_day_max':
+                $t = 'windangle';
+                break;
+            case 'gustdirection':
+            case 'winddirection_hour_max':
+            case 'winddirection_day_max':
+                $t = 'winddirection';
+                break;
+            case 'guststrength':
+            case 'windstrength_hour_max':
+            case 'windstrength_day_max':
+                $t = 'windstrength';
+                break;
+            case 'wood_emc':
+            case 'emc':
+                $t = 'emc';
+                break;
+            case 'vapor_pressure':
+            case 'partial_vapor_pressure':
+            case 'saturation_vapor_pressure':
+                $t = 'vapor_pressure';
+                break;
+            case 'absolute_humidity':
+            case 'partial_absolute_humidity':
+            case 'saturation_absolute_humidity':
+                $t = 'absolute_humidity';
+                break;
+            default:
+                $t = $type;
+        }
+        return get_option('live_weather_station_' . $t . '_' . $opt . '_boundary', 'NaN');
+    }
+
+    /**
      * Update data table with current value line.
      *
-     * @param   array   $value  The values to update or insert in the table
-     * @since    1.0.0
+     * @param array $value The values to update or insert in the table
+     * @since 1.0.0
      */
     protected function update_data_table($value) {
         $verified = isset($value['measure_value']);
@@ -1156,20 +1251,36 @@ trait Storage {
             $verified = !is_null($value['measure_value']);
         }
         if ($verified) {
+            if (!in_array(strtolower($value['module_type']), array('nacomputed', 'naephemeris', 'napollution', 'naforecast', 'namodulev', 'namodulep'))) {
+                $min = $this->get_measurement_boundary($value['measure_type'], $value['module_type'], 'min');
+                $max = $this->get_measurement_boundary($value['measure_type'], $value['module_type'], 'max');
+                if ($min !== 'NaN' && $max !== 'NaN') {
+                    if (is_numeric($min) && is_numeric($max) && is_numeric($value['measure_value'])) {
+                        if ($value['measure_value'] < $min) {
+                            $verified = false;
+                        }
+                        if ($value['measure_value'] > $max) {
+                            $verified = false;
+                        }
+                    }
+                }
+            }
+        }
+        if ($verified) {
             try {
                 $this->update_table(self::live_weather_station_datas_table(), $value);
                 $this->update_historic($value);
             }
             catch (\Exception $ex) {
-                Logger::error('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
+                Logger::warning('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
             }
         }
         else {
             try {
-                Logger::error('Data Manager', null, $value['device_id'], $value['device_name'], $value['module_id'], $value['module_name'], 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
+                Logger::warning('Data Manager', null, $value['device_id'], $value['device_name'], $value['module_id'], $value['module_name'], 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
             }
             catch (\Exception $ex) {
-                Logger::error('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
+                Logger::warning('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
             }
 
         }

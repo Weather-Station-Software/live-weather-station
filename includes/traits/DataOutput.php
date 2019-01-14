@@ -7297,13 +7297,13 @@ trait Output {
                         'min' => LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down':'fa-long-arrow-down'),
                         'max' => LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-up':'fa-long-arrow-up'),
                         'trend' => LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v':'fa-arrows-v'),
-                        'ppressure' => LWS_FAS . ' fa-ellipsis-v fa-s1',
+                        'ppressure' => LWS_FAS . ' ' . (LWS_FA5?'fa-ellipsis-v ico-size-0':'fa-ellipsis-v ico-size-1'),
                         'degrees' => 'wi wi-degrees');
         $markerstyle = array('none' => 'inherit',
                         'min' => 'text-top',
                         'max' => 'text-top',
                         'trend' => 'text-top',
-                        'ppressure' => 'baseline',
+                        'ppressure' => (LWS_FA5?'baseline':'baseline'),
                         'degrees' => 'text-top',);
         $icons = array( 'absolute_humidity' => 'wi-raindrop',
                         'air_density' => 'fa-adjust',
@@ -7444,9 +7444,9 @@ trait Output {
                 $icon = $icons[$type];
                 if (strpos($icon, 'wi-') === 0) {
                     $class = 'wi ';
-                    $size = ' fa-s1';
+                    $size = ' ico-size-1';
                     if ($icon == 'wi-thermometer') {
-                        $size = ' fa-s0';
+                        $size = ' ico-size-0';
                     }
                     $align = '8%';
                     if (strpos($icon, 'wi-night-clear') === 0) {
@@ -7463,12 +7463,12 @@ trait Output {
                 if ($show_value) {
                     $icon = 'wi-owm-' . $value;
                     $class = 'wi ';
-                    $size = ' fa-s1';
+                    $size = ' ico-size-1';
                 }
                 else {
                     $icon = 'wi-day-cloudy';
                     $class = 'wi ';
-                    $size = ' fa-s1';
+                    $size = ' ico-size-1';
                 }
                 break;
             case 'signal':
@@ -7524,7 +7524,7 @@ trait Output {
             case 'wind_ref':
                 $level = $this->get_wind_speed($value, 3);
                 $class = 'wi ';
-                $size = ' fa-s1';
+                $size = ' ico-size-1';
                 $align = 'baseline';
                 if ($show_value) {
                     $icon = 'wi-strong-beaufort-'. $level;
@@ -7542,7 +7542,7 @@ trait Output {
                 $level = $this->get_wind_state($value);
                 $icon = 'wi-strong-wind';
                 $class = 'wi ';
-                $size = ' fa-s1';
+                $size = ' ico-size-1';
                 $align = 'baseline';
                 if ($show_value) {
                     switch ($level) {
@@ -7575,8 +7575,8 @@ trait Output {
             case 'winddirection_hour_max':
                 $icon = 'wi-wind towards-0-deg';
                 $class = 'wi ';
-                $size = ' fa-s2';
-                $align = '-10%';
+                $size = ' ico-size-2';
+                $align = 'unset';
                 if ($show_value) {
                     $s = (get_option('live_weather_station_wind_semantics') == 0 ? 'towards' : 'from') . '-' . $value . '-deg';
                     $icon = 'wi-wind ' . $s ;
@@ -7585,27 +7585,27 @@ trait Output {
             case 'moon_phase':
                 $icon = 'wi-night-clear';
                 $class = 'wi ';
-                $size = ' fa-s1';
+                $size = ' ico-size-1';
                 $align = 'baseline';
                 if ($show_value) {
                     $icon = 'wi-moon-' . $this->get_moon_phase_icon($value);
-                    $size = ' fa-s2';
+                    $size = ' ico-size-2';
                 }
                 break;
             case 'moon_age':
                 $icon = 'wi-night-clear';
                 $class = 'wi ';
-                $size = ' fa-s1';
+                $size = ' ico-size-1';
                 $align = 'baseline';
                 if ($show_value) {
                     $icon = 'wi-moon-' . $this->get_lunation_icon($value);
-                    $size = ' fa-s2';
+                    $size = ' ico-size-2';
                 }
                 break;
             case 'strike_bearing':
                 $icon = 'wi-wind towards-0-deg';
                 $class = 'wi ';
-                $size = ' fa-s2';
+                $size = ' ico-size-2';
                 $align = '-10%';
                 if ($show_value) {
                     $s = 'towards-' . $value . '-deg';
@@ -7617,18 +7617,38 @@ trait Output {
         if ($icon === 'wi-thermometer' || $icon === 'wi-thermometer-exterior') {
             $align = 'text-bottom';
         }
+        if ($icon === 'wi-thermometer-internal') {
+            $size = ' ico-size-2';
+            $align = 'baseline';
+        }
+        if ($icon === 'fa-crosshairs') {
+            $size = ' ico-size-1';
+            $align = '12%';
+        }
+        if ($icon === 'fa-adjust') {
+            $size = ' ico-size-0';
+            $align = '4%';
+        }
+        if ($icon === 'wi-refresh-alt') {
+            $size = ' ico-size-2';
+            $align = 'sub';
+        }
+        if ($icon === 'wi-raindrop' || $icon === 'wi-raindrops') {
+            $size = ' ico-size-2';
+            $align = 'middle';
+        }
         if ($icon === 'wi-sunrise') {
             $align = '-8%';
         }
         if (strpos($icon, 'wi-moon-') !== false) {
-            $size = ' fa-s2';
+            $size = ' ico-size-2';
             $align = 'baseline';
         }
         // Output
         if ($tmm === 'none') {
             $result = '<span class="lws-icon lws-single-icon ' . $extraclass . '" style="vertical-align: middle;padding: 0;margin: 0;"><i style="vertical-align: ' . $align . ';color:' . $main_color .';" class="' . $class . $icon . $size . '" aria-hidden="true"></i></span>';
         } else {
-            $result = '<span class="lws-icon lws-stacked-icon ' . $extraclass . '" style="vertical-align: middle;padding: 0;margin: 0;"><i style="vertical-align: ' . $align . ';color:' . $main_color .';" class="' . $class . $icon . $size . '"></i><i style="color:' . $main_color .';vertical-align:' . $markerstyle[$tmm] .';opacity: 0.7;" class="' . $marker[$tmm] . '"></i></span>';
+            $result = '<span class="lws-icon lws-stacked-icon ' . $extraclass . '" style="vertical-align: middle;padding: 0;margin: 0;"><i style="vertical-align: ' . $align . ';color:' . $main_color .';" class="' . $class . $icon . $size . '"></i><i style="color:' . $main_color .';vertical-align:' . $markerstyle[$tmm] .';opacity: 0.7;" class="' . $marker[$tmm] . '" aria-hidden="true"></i></span>';
         }
         return $result;
 }
@@ -10371,11 +10391,35 @@ trait Output {
     }
 
     /**
+     * Get the measurement minimal boundary.
+     *
+     * @param string $type The type of the boundary.
+     * @param string $module_type The type of the module.
+     * @return integer The measurement minimal to render in controls.
+     * @since 3.7.5
+     */
+    protected function get_measurement_boundary_min($type, $module_type) {
+        return $this->get_measurement_option($type, $module_type, 'min_boundary');
+    }
+
+    /**
+     * Get the measurement maximal rendered boundary.
+     *
+     * @param string $type The type of the boundary.
+     * @param string $module_type The type of the module.
+     * @return integer The measurement maximal to render in controls.
+     * @since 3.7.5
+     */
+    protected function get_measurement_boundary_max($type, $module_type) {
+        return $this->get_measurement_option($type, $module_type, 'max_boundary');
+    }
+
+    /**
      * Get the measurement minimal rendered value.
      *
      * @param string $type The type of the value.
      * @param string $module_type The type of the module.
-     * @return integer The the measurement minimal to render in controls.
+     * @return integer The measurement minimal to render in controls.
      * @since 2.1.0
      */
     protected function get_measurement_min($type, $module_type) {
@@ -10387,7 +10431,7 @@ trait Output {
      *
      * @param string $type The type of the value.
      * @param string $module_type The type of the module.
-     * @return integer The the measurement maximal to render in controls.
+     * @return integer The measurement maximal to render in controls.
      * @since 2.1.0
      */
     protected function get_measurement_max($type, $module_type) {
@@ -10399,7 +10443,7 @@ trait Output {
      *
      * @param string $type The type of the value.
      * @param string $module_type The type of the module.
-     * @return integer The the measurement minimal to render in controls.
+     * @return integer The measurement minimal to render in controls.
      * @since 2.1.0
      */
     protected function get_measurement_alarm_min($type, $module_type) {
@@ -10411,7 +10455,7 @@ trait Output {
      *
      * @param string $type The type of the value.
      * @param string $module_type The type of the module.
-     * @return integer The the measurement maximal to render in controls.
+     * @return integer The measurement maximal to render in controls.
      * @since 2.1.0
      */
     protected function get_measurement_alarm_max($type, $module_type) {
@@ -10425,7 +10469,7 @@ trait Output {
      * @param string $type The type of the value.
      * @param string $module_type The type of the module.
      * @return boolean True if alarm is on, false otherwise.
-     * @since    1.0.0
+     * @since 1.0.0
      */
     protected function is_alarm_on($value, $type, $module_type) {
         $result = (($value < $this->get_measurement_option($type, $module_type, 'min_alarm')) ||

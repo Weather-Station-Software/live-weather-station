@@ -261,6 +261,15 @@ class Outdoor extends \WP_Widget {
         $background_attachment = $attachment;
         $bg_url = $background;
         $wtype = 'outdoor';
+        $text_shadows = WidgetHelper::text_shadow();
+        $box_shadows = WidgetHelper::box_shadow();
+        $box_radius = WidgetHelper::box_radius();
+        if (LWS_FA_SVG) {
+            $svg = 'svg{' . WidgetHelper::svg_shadow() . '}';
+        }
+        else {
+            $svg = '';
+        }
         include(LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php');
     }
 
@@ -419,8 +428,6 @@ class Outdoor extends \WP_Widget {
                         if (array_key_exists('sunrise', $module['datas']) && array_key_exists('sunset', $module['datas'])) {
                             $sunrise = $module['datas']['sunrise']['value'];
                             $sunset = $module['datas']['sunset']['value'];
-                            $datas['sunrise']['icon'] = $this->output_iconic_value($module['datas']['sunrise']['raw_value'], 'sunrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            $datas['sunset']['icon'] = $this->output_iconic_value($module['datas']['sunset']['raw_value'], 'sunset', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         if (array_key_exists('sunrise_a', $module['datas']) && array_key_exists('sunset_a', $module['datas'])) {
                             $sunrise_a = $module['datas']['sunrise_a']['value'];
@@ -523,7 +530,7 @@ class Outdoor extends \WP_Widget {
                             $datas['strike'] = array();
                             $datas['strike']['value'] = $module['datas']['strike_count']['value'];
                             $datas['strike']['unit'] = $module['datas']['strike_count']['unit']['unit'];
-                            $datas['strike']['icon'] = $this->output_iconic_value($module['datas']['strike']['raw_value'], 'strike', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $datas['strike']['icon'] = $this->output_iconic_value($module['datas']['strike_count']['raw_value'], 'strike_count', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         elseif (array_key_exists('strike_instant', $module['datas'])) {
                             $NAModule7 = true;
@@ -570,7 +577,7 @@ class Outdoor extends \WP_Widget {
                         }
                         if (array_key_exists('weather', $module['datas'])) {
                             $datas['weather']['value'] = $module['datas']['weather']['value'];
-                            $datas['weather']['icon'] = $this->output_iconic_value($datas['day']['value'] . '-' . $datas['weather']['value'], 'weather', null, true, 'inherit', 'lws-widget-big-icon-' . $id);
+                            $datas['weather']['icon'] = $this->output_iconic_value($datas['day']['value'] . '-' . $datas['weather']['value'], 'weather', null, true, 'inherit', 'lws-widget-big-wiicon-' . $id);
                         }
                         else {
                             $show_current = false;

@@ -78,7 +78,7 @@ class Admin {
 
 	private $reload = false;
 
-    private $settings = array('general', 'services', 'display', 'thresholds', 'history', 'system');
+    private $settings = array('general', 'services', 'display', 'thresholds', 'history', 'system', 'styles');
     private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground', 'Bloomsky', 'Ambient', 'Windy', 'Stamen', 'Thunderforest', 'Mapbox', 'Maptiler');
     private $service = 'Backend';
 
@@ -210,8 +210,7 @@ class Admin {
         add_settings_section('lws_general_section', null, array($this, 'general_section_callback'), 'lws_general');
         add_settings_section('lws_services_section', null, array($this, 'services_section_callback'), 'lws_services');
         add_settings_section('lws_display_section', null, array($this, 'display_section_callback'), 'lws_display');
-        add_settings_section('lws_widget_styles_section', null, array($this, 'widget_styles_section_callback'), 'lws_widget_styles');
-        add_settings_section('lws_chart_styles_section', null, array($this, 'chart_styles_section_callback'), 'lws_chart_styles');
+        add_settings_section('lws_styles_section', null, array($this, 'styles_section_callback'), 'lws_styles');
         add_settings_section('lws_thresholds_section', null, array($this, 'thresholds_section_callback'), 'lws_thresholds');
         add_settings_section('lws_history_section', null, array($this, 'history_section_callback'), 'lws_history');
         add_settings_section('lws_system_section', null, array($this, 'system_section_callback'), 'lws_system');
@@ -273,12 +272,9 @@ class Admin {
         echo '<p>' . __('You can set here all the units and display options for controls and widgets.', 'live-weather-station') . ' ' . $h . '</p>';
     }
 
-    public function widget_styles_section_callback() {
-        // Nothing to do here
-    }
-
-    public function chart_styles_section_callback() {
-        // Nothing to do here
+    public function styles_section_callback() {
+        $h = InlineHelp::get(20, __('You can find help on these settings on %s.', 'live-weather-station'), __('this page', 'live-weather-station'));
+        echo '<p>' . __('You can set here all the misc styles options for controls and widgets.', 'live-weather-station') . ' ' . $h . '</p>';
     }
 
     public function thresholds_section_callback() {
@@ -459,18 +455,6 @@ class Admin {
 
     }
 
-
-    
-
-    /**
-     * Renders the interface elements for the corresponding field.
-     *
-     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
-     * @since 3.6.0
-     */
-    public function lws_chart_styles_area_opacity_callback($args) {
-        echo $this->field_select($this->get_history_full_js_array(), get_option('live_weather_station_full_history'), 'lws_history_full', $args[0]);
-    }
 
     /**
      * Initializes thresholds fields.
@@ -1032,6 +1016,9 @@ class Admin {
     private function save_options($section) {
         $result = true;
         $this->reload = false;
+        if ($section == 'styles') {
+            // TODO
+        }
         if ($section == 'display') {
             if (array_key_exists('submit', $_POST)) {
                 update_option('live_weather_station_unit_temperature', (integer)$_POST['lws_display_temperature_unit']);
@@ -1185,6 +1172,9 @@ class Admin {
         if ($section == 'system') {
             self::init_system_options();
         }
+        if ($section == 'styles') {
+            self::init_styles_options();
+        }
         return $result;
     }
 
@@ -1229,6 +1219,7 @@ class Admin {
             case 'thresholds' : $settings_string = __('Thresholds settings', 'live-weather-station'); break;
             case 'history' : $settings_string = __('History settings', 'live-weather-station'); break;
             case 'system' : $settings_string = __('System settings', 'live-weather-station'); break;
+            case 'styles' : $settings_string = lws__('Styles settings', 'live-weather-station'); break;
             default: $settings_string = __('Unknown settings', 'live-weather-station');
         }
         if ($sec) {
@@ -1273,7 +1264,7 @@ class Admin {
         }
         else {
             $message = __('%s has not been updated. Please try again.', 'live-weather-station');
-            $message = sprintf($message, '<em>' . lcfirst($settings_string) . '</em>');
+            $message = sprintf($message, '<em>' . ucfirst($settings_string) . '</em>');
             add_settings_error('lws_nonce_error', 403, $message, 'error');
             Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
             Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely update settings for '. $section . ' category.');

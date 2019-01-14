@@ -236,7 +236,17 @@ class Psychrometry extends \WP_Widget {
         $borders = $instance['show_borders'];
         $background_attachment = $attachment;
         $bg_url = $background;
-        include(LWS_PUBLIC_DIR.'partials/WidgetPsychrometryDisplayCSS.php');
+        $wtype = 'psychrometry';
+        $text_shadows = WidgetHelper::text_shadow();
+        $box_shadows = WidgetHelper::box_shadow();
+        $box_radius = WidgetHelper::box_radius();
+        if (LWS_FA_SVG) {
+            $svg = 'svg{' . WidgetHelper::svg_shadow() . '}';
+        }
+        else {
+            $svg = '';
+        }
+        include(LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php');
     }
 
     /**
@@ -290,8 +300,8 @@ class Psychrometry extends \WP_Widget {
      */
     public function widget($args, $instance) {
         wp_enqueue_style('lws-weather-icons');
-        wp_enqueue_style('lws-weather-icons-wind');
         lws_font_awesome();
+        $id = uniqid();
         $instance = $this->_get_instance($instance);
         $title = $instance['title'];
         $subtitle = $instance['subtitle'];
@@ -351,6 +361,7 @@ class Psychrometry extends \WP_Widget {
                             $datas['pressure'] = array();
                             $datas['pressure']['value'] = $module['datas']['pressure']['value'];
                             $datas['pressure']['unit'] = $module['datas']['pressure']['unit']['unit'];
+                            $datas['pressure']['icon'] = $this->output_iconic_value($module['datas']['pressure']['raw_value'], 'pressure', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_pressure = false ;
@@ -380,6 +391,7 @@ class Psychrometry extends \WP_Widget {
                             $datas['humidity'] = array();
                             $datas['humidity']['value'] = $module['datas']['humidity']['value'];
                             $datas['humidity']['unit'] = $module['datas']['humidity']['unit']['unit'];
+                            $datas['humidity']['icon'] = $this->output_iconic_value($module['datas']['humidity']['raw_value'], 'humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_humidity = false;
@@ -389,6 +401,7 @@ class Psychrometry extends \WP_Widget {
                             $datas['temperature'] = array();
                             $datas['temperature']['value'] = $module['datas']['temperature']['value'];
                             $datas['temperature']['unit'] = $module['datas']['temperature']['unit']['unit'];
+                            $datas['temperature']['icon'] = $this->output_iconic_value($module['datas']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_temperature = false;
@@ -413,6 +426,7 @@ class Psychrometry extends \WP_Widget {
                             $datas['dew'] = array();
                             $datas['dew']['value'] = $module['datas']['dew_point']['value'];
                             $datas['dew']['unit'] = $module['datas']['dew_point']['unit']['unit'];
+                            $datas['dew']['icon'] = $this->output_iconic_value($module['datas']['dew_point']['raw_value'], 'dew_point', null, true, 'inherit', 'lws-widget-icon-' . $id);
                             $show_dew = $show_dew && $this->is_valid_dew_point($temp_ref);
                         } else {
                             $show_dew = false;
@@ -426,12 +440,15 @@ class Psychrometry extends \WP_Widget {
                             $datas['potential_temperature'] = array();
                             $datas['potential_temperature']['value'] = $module['datas']['potential_temperature']['value'];
                             $datas['potential_temperature']['unit'] = $module['datas']['potential_temperature']['unit']['unit'] . ' ' . __('pot.', 'live-weather-station');
+                            $datas['equivalent_temperature']['icon'] = $this->output_iconic_value($module['datas']['equivalent_temperature']['raw_value'], 'equivalent_temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $datas['potential_temperature']['icon'] = $this->output_iconic_value($module['datas']['potential_temperature']['raw_value'], 'potential_temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         // Wet Bulb
                         if (array_key_exists('wet_bulb', $module['datas'])) {
                             $datas['wet_bulb'] = array();
                             $datas['wet_bulb']['value'] = $module['datas']['wet_bulb']['value'];
                             $datas['wet_bulb']['unit'] = $module['datas']['wet_bulb']['unit']['unit'];
+                            $datas['wet_bulb']['icon'] = $this->output_iconic_value($module['datas']['wet_bulb']['raw_value'], 'wet_bulb', null, true, 'inherit', 'lws-widget-icon-' . $id);
                             $datas['delta_t'] = array();
                             $datas['delta_t']['value'] = '-';
                             $datas['delta_t']['unit'] = '';
@@ -452,6 +469,8 @@ class Psychrometry extends \WP_Widget {
                             $datas['saturation_absolute_humidity'] = array();
                             $datas['saturation_absolute_humidity']['value'] = $module['datas']['saturation_absolute_humidity']['value'];
                             $datas['saturation_absolute_humidity']['unit'] = $module['datas']['saturation_absolute_humidity']['unit']['unit'];
+                            $datas['partial_absolute_humidity']['icon'] = $this->output_iconic_value($module['datas']['partial_absolute_humidity']['raw_value'], 'partial_absolute_humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $datas['saturation_absolute_humidity']['icon'] = $this->output_iconic_value($module['datas']['saturation_absolute_humidity']['raw_value'], 'saturation_absolute_humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         } else {
                             $show_absolute_humidity = false;
                         }
@@ -464,6 +483,8 @@ class Psychrometry extends \WP_Widget {
                             $datas['saturation_vapor_pressure'] = array();
                             $datas['saturation_vapor_pressure']['value'] = $module['datas']['saturation_vapor_pressure']['value'];
                             $datas['saturation_vapor_pressure']['unit'] = $module['datas']['saturation_vapor_pressure']['unit']['unit'];
+                            $datas['partial_vapor_pressure']['icon'] = $this->output_iconic_value($module['datas']['partial_vapor_pressure']['raw_value'], 'partial_vapor_pressure', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $datas['saturation_vapor_pressure']['icon'] = $this->output_iconic_value($module['datas']['saturation_vapor_pressure']['raw_value'], 'saturation_vapor_pressure', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         } else {
                             $show_vapor_pressure = false;
                         }
@@ -472,6 +493,7 @@ class Psychrometry extends \WP_Widget {
                             $datas['air_density'] = array();
                             $datas['air_density']['value'] = $module['datas']['air_density']['value'];
                             $datas['air_density']['unit'] = $module['datas']['air_density']['unit']['unit'];
+                            $datas['air_density']['icon'] = $this->output_iconic_value($module['datas']['air_density']['raw_value'], 'air_density', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         } else {
                             $show_air_density = false;
                         }
@@ -480,6 +502,7 @@ class Psychrometry extends \WP_Widget {
                             $datas['specific_enthalpy'] = array();
                             $datas['specific_enthalpy']['value'] = $module['datas']['specific_enthalpy']['value'];
                             $datas['specific_enthalpy']['unit'] = $module['datas']['specific_enthalpy']['unit']['unit'];
+                            $datas['specific_enthalpy']['icon'] = $this->output_iconic_value($module['datas']['specific_enthalpy']['raw_value'], 'specific_enthalpy', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         } else {
                             $show_enthalpy = false;
                         }
@@ -488,6 +511,7 @@ class Psychrometry extends \WP_Widget {
                             $datas['wood_emc'] = array();
                             $datas['wood_emc']['value'] = $module['datas']['wood_emc']['value'];
                             $datas['wood_emc']['unit'] = $module['datas']['wood_emc']['unit']['unit'];
+                            $datas['wood_emc']['icon'] = $this->output_iconic_value($module['datas']['wood_emc']['raw_value'], 'wood_emc', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         } else {
                             $show_emc = false;
                         }
@@ -503,6 +527,7 @@ class Psychrometry extends \WP_Widget {
                 $datas['pressure'] = array();
                 $datas['pressure']['value'] = $current['datas']['pressure']['value'];
                 $datas['pressure']['unit'] = $current['datas']['pressure']['unit']['unit'];
+                $datas['pressure']['icon'] = $this->output_iconic_value($current['datas']['pressure']['raw_value'], 'pressure', null, true, 'inherit', 'lws-widget-icon-' . $id);
             } else {
                 $show_pressure = false;
             }
@@ -518,6 +543,7 @@ class Psychrometry extends \WP_Widget {
                 $datas['humidity'] = array();
                 $datas['humidity']['value'] = $current['datas']['humidity']['value'];
                 $datas['humidity']['unit'] = $current['datas']['humidity']['unit']['unit'];
+                $datas['humidity']['icon'] = $this->output_iconic_value($current['datas']['humidity']['raw_value'], 'humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
             } else {
                 $show_humidity = false;
             }
@@ -525,6 +551,7 @@ class Psychrometry extends \WP_Widget {
                 $datas['temperature'] = array();
                 $datas['temperature']['value'] = $current['datas']['temperature']['value'];
                 $datas['temperature']['unit'] = $current['datas']['temperature']['unit']['unit'];
+                $datas['temperature']['icon'] = $this->output_iconic_value($current['datas']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
             } else {
                 $show_temperature = false;
             }
@@ -573,7 +600,6 @@ class Psychrometry extends \WP_Widget {
             $dawndusk = 100;
         }
         echo $args['before_widget'];
-        $id = uniqid();
         $this->css($instance, $id, $flat, $dawndusk, $bg_url, $background_attachment);
         include(LWS_PUBLIC_DIR.'partials/WidgetPsychrometryDisplay.php');
         echo $args['after_widget'];

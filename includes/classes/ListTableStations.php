@@ -225,8 +225,8 @@ class Stations extends Base {
 
     protected function column_shortcode($item){
         $c = sprintf('<a href="?page=lws-stations&action=shortcode&tab=current&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Current records', 'live-weather-station').'</a>', $item['guid']);
-        $d = sprintf('<a href="?page=lws-stations&action=shortcode&tab=daily&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.lcfirst(__('Daily data', 'live-weather-station')).'</a>', $item['guid']);
-        $y = sprintf('<a href="?page=lws-stations&action=shortcode&tab=yearly&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.lcfirst(__('Historical data', 'live-weather-station')).'</a>', $item['guid']);
+        $d = sprintf('<a href="?page=lws-stations&action=shortcode&tab=daily&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.lws_lcfirst(__('Daily data', 'live-weather-station')).'</a>', $item['guid']);
+        $y = sprintf('<a href="?page=lws-stations&action=shortcode&tab=yearly&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.lws_lcfirst(__('Historical data', 'live-weather-station')).'</a>', $item['guid']);
         return $c . ', ' . $d . ', ' . $y . '.';
     }
 

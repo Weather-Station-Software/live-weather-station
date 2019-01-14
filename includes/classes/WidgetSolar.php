@@ -217,7 +217,17 @@ class Solar extends \WP_Widget {
         $borders = $instance['show_borders'];
         $background_attachment = $attachment;
         $bg_url = $background;
-        include(LWS_PUBLIC_DIR.'partials/WidgetSolarDisplayCSS.php');
+        $wtype = 'solar';
+        $text_shadows = WidgetHelper::text_shadow();
+        $box_shadows = WidgetHelper::box_shadow();
+        $box_radius = WidgetHelper::box_radius();
+        if (LWS_FA_SVG) {
+            $svg = 'svg{' . WidgetHelper::svg_shadow() . '}';
+        }
+        else {
+            $svg = '';
+        }
+        include(LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php');
     }
 
     /**
@@ -265,8 +275,8 @@ class Solar extends \WP_Widget {
      */
     public function widget($args, $instance) {
         wp_enqueue_style('lws-weather-icons');
-        wp_enqueue_style('lws-weather-icons-wind');
         lws_font_awesome();
+        $id = uniqid();
         $instance = $this->_get_instance($instance);
         $title = $instance['title'];
         $subtitle = $instance['subtitle'];
@@ -340,6 +350,7 @@ class Solar extends \WP_Widget {
                             $datas['uv_index'] = array();
                             $datas['uv_index']['value'] = $module['datas']['uv_index']['value'];
                             $datas['uv_index']['unit'] = __('UV', 'live-weather-station');
+                            $datas['uv_index']['icon'] = $this->output_iconic_value($module['datas']['uv_index']['raw_value'], 'uv_index', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_uv = false;
@@ -349,6 +360,7 @@ class Solar extends \WP_Widget {
                             $datas['irradiance'] = array();
                             $datas['irradiance']['value'] = $module['datas']['irradiance']['value'];
                             $datas['irradiance']['unit'] = $module['datas']['irradiance']['unit']['unit'];
+                            $datas['irradiance']['icon'] = $this->output_iconic_value($module['datas']['irradiance']['raw_value'], 'irradiance', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_irradiance = false;
@@ -361,6 +373,7 @@ class Solar extends \WP_Widget {
                             $datas['sunshine']['hunit'] = __('h', 'live-weather-station');
                             $datas['sunshine']['mvalue'] = $v[1];
                             $datas['sunshine']['munit'] = __('min.', 'live-weather-station');
+                            $datas['sunshine']['icon'] = $this->output_iconic_value($module['datas']['sunshine']['raw_value'], 'sunshine', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_sunshine = false;
@@ -370,6 +383,7 @@ class Solar extends \WP_Widget {
                             $datas['illuminance'] = array();
                             $datas['illuminance']['value'] = $module['datas']['illuminance']['value'];
                             $datas['illuminance']['unit'] = $module['datas']['illuminance']['unit']['unit'];
+                            $datas['illuminance']['icon'] = $this->output_iconic_value($module['datas']['illuminance']['raw_value'], 'illuminance', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_illuminance = false;
@@ -378,12 +392,13 @@ class Solar extends \WP_Widget {
                     case 'NACurrent': // Current weather -> OpenWeatherMap
                         $NACurrent = true;
                         if (array_key_exists('is_day', $module['datas'])) {
-                            $datas['day']['value'] = ($module['datas']['is_day']['value'] == 1 ? '-day' : '-night');
+                            $datas['day']['value'] = ($module['datas']['is_day']['value'] == 1 ? 'day' : 'night');
                         } else {
                             $datas['day']['value'] = '';
                         }
                         if (array_key_exists('weather', $module['datas'])) {
                             $datas['weather']['value'] = $module['datas']['weather']['value'];
+                            $datas['weather']['icon'] = $this->output_iconic_value($datas['day']['value'] . '-' . $datas['weather']['value'], 'weather', null, true, 'inherit', 'lws-widget-big-wiicon-' . $id);
                         }
                         else {
                             $show_current = false;
@@ -444,7 +459,6 @@ class Solar extends \WP_Widget {
             $dawndusk = 100;
         }
         echo $args['before_widget'];
-        $id = uniqid();
         $this->css($instance, $id, $flat, $dawndusk, $bg_url, $background_attachment);
         include(LWS_PUBLIC_DIR.'partials/WidgetSolarDisplay.php');
         echo $args['after_widget'];

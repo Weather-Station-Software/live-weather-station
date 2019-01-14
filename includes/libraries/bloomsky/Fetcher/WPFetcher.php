@@ -41,7 +41,15 @@ class WPFetcher implements FetcherInterface
         }
         $response = wp_remote_get($url, $args);
         if (wp_remote_retrieve_response_code($response) != 200) {
-            throw new \Exception((string)wp_remote_retrieve_body($response), wp_remote_retrieve_response_code($response));
+            $message = (string)wp_remote_retrieve_body($response);
+            if ($message === '') {
+                $message = 'Unknown error.';
+            }
+            $code = wp_remote_retrieve_response_code($response);
+            if ($code === '') {
+                $code = 999;
+            }
+            throw new \Exception($message, $code);
         }
         return wp_remote_retrieve_body($response);
     }

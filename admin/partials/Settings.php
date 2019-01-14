@@ -31,13 +31,12 @@ $buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; '
     </h2>
 
     <form action="<?php echo esc_url(lws_get_admin_page_url('lws-settings', null, $active_tab)); ?>" method="POST">
-        <?php if ($active_tab !== 'general' && $active_tab !== 'services' && $active_tab !== 'maintenance' && $active_tab !== 'tasks' && $active_tab !== 'styles') { ?>
+        <?php if ($active_tab !== 'general' && $active_tab !== 'services' && $active_tab !== 'maintenance' && $active_tab !== 'tasks') { ?>
             <?php do_settings_sections('lws_'.$active_tab); ?>
             <?php settings_fields($active_tab);?>
-            <?php echo $buttons;?>
-        <?php } ?>
-        <?php if ($active_tab === 'styles') { ?>
-            <?php include(LWS_ADMIN_DIR.'partials/SettingsStyles.php'); ?>
+            <?php if ($active_tab === 'styles') { ?>
+                <?php include(LWS_ADMIN_DIR.'partials/SettingsStyles.php'); ?>
+            <?php } ?>
             <?php echo $buttons;?>
         <?php } ?>
     </form>

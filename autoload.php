@@ -209,8 +209,10 @@ spl_autoload_register(
         case 'WeatherStation\UI\Widget\Psychrometry': $file = LWS_INCLUDES_DIR.'classes/WidgetPsychrometry.php'; break;
         case 'WeatherStation\UI\Widget\Solar': $file = LWS_INCLUDES_DIR.'classes/WidgetSolar.php'; break;
         case 'WeatherStation\UI\Widget\Thunderstorm': $file = LWS_INCLUDES_DIR.'classes/WidgetThunderstorm.php'; break;
+        case 'WeatherStation\UI\Widget\WidgetHelper': $file = LWS_INCLUDES_DIR.'classes/WidgetHelper.php'; break;
         case 'WeatherStation\Utilities\ColorBrewer': $file = LWS_INCLUDES_DIR.'libraries/misc/ColorBrewer.php'; break;
         case 'WeatherStation\Utilities\ColorsManipulation': $file = LWS_INCLUDES_DIR.'libraries/misc/ColorsManipulation.php'; break;
+        case 'WeatherStation\Utilities\CSS': $file = LWS_INCLUDES_DIR.'classes/CssHelper.php'; break;
         case 'WeatherStation\Utilities\Markdown': $file = LWS_INCLUDES_DIR.'libraries/misc/Markdown.php'; break;
         case 'WeatherStation\Utilities\Settings': $file = LWS_INCLUDES_DIR.'classes/SettingsHelper.php'; break;
         default: $file = null;

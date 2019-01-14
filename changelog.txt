@@ -1,11 +1,19 @@
 
-#3.7.5 / January 7th, 2018
+#3.7.5 / January 14th, 2018
 
 * Improvement: all the API calls have been redesigned to be compliant with newly enforced WordPress security rules.
+* Improvement: simple quality checking on collected data.
+* Improvement: "theme-proof" standardized layout for fire, indoor, outdoor, solar and thunderstorm widgets.
 * Improvement: greater speed while collecting data.
 * Improvement: logged events about refresh token for Netatmo APIs are more precise (and less anxiogenic).
 * Improvement: the health index icon is now consistent between widgets and admin station view.
+* Improvement: better _erroneous values_ handling for BloomSky stations.
+* Improvement: when "theme outputs FontAwesome" is chosen, it's now possible to specify CSS or JS+SVG as rendering method.
 * Bug fix: in some cases, daily windrose may be wrongly refreshed (thanks to [@grosnenesse](https://weather.station.software/community/profile/grosnenesse/)).
+* Bug fix: when "theme outputs FontAwesome" is chosen, some icons in admin views are missing.
+* Bug fix: shadows for SVG icons are wrongly rendered in widgets.
+* Bug fix: in German languages, some words are wrongly lower-cased (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+* Bug fix: in some cases computing potential temperature may produce a PHP warning (thanks to [@erwin](https://weather.station.software/community/profile/erwin/)).
 * Removed: cUrl dependencies. Weather Station is now fully operational even if cUrl support is not installed.
 
 #3.7.4 / January 7th, 2018

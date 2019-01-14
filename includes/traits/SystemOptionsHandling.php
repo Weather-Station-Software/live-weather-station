@@ -114,6 +114,18 @@ trait Handling {
 
     private static $live_weather_station_styles_chart_cscheme_key = 'live_weather_station_styles_chart_cschemes';
 
+    private static $live_weather_station_w_text_shadow_position = 'bottom-right';
+    private static $live_weather_station_w_text_shadow_length = 'close';
+    private static $live_weather_station_w_text_shadow_diffusion = 'medium';
+    private static $live_weather_station_w_text_shadow_obscurity = 'light';
+    private static $live_weather_station_w_text_shadow_color = '#000000';
+    private static $live_weather_station_w_box_shadow_position = 'none';
+    private static $live_weather_station_w_box_shadow_length = 'close';
+    private static $live_weather_station_w_box_shadow_diffusion = 'medium';
+    private static $live_weather_station_w_box_shadow_obscurity = 'light';
+    private static $live_weather_station_w_box_shadow_color = '#000000';
+    private static $live_weather_station_w_box_radius = 'medium';
+
 
 
     /**
@@ -673,6 +685,17 @@ trait Handling {
         delete_option('live_weather_station_retention_history');
         delete_option('live_weather_station_purge_cache');
         delete_option('live_weather_station_mutation_observer');
+        delete_option('live_weather_station_w_text_shadow_position');
+        delete_option('live_weather_station_w_text_shadow_length');
+        delete_option('live_weather_station_w_text_shadow_diffusion');
+        delete_option('live_weather_station_w_text_shadow_obscurity');
+        delete_option('live_weather_station_w_text_shadow_color');
+        delete_option('live_weather_station_w_box_shadow_position');
+        delete_option('live_weather_station_w_box_shadow_length');
+        delete_option('live_weather_station_w_box_shadow_diffusion');
+        delete_option('live_weather_station_w_box_shadow_obscurity');
+        delete_option('live_weather_station_w_box_shadow_color');
+        delete_option('live_weather_station_w_box_radius');
         self::delete_thresholds_options();
         self::delete_cschemes_options();
     }
@@ -866,6 +889,26 @@ trait Handling {
     }
 
     /**
+     * Common base for the switching methods.
+     *
+     * @since 3.7.5
+     */
+    protected static function init_styles_options() {
+        update_option('live_weather_station_w_text_shadow_position', self::$live_weather_station_w_text_shadow_position);
+        update_option('live_weather_station_w_text_shadow_length', self::$live_weather_station_w_text_shadow_length);
+        update_option('live_weather_station_w_text_shadow_diffusion', self::$live_weather_station_w_text_shadow_diffusion);
+        update_option('live_weather_station_w_text_shadow_obscurity', self::$live_weather_station_w_text_shadow_obscurity);
+        update_option('live_weather_station_w_text_shadow_color', self::$live_weather_station_w_text_shadow_color);
+        update_option('live_weather_station_w_box_shadow_position', self::$live_weather_station_w_box_shadow_position);
+        update_option('live_weather_station_w_box_shadow_length', self::$live_weather_station_w_box_shadow_length);
+        update_option('live_weather_station_w_box_shadow_diffusion', self::$live_weather_station_w_box_shadow_diffusion);
+        update_option('live_weather_station_w_box_shadow_obscurity', self::$live_weather_station_w_box_shadow_obscurity);
+        update_option('live_weather_station_w_box_shadow_color', self::$live_weather_station_w_box_shadow_color);
+        update_option('live_weather_station_w_box_radius', self::$live_weather_station_w_box_radius);
+    }
+    
+
+    /**
      * Init all options of the plugin.
      *
      * @since 1.0.0
@@ -885,6 +928,7 @@ trait Handling {
         self::init_display_options();
         self::init_cschemes_options();
         self::init_thresholds_options();
+        self::init_styles_options();
         self::init_map_options();
         self::init_history_options();
         update_option('live_weather_station_unit_temperature', self::$live_weather_station_unit_temperature);
@@ -1122,7 +1166,17 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_full_history', self::$live_weather_station_full_history);
         self::verify_option_integer('live_weather_station_retention_history', self::$live_weather_station_retention_history);
         self::verify_option_boolean('live_weather_station_mutation_observer', self::$live_weather_station_mutation_observer);
-
+        self::verify_option_string('live_weather_station_w_text_shadow_position', self::$live_weather_station_w_text_shadow_position);
+        self::verify_option_string('live_weather_station_w_text_shadow_length', self::$live_weather_station_w_text_shadow_length);
+        self::verify_option_string('live_weather_station_w_text_shadow_diffusion', self::$live_weather_station_w_text_shadow_diffusion);
+        self::verify_option_string('live_weather_station_w_text_shadow_obscurity', self::$live_weather_station_w_text_shadow_obscurity);
+        self::verify_option_string('live_weather_station_w_text_shadow_color', self::$live_weather_station_w_text_shadow_color);
+        self::verify_option_string('live_weather_station_w_box_shadow_position', self::$live_weather_station_w_box_shadow_position);
+        self::verify_option_string('live_weather_station_w_box_shadow_length', self::$live_weather_station_w_box_shadow_length);
+        self::verify_option_string('live_weather_station_w_box_shadow_diffusion', self::$live_weather_station_w_box_shadow_diffusion);
+        self::verify_option_string('live_weather_station_w_box_shadow_obscurity', self::$live_weather_station_w_box_shadow_obscurity);
+        self::verify_option_string('live_weather_station_w_box_shadow_color', self::$live_weather_station_w_box_shadow_color);
+        self::verify_option_string('live_weather_station_w_box_radius', self::$live_weather_station_w_box_radius);
     }
 
     /**

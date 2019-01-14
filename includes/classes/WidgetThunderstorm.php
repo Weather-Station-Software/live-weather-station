@@ -215,7 +215,17 @@ class Thunderstorm extends \WP_Widget {
         $borders = $instance['show_borders'];
         $background_attachment = $attachment;
         $bg_url = $background;
-        include(LWS_PUBLIC_DIR.'partials/WidgetThunderstormDisplayCSS.php');
+        $wtype = 'thunderstorm';
+        $text_shadows = WidgetHelper::text_shadow();
+        $box_shadows = WidgetHelper::box_shadow();
+        $box_radius = WidgetHelper::box_radius();
+        if (LWS_FA_SVG) {
+            $svg = 'svg{' . WidgetHelper::svg_shadow() . '}';
+        }
+        else {
+            $svg = '';
+        }
+        include(LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php');
     }
 
     /**
@@ -262,8 +272,8 @@ class Thunderstorm extends \WP_Widget {
      */
     public function widget($args, $instance) {
         wp_enqueue_style('lws-weather-icons');
-        wp_enqueue_style('lws-weather-icons-wind');
         lws_font_awesome();
+        $id = uniqid();
         $instance = $this->_get_instance($instance);
         $title = $instance['title'];
         $subtitle = $instance['subtitle'];
@@ -334,12 +344,16 @@ class Thunderstorm extends \WP_Widget {
                             $datas['strikecount'] = array();
                             $datas['strikecount']['value'] = $module['datas']['strike_count']['value'];
                             $datas['strikecount']['unit'] = __('/ 3 hr', 'live-weather-station');
+                            $datas['strikecount']['icon'] = $this->output_iconic_value($module['datas']['strike_count']['raw_value'], 'strike_count', null, true, 'inherit', 'lws-widget-big-icon-' . $id);
+                            $datas['strikecount']['icon2'] = $this->output_iconic_value($module['datas']['strike_count']['raw_value'], 'strike_count', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         elseif (array_key_exists('strike_instant', $module['datas'])) {
                             $NAModule7 = true;
                             $datas['strikecount'] = array();
                             $datas['strikecount']['value'] = $module['datas']['strike_instant']['value'];
                             $datas['strikecount']['unit'] = __('now', 'live-weather-station');
+                            $datas['strikecount']['icon'] = $this->output_iconic_value($module['datas']['strike_instant']['raw_value'], 'strike_instant', null, true, 'inherit', 'lws-widget-big-icon-' . $id);
+                            $datas['strikecount']['icon2'] = $this->output_iconic_value($module['datas']['strike_instant']['raw_value'], 'strike_instant', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_strikecount = false;
@@ -350,6 +364,7 @@ class Thunderstorm extends \WP_Widget {
                             $datas['strikebearing'] = array();
                             $datas['strikebearing']['value'] = $module['datas']['strike_count']['value'];
                             $datas['strikebearing']['unit'] = $this->get_angle_text($module['datas']['strike_bearing']['raw_value']);
+                            $datas['strikebearing']['icon'] = $this->output_iconic_value($module['datas']['strike_bearing']['raw_value'], 'strike_bearing', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_strikebearing = false;
@@ -360,6 +375,7 @@ class Thunderstorm extends \WP_Widget {
                             $datas['strikedistance']['unit'] = $module['datas']['strike_distance']['unit']['unit'];
                             $datas['strikedistance']['ts1'] = self::get_date_from_utc($module['datas']['strike_distance']['timestamp'], $tz);
                             $datas['strikedistance']['ts2'] = self::get_time_from_utc($module['datas']['strike_distance']['timestamp'], $tz);
+                            $datas['strikedistance']['icon'] = $this->output_iconic_value($module['datas']['strike_distance']['raw_value'], 'strike_distance', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_strikedistance = false;
@@ -404,7 +420,6 @@ class Thunderstorm extends \WP_Widget {
             $dawndusk = 100;
         }
         echo $args['before_widget'];
-        $id = uniqid();
         $this->css($instance, $id, $flat, $dawndusk, $bg_url, $background_attachment);
         include(LWS_PUBLIC_DIR.'partials/WidgetThunderstormDisplay.php');
         echo $args['after_widget'];

@@ -252,22 +252,35 @@ trait BaseClient {
                         $dat['uv_index'] = $data['UVIndex'];
                     }
                     if (array_key_exists('WindDirection', $data)) {
-                        $dat['windangle'] = $this->get_reverse_wind_angle_text($data['WindDirection']);
+                        $w = $data['WindDirection'];
+                        if ($w == 9999) {
+                            $w = 0;
+                        }
+                        $dat['windangle'] = $this->get_reverse_wind_angle_text($w);
                         $dat['gustangle'] = $dat['windangle'];
                         $dat['winddirection'] = (int)floor(($dat['windangle'] + 180) % 360);
                         $dat['gustdirection'] = $dat['winddirection'];
                     }
                     if (array_key_exists('SustainedWindSpeed', $data)) {
                         $dat['windstrength'] = $data['SustainedWindSpeed'];
+                        if ($dat['windstrength'] == 9999) {
+                            $dat['windstrength'] = 0;
+                        }
                     }
                     if (array_key_exists('RainDaily', $data)) {
                         $dat['rain_day_aggregated'] = $data['RainDaily'];
                     }
                     if (array_key_exists('WindGust', $data)) {
                         $dat['guststrength'] = $data['WindGust'];
+                        if ($dat['guststrength'] == 9999) {
+                            $dat['guststrength'] = 0;
+                        }
                     }
                     if (array_key_exists('RainRate', $data)) {
                         $dat['rain'] = $data['RainRate'];
+                        if ($dat['rain'] == 9999) {
+                            $dat['rain'] = 0;
+                        }
                     }
                 }
                 if ($device_model != '') {
