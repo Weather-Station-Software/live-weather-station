@@ -5,12 +5,7 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */
-if ($shadows) {
-    $sh = 'filter:drop-shadow(1px 1px 1px rgba(0,0,0,.1));';
-}
-else {
-    $sh = '';
-}
+
 ?>
 <div class="lws-widget-container lws-widget-container-<?php echo $id ?>">
     <div class="lws-widget-outer-thunderstorm lws-widget-outer-thunderstorm-<?php echo $id ?>">
@@ -18,9 +13,9 @@ else {
             <?php if ( $show_current ):?>
                 <!-- CURRENT CONDITIONS -->
                 <div class="lws-widget-header lws-widget-header-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Current thunderstorm conditions', 'live-weather-station').'"' : ''); ?>>
-                    <i class="wi wi-lightning"></i>
+                    <?php echo $datas['strikecount']['icon']; ?>
                     <?php if (array_key_exists('strikecount',$datas)):?>
-                        <div class="lws-widget-title lws-widget-title-<?php echo $id ?>" style="display: inline-block;margin-left: -50px;font-size: 36px;vertical-align: bottom;"><?php echo $datas['strikecount']['value']; ?></div>
+                        <?php echo $datas['strikecount']['value']; ?>
                     <?php endif;?>
                 </div>
                 <?php if (($show_title || $subtitle != 0) || $show_strikedistance || $show_strikebearing || $show_strikecount):?>
@@ -53,8 +48,8 @@ else {
                         <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"><?php echo $datas['strikecount']['value']; ?></div>
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"></div>
                     </div>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="<?php echo LWS_FAS;?> wi-x32-<?php echo $id ?> fa-bolt" <?php echo LWS_FA_SVG?'style="font-size:42px!important;' . $sh . '"':'';?>></i>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['strikecount']['icon2']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
@@ -73,9 +68,9 @@ else {
             <?php endif;?>
             <?php if ($show_strikebearing):?>
                 <!-- BEARING -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Last strike bearing', 'live-weather-station').'"' : ''); ?>>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="wi wi-x42-<?php echo $id ?> wi-wind towards-<?php echo $datas['strikebearing']['value']; ?>-deg"></i>
+                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Last strike bearing', 'live-weather-station').'"' : ''); ?>>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['strikebearing']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
@@ -95,8 +90,8 @@ else {
                         <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"><?php echo $datas['strikedistance']['value']; ?></div>
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"><?php echo $datas['strikedistance']['unit']; ?></div>
                     </div>
-                    <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <i class="<?php echo LWS_FAS;?> wi-x26-<?php echo $id ?> fa-<?php echo LWS_FA5?'long-arrow-alt-left':'long-arrow-left';?>" <?php echo LWS_FA_SVG?'style="font-size:36px!important;' . $sh . '"':'';?>></i>
+                    <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
+                        <?php echo $datas['strikedistance']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">

@@ -212,12 +212,11 @@ trait Description {
     /**
      * Get the measurement type in plain text.
      *
-     * @param   string $type    The type of the measurement.
-     * @param   boolean $abbr    Optional. Is the type must be abbreviated.
-     * @param   string $module_type    Optional. The type of the module.
-     * @return  string  The type of the measurement in plain text.
-     * @since    1.0.0
-     * @access   protected 
+     * @param string $type The type of the measurement.
+     * @param boolean $abbr Optional. Is the type must be abbreviated.
+     * @param string $module_type Optional. The type of the module.
+     * @return string The type of the measurement in plain text.
+     * @since 1.0.0
      */
     protected function get_measurement_type ($type, $abbr=false, $module_type='NAMain') { 
         switch (strtolower($type)) {

@@ -26,17 +26,17 @@ class InlineHelp {
     public static $station_instance = null;
     private static $links = array (
         'en' => array (
-            'handbook/settings', //0  source: settings - general tab
-            'handbook/settings/history', //1  source: settings - history tab
-            'handbook/settings/services', //2  source: settings - service tab
-            'handbook/settings/display', //3  source: settings - display tab
-            'handbook/settings/thresholds', //4  source: settings - thresholds tab
-            'handbook/settings/system', //5  source: settings - system tab
+            'handbook/settings/', //0  source: settings - general tab
+            'handbook/settings/history/', //1  source: settings - history tab
+            'handbook/settings/services/', //2  source: settings - service tab
+            'handbook/settings/display/', //3  source: settings - display tab
+            'handbook/settings/thresholds/', //4  source: settings - thresholds tab
+            'handbook/settings/system/', //5  source: settings - system tab
             'handbook/data-historization/', //6  source: settings - history tab
             'frequently-asked-questions/', //7  faq section
             'handbook/dashboard/', //8  dashboard
             'handbook/stations-management/', //9  stations
-            'handbook/events', //10 events
+            'handbook/events/', //10 events
             'handbook/requirements/', //11 requirements
             'languages-translation/', //12 translation help
             'blog/', //13 Blog
@@ -45,8 +45,8 @@ class InlineHelp {
             'handbook/technical-specifications/#url', //16 stickertags documentation
             'handbook/', //17 main documentation
             'community/', //18 main support page
-            'handbook/controls', //19 shortcodes
-            'handbook/settings/styles', //20  source: settings - styles tab
+            'handbook/controls/', //19 shortcodes
+            'handbook/settings/styles/', //20  source: settings - styles tab
             'handbook/stations-management/module-management/',  //21
             'handbook/stations-management/data-export/',  //22
             'handbook/stations-management/data-import/',  //23
@@ -897,9 +897,9 @@ class InlineHelp {
                     'content'  => '<p>' . $s1 . '</p>');
 
                 $s1 = __('To add a station of this type, complete the fields', 'live-weather-station');
-                $s1 .= ', <strong>' . lcfirst(__('City', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Country', 'live-weather-station')) . '</strong>';
-                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Station ID', 'live-weather-station')) . '</strong>.';
+                $s1 .= ', <strong>' . lws_lcfirst(__('City', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Country', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Station ID', 'live-weather-station')) . '</strong>.';
                 $s3 = '<em>' . __('Note that the information you enter here is required for computations and presentations of meteorological and astronomical data. It is therefore crucial that they are as accurate as possible.', 'live-weather-station') . '</em>';
                 $tabs[] = array(
                     'title'    => __('Settings', 'live-weather-station'),
@@ -927,12 +927,12 @@ class InlineHelp {
                     'content'  => '<p>' . $s1 . '</p>');
 
                 $s1 = __('To add a station of this type, complete the fields', 'live-weather-station');
-                $s1 .= ' <strong>' . lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('City', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Country', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Altitude', 'live-weather-station')) . '</strong>';
-                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Station ID', 'live-weather-station')) . '</strong>.';
+                $s1 .= ' <strong>' . lws_lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('City', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Country', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Altitude', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Station ID', 'live-weather-station')) . '</strong>.';
                 $s3 = '<em>' . __('Note that the information you enter here is required for computations and presentations of meteorological and astronomical data. It is therefore crucial that they are as accurate as possible.', 'live-weather-station') . '</em>';
                 $tabs[] = array(
                     'title'    => __('Settings', 'live-weather-station'),
@@ -948,14 +948,14 @@ class InlineHelp {
                     'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p>');
 
                 $s1 = __('To add a "virtual" weather station, first complete the fields', 'live-weather-station');
-                $s1 .= ' <strong>' . lcfirst(__('Station name', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('City', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Country', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
-                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Altitude', 'live-weather-station')) . '</strong>.';
+                $s1 .= ' <strong>' . lws_lcfirst(__('Station name', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('City', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Country', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Altitude', 'live-weather-station')) . '</strong>.';
                 $s2 = __('If you know the precise coordinates of the location, then complete the fields', 'live-weather-station');
-                $s2 .= ' <strong>' . lcfirst(__('Latitude', 'live-weather-station')) . '</strong>';
-                $s2 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Longitude', 'live-weather-station')) . '</strong>. ';
+                $s2 .= ' <strong>' . lws_lcfirst(__('Latitude', 'live-weather-station')) . '</strong>';
+                $s2 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Longitude', 'live-weather-station')) . '</strong>. ';
                 $s2 .= sprintf(__('If you don\'t know these coordinates, left blank the corresponding fields, %s will try to find them based on the city and country information.', 'live-weather-station'), LWS_PLUGIN_NAME);
                 $s3 = '<em>' . __('Note that the information you enter here is required for computations and presentations of meteorological and astronomical data. It is therefore crucial that they are as accurate as possible.', 'live-weather-station') . '</em>';
                 $tabs[] = array(
@@ -971,14 +971,14 @@ class InlineHelp {
                     'content'  => '<p>' . $s1 . '</p>');
 
                 $s1 = __('To add a station of this type, first select the station in the dropdown list then, complete the fields', 'live-weather-station');
-                $s1 .= ' <strong>' . lcfirst(__('Station name', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('City', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Country', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Altitude', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Latitude', 'live-weather-station')) . '</strong>';
-                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Longitude', 'live-weather-station')) . '</strong>.';
+                $s1 .= ' <strong>' . lws_lcfirst(__('Station name', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('City', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Country', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Altitude', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Latitude', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Longitude', 'live-weather-station')) . '</strong>.';
                 $s2 = '<em>' . __('Note that the information you enter here is required for computations and presentations of meteorological and astronomical data. It is therefore crucial that they are as accurate as possible.', 'live-weather-station') . '</em>';
                 $tabs[] = array(
                     'title'    => __('Settings', 'live-weather-station'),
@@ -987,7 +987,7 @@ class InlineHelp {
             }
             if (isset($service) && $service == 'weatherunderground' && LWS_WU_ACTIVE) {
                 $s1 = __('In this screen, you can', 'live-weather-station');
-                $s1 .= ' ' . lcfirst(sprintf(__('Add or edit a weather station published on %s', 'live-weather-station'), 'Weather Underground')) . '.';
+                $s1 .= ' ' . lws_lcfirst(sprintf(__('Add or edit a weather station published on %s', 'live-weather-station'), 'Weather Underground')) . '.';
                 $s2 = sprintf(__('This station may be a station that belongs to you or a station you know. The main thing is that it must be publicly available on the %s website.', 'live-weather-station'), 'Weather Underground');
                 $tabs[] = array(
                     'title'    => __('Overview', 'live-weather-station'),
@@ -995,10 +995,10 @@ class InlineHelp {
                     'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p>');
 
                 $s1 = __('To add a station of this type, complete the fields', 'live-weather-station');
-                $s1 .= ' <strong>' . lcfirst(__('Station name', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
-                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Station ID', 'live-weather-station')) . '</strong>.';
-                $s1 .= ' ' . __('You could find the value of the field', 'live-weather-station') . ' <strong>' . lcfirst(__('Station ID', 'live-weather-station')) . '</strong>';
+                $s1 .= ' <strong>' . lws_lcfirst(__('Station name', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Station ID', 'live-weather-station')) . '</strong>.';
+                $s1 .= ' ' . __('You could find the value of the field', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Station ID', 'live-weather-station')) . '</strong>';
                 $s1 .= ' ' . sprintf(__('on the %s website (in the dashboard) or right in the URL of the station\'s page.', 'live-weather-station'), 'Weather Underground');
                 $s2 = '<em>' . __('Note that the information you enter here is required for computations and presentations of meteorological and astronomical data. It is therefore crucial that they are as accurate as possible.', 'live-weather-station') . '</em>';
                 $tabs[] = array(
@@ -1015,22 +1015,22 @@ class InlineHelp {
                     'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p>');
 
                 $s1 = __('To add a station of this type, first complete the fields', 'live-weather-station');
-                $s1 .= ' <strong>' . lcfirst(__('Station name', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('City', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Country', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Altitude', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Latitude', 'live-weather-station')) . '</strong>';
-                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Longitude', 'live-weather-station')) . '</strong>.';
-                $s1 .= ' ' . __('Then, complete', 'live-weather-station') . ' <strong>' . lcfirst(__('Source type', 'live-weather-station')) . '</strong>';
-                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong> ';
+                $s1 .= ' <strong>' . lws_lcfirst(__('Station name', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('City', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Country', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Altitude', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Latitude', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Longitude', 'live-weather-station')) . '</strong>.';
+                $s1 .= ' ' . __('Then, complete', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Source type', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Source name', 'live-weather-station')) . '</strong> ';
                 $s1 .= ' ' . __('as follow:', 'live-weather-station') . '<br/>';
-                $s1 .= '<p><strong>' . __('Local file', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
+                $s1 .= '<p><strong>' . __('Local file', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
                 $s1 .= ' ' . sprintf(__('you can specify the full path of the file like %1$s or %2$s or %3$s.', 'live-weather-station'), '<code>/path/to/realtime.txt</code>', '<code>C:\path\to\realtime.txt</code>', '<code>\\\\smbserver\share\path\to\realtime.txt</code>') . '</p>';
-                $s1 .= '<p><strong>' . __('Web server', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
+                $s1 .= '<p><strong>' . __('Web server', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
                 $s1 .= ' ' . sprintf(__('you can specify the resource like %1$s.', 'live-weather-station'), '<code>www.example.com/path/realtime.txt</code>') . '</p>';
-                $s1 .= '<p><strong>' . __('File server', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
+                $s1 .= '<p><strong>' . __('File server', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
                 $s1 .= ' ' . sprintf(__('you can specify the resource like %1$s (anonymous file server) or %2$s (authenticated file server).', 'live-weather-station'), '<code>example.com/path/realtime.txt</code>', '<code>user:password@example.com/path/realtime.txt</code>') . '</p>';
                 $s2 = '<em>' . __('Note that the information you enter here is required for computations and presentations of meteorological and astronomical data. It is therefore crucial that they are as accurate as possible.', 'live-weather-station') . '</em>';
                 $tabs[] = array(
@@ -1047,20 +1047,20 @@ class InlineHelp {
                     'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p>');
 
                 $s1 = __('To add a station of this type, first complete the fields', 'live-weather-station');
-                $s1 .= ' <strong>' . lcfirst(__('Station name', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('City', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Country', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
-                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Altitude', 'live-weather-station')) . '</strong>.';
-                $s1 .= ' ' . __('Then, complete', 'live-weather-station') . ' <strong>' . lcfirst(__('Source type', 'live-weather-station')) . '</strong>';
-                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong> ';
+                $s1 .= ' <strong>' . lws_lcfirst(__('Station name', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('City', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Country', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Altitude', 'live-weather-station')) . '</strong>.';
+                $s1 .= ' ' . __('Then, complete', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Source type', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Source name', 'live-weather-station')) . '</strong> ';
                 $s1 .= ' ' . __('as follow:', 'live-weather-station') . '<br/>';
-                $s1 .= '<p><strong>' . __('Local file', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
+                $s1 .= '<p><strong>' . __('Local file', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
                 $s1 .= ' ' . sprintf(__('you can specify the full path of the file like %1$s or %2$s or %3$s.', 'live-weather-station'), '<code>/path/to/clientraw.txt</code>', '<code>C:\path\to\clientraw.txt</code>', '<code>\\\\smbserver\share\path\to\clientraw.txt</code>') . '</p>';
-                $s1 .= '<p><strong>' . __('Web server', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
+                $s1 .= '<p><strong>' . __('Web server', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
                 $s1 .= ' ' . sprintf(__('you can specify the resource like %1$s.', 'live-weather-station'), '<code>www.example.com/path/clientraw.txt</code>') . '</p>';
-                $s1 .= '<p><strong>' . __('File server', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
+                $s1 .= '<p><strong>' . __('File server', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
                 $s1 .= ' ' . sprintf(__('you can specify the resource like %1$s (anonymous file server) or %2$s (authenticated file server).', 'live-weather-station'), '<code>example.com/path/clientraw.txt</code>', '<code>user:password@example.com/path/clientraw.txt</code>') . '</p>';
                 $s2 = '<em>' . __('Note that the information you enter here is required for computations and presentations of meteorological and astronomical data. It is therefore crucial that they are as accurate as possible.', 'live-weather-station') . '</em>';
                 $tabs[] = array(
@@ -1076,22 +1076,22 @@ class InlineHelp {
                     'content'  => '<p>' . $s1 . '</p>');
 
                 $s1 = __('To add a station of this type, first complete the fields', 'live-weather-station');
-                $s1 .= ' <strong>' . lcfirst(__('Station name', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('City', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Country', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Altitude', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lcfirst(__('Latitude', 'live-weather-station')) . '</strong>';
-                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Longitude', 'live-weather-station')) . '</strong>.';
-                $s1 .= ' ' . __('Then, complete', 'live-weather-station') . ' <strong>' . lcfirst(__('Source type', 'live-weather-station')) . '</strong>';
-                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong> ';
+                $s1 .= ' <strong>' . lws_lcfirst(__('Station name', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Station model', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('City', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Country', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Time zone', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Altitude', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . lws_lcfirst(__('Latitude', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Longitude', 'live-weather-station')) . '</strong>.';
+                $s1 .= ' ' . __('Then, complete', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Source type', 'live-weather-station')) . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Source name', 'live-weather-station')) . '</strong> ';
                 $s1 .= ' ' . __('as follow:', 'live-weather-station') . '<br/>';
-                $s1 .= '<p><strong>' . __('Local file', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
+                $s1 .= '<p><strong>' . __('Local file', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
                 $s1 .= ' ' . sprintf(__('you can specify the full path of the file like %1$s or %2$s or %3$s.', 'live-weather-station'), '<code>/path/to/clientraw.txt</code>', '<code>C:\path\to\clientraw.txt</code>', '<code>\\\\smbserver\share\path\to\clientraw.txt</code>') . '</p>';
-                $s1 .= '<p><strong>' . __('Web server', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
+                $s1 .= '<p><strong>' . __('Web server', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
                 $s1 .= ' ' . sprintf(__('you can specify the resource like %1$s.', 'live-weather-station'), '<code>www.example.com/path/clientraw.txt</code>') . '</p>';
-                $s1 .= '<p><strong>' . __('File server', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
+                $s1 .= '<p><strong>' . __('File server', 'live-weather-station') . '</strong> &mdash; ' . __('for the field', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Source name', 'live-weather-station')) . '</strong>';
                 $s1 .= ' ' . sprintf(__('you can specify the resource like %1$s (anonymous file server) or %2$s (authenticated file server).', 'live-weather-station'), '<code>example.com/path/clientraw.txt</code>', '<code>user:password@example.com/path/clientraw.txt</code>') . '</p>';
                 $s2 = '<em>' . __('Note that the information you enter here is required for computations and presentations of meteorological and astronomical data. It is therefore crucial that they are as accurate as possible.', 'live-weather-station') . '</em>';
                 $tabs[] = array(

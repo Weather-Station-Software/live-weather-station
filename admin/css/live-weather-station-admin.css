@@ -315,22 +315,22 @@ div.lws-brandicon {
     background: rgba(220,50,50,.06) !important;
 }
 
-.fa-s0 {
-    font-size: 1.25em;
+.ico-size-0 {
+    font-size: 1.25em !important;
     line-height: 1em !important;
 }
 
-.fa-s1 {
-    font-size: 1.3em;
+.ico-size-1 {
+    font-size: 1.3em !important;
     line-height: 1em !important;
 }
 
-.fa-s2 {
-    font-size: 1.9em;
+.ico-size-2 {
+    font-size: 1.9em !important;
     line-height: 1em !important;
 }
 
-.fa-s3 {
-    font-size: 2.1em;
+.ico-size-3 {
+    font-size: 2.1em !important;
     line-height: 1em !important;
 }

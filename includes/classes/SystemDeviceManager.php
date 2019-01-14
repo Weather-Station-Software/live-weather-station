@@ -273,7 +273,7 @@ class Manager
                     if (!in_array($station['station_id'], $this->stations)) {
                         $this->stations[] = $station['station_id'];
                     }
-                    Logger::warning($this->facility, $this->get_service_name(0), $station['station_id'], $station['station_name'], null, null, null, sprintf('The new %s has been fully integrated.', lcfirst($this->get_module_type($module))));
+                    Logger::warning($this->facility, $this->get_service_name(0), $station['station_id'], $station['station_name'], null, null, null, sprintf('The new %s has been fully integrated.', lws_lcfirst($this->get_module_type($module))));
                 }
             }
         }

@@ -254,6 +254,15 @@ class Indoor extends \WP_Widget {
         $background_attachment = $attachment;
         $bg_url = $background;
         $wtype = 'indoor';
+        $text_shadows = WidgetHelper::text_shadow();
+        $box_shadows = WidgetHelper::box_shadow();
+        $box_radius = WidgetHelper::box_radius();
+        if (LWS_FA_SVG) {
+            $svg = 'svg{' . WidgetHelper::svg_shadow() . '}';
+        }
+        else {
+            $svg = '';
+        }
         include(LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php');
     }
 
@@ -265,6 +274,7 @@ class Indoor extends \WP_Widget {
      * @since 3.1.0
      */
     public function widget($args, $instance) {
+        wp_enqueue_style('lws-weather-icons');
         lws_font_awesome();
         $id = uniqid();
         $instance = $this->_get_instance($instance);

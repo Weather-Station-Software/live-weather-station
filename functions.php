@@ -94,11 +94,9 @@ function lws_get_display_locale($user_id = 0) {
  * Get the displaylanguage id.
  *
  * @return string The id of the language.
- *
  * @since 3.3.0
  */
-function lws_get_display_language_id()
-{
+function lws_get_display_language_id() {
     $lang = 'en';
     $extra_language = array('fr');
     $l = strtolower(lws_get_display_locale());
@@ -109,6 +107,21 @@ function lws_get_display_language_id()
         }
     }
     return $lang;
+}
+
+/**
+ * Make a string's first character lowercase the Weather Station's way.
+ * @param string $str The input string.
+ * @return string the resulting string.
+ * @since 3.7.5
+ */
+function lws_lcfirst($str) {
+    if (strpos(strtolower(lws_get_display_language_id()), 'de') !== 0) {
+        return lcfirst($str);
+    }
+    else {
+        return $str;
+    }
 }
 
 /**
@@ -231,7 +244,13 @@ function lws_register_script($handle, $source, $file, $deps = array(), $cdn_avai
  * @since 3.5.3
  */
 function lws_font_awesome($all=false) {
-    switch (get_option('live_weather_station_fa_mode')) {
+    $mode = get_option('live_weather_station_fa_mode');
+    if (is_admin()) {
+        if ($mode > 2) {
+            $mode -= 3;
+        }
+    }
+    switch ($mode) {
         case 0:                                             // Font Awesome 4 outputed by Weather Station
             wp_enqueue_style('lws-font-awesome-4');
             if (!defined('LWS_FAR')) {
@@ -296,6 +315,7 @@ function lws_font_awesome($all=false) {
             wp_dequeue_style('lws-font-awesome-4');
             wp_dequeue_style('lws-font-awesome-5');
             wp_dequeue_script('lws-fa-all');
+            wp_dequeue_script('lws-fa-brands');
             wp_dequeue_script('lws-fa-regular');
             wp_dequeue_script('lws-fa-solid');
             if (!defined('LWS_FAR')) {
@@ -314,7 +334,7 @@ function lws_font_awesome($all=false) {
                 define('LWS_FA_SVG', false);
             }
             break;
-        case 4:                                             // Font Awesome 5 outputed by theme or other plugin
+        case 4:                                             // Font Awesome 5 outputed by theme or other plugin as CSS
             wp_dequeue_style('lws-font-awesome-4');
             wp_dequeue_style('lws-font-awesome-5');
             wp_dequeue_script('lws-fa-all');
@@ -335,6 +355,29 @@ function lws_font_awesome($all=false) {
             }
             if (!defined('LWS_FA_SVG')) {
                 define('LWS_FA_SVG', false);
+            }
+            break;
+        case 5:                                             // Font Awesome 5 outputed by theme or other plugin as JS+SVG
+            wp_dequeue_style('lws-font-awesome-4');
+            wp_dequeue_style('lws-font-awesome-5');
+            wp_dequeue_script('lws-fa-all');
+            wp_dequeue_script('lws-fa-brands');
+            wp_dequeue_script('lws-fa-regular');
+            wp_dequeue_script('lws-fa-solid');
+            if (!defined('LWS_FAR')) {
+                define('LWS_FAR', 'far');
+            }
+            if (!defined('LWS_FAB')) {
+                define('LWS_FAB', 'fab');
+            }
+            if (!defined('LWS_FAS')) {
+                define('LWS_FAS', 'fas');
+            }
+            if (!defined('LWS_FA5')) {
+                define('LWS_FA5', true);
+            }
+            if (!defined('LWS_FA_SVG')) {
+                define('LWS_FA_SVG', true);
             }
             break;
     }
