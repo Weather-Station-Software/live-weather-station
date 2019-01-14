@@ -325,18 +325,6 @@ class Handling {
     }
 
     /**
-     * Get the language id.
-     *
-     * @return string The id of the language.
-     *
-     * @since 3.3.0
-     */
-    public static function get_language_id()
-    {
-        return lws_get_display_language_id();
-    }
-
-    /**
      * Get the language markup for links.
      *
      * @param array $langs Optional. Indicates the language in which the link is available.

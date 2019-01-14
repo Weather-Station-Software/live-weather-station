@@ -1,7 +1,15 @@
 
+#3.7.7 / January 14th, 2018
+
+* Improvement: detection of current user language (when internationalization support is not installed) has been greatly improved.
+* Bug fix: ephemeris computing in extreme latitudes may generate a PHP warning.
+* Bug fix: collecting a Netatmo station with a removed module may generate a PHP warning.
+* Bug fix: in German languages, some words are (again and again) wrongly lower-cased (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+
 #3.7.6 / January 14th, 2018
 
 * Bug fix: in German languages, some words are (again) wrongly lower-cased (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+
 
 #3.7.5 / January 14th, 2018
 

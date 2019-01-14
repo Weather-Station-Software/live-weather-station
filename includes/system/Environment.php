@@ -522,20 +522,20 @@ class Manager {
      */
     private static function locale_name($id) {
         switch ($id) {
-            case 'arq': $result = (lws_get_display_language_id() == 'fr') ? 'Arabe (Algérie)' : 'Arabic (Algeria)' ; break;
-            case 'ary': $result = (lws_get_display_language_id() == 'fr') ? 'Arabe (Maroc)' : 'Arabic (Morocco)' ; break;
-            case 'azb': $result = (lws_get_display_language_id() == 'fr') ? 'Azerbaïdjanais du Sud' : 'South Azerbaijani' ; break;
-            case 'bcc': $result = (lws_get_display_language_id() == 'fr') ? 'Balochi du Sud' : 'Southern Balochi' ; break;
-            case 'frp': $result = (lws_get_display_language_id() == 'fr') ? 'Arpitan' : 'Arpitan' ; break;
-            case 'fuc': $result = (lws_get_display_language_id() == 'fr') ? 'Pulaar' : 'Pulaar' ; break;
-            case 'haz': $result = (lws_get_display_language_id() == 'fr') ? 'Hazaragi' : 'Hazaragi' ; break;
-            case 'kin': $result = (lws_get_display_language_id() == 'fr') ? 'Kinyarwanda' : 'Kinyarwanda' ; break;
-            case 'kmr': $result = (lws_get_display_language_id() == 'fr') ? 'Kurde du Nord' : 'Northern Kurdish' ; break;
-            case 'ory': $result = (lws_get_display_language_id() == 'fr') ? 'Oriya' : 'Oriya' ; break;
-            case 'rhg': $result = (lws_get_display_language_id() == 'fr') ? 'Rohingya' : 'Rohingya' ; break;
-            case 'szl': $result = (lws_get_display_language_id() == 'fr') ? 'Silésien' : 'Silesian' ; break;
-            case 'twd': $result = (lws_get_display_language_id() == 'fr') ? 'Twents' : 'Twents' ; break;
-            default: $result = lws_get_locale_name($id, lws_get_display_language_id());
+            case 'arq': $result = 'Arabic (Algeria)' ; break;
+            case 'ary': $result = 'Arabic (Morocco)' ; break;
+            case 'azb': $result = 'South Azerbaijani' ; break;
+            case 'bcc': $result = 'Southern Balochi' ; break;
+            case 'frp': $result = 'Arpitan' ; break;
+            case 'fuc': $result = 'Pulaar' ; break;
+            case 'haz': $result = 'Hazaragi' ; break;
+            case 'kin': $result = 'Kinyarwanda' ; break;
+            case 'kmr': $result = 'Northern Kurdish' ; break;
+            case 'ory': $result = 'Oriya' ; break;
+            case 'rhg': $result = 'Rohingya' ; break;
+            case 'szl': $result = 'Silesian' ; break;
+            case 'twd': $result = 'Twents' ; break;
+            default: $result = lws_get_locale_name($id, lws_get_display_locale());
 
         }
         return $result;
@@ -647,24 +647,8 @@ class Manager {
             $name = mb_convert_case($name, MB_CASE_TITLE, 'UTF-8');
             if ($translation['slug'] != 'default') {
                 $slug = $translation['slug'];
-                if (lws_get_display_language_id() == 'en') {
-                    $name = '%s ' . $name;
-                    $slug = ucfirst($slug);
-                }
-                if (lws_get_display_language_id() == 'fr') {
-                    if (strpos($name, ' (') > 0) {
-                        $name = str_replace(' (', ' %s (', $name);
-                    }
-                    else {
-                        $name = $name . ' %s';
-                    }
-                    if ($translation['slug'] == 'formal') {
-                        $slug = __('formal', 'live-weather-station');
-                    }
-                    if ($translation['slug'] == 'informal') {
-                        $slug = __('informal', 'live-weather-station');
-                    }
-                }
+                $name = '%s ' . $name;
+                $slug = ucfirst($slug);
                 $name = sprintf($name, $slug);
             }
             $set[$id] = $name;

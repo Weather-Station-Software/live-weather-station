@@ -149,7 +149,7 @@ trait BaseClient {
             if (!isset($device['firmware'])) {
                 $device['firmware'] = 0;
             }
-            if (!isset($device['_id']) || !isset($device['dashboard_data']) || !is_array($device['dashboard_data'])) {
+            if (!isset($device['_id']) || !array_key_exists('dashboard_data', $device) || (array_key_exists('dashboard_data', $device) && !isset($device['dashboard_data'])) || (array_key_exists('dashboard_data', $device) && !is_array($device['dashboard_data']))) {
                 unset($device);
                 Logger::warning($this->facility, $this->service_name, null, null, null, null, 9, 'Station not found.');
                 continue;
@@ -178,7 +178,7 @@ trait BaseClient {
                     if (!isset($module['battery_vp'])) {
                         $module['battery_vp'] = 0;
                     }
-                    if (!isset($module['_id']) || !isset($module['dashboard_data']) || !is_array($module['dashboard_data'])) {
+                    if (!isset($module['_id']) || !array_key_exists('dashboard_data', $module) || (array_key_exists('dashboard_data', $module) && !isset($module['dashboard_data'])) || (array_key_exists('dashboard_data', $module) && !is_array($module['dashboard_data']))) {
                         unset($module);
                     }
                 }
