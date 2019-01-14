@@ -1,4 +1,8 @@
 
+#3.7.6 / January 14th, 2018
+
+* Bug fix: in German languages, some words are (again) wrongly lower-cased (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+
 #3.7.5 / January 14th, 2018
 
 * Improvement: all the API calls have been redesigned to be compliant with newly enforced WordPress security rules.

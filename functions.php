@@ -116,11 +116,11 @@ function lws_get_display_language_id() {
  * @since 3.7.5
  */
 function lws_lcfirst($str) {
-    if (strpos(strtolower(lws_get_display_language_id()), 'de') !== 0) {
-        return lcfirst($str);
+    if (strpos(strtolower(lws_get_display_language_id()), 'de') === 0) {
+        return ucfirst($str);
     }
     else {
-        return $str;
+        return lcfirst($str);
     }
 }
 
