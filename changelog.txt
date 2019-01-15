@@ -1,4 +1,9 @@
 
+#3.7.8 / January 14th, 2018
+
+* Improvement: full compatibility with PHP 7.3.
+* Bug fix: some few German words are again wrongly lower-cased - sorry, that's a long story (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+
 #3.7.7 / January 14th, 2018
 
 * Improvement: detection of current user language (when internationalization support is not installed) has been greatly improved.

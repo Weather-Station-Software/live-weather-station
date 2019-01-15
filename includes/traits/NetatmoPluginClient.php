@@ -104,22 +104,27 @@ trait Client {
             }
             try {
                 if (Quota::verify($this->service_name, 'GET', true)) {
-                    $this->netatmo_datas = $this->netatmo_client->getMeasure($device_id, $module_id, $scale, implode(',', $type), $start, $end, $limit, $optimize, $realtime);
-                    $this->normalize_netatmo_historical_datas($type);
-                    update_option('live_weather_station_netatmo_refresh_token', $this->netatmo_client->getRefreshToken());
-                    update_option('live_weather_station_netatmo_access_token', $this->netatmo_client->getAccessToken()['access_token']);
-                    update_option('live_weather_station_netatmo_connected', 1);
-                    if (isset($config)) {
-                        if (array_key_exists('access_token', $config)) {
-                            if ($config['access_token'] != $this->netatmo_client->getAccessToken()['access_token']) {
-                                Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Access token has been regenerated for following scope: '.$this->netatmo_client->getVariable('scope'));
+                    if (isset($this->netatmo_datas)) {
+                        $this->netatmo_datas = $this->netatmo_client->getMeasure($device_id, $module_id, $scale, implode(',', $type), $start, $end, $limit, $optimize, $realtime);
+                        $this->normalize_netatmo_historical_datas($type);
+                        update_option('live_weather_station_netatmo_refresh_token', $this->netatmo_client->getRefreshToken());
+                        update_option('live_weather_station_netatmo_access_token', $this->netatmo_client->getAccessToken()['access_token']);
+                        update_option('live_weather_station_netatmo_connected', 1);
+                        if (isset($config)) {
+                            if (array_key_exists('access_token', $config)) {
+                                if ($config['access_token'] != $this->netatmo_client->getAccessToken()['access_token']) {
+                                    Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Access token has been regenerated for following scope: ' . $this->netatmo_client->getVariable('scope'));
+                                }
+                            }
+                            if (array_key_exists('refresh_token', $config)) {
+                                if ($config['refresh_token'] != $this->netatmo_client->getRefreshToken()) {
+                                    Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Refresh token has been updated for following scope: ' . $this->netatmo_client->getVariable('scope'));
+                                }
                             }
                         }
-                        if (array_key_exists('refresh_token', $config)) {
-                            if ($config['refresh_token'] != $this->netatmo_client->getRefreshToken()) {
-                                Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Refresh token has been updated for following scope: '.$this->netatmo_client->getVariable('scope'));
-                            }
-                        }
+                    }
+                    else {
+                        Logger::warning($this->facility, $this->service_name, null, null, null, null, 543, 'Empty response from Netatmo servers. Retry will be done shortly.');
                     }
                 }
                 else {
@@ -191,26 +196,32 @@ trait Client {
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
                     $this->netatmo_datas = $this->netatmo_client->getData();
-                    $this->normalize_netatmo_datas(LWS_NETATMO_SID);
-                    if ($store) {
-                        $this->store_netatmo_datas($this->get_all_netatmo_stations());
-                    }
-                    update_option('live_weather_station_netatmo_refresh_token', $this->netatmo_client->getRefreshToken());
-                    update_option('live_weather_station_netatmo_access_token', $this->netatmo_client->getAccessToken()['access_token']);
-                    update_option('live_weather_station_netatmo_connected', 1);
-                    if (isset($config)) {
-                        if (array_key_exists('access_token', $config)) {
-                            if ($config['access_token'] != $this->netatmo_client->getAccessToken()['access_token']) {
-                                Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Access token has been regenerated for following scope: '.$this->netatmo_client->getVariable('scope'));
+                    if (isset($this->netatmo_datas)) {
+                        $this->normalize_netatmo_datas(LWS_NETATMO_SID);
+                        if ($store) {
+                            $this->store_netatmo_datas($this->get_all_netatmo_stations());
+                        }
+                        update_option('live_weather_station_netatmo_refresh_token', $this->netatmo_client->getRefreshToken());
+                        update_option('live_weather_station_netatmo_access_token', $this->netatmo_client->getAccessToken()['access_token']);
+                        update_option('live_weather_station_netatmo_connected', 1);
+                        if (isset($config)) {
+                            if (array_key_exists('access_token', $config)) {
+                                if ($config['access_token'] != $this->netatmo_client->getAccessToken()['access_token']) {
+                                    Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Access token has been regenerated for following scope: '.$this->netatmo_client->getVariable('scope'));
+                                }
+                            }
+                            if (array_key_exists('refresh_token', $config)) {
+                                if ($config['refresh_token'] != $this->netatmo_client->getRefreshToken()) {
+                                    Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Refresh token has been updated for following scope: '.$this->netatmo_client->getVariable('scope'));
+                                }
                             }
                         }
-                        if (array_key_exists('refresh_token', $config)) {
-                            if ($config['refresh_token'] != $this->netatmo_client->getRefreshToken()) {
-                                Logger::notice('Authentication', $this->service_name, null, null, null, null, 0, 'Refresh token has been updated for following scope: '.$this->netatmo_client->getVariable('scope'));
-                            }
-                        }
+                        Logger::notice($this->facility, $this->service_name, null, null, null, null, 0, 'Data retrieved.');
+
                     }
-                    Logger::notice($this->facility, $this->service_name, null, null, null, null, 0, 'Data retrieved.');
+                    else {
+                        Logger::warning($this->facility, $this->service_name, null, null, null, null, 543, 'Empty response from Netatmo servers. Retry will be done shortly.');
+                    }
                 }
                 else {
                     Logger::warning($this->facility, $this->service_name, null, null, null, null, 0, 'Quota manager has forbidden to retrieve data.');
@@ -257,31 +268,36 @@ trait Client {
         $result = array();
         try {
             $this->get_datas(false);
-            $datas = $this->netatmo_datas ;
-            foreach($datas['devices'] as $device){
-                $result[] = array('device_id' => $device['_id'], 'station_name' => $device['station_name'], 'installed' => false);
-            }
-            if ($store) {
-                foreach ($result as &$station) {
-                    if ($this->insert_ignore_stations_table($station['device_id'], LWS_NETATMO_SID)) {
-                        $station['installed'] = true;
-                        Logger::notice($this->facility, $this->service_name, $station['device_id'], $station['station_name'], null, null, null, 'Station added.');
-                    }
-                    else {
-                        Logger::notice($this->facility, $this->service_name, $station['device_id'], $station['station_name'], null, null, null, 'This station was already added.');
-                    }
+            if (isset($this->netatmo_datas)) {
+                $datas = $this->netatmo_datas ;
+                foreach($datas['devices'] as $device){
+                    $result[] = array('device_id' => $device['_id'], 'station_name' => $device['station_name'], 'installed' => false);
                 }
-            }
-            else {
-                foreach ($this->get_all_netatmo_stations() as $item) {
+                if ($store) {
                     foreach ($result as &$station) {
-                        if ($item['station_id'] == $station['device_id']) {
+                        if ($this->insert_ignore_stations_table($station['device_id'], LWS_NETATMO_SID)) {
                             $station['installed'] = true;
+                            Logger::notice($this->facility, $this->service_name, $station['device_id'], $station['station_name'], null, null, null, 'Station added.');
+                        }
+                        else {
+                            Logger::notice($this->facility, $this->service_name, $station['device_id'], $station['station_name'], null, null, null, 'This station was already added.');
                         }
                     }
                 }
+                else {
+                    foreach ($this->get_all_netatmo_stations() as $item) {
+                        foreach ($result as &$station) {
+                            if ($item['station_id'] == $station['device_id']) {
+                                $station['installed'] = true;
+                            }
+                        }
+                    }
+                }
+                Logger::info('Backend', $this->service_name, null, null, null, null, 0, 'Job done: detecting stations.');
             }
-            Logger::info('Backend', $this->service_name, null, null, null, null, 0, 'Job done: detecting stations.');
+            else {
+                Logger::warning($this->facility, $this->service_name, null, null, null, null, 543, 'Empty response from Netatmo servers. Retry will be done shortly.');
+            }
         }
         catch (\Exception $ex) {
             Logger::critical('Backend', $this->service_name, null, null, null, null, $ex->getCode(), 'Error while detecting stations: ' . $ex->getMessage());

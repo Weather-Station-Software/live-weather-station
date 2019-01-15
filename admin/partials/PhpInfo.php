@@ -12,7 +12,7 @@ ob_start();
 @phpinfo();
 preg_match ('%<style type="text/css">(.*?)</style>.*?(<body>.*</body>)%s', ob_get_clean(), $matches);
 try {
-    $phpinfo = join("\n", array_map(create_function('$i', 'return ".phpinfodisplay " . preg_replace( "/,/", ",.phpinfodisplay ", $i );' ), preg_split( '/\n/', $matches[1])));
+    $phpinfo = join("\n", array_map('lws_phpinfo_line', preg_split( '/\n/', $matches[1])));
     $phpinfo = str_replace('width: 934px', 'width: 90%', $phpinfo);
     $tables = $matches[2];
     $okinfo = true;

@@ -42,7 +42,7 @@ trait BaseClient {
      */
     private function store_netatmo_datas($stations, $is_hc=false) {
         $datas = $this->netatmo_datas ;
-        foreach($datas['devices'] as &$device){
+        foreach($datas['devices'] as $device){
             $store = false;
             foreach ($stations as $station) {
                 if ($station['station_id'] == $device['_id']) {
@@ -54,7 +54,7 @@ trait BaseClient {
                     $this->get_netatmo_dashboard($device['_id'], $device['station_name'], $device['_id'], $device['module_name'],
                         $device['type'], $device['data_type'], $device['dashboard_data'], $device['place'], $device['wifi_status'], $device['firmware'], $device['last_status_store'], 0, $device['date_setup'], $device['last_setup'], $device['last_upgrade'], $is_hc);
                     Logger::debug($this->facility, $this->service_name, $device['_id'], $device['station_name'], $device['_id'], $device['module_name'], 0, 'Success while collecting device records.');
-                    foreach($device['modules'] as &$module)
+                    foreach($device['modules'] as $module)
                     {
                         if (isset($module) && is_array($module) && array_key_exists('dashboard_data', $module)) {
                             $this->get_netatmo_dashboard($device['_id'], $device['station_name'], $module['_id'], $module['module_name'],
@@ -122,71 +122,80 @@ trait BaseClient {
 
         }
         foreach($datas['devices'] as &$device){
-            if (!isset($device['station_name'])) {
-                $device['station_name'] = '?';
-            }
-            if (!isset($device['module_name'])) {
-                $device['module_name'] = $device['station_name'];
-            }
-            if (!isset($device['device_name'])) {
-                $device['device_name'] = $device['module_name'];
-            }
-            if (!isset($device['name'])) {
-                $device['name'] = $device['device_name'];
-            }
-            if (!isset($device['type'])) {
-                $device['type'] = 'unknown';
-            }
-            if ($device['type'] == 'NHC') {
-                $device['type'] = 'NAMain';
-            }
-            if (!isset($device['data_type'])) {
-                $device['data_type'] = 'unknown';
-            }
-            if (!isset($device['wifi_status'])) {
-                $device['wifi_status'] = 0;
-            }
-            if (!isset($device['firmware'])) {
-                $device['firmware'] = 0;
-            }
-            if (!isset($device['_id']) || !array_key_exists('dashboard_data', $device) || (array_key_exists('dashboard_data', $device) && !isset($device['dashboard_data'])) || (array_key_exists('dashboard_data', $device) && !is_array($device['dashboard_data']))) {
-                unset($device);
-                Logger::warning($this->facility, $this->service_name, null, null, null, null, 9, 'Station not found.');
-                continue;
-            }
-            if (!isset($device['modules'])) {
-                $device['modules'] = array();
-            }
-            if (count($device['modules']) > 0) {
-                foreach($device['modules'] as &$module)
-                {
-                    if (!isset($module['module_name'])) {
-                        $device['module_name'] = '?';
+            if (isset($device) && is_array($device)) {
+                if (!isset($device['station_name'])) {
+                    $device['station_name'] = '?';
+                }
+                if (!isset($device['module_name'])) {
+                    $device['module_name'] = $device['station_name'];
+                }
+                if (!isset($device['device_name'])) {
+                    $device['device_name'] = $device['module_name'];
+                }
+                if (!isset($device['name'])) {
+                    $device['name'] = $device['device_name'];
+                }
+                if (!isset($device['type'])) {
+                    $device['type'] = 'unknown';
+                }
+                if ($device['type'] == 'NHC') {
+                    $device['type'] = 'NAMain';
+                }
+                if (!isset($device['data_type'])) {
+                    $device['data_type'] = 'unknown';
+                }
+                if (!isset($device['wifi_status'])) {
+                    $device['wifi_status'] = 0;
+                }
+                if (!isset($device['firmware'])) {
+                    $device['firmware'] = 0;
+                }
+                if (!isset($device) || !isset($device['_id']) || !array_key_exists('dashboard_data', $device) || (array_key_exists('dashboard_data', $device) && !isset($device['dashboard_data'])) || (array_key_exists('dashboard_data', $device) && !is_array($device['dashboard_data']))) {
+                    unset($device);
+                    Logger::warning($this->facility, $this->service_name, null, null, null, null, 9, 'Station not found.');
+                    continue;
+                }
+                if (!isset($device['modules'])) {
+                    $device['modules'] = array();
+                }
+                if (count($device['modules']) > 0) {
+                    foreach ($device['modules'] as $key => &$module) {
+                        if (isset($module) && is_array($module)) {
+                            if (!isset($module['module_name'])) {
+                                $device['module_name'] = '?';
+                            }
+                            if (!isset($module['type'])) {
+                                $module['type'] = 'unknown';
+                            }
+                            if (!isset($module['data_type'])) {
+                                $module['data_type'] = 'unknown';
+                            }
+                            if (!isset($module['rf_status'])) {
+                                $module['rf_status'] = 0;
+                            }
+                            if (!isset($module['firmware'])) {
+                                $module['firmware'] = 0;
+                            }
+                            if (!isset($module['battery_vp'])) {
+                                $module['battery_vp'] = 0;
+                            }
+                            if (!isset($module) || !isset($module['_id']) || !array_key_exists('dashboard_data', $module) || (array_key_exists('dashboard_data', $module) && !isset($module['dashboard_data'])) || (array_key_exists('dashboard_data', $module) && !is_array($module['dashboard_data']))) {
+                                unset($device['modules'][$key]);
+                            }
+                        } else {
+                            Logger::warning($this->facility, $this->service_name, $device['_id'], $device['station_name'], null, null, 111, 'Module is removed or out of battery.');
+                        }
+                        //error_log(print_r($module));
                     }
-                    if (!isset($module['type'])) {
-                        $module['type'] = 'unknown';
-                    }
-                    if (!isset($module['data_type'])) {
-                        $module['data_type'] = 'unknown';
-                    }
-                    if (!isset($module['rf_status'])) {
-                        $module['rf_status'] = 0;
-                    }
-                    if (!isset($module['firmware'])) {
-                        $module['firmware'] = 0;
-                    }
-                    if (!isset($module['battery_vp'])) {
-                        $module['battery_vp'] = 0;
-                    }
-                    if (!isset($module['_id']) || !array_key_exists('dashboard_data', $module) || (array_key_exists('dashboard_data', $module) && !isset($module['dashboard_data'])) || (array_key_exists('dashboard_data', $module) && !is_array($module['dashboard_data']))) {
-                        unset($module);
+                } else {
+                    if ($this->netatmo_type == LWS_NETATMO_SID) {
+                        Logger::warning($this->facility, $this->service_name, $device['_id'], $device['station_name'], null, null, 900, 'No module found for this station.');
                     }
                 }
+                $device['modules'] = array_filter($device['modules']);
             }
             else {
-                if ($this->netatmo_type == LWS_NETATMO_SID) {
-                    Logger::warning($this->facility, $this->service_name, $device['_id'], $device['station_name'], null, null, 900, 'No module found for this station.');
-                }
+                Logger::warning($this->facility, $this->service_name, null, null, null, null, 111, 'Station is unreachable.');
             }
 
         }
