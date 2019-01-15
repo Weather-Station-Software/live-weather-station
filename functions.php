@@ -534,6 +534,17 @@ function lws_sanitize_height_field($h) {
 }
 
 
+/**
+ * Adapt phpinfo line.
+ *
+ * @param string $i The line.
+ * @return string The adapted line.
+ * @since 3.7.5
+ */
+function lws_phpinfo_line($i) {
+    return ".phpinfodisplay " . preg_replace( '/,/', ',.phpinfodisplay ', $i);
+}
+
 
 /**
  * Fake __() function for debugging / developing purpose.

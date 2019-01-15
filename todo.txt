@@ -95,10 +95,10 @@ New indexes:
 Pressure altitude
 Density altitude
 Hellman's index
+Zambretti forecast
 
 Translations:
 at a glance box: singular/plural for station(s)
-First upper case letter for German
 
 
 -----
@@ -113,10 +113,7 @@ style : area and line opacity, widget scale, ...
 use wind classification (textual, charts, )
 
 
-
-
-
-add Zambretti forecast
+dynamic refresh for notifications
 
 
 

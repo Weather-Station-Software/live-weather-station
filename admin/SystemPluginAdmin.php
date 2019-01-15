@@ -468,7 +468,7 @@ class Admin {
         $thresholds = self::get_thresholds();
         uasort($thresholds, array($this, 'uasort_reorder_by_threshold_name'));
         foreach ($thresholds as $threshold) {
-            add_settings_field('lws_thresholds_' . $threshold, $this->get_measurement_type($threshold, false, ($threshold == 'rain' ? 'namodule3' : 'NAMain')),
+            add_settings_field('lws_thresholds_' . $threshold, ucfirst($this->get_measurement_type($threshold, false, ($threshold == 'rain' ? 'namodule3' : 'NAMain'))),
                 array($this, 'lws_thresholds_callback'), 'lws_thresholds', 'lws_thresholds_section',
                 array($threshold));
             register_setting('lws_thresholds', 'lws_thresholds_' . $threshold);
@@ -1292,7 +1292,7 @@ class Admin {
         if (REQUIREMENTS_OK) {
             $count = Notifier::count();
             if ($count > 0 && (bool)get_option('live_weather_station_advanced_mode')) {
-                $bubble = ' <span class="update-plugins count-' . $count . '"><span class="plugin-count">' . number_format_i18n($count) . '</span></span>';
+                $bubble = ' <span class="lws-notification count-' . $count . '"><span class="plugin-count">' . number_format_i18n($count) . '</span></span>';
             }
             else {
                 $bubble = '';

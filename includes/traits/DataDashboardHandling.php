@@ -36,7 +36,7 @@ trait Handling {
      */
     private function get_dashboard($station_type, $device_id, $device_name, $module_id, $module_name, $module_type, $types, $datas, $place=null, $last_seen=false) {
         foreach($types as $type) {
-            if (array_key_exists($type, $datas)) {
+            if (isset($datas) && is_array($datas) && array_key_exists($type, $datas)) {
                 $updates = array();
                 $updates['device_id'] = $device_id;
                 $updates['device_name'] = $device_name;
