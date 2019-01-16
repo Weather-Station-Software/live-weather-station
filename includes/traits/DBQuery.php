@@ -26,7 +26,8 @@ trait Query {
                                  'temperature_max', 'temperature_trend', 'irradiance_min', 'irradiance_max', 'irradiance_trend', 'uv_index_min', 'uv_index_max',
                                  'uv_index_trend', 'illuminance_min', 'illuminance_max', 'illuminance_trend', 'soil_temperature_min', 'soil_temperature_max',
                                  'soil_temperature_trend', 'moisture_content_min', 'moisture_content_max', 'moisture_content_trend', 'moisture_tension_min',
-                                 'moisture_tension_max', 'moisture_tension_trend', 'windstrength_trend');
+                                 'moisture_tension_max', 'moisture_tension_trend', 'windstrength_trend', 'absolute_humidity_min', 'absolute_humidity_max',
+                                 'absolute_humidity_trend', 'loc_city', 'loc_country', 'loc_timezone');
 
     /**
      * Filter data regarding its timestamp.
@@ -456,7 +457,7 @@ trait Query {
             foreach ($query_a as $val) {
                 $result[] = (array)$val;
             }
-            $result = $this->filter_values_by_stations_type($result, $station_type);
+            $result = $this->obsolescence_filtering($this->filter_values_by_stations_type($result, $station_type));
         }
         catch(\Exception $ex) {
             $result = array() ;
@@ -469,28 +470,56 @@ trait Query {
         }
         $result = array();
         foreach ($return as $device_id => $device) {
+            $result[$device_id]['name'] = $device['device_name'];
             foreach ($device as $measure_type => $measure) {
                 if (is_array($measure)) {
                     $value = -9999;
                     foreach ($measure as $module_type => $module) {
                         $value = $module['value'];
-                        $diff = round ((abs( strtotime(get_date_from_gmt(date('Y-m-d H:i:s'))) - strtotime(get_date_from_gmt($module['timestamp']))))/60);
-                        $ts = $module['timestamp'];
-                        if ($measure_type == 'temperature' && $module_type == 'NAModule1' && ($diff < $this->delta_time)) {
-                            break;
+                        if ($measure_type == 'temperature') {
+                            if ($module_type == 'NAModule1') {
+                                $result[$device_id][$measure_type] = $value;
+                            }
+                            if ($module_type == 'NACurrent') {
+                                if (!array_key_exists($measure_type, $result[$device_id])) {
+                                    $result[$device_id][$measure_type] = $value;
+                                }
+                            }
                         }
-                        if ($measure_type == 'humidity' && $module_type == 'NAModule1' && ($diff < $this->delta_time)) {
-                            break;
+                        if ($measure_type == 'humidity') {
+                            if ($module_type == 'NAModule1') {
+                                $result[$device_id][$measure_type] = $value;
+                            }
+                            if ($module_type == 'NACurrent') {
+                                if (!array_key_exists($measure_type, $result[$device_id])) {
+                                    $result[$device_id][$measure_type] = $value;
+                                }
+                            }
                         }
-                        if ($measure_type == 'windstrength' && $module_type == 'NAModule2' && ($diff < $this->delta_time)) {
-                            break;
+                        if ($measure_type == 'windstrength') {
+                            if ($module_type == 'NAModule2') {
+                                $result[$device_id][$measure_type] = $value;
+                            }
+                            if ($module_type == 'NACurrent') {
+                                if (!array_key_exists($measure_type, $result[$device_id])) {
+                                    $result[$device_id][$measure_type] = $value;
+                                }
+                            }
                         }
-                        if ($measure_type == 'pressure' && $module_type == 'NAMain' && ($diff < $this->delta_time)) {
-                            break;
+                        if ($measure_type == 'pressure') {
+                            if ($module_type == 'NAMain') {
+                                $result[$device_id][$measure_type] = $value;
+                            }
+                            if ($module_type == 'NACurrent') {
+                                if (!array_key_exists($measure_type, $result[$device_id])) {
+                                    $result[$device_id][$measure_type] = $value;
+                                }
+                            }
+                        }
+                        if (strpos($measure_type, 'loc_') === 0) {
+                            $result[$device_id][$measure_type] = $value;
                         }
                     }
-                    $result[$device_id]['name'] = $device['device_name'];
-                    $result[$device_id][$measure_type] = $value;
                 }
             }
         }

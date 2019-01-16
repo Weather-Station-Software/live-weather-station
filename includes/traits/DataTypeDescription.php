@@ -603,6 +603,15 @@ trait Description {
             case 'absolute_humidity':
                 $result = ($abbr ? __('Abs. humidity', 'live-weather-station') : __('Absolute humidity', 'live-weather-station'));
                 break;
+            case 'absolute_humidity_min':
+                $result = ($abbr ? __('Abs. humidity', 'live-weather-station') : lws__('Lowest absolute humidity of the day', 'live-weather-station'));
+                break;
+            case 'absolute_humidity_max':
+                $result = ($abbr ? __('Abs. humidity', 'live-weather-station') : lws__('Highest absolute humidity of the day', 'live-weather-station'));
+                break;
+            case 'absolute_humidity_trend':
+                $result = ($abbr ? __('Abs. humidity', 'live-weather-station') : lws__('Absolute humidity trend', 'live-weather-station'));
+                break;
             case 'specific_enthalpy':
                 $result = ($abbr ? __('Enthalpy', 'live-weather-station') : __('Specific enthalpy', 'live-weather-station'));
                 break;

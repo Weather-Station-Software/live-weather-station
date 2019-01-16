@@ -751,6 +751,9 @@ trait Storage {
             // VERSION 3.7.0
             self::create_live_weather_station_maps_table();
 
+            // VERSION 3.7.8
+            update_option('live_weather_station_absolute_humidity_min_boundary', 0.0005);
+
 
 
 

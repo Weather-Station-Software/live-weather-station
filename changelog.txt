@@ -1,8 +1,12 @@
 
 #3.7.8 / January 14th, 2018
 
+* Improvement: better data obsolescence handling.
+* Improvement: for clientraw based stations, extra modules are created only if they are operational.
 * Improvement: full compatibility with PHP 7.3.
 * Bug fix: some few German words are again wrongly lower-cased - sorry, that's a long story (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+* Bug fix: PHP errors when hosting provider blocks Netatmo services.
+* Bug fix: psychrometric computation takes in some rare cases wrong reference values.
 
 #3.7.7 / January 14th, 2018
 

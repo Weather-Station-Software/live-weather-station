@@ -19,7 +19,7 @@ trait Client {
 
     use Id_Manipulation, Datetime_Conversion, Dashboard_Manipulation;
 
-    private $delta_time = 30;
+    private $delta_time = 1800;
     private $value_unknown = -9999; 
     protected $facility = 'Weather Computer';
     protected $service_name = null;
@@ -33,6 +33,7 @@ trait Client {
      */
     public function compute($station_type=false) {
         $datas = $this->get_reference_values($station_type);
+        error_log(print_r($datas, true));
         $result = array();
         foreach ($datas as $id => $data) {
             $temperature_ref = $this->value_unknown;

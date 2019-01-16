@@ -90,6 +90,7 @@ Textual climatological shortcodes
 Weather radial
 Widget styles
 Use of live_weather_station_mutation_observer
+UV sticker
 
 New indexes:
 Pressure altitude
@@ -126,6 +127,7 @@ Bonus : banner
 
 
 Extension :
+absolute_humidity
 co2
 humidity
 noise
