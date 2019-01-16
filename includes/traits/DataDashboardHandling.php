@@ -35,6 +35,9 @@ trait Handling {
      * @since 2.0.0
      */
     private function get_dashboard($station_type, $device_id, $device_name, $module_id, $module_name, $module_type, $types, $datas, $place=null, $last_seen=false) {
+        $pressure_ref = null;
+        $temperature_ref = null;
+        $humidity_ref = null;
         foreach($types as $type) {
             if (isset($datas) && is_array($datas) && array_key_exists($type, $datas)) {
                 $updates = array();
@@ -55,7 +58,28 @@ trait Handling {
                 $updates['measure_type'] = strtolower($type);
                 $updates['measure_value'] = $datas[$type];
                 $this->update_data_table($updates);
+                if ($type === 'temperature') {
+                    $temperature_ref = $datas[$type];
+                }
+                if ($type === 'humidity') {
+                    $humidity_ref = $datas[$type];
+                }
             }
+        }
+        if (isset($datas) && is_array($datas) && array_key_exists('pressure', $datas)) {
+            $pressure_ref = $datas['pressure'];
+        }
+        if (isset($temperature_ref) && isset($pressure_ref) && isset($humidity_ref)) {
+            $updates = array();
+            $updates['device_id'] = $device_id;
+            $updates['device_name'] = $device_name;
+            $updates['module_id'] = $module_id;
+            $updates['module_type'] = $module_type;
+            $updates['module_name'] = $module_name;
+            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_type'] = 'absolute_humidity';
+            $updates['measure_value'] = $this->compute_partial_absolute_humidity($temperature_ref, 100 * $pressure_ref, $humidity_ref);
+            $this->update_data_table($updates);
         }
         $updates = array();
         $updates['device_id'] = $device_id;

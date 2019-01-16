@@ -239,8 +239,11 @@ class NAApiClient
             if ($http_code === 200) {
                 return $decode;
             }
+            elseif (isset($http_code)){
+                throw new  NAApiErrorType($http_code, 'HTTP error.', $decode);
+            }
             else {
-                throw new  NAApiErrorType($http_code, 'HTTP error', $decode);
+                throw new  NAApiErrorType(490, 'No HTTP access.', $decode);
             }
         }
         else {

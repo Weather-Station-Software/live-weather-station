@@ -82,7 +82,8 @@ trait StationClient {
         $updates['measure_value'] = $station['loc_longitude'];
         $this->update_data_table($updates);
         $updates['measure_type'] = 'pressure';
-        $updates['measure_value'] = $this->convert_from_mslp_to_baro($weather[6], $station['loc_altitude'], $weather[4]);
+        $pressure_ref = $this->convert_from_mslp_to_baro($weather[6], $station['loc_altitude'], $weather[4]);
+        $updates['measure_value'] = $pressure_ref;
         $this->update_data_table($updates);
         $updates['measure_type'] = 'pressure_sl';
         $updates['measure_value'] = $weather[6];
@@ -163,6 +164,10 @@ trait StationClient {
         $updates['measure_type'] = 'humidity_max';
         $updates['measure_value'] = $weather[163];
         $this->update_data_table($updates);
+        $updates['measure_type'] = 'absolute_humidity';
+        $updates['measure_value'] = $this->compute_partial_absolute_humidity($weather[4], 100 * $pressure_ref, $weather[5]);
+        $this->update_data_table($updates);
+
         Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
         // NAModule2
@@ -259,6 +264,9 @@ trait StationClient {
         $this->update_data_table($updates);
         $updates['measure_type'] = 'humidity';
         $updates['measure_value'] = $weather[13];
+        $this->update_data_table($updates);
+        $updates['measure_type'] = 'absolute_humidity';
+        $updates['measure_value'] = $this->compute_partial_absolute_humidity($weather[12], 100 * $pressure_ref, $weather[13]);
         $this->update_data_table($updates);
         $health = $this->compute_health_index($weather[12], $weather[13], null, null);
         foreach ($health as $key => $idx) {
@@ -407,8 +415,14 @@ trait StationClient {
         $updates['device_id'] = $station['station_id'];
         $updates['device_name'] = $station['station_name'];
         for ($i = 0; $i < 9; $i++) {
+            if (!is_numeric($weather[$tmp[$i]])) {
+                $weather[$tmp[$i]] = null;
+            }
             if ($weather[$tmp[$i]] < -99) {
                 $weather[$tmp[$i]] = null;
+            }
+            if (!is_numeric($weather[$hum[$i]])) {
+                $weather[$hum[$i]] = null;
             }
             if ($weather[$hum[$i]] >= 100) {
                 $weather[$hum[$i]] = null;
@@ -435,11 +449,16 @@ trait StationClient {
                     $updates['measure_value'] = $weather[$hum[$i]];
                     $this->update_data_table($updates);
                 }
-                $health = $this->compute_health_index($weather[$tmp[$i]], $weather[$hum[$i]], null, null);
-                foreach ($health as $key => $idx) {
-                    $updates['measure_type'] = $key;
-                    $updates['measure_value'] = $idx;
+                if (isset($weather[$tmp[$i]]) && isset($weather[$hum[$i]])) {
+                    $updates['measure_type'] = 'absolute_humidity';
+                    $updates['measure_value'] = $this->compute_partial_absolute_humidity($weather[$tmp[$i]], 100 * $pressure_ref, $weather[$hum[$i]]);
                     $this->update_data_table($updates);
+                    $health = $this->compute_health_index($weather[$tmp[$i]], $weather[$hum[$i]], null, null);
+                    foreach ($health as $key => $idx) {
+                        $updates['measure_type'] = $key;
+                        $updates['measure_value'] = $idx;
+                        $this->update_data_table($updates);
+                    }
                 }
                 Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
             }

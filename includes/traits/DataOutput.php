@@ -52,7 +52,7 @@ trait Output {
         'partial_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 'sunshine', 'soil_temperature', 'leaf_wetness',
         'moisture_content', 'moisture_tension', 'evapotranspiration', 'strike_count', 'strike_instant',
         'strike_distance', 'strike_bearing', 'visibility', 'picture', 'video', 'video_imperial', 'video_metric', 'steadman',
-        'summer_simmer', 'delta_t');
+        'summer_simmer', 'delta_t', 'absolute_humidity');
     private $not_showable_measurements = array('battery', 'firmware', 'signal', 'loc_timezone', 'loc_altitude',
         'loc_latitude', 'loc_longitude', 'last_seen', 'last_refresh', 'first_setup', 'last_upgrade', 'last_setup',
         'sunrise_c','sunrise_n','sunrise_a', 'sunset_c','sunset_n', 'sunset_a', 'day_length_c', 'day_length_n',
@@ -65,7 +65,7 @@ trait Output {
         'irradiance_trend', 'uv_index_min', 'uv_index_max', 'uv_index_trend', 'illuminance_min', 'illuminance_max',
         'illuminance_trend', 'soil_temperature_min', 'soil_temperature_max', 'soil_temperature_trend', 'moisture_content_min',
         'moisture_content_max', 'moisture_content_trend', 'moisture_tension_min', 'moisture_tension_max', 'moisture_tension_trend',
-        'windstrength_trend');
+        'windstrength_trend', 'absolute_humidity_min', 'absolute_humidity_max', 'absolute_humidity_trend');
     private $graph_allowed_serie = array('device_id', 'module_id', 'measurement', 'line_mode', 'dot_style', 'line_style', 'line_size');
     private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
 
@@ -7013,6 +7013,7 @@ trait Output {
                 break;
             case 'co2_trend':
             case 'humidity_trend':
+            case 'absolute_humidity_trend':
             case 'noise_trend':
             case 'pressure_trend':
             case 'pressure_sl_trend':
@@ -7182,6 +7183,8 @@ trait Output {
                 $result .= ($unit ? $this->unit_espace.$this->get_precise_pressure_unit($ref) : '');
                 break;
             case 'absolute_humidity':
+            case 'absolute_humidity_min':
+            case 'absolute_humidity_max':
             case 'partial_absolute_humidity':
             case 'saturation_absolute_humidity':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
@@ -8172,6 +8175,8 @@ trait Output {
                 break;
             case 'partial_absolute_humidity':
             case 'absolute_humidity':
+            case 'absolute_humidity_min':
+            case 'absolute_humidity_max':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
                 if ($force_ref != 0) {
                     $ref = $force_ref;
@@ -8516,6 +8521,8 @@ trait Output {
             case 'partial_absolute_humidity':
             case 'saturation_absolute_humidity':
             case 'absolute_humidity':
+            case 'absolute_humidity_min':
+            case 'absolute_humidity_max':
                 $result = __('humidity', 'live-weather-station') ;
                 break;
             case 'noise':

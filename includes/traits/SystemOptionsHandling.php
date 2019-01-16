@@ -458,7 +458,7 @@ trait Handling {
                                                 'max_value' => 0.05,
                                                 'min_alarm' => 0.005,
                                                 'max_alarm' => 0.05,
-                                                'min_boundary' => 0.005,
+                                                'min_boundary' => 0.0005,
                                                 'max_boundary' => 0.05),
             'uv_index' => array (               'min_value' => 0,
                                                 'max_value' => 12,
