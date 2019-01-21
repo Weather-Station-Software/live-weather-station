@@ -43,8 +43,9 @@ trait StationClient {
             throw new \Exception('Bad file format.');
         }
         Logger::debug($this->facility, $this->service, null, null, null, null, null, print_r($weather, true));
+        $timezone = $station['loc_timezone'];
         $locat_ts = gmmktime($weather[1][0].$weather[1][1], $weather[1][3].$weather[1][4], $weather[1][6].$weather[1][7], $weather[0][3].$weather[0][4], $weather[0][0].$weather[0][1], '20'.$weather[0][strlen($weather[0])-2].$weather[0][strlen($weather[0])-1]);
-        $timestamp = date('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $station['loc_timezone']));
+        $timestamp = date('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $timezone));
         $wind_unit = 0;
         switch (strtolower($weather[13])) {
             case 'm/s':
@@ -90,47 +91,48 @@ trait StationClient {
         $updates['measure_timestamp'] = date('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
         $updates['measure_value'] = date('Y-m-d H:i:s');
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
         $updates['measure_timestamp'] = $timestamp;
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'loc_city';
         $updates['measure_value'] = $station['loc_city'];
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'loc_country';
         $updates['measure_value'] = $station['loc_country_code'];
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'loc_timezone';
         $updates['measure_value'] = $station['loc_timezone'];
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'loc_altitude';
         $updates['measure_value'] = $station['loc_altitude'];
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'loc_latitude';
         $updates['measure_value'] = $station['loc_latitude'];
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'loc_longitude';
         $updates['measure_value'] = $station['loc_longitude'];
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'pressure_sl';
         $updates['measure_value'] = $this->get_reverse_pressure($weather[10], $pressure_unit);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'pressure';
         $updates['measure_value'] = $this->convert_from_mslp_to_baro($updates['measure_value'], $station['loc_latitude'], $this->get_reverse_temperature($weather[2], $temperature_unit));
-        $this->update_data_table($updates);
+        $pressure_ref = $updates['measure_value'];
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'pressure_sl_min';
         $updates['measure_value'] = $this->get_reverse_pressure($weather[36], $pressure_unit);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'pressure_min';
         $updates['measure_value'] = $this->convert_from_mslp_to_baro($updates['measure_value'], $station['loc_latitude'], $this->get_reverse_temperature($weather[2], $temperature_unit));
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'pressure_sl_max';
         $updates['measure_value'] = $this->get_reverse_pressure($weather[34], $pressure_unit);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'pressure_max';
         $updates['measure_value'] = $this->convert_from_mslp_to_baro($updates['measure_value'], $station['loc_latitude'], $this->get_reverse_temperature($weather[2], $temperature_unit));
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $trend = 'stable';
         if ($weather[18] > 0) {
             $trend = 'up';
@@ -140,18 +142,18 @@ trait StationClient {
         }
         $updates['measure_type'] = 'pressure_trend';
         $updates['measure_value'] = $trend;
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'pressure_sl_trend';
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'battery';
         $updates['measure_value'] = 100;
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'signal';
         $updates['measure_value'] = 9999;
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'firmware';
         $updates['measure_value'] = $weather[38] . ' / ' . $weather[39];
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $station['last_refresh'] = date('Y-m-d H:i:s');
         $station['last_seen'] = $timestamp;
         $this->update_table(self::live_weather_station_stations_table(), $station);
@@ -168,23 +170,23 @@ trait StationClient {
         $updates['measure_timestamp'] = date('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
         $updates['measure_value'] = date('Y-m-d H:i:s');
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
         $updates['measure_timestamp'] = $timestamp;
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'temperature';
         $updates['measure_value'] = $this->get_reverse_temperature($weather[2], $temperature_unit);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'temperature_min';
         $updates['measure_value'] = $this->get_reverse_temperature($weather[28], $temperature_unit);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'temperature_max';
         $updates['measure_value'] = $this->get_reverse_temperature($weather[26], $temperature_unit);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'humidity';
         $updates['measure_value'] = $weather[3];
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $trend = 'stable';
         if ($weather[25] > 0) {
             $trend = 'up';
@@ -194,7 +196,10 @@ trait StationClient {
         }
         $updates['measure_type'] = 'temperature_trend';
         $updates['measure_value'] = $trend;
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
+        $updates['measure_type'] = 'absolute_humidity';
+        $updates['measure_value'] = $this->compute_partial_absolute_humidity($this->get_reverse_temperature($weather[2], $temperature_unit), 100 * $pressure_ref, $weather[3]);
+        $this->update_data_table($updates, $timezone);
         Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
 
@@ -208,29 +213,29 @@ trait StationClient {
         $updates['measure_timestamp'] = date('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
         $updates['measure_value'] = date('Y-m-d H:i:s');
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
         $updates['measure_timestamp'] = $timestamp;
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'windangle';
         $updates['measure_value'] = $weather[7];
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'winddirection';
         $updates['measure_value'] = (int)floor(($weather[7] + 180) % 360);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'windstrength';
         $updates['measure_value'] = $this->get_reverse_wind_speed($weather[5], $wind_unit);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'gustangle';
         $updates['measure_value'] = $weather[7];
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'gustdirection';
         $updates['measure_value'] = (int)floor(($weather[7] + 180) % 360);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'guststrength';
         $updates['measure_value'] = $this->get_reverse_wind_speed($weather[40], $wind_unit);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
         // NAModule3
@@ -243,29 +248,29 @@ trait StationClient {
         $updates['measure_timestamp'] = date('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
         $updates['measure_value'] = date('Y-m-d H:i:s');
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
         $updates['measure_timestamp'] = $timestamp;
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'rain';
         $updates['measure_value'] = $this->get_reverse_rain($weather[8], $rain_unit);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'rain_hour_aggregated';
         $updates['measure_value'] = $this->get_reverse_rain($weather[47], $rain_unit);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'rain_day_aggregated';
         $updates['measure_value'] = $this->get_reverse_rain($weather[9], $rain_unit);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'rain_month_aggregated';
         $updates['measure_value'] = $this->get_reverse_rain($weather[19], $rain_unit);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'rain_year_aggregated';
         $updates['measure_value'] = $this->get_reverse_rain($weather[20], $rain_unit);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'rain_yesterday_aggregated';
         $updates['measure_value'] = $this->get_reverse_rain($weather[21], $rain_unit);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
         // NAModule4
@@ -278,23 +283,26 @@ trait StationClient {
         $updates['measure_timestamp'] = date('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
         $updates['measure_value'] = date('Y-m-d H:i:s');
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
         $updates['measure_timestamp'] = $timestamp;
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'temperature';
         $updates['measure_value'] = $this->get_reverse_temperature($weather[22], $temperature_unit);
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'humidity';
         $updates['measure_value'] = $weather[23];
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $health = $this->compute_health_index($this->get_reverse_temperature($weather[22], $temperature_unit), $weather[23], null, null);
         foreach ($health as $key => $idx) {
             $updates['measure_type'] = $key;
             $updates['measure_value'] = $idx;
-            $this->update_data_table($updates);
+            $this->update_data_table($updates, $timezone);
         }
+        $updates['measure_type'] = 'absolute_humidity';
+        $updates['measure_value'] = $this->compute_partial_absolute_humidity($this->get_reverse_temperature($weather[22], $temperature_unit), 100 * $pressure_ref, $weather[23]);
+        $this->update_data_table($updates, $timezone);
         Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
 
@@ -308,11 +316,11 @@ trait StationClient {
         $updates['measure_timestamp'] = date('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
         $updates['measure_value'] = date('Y-m-d H:i:s');
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
         $updates['measure_timestamp'] = $timestamp;
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_timestamp'] = $timestamp;
         $updates['measure_type'] = 'uv_index';
         if (is_numeric($weather[43])) {
@@ -321,7 +329,7 @@ trait StationClient {
         else {
             $updates['measure_value'] = 0;
         }
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_timestamp'] = $timestamp;
         $updates['measure_type'] = 'irradiance';
         if (is_numeric($weather[45])) {
@@ -330,7 +338,7 @@ trait StationClient {
         else {
             $updates['measure_value'] = 0;
         }
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_timestamp'] = $timestamp;
         $updates['measure_type'] = 'sunshine';
         if (is_numeric($weather[55])) {
@@ -339,7 +347,7 @@ trait StationClient {
         else {
             $updates['measure_value'] = 0;
         }
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
         // NAModule6
@@ -352,11 +360,11 @@ trait StationClient {
         $updates['measure_timestamp'] = date('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
         $updates['measure_value'] = date('Y-m-d H:i:s');
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
         $updates['measure_timestamp'] = $timestamp;
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         $updates['measure_timestamp'] = $timestamp;
         $updates['measure_type'] = 'evapotranspiration';
         if (is_numeric($weather[44])) {
@@ -365,7 +373,7 @@ trait StationClient {
         else {
             $updates['measure_value'] = 0;
         }
-        $this->update_data_table($updates);
+        $this->update_data_table($updates, $timezone);
         Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
     }
 
@@ -468,8 +476,14 @@ trait StationClient {
         $this->synchronize_station();
         $stations = $this->get_all_realtime_id_stations();
         foreach ($stations as $station) {
-            $raw_data = $this->get_data($station['connection_type'], $station['service_id'], $station['station_id'], $station['station_name']);
-            $this->format_and_store($raw_data, $station);
+            try {
+                $raw_data = $this->get_data($station['connection_type'], $station['service_id'], $station['station_id'], $station['station_name']);
+                $this->format_and_store($raw_data, $station);
+            }
+            catch (\Exception $ex) {
+                Logger::error($this->facility, $this->service, $station['station_id'], $station['station_name'], null, null, $ex->getCode(), 'Error while collecting weather from Realtime file data: ' . $ex->getMessage());
+                continue;
+            }
         }
     }
 

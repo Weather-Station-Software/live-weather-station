@@ -33,7 +33,6 @@ trait Client {
      */
     public function compute($station_type=false) {
         $datas = $this->get_reference_values($station_type);
-        error_log(print_r($datas, true));
         $result = array();
         foreach ($datas as $id => $data) {
             $temperature_ref = $this->value_unknown;

@@ -34,7 +34,6 @@ define('DEFAULT_UUID', '00000000-0000-0000-0000-000000000000');
 
 trait Storage {
 
-
     /**
      *
      * @since 1.0.0
@@ -752,7 +751,7 @@ trait Storage {
             self::create_live_weather_station_maps_table();
 
             // VERSION 3.7.8
-            update_option('live_weather_station_absolute_humidity_min_boundary', 0.0005);
+            update_option('live_weather_station_absolute_humidity_min_boundary', 0.00001);
 
 
 
@@ -1243,18 +1242,209 @@ trait Storage {
     }
 
     /**
+     * Get specific lines.
+     *
+     * @param array $attributes An array representing the query.
+     * @param string $after The DateTime breakdown.
+     * @return array An array containing all the datas.
+     * @since 3.7.5
+     */
+    protected function get_datas_rows_after($attributes, $after) {
+        if (array_key_exists('measure_timestamp', $attributes)) {
+            unset($attributes['measure_timestamp']);
+        }
+        global $wpdb;
+        $where = array();
+        foreach ($attributes as $k => $v) {
+            if (isset($v)) {
+                $where[] = '`' . $k . '`=' .  "'" . $v . "'";
+            }
+        }
+        $where[] = '`measure_timestamp`>' .  "'" . $after . "'";
+        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $sql = "SELECT * FROM " . $table_name . " WHERE (" . implode(" AND ", $where) . ");";
+        try {
+            $result = (array)$wpdb->get_results($sql, ARRAY_A);
+        }
+        catch(\Exception $ex) {
+            return array();
+        }
+        return $result;
+    }
+
+    /**
+     * Get the station timezone by choosing the best (quickest) method.
+     *
+     * @param array $station The station details.
+     * @param array $place The place details.
+     * @param string $guid The station guid.
+     * @param string $station_id The station id.
+     * @return string The timezone ready to use.
+     * @since 3.7.8
+     */
+    protected function get_timezone($station, $place, $guid, $station_id) {
+        $result = '';
+        if (isset($station) && is_array($station)) {
+            if (array_key_exists('loc_timezone', $station)) {
+                $result = $station['loc_timezone'];
+            }
+        }
+        if (!$result && isset($place) && is_array($place)) {
+            if (array_key_exists('timezone', $place)) {
+                $result = str_replace('\\', '', $place['timezone']);
+            }
+        }
+        if (!$result && isset($guid)) {
+            $station = $this->get_station($guid);
+            if (isset($station) && is_array($station)) {
+                if (array_key_exists('loc_timezone', $station)) {
+                    $result = $station['loc_timezone'];
+                }
+            }
+        }
+        if (!$result && isset($station_id)) {
+            $station = $this->get_station_informations_by_station_id($station_id);
+            if (isset($station) && is_array($station)) {
+                if (array_key_exists('loc_timezone', $station)) {
+                    $result = $station['loc_timezone'];
+                }
+            }
+        }
+        if (!$result) {
+            $result = 'UTC';
+        }
+        return $result;
+    }
+
+    /**
+     * Get trend.
+     *
+     * @param array $attributes An array representing the query.
+     * @param string $tz The timezone of the station.
+     * @return string The trend.
+     * @since 3.7.8
+     */
+    protected function get_trend($attributes, $tz) {
+        $result = '';
+        if (array_key_exists('measure_value', $attributes)) {
+            $value = $attributes['measure_value'];
+            unset($attributes['measure_value']);
+        }
+        else {
+            $value = 0;
+        }
+        if (array_key_exists('measure_timestamp', $attributes)) {
+            unset($attributes['measure_timestamp']);
+        }
+        if (array_key_exists('module_name', $attributes)) {
+            unset($attributes['module_name']);
+        }
+        if (array_key_exists('device_name', $attributes)) {
+            unset($attributes['device_name']);
+        }
+        switch ($attributes['measure_type']) {
+            case 'cloudiness':
+            case 'humidity':
+            case 'absolute_humidity':
+                $shift = 3600;
+                $sensibility = 0.01;
+                break;
+            case 'moisture_content':
+            case 'moisture_tension':
+            case 'soil_temperature':
+                $shift = 7200;
+                $sensibility = 0.001;
+                break;
+            case 'pressure':
+            case 'pressure_sl':
+                $shift = 7200;
+                $sensibility = 0.005;
+                break;
+            case 'windstrength':
+            case 'guststrength':
+                $shift = 1800;
+                $sensibility = 0.05;
+                break;
+            default:
+                $shift = 1800;
+                $sensibility = 0.005;
+        }
+        try {
+            $datetime = new \DateTime(date('Y-m-d H:i:s', time()-$shift), new \DateTimeZone($tz));
+        }
+        catch(\Exception $ex) {
+            return '';
+        }
+        global $wpdb;
+        $where = array();
+        foreach ($attributes as $k => $v) {
+            if (isset($v)) {
+                $where[] = '`' . $k . '`=' .  "'" . $v . "'";
+            }
+        }
+        $where[] = '`timestamp`>' .  "'" . date('Y-m-d H:i:s', $datetime->getTimestamp()) . "'";
+        $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
+        $sql = "SELECT * FROM " . $table_name . " WHERE (" . implode(" AND ", $where) . ") ORDER BY `timestamp` ASC ;";
+        try {
+            $data = (array)$wpdb->get_results($sql, ARRAY_A);
+        }
+        catch(\Exception $ex) {
+            return '';
+        }
+        $set = array();
+        $cpt = 0;
+        foreach ($data as $i => $d) {
+            if (array_key_exists('measure_value', $d)) {
+                $set[] = $d['measure_value'];
+                $cpt += $i;
+            }
+        }
+        $n = count($set);
+        if ($n > 2) {
+            $x_sum = $cpt;
+            $y_sum = array_sum($set);
+            $xx_sum = 0;
+            $xy_sum = 0;
+            foreach ($set as $i => $s) {
+                $xy_sum += ($i * $s);
+                $xx_sum += ($i * $i);
+            }
+            try {
+                $slope = (($n * $xy_sum) - ($x_sum * $y_sum)) / (($n * $xx_sum) - ($x_sum * $x_sum));
+            }
+            catch(\Exception $ex) {
+                $slope = 0;
+            }
+            if (abs($slope) > abs($value * $sensibility)) {
+                if ($slope > 0) {
+                    $result = 'up';
+                }
+                if ($slope < 0) {
+                    $result = 'down';
+                }
+            }
+            else {
+                $result = 'stable';
+            }
+            //error_log ($attributes['measure_type'] . ' (' . $result . ') = ' . $value . ' / ' . $slope);
+        }
+        return $result;
+    }
+
+    /**
      * Update data table with current value line.
      *
-     * @param array $value The values to update or insert in the table
+     * @param array $value The values to update or insert in the table.
+     * @param string $tz The timezone of the station.
      * @since 1.0.0
      */
-    protected function update_data_table($value) {
+    protected function update_data_table($value, $tz) {
         $verified = isset($value['measure_value']);
         if ($verified) {
             $verified = !is_null($value['measure_value']);
         }
         if ($verified) {
-            if (!in_array(strtolower($value['module_type']), array('nacomputed', 'naephemeris', 'napollution', 'naforecast', 'namodulev', 'namodulep'))) {
+            if (!in_array(strtolower($value['module_type']), array('nacomputed', 'naephemer', 'napollution', 'naforecast', 'namodulev', 'namodulep'))) {
                 $min = $this->get_measurement_boundary($value['measure_type'], $value['module_type'], 'min');
                 $max = $this->get_measurement_boundary($value['measure_type'], $value['module_type'], 'max');
                 if ($min !== 'NaN' && $max !== 'NaN') {
@@ -1271,8 +1461,110 @@ trait Storage {
         }
         if ($verified) {
             try {
+                $type = $value['measure_type'];
+                $v = $value['measure_value'];
                 $this->update_table(self::live_weather_station_datas_table(), $value);
                 $this->update_historic($value);
+                if (in_array($value['measure_type'], $this->min_max_trend)) {
+                    $comp = array('min', 'max', 'trend');
+                    if ($value['measure_type'] === 'windstrength' || $value['measure_type'] === 'guststrength') {
+                        $comp = array('day_min', 'day_max', 'day_trend');
+                    }
+                    foreach ($comp as $i => $c) {
+                        $value['measure_type'] = $type;
+                        $value['measure_value'] = $v;
+                        $trend = '';
+                        if ($i === 2) {
+                            if ((bool)get_option('live_weather_station_collect_history')) {
+                                $trend = $this->get_trend($value, $tz);
+                            }
+                            if (!$trend) {
+                                $datetime = new \DateTime('today midnight', new \DateTimeZone($tz));
+                                $oldval = $this->get_datas_rows_after($value, date('Y-m-d H:i:s', $datetime->getTimestamp()));
+                            }
+                        }
+                        unset ($value['measure_value']);
+                        $value['measure_type'] = $type . '_' . $c;
+                        $datetime = new \DateTime('today midnight', new \DateTimeZone($tz));
+                        $val = $this->get_datas_rows_after($value, date('Y-m-d H:i:s', $datetime->getTimestamp()));
+                        if (count($val) > 0) {
+                            switch ($i) {
+                                case 0:
+                                    if (array_key_exists('measure_value', $val[0])) {
+                                        if ($v < $val[0]['measure_value']) {
+                                            $value['measure_value'] = $v;
+                                            $this->update_data_table($value, $tz);
+                                        }
+                                    }
+                                    else {
+                                        $value['measure_value'] = $v;
+                                        $this->update_data_table($value, $tz);
+                                    }
+                                    break;
+                                case 1:
+                                    if (array_key_exists('measure_value', $val[0])) {
+                                        if ($v > $val[0]['measure_value']) {
+                                            $value['measure_value'] = $v;
+                                            $this->update_data_table($value, $tz);
+                                        }
+                                    }
+                                    else {
+                                        $value['measure_value'] = $v;
+                                        $this->update_data_table($value, $tz);
+                                    }
+                                    break;
+                                case 2:
+                                    if (!$trend && isset($val) && is_array($val) && array_key_exists('measure_value', $val[0]) && isset($oldval) && is_array($oldval) && array_key_exists('measure_value', $oldval[0])) {
+                                        switch ($val[0]['measure_value']) {
+                                            case 'up':
+                                                if ($v > $oldval[0]['measure_value'] * 1.02) {
+                                                    $trend = 'up';
+                                                }
+                                                else {
+                                                    $trend = 'stable';
+                                                }
+                                                break;
+                                            case 'down':
+                                                if ($v < $oldval[0]['measure_value'] * 0.98) {
+                                                    $trend = 'down';
+                                                }
+                                                else {
+                                                    $trend = 'stable';
+                                                }
+                                                break;
+                                            default:
+                                                $trend = 'stable';
+                                                if ($v < $oldval[0]['measure_value'] * 0.98) {
+                                                    $trend = 'down';
+                                                }
+                                                if ($v > $oldval[0]['measure_value'] * 1.02) {
+                                                    $trend = 'down';
+                                                }
+                                        }
+                                        $value['measure_value'] = $trend;
+                                        $this->update_data_table($value, $tz);
+                                    }
+                                    else {
+                                        $value['measure_value'] = 'stable';
+                                        if ($trend) {
+                                            $value['measure_value'] = $trend;
+                                        }
+                                        $this->update_data_table($value, $tz);
+                                    }
+                            }
+                        }
+                        else {
+                            if ($i < 2) {
+                                $value['measure_value'] = $v;
+                                $this->update_data_table($value, $tz);
+                            }
+                            else {
+                                $value['measure_value'] = 'stable';
+                                $this->update_data_table($value, $tz);
+                            }
+                        }
+                    }
+                }
             }
             catch (\Exception $ex) {
                 Logger::warning('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));

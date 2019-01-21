@@ -162,6 +162,12 @@ trait PublicClient {
         }
         Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($weather, true));
         if (!empty($weather) && array_key_exists('obs', $weather) && is_array($weather['obs'])) {
+            if (array_key_exists('timezone', $weather)) {
+                $timezone = $weather['timezone'];
+            }
+            else {
+                $timezone = $this->get_timezone($station, null, $station['guid'], $station['station_id']);
+            }
             if (array_key_exists(0, $weather['obs']) && is_array($weather['obs'][0])) {
                 $observation = $weather['obs'][0];
                 if (is_null($observation)) {
@@ -193,6 +199,9 @@ trait PublicClient {
                 } else {
                     $strikestamp = date('Y-m-d H:i:s');
                 }
+                $pressure_ref = null;
+                $temperature_ref = null;
+                $humidity_ref = null;
 
                 // NAMain
                 $type = 'NAMain';
@@ -204,71 +213,75 @@ trait PublicClient {
                 $updates['measure_timestamp'] = date('Y-m-d H:i:s');
                 $updates['measure_type'] = 'last_refresh';
                 $updates['measure_value'] = date('Y-m-d H:i:s');
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
                 $updates['measure_type'] = 'last_seen';
                 $updates['measure_value'] = $timestamp;
                 $updates['measure_timestamp'] = $timestamp;
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
                 $updates['measure_timestamp'] = $timestamp;
                 $updates['measure_type'] = 'loc_city';
                 $updates['measure_value'] = $station['loc_city'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
                 $updates['measure_type'] = 'loc_country';
                 $updates['measure_value'] = $station['loc_country_code'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
                 if (array_key_exists('timezone', $weather)) {
                     $station['loc_timezone'] = $weather['timezone'];
                     $updates['measure_type'] = 'loc_timezone';
                     $updates['measure_value'] = $station['loc_timezone'];
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('latitude', $weather)) {
                     $station['loc_latitude'] = $weather['latitude'];
                     $updates['measure_type'] = 'loc_latitude';
                     $updates['measure_value'] = $station['loc_latitude'];
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('longitude', $weather)) {
                     $station['loc_longitude'] = $weather['longitude'];
                     $updates['measure_type'] = 'loc_longitude';
                     $updates['measure_value'] = $station['loc_longitude'];
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('elevation', $weather)) {
                     $station['loc_altitude'] = $weather['elevation'];
                     $updates['measure_type'] = 'loc_altitude';
                     $updates['measure_value'] = $station['loc_altitude'];
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                 }
-                if (array_key_exists('barometric_pressure_indoor', $observation)) {
+                /*if (array_key_exists('barometric_pressure_indoor', $observation)) {
                     $updates['measure_type'] = 'pressure';
-                    $updates['measure_value'] = $observation['barometric_pressure_indoor'];
-                    $this->update_data_table($updates);
+                    $pressure_ref = $observation['barometric_pressure_indoor'];
+                    $updates['measure_value'] = $pressure_ref;
+                    $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('barometric_pressure', $observation)) {
                     $updates['measure_type'] = 'pressure';
-                    $updates['measure_value'] = $observation['barometric_pressure'];
-                    $this->update_data_table($updates);
-                }
+                    $pressure_ref = $observation['barometric_pressure'];
+                    $updates['measure_value'] = $pressure_ref;
+                    $this->update_data_table($updates, $timezone);
+                }*/
                 if (array_key_exists('station_pressure_indoor', $observation)) {
                     $updates['measure_type'] = 'pressure';
-                    $updates['measure_value'] = $observation['station_pressure_indoor'];
-                    $this->update_data_table($updates);
+                    $pressure_ref = $observation['station_pressure_indoor'];
+                    $updates['measure_value'] = $pressure_ref;
+                    $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('station_pressure', $observation)) {
                     $updates['measure_type'] = 'pressure';
-                    $updates['measure_value'] = $observation['station_pressure'];
-                    $this->update_data_table($updates);
+                    $pressure_ref = $observation['station_pressure'];
+                    $updates['measure_value'] = $pressure_ref;
+                    $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('sea_level_pressure_indoor', $observation)) {
                     $updates['measure_type'] = 'pressure_sl';
                     $updates['measure_value'] = $observation['sea_level_pressure_indoor'];
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('sea_level_pressure', $observation)) {
                     $updates['measure_type'] = 'pressure_sl';
                     $updates['measure_value'] = $observation['sea_level_pressure'];
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                 }
                 $station['last_refresh'] = date('Y-m-d H:i:s');
                 $station['last_seen'] = $timestamp;
@@ -287,21 +300,30 @@ trait PublicClient {
                     $updates['measure_timestamp'] = date('Y-m-d H:i:s');
                     $updates['measure_type'] = 'last_refresh';
                     $updates['measure_value'] = date('Y-m-d H:i:s');
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'last_seen';
                     $updates['measure_value'] = $timestamp;
                     $updates['measure_timestamp'] = $timestamp;
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                     $updates['measure_timestamp'] = $timestamp;
                     if (array_key_exists('air_temperature', $observation)) {
                         $updates['measure_type'] = 'temperature';
-                        $updates['measure_value'] = $observation['air_temperature'];
-                        $this->update_data_table($updates);
+                        $temperature_ref = $observation['air_temperature'];
+                        $updates['measure_value'] = $temperature_ref;
+                        $this->update_data_table($updates, $timezone);
                     }
                     if (array_key_exists('relative_humidity', $observation)) {
                         $updates['measure_type'] = 'humidity';
-                        $updates['measure_value'] = $observation['relative_humidity'];
-                        $this->update_data_table($updates);
+                        $humidity_ref = $observation['relative_humidity'];
+                        $updates['measure_value'] = $humidity_ref;
+                        $this->update_data_table($updates, $timezone);
+                    }
+                    if (isset($temperature_ref) && isset($pressure_ref) && isset($humidity_ref)) {
+                        $updates['measure_type'] = 'absolute_humidity';
+                        $updates['measure_value'] = $this->compute_partial_absolute_humidity($temperature_ref, 100 * $pressure_ref, $humidity_ref);
+                        $this->update_data_table($updates, $timezone);
+                        $temperature_ref = null;
+                        $humidity_ref = null;
                     }
                     Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
                 }
@@ -317,35 +339,35 @@ trait PublicClient {
                     $updates['measure_timestamp'] = date('Y-m-d H:i:s');
                     $updates['measure_type'] = 'last_refresh';
                     $updates['measure_value'] = date('Y-m-d H:i:s');
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'last_seen';
                     $updates['measure_value'] = $timestamp;
                     $updates['measure_timestamp'] = $timestamp;
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                     $updates['measure_timestamp'] = $timestamp;
                     if (array_key_exists('wind_direction', $observation)) {
                         $updates['measure_type'] = 'windangle';
                         $updates['measure_value'] = $observation['wind_direction'];
-                        $this->update_data_table($updates);
+                        $this->update_data_table($updates, $timezone);
                         $updates['measure_type'] = 'winddirection';
                         $updates['measure_value'] = (int)floor(($observation['wind_direction'] + 180) % 360);
-                        $this->update_data_table($updates);
+                        $this->update_data_table($updates, $timezone);
                         $updates['measure_type'] = 'gustangle';
                         $updates['measure_value'] = $observation['wind_direction'];
-                        $this->update_data_table($updates);
+                        $this->update_data_table($updates, $timezone);
                         $updates['measure_type'] = 'gustdirection';
                         $updates['measure_value'] = (int)floor(($observation['wind_direction'] + 180) % 360);
-                        $this->update_data_table($updates);
+                        $this->update_data_table($updates, $timezone);
                     }
                     if (array_key_exists('wind_avg', $observation)) {
                         $updates['measure_type'] = 'windstrength';
                         $updates['measure_value'] = $observation['wind_avg'];
-                        $this->update_data_table($updates);
+                        $this->update_data_table($updates, $timezone);
                     }
                     if (array_key_exists('wind_gust', $observation)) {
                         $updates['measure_type'] = 'guststrength';
                         $updates['measure_value'] = $observation['wind_gust'];
-                        $this->update_data_table($updates);
+                        $this->update_data_table($updates, $timezone);
                     }
                     Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
                 }
@@ -361,31 +383,31 @@ trait PublicClient {
                     $updates['measure_timestamp'] = date('Y-m-d H:i:s');
                     $updates['measure_type'] = 'last_refresh';
                     $updates['measure_value'] = date('Y-m-d H:i:s');
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'last_seen';
                     $updates['measure_value'] = $timestamp;
                     $updates['measure_timestamp'] = $timestamp;
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                     $updates['measure_timestamp'] = $timestamp;
                     if (array_key_exists('precip', $observation)) {
                         $updates['measure_type'] = 'rain';
                         $updates['measure_value'] = $observation['precip'];
-                        $this->update_data_table($updates);
+                        $this->update_data_table($updates, $timezone);
                     }
                     if (array_key_exists('precip_accum_last_1hr', $observation)) {
                         $updates['measure_type'] = 'rain_hour_aggregated';
                         $updates['measure_value'] = $observation['precip_accum_last_1hr'];
-                        $this->update_data_table($updates);
+                        $this->update_data_table($updates, $timezone);
                     }
                     if (array_key_exists('precip_accum_local_day', $observation)) {
                         $updates['measure_type'] = 'rain_day_aggregated';
                         $updates['measure_value'] = $observation['precip_accum_local_day'];
-                        $this->update_data_table($updates);
+                        $this->update_data_table($updates, $timezone);
                     }
                     if (array_key_exists('precip_accum_local_yesterday', $observation)) {
                         $updates['measure_type'] = 'rain_yesterday_aggregated';
                         $updates['measure_value'] = $observation['precip_accum_local_yesterday'];
-                        $this->update_data_table($updates);
+                        $this->update_data_table($updates, $timezone);
                     }
                     Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
                 }
@@ -401,21 +423,28 @@ trait PublicClient {
                     $updates['measure_timestamp'] = date('Y-m-d H:i:s');
                     $updates['measure_type'] = 'last_refresh';
                     $updates['measure_value'] = date('Y-m-d H:i:s');
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'last_seen';
                     $updates['measure_value'] = $timestamp;
                     $updates['measure_timestamp'] = $timestamp;
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                     $updates['measure_timestamp'] = $timestamp;
                     if (array_key_exists('air_temperature_indoor', $observation)) {
                         $updates['measure_type'] = 'temperature';
-                        $updates['measure_value'] = $observation['air_temperature_indoor'];
-                        $this->update_data_table($updates);
+                        $temperature_ref = $observation['air_temperature_indoor'];
+                        $updates['measure_value'] = $temperature_ref;
+                        $this->update_data_table($updates, $timezone);
                     }
                     if (array_key_exists('relative_humidity_indoor', $observation)) {
                         $updates['measure_type'] = 'humidity';
-                        $updates['measure_value'] = $observation['relative_humidity_indoor'];
-                        $this->update_data_table($updates);
+                        $humidity_ref = $observation['relative_humidity_indoor'];
+                        $updates['measure_value'] = $humidity_ref;
+                        $this->update_data_table($updates, $timezone);
+                    }
+                    if (isset($temperature_ref) && isset($pressure_ref) && isset($humidity_ref)) {
+                        $updates['measure_type'] = 'absolute_humidity';
+                        $updates['measure_value'] = $this->compute_partial_absolute_humidity($temperature_ref, 100 * $pressure_ref, $humidity_ref);
+                        $this->update_data_table($updates, $timezone);
                     }
                     Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
                 }
@@ -431,27 +460,27 @@ trait PublicClient {
                     $updates['measure_timestamp'] = date('Y-m-d H:i:s');
                     $updates['measure_type'] = 'last_refresh';
                     $updates['measure_value'] = date('Y-m-d H:i:s');
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'last_seen';
                     $updates['measure_value'] = $timestamp;
                     $updates['measure_timestamp'] = $timestamp;
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                     if (array_key_exists('uv', $observation)) {
                         $updates['measure_type'] = 'uv_index';
                         $updates['measure_value'] = $observation['uv'];
-                        $this->update_data_table($updates);
+                        $this->update_data_table($updates, $timezone);
                     }
                     if (array_key_exists('solar_radiation', $observation)) {
                         $updates['measure_type'] = 'irradiance';
                         $updates['measure_value'] = $observation['solar_radiation'];
-                        $this->update_data_table($updates);
+                        $this->update_data_table($updates, $timezone);
                     }
                     if (array_key_exists('brightness', $observation)) {
                         $updates['measure_type'] = 'illuminance';
                         $updates['measure_value'] = $observation['brightness'];
-                        $this->update_data_table($updates);
+                        $this->update_data_table($updates, $timezone);
                     }
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                     Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
                 }
 
@@ -466,23 +495,23 @@ trait PublicClient {
                     $updates['measure_timestamp'] = date('Y-m-d H:i:s');
                     $updates['measure_type'] = 'last_refresh';
                     $updates['measure_value'] = date('Y-m-d H:i:s');
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                     $updates['measure_type'] = 'last_seen';
                     $updates['measure_value'] = $timestamp;
                     $updates['measure_timestamp'] = $timestamp;
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                     if (array_key_exists('lightning_strike_count_last_3hr', $observation)) {
                         $updates['measure_type'] = 'strike_count';
                         $updates['measure_value'] = $observation['lightning_strike_count_last_3hr'];
-                        $this->update_data_table($updates);
+                        $this->update_data_table($updates, $timezone);
                     }
                     if (array_key_exists('lightning_strike_last_distance', $observation)) {
                         $updates['measure_type'] = 'strike_distance';
                         $updates['measure_value'] = $observation['lightning_strike_last_distance'] * 1000;
                         $updates['measure_timestamp'] = $strikestamp;
-                        $this->update_data_table($updates);
+                        $this->update_data_table($updates, $timezone);
                     }
-                    $this->update_data_table($updates);
+                    $this->update_data_table($updates, $timezone);
                     Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
                 }
             }

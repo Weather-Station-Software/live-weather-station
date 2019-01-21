@@ -108,6 +108,12 @@ trait StationClient {
         }
         if (!empty($weather) && array_key_exists('current_observation', $weather)) {
             $observation = $weather['current_observation'];
+            if (array_key_exists('local_tz_long', $observation)) {
+                $timezone = substr($observation['local_tz_long'], 0, 49);
+            }
+            else {
+                $timezone = $this->get_timezone($station, null, $station['guid'], $station['station_id']);
+            }
             if (array_key_exists('display_location', $observation)) {
                 $location = $observation['display_location'];
             }
@@ -145,52 +151,52 @@ trait StationClient {
             $updates['measure_timestamp'] = date('Y-m-d H:i:s');
             $updates['measure_type'] = 'last_refresh';
             $updates['measure_value'] = date('Y-m-d H:i:s');
-            $this->update_data_table($updates);
+            $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'last_seen';
             $updates['measure_value'] = $timestamp;
             $updates['measure_timestamp'] = $timestamp;
-            $this->update_data_table($updates);
+            $this->update_data_table($updates, $timezone);
             $updates['measure_timestamp'] = $timestamp;
             if (array_key_exists('city', $location)) {
                 $station['loc_city'] = substr($location['city'], 0, 59);
                 $updates['measure_type'] = 'loc_city';
                 $updates['measure_value'] = $station['loc_city'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('country_iso3166', $location)) {
                 $station['loc_country_code'] = substr($location['country_iso3166'], 0, 2);
                 $updates['measure_type'] = 'loc_country';
                 $updates['measure_value'] = $station['loc_country_code'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('local_tz_long', $observation)) {
                 $station['loc_timezone'] = substr($observation['local_tz_long'], 0, 49);
                 $updates['measure_type'] = 'loc_timezone';
                 $updates['measure_value'] = $station['loc_timezone'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('latitude', $location)) {
                 $station['loc_latitude'] = $location['latitude'];
                 $updates['measure_type'] = 'loc_latitude';
                 $updates['measure_value'] = $station['loc_latitude'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('longitude', $location)) {
                 $station['loc_longitude'] = $location['longitude'];
                 $updates['measure_type'] = 'loc_longitude';
                 $updates['measure_value'] = $station['loc_longitude'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('elevation', $location)) {
                 $station['loc_altitude'] = $location['elevation'];
                 $updates['measure_type'] = 'loc_altitude';
                 $updates['measure_value'] = $station['loc_altitude'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('pressure_mb', $observation)) {
                 $updates['measure_type'] = 'pressure_sl';
                 $updates['measure_value'] = $observation['pressure_mb'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
                 if (array_key_exists('temp_c', $observation)) {
                     $temperature = $observation['temp_c'];
                 }
@@ -199,7 +205,7 @@ trait StationClient {
                 }
                 $updates['measure_type'] = 'pressure';
                 $updates['measure_value'] = $this->convert_from_mslp_to_baro($updates['measure_value'], $station['loc_longitude'], $temperature);
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('pressure_trend', $observation)) {
                 $updates['measure_type'] = 'pressure_trend';
@@ -210,9 +216,9 @@ trait StationClient {
                 elseif ($observation['pressure_trend'] == '+') {
                     $updates['measure_value'] = 'up';
                 }
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
                 $updates['measure_type'] = 'pressure_sl_trend';
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             $station['last_refresh'] = date('Y-m-d H:i:s');
             $station['last_seen'] = $timestamp;
@@ -229,22 +235,22 @@ trait StationClient {
             $updates['measure_timestamp'] = date('Y-m-d H:i:s');
             $updates['measure_type'] = 'last_refresh';
             $updates['measure_value'] = date('Y-m-d H:i:s');
-            $this->update_data_table($updates);
+            $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'last_seen';
             $updates['measure_value'] = $timestamp;
             $updates['measure_timestamp'] = $timestamp;
-            $this->update_data_table($updates);
+            $this->update_data_table($updates, $timezone);
             $updates['measure_timestamp'] = $timestamp;
             if (array_key_exists('temp_c', $observation)) {
                 $updates['measure_type'] = 'temperature';
                 $updates['measure_value'] = $observation['temp_c'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('relative_humidity', $observation)) {
                 $updates['measure_type'] = 'humidity';
                 $updates['measure_value'] = $observation['relative_humidity'];
                 $updates['measure_value'] = (integer)str_replace('%', '', $updates['measure_value']);
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
@@ -258,35 +264,35 @@ trait StationClient {
             $updates['measure_timestamp'] = date('Y-m-d H:i:s');
             $updates['measure_type'] = 'last_refresh';
             $updates['measure_value'] = date('Y-m-d H:i:s');
-            $this->update_data_table($updates);
+            $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'last_seen';
             $updates['measure_value'] = $timestamp;
             $updates['measure_timestamp'] = $timestamp;
-            $this->update_data_table($updates);
+            $this->update_data_table($updates, $timezone);
             $updates['measure_timestamp'] = $timestamp;
             if (array_key_exists('wind_degrees', $observation)) {
                 $updates['measure_type'] = 'windangle';
                 $updates['measure_value'] = $observation['wind_degrees'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
                 $updates['measure_type'] = 'winddirection';
                 $updates['measure_value'] = (int)floor(($observation['wind_degrees'] + 180) % 360);
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
                 $updates['measure_type'] = 'gustangle';
                 $updates['measure_value'] = $observation['wind_degrees'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
                 $updates['measure_type'] = 'gustdirection';
                 $updates['measure_value'] = (int)floor(($observation['wind_degrees'] + 180) % 360);
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('wind_kph', $observation)) {
                 $updates['measure_type'] = 'windstrength';
                 $updates['measure_value'] = $observation['wind_kph'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('wind_gust_kph', $observation)) {
                 $updates['measure_type'] = 'guststrength';
                 $updates['measure_value'] = $observation['wind_gust_kph'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
@@ -300,22 +306,22 @@ trait StationClient {
             $updates['measure_timestamp'] = date('Y-m-d H:i:s');
             $updates['measure_type'] = 'last_refresh';
             $updates['measure_value'] = date('Y-m-d H:i:s');
-            $this->update_data_table($updates);
+            $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'last_seen';
             $updates['measure_value'] = $timestamp;
             $updates['measure_timestamp'] = $timestamp;
-            $this->update_data_table($updates);
+            $this->update_data_table($updates, $timezone);
             $updates['measure_timestamp'] = $timestamp;
 
             if (array_key_exists('precip_1hr_metric', $observation)) {
                 $updates['measure_type'] = 'rain_hour_aggregated';
                 $updates['measure_value'] = $observation['precip_1hr_metric'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('precip_today_metric', $observation)) {
                 $updates['measure_type'] = 'rain_day_aggregated';
                 $updates['measure_value'] = $observation['precip_today_metric'];
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
@@ -331,11 +337,11 @@ trait StationClient {
             $updates['measure_timestamp'] = date('Y-m-d H:i:s');
             $updates['measure_type'] = 'last_refresh';
             $updates['measure_value'] = date('Y-m-d H:i:s');
-            $this->update_data_table($updates);
+            $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'last_seen';
             $updates['measure_value'] = $timestamp;
             $updates['measure_timestamp'] = $timestamp;
-            $this->update_data_table($updates);
+            $this->update_data_table($updates, $timezone);
             $updates['measure_timestamp'] = $timestamp;
             if (array_key_exists('solarradiation', $observation)) {
                 $updates['measure_type'] = 'irradiance';
@@ -345,7 +351,7 @@ trait StationClient {
                 else {
                     $updates['measure_value'] = 0;
                 }
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
             $updates['measure_timestamp'] = $timestamp;
             if (array_key_exists('UV', $observation)) {
@@ -359,7 +365,7 @@ trait StationClient {
                 else {
                     $updates['measure_value'] = 0;
                 }
-                $this->update_data_table($updates);
+                $this->update_data_table($updates, $timezone);
             }
 
 
