@@ -42,17 +42,17 @@ trait Output {
         'cloudiness', 'noise', 'rain', 'rain_hour_aggregated', 'rain_day_aggregated' , 'rain_yesterday_aggregated',
         'rain_month_aggregated','rain_season_aggregated', 'rain_year_aggregated','snow', 'windangle', 'gustangle',
         'windangle_max', 'windangle_day_max', 'windangle_hour_max', 'windstrength', 'guststrength', 'windstrength_max',
-        'windstrength_day_max', 'windstrength_hour_max', 'wind_ref', 'pressure_sl', 'temperature', 'tempint', 'tempext',
+        'windstrength_hour_max', 'wind_ref', 'pressure_sl', 'temperature', 'tempint', 'tempext',
         'temperature_ref', 'dew_point', 'frost_point', 'heat_index', 'humidex',
         'wind_chill', 'cloud_ceiling', 'sunrise', 'sunset', 'moonrise',
         'moonset', 'moon_illumination', 'moon_diameter', 'sun_diameter', 'moon_distance', 'sun_distance', 'moon_phase',
-        'moon_age', 'o3_distance', 'co_distance',
+        'moon_age', 'o3_distance', 'co_distance', /*'absolute_humidity',*/
         'day_length', 'health_idx', 'cbi', 'pressure_ref', 'wet_bulb', 'air_density', 'wood_emc',
         'equivalent_temperature', 'potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
         'partial_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 'sunshine', 'soil_temperature', 'leaf_wetness',
         'moisture_content', 'moisture_tension', 'evapotranspiration', 'strike_count', 'strike_instant',
         'strike_distance', 'strike_bearing', 'visibility', 'picture', 'video', 'video_imperial', 'video_metric', 'steadman',
-        'summer_simmer', 'delta_t', 'absolute_humidity');
+        'summer_simmer', 'delta_t');
     private $not_showable_measurements = array('battery', 'firmware', 'signal', 'loc_timezone', 'loc_altitude',
         'loc_latitude', 'loc_longitude', 'last_seen', 'last_refresh', 'first_setup', 'last_upgrade', 'last_setup',
         'sunrise_c','sunrise_n','sunrise_a', 'sunset_c','sunset_n', 'sunset_a', 'day_length_c', 'day_length_n',
@@ -65,7 +65,10 @@ trait Output {
         'irradiance_trend', 'uv_index_min', 'uv_index_max', 'uv_index_trend', 'illuminance_min', 'illuminance_max',
         'illuminance_trend', 'soil_temperature_min', 'soil_temperature_max', 'soil_temperature_trend', 'moisture_content_min',
         'moisture_content_max', 'moisture_content_trend', 'moisture_tension_min', 'moisture_tension_max', 'moisture_tension_trend',
-        'windstrength_trend', 'absolute_humidity_min', 'absolute_humidity_max', 'absolute_humidity_trend');
+        'windstrength_day_trend', 'absolute_humidity_min', 'absolute_humidity_max', 'absolute_humidity_trend', 'cloudiness_min',
+        'cloudiness_max', 'cloudiness_trend', 'guststrength_day_min', 'guststrength_day_max', 'guststrength_day_trend',
+        'visibility_min', 'visibility_max', 'visibility_trend', 'windstrength_day_min', 'windstrength_day_max',
+        'windstrength_day_trend');
     private $graph_allowed_serie = array('device_id', 'module_id', 'measurement', 'line_mode', 'dot_style', 'line_style', 'line_size');
     private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
 
@@ -6910,6 +6913,8 @@ trait Output {
                 $result .= ($unit ? $this->unit_espace.$this->get_humidity_unit() : '');
                 break;
             case 'cloudiness':
+            case 'cloudiness_min':
+            case 'cloudiness_max':
                 $result = $this->get_cloudiness($value);
                 $result .= ($unit ? $this->unit_espace.$this->get_cloudiness_unit() : '');
                 break;
@@ -6960,6 +6965,9 @@ trait Output {
             case 'guststrength':
             case 'windstrength_max':
             case 'windstrength_day_max':
+            case 'windstrength_day_min':
+            case 'guststrength_day_max':
+            case 'guststrength_day_min':
             case 'windstrength_hour_max':
             case 'wind_ref':
                 $ref = get_option('live_weather_station_unit_wind_strength');
@@ -7024,7 +7032,10 @@ trait Output {
             case 'soil_temperature_trend':
             case 'moisture_content_trend':
             case 'moisture_tension_trend':
-            case 'windstrength_trend':
+            case 'windstrength_day_trend':
+            case 'guststrength_day_trend':
+            case 'cloudiness_trend':
+            case 'visibility_trend':
                 if ($textual) {
                     $result = $this->get_trend_text($value);
                 }
@@ -7252,6 +7263,8 @@ trait Output {
                 $result .= ($unit ? $this->unit_espace.$this->get_wind_angle_unit() : '');
                 break;
             case 'visibility':
+            case 'visibility_min':
+            case 'visibility_max':
                 $ref = get_option('live_weather_station_unit_distance');
                 $result = $this->get_visibility($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_altitude_unit($ref) : '');
@@ -7299,12 +7312,16 @@ trait Output {
         $marker = array('none' => '',
                         'min' => LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down':'fa-long-arrow-down'),
                         'max' => LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-up':'fa-long-arrow-up'),
+                        'day_min' => LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-down':'fa-long-arrow-down'),
+                        'day_max' => LWS_FAS . ' ' . (LWS_FA5?'fa-long-arrow-alt-up':'fa-long-arrow-up'),
                         'trend' => LWS_FAS . ' ' . (LWS_FA5?'fa-arrows-alt-v':'fa-arrows-v'),
                         'ppressure' => LWS_FAS . ' ' . (LWS_FA5?'fa-ellipsis-v ico-size-0':'fa-ellipsis-v ico-size-1'),
                         'degrees' => 'wi wi-degrees');
         $markerstyle = array('none' => 'inherit',
                         'min' => 'text-top',
                         'max' => 'text-top',
+                        'day_min' => 'text-top',
+                        'day_max' => 'text-top',
                         'trend' => 'text-top',
                         'ppressure' => (LWS_FA5?'baseline':'baseline'),
                         'degrees' => 'text-top',);
@@ -7410,8 +7427,14 @@ trait Output {
 
         $live = array('weather', 'signal', 'battery', 'wind', 'gust', 'moon_age', 'moon_phase', 'strike_bearing');
         $tmm = 'none';
+        if (strpos(strtolower($type), 'day_min') !== false) {
+            $tmm = 'day_min';
+        }
         if (strpos(strtolower($type), '_min') !== false) {
             $tmm = 'min';
+        }
+        if (strpos(strtolower($type), 'day_max') !== false) {
+            $tmm = 'day_max';
         }
         if (strpos(strtolower($type), '_max') !== false) {
             $tmm = 'max';
@@ -7522,7 +7545,12 @@ trait Output {
             case 'windstrength':
             case 'guststrength':
             case 'windstrength_max':
+            case 'windstrength_day_min':
             case 'windstrength_day_max':
+            case 'windstrength_day_trend':
+            case 'guststrength_day_min':
+            case 'guststrength_day_max':
+            case 'guststrength_day_trend':
             case 'windstrength_hour_max':
             case 'wind_ref':
                 $level = $this->get_wind_speed($value, 3);
@@ -7844,6 +7872,8 @@ trait Output {
                 $result['dimension'] = 'percentage';
                 break;
             case 'cloudiness':
+            case 'cloudiness_min':
+            case 'cloudiness_max':
             case 'cloud_cover':
                 $ref = 0;
                 if ($force_ref != 0) {
@@ -8009,6 +8039,9 @@ trait Output {
             case 'guststrength':
             case 'windstrength_max':
             case 'windstrength_day_max':
+            case 'windstrength_day_min':
+            case 'guststrength_day_max':
+            case 'guststrength_day_min':
             case 'windstrength_hour_max':
                 $ref = get_option('live_weather_station_unit_wind_strength');
                 if ($force_ref != 0) {
@@ -8327,6 +8360,8 @@ trait Output {
                 $result['dimension'] = 'angle';
                 break;
             case 'visibility':
+            case 'visibility_min':
+            case 'visibility_max':
                 $ref = get_option('live_weather_station_unit_distance');
                 if ($force_ref != 0) {
                     $ref = $force_ref;
@@ -8556,6 +8591,9 @@ trait Output {
             case 'windstrength_max':
             case 'windstrength_hour_max':
             case 'windstrength_day_max':
+            case 'windstrength_day_min':
+            case 'guststrength_day_max':
+            case 'guststrength_day_min':
             case 'guststrength':
                 $result = __('wind', 'live-weather-station') ;
                 break;
@@ -8599,6 +8637,8 @@ trait Output {
                 $result = __('cloud base', 'live-weather-station') ;
                 break;
             case 'cloudiness':
+            case 'cloudiness_min':
+            case 'cloudiness_max':
                 $result = __('cloudiness', 'live-weather-station') ;
                 break;
             case 'temperature':
@@ -8669,6 +8709,8 @@ trait Output {
                 $result = __('distance', 'live-weather-station') ;
                 break;
             case 'visibility':
+            case 'visibility_min':
+            case 'visibility_max':
                 $result = __('visibility', 'live-weather-station') ;
                 break;
             case 'strike_bearing':
@@ -10479,7 +10521,7 @@ trait Output {
      * @since 1.0.0
      */
     protected function is_alarm_on($value, $type, $module_type) {
-        $result = (($value < $this->get_measurement_option($type, $module_type, 'min_alarm')) ||
+        return (($value < $this->get_measurement_option($type, $module_type, 'min_alarm')) ||
                    ($value > $this->get_measurement_option($type, $module_type, 'max_alarm')));
     }
 
@@ -10600,7 +10642,7 @@ trait Output {
                         $val['measure_value_txt'] = 'O₃&nbsp;/&nbsp;' . $val['measure_value_txt'];
                     }
                     $unit = $this->output_unit($val['measure_type'], $module['module_type']);
-                    if (array_key_exists('comp', $unit) && ($val['measure_type'] != 'humidity') && ($val['measure_type'] != 'health_idx')) {
+                    if (array_key_exists('comp', $unit) && (!in_array(strtolower($val['measure_type']), $this->min_max_trend))) {
                         $val['measure_value_txt'] .= ' ' . $unit['comp'];
                     }
                     $val['measure_value_txt'] = str_replace(' ', '&nbsp;', $val['measure_value_txt']);

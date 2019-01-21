@@ -1,11 +1,16 @@
 
-#3.7.8 / January 14th, 2018
+#3.7.8 / January 22nd, 2018
 
 * Improvement: better data obsolescence handling.
-* Improvement: for clientraw based stations, extra modules are created only if they are operational.
+* Improvement: collection error are now reported on a station basis for Clientraw, Realtime and Stickertags file-based stations.
+* Improvement: optimization of collection and database storage.
+* Improvement: for Clientraw based stations, extra modules are now created only if they are operational.
 * Improvement: full compatibility with PHP 7.3.
+* Bug fix: Netatmo importer can't import rain values in some conditions (thanks to [@2bias](https://weather.station.software/community/profile/2bias/)).
 * Bug fix: some few German words are again wrongly lower-cased - sorry, that's a long story (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
 * Bug fix: PHP errors when hosting provider blocks Netatmo services.
+* Bug fix: if a file-based station is in error, all stations having the same type may reproduce the same error (thanks to [@daguilera](https://weather.station.software/community/profile/daguilera/)).
+* Bug fix: alarms in steel meters are not working correctly (thanks to [@olaf](https://weather.station.software/community/profile/olaf/)).
 * Bug fix: psychrometric computation takes in some rare cases wrong reference values.
 
 #3.7.7 / January 14th, 2018

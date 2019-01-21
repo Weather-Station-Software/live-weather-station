@@ -110,14 +110,22 @@ class Builder
         array('health_idx', 'co2', 'humidity', 'cloudiness', 'noise', 'pressure_sl', 'temperature', 'irradiance',
               'uv_index', 'illuminance', 'cloud_ceiling', 'heat_index', 'humidex', 'wind_chill', 'windangle', 
               'windstrength', 'rain_day_aggregated', 'rain', 'weather', 'dew_point', 'frost_point', 'visibility',
-              'winddirection', 'steadman', 'summer_simmer');
+              'winddirection', 'steadman', 'summer_simmer', 'absolute_humidity');
     public $extended_measurements = 
         array('cbi', 'wet_bulb', 'air_density', 'wood_emc', 'equivalent_temperature', 'potential_temperature',
               'pressure', 'equivalent_potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
-              'saturation_vapor_pressure', 'vapor_pressure', 'absolute_humidity', 'partial_absolute_humidity',
+              'saturation_vapor_pressure', 'vapor_pressure', 'partial_absolute_humidity',
               'saturation_absolute_humidity', 'soil_temperature', 'leaf_wetness', 'moisture_content',
               'moisture_tension', 'evapotranspiration', 'gustangle', 'guststrength', 'strike_instant', 'strike_count',
               'sunshine', 'gustdirection', 'delta_t');
+
+
+
+
+
+
+
+
 
     private $Live_Weather_Station;
     private $version;

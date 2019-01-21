@@ -22,6 +22,7 @@ abstract class NetatmoImporter extends Process {
     use Id_Manipulation, Client, Conversion, DateTimeConversion;
 
     protected $terminated = false;
+    protected $pressure = null;
 
 
     /**
@@ -187,15 +188,11 @@ abstract class NetatmoImporter extends Process {
         else {
             $this->params['init']['end_date'] = 0;
         }
-
         $this->bp_service = 'Netatmo';
-
-
-
         $old_dates = array();
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
-        $sql = "SELECT DISTINCT device_name, module_id, module_type, module_name FROM " . $table_name . " WHERE device_id = '" . $this->params['init']['station_id'] . "'";
+        $sql = "SELECT DISTINCT device_name, module_id, module_type, module_name FROM " . $table_name . " WHERE device_id = '" . $this->params['init']['station_id'] . "' ORDER BY module_type ASC";
         $rows = $wpdb->get_results($sql, ARRAY_A);
         $this->params['todo_ext'] = array();
         $this->params['todo_int'] = array();
@@ -266,31 +263,42 @@ abstract class NetatmoImporter extends Process {
                 $ref_t = null;
                 $ref_n = null;
                 $ref_c = null;
+                $ref_p = null;
                 if (array_key_exists($ts, $this->netatmo_datas['co2'])) {
                     $result['co2'][$ts] = $this->netatmo_datas['co2'][$ts];
-                    $ref_c = $this->netatmo_datas['co2'][$ts];
+                    $ref_c = $result['co2'][$ts];
                 }
                 if (array_key_exists($ts, $this->netatmo_datas['humidity'])) {
                     $result['humidity'][$ts] = $this->netatmo_datas['humidity'][$ts];
-                    $ref_h = $this->netatmo_datas['humidity'][$ts];
+                    $ref_h = $result['humidity'][$ts];
                 }
                 if (array_key_exists($ts, $this->netatmo_datas['noise'])) {
                     $result['noise'][$ts] = $this->netatmo_datas['noise'][$ts];
-                    $ref_n = $this->netatmo_datas['noise'][$ts];
+                    $ref_n = $result['noise'][$ts];
                 }
                 if (array_key_exists($ts, $this->netatmo_datas['pressure'])) {
                     $result['pressure_sl'][$ts] = $this->netatmo_datas['pressure'][$ts];
                     $result['pressure'][$ts] = $this->convert_from_mslp_to_baro($this->netatmo_datas['pressure'][$ts], $this->params['init']['loc_altitude']);
+                    $ref_p = $result['pressure'][$ts];
                 }
                 if (array_key_exists($ts, $this->netatmo_datas['temperature'])) {
                     $result['temperature'][$ts] = $this->netatmo_datas['temperature'][$ts];
-                    $ref_t = $this->netatmo_datas['temperature'][$ts];
+                    $ref_t = $result['temperature'][$ts];
                 }
                 $h = $this->compute_health_index($ref_t, $ref_h, $ref_c, $ref_n);
                 if (array_key_exists('health_idx', $h)) {
                     $result['health_idx'][$ts] = $h['health_idx'];
                 }
+                if (isset($ref_t) && isset($ref_p) && isset($ref_h)) {
+                    $result['absolute_humidity'][$ts] = $this->compute_partial_absolute_humidity($ref_t, 100 * $ref_p, $ref_h);
+                }
             }
+        }
+        if (array_key_exists('pressure', $result)) {
+            $this->pressure = $result['pressure'];
+        }
+        else {
+            $this->pressure = null;
         }
         unset($this->netatmo_datas);
         return $result;
@@ -316,11 +324,24 @@ abstract class NetatmoImporter extends Process {
         }
         if (array_key_exists($cpt_type, $this->netatmo_datas)) {
             foreach ($this->netatmo_datas[$cpt_type] as $ts => $dummy) {
+                $ref_h = null;
+                $ref_t = null;
+                $ref_p = null;
+                if (isset($this->pressure) && is_array($this->pressure)) {
+                    if (array_key_exists($ts, $this->pressure)) {
+                        $ref_p = $this->pressure[$ts];
+                    }
+                }
                 if (array_key_exists($ts, $this->netatmo_datas['humidity'])) {
                     $result['humidity'][$ts] = $this->netatmo_datas['humidity'][$ts];
+                    $ref_h = $result['humidity'][$ts];
                 }
                 if (array_key_exists($ts, $this->netatmo_datas['temperature'])) {
                     $result['temperature'][$ts] = $this->netatmo_datas['temperature'][$ts];
+                    $ref_t = $result['temperature'][$ts];
+                }
+                if (isset($ref_t) && isset($ref_p) && isset($ref_h)) {
+                    $result['absolute_humidity'][$ts] = $this->compute_partial_absolute_humidity($ref_t, 100 * $ref_p, $ref_h);
                 }
             }
         }
@@ -389,7 +410,10 @@ abstract class NetatmoImporter extends Process {
         if (array_key_exists($cpt_type, $this->netatmo_datas)) {
             foreach ($this->netatmo_datas[$cpt_type] as $ts => $dummy) {
                 if (array_key_exists($ts, $this->netatmo_datas['sum_rain'])) {
-                    $result['sum_rain'][$ts] = $this->netatmo_datas['sum_rain'][$ts];
+                    $result['rain_day_aggregated'][$ts] = $this->netatmo_datas['sum_rain'][$ts];
+                }
+                if (array_key_exists($ts, $this->netatmo_datas['rain'])) {
+                    $result['rain'][$ts] = $this->netatmo_datas['rain'][$ts];
                 }
             }
         }
@@ -422,6 +446,12 @@ abstract class NetatmoImporter extends Process {
                 $ref_t = null;
                 $ref_n = null;
                 $ref_c = null;
+                $ref_p = null;
+                if (isset($this->pressure) && is_array($this->pressure)) {
+                    if (array_key_exists($ts, $this->pressure)) {
+                        $ref_p = $this->pressure[$ts];
+                    }
+                }
                 if (array_key_exists($ts, $this->netatmo_datas['co2'])) {
                     $result['co2'][$ts] = $this->netatmo_datas['co2'][$ts];
                     $ref_c = $this->netatmo_datas['co2'][$ts];
@@ -437,6 +467,9 @@ abstract class NetatmoImporter extends Process {
                 $h = $this->compute_health_index($ref_t, $ref_h, $ref_c, $ref_n);
                 if (array_key_exists('health_idx', $h)) {
                     $result['health_idx'][$ts] = $h['health_idx'];
+                }
+                if (isset($ref_t) && isset($ref_p) && isset($ref_h)) {
+                    $result['absolute_humidity'][$ts] = $this->compute_partial_absolute_humidity($ref_t, 100 * $ref_p, $ref_h);
                 }
             }
         }

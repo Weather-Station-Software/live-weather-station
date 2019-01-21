@@ -33,7 +33,7 @@ trait Client {
     public $available_types = array('NAMain' => array('Temperature', 'CO2', 'Humidity', 'Pressure', 'Noise'),
                                     'NAModule1' => array('Temperature', 'Humidity'),
                                     'NAModule2' => array('WindStrength', 'WindAngle', 'Guststrength', 'GustAngle'),
-                                    'NAModule3' => array('sum_rain'),
+                                    'NAModule3' => array('Rain', 'Sum_Rain'),
                                     'NAModule4' => array('Temperature', 'CO2', 'Humidity'));
 
 
@@ -104,7 +104,8 @@ trait Client {
             }
             try {
                 if (Quota::verify($this->service_name, 'GET', true)) {
-                    if (isset($this->netatmo_datas)) {
+                    if (true) {
+                        //if (isset($this->netatmo_datas)) {
                         $this->netatmo_datas = $this->netatmo_client->getMeasure($device_id, $module_id, $scale, implode(',', $type), $start, $end, $limit, $optimize, $realtime);
                         $this->normalize_netatmo_historical_datas($type);
                         update_option('live_weather_station_netatmo_refresh_token', $this->netatmo_client->getRefreshToken());
@@ -196,7 +197,8 @@ trait Client {
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
                     $this->netatmo_datas = $this->netatmo_client->getData();
-                    if (isset($this->netatmo_datas)) {
+                    if (true) {
+                    //if (isset($this->netatmo_datas)) {
                         $this->normalize_netatmo_datas(LWS_NETATMO_SID);
                         if ($store) {
                             $this->store_netatmo_datas($this->get_all_netatmo_stations());
@@ -268,7 +270,8 @@ trait Client {
         $result = array();
         try {
             $this->get_datas(false);
-            if (isset($this->netatmo_datas)) {
+            if (true) {
+                //if (isset($this->netatmo_datas)) {
                 $datas = $this->netatmo_datas ;
                 foreach($datas['devices'] as $device){
                     $result[] = array('device_id' => $device['_id'], 'station_name' => $device['station_name'], 'installed' => false);

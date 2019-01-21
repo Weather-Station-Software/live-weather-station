@@ -355,9 +355,23 @@ trait Generator {
             case 'dusk_length_a':
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_special_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']), $this->output_value($mvalue, $mtype, true, false, $ref['module_type']), $this->output_value($mvalue, $mtype, false, true, $ref['module_type']))));
                 break;
-            case 'temperature_trend':
+            case 'co2_trend':
+            case 'humidity_trend':
+            case 'absolute_humidity_trend':
+            case 'noise_trend':
             case 'pressure_trend':
             case 'pressure_sl_trend':
+            case 'temperature_trend':
+            case 'irradiance_trend':
+            case 'uv_index_trend':
+            case 'illuminance_trend':
+            case 'soil_temperature_trend':
+            case 'moisture_content_trend':
+            case 'moisture_tension_trend':
+            case 'windstrength_day_trend':
+            case 'guststrength_day_trend':
+            case 'cloudiness_trend':
+            case 'visibility_trend':
             case 'moon_age':
             case 'moon_phase':
             case 'loc_timezone':
@@ -390,6 +404,9 @@ trait Generator {
             case 'gustdirection':
             case 'winddirection_max':
             case 'winddirection_day_max':
+            case 'winddirection_day_min':
+            case 'gustdirection_day_max':
+            case 'gustdirection_day_min':
             case 'winddirection_hour_max':
             case 'strike_bearing':
                 $result[] = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_wind_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']), $this->output_value($mvalue, $mtype, true, false, $ref['module_type']), $this->get_angle_text($mvalue), $this->get_angle_full_text($mvalue))));

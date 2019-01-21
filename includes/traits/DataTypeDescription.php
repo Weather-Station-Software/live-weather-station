@@ -376,11 +376,6 @@ trait Description {
             case 'cloud_ceiling':
                 $result = ($abbr ? __('Cloud base', 'live-weather-station') : __('Cloud base altitude', 'live-weather-station'));
                 break;
-            case 'cloudcover':
-            case 'cloud_cover':
-            case 'cloudiness':
-                $result = ($abbr ? __('Cloudiness', 'live-weather-station') : __('Cloudiness', 'live-weather-station'));
-                break;
             case 'rain':
                 if (strtolower($module_type)=='namodule3') {
                     $result = ($abbr ? __('Rain', 'live-weather-station') : __('Rain rate', 'live-weather-station'));
@@ -451,11 +446,23 @@ trait Description {
             case 'winddirection_day_max':
                 $result = ($abbr ? __('Wind', 'live-weather-station') : __('Wind direction for the maximal wind strength today', 'live-weather-station'));
                 break;
-            case 'windstrength_day_max':
-                $result = ($abbr ? __('Wind', 'live-weather-station') : __('Maximal wind strength today', 'live-weather-station'));
+            case 'windstrength_day_min':
+                $result = ($abbr ? __('Wind', 'live-weather-station') : lws__('Lowest wind strength for the day', 'live-weather-station'));
                 break;
-            case 'windstrength_trend':
+            case 'windstrength_day_max':
+                $result = ($abbr ? __('Wind', 'live-weather-station') : lws__('Highest wind strength for the day', 'live-weather-station'));
+                break;
+            case 'windstrength_day_trend':
                 $result = ($abbr ? __('Wind', 'live-weather-station') : lws__('Wind strength trend', 'live-weather-station'));
+                break;
+            case 'guststrength_day_min':
+                $result = ($abbr ? __('Gust', 'live-weather-station') : lws__('Lowest gust strength for the day', 'live-weather-station'));
+                break;
+            case 'guststrength_day_max':
+                $result = ($abbr ? __('Gust', 'live-weather-station') : lws__('Highest gust strength for the day', 'live-weather-station'));
+                break;
+            case 'guststrength_day_trend':
+                $result = ($abbr ? __('Gust', 'live-weather-station') : lws__('Gust strength trend', 'live-weather-station'));
                 break;
             case 'loc_altitude':
             case 'altitude':
@@ -725,8 +732,31 @@ trait Description {
                 $result = ($abbr ? __('Strike bear.', 'live-weather-station') : __('Strike bearing', 'live-weather-station'));
                 break;
             // MISC
+            case 'cloudcover':
+            case 'cloud_cover':
+            case 'cloudiness':
+                $result = ($abbr ? __('Cloudiness', 'live-weather-station') : __('Cloudiness', 'live-weather-station'));
+                break;
+            case 'cloudiness_min':
+                $result = ($abbr ? __('Cloudiness', 'live-weather-station') : lws__('Lowest cloudiness of the day', 'live-weather-station'));
+                break;
+            case 'cloudiness_max':
+                $result = ($abbr ? __('Cloudiness', 'live-weather-station') : lws__('Highest cloudiness of the day', 'live-weather-station'));
+                break;
+            case 'cloudiness_trend':
+                $result = ($abbr ? __('Cloudiness', 'live-weather-station') : lws__('Cloudiness trend', 'live-weather-station'));
+                break;
             case 'visibility':
                 $result = ($abbr ? __('Visibility', 'live-weather-station') : __('Visibility', 'live-weather-station'));
+                break;
+            case 'visibility_min':
+                $result = ($abbr ? __('Visibility', 'live-weather-station') : lws__('Lowest visibility of the day', 'live-weather-station'));
+                break;
+            case 'visibility_max':
+                $result = ($abbr ? __('Visibility', 'live-weather-station') : lws__('Highest visibility of the day', 'live-weather-station'));
+                break;
+            case 'visibility_trend':
+                $result = ($abbr ? __('Visibility', 'live-weather-station') : lws__('Visibility trend', 'live-weather-station'));
                 break;
             case 'picture':
                 $result = ($abbr ? __('Image', 'live-weather-station') : __('Image', 'live-weather-station'));
