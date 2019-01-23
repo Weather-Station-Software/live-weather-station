@@ -1523,6 +1523,9 @@ trait Conversion {
             case 'humidex':
             case 'wind_chill':
             case 'soil_temperature':
+            case 'steadman':
+            case 'delta_t':
+            case 'summer_simmer':
                 $result = $this->get_reverse_temperature($value, get_option('live_weather_station_unit_temperature'));
                 break;
             case 'loc_altitude':

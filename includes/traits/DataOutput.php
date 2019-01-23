@@ -10521,6 +10521,7 @@ trait Output {
      * @since 1.0.0
      */
     protected function is_alarm_on($value, $type, $module_type) {
+        $value = $this->output_value($value, $type, false, false, $module_type);
         return (($value < $this->get_measurement_option($type, $module_type, 'min_alarm')) ||
                    ($value > $this->get_measurement_option($type, $module_type, 'max_alarm')));
     }

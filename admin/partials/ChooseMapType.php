@@ -41,6 +41,17 @@ else {
     $mapbox_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
 
+if (get_option('live_weather_station_maptiler_apikey') != '') {
+    $maptiler_s = ucfirst(addslashes(sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Maptiler')));
+    $maptiler_l = lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'maptiler');
+    $maptiler_t = '_self';
+}
+else {
+    $maptiler_s = addslashes(lws__('To add a map of this type, you need to set a Maptiler API key. To set it, click on this logo to be redirected to the services settings.', 'live-weather-station'));
+    $maptiler_l = lws_get_admin_page_url('lws-settings', null, 'services');
+    $maptiler_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
+}
+
 if (get_option('live_weather_station_thunderforest_apikey') != '') {
     $thunderforest_s = ucfirst(addslashes(sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Thunderforest')));
     $thunderforest_l = lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'thunderforest');
@@ -69,6 +80,9 @@ $stamen_t = '_self';
                 </style>
                 <div style="flex:auto;padding:14px;"><img id="owm" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_owm_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="mapbox" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_mapbox_color_logo());?>" /></div>
+                <?php if (LWS_PREVIEW) { ?>
+                    <div style="flex:auto;padding:14px;"><img id="maptiler" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_maptiler_color_logo());?>" /></div>
+                <?php } ?>
                 <div style="flex:auto;padding:14px;"><img id="stamen" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_stamen_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="thunderforest" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_thunderforest_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="windy" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_windy_color_logo());?>" /></div>
@@ -107,6 +121,12 @@ $stamen_t = '_self';
             });
             $("#mapbox").click(function() {
                 window.open('<?php echo $mapbox_l; ?>', '<?php echo $mapbox_t; ?>');
+            });
+            $("#maptiler").mouseover(function() {
+                $("#tip-text").html("<?php echo $maptiler_s; ?>");
+            });
+            $("#maptiler").click(function() {
+                window.open('<?php echo $maptiler_l; ?>', '<?php echo $maptiler_t; ?>');
             });
             $("#owm").mouseover(function() {
                 $("#tip-text").html("<?php echo $owm_s; ?>");

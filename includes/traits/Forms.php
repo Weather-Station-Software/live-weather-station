@@ -202,10 +202,10 @@ trait Handling {
         $max_boundary = $this->output_value(get_option('live_weather_station_' . $type . '_max_boundary'), $type);
         $decimal = $this->decimal_for_output($type);
         if ($decimal != 0) {
-            $step = pow(10, 0-$decimal);
+            $step = pow(10, 0 - $decimal);
         }
         else {
-            $step = pow(10, floor(log10($max_boundary - $min_boundary))-2);
+            $step = pow(10, floor(log10($max_boundary - $min_boundary)) - 2);
         }
         if ($step > 1) {
             $min_value = $step * round($this->output_value(get_option('live_weather_station_' . $type . '_min_value'), $type)/$step);

@@ -753,7 +753,7 @@ class Handling {
      */
     public static function get_base64_maptiler_icon($color1='#000', $color2='#000', $color3='#000', $color4='#000', $color5='#000', $color6='#000', $color7='#000', $color8='#000') {
         $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" fill="none" width="100%" height="100%"  viewBox="0 0 2000 2000">';
-        $source .= '<g transform="translate(32,32) scale(0.75,0.75)">';
+        $source .= '<g transform="translate(32,32) scale(0.95,0.95)">';
         $source .= '<path style="fill:' . $color1 . '" d="M714.993,1505.704c77.303,77.287,283.078,287.052,282.98,287.265 c-0.751,1.369,204.42-204.633,286.141-286.303l-285.049-285.032L714.993,1505.704z"/>';
         $source .= '<path style="fill:' . $color2 . '" d="M999.064,1221.634l285.049,285.032c0.423-0.474,0.944-1.011,1.401-1.435l284.771-284.788L1285.27,935.429 L999.064,1221.634z"/>';
         $source .= '<path style="fill:' . $color3 . '" d="M1570.285,1220.443l0.732-0.732c157.523-157.509,157.656-412.784,0.474-570.488L1285.27,935.429 L1570.285,1220.443z"/>';

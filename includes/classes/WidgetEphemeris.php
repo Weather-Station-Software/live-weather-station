@@ -207,12 +207,12 @@ class Ephemeris extends \WP_Widget {
         $text_shadows = WidgetHelper::text_shadow();
         $box_shadows = WidgetHelper::box_shadow();
         $box_radius = WidgetHelper::box_radius();
-        if (LWS_FA_SVG) {
+        /*if (LWS_FA_SVG) {
             $svg = 'svg{' . WidgetHelper::svg_shadow() . '}';
         }
         else {
             $svg = '';
-        }
+        }*/
         include(LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php');
     }
 

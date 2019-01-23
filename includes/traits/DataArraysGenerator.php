@@ -3237,6 +3237,27 @@ trait Generator {
     }
 
     /**
+     * Get map overlay array for MapTiler.
+     *
+     * @return array An array containing map overlay for MapTiler ready to convert to a JS array.
+     * @since 3.8.0
+     */
+    protected function get_maptiler_overlay_js_array() {
+        $result = array();
+        $result[] = array('styles:basic',  lws__('Basic', 'live-weather-station'));
+        $result[] = array('styles:bright',  lws__('Bright', 'live-weather-station'));
+        $result[] = array('styles:darkmatter',  lws__('Dark matter', 'live-weather-station'));
+        $result[] = array('styles:hybrid',  lws__('Satellite hybrid', 'live-weather-station'));
+        $result[] = array('styles:positron',  lws__('Positron', 'live-weather-station'));
+        $result[] = array('styles:streets',  lws__('Streets', 'live-weather-station'));
+        $result[] = array('styles:topo',  lws__('Topo', 'live-weather-station'));
+        $result[] = array('styles:voyager',  lws__('Voyager', 'live-weather-station'));
+        $result[] = array('data:hillshades',  lws__('Hillshades', 'live-weather-station'));
+        $result[] = array('data:terrain-rgb',  lws__('RGB terrain', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
      * Get map overlay array for OpenWeatherMap.
      *
      * @return array An array containing map overlay for OpenWeatherMap ready to convert to a JS array.
