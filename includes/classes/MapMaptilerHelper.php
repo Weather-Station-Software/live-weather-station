@@ -59,7 +59,7 @@ class MaptilerHandling extends BaseHandling {
             $result['controls']['zoom'] = ($_POST['controls-zoom'] == 'on');
         }
         if (array_key_exists('options-overlay', $_POST)) {
-            if (in_array($_POST['options-overlay'], array('streets', 'light', 'dark', 'satellite', 'streets-satellite', 'wheatpaste', 'streets-basic', 'comic', 'outdoors', 'run-bike-hike', 'pencil', 'pirates', 'emerald', 'high-contrast', 'terrain-rgb'))) {
+            if (in_array($_POST['options-overlay'], array('styles:basic', 'styles:bright', 'styles:darkmatter', 'styles:hybrid', 'styles:positron', 'styles:streets', 'styles:topo', 'styles:voyager', 'data:hillshades', 'data:terrain-rgb'))) {
                 $result['options']['overlay'] = $_POST['options-overlay'];
             }
         }
@@ -109,12 +109,23 @@ class MaptilerHandling extends BaseHandling {
      * @since 3.8.0
      */
     protected function specific_script(){
-        $result = '';
-        $result .= "var layer = new L.tileLayer('https://api.tiles.maptiler.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {" . PHP_EOL;
+        $style = explode(':', $this->map_params['specific']['options']['overlay']);
+        $ext = 'png';
+        if (count($style) === 2) {
+            if ($style[1] == 'hybrid') {
+                $ext = 'jpg';
+            }
+            $result = '';
+            $result .= "var layer = new L.tileLayer('https://maps.tilehosting.com/" . $style[0] . "/" . $style[1] . "/{z}/{x}/{y}." . $ext . "?key={accessToken}', {" . PHP_EOL;
+        }
+        else {
+            $result = '';
+            $result .= "var layer = new L.tileLayer('https://maps.tilehosting.com/styles/hybrid/{z}/{x}/{y}.jpg?key={accessToken}', {" . PHP_EOL;
+        }
+
         $result .= '  attribution: "Maps &copy; <a href=\"https://www.maptiler.com/\">Maptiler</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
         $result .= '  maxZoom: ' . $this->maxzoom . ',' . PHP_EOL;
         $result .= '  minZoom: ' . $this->minzoom . ',' . PHP_EOL;
-        $result .= '  id: "maptiler.' . $this->map_params['specific']['options']['overlay'] . '",' . PHP_EOL;
         $result .= '  accessToken: "' . get_option('live_weather_station_maptiler_apikey') . '"' . PHP_EOL;
         $result .= '});' . PHP_EOL;
         $result .= "var map = new L.Map('maptiler-" . $this->uniq . "', {" . PHP_EOL;
@@ -163,7 +174,7 @@ class MaptilerHandling extends BaseHandling {
      */
     public function output_feature() {
         $content = '<table cellspacing="0" style="display:table;" class="lws-settings"><tbody>';
-        $content .= $this->get_key_value_option_select('options-overlay', __('Overlay', 'live-weather-station'), $this->get_mapboxmap_overlay_js_array(), true, $this->map_params['specific']['options']['overlay']);
+        $content .= $this->get_key_value_option_select('options-overlay', __('Overlay', 'live-weather-station'), $this->get_maptiler_overlay_js_array(), true, $this->map_params['specific']['options']['overlay']);
         $content .= '</tbody></table>';
         return $content;
     }
