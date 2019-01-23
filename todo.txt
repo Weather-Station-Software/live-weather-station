@@ -83,11 +83,11 @@ Fully delete a station in fast collect mode
 ***********************
 DONE:
 
+* New: MapTiler added as mapping service.
 
 
 TODO:
 Rename Humidity in Relative Humidity
-MapTiler for maps
 min/max/trend
 Shortened types for textual and gauge
 Icons via shortcodes

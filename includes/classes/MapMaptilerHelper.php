@@ -30,7 +30,7 @@ class MaptilerHandling extends BaseHandling {
 
     protected $type = 6;
     public $service = 'Maptiler';
-    protected $maxzoom = 21;
+    protected $maxzoom = 23;
 
     /**
      * Initialize the map and set its specific properties.
