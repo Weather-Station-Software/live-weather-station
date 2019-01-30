@@ -159,7 +159,6 @@ jQuery(document).ready( function($) {
             $('#span-sync').show();
         }
     });
-
     $('#add-edit-wflw').click( function() {
         var form_data=$('#add-edit-wflw-form').serializeArray();
         var error_free=true;
@@ -181,6 +180,45 @@ jQuery(document).ready( function($) {
             $('#span-sync').show();
         }
     });
+
+
+
+
+    $('#add-edit-wlink').click( function() {
+        var form_data=$('#add-edit-wlink-form').serializeArray();
+        var error_free=true;
+        for (var input in form_data){
+            if (form_data[input]['name'] == 'loc_country_code') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'service_did') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'service_apitoken') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+            if (form_data[input]['name'] == 'service_ownerpass') {
+                if (form_data[input]['value'] == '') {
+                    error_free=false;
+                }
+            }
+        }
+        if (error_free) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#span-sync').show();
+        }
+    });
+
+
+
+
 
     $('#add-edit-piou').click( function() {
         var form_data=$('#add-edit-piou-form').serializeArray();

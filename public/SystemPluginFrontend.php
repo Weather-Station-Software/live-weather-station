@@ -20,7 +20,7 @@ class Frontend {
 
 	private $Live_Weather_Station;
 	private $version;
-	private $allowed_shortcodes = array('live-weather-station-textual', 'live-weather-station-snapshot', 'live-weather-station-timelapse');
+	private $allowed_shortcodes = array('live-weather-station-textual', 'live-weather-station-icon', 'live-weather-station-snapshot', 'live-weather-station-timelapse');
 
 	/**
 	 * Initialize the class and set its properties.
@@ -48,8 +48,8 @@ class Frontend {
         lws_register_style('lws-font-chart-icons', LWS_PUBLIC_URL, 'css/font-chart-icons.min.css');
         lws_register_style('lws-lcd', LWS_PUBLIC_URL, 'css/lws-lcd.min.css');
         lws_register_style('lws-table', LWS_PUBLIC_URL, 'css/live-weather-station-table.min.css');
-        lws_register_style('lws-font-awesome-4', LWS_PUBLIC_URL, 'css/font-awesome-4.min.css');
-        lws_register_style('lws-font-awesome-5', LWS_PUBLIC_URL, 'css/font-awesome-5.min.css');
+        lws_register_style('lws-font-awesome-4', LWS_PUBLIC_URL, 'css/fontawesome-4.min.css');
+        lws_register_style('lws-font-awesome-5', LWS_PUBLIC_URL, 'css/fontawesome-5.min.css');
         lws_register_style('lws-weather-icons', LWS_PUBLIC_URL, 'css/weather-icons.min.css');
         lws_register_style('lws-weather-icons-wind', LWS_PUBLIC_URL, 'css/weather-icons-wind.min.css');
         lws_register_style('lws-nvd3', LWS_PUBLIC_URL, 'css/nv.d3.min.css', array(), false);

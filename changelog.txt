@@ -1,12 +1,24 @@
 
-#3.7.9 / February 22nd, 2018
+#3.7.9 / February 1st, 2019
 
-* Improvement: .
+* Improvement: better temperature validity range for rain vs. snow detection.
+* Improvement: month names are now translated in calendar heatmap (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/) for the suggestion).
+* Improvement: optimized cache mechanism for multilingual sites.
+* Improvement: it's now possible to let the protocol specifier in the source name when adding a file-based station.
+* Improvement: FontAwesome 5 has been updated to version 5.7.0.
+* Improvement: current conditions icon is now displayed in station views.
+* Improvement: adapted table lists in prevision of WordPress 5.1.
 * Bug fix: some alarms are not working correctly when in non-metric system (thanks to [@dougotto65](https://weather.station.software/community/profile/dougotto65/)).
-* Bug fix: Steadman index, Summer Simmer index and delta-T thresholds ar not correctly saved when in non-metric system.
+* Bug fix: Steadman index, Summer Simmer index and delta-T thresholds are not correctly saved when in non-metric system.
+* Bug fix: outdoor widget may wrongly display the snow rate.
+* Bug fix: heatmap charts are not correctly refreshed when ajax refresh is selected (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+* Bug fix: some icons may be missing/invisible in the station view.
 * Bug fix: in some cases, there may be a PHP warning when outputting ephemeris widget.
+* Bug fix: an extra space character is added after some textual shortcodes (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+* Bug fix: widget produces PHP error when colors are not set (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+* Bug fix: dates typos in the changelog.
 
-#3.7.8 / January 22nd, 2018
+#3.7.8 / January 22nd, 2019
 
 * Improvement: better data obsolescence handling.
 * Improvement: collection error are now reported on a station basis for Clientraw, Realtime and Stickertags file-based stations.
@@ -20,19 +32,19 @@
 * Bug fix: alarms in steel meters are not working correctly (thanks to [@olaf](https://weather.station.software/community/profile/olaf/)).
 * Bug fix: psychrometric computation takes in some rare cases wrong reference values.
 
-#3.7.7 / January 14th, 2018
+#3.7.7 / January 14th, 2019
 
 * Improvement: detection of current user language (when internationalization support is not installed) has been greatly improved.
 * Bug fix: ephemeris computing in extreme latitudes may generate a PHP warning.
 * Bug fix: collecting a Netatmo station with a removed module may generate a PHP warning.
 * Bug fix: in German languages, some words are (again and again) wrongly lower-cased (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
 
-#3.7.6 / January 14th, 2018
+#3.7.6 / January 14th, 2019
 
 * Bug fix: in German languages, some words are (again) wrongly lower-cased (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
 
 
-#3.7.5 / January 14th, 2018
+#3.7.5 / January 14th, 2019
 
 * Improvement: all the API calls have been redesigned to be compliant with newly enforced WordPress security rules.
 * Improvement: simple quality checking on collected data.
@@ -49,7 +61,7 @@
 * Bug fix: in some cases computing potential temperature may produce a PHP warning (thanks to [@erwin](https://weather.station.software/community/profile/erwin/)).
 * Removed: cUrl dependencies. Weather Station is now fully operational even if cUrl support is not installed.
 
-#3.7.4 / January 7th, 2018
+#3.7.4 / January 7th, 2019
 
 * Improvement: optimized quota management for Mapbox and ThunderForest maps.
 * Improvement: "theme-proof" standardized layout for ephemeris widget.
@@ -60,7 +72,7 @@
 * Bug fix: in some cases, the moon logo in ephemeris widget has a wrong size.
 * Bug fix: with some WordPress themes, the Windy logo inherit of CSS properties.
 
-#3.7.3 / January 3th, 2018
+#3.7.3 / January 3th, 2019
 
 * Improvement: the ephemeris module (in station view) now displays local times rather than UTC.
 * Improvement: optimized edge cases handling in ephemeris computation.
@@ -68,7 +80,7 @@
 * Bug fix: rain is wrongly collected in stickertags files when not in metric system (thanks to [@thomas](https://weather.station.software/community/profile/thomas/)).
 * Bug fix: there's a PHP notice when saving display settings.
 
-#3.7.2 / January 2nd, 2018
+#3.7.2 / January 2nd, 2019
 
 * Improvement: better icon sizes in widget when Awesome Font 5 as CSS is choosen as rendering method.
 * Improvement: when zoom control is set to _disabled_ for a map, it disables now the mouse scroll wheel too (thanks to [@hwim](https://weather.station.software/community/profile/hwim/) for the suggestion).

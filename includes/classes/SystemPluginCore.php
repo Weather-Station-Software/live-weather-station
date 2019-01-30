@@ -198,6 +198,7 @@ class Core {
         $this->loader->add_action( 'wp_ajax_lws_shortcode', $plugin_public, 'lws_shortcode_callback');
         $this->loader->add_action( 'wp_ajax_nopriv_lws_shortcode', $plugin_public, 'lws_shortcode_callback');
         add_shortcode( 'live-weather-station-icon', array($plugin_public, 'icon_shortcodes'));
+        add_shortcode( 'live-weather-station-liveicon', array($plugin_public, 'liveicon_shortcodes'));
         add_shortcode( 'live-weather-station-textual', array($plugin_public, 'textual_shortcodes'));
         add_shortcode( 'live-weather-station-livetextual', array($plugin_public, 'livetextual_shortcodes'));
         add_shortcode( 'live-weather-station-snapshot', array($plugin_public, 'snapshot_shortcodes'));

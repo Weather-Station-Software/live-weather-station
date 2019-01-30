@@ -193,13 +193,20 @@ class Outdoor extends \WP_Widget {
             $maxwidth = 0;
         }
         $txt_color = $instance['txt_color'];
+        $bg_color = $instance['bg_color'];
+        if (!$txt_color) {
+            $txt_color = '#444444';
+        }
+        if (!$bg_color) {
+            $txt_color = '#FFFFFF';
+        }
         if ($flat_design) {
             $fact = 80;
         }
         else {
             $fact = 98;
         }
-        $c = new Color($instance['bg_color']);
+        $c = new Color($bg_color);
         if ($dawndusk < 100) {
             $color = new Color($c->darken(round(($fact * $c->getHsl()['L']) * (1 - ($dawndusk / 100)), 0)));
         }
@@ -396,6 +403,7 @@ class Outdoor extends \WP_Widget {
         $NACurrent = false;
         $NAComputed = false;
         $modules = $this->get_widget_data($instance['station'], 'outdoor', $hide_obsolete);
+        $temp = 0;
         $timestamp = '';
         $tz = '';
         $location = '';
@@ -448,6 +456,7 @@ class Outdoor extends \WP_Widget {
                         if (array_key_exists('temperature', $module['datas'])) {
                             $NAModule1 = true;
                             $datas['temperature'] = array();
+                            $temp = $module['datas']['temperature']['raw_value'];
                             $datas['temperature']['value'] = $module['datas']['temperature']['value'];
                             $datas['temperature']['unit'] = $module['datas']['temperature']['unit']['unit'];
                             $datas['temperature']['icon'] = $this->output_iconic_value($module['datas']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
@@ -710,6 +719,7 @@ class Outdoor extends \WP_Widget {
             }
             if (array_key_exists('temperature', $current['datas'])) {
                 $datas['temperature'] = array();
+                $temp = $current['datas']['temperature']['raw_value'];
                 $datas['temperature']['value'] = $current['datas']['temperature']['value'];
                 $datas['temperature']['unit'] = $current['datas']['temperature']['unit']['unit'];
                 $datas['temperature']['icon'] = $this->output_iconic_value($current['datas']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
@@ -764,6 +774,7 @@ class Outdoor extends \WP_Widget {
         if (!$NACurrent) {
             $show_current = false ;
             $show_cloud_cover = false ;
+            $show_snow = false ;
         }
         if (!$NAComputed) {
             $show_snow = false ;
@@ -777,8 +788,8 @@ class Outdoor extends \WP_Widget {
             $show_cloud_ceiling = false ;
         }
         if (array_key_exists('temperature', $datas)) {
-            $show_snow = ($show_snow && $this->is_valid_snow($datas['temperature']['value']));
-            $show_rain = ($show_rain && $this->is_valid_rain($datas['temperature']['value']));
+            $show_snow = ($show_snow && $this->is_valid_snow($temp));
+            $show_rain = ($show_rain && $this->is_valid_rain($temp));
         }
         else {
             //

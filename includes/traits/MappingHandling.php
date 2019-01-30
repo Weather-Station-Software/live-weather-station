@@ -18,7 +18,7 @@ trait Handling {
      * @param float $lat The latitude of the point.
      * @param float $lon The longitude of the point.
      * @param integer $height The height (in px) of the frame.
-     * @param boolean $marker Optional. Indicates wheter the marker should be whown.
+     * @param boolean $marker Optional. Indicates whether the marker should be shown.
      * @return string The full html iframe ready to be printed.
      * @since 3.0.0
      */

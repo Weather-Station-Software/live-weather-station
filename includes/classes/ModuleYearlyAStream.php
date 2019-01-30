@@ -23,7 +23,7 @@ class AStream extends \WeatherStation\Engine\Module\Maintainer {
         $this->module_type = 'astream';
         $this->module_name = ucfirst(__('angular stream', 'live-weather-station'));
         $this->module_hint = __('Display historical data as an angular stream chart. Particularly suitable for wind data, this graph allows to view a measurement according to an angle.', 'live-weather-station');
-        $this->module_icon = 'fa fa-fw fa-rotate-90 fa-hourglass';
+        $this->module_icon = LWS_FAS . (LWS_FA5?' fa-hourglass':' fa-hourglass') . ' fa-fw fa-rotate-90';
         $this->layout = '12-3-4';
         $this->series_number = 2;
         parent::__construct($station_information);

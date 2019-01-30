@@ -24,6 +24,7 @@ use WeatherStation\UI\Map\ThunderforestHandling;
 use WeatherStation\UI\Map\StamenHandling;
 use WeatherStation\UI\Map\OpenweathermapHandling;
 use WeatherStation\UI\Map\MapboxHandling;
+use WeatherStation\UI\Map\MaptilerHandling;
 
 /**
  * Outputing / shortcoding functionalities for Weather Station plugin.
@@ -52,7 +53,7 @@ trait Output {
         'partial_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 'sunshine', 'soil_temperature', 'leaf_wetness',
         'moisture_content', 'moisture_tension', 'evapotranspiration', 'strike_count', 'strike_instant',
         'strike_distance', 'strike_bearing', 'visibility', 'picture', 'video', 'video_imperial', 'video_metric', 'steadman',
-        'summer_simmer', 'delta_t');
+        'summer_simmer', 'delta_t', 'weather');
     private $not_showable_measurements = array('battery', 'firmware', 'signal', 'loc_timezone', 'loc_altitude',
         'loc_latitude', 'loc_longitude', 'last_seen', 'last_refresh', 'first_setup', 'last_upgrade', 'last_setup',
         'sunrise_c','sunrise_n','sunrise_a', 'sunset_c','sunset_n', 'sunset_a', 'day_length_c', 'day_length_n',
@@ -69,6 +70,12 @@ trait Output {
         'cloudiness_max', 'cloudiness_trend', 'guststrength_day_min', 'guststrength_day_max', 'guststrength_day_trend',
         'visibility_min', 'visibility_max', 'visibility_trend', 'windstrength_day_min', 'windstrength_day_max',
         'windstrength_day_trend');
+    protected $dynamic_icons = array('signal', 'battery', 'moon_phase', 'moon_age', 'strike_bearing', 'windstrength', 'guststrength',
+        'windstrength_max', 'windstrength_day_min', 'windstrength_day_max', 'guststrength_day_min',
+        'guststrength_day_max', 'windstrength_hour_max', 'wind_ref', 'warn_windstrength', 'warn_guststrength',
+        'warn_windstrength_max', 'warn_windstrength_day_max', 'warn_windstrength_hour_max', 'warn_wind_ref', 'windangle', 'gustangle',
+        'winddirection', 'gustdirection', 'windangle_max', 'windangle_day_max', 'windangle_hour_max', 'winddirection_max',
+        'winddirection_day_max', 'winddirection_hour_max', 'weather');
     private $graph_allowed_serie = array('device_id', 'module_id', 'measurement', 'line_mode', 'dot_style', 'line_style', 'line_size');
     private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
 
@@ -107,6 +114,10 @@ trait Output {
                         break;
                     case 5 :
                         $mapping_service = new OpenweathermapHandling($map, $_attributes['size']);
+                        return $mapping_service->output();
+                        break;
+                    case 6 :
+                        $mapping_service = new MaptilerHandling($map, $_attributes['size']);
                         return $mapping_service->output();
                         break;
                     default:
@@ -4007,7 +4018,14 @@ trait Output {
             if ($label_txt != '') {
                 $label_txt = '<div style="padding-top:' . $ptop . 'px;' . str_replace('fill', 'color', $prop['text']) . '"><text style="' . $prop['nv-axislabel'] . '">' . $label_txt . '</text></div>';
             }
-
+            $months = $this->get_month_names();
+            $month_M = array();
+            $month_F = array();
+            for ($i=1; $i<=12; $i++) {
+                $month_M[] = '"' . $months[$i]['M'] . '"';
+                $month_F[] = '"' . $months[$i]['F'] . '"';
+            }
+            $i18n = 'decimal: ".",thousands: ",",grouping: [3],currency: ["$", ""],dateTime: "%a %b %e %X %Y",date: "%m/%d/%Y",time: "%H:%M:%S",periods: ["AM", "PM"],days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],shortDays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],months: [' . implode(',', $month_F) . '],shortMonths: [' . implode(',', $month_M) . ']';
             wp_enqueue_style('lws-nvd3');
             wp_enqueue_style('lws-cal-heatmap');
             wp_enqueue_script('lws-cal-heatmap');
@@ -4054,6 +4072,7 @@ trait Output {
                 $body .= '          displayLegend: false,' . PHP_EOL;
             }
             $body .= '          subDomainTitleFormat: {empty: "' . sprintf(__('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>'). '", filled: "' . sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s %s</strong>', '{date}', $values['extras'][0]['measurement_type'] . ' - ' . $values['extras'][0]['set_name'], '{count}', $values['legend']['unit']['unit']). '"},' . PHP_EOL;
+            $body .= '          i18nDomainDateFormat: {' . $i18n . '},' . PHP_EOL;
             $body .= '          legendTitleFormat: {lower: "",inner: "",upper: ""}' . PHP_EOL;
             $body .= '      });' . PHP_EOL;
             // END MAIN BODY
@@ -4262,6 +4281,9 @@ trait Output {
                 if ($type == 'distributionrc' || $type == 'valuerc') {
                     $result .= '        chart' . $uniq . '.data(data' . $uniq . ').duration(500).update();' . PHP_EOL;
                 }
+                elseif ($type == 'calendarhm') {
+                    $result .= '        chart' . $uniq . '.update(data' . $uniq . ');' . PHP_EOL;
+                }
                 else {
                     $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
                 }
@@ -4331,7 +4353,7 @@ trait Output {
             $result .= '' . PHP_EOL;
         }
         $result .= '  });' . PHP_EOL;
-        $result .= lws_print_end_script() . PHP_EOL;
+        $result .= lws_print_end_script();
 
         return $result;
     }
@@ -4381,7 +4403,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script() . PHP_EOL;
+                $result .= lws_print_end_script();
             }
 
             if ($_attributes['metric'] == 'call_short' || $_attributes['metric'] == 'call_long' || $_attributes['metric'] == 'rate_short' || $_attributes['metric'] == 'rate_long') {
@@ -4467,7 +4489,7 @@ trait Output {
                 $s = str_replace('-', '', $s);
                 $result .= '    $("#selector-'.$s.'-'.$uniq.'").click();' . PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script() . PHP_EOL;
+                $result .= lws_print_end_script();
             }
         }
 
@@ -4502,7 +4524,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script() . PHP_EOL;
+                $result .= lws_print_end_script();
             }
 
             if ($_attributes['metric'] == 'density' || $_attributes['metric'] == 'criticality') {
@@ -4573,7 +4595,7 @@ trait Output {
                 }
                 $result .= '      });' . PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script() . PHP_EOL;
+                $result .= lws_print_end_script();
             }
         }
 
@@ -4609,7 +4631,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script() . PHP_EOL;
+                $result .= lws_print_end_script();
             }
             if ($_attributes['metric'] == 'time_by_pool') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
@@ -4636,7 +4658,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script() . PHP_EOL;
+                $result .= lws_print_end_script();
             }
             if ($_attributes['metric'] == 'time_for_history' || $_attributes['metric'] == 'time_for_system' || $_attributes['metric'] == 'time_for_pull' || $_attributes['metric'] == 'time_for_push') {
                 wp_enqueue_script('lws-colorbrewer');
@@ -4671,7 +4693,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script() . PHP_EOL;
+                $result .= lws_print_end_script();
             }
         }
 
@@ -4707,7 +4729,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script() . PHP_EOL;
+                $result .= lws_print_end_script();
             }
             if ($_attributes['metric'] == 'time') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
@@ -4732,7 +4754,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script() . PHP_EOL;
+                $result .= lws_print_end_script();
             }
             if ($_attributes['metric'] == 'efficiency') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
@@ -4759,7 +4781,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script() . PHP_EOL;
+                $result .= lws_print_end_script();
             }
             if ($_attributes['metric'] == 'time_saving') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
@@ -4787,7 +4809,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script() . PHP_EOL;
+                $result .= lws_print_end_script();
             }
         }
 
@@ -4828,7 +4850,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script() . PHP_EOL;
+                $result .= lws_print_end_script();
             }
         }
         return $result;
@@ -5000,7 +5022,7 @@ trait Output {
                 $result .= '  ' . $image .'.onload = function() {$("#' . $uniq . '").css("background-image", "url(" + ' . $image .'.src + ")");}'.PHP_EOL;
                 $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {' . $image .'.src = data;});}, '.$time.');})'.PHP_EOL;
         }
-        $result .= lws_print_end_script().PHP_EOL;
+        $result .= lws_print_end_script();
         return $result;
     }
 
@@ -5043,7 +5065,7 @@ trait Output {
         $result .= '                    cycleSpeed      : "'.$_attributes['speed'].'"'.PHP_EOL;
         $result .= '    });'.PHP_EOL;
         $result .= '  });'.PHP_EOL;
-        $result .= lws_print_end_script().PHP_EOL;
+        $result .= lws_print_end_script();
         return $result;
     }
 
@@ -5704,7 +5726,7 @@ trait Output {
         $result .= '    http.send(params);'.PHP_EOL;
         $result .= '  }, '.$time.');'.PHP_EOL;
         $result .= '});'.PHP_EOL;
-        $result .= lws_print_end_script().PHP_EOL;
+        $result .= lws_print_end_script();
         return $result;
     }
 
@@ -6414,7 +6436,7 @@ trait Output {
             $result .= '      });'.PHP_EOL;
         }
         $result .= '    });'.PHP_EOL;
-        $result .= lws_print_end_script().PHP_EOL;
+        $result .= lws_print_end_script();
         return $result;
     }
 
@@ -6652,6 +6674,24 @@ trait Output {
                         $result = $this->output_value($result, $_attributes['measure_type'], false, true, $module_type);
                 }
                 break;
+            case 'hh-mm':
+            case 'hh-mm-ss':
+                switch ($_attributes['measure_type']) {
+                    case 'sunshine':
+                    case 'day_length':
+                    case 'day_length_c':
+                    case 'day_length_n':
+                    case 'day_length_a':
+                    case 'dawn_length_c':
+                    case 'dawn_length_n':
+                    case 'dawn_length_a':
+                    case 'dusk_length_c':
+                    case 'dusk_length_n':
+                    case 'dusk_length_a':
+                        $result = $this->get_age_hours_from_seconds($result, $_attributes['format']);
+                        break;
+                }
+                break;
             case 'short-text':
                 switch ($_attributes['measure_type']) {
                     case 'windangle':
@@ -6779,7 +6819,7 @@ trait Output {
             default:
                 $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);});}, '.$time.');});'.PHP_EOL;
         }
-        $result .= lws_print_end_script().PHP_EOL;
+        $result .= lws_print_end_script();
         return $result;
     }
 
@@ -6788,17 +6828,65 @@ trait Output {
      *
      * @param array $attributes The value queryed by the shortcode.
      * @return string The result of the shortcode.
-     * @since 3.4.0
+     * @since 3.8.0
      */
     public function icon_shortcodes($attributes) {
-        $_attributes = shortcode_atts( array('type'=>'simple', 'measurement'=>'', 'color'=>''), $attributes);
-        $result = '';
-        switch ($_attributes['type']) {
-            case 'simple':
-                $style = '';
-                $result = ''; //$this->output_iconic_value(0, $_attributes['measurement'], null, false, $style);
-                break;
+        $_attributes = shortcode_atts(array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => ''), $attributes);
+        $args = $_attributes;
+        if ($_attributes['format'] !== 'none') {
+            $args['element'] = 'measure_value';
+            $text = '&nbsp;' . $this->textual_shortcodes($args);
+            $text = '<span class="lws-text" style="vertical-align: baseline;">&nbsp;' . $text . '</span>';
         }
+        else {
+            $text = '';
+        }
+        $args['format'] = 'raw';
+        $args['element'] = 'measure_value';
+        $value = $this->textual_shortcodes($args);
+        $args['element'] = 'module_type';
+        $type = $this->textual_shortcodes($args);
+        $icon = $this->output_iconic_value($value, $_attributes['measure_type'], $type, ($_attributes['element'] === 'dynamic'));
+        $pref = '<span class="lws-icon-value">';
+        $suf = '</span>';
+        $result = $pref . $icon . $text . $suf;
+        return $result;
+    }
+
+    /**
+     * Get value for icon shortcodes as "live" values.
+     *
+     * @return string $attributes The value queryed by the shortcode.
+     * @since 3.8.0
+     */
+    public function liveicon_shortcodes($attributes) {
+        $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => '', 'fx'=>'','color'=>'','speed'=>''), $attributes );
+        $fingerprint = uniqid('', true);
+        $uuid = substr ($fingerprint, strlen($fingerprint)-6, 80);
+        $uniq = 'live-icon-' . $uuid;
+        $time = 1000 * (120 + rand(-20, 20));
+        $speed = (int)$_attributes['speed'] / 2;
+        $shortcode = 'live-weather-station-icon device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' element=\'' . $_attributes['element'] . '\' format=\'' . $_attributes['format'] . '\'';
+        $result = '<span id="' . $uniq . '" class="lws-liveicon-value lws-measurement-type-' . str_replace('_', '-', $_attributes['measure_type']) . '">' . do_shortcode('[' . $shortcode . ']') . '</span>';
+        $result .= lws_print_begin_script() . PHP_EOL;
+        $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+        switch ($_attributes['fx']) {
+            case 'fade-to-initial':
+                wp_enqueue_script('jquery-color');
+                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: "' . $_attributes['color'] . '"}, 0 );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
+                break;
+            case 'glow':
+                wp_enqueue_script('jquery-color');
+                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: "' . $_attributes['color'] . '"}, ' . $speed . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
+                break;
+            case 'blink':
+                wp_enqueue_script('jquery-color');
+                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");for (i=0; i<4; i++) { $("#' . $uniq . '").animate({color: "' . $_attributes['color'] . '"}, ' . $speed/4 . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed/4 . ' );}});}, '.$time.');});'.PHP_EOL;
+                break;
+            default:
+                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);});}, '.$time.');});'.PHP_EOL;
+        }
+        $result .= lws_print_end_script();
         return $result;
     }
 
@@ -6837,16 +6925,17 @@ trait Output {
     /**
      * Output a value with user's unit.
      *
-     * @param   mixed       $value          The value to output.
-     * @param   string      $type           The type of the value.
-     * @param   boolean     $unit           Optional. Display unit.
-     * @param   boolean     $textual        Optional. Display textual value.
-     * @param   string      $module_type    Optional. The type of the module.
-     * @param   string      $tz             Optional. The timezone.
-     * @return  string      The value outputed with the right unit.
-     * @since    1.0.0
+     * @param mixed $value The value to output.
+     * @param string $type The type of the value.
+     * @param boolean $unit Optional. Display unit.
+     * @param boolean $textual Optional. Display textual value.
+     * @param string $module_type Optional. The type of the module.
+     * @param string $tz Optional. The timezone.
+     * @param string $format Optional. Special format if needed.
+     * @return string The value outputed with the right unit.
+     * @since 1.0.0
      */
-    protected function output_value($value, $type, $unit=false , $textual=false, $module_type='NAMain', $tz='') {
+    protected function output_value($value, $type, $unit=false , $textual=false, $module_type='NAMain', $tz='', $format='') {
         $not = __('N/A', 'live-weather-station');
         if ($value == $not) {
             return $not;
@@ -6865,6 +6954,9 @@ trait Output {
                 break;
             case 'weather':
                 $result = (int)round($value, 0);
+                if ($textual) {
+                    $result = $this->get_current_weather_text($value);
+                }
                 break;
             case 'signal':
                 $result = $this->get_signal_percentage($value, $module_type);
@@ -7075,7 +7167,7 @@ trait Output {
                         $result .= ($unit ? $this->unit_espace . $this->get_dusk_dawn_unit() : '');
                     }
                     if ($textual) {
-                        $result = $this->get_age_hours_from_seconds($value);
+                        $result = $this->get_age_hours_from_seconds($value, $format);
                     }
                 }
                 break;
@@ -7093,7 +7185,7 @@ trait Output {
                         $result .= ($unit ? $this->unit_espace . $this->get_day_length_unit() : '');
                     }
                     if ($textual) {
-                        $result = $this->get_age_hours_from_seconds($value);
+                        $result = $this->get_age_hours_from_seconds($value, $format);
                     }
                 }
                 break;
@@ -7358,12 +7450,15 @@ trait Output {
                         'illuminance' => 'fa-' . (LWS_FA5?'long-arrow-alt-down':'long-arrow-down'),
                         'import' => 'fa-download',
                         'irradiance' => 'fa-rotate-90 fa-' . (LWS_FA5?'sign-in-alt':'sign-in'),
+                        'last_refresh' => 'fa-' . (LWS_FA5?'sync-alt ':'refresh'),
                         'last_upgrade' => 'fa-cog',
                         'last_seen' => 'fa-eye',
                         'last_setup' => 'fa-wrench',
                         'leaf_wetness' => 'fa-' . (LWS_FA5?'leaf ':'envira'),
                         'loc_altitude' => 'fa-rotate-315 fa-location-arrow',
                         'loc_timezone' => 'fa-' . (LWS_FA5?'clock ':'clock-o'),
+                        'loc_latitude' => 'fa-' . (LWS_FA5?'map-marker-alt':'map-marker'),
+                        'loc_longitude' => 'fa-' . (LWS_FA5?'map-marker-alt':'map-marker'),
                         'location' => 'fa-' . (LWS_FA5?'map-marker-alt':'map-marker'),
                         'map' => 'fa-map',
                         'module' => 'fa-database',
@@ -7380,6 +7475,7 @@ trait Output {
                         'pressure' => 'wi-barometer',
                         'pressure_sl' => 'wi-barometer',
                         'pressure_trend' => 'wi-barometer',
+                        'pressure_ref' => 'wi-barometer',
                         'o3' => 'fa-' . (LWS_FA5?'circle-notch':'circle-o-notch'),
                         'o3_distance' => 'fa-crosshairs',
                         'picture' => 'fa-image',
@@ -7391,9 +7487,9 @@ trait Output {
                         'rain_season_aggregated' => 'wi-umbrella',
                         'rain_year_aggregated' => 'wi-umbrella',
                         'rain_yesterday_aggregated' => 'wi-umbrella',
+                        'refresh' => 'fa-' . (LWS_FA5?'sync-alt ':'refresh'),
                         'saturation_absolute_humidity' => 'wi-raindrop',
                         'so2' => 'wi-smoke',
-                        'refresh' => 'fa-' . (LWS_FA5?'sync-alt ':'refresh'),
                         'snow' => 'wi-snowflake-cold',
                         'soil_temperature' => 'wi-thermometer',
                         'specific_enthalpy' => 'wi-refresh-alt',
@@ -7547,10 +7643,8 @@ trait Output {
             case 'windstrength_max':
             case 'windstrength_day_min':
             case 'windstrength_day_max':
-            case 'windstrength_day_trend':
             case 'guststrength_day_min':
             case 'guststrength_day_max':
-            case 'guststrength_day_trend':
             case 'windstrength_hour_max':
             case 'wind_ref':
                 $level = $this->get_wind_speed($value, 3);
@@ -7558,7 +7652,7 @@ trait Output {
                 $size = ' ico-size-1';
                 $align = 'baseline';
                 if ($show_value) {
-                    $icon = 'wi-strong-beaufort-'. $level;
+                    $icon = 'wi-wind-beaufort-'. $level;
                 }
                 else {
                     $icon = 'wi-strong-wind';
@@ -8374,6 +8468,7 @@ trait Output {
             case 'video':
             case 'video_imperial':
             case 'video_metric':
+            case 'weather':
                 $result['unit'] = '' ;
                 $result['long'] = '' ;
                 $result['comp'] = '' ;
@@ -8770,6 +8865,77 @@ trait Output {
         setlocale(LC_ALL, $locale);
         uasort($result, 'WeatherStation\Data\compareASCII');
         setlocale(LC_ALL, $save_locale);
+        return $result;
+    }
+
+    /**
+     * Get the weather in human readable text.
+     *
+     * @param integer $value The value of the weather.
+     * @return string The weather in human readable text.
+     * @since 3.8.0
+     */
+    protected function get_current_weather_text($value) {
+        if (!LWS_PREVIEW) {
+            return '';
+        }
+        switch ($value) {
+            case 200 : $result = lws__('thunderstorm with light rain', 'live-weather-station'); break;
+            case 201 : $result = lws__('thunderstorm with rain', 'live-weather-station'); break;
+            case 202 : $result = lws__('thunderstorm with heavy rain', 'live-weather-station'); break;
+            case 210 : $result = lws__('light thunderstorm', 'live-weather-station'); break;
+            case 211 : $result = lws__('thunderstorm', 'live-weather-station'); break;
+            case 212 : $result = lws__('heavy thunderstorm', 'live-weather-station'); break;
+            case 221 : $result = lws__('ragged thunderstorm', 'live-weather-station'); break;
+            case 230 : $result = lws__('thunderstorm with light drizzle', 'live-weather-station'); break;
+            case 231 : $result = lws__('thunderstorm with drizzle', 'live-weather-station'); break;
+            case 232 : $result = lws__('thunderstorm with heavy drizzle', 'live-weather-station'); break;
+            case 300 : $result = lws__('light intensity drizzle', 'live-weather-station'); break;
+            case 301 : $result = lws__('drizzle', 'live-weather-station'); break;
+            case 302 : $result = lws__('heavy intensity drizzle', 'live-weather-station'); break;
+            case 310 : $result = lws__('light intensity drizzle rain', 'live-weather-station'); break;
+            case 311 : $result = lws__('drizzle rain', 'live-weather-station'); break;
+            case 312 : $result = lws__('heavy intensity drizzle rain', 'live-weather-station'); break;
+            case 313 : $result = lws__('shower rain and drizzle', 'live-weather-station'); break;
+            case 314 : $result = lws__('heavy shower rain and drizzle', 'live-weather-station'); break;
+            case 321 : $result = lws__('shower drizzle', 'live-weather-station'); break;
+            case 500 : $result = lws__('light rain', 'live-weather-station'); break;
+            case 501 : $result = lws__('moderate rain', 'live-weather-station'); break;
+            case 502 : $result = lws__('heavy intensity rain', 'live-weather-station'); break;
+            case 503 : $result = lws__('very heavy rain', 'live-weather-station'); break;
+            case 504 : $result = lws__('extreme rain', 'live-weather-station'); break;
+            case 511 : $result = lws__('freezing rain', 'live-weather-station'); break;
+            case 520 : $result = lws__('light intensity shower rain', 'live-weather-station'); break;
+            case 521 : $result = lws__('shower rain', 'live-weather-station'); break;
+            case 522 : $result = lws__('heavy intensity shower rain', 'live-weather-station'); break;
+            case 531 : $result = lws__('ragged shower rain', 'live-weather-station'); break;
+            case 600 : $result = lws__('light snow', 'live-weather-station'); break;
+            case 601 : $result = lws__('snow', 'live-weather-station'); break;
+            case 602 : $result = lws__('heavy snow', 'live-weather-station'); break;
+            case 611 : $result = lws__('sleet', 'live-weather-station'); break;
+            case 612 : $result = lws__('shower sleet', 'live-weather-station'); break;
+            case 615 : $result = lws__('light rain and snow', 'live-weather-station'); break;
+            case 616 : $result = lws__('rain and snow', 'live-weather-station'); break;
+            case 620 : $result = lws__('light shower snow', 'live-weather-station'); break;
+            case 621 : $result = lws__('shower snow', 'live-weather-station'); break;
+            case 622 : $result = lws__('heavy shower snow', 'live-weather-station'); break;
+            case 701 : $result = lws__('mist', 'live-weather-station'); break;
+            case 711 : $result = lws__('smoke', 'live-weather-station'); break;
+            case 721 : $result = lws__('haze', 'live-weather-station'); break;
+            case 731 : $result = lws__('sand, dust whirls', 'live-weather-station'); break;
+            case 741 : $result = lws__('fog', 'live-weather-station'); break;
+            case 751 : $result = lws__('sand', 'live-weather-station'); break;
+            case 761 : $result = lws__('dust', 'live-weather-station'); break;
+            case 762 : $result = lws__('volcanic ash', 'live-weather-station'); break;
+            case 771 : $result = lws__('squalls', 'live-weather-station'); break;
+            case 781 : $result = lws__('tornado', 'live-weather-station'); break;
+            case 800 : $result = lws__('clear sky', 'live-weather-station'); break;
+            case 801 : $result = lws__('few clouds', 'live-weather-station'); break;
+            case 802 : $result = lws__('scattered clouds', 'live-weather-station'); break;
+            case 803 : $result = lws__('broken clouds', 'live-weather-station'); break;
+            case 804 : $result = lws__('overcast clouds', 'live-weather-station'); break;
+            default : $result = 'unknown'; break;
+        }
         return $result;
     }
 
@@ -10211,7 +10377,7 @@ trait Output {
      */
     protected function is_valid_rain($temp_ref) {
         $result = false;
-        if ($temp_ref > -10) {
+        if ($temp_ref > -5) {
             $result = true;
         }
         return $result;
@@ -10226,7 +10392,7 @@ trait Output {
      */
     protected function is_valid_snow($temp_ref) {
         $result = false;
-        if ($temp_ref < 10) {
+        if ($temp_ref < 5) {
             $result = true;
         }
         return $result;
@@ -10627,9 +10793,12 @@ trait Output {
                     $val['measure_type_txt'] = $this->get_measurement_type($val['measure_type'], false, $module['module_type']);
                     $val['measure_value'] = $data['measure_value'];
                     $val['measure_timestamp'] = $data['measure_timestamp'];
-                    $textual = (strpos($val['measure_type'], '_trend') > 0);
+                    $textual = (strpos($val['measure_type'], '_trend') !== false);
+                    if (!$textual) {
+                        $textual = ($val['measure_type'] == 'weather');
+                    }
                     $val['measure_value_txt'] = $this->output_value($val['measure_value'], $val['measure_type'], true, $textual, $module['module_type'], $station['loc_timezone']);
-                    $val['measure_value_icn'] = $this->output_iconic_value($val['measure_value'], $val['measure_type'], $module['module_type'], false, '#999');
+                    $val['measure_value_icn'] = $this->output_iconic_value($val['measure_value'], $val['measure_type'], $module['module_type'], ($val['measure_type'] == 'weather'), '#999');
                     if (strpos($val['measure_type'], 'angle') > 0) {
                         $val['measure_value_txt'] = $this->get_angle_text($val['measure_value']);
                     }
@@ -11139,6 +11308,36 @@ trait Output {
         if ($health_idx < 20) {
             $result = '#EB302E';
         }
+        return $result;
+    }
+
+    /**
+     * Get month names.
+     *
+     * @return array An array containing month names.
+     * @since 3.7.9
+     */
+    protected function get_month_names() {
+        $result = array();
+        for ($i=1; $i<=12; $i++) {
+            $ts = 86400 + ($i - 1 ) * 31 * 86400;
+            $m = array();
+            $m['F'] = date_i18n('F', $ts);
+            $m['M'] = date_i18n('M', $ts);
+            $result[$i] = $m;
+        }
+        return $result;
+    }
+
+    /**
+     * Get day names.
+     *
+     * @return array An array containing day names.
+     * @since 3.7.9
+     */
+    protected function get_day_names() {
+        $result = array();
+
         return $result;
     }
 

@@ -1200,11 +1200,11 @@ class Manager {
      * @since 3.4.1
      */
     public static function get_multilang_language_id() {
-        $result = 'xx';
+        $result = lws_get_display_locale();
         if (self::is_polylang_installed()) {
             $result = pll_current_language();
         }
-        else if (self::is_wpml_installed()) {
+        if (self::is_wpml_installed()) {
             $result = ICL_LANGUAGE_CODE;
         }
         if (self::is_babble_installed()) {

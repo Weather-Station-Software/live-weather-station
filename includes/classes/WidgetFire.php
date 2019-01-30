@@ -194,13 +194,20 @@ class Fire extends \WP_Widget {
             $maxwidth = 0;
         }
         $txt_color = $instance['txt_color'];
+        $bg_color = $instance['bg_color'];
+        if (!$txt_color) {
+            $txt_color = '#444444';
+        }
+        if (!$bg_color) {
+            $txt_color = '#FFFFFF';
+        }
         if ($flat_design) {
             $fact = 80;
         }
         else {
             $fact = 98;
         }
-        $color = new Color($instance['bg_color']);
+        $color = new Color($bg_color);
 
         if (($cbi > 90) && $instance['follow_risk']){
             $l = $color->getHsl()['L'];

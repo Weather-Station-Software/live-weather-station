@@ -25,8 +25,8 @@ use WeatherStation\System\Storage\Manager as FS;
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.7.9-dev0');
-define('LWS_PREVIEW', true);
+define('LWS_VERSION', '3.7.9-dev1');
+define('LWS_PREVIEW', false);
 
 
 
@@ -70,6 +70,7 @@ define('LWS_IC_W3TC', EnvManager::is_w3_total_cache_installed());
 define('LWS_IC_AUTOPTIMIZE', EnvManager::is_autoptimize_installed());
 define('LWS_IC_HC', EnvManager::is_hyper_cache_installed());
 define('LWS_WU_ACTIVE', false);
+define('LWS_SERVICE_SEPARATOR', '{/LWS_SEP/}');
 
 
 /**

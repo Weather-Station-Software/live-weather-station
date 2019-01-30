@@ -5,7 +5,6 @@
  * 3.x - Services availability (as analytics tab)
  * 3.x - Wind state
  * 3.x - Sun (meridian) transit time
- * 3.x - Querying icons texts via shortcodes
  * 3.x - Forest fire weather index computing
  * 3.x - Aridity index computing
  * 3.x - Pushing data to twitter / slack / fb / ...
@@ -16,7 +15,6 @@
  * 4.x - 5 days forecasting
  * 4.x - Gutenberg blocks
  * 5.x - Pushing data to MQTT broker
- * 5.x - Textual historical shortcodes
 
 
 
@@ -47,7 +45,6 @@
  * 3.x - Clientraw as export
  * 3.x - Realtime as export
  * 3.x - all-sensors.xml as import
- * 3.x - weatherlink as import
  * 3.x - private WeatherFlow
  * 4.x - Metar / TAF / NOAA
 
@@ -57,7 +54,6 @@
 * IMPROVEMENTS TO DO  *
 ***********************
 
-Warning box (locale, WP version)
 Misc display options (widgets, charts, etc.)
 
 ***********************
@@ -82,23 +78,34 @@ Fully delete a station in fast collect mode
 * 3.8.x               *
 ***********************
 DONE:
+-----
 
+* New: Weather Station natively connects to ***WeatherLink Network*** - special thanks to David Aguilera for the tests.
 * New: MapTiler added as mapping service.
+* New: "icon" control to display current data as static or dynamic icons.
+* Improvement: current conditions can now be displayed as plain text in textual shortcodes.
+* Improvement: duration can now be outputted as hh:mm or hh:mm:ss formats in textual shortcodes (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/) for the suggestion).
+* Improvement: in maps, two new marker types (temperature and colored temperature) allow to display temperature in markers (thanks to [@daguilera](https://weather.station.software/community/profile/daguilera/) for the suggestion).
+
 
 
 TODO:
+-----
 Rename Humidity in Relative Humidity
 min/max/trend
 Shortened types for textual and gauge
-Icons via shortcodes
+Credits with David Aguilera
+Fix ModuleCurrentGauge.php line 275 (controls)
+
+
+
 Textual climatological shortcodes
 Weather radial
 Widget styles
 Use of live_weather_station_mutation_observer
 UV sticker
-Temperature in map markers
 Link in map popup
-Weatherlink.com
+Backup/restore configuration
 
 New indexes:
 Pressure altitude
@@ -106,11 +113,16 @@ Density altitude
 Hellman's index
 Zambretti forecast
 
-Translations:
+TRANSLATION:
+------------
 at a glance box: singular/plural for station(s)
 
 
 -----
+
+
+
+
 
 
 Chart for station comparison

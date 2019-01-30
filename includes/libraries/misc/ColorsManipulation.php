@@ -477,6 +477,31 @@ class ColorsManipulation {
         return $result;
     }
 
+    public static function colorGradient($from_color, $to_color, $graduations = 10) {
+        $graduations--;
+        $startcol = str_replace("#", "", $from_color);
+        $endcol = str_replace("#", "", $to_color);
+        $RedOrigin = hexdec(substr($startcol, 0, 2));
+        $GrnOrigin = hexdec(substr($startcol, 2, 2));
+        $BluOrigin = hexdec(substr($startcol, 4, 2));
+        if ($graduations >= 2) { // for at least 3 colors
+            $GradientSizeRed = (hexdec(substr($endcol, 0, 2)) - $RedOrigin) / $graduations; //Graduation Size Red
+            $GradientSizeGrn = (hexdec(substr($endcol, 2, 2)) - $GrnOrigin) / $graduations;
+            $GradientSizeBlu = (hexdec(substr($endcol, 4, 2)) - $BluOrigin) / $graduations;
+            for ($i = 0; $i <= $graduations; $i++) {
+                $RetVal[$i] = strtoupper("#" . str_pad(dechex($RedOrigin + ($GradientSizeRed * $i)), 2, '0', STR_PAD_LEFT) .
+                    str_pad(dechex($GrnOrigin + ($GradientSizeGrn * $i)), 2, '0', STR_PAD_LEFT) .
+                    str_pad(dechex($BluOrigin + ($GradientSizeBlu * $i)), 2, '0', STR_PAD_LEFT));
+            }
+        } elseif ($graduations == 1) { // exactly 2 colors
+            $RetVal[] = $from_color;
+            $RetVal[] = $to_color;
+        } else { // one color
+            $RetVal[] = $from_color;
+        }
+        return $RetVal;
+    }
+
 
     /**
      * Returns whether or not given color is considered "light"

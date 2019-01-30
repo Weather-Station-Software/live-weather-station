@@ -6,6 +6,7 @@ use WeatherStation\System\Environment\Manager as EnvManager;
 use WeatherStation\SDK\Clientraw\Plugin\StationCollector as ClientrawCollector;
 use WeatherStation\SDK\Realtime\Plugin\StationCollector as RealtimeCollector;
 use WeatherStation\SDK\WeatherFlow\Plugin\StationCollector as WeatherFlowCollector;
+use WeatherStation\SDK\WeatherLink\Plugin\StationCollector as WeatherLinkCollector;
 use WeatherStation\SDK\Pioupiou\Plugin\StationCollector as PioupiouCollector;
 use WeatherStation\SDK\BloomSky\Plugin\StationCollector as BloomskyCollector;
 use WeatherStation\SDK\Ambient\Plugin\StationCollector as AmbientCollector;
@@ -42,6 +43,7 @@ use WeatherStation\SDK\Clientraw\Plugin\StationInitiator as Clientraw_Station_In
 use WeatherStation\SDK\Realtime\Plugin\StationInitiator as Realtime_Station_Initiator;
 use WeatherStation\SDK\Stickertags\Plugin\StationInitiator as Stickertags_Station_Initiator;
 use WeatherStation\SDK\WeatherFlow\Plugin\StationInitiator as WeatherFlow_Station_Initiator;
+use WeatherStation\SDK\WeatherLink\Plugin\StationInitiator as WeatherLink_Station_Initiator;
 use WeatherStation\SDK\Pioupiou\Plugin\StationInitiator as Pioupiou_Station_Initiator;
 use WeatherStation\SDK\BloomSky\Plugin\StationInitiator as Bloomsky_Station_Initiator;
 use WeatherStation\SDK\Ambient\Plugin\StationInitiator as Ambient_Station_Initiator;
@@ -113,8 +115,8 @@ class Admin {
         lws_register_style('lws-font-chart-icons', LWS_PUBLIC_URL, 'css/font-chart-icons.min.css');
         lws_register_style('lws-lcd', LWS_PUBLIC_URL, 'css/lws-lcd.min.css');
         lws_register_style('lws-table', LWS_PUBLIC_URL, 'css/live-weather-station-table.min.css');
-        lws_register_style('lws-font-awesome-4', LWS_PUBLIC_URL, 'css/font-awesome-4.min.css');
-        lws_register_style('lws-font-awesome-5', LWS_PUBLIC_URL, 'css/font-awesome-5.min.css');
+        lws_register_style('lws-font-awesome-4', LWS_PUBLIC_URL, 'css/fontawesome-4.min.css');
+        lws_register_style('lws-font-awesome-5', LWS_PUBLIC_URL, 'css/fontawesome-5.min.css');
         lws_register_style('lws-weather-icons', LWS_PUBLIC_URL, 'css/weather-icons.min.css');
         lws_register_style('lws-weather-icons-wind', LWS_PUBLIC_URL, 'css/weather-icons-wind.min.css');
         lws_register_style('lws-nvd3', LWS_PUBLIC_URL, 'css/nv.d3.min.css', array(), false);
@@ -1511,7 +1513,19 @@ class Admin {
                                 $station = $this->get_station_informations_by_guid($id);
                             }
                             else {
-                                $station = $this->get_wflw_station();
+                                $station = $this->get_wlink_station();
+                            }
+                            $countries = $this->get_country_names();
+                            $error = 0;
+                            $error_message = '';
+                            $args = compact('station', 'countries', 'error', 'error_message', 'dashboard');
+                            break;
+                        case 'weatherlink':
+                            if ($id) {
+                                $station = $this->get_station_informations_by_guid($id);
+                            }
+                            else {
+                                $station = $this->get_wlink_station();
                             }
                             $countries = $this->get_country_names();
                             $error = 0;
@@ -1751,6 +1765,30 @@ class Admin {
                                 }
                                 else {
                                     $view = 'form-add-edit-weatherflow' ;
+                                    $args = compact('station', 'countries', 'error', 'error_message', 'dashboard');
+                                }
+                            }
+                            break;
+                        case 'weatherlink':
+                            if (array_key_exists('add-edit-wlink', $_POST)) {
+                                $station = $this->add_wlink();
+                                $error = 0;
+                                $countries = $this->get_country_names();
+                                if (array_key_exists('error', $station)) {
+                                    $error = $station['error'];
+                                    unset($station['error']);
+                                }
+                                if (array_key_exists('message', $station)) {
+                                    $error_message = $station['message'];
+                                    unset($station['message']);
+                                }
+                                if ($error == 0) {
+                                    if ($dashboard) {
+                                        $view = 'dashboard' ;
+                                    }
+                                }
+                                else {
+                                    $view = 'form-add-edit-weatherlink' ;
                                     $args = compact('station', 'countries', 'error', 'error_message', 'dashboard');
                                 }
                             }
@@ -2575,6 +2613,8 @@ class Admin {
         $n->run();
         $n = new WeatherFlow_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
         $n->run();
+        $n = new WeatherLink_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run();
         $n = new Bloomsky_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
         $n->run();
         $n = new Ambient_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
@@ -2682,6 +2722,17 @@ class Admin {
      */
     private function get_wflw() {
         $n = new WeatherFlow_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
+        $n->run();
+        $this->get_current_and_pollution();
+    }
+
+    /**
+     * First getting of data for WetaherFlow station.
+     *
+     * @since 3.8.0
+     */
+    private function get_wlink() {
+        $n = new WeatherLink_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
         $n->run();
         $this->get_current_and_pollution();
     }
@@ -3458,6 +3509,7 @@ class Admin {
             if (array_key_exists('loc_altitude', $_POST)) {
                 $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
             }
+            $station['service_id'] = str_replace(array('http://', 'https://', 'ftp://'), '', $station['service_id']);
             $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
             $collector = new ClientrawCollector();
             if ($message = $collector->test($station['connection_type'], $station['service_id'])) {
@@ -3718,6 +3770,7 @@ class Admin {
             if (array_key_exists('loc_longitude', $_POST)) {
                 $station['loc_longitude'] = sprintf("%.7F", (float)stripslashes(htmlspecialchars_decode($_POST['loc_longitude'])));
             }
+            $station['service_id'] = str_replace(array('http://', 'https://', 'ftp://'), '', $station['service_id']);
             $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
             $collector = new RealtimeCollector();
             if ($message = $collector->test($station['connection_type'], $station['service_id'])) {
@@ -3856,6 +3909,7 @@ class Admin {
             if (array_key_exists('loc_longitude', $_POST)) {
                 $station['loc_longitude'] = sprintf("%.7F", (float)stripslashes(htmlspecialchars_decode($_POST['loc_longitude'])));
             }
+            $station['service_id'] = str_replace(array('http://', 'https://', 'ftp://'), '', $station['service_id']);
             $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
             $collector = new StickertagsCollector();
             if ($message = $collector->test($station['connection_type'], $station['service_id'])) {
@@ -4048,7 +4102,7 @@ class Admin {
     }
 
     /**
-     * Add a Realtime station.
+     * Add a WeatherFlow station.
      *
      * @since 3.0.0
      */
@@ -4119,6 +4173,135 @@ class Admin {
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
                     $this->get_wflw();
+                    $st = $this->get_station_informations_by_guid($guid);
+                    $this->modify_table(self::live_weather_station_log_table(), 'device_id', $station_id, $st['station_id']);
+                }
+                else {
+                    if ($update) {
+                        $message = $message = __('Unable to update the station %s.', 'live-weather-station');
+                        $log = 'Unable to update this station.';
+                        $station_id = $station['station_id'];
+                        $station_name = $station['station_name'];
+                    }
+                    else {
+                        $message = $message = __('Unable to add the station %s.', 'live-weather-station');
+                        $log = 'Unable to add this station.';
+                        $station_id = null;
+                        $station_name = null;
+                    }
+                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    add_settings_error('lws_nonce_error', 403, $message, 'error');
+                    Logger::error($this->service, null, $station_id, $station_name, null, null, null, $log);
+                }
+            }
+            else {
+                if ($update) {
+                    $message = $message = __('Unable to update the station %s.', 'live-weather-station');
+                    $station_id = $station['station_id'];
+                    $station_name = $station['station_name'];
+                }
+                else {
+                    $message = $message = __('Unable to add the station %s.', 'live-weather-station');
+                    $station_id = null;
+                    $station_name = null;
+                }
+                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                add_settings_error('lws_nonce_error', 403, $message, 'error');
+                Logger::critical('Security', null, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
+                Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
+            }
+        }
+        else {
+            $result['error'] = $error;
+        }
+        if (!array_key_exists('guid', $station)) {
+            $station['guid'] = 0;
+        }
+        $station['error'] = $error;
+        $station['message'] = $message;
+        return $station;
+    }
+
+    /**
+     * Add a WeatherLink station.
+     *
+     * @since 3.8.0
+     */
+    public function add_wlink() {
+        $station = array();
+        $error = 0;
+        $message = '';
+        if (array_key_exists('guid', $_POST) &&
+            array_key_exists('station_id', $_POST) &&
+            array_key_exists('service_did', $_POST) &&
+            array_key_exists('service_apitoken', $_POST) &&
+            array_key_exists('service_ownerpass', $_POST) &&
+            array_key_exists('loc_country_code', $_POST)) {
+            $station['station_type'] = LWS_WLINK_SID;
+            $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+            $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
+            $station['loc_country_code'] = $_POST['loc_country_code'];
+            $station['service_id'] = $_POST['service_did'] . LWS_SERVICE_SEPARATOR . $_POST['service_apitoken'] . LWS_SERVICE_SEPARATOR . $_POST['service_ownerpass'];
+            $collector = new WeatherLinkCollector();
+            if ($message = $collector->test_station($station['service_id'])) {
+                $error = 1;
+            }
+            else {
+                $station['station_id'] = $collector->station_id;
+                if ($collector->detected_station_name != '') {
+                    $station['station_name'] = $collector->detected_station_name;
+                }
+                else {
+                    $station['station_name'] = __('no name', 'live-weather-station');
+                }
+                if ($collector->detected_station_model != '') {
+                    $station['station_model'] = $collector->detected_station_model;
+                }
+                if ($collector->detected_timezone != '') {
+                    $station['loc_timezone'] = $collector->detected_timezone;
+                }
+                if ($collector->detected_city != '') {
+                    $station['loc_city'] = ucfirst($collector->detected_city);
+                }
+                if ($collector->detected_latitude) {
+                    $station['loc_latitude'] = $collector->detected_latitude;
+                }
+                if ($collector->detected_longitude) {
+                    $station['loc_longitude'] = $collector->detected_longitude;
+                }
+                if ($collector->detected_altitude) {
+                    $station['loc_altitude'] = $collector->detected_altitude;
+                }
+            }
+        }
+        else {
+            $error = 3;
+        }
+        if ($error == 0) {
+            $update = true;
+            if (array_key_exists('guid', $station)) {
+                if ($station['guid'] == 0) {
+                    unset($station['guid']);
+                    $update = false;
+                }
+            }
+            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-wlink')) {
+                if ($guid = $this->update_stations_table($station, true)) {
+                    $st = $this->get_station_informations_by_guid($guid);
+                    $station_id = $st['station_id'];
+                    $station_name = $st['station_name'];
+                    if ($update) {
+                        $message = __('The station %s has been correctly updated.', 'live-weather-station');
+                        $log = 'Station updated.';
+                    }
+                    else {
+                        $message = __('The station %s has been correctly added.', 'live-weather-station');
+                        $log = 'Station added.';
+                    }
+                    $message = sprintf($message, '<em>' . $station_name . '</em>');
+                    add_settings_error('lws_nonce_success', 200, $message, 'updated');
+                    Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
+                    $this->get_wlink();
                     $st = $this->get_station_informations_by_guid($guid);
                     $this->modify_table(self::live_weather_station_log_table(), 'device_id', $station_id, $st['station_id']);
                 }
