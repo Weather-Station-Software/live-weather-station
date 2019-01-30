@@ -50,6 +50,8 @@ trait Description {
                 break;
             case 11:
                 $result = 'Ambient';
+            case 12:
+                $result = 'WeatherLink';
                 break;
             case 101:
                 $result = 'Windy';

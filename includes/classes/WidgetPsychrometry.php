@@ -169,13 +169,20 @@ class Psychrometry extends \WP_Widget {
             $maxwidth = 0;
         }
         $txt_color = $instance['txt_color'];
+        $bg_color = $instance['bg_color'];
+        if (!$txt_color) {
+            $txt_color = '#444444';
+        }
+        if (!$bg_color) {
+            $txt_color = '#FFFFFF';
+        }
         if ($flat_design) {
             $fact = 80;
         }
         else {
             $fact = 98;
         }
-        $c = new Color($instance['bg_color']);
+        $c = new Color($bg_color);
         if ($dawndusk < 100) {
             $color = new Color($c->darken(round(($fact * $c->getHsl()['L']) * (1 - ($dawndusk / 100)), 0)));
         }

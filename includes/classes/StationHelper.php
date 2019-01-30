@@ -17,6 +17,7 @@ use WeatherStation\SDK\WeatherUnderground\Plugin\Pusher as WUG_Pusher;
 
 use WeatherStation\Engine\Module\Maintainer as ModuleMaintainer;
 use WeatherStation\Engine\Module\Current\Gauge;
+use WeatherStation\Engine\Module\Current\Icon;
 use WeatherStation\Engine\Module\Current\Lcd;
 use WeatherStation\Engine\Module\Current\Meter;
 use WeatherStation\Engine\Module\Current\Snapshot;
@@ -82,8 +83,8 @@ class Handling {
     private $arg_tab;
     private $arg_action;
     private $service = 'Backend';
-    private $publishable = array(LWS_NETATMO_SID, LWS_LOC_SID, LWS_OWM_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WUG_SID, LWS_WFLW_SID, LWS_BSKY_SID, LWS_AMBT_SID);
-    private $sharable = array(LWS_NETATMO_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WFLW_SID, LWS_BSKY_SID, LWS_AMBT_SID);
+    private $publishable = array(LWS_NETATMO_SID, LWS_LOC_SID, LWS_OWM_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WUG_SID, LWS_WFLW_SID, LWS_BSKY_SID, LWS_AMBT_SID, LWS_WLINK_SID);
+    private $sharable = array(LWS_NETATMO_SID, LWS_RAW_SID, LWS_REAL_SID, LWS_WFLW_SID, LWS_BSKY_SID, LWS_AMBT_SID, LWS_WLINK_SID);
     private $publishing_proto = array('txt', 'raw', 'real', 'yow');
 
     /**
@@ -92,8 +93,12 @@ class Handling {
      * @since 3.4.0
      */
     private function register_modules() {
+        lws_font_awesome();
         $bsky = self::is_bsky_station($this->station_id);
         Textual::register_module('current');
+        if (LWS_PREVIEW) {
+            Icon::register_module('current');
+        }
         Gauge::register_module('current');
         Lcd::register_module('current');
         Meter::register_module('current');

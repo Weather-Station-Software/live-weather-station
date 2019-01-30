@@ -31,7 +31,7 @@ abstract class Maintainer {
     protected $module_id = '';
     protected $module_name = '';
     protected $module_hint = '';
-    protected $module_icon = 'fa fa-lg fa-fw fa-question';
+    protected $module_icon = LWS_FAR . (LWS_FA5?' fa-question-circle':' fa-fa-question-circle-o') . ' fa-fw';
     protected $module_icon_color = '#777777';
     protected $module_icon_index = '';
     protected $selected = false;
@@ -428,7 +428,7 @@ abstract class Maintainer {
             $result .= '});';
         }
         $result .= '});' . PHP_EOL;
-        $result .= lws_print_end_script() . PHP_EOL;
+        $result .= lws_print_end_script();
         return $result;
     }
 

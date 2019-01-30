@@ -2,6 +2,8 @@
 
 namespace WeatherStation\Utilities;
 
+use WeatherStation\Utilities\ColorsManipulation;
+
 /**
  * A color utility to use colorberwer colors in php.
  *
@@ -332,6 +334,17 @@ class ColorBrewer {
             $rank = $size - 1 - $rank;
         }
         return self::_get($set, $size, $rank);
+    }
+
+    public static function getGradient($set, $range, $length, $reverse=false) {
+        $result = array();
+        $step = (int)($length / $range);
+        for ($i=0; $i<$range; $i++) {
+            foreach (ColorsManipulation::colorGradient(self::get($set, $range + 1, $i, $reverse), self::get($set, $range + 1, $i + 1, $reverse), $step) as $c) {
+                $result[] = $c;
+            }
+        }
+        return $result;
     }
 
 }

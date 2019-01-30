@@ -212,6 +212,21 @@ var CalHeatMap = function() {
 		// for accepted date formatting used by d3.time.format()
 		subDomainDateFormat: null,
 
+		i18nDomainDateFormat: {
+			decimal: ".",
+			thousands: ",",
+			grouping: [3],
+			currency: ["$", ""],
+			dateTime: "%a %b %e %X %Y",
+			date: "%m/%d/%Y",
+			time: "%H:%M:%S",
+			periods: ["AM", "PM"],
+			days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+			shortDays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+			months: ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"],
+			shortMonths: ["Ene", "Feb", "Mar", "Abr", "May", "Jun", "Jul", "Ago", "Sep", "Oct", "Nov", "Dic"]
+		},
+
 		// Formatting of the text inside each subDomain cell
 		// @default: null, no text
 		// Accept a string used as specifier by d3.time.format()
@@ -1145,7 +1160,7 @@ CalHeatMap.prototype = {
 			}
 		}
 
-		options.subDomainDateFormat = (typeof options.subDomainDateFormat === "string" || typeof options.subDomainDateFormat === "function" ? options.subDomainDateFormat : this._domainType[options.subDomain].format.date);
+		options.subDomainDateFormat = (typeof options.subDomainDateFormat === "string" || typeof options.subDomainDateFormat === "function" || typeof options.subDomainDateFormat === "object" ? options.subDomainDateFormat : this._domainType[options.subDomain].format.date);
 		options.domainLabelFormat = (typeof options.domainLabelFormat === "string" || typeof options.domainLabelFormat === "function" ? options.domainLabelFormat : this._domainType[options.domain].format.legend);
 		options.subDomainTextFormat = ((typeof options.subDomainTextFormat === "string" && options.subDomainTextFormat !== "") || typeof options.subDomainTextFormat === "function" ? options.subDomainTextFormat : null);
 		options.domainMargin = expandMarginSetting(options.domainMargin);
@@ -1627,6 +1642,23 @@ CalHeatMap.prototype = {
 
 	formatDate: function(d, format) {
 		"use strict";
+
+
+		if (this.options.i18nDomainDateFormat != null) {
+			var myFormatters = d3.locale(this.options.i18nDomainDateFormat);
+
+
+
+			//var myFormatters = d3.locale(this.options.subDomainDateFormat);
+			//d3.time.format = myFormatters.timeFormat;
+
+			d3.time.format = myFormatters.timeFormat;
+		}
+
+
+
+
+
 
 		if (arguments.length < 2) {
 			format = "title";

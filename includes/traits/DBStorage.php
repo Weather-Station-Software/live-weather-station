@@ -29,6 +29,7 @@ define('LWS_WFLW_SID', 8);
 define('LWS_PIOU_SID', 9);
 define('LWS_BSKY_SID', 10);
 define('LWS_AMBT_SID', 11);
+define('LWS_WLINK_SID', 12);
 
 define('DEFAULT_UUID', '00000000-0000-0000-0000-000000000000');
 

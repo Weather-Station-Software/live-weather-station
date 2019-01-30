@@ -100,6 +100,9 @@ class Handling {
             case 11:
                 $result = self::get_base64_ambient_icon($color);
                 break;
+            case 12:
+                $result = self::get_base64_weatherlink_icon($color);
+                break;
             default:
                 $result = self::get_base64_lws_icon();
         }
@@ -150,6 +153,9 @@ class Handling {
                 break;
             case 11:
                 $result = self::get_base64_ambient_color_logo();
+                break;
+            case 12:
+                $result = self::get_base64_weatherlink_color_logo();
                 break;
             default:
                 $result = self::get_base64_lws_icon();
@@ -401,6 +407,58 @@ class Handling {
      */
     public static function get_base64_netatmo_hc_color_logo() {
         return self::get_base64_netatmo_icon('#d497a8');
+    }
+
+    /**
+     * Returns a base64 svg resource for the WeatherLink icon.
+     *
+     * @param string $color Optional. Color of the icon.
+     * @return string The svg resource as a base64.
+     * @since 3.8.0
+     */
+    public static function get_base64_weatherlink_icon($color='#000') {
+        $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="100%" height="100%" viewBox="0 0 240 240" fill="' . $color . '">';
+        $source .= '<g transform="translate(-384,40) scale(0.8,0.8)">';
+        $source .= '<polyline points="738.9,43.9 713.5,158.5 718.9,158.5 744.2,43.9 738.9,43.9"/>';
+        $source .= '<polygon points="572.3,158.5 587.7,158.5 594.1,129.7 577.8,133.7 572.3,158.5"/>';
+        $source .= '<polygon points="607.6,158.5 615.1,124.7 601.5,128 594.7,158.5"/>';
+        $source .= '<polygon points="637.4,119.3 625.9,122.1 617.8,158.5 628.7,158.5"/>';
+        $source .= '<polygon points="553.7,124.5 564.3,114.9 571,85 564.9,73.8"/>';
+        $source .= '<polygon points="597.7,43.9 593.5,63 608.1,66.8 613.1,43.9"/>';
+        $source .= '<polyline points="587.1,61.1 590.9,43.9 571.3,43.9 571.6,43.9 568.6,55.9 568.8,56.5 586.5,61.1"/>';
+        $source .= '<polyline points="546.7,158.5 565.5,158.5 570.6,135.5 550.2,140.3 546.2,158.5"/>';
+        $source .= '<polygon points="633,43.9 620.1,43.9 614.7,68.5 626.9,71.7"/>';
+        $source .= '<polyline points="540.3,158.5 544.1,141.8 531.2,144.9 546.4,131.1 560.8,66.3 553.2,52.5 563.3,55.1 565.7,43.9 538.9,43.9 538.3,43.9 512.9,158.5 540.3,158.5"/>';
+        $source .= '<polygon points="649.7,158.5 659.6,114 650.3,116.2 641,158.5"/>';
+        $source .= '<polygon points="693.4,158.5 706.3,102.7 699,104.5 687,158.5"/>';
+        $source .= '<polygon points="701.9,91.3 708.5,93 718.7,43.9 712.4,43.9"/>';
+        $source .= '<polygon points="682,108.6 674,110.5 663.4,158.5 670.9,158.5"/>';
+        $source .= '<polygon points="675.1,43.9 666.4,43.9 658.4,79.9 666.7,82.1"/>';
+        $source .= '<polygon points="643.2,43.9 636.5,74.2 646.8,76.9 654.1,43.9"/>';
+        $source .= '<polygon points="688.8,43.9 679.6,85.5 686.7,87.3 696.3,43.9"/>';
+        $source .= '</g>';
+        $source .= '</svg>';
+        return 'data:image/svg+xml;base64,' . base64_encode($source);
+    }
+
+    /**
+     * Returns a base64 svg resource for the monochrome WeatherLink logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.8.0
+     */
+    public static function get_base64_weatherlink_grey_logo() {
+        return self::get_base64_weatherlink_icon('#666666');
+    }
+
+    /**
+     * Returns a base64 svg resource for the colored WeatherLink logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.8.0
+     */
+    public static function get_base64_weatherlink_color_logo() {
+        return self::get_base64_weatherlink_icon('#1E384A');
     }
 
     /**

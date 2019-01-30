@@ -185,13 +185,20 @@ class Indoor extends \WP_Widget {
             $maxwidth = 0;
         }
         $txt_color = $instance['txt_color'];
+        $bg_color = $instance['bg_color'];
+        if (!$txt_color) {
+            $txt_color = '#444444';
+        }
+        if (!$bg_color) {
+            $txt_color = '#FFFFFF';
+        }
         if ($flat_design) {
             $fact = 80;
         }
         else {
             $fact = 98;
         }
-        $color = new Color($instance['bg_color']);
+        $color = new Color($bg_color);
         if (($health_idx < 40) && $instance['follow_quality']){
             $l = $color->getHsl()['L'];
             $c = new Color($color->mix('342500', -((100-$health_idx)/2)));

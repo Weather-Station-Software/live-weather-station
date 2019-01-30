@@ -38,7 +38,7 @@ class Snapshot extends \WeatherStation\Engine\Module\Maintainer {
         $this->module_type = 'snapshot';
         $this->module_name = ucfirst(__('snapshot', 'live-weather-station'));
         $this->module_hint = __('Display current snapshot from the station.', 'live-weather-station');
-        $this->module_icon = 'fa fa-fw fa-image';
+        $this->module_icon = LWS_FAS . (LWS_FA5?' fa-image':' fa-image') . ' fa-fw';
         $this->layout = '12-3-4';
         parent::__construct($station_information);
     }

@@ -5,6 +5,7 @@ namespace WeatherStation\UI\Map;
 use WeatherStation\Data\Output;
 use WeatherStation\Data\Arrays\Generator;
 use WeatherStation\UI\SVG\Handling as SVG;
+use WeatherStation\Utilities\ColorBrewer;
 
 /**
  * This class is the base class for all map handler.
@@ -148,7 +149,7 @@ abstract class BaseHandling {
             }
         }
         if (array_key_exists('marker-type', $_POST)) {
-            if (in_array($_POST['marker-type'], array('none', 'pin', 'old', 'logo', 'brand', 'weather:current', 'weather:wind'))) {
+            if (in_array($_POST['marker-type'], array('none', 'pin', 'old', 'logo', 'brand', 'weather:current', 'weather:temp', 'weather:colortemp', 'weather:wind'))) {
                 $params['marker']['type'] = $_POST['marker-type'];
             }
         }
@@ -225,16 +226,19 @@ abstract class BaseHandling {
                 if ($id === 1) {return '#FFFFFF';}
                 if ($id === 2) {return '#ffd200';}
                 if ($id === 3) {return '#2d7dd2';}
+                if ($id === 4) {return '#FFFFFF';}
                 break;
             case 'dark':
                 if ($id === 1) {return '#273043';}
                 if ($id === 2) {return '#ffd200';}
                 if ($id === 3) {return '#ffd200';}
+                if ($id === 4) {return '#273043';}
                 break;
             default:
                 if ($id === 1) {return '#2d7dd2';}
                 if ($id === 2) {return '#ffd200';}
                 if ($id === 3) {return '#ffffff';}
+                if ($id === 4) {return '#FFFFFF';}
         }
     }
 
@@ -427,6 +431,7 @@ abstract class BaseHandling {
                 $wind_force = null;
                 $wind_strength = null;
                 $temperature = null;
+                $temperature_ref = null;
                 $humidity = null;
                 $pressure = null;
                 $params = null;
@@ -454,6 +459,7 @@ abstract class BaseHandling {
                                 }
                                 if (array_key_exists('temperature', $module['datas']) && !isset($temperature)) {
                                     $temperature = $this->output_value($module['datas']['temperature']['raw_value'], 'temperature', true);
+                                    $temperature_ref = $module['datas']['temperature']['raw_value'];
                                 }
                                 if (array_key_exists('pressure_sl', $module['datas']) && !isset($pressure)){
                                     $pressure = $this->output_value($module['datas']['pressure_sl']['raw_value'], 'pressure_sl', true);
@@ -480,6 +486,7 @@ abstract class BaseHandling {
                                 }
                                 if (array_key_exists('temperature', $module['datas'])) {
                                     $temperature = $this->output_value($module['datas']['temperature']['raw_value'], 'temperature', true);
+                                    $temperature_ref = $module['datas']['temperature']['raw_value'];
                                 }
                                 break;
                             case 'NAMain':
@@ -526,7 +533,25 @@ abstract class BaseHandling {
             else {
                 $s['windDiv'] = '';
             }
-
+            if (isset($temperature)) {
+                $ref = get_option('live_weather_station_unit_temperature') ;
+                $t = (integer)round($this->get_temperature($temperature_ref, $ref), 0);
+                $temp = $t . str_replace('&nbsp;', '', $this->unit_espace.$this->get_temperature_unit($ref));
+                $colors = ColorBrewer::getGradient('RdYlBu', 8, 56, true);
+                if ($t < -15) {
+                    $t = -15;
+                }
+                if ($t > 40) {
+                    $t = 40;
+                }
+                $color = $colors[$t+15];
+                $s['tempDiv'] = '<span style=\'color:' . $this->color(3) . ';font-size:12px;font-weight:900;position:relative;top:14px;\'>' . $temp . '</span>';
+                $s['tempColDiv'] = '<span style=\'display:block;width:100%;height:100%;border-radius: 50%;background-color:' . $color . ';\'><span style=\'color:' . $this->color(4) . ';font-size:12px;font-weight:900;position:relative;top:14px;\'>' . $temp . '</span></span>';
+            }
+            else {
+                $s['tempDiv'] = '';
+                $s['tempColDiv'] = '';
+            }
             switch ($this->map_params['marker']['style']) {
                 case 'minimalist':
                     $content = '<div class="title">' . $station['station_name'] . '</div>';
@@ -604,7 +629,7 @@ abstract class BaseHandling {
         if (count($st) > 0) {
             $result = 'var stations = {';
             foreach ($st as $s) {
-                $result .= $s['id'] . ':{"lat":' . $s['lat'] . ', "lon":' . $s['lon'] . ', "icn":"' . $s['iconUrl'] . '", "wtr":"' . $s['weatherDiv'] . '","wnd":"' . $s['windDiv'] . '","cnt":"' . $s['content'] . '"},';
+                $result .= $s['id'] . ':{"lat":' . $s['lat'] . ', "lon":' . $s['lon'] . ', "icn":"' . $s['iconUrl'] . '", "tmp":"' . $s['tempDiv'] . '", "tmpcol":"' . $s['tempColDiv'] . '", "wtr":"' . $s['weatherDiv'] . '","wnd":"' . $s['windDiv'] . '","cnt":"' . $s['content'] . '"},';
             }
             $result .= "};";
             if ($this->map_params['marker']['type'] == 'pin') {
@@ -619,6 +644,12 @@ abstract class BaseHandling {
             }
             if ($this->map_params['marker']['type'] == 'weather:current') {
                 $result .= "  var stationIcon = L.divIcon({html: stations[id].wtr, iconSize: [44, 44]});" . PHP_EOL;
+            }
+            if ($this->map_params['marker']['type'] == 'weather:temp') {
+                $result .= "  var stationIcon = L.divIcon({html: stations[id].tmp, iconSize: [44, 44]});" . PHP_EOL;
+            }
+            if ($this->map_params['marker']['type'] == 'weather:colortemp') {
+                $result .= "  var stationIcon = L.divIcon({html: stations[id].tmpcol, iconSize: [44, 44]});" . PHP_EOL;
             }
             if ($this->map_params['marker']['type'] == 'weather:wind') {
                 $result .= "  var stationIcon = L.divIcon({html: stations[id].wnd, iconSize: [44, 44]});" . PHP_EOL;

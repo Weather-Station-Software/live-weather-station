@@ -572,16 +572,43 @@ trait Conversion {
     }
 
     /**
+     * Converts a decimal number of seconds into an array.
+     *
+     * @param integer $age The age in seconds.
+     * @param string $format Optional. The format.
+     * @return array Array of hours, minutes and seconds.
+     * @since 3.8.0
+     */
+    public static function get_age_format_from_seconds($age, $format='hh-mm') {
+        $value = array();
+        foreach (array(60, 60, 100000) as $key => $interval) {
+            $val = $age % $interval;
+            $age = round(($age-$val)/$interval, 0);
+            if (($format == 'hh-mm' && $key != 0) || $format == 'hh-mm-ss') {
+                $value[] = str_pad($val, 2, '0', STR_PAD_LEFT);
+            }
+        }
+        return array_reverse($value);
+    }
+
+    /**
      * Converts a decimal number of seconds into the correct format.
      *
      * @param integer $age The age in seconds.
+     * @param string $format Optional. Special format if needed.
      * @return string Formatted age in days, hours, minutes and seconds.
      * @since 3.1.0
      */
-    public static function get_age_hours_from_seconds($age) {
+    public static function get_age_hours_from_seconds($age, $format='') {
         $result = implode(', ', self::get_age_array_from_seconds($age, true));
         if ($result === '') {
             $result = __('less than 1 second', 'live-weather-station');
+        }
+        if ($format == 'hh-mm') {
+            $result = implode(':', self::get_age_format_from_seconds($age, 'hh-mm'));
+        }
+        if ($format == 'hh-mm-ss') {
+            $result = implode(':', self::get_age_format_from_seconds($age, 'hh-mm-ss'));
         }
         return $result;
     }

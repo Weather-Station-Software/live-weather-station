@@ -38,7 +38,7 @@ class Timelapse extends \WeatherStation\Engine\Module\Maintainer {
         $this->module_type = 'timelapse';
         $this->module_name = __('Timelapse viewer', 'live-weather-station');
         $this->module_hint = __('Display a recorded timelapse.', 'live-weather-station');
-        $this->module_icon = 'fa fa-fw fa-stopwatch';
+        $this->module_icon = LWS_FAS . (LWS_FA5?' fa-stopwatch':' fa-stopwatch') . ' fa-fw';
         $this->layout = '12-3-4';
         parent::__construct($station_information);
     }

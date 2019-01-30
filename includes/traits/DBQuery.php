@@ -1824,6 +1824,52 @@ trait Query {
     }
 
     /**
+     * Get a WeatherLink station.
+     *
+     * @param integer $guid Optional. The station guid.
+     * @return array An array containing the station details.
+     * @since 3.8.0
+     */
+    protected function get_wlink_station($guid=0) {
+        if ($guid == 0) {
+            $ccs = '';
+            $cc = explode ('_', lws_get_display_locale());
+            if (count($cc) > 1) {
+                $ccs = strtoupper($cc[1][0].$cc[1][1]);
+            }
+            $nothing = array();
+            $nothing['guid'] = 0;
+            $nothing['station_id'] = 'TMP-' . substr(uniqid('', true), 10, 13);
+            $nothing['station_type'] = LWS_WLINK_SID;
+            $nothing['station_name'] = '';
+            $nothing['loc_city'] = '';
+            $nothing['loc_country_code'] = $ccs;
+            $nothing['loc_timezone'] = '';
+            $nothing['loc_latitude'] = '';
+            $nothing['loc_longitude'] = '';
+            $nothing['loc_altitude'] = '';
+            $nothing['service_id'] = '';
+            return $nothing;
+        }
+        else {
+            global $wpdb;
+            $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            $sql = "SELECT * FROM " . $table_name . " WHERE guid='" . $guid . "'";
+            try {
+                $query = (array)$wpdb->get_results($sql);
+                $query_a = (array)$query;
+                $result = array();
+                foreach ($query_a as $val) {
+                    $result[] = (array)$val;
+                }
+                return $result[0];
+            } catch (\Exception $ex) {
+                return array();
+            }
+        }
+    }
+
+    /**
      * Get a Ambient station.
      *
      * @param integer $guid Optional. The station guid.
@@ -2196,6 +2242,16 @@ trait Query {
      */
     protected function get_all_wflw_id_stations() {
         return $this->get_all_stations_by_type(LWS_WFLW_SID);
+    }
+
+    /**
+     * Get a list of all WeatherLink (by Id) stations.
+     *
+     * @return array An array containing the details of all stations.
+     * @since 3.8.0
+     */
+    protected function get_all_wlink_id_stations() {
+        return $this->get_all_stations_by_type(LWS_WLINK_SID);
     }
 
     /**

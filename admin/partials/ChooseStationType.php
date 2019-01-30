@@ -108,6 +108,11 @@ else {
     $ambient_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
 
+$wlink_s = ucfirst(addslashes(lws__('a personal weather station connected to WeatherLink 2.', 'live-weather-station')));
+$wlink_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'weatherlink', $dashboard);
+$wlink_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'weatherlink', $dashboard);
+$wlink_t = '_self';
+
 
 
 ?>
@@ -128,6 +133,9 @@ else {
                 <div style="flex:auto;padding:14px;"><img id="weatherflow" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_weatherflow_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="bloomsky" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_bloomsky_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="pioupiou" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_piou_color_logo());?>" /></div>
+                <?php if (LWS_PREVIEW) { ?>
+                    <div style="flex:auto;padding:14px;"><img id="weatherlink" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_weatherlink_color_logo());?>" /></div>
+                <?php } ?>
                 <div style="flex:auto;padding:14px;"><img id="loc" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_loc_color_logo());?>" /></div>
                 <?php if (LWS_OWM_READY) { ?>
                     <div style="flex:auto;padding:14px;"><img id="owm" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_owm_color_logo());?>" /></div>
@@ -222,6 +230,12 @@ else {
             });
             $("#txt").click(function() {
                 window.open('<?php echo $txt_l; ?>', '<?php echo $txt_t; ?>');
+            });
+            $("#weatherlink").mouseover(function() {
+                $("#tip-text").html("<?php echo $wlink_s; ?>");
+            });
+            $("#weatherlink").click(function() {
+                window.open('<?php echo $wlink_l; ?>', '<?php echo $wlink_t; ?>');
             });
         });
     </script>

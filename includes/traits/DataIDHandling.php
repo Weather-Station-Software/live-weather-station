@@ -15,6 +15,7 @@ use WeatherStation\System\Cache\Cache;
 trait Handling {
 
     private static $owm_id ='xx';
+    private static $wlink_id ='wl';
     private static $owm_station_id ='xy';
     private static $wug_id ='xz';
     private static $clientraw_id ='yx';
@@ -44,7 +45,21 @@ trait Handling {
     public static function compute_unique_bsky_id($hdid) {
         $st = str_pad($hdid, 12, '0', STR_PAD_LEFT);
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
-        return strtolower($result);
+        return strtolower(substr($result, 0, 17));
+    }
+
+    /**
+     * Compute the id for a WeatherLink station.
+     *
+     * @param integer $did The device id of the station
+     * @return string The unique id of the station.
+     *
+     * @since 3.8.0
+     */
+    public static function compute_unique_wlink_id($did) {
+        $st = str_pad($did, 12, '0', STR_PAD_LEFT);
+        $result = self::$wlink_id . ':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
+        return strtolower(substr($result, 0, 17));
     }
 
     /**
@@ -264,6 +279,17 @@ trait Handling {
     }
 
     /**
+     * Indicates if the id is the id of a WeatherLink station.
+     *
+     * @param integer $station_id The numeric id of the station.
+     * @return boolean True if it's an WeatherLink station, false otherwise.
+     * @since 3.8.0
+     */
+    public static function is_wlink_station($station_id) {
+        return (substr($station_id, 0, 2) == self::$wlink_id);
+    }
+
+    /**
      * Indicates if the id is the id of an Netatmo station.
      *
      * @param integer $station_id The numeric id of the station.
@@ -275,7 +301,7 @@ trait Handling {
                 !self::is_raw_station($station_id) && !self::is_real_station($station_id) &&
                 !self::is_txt_station($station_id) && !self::is_wflw_station($station_id) &&
                 !self::is_piou_station($station_id) && !self::is_bsky_station($station_id) &&
-                !self::is_ambt_station($station_id));
+            !self::is_ambt_station($station_id) && !self::is_wlink_station($station_id));
     }
 
     /**

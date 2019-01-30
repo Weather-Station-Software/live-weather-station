@@ -63,7 +63,7 @@ $warning = __('All the maps associated to this service will no longer be display
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('API plan', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php echo $plan_name ?> (<?php echo InlineHelp::get(-44, '%s', __('get details', 'live-weather-station'));?>)</span>
+                        <span><?php echo $plan_name ?> (<?php echo InlineHelp::get(-45, '%s', __('get details', 'live-weather-station'));?>)</span>
                     </td>
                 </tr>
             <?php } ?>
