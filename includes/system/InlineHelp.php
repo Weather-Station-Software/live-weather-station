@@ -939,7 +939,7 @@ class InlineHelp {
                 $s1 .= ', <strong>' . lws_lcfirst(lws__('Device ID', 'live-weather-station')) . '</strong>';
                 $s1 .= ', <strong>' . lws__('API Token', 'live-weather-station') . '</strong>';
                 $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lws_lcfirst(lws__('Password', 'live-weather-station')) . '</strong>.';
-                $s2 = sprintf(lws__('You can learn how to obtain your API key in %s', 'live-weather-station'), self::get(-48, '%s', __('this video', 'live-weather-station')));
+                $s2 = sprintf(lws__('You can learn how to obtain your API key in %s', 'live-weather-station'), self::get(-48, '%s', lws__('this video', 'live-weather-station')));
                 $s3 = '<em>' . __('Note that the information you enter here is required for computations and presentations of meteorological and astronomical data. It is therefore crucial that they are as accurate as possible.', 'live-weather-station') . '</em>';
                 $tabs[] = array(
                     'title'    => __('Settings', 'live-weather-station'),

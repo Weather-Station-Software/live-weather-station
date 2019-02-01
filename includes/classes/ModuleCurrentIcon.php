@@ -36,8 +36,8 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
     public function __construct($station_information) {
         self::$module_mode = 'current';
         $this->module_type = 'icon';
-        $this->module_name = ucfirst(__('icon data', 'live-weather-station'));
-        $this->module_hint = __('Display current data as icon.', 'live-weather-station');
+        $this->module_name = ucfirst(lws__('icon data', 'live-weather-station'));
+        $this->module_hint = lws__('Display current data as icon.', 'live-weather-station');
         $this->module_icon = LWS_FAS . (LWS_FA5?' fa-thumbtack':' fa-thumb-tack') . ' fa-fw';
         $this->layout = '12-3-4';
         parent::__construct($station_information);
