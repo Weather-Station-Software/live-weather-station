@@ -383,7 +383,7 @@ trait Handling {
                 return __('WeatherFlow - Weather station', 'live-weather-station');
                 break;
             case 'lws_wlink_station_update':
-                return __('WeatherLink - Weather station', 'live-weather-station');
+                return lws__('WeatherLink - Weather station', 'live-weather-station');
                 break;
             case 'lws_piou_station_update':
                 return __('Pioupiou - Sensor', 'live-weather-station');

@@ -25,7 +25,7 @@ use WeatherStation\System\Storage\Manager as FS;
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.7.9-dev1');
+define('LWS_VERSION', '3.7.9');
 define('LWS_PREVIEW', false);
 
 

@@ -30,6 +30,9 @@ trait Conversion {
      * @since 3.6.2
      */
     protected function convert_from_baro_to_mslp($baro, $altitude, $temperature=15.0){
+        if (!is_numeric($baro) || !is_numeric($altitude) || !is_numeric($temperature)) {
+            return 0;
+        }
         $H = 0.0065 * $altitude;
         $T = 273.15 + $temperature;
         $result = $baro * pow(1 - ($H / ($T + $H)), -5.257);
@@ -46,6 +49,9 @@ trait Conversion {
      * @since 3.6.2
      */
     protected function convert_from_mslp_to_baro($mslp, $altitude, $temperature=15.0){
+        if (!is_numeric($mslp) || !is_numeric($altitude) || !is_numeric($temperature)) {
+            return 0;
+        }
         $H = 0.0065 * $altitude;
         $T = 273.15 + $temperature;
         $result = $mslp * pow(1 - ($H / ($T + $H)), 5.257);

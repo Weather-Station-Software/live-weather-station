@@ -8,6 +8,7 @@
 * Improvement: FontAwesome 5 has been updated to version 5.7.0.
 * Improvement: current conditions icon is now displayed in station views.
 * Improvement: adapted table lists in prevision of WordPress 5.1.
+* Improvement: optimization of barometric/atmospheric pressure conversion.
 * Bug fix: some alarms are not working correctly when in non-metric system (thanks to [@dougotto65](https://weather.station.software/community/profile/dougotto65/)).
 * Bug fix: Steadman index, Summer Simmer index and delta-T thresholds are not correctly saved when in non-metric system.
 * Bug fix: outdoor widget may wrongly display the snow rate.
