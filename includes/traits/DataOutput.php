@@ -7387,16 +7387,34 @@ trait Output {
      * Output a measurement icon.
      *
      * @param mixed $value The value to output.
+     * @param string $main_color Main color of the icon.
+     * @param string $extraclass Extra class for the main container.
+     * @param null|boolean Optional. Indicates if it's day or night.
      * @return string The HTML tag for icons.
      * @since 3.8.0
      */
-    protected function output_zcast_iconic_value($value) {
-
-
-
-        //$result = '<span class="lws-icon lws-stacked-icon ' . $extraclass . '" style="vertical-align: middle;padding: 0;margin: 0;"><i style="vertical-align: ' . $align . ';color:' . $main_color .';" class="' . $class . $icon . $size . '"></i><i style="color:' . $main_color .';vertical-align:' . $markerstyle[$tmm] .';opacity: 0.7;" class="' . $marker[$tmm] . '" aria-hidden="true"></i></span>';
-
-        return '';
+    protected function output_zcast_iconic_value($value, $main_color, $extraclass, $is_day=null) {
+        $result = '<span class="lws-icon lws-stacked-icon ' . $extraclass . '" style="vertical-align: middle;padding: 0;margin: 0;">';
+        $arrow = false;
+        foreach ($this->get_zcast_icons($value) as $icon) {
+            if ($arrow) {
+                $result .= '&nbsp;&nbsp;<i style="vertical-align: baseline;color:' . $main_color .';" class="wi wi-direction-right ico-size-1"></i>&nbsp;&nbsp;';
+            }
+            $spec = '';
+            if ($icon > 1000) {
+                $icon -= 1000;
+                if (!is_null($is_day)) {
+                    $spec = 'day-';
+                    if (!$is_day) {
+                        $spec = 'night-';
+                    }
+                }
+            }
+            $result .= '<i style="vertical-align: baseline;color:' . $main_color .';" class="wi wi-owm-' . $spec . $icon . ' ico-size-1"></i>';
+            $arrow = true;
+        }
+        $result .= '</span>';
+        return $result;
     }
 
     /**
@@ -7408,10 +7426,11 @@ trait Output {
      * @param boolean $show_value Optional. The value must represent the true value if possible.
      * @param string $main_color Optional. Main color of the icon.
      * @param string $extraclass Optional. Extra class for the main container.
+     * @param null|boolean Optional. Indicates if it's day or night.
      * @return string The HTML tag for icon.
      * @since 3.0.0
      */
-    protected function output_iconic_value($value, $type, $module_type='NAMain', $show_value=false, $main_color=null, $extraclass='') {
+    protected function output_iconic_value($value, $type, $module_type='NAMain', $show_value=false, $main_color=null, $extraclass='', $is_day=null) {
         lws_font_awesome();
         $type = strtolower($type);
         if (strpos($type, 'sunrise') === 0) {
@@ -7620,8 +7639,15 @@ trait Output {
         // Other cases
         switch (strtolower($type)) {
             case 'weather':
+                $spec = '';
+                if (isset($is_day)) {
+                    $spec = 'day-';
+                    if (!$is_day) {
+                        $spec = 'night-';
+                    }
+                }
                 if ($show_value) {
-                    $icon = 'wi-owm-' . $value;
+                    $icon = 'wi-owm-' . $spec . $value;
                     $class = 'wi ';
                     $size = ' ico-size-1';
                 }
@@ -7817,7 +7843,7 @@ trait Output {
             $result = '<span class="lws-icon lws-stacked-icon ' . $extraclass . '" style="vertical-align: middle;padding: 0;margin: 0;"><i style="vertical-align: ' . $align . ';color:' . $main_color .';" class="' . $class . $icon . $size . '"></i><i style="color:' . $main_color .';vertical-align:' . $markerstyle[$tmm] .';opacity: 0.7;" class="' . $marker[$tmm] . '" aria-hidden="true"></i></span>';
         }
         if ($show_value && strpos($type, 'zcast_') === 0) {
-            return $this->output_zcast_iconic_value($value);
+            return $this->output_zcast_iconic_value($value, $main_color, $extraclass, ($type == 'zcast_best'?true:$is_day));
         }
         return $result;
 }
@@ -8780,14 +8806,14 @@ trait Output {
                 $result = __('cloud base', 'live-weather-station') ;
                 break;
             case 'alt_pressure':
-                $result = __('pressure alt.', 'live-weather-station') ;
+                $result = lws__('pressure alt.', 'live-weather-station') ;
                 break;
             case 'density_pressure':
-                $result = __('density alt.', 'live-weather-station') ;
+                $result = lws__('density alt.', 'live-weather-station') ;
                 break;
             case 'zcast_live':
             case 'zcast_best':
-                $result = __('forecast', 'live-weather-station') ;
+                $result = lws__('forecast', 'live-weather-station') ;
                 break;
             case 'cloudiness':
             case 'cloudiness_min':
@@ -9065,7 +9091,7 @@ trait Output {
             switch ((int)$f[1]) {
                 case 0:
                 case 1:
-                    $result[] = 800;  // day-sunny
+                    $result[] = 1800;  // day-sunny
                 break;
                 case 2:
                 case 3:
@@ -9076,7 +9102,7 @@ trait Output {
                 case 6:
                 case 7:
                 case 10:
-                    $result[] = 958;  // day-cloudy
+                    $result[] = 1958;  // day-cloudy
                     break;
                 case 8:
                 case 13:
@@ -9114,12 +9140,12 @@ trait Output {
             }
             switch ((int)$f[1]) {
                 case 2:
-                    $result[] = 800;  // day-sunny
+                    $result[] = 1800;  // day-sunny
                     break;
                 case 3:
                 case 9:
                 case 11:
-                    $result[] = 958;  // day-cloudy
+                    $result[] = 1958;  // day-cloudy
                     break;
                 case 4:
                 case 6:

@@ -1,8 +1,10 @@
 
 #3.7.10 / February 1st, 2019
 
+* Improvement: optimization of nigth and day times computation for background changing in widgets.
 * Improvement: reference pressure value is stored while computing psychrometric values even if there's no reference temperature or humidity values.
 * Improvement: better server detection and outputting for servers having only private range IP (mainly self-hosted servers).
+* Bug fix: some stations, in some maps, have wrong night/day indicator when "current conditions" is chosen as marker type. 
 * Bug fix: there's a malformed exception when Netatmo servers are unable to send an error code after a failed token refresh.
 * Bug fix: while upgrading Weather Station, last version number may be wrongly interpreted and this results in the unnecessary execution of some patches.
 

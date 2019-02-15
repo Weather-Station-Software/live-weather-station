@@ -1202,4 +1202,36 @@ trait Handling {
         self::init_options();
     }
 
+    /**
+     * Get all options of the plugin - for backup purpose.
+     *
+     * @return array An array containing all the options (key/value).
+     * @since 3.8.0
+     */
+    public static function get_all_options() {
+        $result = array();
+        global $wpdb;
+        foreach ($wpdb->get_results("SELECT option_name, option_value FROM " . $wpdb->options . " WHERE option_name like 'live_weather_station%'", ARRAY_A) as $option) {
+            $result[$option['option_name']] = $option['option_value'];
+        }
+        Logger::notice('Core', null, null, null, null, null, 600, 'Settings successfully exported.');
+        return $result;
+    }
+
+    /**
+     * Set all options of the plugin - for restore purpose.
+     *
+     * @@param $options array An array containing all the options (key/value).
+     * @since 3.8.0
+     */
+    public static function set_all_options($options) {
+        foreach ($options as $key => $option) {
+            if ($key != 'live_weather_station_version') {
+                update_option($key, $option);
+            }
+        }
+        self::verify_options();
+        Logger::notice('Core', null, null, null, null, null, 601, 'Settings successfully imported and verified.');
+    }
+
 }

@@ -53,4 +53,46 @@ trait Handling {
         }
         return 'UTC';
     }
+
+    /**
+     * Get the night / day status of the station.
+     *
+     * @param float $lat The latitude of the station.
+     * @param float $lon The longitude of the station.
+     * @param string $tz The timezone of the station.
+     * @return boolean True if it's day, false otherwise.
+     * @since 3.8.0
+     */
+    protected function check_day($lat, $lon, $tz) {
+        $time_rise = time()-36000;
+        $time_set = time()-36000;
+        $datetime = new \DateTime();
+        $datetime->setTimestamp(time());
+        $datetime->setTimezone(new \DateTimeZone($tz));
+        $month = $datetime->format('m');
+        $day = $datetime->format('d');
+        for ($fact = -1; $fact <= 2; $fact++) {
+            $sunrise = date_sunrise(time()+(86400*$fact), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+            $verif = new \DateTime();
+            $verif->setTimestamp($sunrise);
+            $verif->setTimezone(new \DateTimeZone($tz));
+            if ($month == $verif->format('m') && $day == $verif->format('d')) {
+                $time_rise = time()+(86400*$fact);
+                break;
+            }
+        }
+        for ($fact = -1; $fact <= 2; $fact++) {
+            $sunset = date_sunset(time()+(86400*$fact), SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+            $verif = new \DateTime();
+            $verif->setTimestamp($sunset);
+            $verif->setTimezone(new \DateTimeZone($tz));
+            if ($month == $verif->format('m') && $day == $verif->format('d')) {
+                $time_set = time()+(86400*$fact);
+                break;
+            }
+        }
+        $sunrise = date_sunrise($time_rise, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+        $sunset = date_sunset($time_set, SUNFUNCS_RET_TIMESTAMP, $lat, $lon, 90+(50/60));
+        return (time() > $sunrise && time() < $sunset);
+    }
 }
