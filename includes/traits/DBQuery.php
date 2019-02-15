@@ -2598,5 +2598,54 @@ trait Query {
         return $result;
     }
 
+    /**
+     * Get options table of the plugin - for backup purpose.
+     *
+     * @param string $table The table name - without prefix.
+     * @return array An array containing all rows of the table.
+     * @since 3.8.0
+     */
+    private static function get_table($table) {
+        global $wpdb;
+        $sql = "SELECT * FROM " . $wpdb->prefix . $table;
+        return $wpdb->get_results($sql, ARRAY_A);
+    }
+
+    /**
+     * Get maps table of the plugin - for backup purpose.
+     *
+     * @return array An array containing all rows of the maps table.
+     * @since 3.8.0
+     */
+    public static function get_maps_table() {
+        $result = self::get_table(self::live_weather_station_maps_table());
+        Logger::notice('Core', null, null, null, null, null, 600, 'Maps table successfully exported.');
+        return $result;
+    }
+
+    /**
+     * Get modules table of the plugin - for backup purpose.
+     *
+     * @return array An array containing all rows of the modules table.
+     * @since 3.8.0
+     */
+    public static function get_modules_table() {
+        $result = self::get_table(self::live_weather_station_module_detail_table());
+        Logger::notice('Core', null, null, null, null, null, 600, 'Modules table successfully exported.');
+        return $result;
+    }
+
+    /**
+     * Get stations table of the plugin - for backup purpose.
+     *
+     * @return array An array containing all rows of the stations table.
+     * @since 3.8.0
+     */
+    public static function get_stations_table() {
+        $result = self::get_table(self::live_weather_station_stations_table());
+        Logger::notice('Core', null, null, null, null, null, 600, 'Stations table successfully exported.');
+        return $result;
+    }
+
 
 }

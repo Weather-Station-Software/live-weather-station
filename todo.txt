@@ -84,6 +84,7 @@ DONE:
 * New: Navionics added as mapping service (nautical, sonar and ski layers).
 * New: MapTiler added as mapping service (many standard layers).
 * New: "icon" control to display current data as static or dynamic icons.
+* New: Zambretti forecast is now computed and is available with textual shortcode and the new icon control.  
 * New: pressure and density altitudes are now computed and available in all controls, graphs and charts.
 * Improvement: current conditions can now be displayed as plain text in textual shortcodes.
 * Improvement: duration can now be outputted as hh:mm or hh:mm:ss formats in textual shortcodes (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/) for the suggestion).
@@ -99,6 +100,7 @@ Shortened types for textual and gauge
 Main credits with David Aguilera (Davis WeatherLink)
 Fix ModuleCurrentGauge.php line 275 (controls)
 Limits for alt_pressure and alt_density
+Absolute humidity
 
 
 Textual climatological shortcodes
@@ -110,7 +112,6 @@ Link in map popup
 Backup/restore configuration
 
 New indexes:
-Zambretti forecast
 
 Hellman's index
 
