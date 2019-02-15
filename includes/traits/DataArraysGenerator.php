@@ -662,6 +662,8 @@ trait Generator {
                     $result[] = $line;
                 }
                 break;
+            case 'zcast_live':
+            case 'zcast_best':
             case 'weather':
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_trend_format(array($mvalue, ucfirst($this->output_value($mvalue, $mtype, false, true, $ref['module_type'])))));
                 if ($icon) {
@@ -1123,6 +1125,14 @@ trait Generator {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'saturation_vapor_pressure', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'partial_absolute_humidity', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'saturation_absolute_humidity', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
+                    if (LWS_PREVIEW) {
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'alt_pressure', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'alt_density', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
+                        if ($full) {
+                            $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'zcast_live', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
+                            $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'], 'zcast_best', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
+                        }
+                    }
                 }
                 break;
             case 'nacurrent': // Virtual module for current values from OpenWeatherMap.org
@@ -1136,7 +1146,9 @@ trait Generator {
                     $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'firmware', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
                 }
                 if (LWS_PREVIEW) {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'weather', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
+                    if ($full) {
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'weather', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
+                    }
                 }
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
                 $result[] = $this->get_line_array($ref, $data, $reduced, $ref['module_type'],'pressure_sl', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
@@ -3527,6 +3539,36 @@ trait Generator {
         $result[] = array('vane:nir',  __('Vegetation: NIR', 'live-weather-station'));
         $result[] = array('vane:ndvi',  __('Vegetation: NDVI', 'live-weather-station'));
         $result[] = array('vane:ndwi',  __('Vegetation: NDWI', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get map overlay array for Navionics.
+     *
+     * @return array An array containing map overlay for OpenWeatherMap ready to convert to a JS array.
+     * @since 3.8.0
+     */
+    protected function get_navionicsmap_overlay_js_array() {
+        $result = array();
+        $result[] = array('JNC.NAVIONICS_CHARTS.NAUTICAL',  lws__('Nautical map', 'live-weather-station'));
+        $result[] = array('JNC.NAVIONICS_CHARTS.SONARCHART',  lws__('Sonar map', 'live-weather-station'));
+        $result[] = array('JNC.NAVIONICS_CHARTS.SKI',  lws__('Ski map', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get map safety depth array for Navionics.
+     *
+     * @return array An array containing map safety depth for OpenWeatherMap ready to convert to a JS array.
+     * @since 3.8.0
+     */
+    protected function get_navionicsmap_depth_js_array() {
+        $result = array();
+        $result[] = array('JNC.SAFETY_DEPTH_LEVEL.LEVEL0',  lws__('20 meters, 60 feet, 10 fathoms', 'live-weather-station'));
+        $result[] = array('JNC.SAFETY_DEPTH_LEVEL.LEVEL1',  lws__('10 meters, 30 feet, 5 fathoms', 'live-weather-station'));
+        $result[] = array('JNC.SAFETY_DEPTH_LEVEL.LEVEL2',  lws__('5 meters, 18 feet, 2 fathoms', 'live-weather-station'));
+        $result[] = array('JNC.SAFETY_DEPTH_LEVEL.LEVEL3',  lws__('2 meters, 6 feet, 1 fathom', 'live-weather-station'));
+        $result[] = array('JNC.SAFETY_DEPTH_LEVEL.LEVEL4',  lws__('None', 'live-weather-station'));
         return $result;
     }
 

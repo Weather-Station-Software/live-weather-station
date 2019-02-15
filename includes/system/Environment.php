@@ -162,7 +162,15 @@ class Manager {
         }
         else {
             $os = explode( " ", trim($os_detail));
-            return $os[0] . ' ' . $os[12];
+            if (count($os) == 13) {
+                return $os[0] . ' ' . $os[12];
+            }
+            elseif (count($os) > 11) {
+                return $os[0] . ' ' . $os[count($os) - 1];
+            }
+            else {
+                return $os[0];
+            }
         }
     }
 
@@ -268,7 +276,25 @@ class Manager {
      */
     public static function hoster_name() {
         $s = self::server_full_information();
-        return $s['org'];
+        if (is_array($s)) {
+            if (array_key_exists('org', $s)) {
+                return $s['org'];
+            }
+            elseif (array_key_exists('status', $s) && $s['status'] == 'fail') {
+                if (array_key_exists('message', $s)) {
+                    return ucfirst($s['message']);
+                }
+                else {
+                    return __('unknown', 'live-weather-station');
+                }
+            }
+            else {
+                return __('unknown', 'live-weather-station');
+            }
+        }
+        else {
+            return __('unknown', 'live-weather-station');
+        }
     }
 
     /**
@@ -278,7 +304,17 @@ class Manager {
      */
     public static function hoster_location() {
         $s = self::server_full_information();
-        return $s['city'] . ', ' . $s['country'];
+        if (is_array($s)) {
+            if (array_key_exists('city', $s) && array_key_exists('country', $s)) {
+                return $s['city'] . ', ' . $s['country'];
+            }
+            else {
+                return lws__('unknown location', 'live-weather-station');
+            }
+        }
+        else {
+            return lws__('unknown location', 'live-weather-station');
+        }
     }
 
     /**

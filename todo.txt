@@ -81,8 +81,10 @@ DONE:
 -----
 
 * New: Weather Station natively connects to ***WeatherLink Network*** - special thanks to David Aguilera for the tests.
-* New: MapTiler added as mapping service.
+* New: Navionics added as mapping service (nautical, sonar and ski layers).
+* New: MapTiler added as mapping service (many standard layers).
 * New: "icon" control to display current data as static or dynamic icons.
+* New: pressure and density altitudes are now computed and available in all controls, graphs and charts.
 * Improvement: current conditions can now be displayed as plain text in textual shortcodes.
 * Improvement: duration can now be outputted as hh:mm or hh:mm:ss formats in textual shortcodes (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/) for the suggestion).
 * Improvement: in maps, two new marker types (temperature and colored temperature) allow to display temperature in markers (thanks to [@daguilera](https://weather.station.software/community/profile/daguilera/) for the suggestion).
@@ -94,9 +96,9 @@ TODO:
 Rename Humidity in Relative Humidity
 min/max/trend
 Shortened types for textual and gauge
-Credits with David Aguilera
+Main credits with David Aguilera (Davis WeatherLink)
 Fix ModuleCurrentGauge.php line 275 (controls)
-
+Limits for alt_pressure and alt_density
 
 
 Textual climatological shortcodes
@@ -108,10 +110,9 @@ Link in map popup
 Backup/restore configuration
 
 New indexes:
-Pressure altitude
-Density altitude
-Hellman's index
 Zambretti forecast
+
+Hellman's index
 
 TRANSLATION:
 ------------

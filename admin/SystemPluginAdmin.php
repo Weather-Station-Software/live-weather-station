@@ -81,7 +81,7 @@ class Admin {
 	private $reload = false;
 
     private $settings = array('general', 'services', 'display', 'thresholds', 'history', 'system', 'styles');
-    private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground', 'Bloomsky', 'Ambient', 'Windy', 'Stamen', 'Thunderforest', 'Mapbox', 'Maptiler');
+    private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground', 'Bloomsky', 'Ambient', 'Windy', 'Stamen', 'Thunderforest', 'Mapbox', 'Maptiler', 'Navionics');
     private $service = 'Backend';
 
     private $_station = null;
@@ -122,6 +122,7 @@ class Admin {
         lws_register_style('lws-nvd3', LWS_PUBLIC_URL, 'css/nv.d3.min.css', array(), false);
         lws_register_style('lws-cal-heatmap', LWS_PUBLIC_URL, 'css/cal-heatmap.min.css');
         lws_register_style('lws-leaflet', LWS_PUBLIC_URL, 'css/leaflet.min.css');
+        wp_register_style('lws-navionics', 'https://webapiv2.navionics.com/dist/webapi/webapi.min.css');
     }
 
     /**
@@ -189,6 +190,7 @@ class Admin {
         lws_register_script('lws-leaflet', LWS_PUBLIC_URL, 'js/leaflet.min.js');
         lws_register_script('lws-stamen-boot', LWS_PUBLIC_URL, 'js/stamen.min.js');
         wp_register_script('lws-windy-boot', 'https://api4.windy.com/assets/libBoot.js');
+        wp_register_script('lws-navionics', 'https://webapiv2.navionics.com/dist/webapi/webapi.min.no-dep.js');
     }
 
     /**
@@ -2350,6 +2352,14 @@ class Admin {
                         $s = $this->connect_maptiler($key, $plan);
                     }
                 }
+                if ($service == 'Navionics') {
+                    if ($key == '') {
+                        $s = __('the API key can not be empty', 'live-weather-station');
+                    }
+                    else {
+                        $s = $this->connect_navionics($key);
+                    }
+                }
                 if ($s == '') {
                     $message = __('%s is now connected to %s.', 'live-weather-station');
                     $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . $service . '</em>');
@@ -2396,6 +2406,10 @@ class Admin {
                 }
                 if ($service == 'Maptiler') {
                     $this->disconnect_maptiler();
+                    $result = true;
+                }
+                if ($service == 'Navionics') {
+                    $this->disconnect_navionics();
                     $result = true;
                 }
                 if ($service == 'Bloomsky') {
@@ -2450,6 +2464,10 @@ class Admin {
                 }
                 if ($service == 'Maptiler') {
                     $this->disconnect_maptiler();
+                    $result = true;
+                }
+                if ($service == 'Navionics') {
+                    $this->disconnect_navionics();
                     $result = true;
                 }
                 if ($service == 'Bloomsky') {
@@ -3020,12 +3038,26 @@ class Admin {
      * @param string $plan The plan of the account.
      * @return string The error string if an error occured, empty string if none.
      *
-     * @since 3.7.0
+     * @since 3.8.0
      */
     protected function connect_maptiler($key, $plan) {
         update_option('live_weather_station_maptiler_apikey', $key);
         update_option('live_weather_station_maptiler_plan', $plan);
         Logger::notice('Authentication', 'Maptiler', null, null, null, null, null, 'API key correctly set.');
+        return '';
+    }
+
+    /**
+     * Connect to a Navionics account.
+     *
+     * @param string $key The API key of the account.
+     * @return string The error string if an error occured, empty string if none.
+     *
+     * @since 3.8.0
+     */
+    protected function connect_navionics($key) {
+        update_option('live_weather_station_navionics_apikey', $key);
+        Logger::notice('Authentication', 'Navionics', null, null, null, null, null, 'API key correctly set.');
         return '';
     }
 
@@ -3071,6 +3103,26 @@ class Admin {
     protected function disconnect_mapbox() {
         self::init_mapbox_options();
         Logger::notice('Authentication', 'Mapbox', null, null, null, null, null, 'Correctly disconnected from service.');
+    }
+
+    /**
+     * Disconnect from an MapTiler API key.
+     *
+     * @since 3.8.0
+     */
+    protected function disconnect_maptiler() {
+        self::init_maptiler_options();
+        Logger::notice('Authentication', 'Maptiler', null, null, null, null, null, 'Correctly disconnected from service.');
+    }
+
+    /**
+     * Disconnect from a Navionics API key.
+     *
+     * @since 3.8.0
+     */
+    protected function disconnect_navionics() {
+        self::init_navionics_options();
+        Logger::notice('Authentication', 'Navionics', null, null, null, null, null, 'Correctly disconnected from service.');
     }
 
     /**

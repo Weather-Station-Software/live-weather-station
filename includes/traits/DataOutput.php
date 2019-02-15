@@ -25,6 +25,7 @@ use WeatherStation\UI\Map\StamenHandling;
 use WeatherStation\UI\Map\OpenweathermapHandling;
 use WeatherStation\UI\Map\MapboxHandling;
 use WeatherStation\UI\Map\MaptilerHandling;
+use WeatherStation\UI\Map\NavionicsHandling;
 
 /**
  * Outputing / shortcoding functionalities for Weather Station plugin.
@@ -47,7 +48,7 @@ trait Output {
         'temperature_ref', 'dew_point', 'frost_point', 'heat_index', 'humidex',
         'wind_chill', 'cloud_ceiling', 'sunrise', 'sunset', 'moonrise',
         'moonset', 'moon_illumination', 'moon_diameter', 'sun_diameter', 'moon_distance', 'sun_distance', 'moon_phase',
-        'moon_age', 'o3_distance', 'co_distance', /*'absolute_humidity',*/
+        'moon_age', 'o3_distance', 'co_distance', /*'absolute_humidity',*/ 'alt_pressure', 'alt_density', 'zcast_live', 'zcast_best',
         'day_length', 'health_idx', 'cbi', 'pressure_ref', 'wet_bulb', 'air_density', 'wood_emc',
         'equivalent_temperature', 'potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
         'partial_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 'sunshine', 'soil_temperature', 'leaf_wetness',
@@ -118,6 +119,10 @@ trait Output {
                         break;
                     case 6 :
                         $mapping_service = new MaptilerHandling($map, $_attributes['size']);
+                        return $mapping_service->output();
+                        break;
+                    case 7 :
+                        $mapping_service = new NavionicsHandling($map, $_attributes['size']);
                         return $mapping_service->output();
                         break;
                     default:
@@ -6958,6 +6963,13 @@ trait Output {
                     $result = $this->get_current_weather_text($value);
                 }
                 break;
+            case 'zcast_best':
+            case 'zcast_live':
+                $result = $value;
+                if ($textual) {
+                    $result = $this->get_zcast_text($value);
+                }
+                break;
             case 'signal':
                 $result = $this->get_signal_percentage($value, $module_type);
                 $result .= ($unit ? $this->unit_espace.$this->get_signal_unit() : '');
@@ -7109,6 +7121,12 @@ trait Output {
             case 'cloud_ceiling':
                 $ref = get_option('live_weather_station_unit_altitude');
                 $result = $this->get_cloud_ceiling($value, $ref);
+                $result .= ($unit ? $this->unit_espace.$this->get_altitude_unit($ref) : '');
+                break;
+            case 'alt_pressure':
+            case 'alt_density':
+                $ref = get_option('live_weather_station_unit_altitude');
+                $result = $this->get_alt_pressure_density($value, $ref);
                 $result .= ($unit ? $this->unit_espace.$this->get_altitude_unit($ref) : '');
                 break;
             case 'co2_trend':
@@ -7419,6 +7437,8 @@ trait Output {
                         'degrees' => 'text-top',);
         $icons = array( 'absolute_humidity' => 'wi-raindrop',
                         'air_density' => 'fa-adjust',
+                        'alt_pressure' => 'fa-' . (LWS_FA5?'arrow-alt-circle-up':'fa-arrow-circle-o-up'),
+                        'alt_density' => 'fa-' . (LWS_FA5?'arrow-alt-circle-up':'fa-arrow-circle-up'),
                         'altitude' => 'fa-rotate-315 fa-location-arrow',
                         'cbi' => 'wi-fire',
                         'city' => 'fa-globe',
@@ -7518,6 +7538,8 @@ trait Output {
                         'wet_bulb' => 'wi-thermometer',
                         'wind_chill' => 'wi-thermometer-internal',
                         'wood_emc' => 'fa-tree',
+                        'zcast_best' => 'fa-binoculars',
+                        'zcast_live' => 'fa-binoculars',
                         'zoom' => 'fa-search'
             );
 
@@ -7544,7 +7566,7 @@ trait Output {
         if (strpos(strtolower($type), '_tension') !== false) {
             $tmm = 'degrees';
         }
-        if (strpos(strtolower($type), '_pressure') !== false) {
+        if (strpos(strtolower($type), '_pressure') !== false && strtolower($type) !== 'alt_pressure') {
             $tmm = 'ppressure';
             $type = 'pressure';
         }
@@ -7637,6 +7659,9 @@ trait Output {
                             break;
                     }
                 }
+                break;
+            case 'alt_pressure':
+                $class = LWS_FAR . ' ';
                 break;
             case 'windstrength':
             case 'guststrength':
@@ -7894,6 +7919,8 @@ trait Output {
         $ref = -1;
         switch ($type) {
             case 'loc_altitude':
+            case 'alt_pressure':
+            case 'alt_density':
             case 'cloud_ceiling':
                 $ref = get_option('live_weather_station_unit_altitude');
                 if ($force_ref != 0) {
@@ -8469,6 +8496,8 @@ trait Output {
             case 'video_imperial':
             case 'video_metric':
             case 'weather':
+            case 'zcast_live':
+            case 'zcast_best':
                 $result['unit'] = '' ;
                 $result['long'] = '' ;
                 $result['comp'] = '' ;
@@ -8731,6 +8760,16 @@ trait Output {
             case 'cloud_ceiling':
                 $result = __('cloud base', 'live-weather-station') ;
                 break;
+            case 'alt_pressure':
+                $result = __('pressure alt.', 'live-weather-station') ;
+                break;
+            case 'density_pressure':
+                $result = __('density alt.', 'live-weather-station') ;
+                break;
+            case 'zcast_live':
+            case 'zcast_best':
+                $result = __('forecast', 'live-weather-station') ;
+                break;
             case 'cloudiness':
             case 'cloudiness_min':
             case 'cloudiness_max':
@@ -8936,6 +8975,168 @@ trait Output {
             case 804 : $result = lws__('overcast clouds', 'live-weather-station'); break;
             default : $result = 'unknown'; break;
         }
+        return $result;
+    }
+
+    /**
+     * Get Zambretti forecast in human readable text.
+     *
+     * @param integer $value The value of the Zambretti forecast.
+     * @return string The Zambretti forecast in human readable text.
+     * @since 3.8.0
+     */
+    protected function get_zcast_text($value) {
+        $result = __('unknown', 'live-weather-station');
+        $forecast = array(
+            lws__('Settled fine', 'live-weather-station'),
+            lws__('Fine weather', 'live-weather-station'),
+            lws__('Becoming fine', 'live-weather-station'),
+            lws__('Fine, becoming less settled', 'live-weather-station'),
+            lws__('Fine, possible showers', 'live-weather-station'),
+            lws__('Fairly fine, improving', 'live-weather-station'),
+            lws__('Fairly fine, possible showers early', 'live-weather-station'),
+            lws__('Fairly fine, showery later', 'live-weather-station'),
+            lws__('Showery early, improving', 'live-weather-station'),
+            lws__('Changeable, mending', 'live-weather-station'),
+            lws__('Fairly fine, showers likely', 'live-weather-station'),
+            lws__('Rather unsettled clearing later', 'live-weather-station'),
+            lws__('Unsettled, probably improving', 'live-weather-station'),
+            lws__('Showery, bright intervals', 'live-weather-station'),
+            lws__('Showery, becoming less settled', 'live-weather-station'),
+            lws__('Changeable, some rain', 'live-weather-station'),
+            lws__('Unsettled, short fine intervals', 'live-weather-station'),
+            lws__('Unsettled, rain later', 'live-weather-station'),
+            lws__('Unsettled, some rain', 'live-weather-station'),
+            lws__('Mostly very unsettled', 'live-weather-station'),
+            lws__('Occasional rain, worsening', 'live-weather-station'),
+            lws__('Rain at times, very unsettled', 'live-weather-station'),
+            lws__('Rain at frequent intervals', 'live-weather-station'),
+            lws__('Rain, very unsettled', 'live-weather-station'),
+            lws__('Stormy, may improve', 'live-weather-station'),
+            lws__('Stormy, much rain', 'live-weather-station'));
+        $f = explode(':', $value);
+        if (count($f) == 2) {
+            if ((int)$f[1] >= 0 && (int)$f[1] <= 25) {
+                if ($f[0] == 'X') {
+                    $result = lws__('Exceptional Weather: ', 'live-weather-station') . lws_lcfirst($forecast[(int)$f[1]]) . '.';
+                }
+                else {
+                    $result = $forecast[(int)$f[1]];
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get Zambretti forecast as weather code.
+     *
+     * @param integer $value The value of the Zambretti forecast.
+     * @param integer $weather Optional. The current conditions value.
+     * @return array The code of icon(s) ordered.
+     * @since 3.8.0
+     */
+    protected function get_zcast_icons($value, $weather=null) {
+        $result = array();
+        if ($weather) {
+            $result[] = (int)$weather;
+        }
+        $f = explode(':', $value);
+        if (count($f) == 2) {
+            switch ((int)$f[1]) {
+                case 0:
+                case 1:
+                    $result[] = 800;  // day-sunny
+                break;
+                case 2:
+                case 3:
+                case 4:
+                    $result[] = 1804;  // day-sunny-overcast
+                    break;
+                case 5:
+                case 6:
+                case 7:
+                case 10:
+                    $result[] = 1958;  // day-cloudy
+                    break;
+                case 8:
+                case 13:
+                case 14:
+                    $result[] = 906;  // hail
+                    break;
+                case 9:
+                case 11:
+                    $result[] = 804;  // cloudy
+                    break;
+
+            }
+            switch ((int)$f[1]) {
+                case 2:
+                    $result[] = 800;  // day-sunny
+                    break;
+                case 3:
+                case 9:
+                case 11:
+                    $result[] = 1958;  // day-cloudy
+                    break;
+                case 4:
+                case 6:
+                case 7:
+                    $result[] = 313;  // showers
+                    break;
+                case 10:
+                case 14:
+                    $result[] = 1906;  // day-hail
+                    break;
+                case 5:
+                    $result[] = 1804;  // day-sunny-overcast
+                    break;
+                case 8:
+                    $result[] = 804;  // cloudy
+                    break;
+
+
+            }
+
+
+
+
+        }
+
+
+        /*$forecast = array(
+            0 lws__('Settled fine', 'live-weather-station'),
+            1 lws__('Fine weather', 'live-weather-station'),
+            2 lws__('Becoming fine', 'live-weather-station'),
+            3 lws__('Fine, becoming less settled', 'live-weather-station'),
+            4 lws__('Fine, possible showers', 'live-weather-station'),
+            5 lws__('Fairly fine, improving', 'live-weather-station'),
+            6 lws__('Fairly fine, possible showers early', 'live-weather-station'),
+            7 lws__('Fairly fine, showery later', 'live-weather-station'),
+            8 lws__('Showery early, improving', 'live-weather-station'),
+            9 lws__('Changeable, mending', 'live-weather-station'),
+            10 lws__('Fairly fine, showers likely', 'live-weather-station'),
+            11 lws__('Rather unsettled clearing later', 'live-weather-station'),
+            12 lws__('Unsettled, probably improving', 'live-weather-station'),
+            13 lws__('Showery, bright intervals', 'live-weather-station'),
+            14 lws__('Showery, becoming less settled', 'live-weather-station'),
+
+
+            15 lws__('Changeable, some rain', 'live-weather-station'),
+            16 lws__('Unsettled, short fine intervals', 'live-weather-station'),
+            17 lws__('Unsettled, rain later', 'live-weather-station'),
+            18 lws__('Unsettled, some rain', 'live-weather-station'),
+            19 lws__('Mostly very unsettled', 'live-weather-station'),
+            20 lws__('Occasional rain, worsening', 'live-weather-station'),
+            21 lws__('Rain at times, very unsettled', 'live-weather-station'),
+            22 lws__('Rain at frequent intervals', 'live-weather-station'),
+            23 lws__('Rain, very unsettled', 'live-weather-station'),
+            24 lws__('Stormy, may improve', 'live-weather-station'),
+            25 lws__('Stormy, much rain', 'live-weather-station'));
+
+
+*/
+
         return $result;
     }
 
@@ -9565,6 +9766,8 @@ trait Output {
             case 'heat_index':
             case 'cloud_ceiling':
             case 'cbi':
+            case 'zcast_best':
+            case 'zcast_live':
                 $result = $computed && $outdoor;
                 break;
             case 'wet_bulb':
@@ -9584,6 +9787,8 @@ trait Output {
             case 'partial_absolute_humidity':
             case 'saturation_absolute_humidity':
             case 'absolute_humidity':
+            case 'alt_pressure':
+            case 'alt_density':
                 $result = $psychrometry;
                 break;
             case 'o3':
@@ -10795,7 +11000,7 @@ trait Output {
                     $val['measure_timestamp'] = $data['measure_timestamp'];
                     $textual = (strpos($val['measure_type'], '_trend') !== false);
                     if (!$textual) {
-                        $textual = ($val['measure_type'] == 'weather');
+                        $textual = ($val['measure_type'] == 'weather' || $val['measure_type'] == 'zcast_live' || $val['measure_type'] == 'zcast_best');
                     }
                     $val['measure_value_txt'] = $this->output_value($val['measure_value'], $val['measure_type'], true, $textual, $module['module_type'], $station['loc_timezone']);
                     $val['measure_value_icn'] = $this->output_iconic_value($val['measure_value'], $val['measure_type'], $module['module_type'], ($val['measure_type'] == 'weather'), '#999');
@@ -10816,6 +11021,9 @@ trait Output {
                         $val['measure_value_txt'] .= ' ' . $unit['comp'];
                     }
                     $val['measure_value_txt'] = str_replace(' ', '&nbsp;', $val['measure_value_txt']);
+                    if ($val['measure_type'] == 'weather' || $val['measure_type'] == 'zcast_live' || $val['measure_type'] == 'zcast_best') {
+                        $val['measure_value_txt'] = ucfirst($val['measure_value_txt']);
+                    }
                     $module['measure'][] = $val;
                 }
             }

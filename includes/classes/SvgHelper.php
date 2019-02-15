@@ -462,6 +462,48 @@ class Handling {
     }
 
     /**
+     * Returns a base64 svg resource for the Navionics icon.
+     *
+     * @param string $color Optional. Color of the icon.
+     * @return string The svg resource as a base64.
+     * @since 3.8.0
+     */
+    public static function get_base64_navionics_icon($color='#000') {
+        $source =  '<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xml:space="preserve" width="100%" height="100%" viewBox="0 0 900 900">';
+        $source .= '<g transform="translate(130,-470) scale(2.1,2.1)">';
+        $source .= '<path style="fill:' . $color . '" d="M297.5,408,137.18,557.13l-2.39-56.63L64.6,565.91a153,153,0,0,0,54.7,23.88c81.41,17.54,162-34.9,178.94-116.1A152.61,152.61,0,0,0,297.5,408Z"/>';
+        $source .= '<path style="fill:' . $color . '" d="M12.17,382.34l85.14-81.25C59.44,315.58,28.47,343.78,12.17,382.34Z"/>';
+        $source .= '<path style="fill:' . $color . '" d="M154.68,291.13,0,433.5c.43-7.62,1.47-18.82,3.7-26.63l118.57-113.2A147.36,147.36,0,0,1,154.68,291.13Z"/>';
+        $source .= '<path style="fill:' . $color . '" d="M202.63,300.27,5.71,484A143.12,143.12,0,0,1,.8,457.43L176.44,293.05q2.85.48,5.7,1.09A141.09,141.09,0,0,1,202.63,300.27Z"/>';
+        $source .= '<path style="fill:' . $color . '" d="M247.09,325.68a149.48,149.48,0,0,0-25.36-17.41l-5.59,44.67Z"/>';
+        $source .= '<path style="fill:' . $color . '" d="M274.37,356.13,166.69,459.82l.8-60.62-139,130.33c-6.91-8.7-10.78-16-14.89-25L210.56,321,205,374.47l49.23-42.21A141.79,141.79,0,0,1,274.37,356.13Z"/>';
+        $source .= '<path style="fill:' . $color . '" d="M294.31,397.61,144.36,534.8l-2.39-55-85.1,80.49A155.79,155.79,0,0,1,33.8,536.89L158.72,419.94l-.8,60.62L280,364.72A142.07,142.07,0,0,1,294.31,397.61Z"/>';
+        $source .= '</g>';
+        $source .= '</svg>';
+        return 'data:image/svg+xml;base64,' . base64_encode($source);
+    }
+
+    /**
+     * Returns a base64 svg resource for the monochrome Navionics logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.8.0
+     */
+    public static function get_base64_navionics_grey_logo() {
+        return self::get_base64_navionics_icon('#666666');
+    }
+
+    /**
+     * Returns a base64 svg resource for the colored Navionics logo.
+     *
+     * @return string The svg resource as a base64.
+     * @since 3.8.0
+     */
+    public static function get_base64_navionics_color_logo() {
+        return self::get_base64_navionics_icon('#00529A');
+    }
+
+    /**
      * Returns a base64 svg resource for the Weatherflow icon.
      *
      * @param string $color Optional. Color of the icon.

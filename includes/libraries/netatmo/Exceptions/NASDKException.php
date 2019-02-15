@@ -12,6 +12,12 @@ class NASDKException extends \Exception
 {
     public function __construct($code, $message)
     {
+        if (!$message) {
+            $message = 'Unknow error';
+        }
+        if (!is_numeric($code)) {
+            $code = 505;
+        }
         parent::__construct($message, $code);
     }
 }

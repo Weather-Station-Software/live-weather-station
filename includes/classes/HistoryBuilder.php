@@ -104,7 +104,7 @@ class Builder
             'soil_temperature', 'leaf_wetness', 'moisture_content', 'moisture_tension', 'evapotranspiration',
             'windangle', 'gustangle', 'windstrength', 'guststrength', 'rain', 'rain_hour_aggregated', 'visibility',
             'rain_day_aggregated', 'strike_count', 'strike_instant', 'weather', 'dew_point', 'frost_point', 'sunshine',
-            'winddirection', 'gustdirection', 'delta_t', 'steadman', 'summer_simmer');
+            'winddirection', 'gustdirection', 'delta_t', 'steadman', 'summer_simmer', 'alt_pressure', 'alt_density');
     
     public $standard_measurements = 
         array('health_idx', 'co2', 'humidity', 'cloudiness', 'noise', 'pressure_sl', 'temperature', 'irradiance',
@@ -114,7 +114,7 @@ class Builder
     public $extended_measurements = 
         array('cbi', 'wet_bulb', 'air_density', 'wood_emc', 'equivalent_temperature', 'potential_temperature',
               'pressure', 'equivalent_potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
-              'saturation_vapor_pressure', 'vapor_pressure', 'partial_absolute_humidity',
+              'saturation_vapor_pressure', 'vapor_pressure', 'partial_absolute_humidity', 'alt_pressure', 'alt_density',
               'saturation_absolute_humidity', 'soil_temperature', 'leaf_wetness', 'moisture_content',
               'moisture_tension', 'evapotranspiration', 'gustangle', 'guststrength', 'strike_instant', 'strike_count',
               'sunshine', 'gustdirection', 'delta_t');

@@ -594,17 +594,21 @@ class Cache {
      *
      * @param string $cache_id The cached element slug. Expected to not be SQL-escaped.
      * @param mixed $value Cached element value, must be serializable if non-scalar. Expected to not be SQL-escaped.
+     * @param intger $expiry Optional. Override default cahe expiry time.
      * @return bool False if value was not set and true if value was set.
      * @since 3.0.0
      *
      */
-    public static function set_query($cache_id, $value) {
+    public static function set_query($cache_id, $value, $expiry=null) {
+        if (!$expiry) {
+            $expiry = self::$wp_expiry;
+        }
         $cache_id = Env::get_cache_prefix() . $cache_id;
         if (!(bool)get_option('live_weather_station_query_cache')) {
             return false;
         }
         else {
-            return wp_cache_set($cache_id, $value, '', self::$wp_expiry);
+            return wp_cache_set($cache_id, $value, '', $expiry);
         }
     }
 

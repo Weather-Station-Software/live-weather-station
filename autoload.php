@@ -200,6 +200,7 @@ spl_autoload_register(
         case 'WeatherStation\UI\Map\OpenweathermapHandling': $file = LWS_INCLUDES_DIR.'classes/MapOpenweathermapHelper.php'; break;
         case 'WeatherStation\UI\Map\MapboxHandling': $file = LWS_INCLUDES_DIR.'classes/MapMapboxHelper.php'; break;
         case 'WeatherStation\UI\Map\MaptilerHandling': $file = LWS_INCLUDES_DIR.'classes/MapMaptilerHelper.php'; break;
+        case 'WeatherStation\UI\Map\NavionicsHandling': $file = LWS_INCLUDES_DIR.'classes/MapNavionicsHelper.php'; break;
         case 'WeatherStation\UI\Map\StamenHandling': $file = LWS_INCLUDES_DIR.'classes/MapStamenHelper.php'; break;
         case 'WeatherStation\UI\Map\ThunderforestHandling': $file = LWS_INCLUDES_DIR.'classes/MapThunderforestHelper.php'; break;
         case 'WeatherStation\UI\Map\WindyHandling': $file = LWS_INCLUDES_DIR.'classes/MapWindyHelper.php'; break;
