@@ -533,6 +533,7 @@ abstract class NetatmoImporter extends Process {
                     $result['air_density'][$ts] = $this->compute_air_density($t, 100 * $p, $h);
                     $result['partial_absolute_humidity'][$ts] = $this->compute_partial_absolute_humidity($t, 100 * $p, $h);
                     $result['specific_enthalpy'][$ts] = $this->compute_specific_enthalpy($t, 100 * $p, $h);
+                    $result['alt_density'][$ts] = $this->compute_density_altitude($t, 100 * $p, $h);
                 }
                 if (isset($t) && isset($p)) {
                     $result['saturation_absolute_humidity'][$ts] = $this->compute_saturation_absolute_humidity($t, 100 * $p);
@@ -542,6 +543,9 @@ abstract class NetatmoImporter extends Process {
                 }
                 if (isset($t)) {
                     $result['saturation_vapor_pressure'][$ts] = $this->compute_saturation_vapor_pressure($t);
+                }
+                if (isset($p)) {
+                    $result['alt_pressure'][$ts] = $this->compute_pressure_altitude(100 * $p);
                 }
                 if (isset($t) && isset($w)) {
                     $result['wind_chill'][$ts] = $this->compute_wind_chill($t, $w);

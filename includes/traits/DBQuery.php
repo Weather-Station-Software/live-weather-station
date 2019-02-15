@@ -453,7 +453,7 @@ trait Query {
     private function get_reference_values($station_type=false) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
-        $sql = "SELECT device_id, device_name, module_type, measure_timestamp, measure_type, measure_value FROM ".$table_name." WHERE (module_type='NAMain' OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NACurrent') AND (measure_type='temperature' OR measure_type='humidity' OR measure_type='windstrength' OR measure_type='pressure' OR measure_type LIKE 'loc_%')" ;
+        $sql = "SELECT device_id, device_name, module_type, measure_timestamp, measure_type, measure_value FROM ".$table_name." WHERE (module_type='NAMain' OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NACurrent') AND (measure_type='temperature' OR measure_type='humidity' OR measure_type='windstrength' OR measure_type='winddirection' OR measure_type='pressure' OR measure_type='pressure_trend' OR measure_type='pressure_sl' OR measure_type LIKE 'loc_%')" ;
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -480,7 +480,7 @@ trait Query {
                     $value = -9999;
                     foreach ($measure as $module_type => $module) {
                         $value = $module['value'];
-                        if ($measure_type == 'temperature') {
+                        if ($measure_type == 'temperature' || $measure_type == 'humidity') {
                             if ($module_type == 'NAModule1') {
                                 $result[$device_id][$measure_type] = $value;
                             }
@@ -490,17 +490,7 @@ trait Query {
                                 }
                             }
                         }
-                        if ($measure_type == 'humidity') {
-                            if ($module_type == 'NAModule1') {
-                                $result[$device_id][$measure_type] = $value;
-                            }
-                            if ($module_type == 'NACurrent') {
-                                if (!array_key_exists($measure_type, $result[$device_id])) {
-                                    $result[$device_id][$measure_type] = $value;
-                                }
-                            }
-                        }
-                        if ($measure_type == 'windstrength') {
+                        if ($measure_type == 'windstrength' || $measure_type == 'winddirection') {
                             if ($module_type == 'NAModule2') {
                                 $result[$device_id][$measure_type] = $value;
                             }
@@ -510,7 +500,7 @@ trait Query {
                                 }
                             }
                         }
-                        if ($measure_type == 'pressure') {
+                        if ($measure_type == 'pressure' || $measure_type == 'pressure_trend' || $measure_type == 'pressure_sl') {
                             if ($module_type == 'NAMain') {
                                 $result[$device_id][$measure_type] = $value;
                             }
@@ -526,6 +516,56 @@ trait Query {
                     }
                 }
             }
+            if (array_key_exists('loc_latitude', $result[$device_id]) && $result[$device_id]['loc_latitude'] < 0) {
+                $result[$device_id]['north'] = false;
+            }
+            else {
+                $result[$device_id]['north'] = true;
+            }
+            $ref_min = 950;
+            $ref_max = 1050;
+            if ((bool)get_option('live_weather_station_build_history')) {
+                $ret = get_option('live_weather_station_retention_history');
+                if ($ret == 0 || $ret > 52) {
+                    $station = $this->get_station_informations_by_station_id($device_id);
+                    if (array_key_exists('oldest_data', $station)) {
+                        $old = \DateTime::createFromFormat('Y-m-d', $station['oldest_data']);
+                        if (time() - $old->getTimestamp() > 60 * 60 * 24 * 365) {
+                            $table_name = $wpdb->prefix.self::live_weather_station_histo_yearly_table();
+                            $sql = "SELECT module_type, MAX(measure_value) as max_pressure, MIN(measure_value) as min_pressure FROM " . $table_name . " WHERE device_id='" . $device_id . "' AND (module_type='NAMain' OR module_type='NACurrent') AND measure_type='pressure_sl' AND measure_set='avg' GROUP BY module_type";
+                            $cache_id = 'get_min_max_pressure_'.$device_id;
+                            $value = Cache::get_query($cache_id);
+                            if ($value === false) {
+                                $query = $wpdb->get_results($sql, ARRAY_A);
+                                $min = null;
+                                $max = null;
+                                foreach ($query as $row) {
+                                    if ($row['module_type'] == 'NAMain') {
+                                        $min = $row['min_pressure'];
+                                        $max = $row['max_pressure'];
+                                    }
+                                    if ($row['module_type'] == 'NACurrent') {
+                                        if (!$min) {
+                                            $min = $row['min_pressure'];
+                                        }
+                                        if (!$max) {
+                                            $max = $row['max_pressure'];
+                                        }
+                                    }
+                                }
+                                $value = array();
+                                $value['min'] = $min;
+                                $value['max'] = $max;
+                                Cache::set_query($cache_id, $value, 172800); // cache it for 48 hours
+                            }
+                            $ref_min = $value['min'];
+                            $ref_max = $value['max'];
+                        }
+                    }
+                }
+            }
+            $result[$device_id]['pressure_sl_min'] = $ref_min;
+            $result[$device_id]['pressure_sl_max'] = $ref_max;
         }
         return $result;
     }

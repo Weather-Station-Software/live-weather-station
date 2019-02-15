@@ -520,12 +520,16 @@ class WeatherFlowImporter extends Process {
                     $result['air_density'][$ts] = $this->compute_air_density($t, 100 * $p, $h);
                     $result['partial_absolute_humidity'][$ts] = $this->compute_partial_absolute_humidity($t, 100 * $p, $h);
                     $result['specific_enthalpy'][$ts] = $this->compute_specific_enthalpy($t, 100 * $p, $h);
+                    $result['alt_density'][$ts] = $this->compute_density_altitude($t, 100 * $p, $h);
                 }
                 if (isset($t) && isset($p)) {
                     $result['saturation_absolute_humidity'][$ts] = $this->compute_saturation_absolute_humidity($t, 100 * $p);
                     $result['potential_temperature'][$ts] = $this->compute_potential_temperature($t, 100 * $p);
                     $result['equivalent_temperature'][$ts] = $this->compute_equivalent_temperature($t, 100 * $p);
                     $result['equivalent_potential_temperature'][$ts] = $this->compute_equivalent_potential_temperature($t, 100 * $p);
+                }
+                if (isset($p)) {
+                    $result['alt_pressure'][$ts] = $this->compute_pressure_altitude(100 * $p);
                 }
                 if (isset($t)) {
                     $result['saturation_vapor_pressure'][$ts] = $this->compute_saturation_vapor_pressure($t);

@@ -105,6 +105,7 @@ class Handling {
         add_meta_box('lws-connect-mapbox', 'Mapbox', array($this, 'mapbox_box'), 'lws-settings', 'column3');
         if (LWS_PREVIEW) {
             add_meta_box('lws-connect-maptiler', 'MapTiler', array($this, 'maptiler_box'), 'lws-settings', 'column3');
+            add_meta_box('lws-connect-navionics', 'Navionics', array($this, 'navionics_box'), 'lws-settings', 'column3');
         }
         add_meta_box('lws-connect-thunderforest', 'Thunderforest', array($this, 'thunderforest_box'), 'lws-settings', 'column3');
         add_meta_box('lws-connect-windy', 'Windy', array($this, 'windy_box'), 'lws-settings', 'column3');
@@ -180,6 +181,15 @@ class Handling {
      */
     public function maptiler_box() {
         include(LWS_ADMIN_DIR.'partials/ConnectMaptiler.php');
+    }
+
+    /**
+     * Get content of the Navionics box.
+     *
+     * @since 3.8.0
+     */
+    public function navionics_box() {
+        include(LWS_ADMIN_DIR.'partials/ConnectNavionics.php');
     }
 
     /**

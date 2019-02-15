@@ -38,7 +38,10 @@ trait Client {
             $temperature_ref = $this->value_unknown;
             $humidity_ref = $this->value_unknown;
             $wind_ref = $this->value_unknown;
+            $winddirection_ref = $this->value_unknown;
             $pressure_ref = $this->value_unknown;
+            $pressure_sl_ref = $this->value_unknown;
+            $pressure_trend_ref = 'stable';
             if (array_key_exists('temperature', $data)) {
                 $temperature_ref = $data['temperature'];
             }
@@ -48,8 +51,17 @@ trait Client {
             if (array_key_exists('windstrength', $data)) {
                 $wind_ref = $data['windstrength'];
             }
+            if (array_key_exists('winddirection', $data)) {
+                $winddirection_ref = $data['winddirection'];
+            }
             if (array_key_exists('pressure', $data)) {
                 $pressure_ref = $data['pressure'];
+            }
+            if (array_key_exists('pressure_trend', $data)) {
+                $pressure_trend_ref = $data['pressure_trend'];
+            }
+            if (array_key_exists('pressure_sl', $data)) {
+                $pressure_sl_ref = $data['pressure_sl'];
             }
             $place = array();
             $place['country'] = $data['loc_country'];
@@ -80,8 +92,10 @@ trait Client {
                 if (!in_array('temperature_ref', $nm['data_type'])) {
                     $nm['data_type'][] = 'temperature_ref';
                 }
+                if (!in_array('humidity_ref', $nm['data_type'])) {
+                    $nm['data_type'][] = 'humidity_ref';
+                }
                 $nm['data_type'][] = 'cbi';
-                $nm['data_type'][] = 'humidity_ref';
                 $nm['data_type'][] = 'dew_point';
                 $nm['data_type'][] = 'frost_point';
                 $nm['data_type'][] = 'heat_index';
@@ -116,10 +130,13 @@ trait Client {
                 if (!in_array('humidity_ref', $nm['data_type'])) {
                     $nm['data_type'][] = 'humidity_ref';
                 }
-                $nm['data_type'][] = 'pressure_ref';
+                if (!in_array('pressure_ref', $nm['data_type'])) {
+                    $nm['data_type'][] = 'pressure_ref';
+                }
                 $nm['data_type'][] = 'air_density';
                 $nm['data_type'][] = 'partial_absolute_humidity';
                 $nm['data_type'][] = 'specific_enthalpy';
+                $nm['data_type'][] = 'alt_density';
                 $nm['dashboard_data']['time_utc'] = time();
                 $nm['dashboard_data']['temperature_ref'] = $temperature_ref;
                 $nm['dashboard_data']['humidity_ref'] = $humidity_ref;
@@ -127,6 +144,7 @@ trait Client {
                 $nm['dashboard_data']['air_density'] = $this->compute_air_density($temperature_ref, 100 * $pressure_ref, $humidity_ref);
                 $nm['dashboard_data']['partial_absolute_humidity'] = $this->compute_partial_absolute_humidity($temperature_ref, 100 * $pressure_ref, $humidity_ref);
                 $nm['dashboard_data']['specific_enthalpy'] = $this->compute_specific_enthalpy($temperature_ref, 100 * $pressure_ref, $humidity_ref);
+                $nm['dashboard_data']['alt_density'] = $this->compute_density_altitude($temperature_ref, 100 * $pressure_ref, $humidity_ref);
             }
 
             if ( ($temperature_ref != $this->value_unknown) &&
@@ -134,7 +152,9 @@ trait Client {
                 if (!in_array('temperature_ref', $nm['data_type'])) {
                     $nm['data_type'][] = 'temperature_ref';
                 }
-                $nm['data_type'][] = 'pressure_ref';
+                if (!in_array('pressure_ref', $nm['data_type'])) {
+                    $nm['data_type'][] = 'pressure_ref';
+                }
                 $nm['data_type'][] = 'saturation_absolute_humidity';
                 $nm['data_type'][] = 'potential_temperature';
                 $nm['data_type'][] = 'equivalent_temperature';
@@ -146,6 +166,15 @@ trait Client {
                 $nm['dashboard_data']['potential_temperature'] = $this->compute_potential_temperature($temperature_ref, 100 * $pressure_ref);
                 $nm['dashboard_data']['equivalent_temperature'] = $this->compute_equivalent_temperature($temperature_ref, 100 * $pressure_ref);
                 $nm['dashboard_data']['equivalent_potential_temperature'] = $this->compute_equivalent_potential_temperature($temperature_ref, 100 * $pressure_ref);
+            }
+            if ($pressure_ref != $this->value_unknown) {
+                if (!in_array('pressure_ref', $nm['data_type'])) {
+                    $nm['data_type'][] = 'pressure_ref';
+                }
+                $nm['data_type'][] = 'alt_pressure';
+                $nm['dashboard_data']['time_utc'] = time();
+                $nm['dashboard_data']['pressure_ref'] = $pressure_ref;
+                $nm['dashboard_data']['alt_pressure'] = $this->compute_pressure_altitude(100 * $pressure_ref);
             }
             if ($temperature_ref != $this->value_unknown) {
                 if (!in_array('temperature_ref', $nm['data_type'])) {
@@ -188,6 +217,23 @@ trait Client {
                 $nm['dashboard_data']['humidity_ref'] = $humidity_ref;
                 $nm['dashboard_data']['wind_ref'] = $wind_ref;
                 $nm['dashboard_data']['steadman'] = $steadman;
+            }
+            if ( ($pressure_sl_ref != $this->value_unknown) &&
+                ($winddirection_ref != $this->value_unknown) ) {
+                $zcast = $this->compute_zambretti_forecast(100 * $pressure_sl_ref, $pressure_trend_ref, $winddirection_ref, $data['north'], 100 * $data['pressure_sl_max'], 100 * $data['pressure_sl_min']);
+                $nm['data_type'][] = 'zcast_live';
+                $nm['dashboard_data']['time_utc'] = time();
+                $nm['dashboard_data']['zcast_live'] = $zcast;
+                if (array_key_exists('loc_timezone', $data)) {
+                    $datetime = new \DateTime('now', new \DateTimeZone('UTC'));
+                    $datetime->setTimezone(new \DateTimeZone($data['loc_timezone']));
+                    $h = (int)$datetime->format('H');
+                    $m = (int)$datetime->format('i');
+                    if ($h == 9 && $m < 30) {
+                        $nm['data_type'][] = 'zcast_best';
+                        $nm['dashboard_data']['zcast_best'] = $zcast;
+                    }
+                }
             }
             if (count($nm['dashboard_data']) > 0) {
                 $result[] = $nm;

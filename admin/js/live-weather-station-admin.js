@@ -379,6 +379,20 @@ jQuery(document).ready( function($) {
         }
     });
 
+    $('#navionics-connect').click( function() {
+        $('.button').removeClass('button-primary').addClass('button-disabled');
+        $('.button').click(function() { return false; });
+        $('#navionics-span-sync').show();
+    });
+
+    $('#navionics-disconnect').click( function() {
+        if (lws_navionics_confirmation) {
+            $('.button').removeClass('button-primary').addClass('button-disabled');
+            $('.button').click(function() { return false; });
+            $('#navionics-span-sync').show();
+        }
+    });
+
     $('#mapbox-connect').click( function() {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });

@@ -392,10 +392,10 @@ trait StationClient {
             $this->get_and_store_data();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
-            $weather->compute(LWS_REAL_SID);
+            $weather->compute(LWS_TXT_SID);
             $err = 'computing ephemeris';
             $ephemeris = new Ephemeris_Computer();
-            $ephemeris->compute(LWS_REAL_SID);
+            $ephemeris->compute(LWS_TXT_SID);
             Logger::info($system, $this->service, null, null, null, null, 0, 'Job done: collecting from Realtime file and computing weather and ephemeris data.');
         }
         catch (\Exception $ex) {

@@ -71,6 +71,9 @@ trait Description {
             case 106:
                 $result = 'MapTiler';
                 break;
+            case 107:
+                $result = 'Navionics';
+                break;
             default:
                 $result = null;
         }
@@ -636,6 +639,18 @@ trait Description {
                 break;
             case 'equivalent_potential_temperature':
                 $result = ($abbr ? __('Eq. pot. temperature', 'live-weather-station') : __('Equivalent potential temperature', 'live-weather-station'));
+                break;
+            case 'alt_pressure':
+                $result = ($abbr ? lws__('Pressure alt.', 'live-weather-station') : lws__('Pressure altitude', 'live-weather-station'));
+                break;
+            case 'alt_density':
+                $result = ($abbr ? lws__('Density alt.', 'live-weather-station') : lws__('Density altitude', 'live-weather-station'));
+                break;
+            case 'zcast_best':
+                $result = ($abbr ? lws__('Zambretti', 'live-weather-station') : lws__('Zambretti forecast (at 09:00)', 'live-weather-station'));
+                break;
+            case 'zcast_live':
+                $result = ($abbr ? lws__('Zambretti', 'live-weather-station') : lws__('Zambretti forecast (live)', 'live-weather-station'));
                 break;
             // SOLAR
             case 'irradiance':

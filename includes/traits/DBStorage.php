@@ -741,12 +741,16 @@ trait Storage {
             self::create_live_weather_station_media_table();
             self::create_live_weather_station_background_process_table();
             self::create_live_weather_station_notifications_table();
-            ProcessManager::register('WindExpander');
+            if (version_compare($oldversion, '3.6.0', '<')) {
+                ProcessManager::register('WindExpander');
+            }
 
 
             // VERSION 3.6.3
-            ProcessManager::register('IdentifierLowercaser');
-            ProcessManager::register('PressureExpander');
+            if (version_compare($oldversion, '3.6.3', '<')) {
+                ProcessManager::register('IdentifierLowercaser');
+                ProcessManager::register('PressureExpander');
+            }
 
             // VERSION 3.7.0
             self::create_live_weather_station_maps_table();

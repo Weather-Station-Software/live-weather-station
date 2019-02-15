@@ -14,6 +14,176 @@ trait Utilities {
 
 
     /**
+     * Computes the Zambretti forecast index.
+     *
+     * @param float $p Sea level pressure (in Pascal).
+     * @param string $trend Pressure trend ('stable', 'up' or 'down').
+     * @param float $w Wind direction in degrees.
+     * @param boolean $north Optional. True if in north hemisphere, false otherwise.
+     * @param integer $pressure_max Optional. Max sea level pressure (in Pascal).
+     * @param integer $pressure_min Optional. Min sea level pressure (in Pascal).
+     * @return string The computed Zambretti forecast.
+     * @since 3.8.0
+     */
+    protected function compute_zambretti_forecast($p, $trend, $w, $north=true, $pressure_max=105000, $pressure_min=95000) {
+        $rise_options = array('25', '25', '25', '24', '24', '19', '16', '12', '11', '9', '8', '6', '5', '2', '1', '1', '0', '0', '0', '0', '0', '0');
+        $steady_options = array('25', '25', '25', '25', '25', '25', '23', '23', '22', '18', '15', '13', '10', '4', '1', '1', '0', '0', '0', '0', '0', '0');
+        $fall_options = array('25', '25', '25', '25', '25', '25', '25', '25', '23', '23', '21', '20', '17', '14', '7', '3', '1', '1', '1', '0', '0', '0');
+        $pressure_min = $pressure_min / 100;
+        $pressure_max = $pressure_max / 100;
+        $p = $p / 100;
+        while ($w < 0) {
+            $w = $w + 360;
+        }
+        $dir = array('N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW', 'N');
+        $w = $dir[(int)round((($w % 360) / 22.5) + 0.4)];
+        $month = date('n');
+        $summer = (($month >= 4) && ($month <= 9));
+        $range = ($pressure_max - $pressure_min);
+        $constant = round(($range / 22), 3);
+        if ($north) {
+            if ($w == 'N') {
+                $p += 6 / 100 * $range;
+            }
+            elseif ($w == 'NNE') {
+                $p += 5 / 100 * $range;
+            }
+            elseif ($w == 'NE') {
+                $p += 5 / 100 * $range;
+            } 
+            elseif ($w == 'ENE') {
+                $p += 2 / 100 * $range;
+            } 
+            elseif ($w == 'E') {
+                $p -= 0.5 / 100 * $range;
+            } 
+            elseif ($w == 'ESE') {
+                $p -= 2 / 100 * $range;
+            } 
+            elseif ($w == 'SE') {
+                $p -= 5 / 100 * $range;
+            } 
+            elseif ($w == 'SSE') {
+                $p -= 8.5 / 100 * $range;
+            } 
+            elseif ($w == 'S') {
+                $p -= 12 / 100 * $range;
+            } 
+            elseif ($w == 'SSW') {
+                $p -= 10 / 100 * $range;  
+            } 
+            elseif ($w == 'SW') {
+                $p -= 6 / 100 * $range;
+            } 
+            elseif ($w == 'WSW') {
+                $p -= 4.5 / 100 * $range;  
+            } 
+            elseif ($w == 'W') {
+                $p -= 3 / 100 * $range;
+            } 
+            elseif ($w == 'WNW') {
+                $p -= 0.5 / 100 * $range;
+            }
+            elseif ($w == 'NW') {
+                $p += 1.5 / 100 * $range;
+            } 
+            elseif ($w == 'NNW') {
+                $p += 3 / 100 * $range;
+            }
+            if ($summer) {
+                if ($trend == 'up') {
+                    $p += 7 / 100 * $range;
+                } 
+                elseif ($trend == 'down') { 
+                    $p -= 7 / 100 * $range;
+                }
+            }
+        } 
+        else {
+            if ($w == 'S') {
+                $p += 6 / 100 * $range;
+            }
+            elseif ($w == 'SSW') {
+                $p += 5 / 100 * $range;
+            }
+            elseif ($w == 'SW') {
+                $p += 5 / 100 * $range;
+            }
+            elseif ($w == 'WSW') {
+                $p += 2 / 100 * $range;
+            }
+            elseif ($w == 'W') {
+                $p -= 0.5 / 100 * $range;
+            }
+            elseif ($w == 'WNW') {
+                $p -= 2 / 100 * $range;
+            }
+            elseif ($w == 'NW') {
+                $p -= 5 / 100 * $range;
+            }
+            elseif ($w == 'NNW') {
+                $p -= 8.5 / 100 * $range;
+            }
+            elseif ($w == 'N') {
+                $p -= 12 / 100 * $range;
+            }
+            elseif ($w == 'NNE') {
+                $p -= 10 / 100 * $range;
+            }
+            elseif ($w == 'NE') {
+                $p -= 6 / 100 * $range;
+            }
+            elseif ($w == 'ENE') {
+                $p -= 4.5 / 100 * $range;
+            }
+            elseif ($w == 'E') {
+                $p -= 3 / 100 * $range;
+            }
+            elseif ($w == 'ESE') {
+                $p -= 0.5 / 100 * $range;
+            }
+            elseif ($w == 'SE') {
+                $p += 1.5 / 100 * $range;
+            }
+            elseif ($w == 'SSE') {
+                $p += 3 / 100 * $range;
+            }
+            if (!$summer) {
+                if ($trend == 'up') {
+                    $p += 7 / 100 * $range;
+                } elseif ($trend == 'down') {
+                    $p -= 7 / 100 * $range;
+                }
+            }
+        }
+        if ($p == $pressure_max) {
+            $p = $pressure_max - 1;
+        }
+        $option = floor(($p - $pressure_min) / $constant);
+        if ($option < 0) {
+            $result = 'X:';
+            $option = 0;
+        }
+        elseif ($option > 21) {
+            $result = 'X:';
+            $option = 21;
+        }
+        else {
+            $result = 'S:';
+        }
+        if ($trend == 'up') {
+            $result .= $rise_options[$option];
+        }
+        elseif ($trend == 'down') {
+            $result .= $fall_options[$option];
+        }
+        else {
+            $result .= $steady_options[$option];
+        }
+        return $result;
+    }
+
+    /**
      * Computes the vapor pressure.
      *
      * @param float $t Temperature in celcius.
@@ -189,6 +359,37 @@ trait Utilities {
         $te = $this->compute_equivalent_temperature($t, $p);
         $tp = $this->compute_potential_temperature($t, $p);
         return round( $te * $tp / $t, 1);
+    }
+
+    /**
+     * Computes the density altitude.
+     *
+     * @param integer $t Temperature in celcius.
+     * @param integer $p Pressure in pascal.
+     * @param integer $h Humidity in percent.
+     * @return integer The computed density altitude (in meters).
+     * @since 3.8.0
+     */
+    protected function compute_density_altitude($t, $p, $h) {
+        $k = 145366.45 * 0.3048;
+        $d = $this->compute_dew_point($t, $h);
+        $e = 6.11 * pow(10, (7.5 * $d) / (237.7 + $d));
+        $tv = ($t + 273.15) / (1 - ((1 - 0.622) * ($e * 100 / $p)));
+        $tv = ((9 / 5) * ($tv - 273.15) + 32) + 459.69;
+        $pres = ($p / 3386.39);
+        return round( $k * (1 - pow((17.326 * $pres / $tv), 0.235)), 0);
+    }
+
+    /**
+     * Computes the pressure altitude.
+     *
+     * @param integer $p Pressure in pascal.
+     * @return integer The computed pressure altitude (in meters).
+     * @since 3.8.0
+     */
+    protected function compute_pressure_altitude($p) {
+        $k = 145366.45 * 0.3048;
+        return round( $k * (1 - pow(($p / 101325), 0.190284)), 0);
     }
 
     /**

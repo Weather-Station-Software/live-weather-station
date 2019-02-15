@@ -82,13 +82,17 @@ class Handling {
                 $this->map_type = 4;
                 $this->aux_handler = new MapboxHandling();
                 break;
+            case 'openweathermap':
+                $this->map_type = 5;
+                $this->aux_handler = new OpenweathermapHandling();
+                break;
             case 'maptiler':
                 $this->map_type = 6;
                 $this->aux_handler = new MaptilerHandling();
                 break;
-            case 'openweathermap':
-                $this->map_type = 5;
-                $this->aux_handler = new OpenweathermapHandling();
+            case 'navionics':
+                $this->map_type = 7;
+                $this->aux_handler = new NavionicsHandling();
                 break;
             default:
                 $this->map_type = 0;
