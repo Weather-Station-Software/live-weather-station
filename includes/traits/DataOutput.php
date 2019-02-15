@@ -76,7 +76,7 @@ trait Output {
         'guststrength_day_max', 'windstrength_hour_max', 'wind_ref', 'warn_windstrength', 'warn_guststrength',
         'warn_windstrength_max', 'warn_windstrength_day_max', 'warn_windstrength_hour_max', 'warn_wind_ref', 'windangle', 'gustangle',
         'winddirection', 'gustdirection', 'windangle_max', 'windangle_day_max', 'windangle_hour_max', 'winddirection_max',
-        'winddirection_day_max', 'winddirection_hour_max', 'weather');
+        'winddirection_day_max', 'winddirection_hour_max', 'weather', 'zcast_live', 'zcast_best');
     private $graph_allowed_serie = array('device_id', 'module_id', 'measurement', 'line_mode', 'dot_style', 'line_style', 'line_size');
     private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
 
@@ -7387,6 +7387,22 @@ trait Output {
      * Output a measurement icon.
      *
      * @param mixed $value The value to output.
+     * @return string The HTML tag for icons.
+     * @since 3.8.0
+     */
+    protected function output_zcast_iconic_value($value) {
+
+
+
+        //$result = '<span class="lws-icon lws-stacked-icon ' . $extraclass . '" style="vertical-align: middle;padding: 0;margin: 0;"><i style="vertical-align: ' . $align . ';color:' . $main_color .';" class="' . $class . $icon . $size . '"></i><i style="color:' . $main_color .';vertical-align:' . $markerstyle[$tmm] .';opacity: 0.7;" class="' . $marker[$tmm] . '" aria-hidden="true"></i></span>';
+
+        return '';
+    }
+
+    /**
+     * Output a measurement icon.
+     *
+     * @param mixed $value The value to output.
      * @param string $type The type of the value.
      * @param string $module_type Optional. The type of the module.
      * @param boolean $show_value Optional. The value must represent the true value if possible.
@@ -7799,6 +7815,9 @@ trait Output {
             $result = '<span class="lws-icon lws-single-icon ' . $extraclass . '" style="vertical-align: middle;padding: 0;margin: 0;"><i style="vertical-align: ' . $align . ';color:' . $main_color .';" class="' . $class . $icon . $size . '" aria-hidden="true"></i></span>';
         } else {
             $result = '<span class="lws-icon lws-stacked-icon ' . $extraclass . '" style="vertical-align: middle;padding: 0;margin: 0;"><i style="vertical-align: ' . $align . ';color:' . $main_color .';" class="' . $class . $icon . $size . '"></i><i style="color:' . $main_color .';vertical-align:' . $markerstyle[$tmm] .';opacity: 0.7;" class="' . $marker[$tmm] . '" aria-hidden="true"></i></span>';
+        }
+        if ($show_value && strpos($type, 'zcast_') === 0) {
+            return $this->output_zcast_iconic_value($value);
         }
         return $result;
 }
@@ -9057,18 +9076,41 @@ trait Output {
                 case 6:
                 case 7:
                 case 10:
-                    $result[] = 1958;  // day-cloudy
+                    $result[] = 958;  // day-cloudy
                     break;
                 case 8:
                 case 13:
+                    $result[] = 1520;  // day-showers
+                    break;
                 case 14:
-                    $result[] = 906;  // hail
+                case 16:
+                case 20:
+                    $result[] = 313;  // showers
                     break;
                 case 9:
                 case 11:
+                case 12:
+                case 19:
                     $result[] = 804;  // cloudy
                     break;
-
+                case 15:
+                    $result[] = 1906;  // day-hail
+                    break;
+                case 17:
+                case 18:
+                case 21:
+                    $result[] = 906;  // hail
+                    break;
+                case 22:
+                    $result[] = 302;  // rain
+                    break;
+                case 23:
+                    $result[] = 315;  // rain-wind
+                    break;
+                case 24:
+                case 25:
+                    $result[] = 230;  // storm
+                    break;
             }
             switch ((int)$f[1]) {
                 case 2:
@@ -9077,16 +9119,21 @@ trait Output {
                 case 3:
                 case 9:
                 case 11:
-                    $result[] = 1958;  // day-cloudy
+                    $result[] = 958;  // day-cloudy
                     break;
                 case 4:
                 case 6:
+                case 14:
+                    $result[] = 1520;  // day-showers
+                    break;
                 case 7:
                     $result[] = 313;  // showers
                     break;
                 case 10:
-                case 14:
                     $result[] = 1906;  // day-hail
+                    break;
+                case 12:
+                    $result[] = 805;  // cloud
                     break;
                 case 5:
                     $result[] = 1804;  // day-sunny-overcast
@@ -9094,49 +9141,17 @@ trait Output {
                 case 8:
                     $result[] = 804;  // cloudy
                     break;
-
-
+                case 17:
+                    $result[] = 302;  // rain
+                    break;
+                case 20:
+                    $result[] = 906;  // hail
+                    break;
+                case 25:
+                    $result[] = 231;  // storm + showers
+                    break;
             }
-
-
-
-
         }
-
-
-        /*$forecast = array(
-            0 lws__('Settled fine', 'live-weather-station'),
-            1 lws__('Fine weather', 'live-weather-station'),
-            2 lws__('Becoming fine', 'live-weather-station'),
-            3 lws__('Fine, becoming less settled', 'live-weather-station'),
-            4 lws__('Fine, possible showers', 'live-weather-station'),
-            5 lws__('Fairly fine, improving', 'live-weather-station'),
-            6 lws__('Fairly fine, possible showers early', 'live-weather-station'),
-            7 lws__('Fairly fine, showery later', 'live-weather-station'),
-            8 lws__('Showery early, improving', 'live-weather-station'),
-            9 lws__('Changeable, mending', 'live-weather-station'),
-            10 lws__('Fairly fine, showers likely', 'live-weather-station'),
-            11 lws__('Rather unsettled clearing later', 'live-weather-station'),
-            12 lws__('Unsettled, probably improving', 'live-weather-station'),
-            13 lws__('Showery, bright intervals', 'live-weather-station'),
-            14 lws__('Showery, becoming less settled', 'live-weather-station'),
-
-
-            15 lws__('Changeable, some rain', 'live-weather-station'),
-            16 lws__('Unsettled, short fine intervals', 'live-weather-station'),
-            17 lws__('Unsettled, rain later', 'live-weather-station'),
-            18 lws__('Unsettled, some rain', 'live-weather-station'),
-            19 lws__('Mostly very unsettled', 'live-weather-station'),
-            20 lws__('Occasional rain, worsening', 'live-weather-station'),
-            21 lws__('Rain at times, very unsettled', 'live-weather-station'),
-            22 lws__('Rain at frequent intervals', 'live-weather-station'),
-            23 lws__('Rain, very unsettled', 'live-weather-station'),
-            24 lws__('Stormy, may improve', 'live-weather-station'),
-            25 lws__('Stormy, much rain', 'live-weather-station'));
-
-
-*/
-
         return $result;
     }
 
