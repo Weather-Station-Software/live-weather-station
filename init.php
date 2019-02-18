@@ -25,8 +25,8 @@ use WeatherStation\System\Storage\Manager as FS;
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.7.10-dev1');
-define('LWS_PREVIEW', true);
+define('LWS_VERSION', '3.7.10');
+define('LWS_PREVIEW', false);
 
 define('LWS_CODENAME', '"Déportivo"');
 define('LWS_WHATSNEW', 'https://weather.station.software/blog/weather-station-3-7-deportivo/');
@@ -57,7 +57,6 @@ define('LWS_ADMIN_PHP_URL', EnvManager::admin_dir_relative_url());
 define('LWS_AJAX_URL', EnvManager::ajax_dir_relative_url());
 define('LWS_I18N_LOADED', EnvManager::is_i18n_loaded());
 define('LWS_JSON_LOADED', EnvManager::is_json_loaded());
-define('LWS_ICONV_LOADED', EnvManager::is_iconv_loaded());
 define('LWS_PHPVERSION_OK', EnvManager::is_php_version_ok());
 define('LWS_PLUGIN_AGENT', LWS_FULL_NAME . ' (' . EnvManager::wordpress_version_id() . '; ' . EnvManager::weatherstation_version_id() . '; +https://weather.station.software)');
 define('LWS_IC_WPROCKET', EnvManager::is_wp_rocket_installed());

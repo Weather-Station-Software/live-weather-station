@@ -765,10 +765,10 @@ trait Storage {
 
             // OUTDATED PHP
             if (!Env::is_php_version_uptodate()) {
-                Notifier::error(__('Your PHP version is outdated', 'live-weather-station'),
+                Notifier::error(__('Your PHP version is deprecated', 'live-weather-station'),
                                'http://php.net/supported-versions.php',
                                 __('This version of PHP is no longer supported by the PHP team and will not even receive security fixes in a few weeks. You should seriously consider to update it.', 'live-weather-station') .
-                                '<br/><em>' . __('Note: even if you do not update, Weather Station will continue to work.', 'live-weather-station') . '</em>');
+                                '<br/><em>' . __('Note: even if you do not update, Weather Station will continue to work, but I can\'t offer technical support anymore...', 'live-weather-station') . '</em>');
             }
 
             // WUG STATION COLLECTED

@@ -42,7 +42,13 @@ class File extends Base {
         if ($item['state'] === 'none') {
             if ($item['ext'] !== 'ukn') {
                 $result = __('Ready', 'live-weather-station');
-                $actions = array('<a href="' . $item['url'] . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Download file', 'live-weather-station').'</a>');
+                if (LWS_PREVIEW) {
+                    $actions[] = '<a href="' . $item['url'] . '" target="_blank" >' . lws__('View file', 'live-weather-station').'</a>';
+                }
+                $actions[] = '<a href="' . $item['url'] . '" download>' . __('Download file', 'live-weather-station').'</a>';
+                if ($item['ext'] == 'wsconf.json') {
+                    $actions[] = '<a href="' . lws_get_admin_page_url('lws-files', 'form', 'import', 'configuration', false, null, $item['uuid']) . '">' . lws__('Import configuration', 'live-weather-station').'</a>';
+                }
             }
             else {
                 $result = __('Ready', 'live-weather-station');
@@ -54,6 +60,20 @@ class File extends Base {
         return sprintf('%1$s %2$s', $result, $this->row_actions($actions));
     }
 
+    /*protected function column_from($item){
+        return $item['from'];
+    }*/
+
+    protected function column_to($item){
+        if ($item['ext'] !== 'ukn' && $item['ext'] !== 'wsconf.json') {
+            $result = $item['to'];
+        }
+        else {
+            $result = '';
+        }
+        return $result;
+    }
+
     protected function column_date($item){
         $result = date_i18n(get_option('date_format'), $item['date']);
         $result .='<br /><span style="color:silver">' . $this->get_time_diff_from_utc($item['date']) . '</span>';
@@ -62,7 +82,7 @@ class File extends Base {
 
     public function get_columns(){
         $columns = array(
-            'station' => __('Station', 'live-weather-station'),
+            'station' => lws__('Element', 'live-weather-station'),
             'state' => __('State', 'live-weather-station'),
             'from' => __('From', 'live-weather-station'),
             'to' => __('To', 'live-weather-station'),

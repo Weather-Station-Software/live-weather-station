@@ -214,6 +214,17 @@ class Manager {
      * Write a line in a file.
      *
      * @param string $filename The full name of the file.
+     * @param string $data The data to write.
+     * @since 3.7.0
+     */
+    public static function write_file($filename, $data) {
+        file_put_contents($filename, $data);
+    }
+
+    /**
+     * Write a line in a file.
+     *
+     * @param string $filename The full name of the file.
      * @param string $line The line to write.
      * @since 3.7.0
      */
@@ -269,6 +280,10 @@ class Manager {
             $valid = false;
             if (count($e) === 4) {
                 $d = explode('.', $e[3]);
+                if (count($d) == 3) {
+                    $d[1] = $d[1] . '.' . $d[2];
+                    unset($d[2]);
+                }
                 if (count($d) === 2) {
                     $UUIDv4 = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
                     if (preg_match($UUIDv4, $d[0]) !== false) {
@@ -369,6 +384,50 @@ class Manager {
                 $lines = 0;
             }
             $result['lines'] = $lines;
+        }
+        return $result;
+    }
+
+    /**
+     * Check configuration elements in a file.
+     *
+     * @param string $uuid The uuid of the file.
+     * @return boolean|array False if it's impossible to access the file, otherwise an array containing configuration elements.
+     * @since 3.8.0
+     */
+    public static function check_configuration($uuid) {
+        $result = false;
+        $content = self::get_configuration($uuid);
+        if ($content) {
+            try {
+                $result = array();
+                foreach (array('settings', 'stations', 'modules', 'maps') as $item) {
+                    if (array_key_exists($item, $content)) {
+                        $result[$item] = count($content[$item]);
+                    }
+                }
+            }
+            catch (\Exception $ex) {
+                $result = false;
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get configuration file content.
+     *
+     * @param string $uuid The uuid of the file.
+     * @return boolean|array False if it's impossible to access the file, otherwise an array containing configuration.
+     * @since 3.8.0
+     */
+    public static function get_configuration($uuid) {
+        $file = self::find_valid($uuid, array('wsconf.json'));
+        try {
+            $result = json_decode(file_get_contents(self::get_root_name() . '/' . $file['file']), true);
+        }
+        catch (\Exception $ex) {
+            $result = false;
         }
         return $result;
     }

@@ -60,7 +60,7 @@ class Core {
 	private function verify_requirements() {
 	    $reference = (integer)date('i');
 	    // EMERGENCY
-	    if (LWS_PHPVERSION_OK && LWS_ICONV_LOADED && LWS_JSON_LOADED) {
+	    if (LWS_PHPVERSION_OK && LWS_JSON_LOADED) {
             if (!defined('REQUIREMENTS_OK')) {
                 define('REQUIREMENTS_OK', true);
             }
@@ -76,19 +76,16 @@ class Core {
         if (!LWS_JSON_LOADED) {
             Logger::emergency('Core', null, null, null, null, null, 666, 'JSON support is not installed on your server. ' . LWS_PLUGIN_NAME . ' can not run!');
         }
-        if (!LWS_ICONV_LOADED) {
-            Logger::emergency('Core', null, null, null, null, null, 666, 'ICONV support is not installed on your server. ' . LWS_PLUGIN_NAME . ' can not run!');
-        }
 
-        // WARNING
+        // ERROR
         if ($reference % 30 == 0) {
             if (get_transient('lws_warning_reference') != $reference) {
                 if (!Env::is_php_version_uptodate()) {
-                    Logger::warning('Core', null, null, null, null, null, 122, 'Your PHP version is old. It is no longer supported and will not even receive security fixes in a few months. You should seriously consider to update it.');
+                    Logger::error('Core', null, null, null, null, null, 122, 'Your PHP version is deprecated. It is no longer supported and can not even receive security fixes from many months. You should seriously consider to update it.');
                 }
 
                 if (!Env::is_wp_version_uptodate()) {
-                    Logger::warning('Core', null, null, null, null, null, 121, 'Your WordPress version is old. You should seriously consider to update it.');
+                    Logger::error('Core', null, null, null, null, null, 121, 'Your WordPress version is old. You should seriously consider to update it.');
                 }
                 set_transient('lws_warning_reference', $reference);
             }

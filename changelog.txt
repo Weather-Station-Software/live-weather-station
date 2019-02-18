@@ -1,12 +1,18 @@
 
-#3.7.10 / February 1st, 2019
+#3.7.10 / February 19th, 2019
 
-* Improvement: optimization of nigth and day times computation for background changing in widgets.
+* Improvement: optimization of night and day times computation for background changing in widgets.
+* Improvement: LCD display now correctly handles non-ascci caracters (i.e. for German, French, Dutch, etc.).
+* Improvement: in the file manager, clicking on "download file" will now download the file even if the file format is unsupported by WordPress.
 * Improvement: reference pressure value is stored while computing psychrometric values even if there's no reference temperature or humidity values.
-* Improvement: better server detection and outputting for servers having only private range IP (mainly self-hosted servers).
+* Improvement: better server detection and outputting for servers on private IP range (mainly residential self-hosted servers).
+* Improvement: full support for WordPress 5.1.
 * Bug fix: some stations, in some maps, have wrong night/day indicator when "current conditions" is chosen as marker type. 
+* Bug fix: it's impossible to reset a module name after customization. 
 * Bug fix: there's a malformed exception when Netatmo servers are unable to send an error code after a failed token refresh.
 * Bug fix: while upgrading Weather Station, last version number may be wrongly interpreted and this results in the unnecessary execution of some patches.
+* Removed: iconv dependencies. Weather Station is now fully operational even if iconv support is not installed: iconv is no more a requirement.
+* Removed: [Weather Station support for PHP < 7.1 and WordPress < 4.9](https://weather.station.software/blog/weather-station-support-changes/). If you have versions older than that, Weather Station may work, but I can not offer technical support anymore...
 
 #3.7.9 / February 1st, 2019
 
@@ -69,7 +75,7 @@
 * Bug fix: shadows for SVG icons are wrongly rendered in widgets.
 * Bug fix: in German languages, some words are wrongly lower-cased (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
 * Bug fix: in some cases computing potential temperature may produce a PHP warning (thanks to [@erwin](https://weather.station.software/community/profile/erwin/)).
-* Removed: cUrl dependencies. Weather Station is now fully operational even if cUrl support is not installed.
+* Removed: cUrl dependencies. Weather Station is now fully operational even if cUrl support is not installed: cUrl is no more a requirement.
 
 #3.7.4 / January 7th, 2019
 

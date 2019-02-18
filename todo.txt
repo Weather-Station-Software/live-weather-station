@@ -86,9 +86,11 @@ DONE:
 * New: "icon" control to display current data as static or dynamic icons.
 * New: Zambretti forecast is now computed and is available with textual shortcode and the new icon control.  
 * New: pressure and density altitudes are now computed and available in all controls, graphs and charts.
+* New: full configuration export/import feature (settings, stations and maps).
 * Improvement: current conditions can now be displayed as plain text in textual shortcodes.
 * Improvement: duration can now be outputted as hh:mm or hh:mm:ss formats in textual shortcodes (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/) for the suggestion).
 * Improvement: in maps, two new marker types (temperature and colored temperature) allow to display temperature in markers (thanks to [@daguilera](https://weather.station.software/community/profile/daguilera/) for the suggestion).
+* Improvement: the detection of site's timezone is now fully compliant with WordPress rules.
 
 
 
@@ -96,7 +98,7 @@ TODO:
 -----
 Rename Humidity in Relative Humidity
 min/max/trend
-Shortened types for textual and gauge
+Shortened types for textual and gauge (shortened meaning ?)
 Main credits with David Aguilera (Davis WeatherLink)
 Fix ModuleCurrentGauge.php line 275 (controls)
 Limits for alt_pressure and alt_density
@@ -105,11 +107,14 @@ Absolute humidity
 
 Textual climatological shortcodes
 Weather radial
+Year / season comparison
 Widget styles
 Use of live_weather_station_mutation_observer
 UV sticker
 Link in map popup
-Backup/restore configuration
+alert for wordpress version
+Don't drop tables when disable plugin
+delete old notifications
 
 New indexes:
 
@@ -125,7 +130,10 @@ at a glance box: singular/plural for station(s)
 
 
 
+Accumulated rain in yearly charts
+Day duration in yearly charts
 
+Line at 0°
 
 Chart for station comparison
 
@@ -134,7 +142,6 @@ Test parser on website
 style : area and line opacity, widget scale, ...
 
 use wind classification (textual, charts, )
-
 
 dynamic refresh for notifications
 

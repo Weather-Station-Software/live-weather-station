@@ -51,6 +51,7 @@ use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Notifications\Notifier;
 use WeatherStation\System\Storage\Manager as FS;
 use WeatherStation\UI\Map\Handling as Map;
+use WeatherStation\System\Background\ProcessManager;
 
 
 
@@ -1378,6 +1379,9 @@ class Admin {
         if (!($mid = filter_input(INPUT_GET, 'mid'))) {
             $mid = filter_input(INPUT_POST, 'mid');
         }
+        if (!($xid = filter_input(INPUT_GET, 'xid'))) {
+            $xid = filter_input(INPUT_POST, 'xid');
+        }
         $email = filter_input(INPUT_POST, 'email');
         $args = array();
 
@@ -1404,6 +1408,20 @@ class Admin {
                 break;
             case 'lws-files':
                 $view = 'list-table-files';
+                if ($service == 'configuration' && $tab == 'import' && $action == 'form') {
+                    $view = $action . '-' . $tab . '-' . $service ;
+                    $configuration = FS::check_configuration($xid);
+                    if ($configuration) {
+                        $configuration['uuid'] = $xid;
+                    }
+                    else {
+                        $configuration['uuid'] = 'error';
+                    }
+                    $args = compact('configuration');
+                }
+                if ($service == 'configuration' && $tab == 'import' && $action == 'do') {
+                    $this->import_configuration($xid);
+                }
                 break;
             case 'lws-maps':
                 $view = 'list-table-maps';
@@ -1862,6 +1880,7 @@ class Admin {
                     case 'sync-data': $this->sync_data(); break;
                     case 'reset-cache': $this->reset_cache(); break;
                     case 'purge-log': $this->reset_log(); break;
+                    case 'export-configuration': $this->export_configuration(); break;
                     case 'reset-cschemes': $this->reset_palette($id); break;
                     case 'form':
                         if ($service != '' && ($tab == 'add' || $tab == 'add-edit' || $tab == 'edit')) {
@@ -1919,9 +1938,9 @@ class Admin {
     /**
      * Load the named partial with its values.
      *
-     * @param   string  $name   The name of the partial to load.
-     * @param   array   $args   The values to pass to the view.
-     * @since    3.0.0
+     * @param string $name The name of the partial to load.
+     * @param array $args The values to pass to the view.
+     * @since 3.0.0
      */
     protected function lws_view_admin_page($name, array $args = array()) {
         foreach ($args as $key => $val) {
@@ -2116,6 +2135,18 @@ class Admin {
         Cache::flush_backend(false);
         Logger::reset();
         add_settings_error('lws_nonce_success', 200, sprintf(__('%s has been reset.', 'live-weather-station'), __('Events log', 'live-weather-station')), 'updated');
+    }
+
+    /**
+     * Launch an export of configuration.
+     *
+     * @since 3.8.0
+     */
+    private function export_configuration() {
+        ProcessManager::register('ConfigurationExporter');
+        $message = lws__('Configuration export has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');
+        add_settings_error('lws_nonce_success', 200, $message, 'updated');
+        Logger::notice('Export Manager', null, null, null, null, null, null, 'Configuration export launched.');
     }
 
     /**
@@ -2569,6 +2600,68 @@ class Admin {
         else {
             add_settings_error('lws_nonce_error', 403, 'No station to remove.', 'error');
             Logger::error('Security', null, null, null, null, null, null, 'An attempt was made to remove a station without ID.');
+        }
+    }
+
+    /**
+     * Import a configuration file.
+     *
+     * @param integer $uuid The uuid of the configuration file.
+     * @since 3.8.0
+     */
+    protected function import_configuration($uuid=null) {
+        if (isset($uuid) && $uuid) {
+            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'import-configuration')) {
+                $error = false;
+                if (array_key_exists('do-import-configuration', $_POST)) {
+                    $configuration = FS::get_configuration($uuid);
+                    if (array_key_exists('configuration-settings', $_POST)) {
+                        if (array_key_exists('settings', $configuration)) {
+                            self::set_all_options($configuration['settings']);
+                        }
+                        else {
+                            $error = true;
+                        }
+                    }
+                    if (array_key_exists('configuration-maps', $_POST)) {
+                        if (array_key_exists('maps', $configuration)) {
+                            self::set_maps_table($configuration['maps']);
+                        }
+                        else {
+                            $error = true;
+                        }
+                    }
+                    if (array_key_exists('configuration-stations', $_POST)) {
+                        if (array_key_exists('stations', $configuration) && array_key_exists('modules', $configuration)) {
+                            self::set_stations_table($configuration['stations']);
+                            self::set_modules_table($configuration['modules']);
+                        }
+                        else {
+                            $error = true;
+                        }
+                    }
+                }
+                if (!$error) {
+                    $message = lws__('The configuration has been correctly imported.', 'live-weather-station');
+                    add_settings_error('lws_nonce_success', 200, $message, 'updated');
+                    Logger::notice($this->service, null, null, null, null, null, null, 'The configuration has been correctly imported.');
+                }
+                else {
+                    $message = lws__('Unable to import the configuration.', 'live-weather-station');
+                    add_settings_error('lws_nonce_error', 403, $message, 'error');
+                    Logger::error($this->service, null, null, null, null, null, null, 'Unable to import the configuration.');
+                }
+            }
+            else {
+                $message = lws__('Unable to import the configuration.', 'live-weather-station');
+                add_settings_error('lws_nonce_error', 403, $message, 'error');
+                Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
+                Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely import this configuration file.');
+            }
+        }
+        else {
+            add_settings_error('lws_nonce_error', 403, 'No configuration file to import.', 'error');
+            Logger::error('Security', null, null, null, null, null, null, 'An attempt was made to import a configuration without ID.');
         }
     }
 

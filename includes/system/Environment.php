@@ -336,21 +336,12 @@ class Manager {
     }
 
     /**
-     * Verification of mandatory iconv extension.
-     *
-     * @since 3.4.0
-     */
-    public static function is_iconv_loaded() {
-        return (function_exists('iconv'));
-    }
-
-    /**
      * Verification of PHP version.
      *
      * @since 3.0.0
      */
     public static function is_php_version_ok() {
-        return (!version_compare(PHP_VERSION, '5.4.0', '<'));
+        return (!version_compare(PHP_VERSION, '5.6.0', '<'));
     }
 
     /**
@@ -796,7 +787,7 @@ class Manager {
      * @since 3.5.4
      */
     public static function is_php_version_uptodate() {
-        return (version_compare(PHP_VERSION, LWS_MINIMUM_PHP_VERSION) >= 0);
+        return (version_compare(PHP_VERSION, LWS_MINIMUM_PHP_VERSION, '>='));
     }
 
     /**

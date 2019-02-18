@@ -229,7 +229,7 @@ trait Client {
                     $datetime->setTimezone(new \DateTimeZone($data['loc_timezone']));
                     $h = (int)$datetime->format('H');
                     $m = (int)$datetime->format('i');
-                    if ($h == 9 && $m < 30) {
+                    if ($h == 9 && $m < 22) {
                         $nm['data_type'][] = 'zcast_best';
                         $nm['dashboard_data']['zcast_best'] = $zcast;
                     }
