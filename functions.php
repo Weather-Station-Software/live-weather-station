@@ -18,7 +18,7 @@
  * @return string The full url of the admin page.
  * @since 3.0.0
  */
-function lws_get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $service=null, $dashboard=false, $id=null) {
+function lws_get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $service=null, $dashboard=false, $id=null, $xid=null) {
     $args = array('page' => $page);
     if (isset($tab)) {
         $args['tab'] = $tab;
@@ -31,6 +31,9 @@ function lws_get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, 
     }
     if (isset($id)) {
         $args['id'] = $id;
+    }
+    if (isset($xid)) {
+        $args['xid'] = $xid;
     }
     $args['dashboard'] = $dashboard;
     $url = add_query_arg($args, admin_url('admin.php'));
@@ -545,6 +548,20 @@ function lws_phpinfo_line($i) {
     return ".phpinfodisplay " . preg_replace( '/,/', ',.phpinfodisplay ', $i);
 }
 
+/**
+ * Simulate iconv function but without iconv support.
+ *
+ * @param string $string The string to convert.
+ * @return string The converted string.
+ * @since 3.7.5
+ */
+function lws_iconv($string) {
+    $string = remove_accents($string);
+    $string = str_replace('₂', '2', $string);
+    $string = str_replace('₃', '3', $string);
+    return $string;
+}
+
 
 /**
  * Fake __() function for debugging / developing purpose.
@@ -553,10 +570,25 @@ function lws_phpinfo_line($i) {
  *
  * @param string $text Text to translate.
  * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
- * @return string tring Translated text.
+ * @return string Translated text.
  */
 function lws__($text, $domain='default') {
     return $text;
+}
+
+/**
+ * Fake __() function for debugging / developing purpose.
+ *
+ * @since 3.6.1
+ *
+ * @param string $single The text to be used if the number is singular.
+ * @param string $plural The text to be used if the number is plural.
+ * @param int    $number The number to compare against to use either the singular or plural form.
+ * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
+ * @return string Translated text.
+ */
+function lws_n($single, $plural, $number, $domain = 'default' ) {
+    return _n($single, $plural, $number, $domain);
 }
 
 /**
@@ -566,7 +598,7 @@ function lws__($text, $domain='default') {
  *
  * @param string $text Text to translate.
  * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
- * @return string tring Translated text.
+ * @return string Translated text.
  */
 function esc_html_lws__($text, $domain='default') {
     return $text;
@@ -579,7 +611,7 @@ function esc_html_lws__($text, $domain='default') {
  *
  * @param string $text Text to translate.
  * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
- * @return string tring Translated text.
+ * @return string Translated text.
  */
 function esc_html_e_lws__($text, $domain='default') {
     echo $text;

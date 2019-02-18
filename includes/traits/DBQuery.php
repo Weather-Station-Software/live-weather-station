@@ -528,7 +528,7 @@ trait Query {
                 $ret = get_option('live_weather_station_retention_history');
                 if ($ret == 0 || $ret > 52) {
                     $station = $this->get_station_informations_by_station_id($device_id);
-                    if (array_key_exists('oldest_data', $station)) {
+                    if (array_key_exists('oldest_data', $station) && $station['oldest_data'] != '0000-00-00') {
                         $old = \DateTime::createFromFormat('Y-m-d', $station['oldest_data']);
                         if (time() - $old->getTimestamp() > 60 * 60 * 24 * 365) {
                             $table_name = $wpdb->prefix.self::live_weather_station_histo_yearly_table();
@@ -2647,5 +2647,58 @@ trait Query {
         return $result;
     }
 
+    /**
+     * Set maps table of the plugin - for restore purpose.
+     *
+     * @@param array $rows An array containing all rows of the maps table.
+     * @since 3.8.0
+     */
+    public static function set_maps_table($rows) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_maps_table();
+        $sql = 'TRUNCATE TABLE '.$table_name;
+        $wpdb->query($sql);
+        foreach ($rows as $row) {
+            self::insert_update_table(self::live_weather_station_maps_table(), $row);
+        }
+        Logger::notice('Core', null, null, null, null, null, 601, 'Maps table successfully imported.');
+    }
+
+    /**
+     * Set modules table of the plugin - for restore purpose.
+     *
+     * @@param array $rows An array containing all rows of the modules table.
+     * @since 3.8.0
+     */
+    public static function set_modules_table($rows) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_module_detail_table();
+        $sql = 'TRUNCATE TABLE '.$table_name;
+        $wpdb->query($sql);
+        foreach ($rows as $row) {
+            self::insert_update_table(self::live_weather_station_module_detail_table(), $row);
+        }
+        Logger::notice('Core', null, null, null, null, null, 601, 'Modules table successfully imported.');
+    }
+
+    /**
+     * Set stations table of the plugin - for restore purpose.
+     *
+     * @@param array $rows An array containing all rows of the stations table.
+     * @since 3.8.0
+     */
+    public static function set_stations_table($rows) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+        $sql = 'TRUNCATE TABLE '.$table_name;
+        $wpdb->query($sql);
+        foreach ($rows as &$row) {
+            unset($row['last_refresh']);
+            unset($row['last_seen']);
+            unset($row['oldest_data']);
+            self::insert_update_table(self::live_weather_station_stations_table(), $row);
+        }
+        Logger::notice('Core', null, null, null, null, null, 601, 'Stations table successfully imported.');
+    }
 
 }

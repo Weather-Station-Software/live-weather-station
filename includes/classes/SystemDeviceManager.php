@@ -193,6 +193,9 @@ class Manager
                 if (array_key_exists('screen_name', $module)) {
                     $module['screen_name'] = esc_sql($module['screen_name']);
                 }
+                else {
+                    $module['screen_name'] = '';
+                }
                 self::insert_update_table(self::live_weather_station_module_detail_table(), $module);
             }
             Cache::invalidate_query($cache_id);

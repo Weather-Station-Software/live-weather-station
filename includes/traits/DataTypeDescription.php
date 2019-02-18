@@ -938,6 +938,7 @@ trait Description {
             case 'dsv' : $result = __('Delimiter-separated values', 'live-weather-station'); break;
             case 'tsv' : $result = __('Tab-separated values', 'live-weather-station'); break;
             case 'ndjson' : $result = __('Standard import/export values', 'live-weather-station'); break;
+            case 'wsconf.json' : $result = lws__('Weather Station configuration', 'live-weather-station'); break;
             default : $result = __('Unknown format', 'live-weather-station');
         }
         return $result;

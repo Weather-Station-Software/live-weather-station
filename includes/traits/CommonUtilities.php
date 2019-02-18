@@ -26,6 +26,10 @@ trait Utilities {
      * @since 3.8.0
      */
     protected function compute_zambretti_forecast($p, $trend, $w, $north=true, $pressure_max=105000, $pressure_min=95000) {
+        if ($pressure_max - $pressure_min <= 0) {
+            $pressure_max = 105000;
+            $pressure_min = 95000;
+        }
         $rise_options = array('25', '25', '25', '24', '24', '19', '16', '12', '11', '9', '8', '6', '5', '2', '1', '1', '0', '0', '0', '0', '0', '0');
         $steady_options = array('25', '25', '25', '25', '25', '25', '23', '23', '22', '18', '15', '13', '10', '4', '1', '1', '0', '0', '0', '0', '0', '0');
         $fall_options = array('25', '25', '25', '25', '25', '25', '25', '25', '23', '23', '21', '20', '17', '14', '7', '3', '1', '1', '1', '0', '0', '0');

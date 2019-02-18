@@ -127,7 +127,7 @@ trait Handling {
     private static $live_weather_station_w_box_shadow_color = '#000000';
     private static $live_weather_station_w_box_radius = 'medium';
 
-
+    private static $do_not_export_import = array('live_weather_station_version', 'live_weather_station_logger_installed', 'live_weather_station_misc_stat', 'live_weather_station_version');
 
     /**
      * Get the thresholds options of the plugin.
@@ -1212,7 +1212,9 @@ trait Handling {
         $result = array();
         global $wpdb;
         foreach ($wpdb->get_results("SELECT option_name, option_value FROM " . $wpdb->options . " WHERE option_name like 'live_weather_station%'", ARRAY_A) as $option) {
-            $result[$option['option_name']] = $option['option_value'];
+            if (!in_array($option['option_name'], self::$do_not_export_import)) {
+                $result[$option['option_name']] = $option['option_value'];
+            }
         }
         Logger::notice('Core', null, null, null, null, null, 600, 'Settings successfully exported.');
         return $result;
@@ -1226,7 +1228,7 @@ trait Handling {
      */
     public static function set_all_options($options) {
         foreach ($options as $key => $option) {
-            if ($key != 'live_weather_station_version') {
+            if (!in_array($key, self::$do_not_export_import)) {
                 update_option($key, $option);
             }
         }

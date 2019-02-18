@@ -331,10 +331,11 @@ trait Generator {
      * @param array $measure An array containing sample data.
      * @param string $type The type of the measure.
      * @param boolean $is_day Optional. Is it day or night ?
+     * @param boolean $mix_day Optional. Are we at less than 4 hours of a sun change ?
      * @return array An array containing the iconized measure.
      * @since 3.8.0
      */
-    private function iconize_measure_array($measure, $type, $is_day=null) {
+    private function iconize_measure_array($measure, $type, $is_day=null, $mix_day=null) {
         $measure[0] = lws__('Static measurement icon', 'live-weather-station');
         $measure[1] = 'static';
         $icon = $this->output_iconic_value($measure[2][0][2], $type, null, false, null, '', $is_day);
@@ -355,15 +356,16 @@ trait Generator {
      * @param array $measure An array containing sample data.
      * @param string $type The type of the measure.
      * @param boolean $is_day Optional. Is it day or night ?
+     * @param boolean $mix_day Optional. Are we at less than 4 hours of a sun change ?
      * @return array An array containing the iconized measure.
      * @since 3.8.0
      */
-    private function subiconize_measure_array($measure, $type, $is_day=null) {
+    private function subiconize_measure_array($measure, $type, $is_day=null, $mix_day=null) {
         $result = array();
         if (in_array($type, $this->dynamic_icons)) {
             $measure[0] = lws__('Dynamic measurement icon', 'live-weather-station');
             $measure[1] = 'dynamic';
-            $icon = $this->output_iconic_value($measure[2][0][2], $type, null, true, null, '', $is_day);
+            $icon = $this->output_iconic_value($measure[2][0][2], $type, null, true, null, '', $is_day, $mix_day);
             $pref = '<span class="lws-icon-value" style="font-size:26px;">';
             $suf = '</span>';
             $t = array();
@@ -393,6 +395,7 @@ trait Generator {
         $ts = 0;
         $found = false;
         $is_day = $this->check_day($ref['loc_latitude'], $ref['loc_longitude'], $ref['loc_timezone']);
+        $mix_day = $this->check_mixday($ref['loc_latitude'], $ref['loc_longitude'], $ref['loc_timezone']);
         foreach($data['measure'] as $measure) {
             if ($measure['measure_type'] == $mtype) {
                 $mvalue = $measure['measure_value'];
@@ -422,8 +425,8 @@ trait Generator {
             case 'cbi':
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_special_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']), $this->output_value($mvalue, $mtype, true, false, $ref['module_type']), $this->output_value($mvalue, $mtype, false, true, $ref['module_type']))));
                 if ($icon) {
-                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day);
-                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day);
+                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day, $mix_day);
+                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day, $mix_day);
                     if (!empty($sub)) {
                         $result[] = $sub;
                     }
@@ -445,8 +448,8 @@ trait Generator {
             case 'dusk_length_a':
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_duration_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']), $this->output_value($mvalue, $mtype, true, false, $ref['module_type']), $this->output_value($mvalue, $mtype, false, true, $ref['module_type']), $this->output_value($mvalue, $mtype, false, true, $ref['module_type'], '', 'hh-mm'), $this->output_value($mvalue, $mtype, false, true, $ref['module_type'], '', 'hh-mm-ss'))));
                 if ($icon) {
-                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day);
-                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day);
+                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day, $mix_day);
+                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day, $mix_day);
                     if (!empty($sub)) {
                         $result[] = $sub;
                     }
@@ -477,8 +480,8 @@ trait Generator {
             case 'loc_timezone':
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_trend_format(array($mvalue, $this->output_value($mvalue, $mtype, false, true, $ref['module_type']))));
                 if ($icon) {
-                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day);
-                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day);
+                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day, $mix_day);
+                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day, $mix_day);
                     if (!empty($sub)) {
                         $result[] = $sub;
                     }
@@ -490,8 +493,8 @@ trait Generator {
             case 'aggregated':
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_aggregated_value_format(array($mvalue, $this->output_value($mvalue, $mtype))));
                 if ($icon) {
-                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day);
-                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day);
+                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day, $mix_day);
+                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day, $mix_day);
                     if (!empty($sub)) {
                         $result[] = $sub;
                     }
@@ -503,8 +506,8 @@ trait Generator {
             case 'outdoor':
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_aggregated_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']))));
                 if ($icon) {
-                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day);
-                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day);
+                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day, $mix_day);
+                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day, $mix_day);
                     if (!empty($sub)) {
                         $result[] = $sub;
                     }
@@ -516,8 +519,8 @@ trait Generator {
             case 'firmware':
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_firmware_value_format(array($mvalue)));
                 if ($icon) {
-                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day);
-                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day);
+                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day, $mix_day);
+                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day, $mix_day);
                     if (!empty($sub)) {
                         $result[] = $sub;
                     }
@@ -530,8 +533,8 @@ trait Generator {
             case 'loc_longitude':
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_coordinate_value_format(array($mvalue, $this->output_coordinate($mvalue, $mtype, 1), $this->output_coordinate($mvalue, $mtype, 2), $this->output_coordinate($mvalue, $mtype, 3), $this->output_coordinate($mvalue, $mtype, 4), $this->output_coordinate($mvalue, $mtype, 5))));
                 if ($icon) {
-                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day);
-                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day);
+                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day, $mix_day);
+                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day, $mix_day);
                     if (!empty($sub)) {
                         $result[] = $sub;
                     }
@@ -545,8 +548,8 @@ trait Generator {
             case 'wind_chill':
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_simple_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']))));
                 if ($icon) {
-                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day);
-                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day);
+                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day, $mix_day);
+                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day, $mix_day);
                     if (!empty($sub)) {
                         $result[] = $sub;
                     }
@@ -571,8 +574,8 @@ trait Generator {
             case 'strike_bearing':
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_wind_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']), $this->output_value($mvalue, $mtype, true, false, $ref['module_type']), $this->get_angle_text($mvalue), $this->get_angle_full_text($mvalue))));
                 if ($icon) {
-                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day);
-                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day);
+                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day, $mix_day);
+                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day, $mix_day);
                     if (!empty($sub)) {
                         $result[] = $sub;
                     }
@@ -593,8 +596,8 @@ trait Generator {
             case 'moonset':
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_std_time_format(array($mvalue, $this->get_date_from_utc($mvalue, $ref['loc_timezone']), $this->get_time_from_utc($mvalue, $ref['loc_timezone']), $this->get_time_diff_from_utc($mvalue))));
                 if ($icon) {
-                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day);
-                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day);
+                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day, $mix_day);
+                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day, $mix_day);
                     if (!empty($sub)) {
                         $result[] = $sub;
                     }
@@ -610,8 +613,8 @@ trait Generator {
             case 'last_setup':
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_time_format(array($mvalue, $this->get_date_from_mysql_utc($mvalue, $ref['loc_timezone']), $this->get_time_from_mysql_utc($mvalue, $ref['loc_timezone']), $this->get_time_diff_from_mysql_utc($mvalue))));
                 if ($icon) {
-                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day);
-                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day);
+                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day, $mix_day);
+                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day, $mix_day);
                     if (!empty($sub)) {
                         $result[] = $sub;
                     }
@@ -630,8 +633,8 @@ trait Generator {
                 }
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_picture_format(array($mvalue, $picturl)));
                 if ($icon) {
-                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day);
-                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day);
+                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day, $mix_day);
+                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day, $mix_day);
                     if (!empty($sub)) {
                         $result[] = $sub;
                     }
@@ -656,8 +659,8 @@ trait Generator {
                 }
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_video_format(array($mvalue, $vidurl)));
                 if ($icon) {
-                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day);
-                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day);
+                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day, $mix_day);
+                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day, $mix_day);
                     if (!empty($sub)) {
                         $result[] = $sub;
                     }
@@ -671,8 +674,8 @@ trait Generator {
             case 'weather':
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_trend_format(array($mvalue, ucfirst($this->output_value($mvalue, $mtype, false, true, $ref['module_type'])))));
                 if ($icon) {
-                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day);
-                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day);
+                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day, $mix_day);
+                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day, $mix_day);
                     if (!empty($sub)) {
                         $result[] = $sub;
                     }
@@ -684,8 +687,8 @@ trait Generator {
             default:
                 $line = array(__('Measurement value', 'live-weather-station'), 'measure_value', $this->get_td_value_format(array($mvalue, $this->output_value($mvalue, $mtype, false, false, $ref['module_type']), $this->output_value($mvalue, $mtype, true, false, $ref['module_type']))));
                 if ($icon) {
-                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day);
-                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day);
+                    $result[] = $this->iconize_measure_array($line, $mtype, $is_day, $mix_day);
+                    $sub = $this->subiconize_measure_array($line, $mtype, $is_day, $mix_day);
                     if (!empty($sub)) {
                         $result[] = $sub;
                     }

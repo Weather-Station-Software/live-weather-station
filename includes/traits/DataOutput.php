@@ -48,7 +48,7 @@ trait Output {
         'temperature_ref', 'dew_point', 'frost_point', 'heat_index', 'humidex',
         'wind_chill', 'cloud_ceiling', 'sunrise', 'sunset', 'moonrise',
         'moonset', 'moon_illumination', 'moon_diameter', 'sun_diameter', 'moon_distance', 'sun_distance', 'moon_phase',
-        'moon_age', 'o3_distance', 'co_distance', /*'absolute_humidity',*/ 'alt_pressure', 'alt_density', 'zcast_live', 'zcast_best',
+        'moon_age', 'o3_distance', 'co_distance', /*'absolute_humidity', 'alt_pressure', 'alt_density', 'zcast_live', 'zcast_best',*/
         'day_length', 'health_idx', 'cbi', 'pressure_ref', 'wet_bulb', 'air_density', 'wood_emc',
         'equivalent_temperature', 'potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
         'partial_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 'sunshine', 'soil_temperature', 'leaf_wetness',
@@ -5122,7 +5122,7 @@ trait Output {
             if ($raw_datas['condition']['value'] == 3 || $raw_datas['condition']['value'] == 4) {
                 $save_locale = setlocale(LC_ALL,'');
                 setlocale(LC_ALL, lws_get_display_locale());
-                $measure['title'] = iconv('UTF-8', 'ASCII//TRANSLIT', __('No data', 'live-weather-station'));
+                $measure['title'] = lws_iconv( __('No data', 'live-weather-station'));
                 setlocale(LC_ALL, $save_locale);
             }
             $measure['battery'] = 'full';
@@ -5147,7 +5147,7 @@ trait Output {
                 if ($datas['condition']['value'] == 3 || $datas['condition']['value'] == 4) {
                     $save_locale = setlocale(LC_ALL,'');
                     setlocale(LC_ALL, lws_get_display_locale());
-                    $measure['title'] = iconv('UTF-8', 'ASCII//TRANSLIT', __('No data', 'live-weather-station'));
+                    $measure['title'] = lws_iconv( __('No data', 'live-weather-station'));
                     setlocale(LC_ALL, $save_locale);
                 }
                 $measure['battery'] = 'full';
@@ -7390,13 +7390,16 @@ trait Output {
      * @param string $main_color Main color of the icon.
      * @param string $extraclass Extra class for the main container.
      * @param null|boolean Optional. Indicates if it's day or night.
+     * @param null|boolean $mix_day Optional. Are we at less than 4 hours of a sun change ?
      * @return string The HTML tag for icons.
      * @since 3.8.0
      */
-    protected function output_zcast_iconic_value($value, $main_color, $extraclass, $is_day=null) {
+    protected function output_zcast_iconic_value($value, $main_color, $extraclass, $is_day=null, $mix_day=null) {
         $result = '<span class="lws-icon lws-stacked-icon ' . $extraclass . '" style="vertical-align: middle;padding: 0;margin: 0;">';
         $arrow = false;
-        foreach ($this->get_zcast_icons($value) as $icon) {
+        $icons = $this->get_zcast_icons($value);
+        $last = count($icons) - 1;
+        foreach ($icons as $i => $icon) {
             if ($arrow) {
                 $result .= '&nbsp;&nbsp;<i style="vertical-align: baseline;color:' . $main_color .';" class="wi wi-direction-right ico-size-1"></i>&nbsp;&nbsp;';
             }
@@ -7407,6 +7410,14 @@ trait Output {
                     $spec = 'day-';
                     if (!$is_day) {
                         $spec = 'night-';
+                    }
+                }
+                if (!is_null($mix_day) && $mix_day && $i == $last) {
+                    if ($spec == 'day-') {
+                        $spec = 'night-';
+                    }
+                    elseif ($spec == 'night-') {
+                        $spec = 'day-';
                     }
                 }
             }
@@ -7427,10 +7438,11 @@ trait Output {
      * @param string $main_color Optional. Main color of the icon.
      * @param string $extraclass Optional. Extra class for the main container.
      * @param null|boolean Optional. Indicates if it's day or night.
+     * @param null|boolean $mix_day Optional. Are we at less than 4 hours of a sun change ?
      * @return string The HTML tag for icon.
      * @since 3.0.0
      */
-    protected function output_iconic_value($value, $type, $module_type='NAMain', $show_value=false, $main_color=null, $extraclass='', $is_day=null) {
+    protected function output_iconic_value($value, $type, $module_type='NAMain', $show_value=false, $main_color=null, $extraclass='', $is_day=null, $mix_day=null) {
         lws_font_awesome();
         $type = strtolower($type);
         if (strpos($type, 'sunrise') === 0) {
@@ -7843,7 +7855,7 @@ trait Output {
             $result = '<span class="lws-icon lws-stacked-icon ' . $extraclass . '" style="vertical-align: middle;padding: 0;margin: 0;"><i style="vertical-align: ' . $align . ';color:' . $main_color .';" class="' . $class . $icon . $size . '"></i><i style="color:' . $main_color .';vertical-align:' . $markerstyle[$tmm] .';opacity: 0.7;" class="' . $marker[$tmm] . '" aria-hidden="true"></i></span>';
         }
         if ($show_value && strpos($type, 'zcast_') === 0) {
-            return $this->output_zcast_iconic_value($value, $main_color, $extraclass, ($type == 'zcast_best'?true:$is_day));
+            return $this->output_zcast_iconic_value($value, $main_color, $extraclass, ($type == 'zcast_best'?true:$is_day), ($type == 'zcast_best'?false:$mix_day));
         }
         return $result;
 }
@@ -7866,6 +7878,7 @@ trait Output {
                 $result = '<i %1$s class="' . LWS_FAR . ' ' . (LWS_FA5?'fa-file-excel':'fa-file-excel-o') . ' %2$s" aria-hidden="true"></i>';
                 break;
             case 'ndjson':
+            case 'wsconf.json':
                 $result = '<i %1$s class="' . LWS_FAR . ' ' . (LWS_FA5?'fa-file-code':'fa-file-code-o') . ' %2$s" aria-hidden="true"></i>';
                 break;
             default:
@@ -8924,8 +8937,8 @@ trait Output {
     protected function get_country_names() {
 
         function compareASCII($a, $b) {
-            $at = iconv('UTF-8', 'ASCII//TRANSLIT', $a);
-            $bt = iconv('UTF-8', 'ASCII//TRANSLIT', $b);
+            $at = lws_iconv( $a);
+            $bt = lws_iconv( $b);
             return strcmp(strtoupper($at), strtoupper($bt));
         }
 
@@ -9969,20 +9982,20 @@ trait Output {
                 $measure['show_sub_unit'] = ($unit['comp']!='');
                 $measure['show_min_max'] = false;
                 if ($outdoor || ($data['module_name'][0] == '[' && $aggregated && $outdoor)) {
-                    $measure['title'] = iconv('UTF-8','ASCII//TRANSLIT',__('O/DR', 'live-weather-station') . ':' .$this->output_abbreviation($data['measure_type']));
+                    $measure['title'] = lws_iconv(__('O/DR', 'live-weather-station') . ':' .$this->output_abbreviation($data['measure_type']));
                 }
                 elseif ($pollution || ($data['measure_type'] == 'o3') || ($data['measure_type'] == 'co')) {
-                    $measure['title'] = iconv('UTF-8','ASCII//TRANSLIT',$this->get_measurement_type($data['measure_type']));
+                    $measure['title'] = lws_iconv($this->get_measurement_type($data['measure_type']));
                 }
                 elseif ($psychrometry) {
-                    $measure['title'] = iconv('UTF-8','ASCII//TRANSLIT',$this->get_measurement_type($data['measure_type']));
+                    $measure['title'] = lws_iconv($this->get_measurement_type($data['measure_type']));
                 }
                 else {
                     if ($data['module_name'][0] == '[') {
-                        $measure['title'] = iconv('UTF-8','ASCII//TRANSLIT',__('O/DR', 'live-weather-station') . ':' .$this->output_abbreviation($data['measure_type']));
+                        $measure['title'] = lws_iconv(__('O/DR', 'live-weather-station') . ':' .$this->output_abbreviation($data['measure_type']));
                     }
                     else {
-                        $measure['title'] = iconv('UTF-8', 'ASCII//TRANSLIT', DeviceManager::get_module_name($data['device_id'], $data['module_id']));
+                        $measure['title'] = lws_iconv( DeviceManager::get_module_name($data['device_id'], $data['module_id']));
                     }
                 }
                 if (array_key_exists($data['module_id'], $battery)) {
