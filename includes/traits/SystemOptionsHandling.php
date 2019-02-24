@@ -57,6 +57,8 @@ trait Handling {
     private static $live_weather_station_cron_speed = 0;
     private static $live_weather_station_show_update = true;
     private static $live_weather_station_plugin_stat = false;
+    private static $live_weather_station_keep_tables = true;
+    private static $live_weather_station_ajax_widget = true;
     private static $live_weather_station_collection_http_timeout = 45;
     private static $live_weather_station_sharing_http_timeout = 45;
     private static $live_weather_station_system_http_timeout = 20;
@@ -109,6 +111,8 @@ trait Handling {
     private static $live_weather_station_full_history = false;
     private static $live_weather_station_retention_history = 5;
 
+    private static $live_weather_station_retention_notifications = 30;
+
     private static $live_weather_station_styles_chart_opacity_area = 0.4;
     private static $live_weather_station_styles_chart_opacity_sarea = 0.8;
     private static $live_weather_station_styles_chart_opacity_bar = 0.9;
@@ -128,6 +132,8 @@ trait Handling {
     private static $live_weather_station_w_box_radius = 'medium';
 
     private static $do_not_export_import = array('live_weather_station_version', 'live_weather_station_logger_installed', 'live_weather_station_misc_stat', 'live_weather_station_version');
+
+    private static $must_be_unserialized_as_array = array('live_weather_station_styles_chart_cschemes', 'live_weather_station_translation_stat');
 
     /**
      * Get the thresholds options of the plugin.
@@ -676,6 +682,8 @@ trait Handling {
         delete_option('live_weather_station_cron_speed');
         delete_option('live_weather_station_show_update');
         delete_option('live_weather_station_plugin_stat');
+        delete_option('live_weather_station_keep_tables');
+        delete_option('live_weather_station_ajax_widget');
         delete_option('live_weather_station_collection_http_timeout');
         delete_option('live_weather_station_sharing_http_timeout');
         delete_option('live_weather_station_system_http_timeout');
@@ -685,6 +693,7 @@ trait Handling {
         delete_option('live_weather_station_build_history');
         delete_option('live_weather_station_full_history');
         delete_option('live_weather_station_retention_history');
+        delete_option('live_weather_station_retention_notifications');
         delete_option('live_weather_station_purge_cache');
         delete_option('live_weather_station_mutation_observer');
         delete_option('live_weather_station_w_text_shadow_position');
@@ -848,6 +857,8 @@ trait Handling {
         update_option('live_weather_station_show_analytics', self::$live_weather_station_show_analytics);
         update_option('live_weather_station_show_tasks', self::$live_weather_station_show_tasks);
         update_option('live_weather_station_plugin_stat', self::$live_weather_station_plugin_stat);
+        update_option('live_weather_station_keep_tables', self::$live_weather_station_keep_tables);
+        update_option('live_weather_station_ajax_widget', self::$live_weather_station_ajax_widget);
         update_option('live_weather_station_analytics_cutoff', self::$live_weather_station_analytics_cutoff);
         update_option('live_weather_station_auto_update', self::$live_weather_station_auto_update);
         update_option('live_weather_station_quota_mode', self::$live_weather_station_quota_mode);
@@ -859,6 +870,7 @@ trait Handling {
         update_option('live_weather_station_picture_retention', self::$live_weather_station_picture_retention);
         update_option('live_weather_station_video_retention', self::$live_weather_station_video_retention);
         update_option('live_weather_station_mutation_observer', self::$live_weather_station_mutation_observer);
+        update_option('live_weather_station_retention_notifications', self::$live_weather_station_retention_notifications);
     }
 
     /**
@@ -1134,6 +1146,8 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_partial_translation', self::$live_weather_station_partial_translation);
         self::verify_option_boolean('live_weather_station_show_update', self::$live_weather_station_show_update);
         self::verify_option_boolean('live_weather_station_plugin_stat', self::$live_weather_station_plugin_stat);
+        self::verify_option_boolean('live_weather_station_keep_tables', self::$live_weather_station_keep_tables);
+        self::verify_option_boolean('live_weather_station_ajax_widget', self::$live_weather_station_ajax_widget);
         self::verify_option_integer('live_weather_station_quota_mode', self::$live_weather_station_quota_mode);
         self::verify_option_boolean('live_weather_station_force_frontend_styling', self::$live_weather_station_force_frontend_styling);
         self::verify_option_string('live_weather_station_netatmo_refresh_token', self::$live_weather_station_netatmo_refresh_token);
@@ -1178,6 +1192,7 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_build_history', self::$live_weather_station_build_history);
         self::verify_option_boolean('live_weather_station_full_history', self::$live_weather_station_full_history);
         self::verify_option_integer('live_weather_station_retention_history', self::$live_weather_station_retention_history);
+        self::verify_option_integer('live_weather_station_retention_notifications', self::$live_weather_station_retention_notifications);
         self::verify_option_boolean('live_weather_station_mutation_observer', self::$live_weather_station_mutation_observer);
         self::verify_option_string('live_weather_station_w_text_shadow_position', self::$live_weather_station_w_text_shadow_position);
         self::verify_option_string('live_weather_station_w_text_shadow_length', self::$live_weather_station_w_text_shadow_length);
@@ -1213,7 +1228,12 @@ trait Handling {
         global $wpdb;
         foreach ($wpdb->get_results("SELECT option_name, option_value FROM " . $wpdb->options . " WHERE option_name like 'live_weather_station%'", ARRAY_A) as $option) {
             if (!in_array($option['option_name'], self::$do_not_export_import)) {
-                $result[$option['option_name']] = $option['option_value'];
+                if (in_array($option['option_name'], self::$must_be_unserialized_as_array)) {
+                    $result[$option['option_name']] = get_option($option['option_name']);
+                }
+                else {
+                    $result[$option['option_name']] = $option['option_value'];
+                }
             }
         }
         Logger::notice('Core', null, null, null, null, null, 600, 'Settings successfully exported.');

@@ -30,6 +30,7 @@ use WeatherStation\System\Plugin\Stats;
 use WeatherStation\Data\History\Builder as HistoryBuilder;
 use WeatherStation\Data\History\Cleaner as HistoryCleaner;
 use WeatherStation\System\Device\Manager as DeviceManager;
+use WeatherStation\System\Notifications\Notifier;
 
 /**
  * Functionalities for schedules & cron handling.
@@ -51,6 +52,7 @@ trait Handling {
     public static $watchdog_name = 'lws_watchdog';
     public static $translation_update_name = 'lws_translation_update';
     public static $log_rotate_name = 'lws_log_rotate';
+    public static $notif_rotate_name = 'lws_notif_rotate';
     public static $cache_flush_name = 'lws_cache_flush';
     public static $stats_clean_name = 'lws_stats_clean';
     public static $integrity_check_name = 'lws_integrity_check';
@@ -59,7 +61,7 @@ trait Handling {
     public static $background_process_name = 'lws_background_process';
     public static $cron_system = array('lws_watchdog', 'lws_translation_update', 'lws_log_rotate', 'lws_cache_flush',
                                         'lws_stats_clean', 'lws_integrity_check', 'lws_plugin_stat', 'lws_device_management',
-                                        'lws_background_process');
+                                        'lws_background_process', 'lws_notif_rotate');
 
     // HISTORY
     public static $history_build_name = 'lws_history_build';
@@ -342,6 +344,9 @@ trait Handling {
                 break;
             case 'lws_log_rotate':
                 return __('Events log rotation', 'live-weather-station');
+                break;
+            case 'lws_notif_rotate':
+                return lws__('Obsolete notifications deletion', 'live-weather-station');
                 break;
             case 'lws_cache_flush':
                 return __('Cache flushing', 'live-weather-station');
@@ -834,6 +839,31 @@ trait Handling {
         if (!wp_next_scheduled(self::$log_rotate_name)) {
             wp_schedule_event(time() + $timeshift, 'daily', self::$log_rotate_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$log_rotate_name).'" (re)scheduled.');
+        }
+    }
+
+    /**
+     * Define notifications rotate cron job.
+     *
+     * @since 3.8.0
+     */
+    protected static function define_notif_rotate_cron() {
+        $notifier = new Notifier(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$notif_rotate_name, array($notifier, 'rotate'));
+    }
+
+    /**
+     * Launch the notifications rotate cron job if needed.
+     *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
+     * @since 3.8.0
+     */
+    protected static function launch_notif_rotate_cron($timeshift=0, $system='Watchdog') {
+        if (!wp_next_scheduled(self::$notif_rotate_name)) {
+            wp_schedule_event(time() + $timeshift, 'twicedaily', self::$notif_rotate_name);
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$notif_rotate_name).'" (re)scheduled.');
         }
     }
 

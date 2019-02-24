@@ -4,6 +4,7 @@ namespace WeatherStation\System\Notifications;
 
 use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Schedules\Watchdog;
+use WeatherStation\System\Logs\Logger;
 
 /**
  * This class add notification capacity to the plugin.
@@ -33,6 +34,31 @@ class Notifier {
     public function __construct($Live_Weather_Station, $version) {
         $this->Live_Weather_Station = $Live_Weather_Station;
         $this->version = $version;
+    }
+
+    /**
+     * Delete old notifications.
+     *
+     * @since 3.8.0
+     */
+    public function rotate() {
+        $cron_id = Watchdog::init_chrono(Watchdog::$log_rotate_name);
+        $days = get_option('live_weather_station_retention_notifications', 0);
+        if ($days > 0) {
+            $count = $this->purge_table(self::live_weather_station_notifications_table() , 'timestamp', 24 * $days);
+            if ($count > 0) {
+                if ($count == 1) {
+                    Logger::notice('Notifier',null,null,null,null,null,null,'1 obsolete notification deleted.');
+                }
+                if ($count > 1) {
+                    Logger::notice('Notifier',null,null,null,null,null,null,$count . ' obsolete notifications deleted.');
+                }
+            }
+            else {
+                Logger::info('Notifier',null,null,null,null,null,null,'No obsolete notifications to delete.');
+            }
+        }
+        Watchdog::stop_chrono($cron_id);
     }
 
     /**

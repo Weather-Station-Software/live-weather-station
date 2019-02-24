@@ -15,22 +15,23 @@ use WeatherStation\System\Cache\Cache;
  * @package Includes\Classes
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
- * @since 1.0.0
+ * @since 3.8.0
  */
-class Deactivator {
+class Uninstaller {
 
-	use Storage, Options;
+    use Storage, Options;
 
-	/**
-	 * Deactivates the plugin.
-	 *
-	 * Flush caches and stop scheduler.
-	 *
-	 * @since 1.0.0
-	 */
-	public static function deactivate() {
-	    Cache::flush_full(false);
-		Watchdog::stop();
-	}
+    /**
+     * Uninstall the plugin.
+     *
+     * Drop table and delete options.
+     *
+     * @since 3.8.0
+     */
+    public static function uninstall() {
+        self::delete_options();
+        self::drop_tables();
+        self::clean_all_usermeta();
+    }
 
 }

@@ -57,6 +57,7 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Module\Yearly\Timelapse': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyTimelapse.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\ValueRC': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyValueRC.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Windrose': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyWindrose.php'; break;
+        case 'WeatherStation\Engine\Module\Climat\Lines': $file = LWS_INCLUDES_DIR.'classes/ModuleClimatLines.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\TXTGenerator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneAbstractTXTGenerator.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Framework': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneFramework.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Generator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneGenerator.php'; break;
@@ -177,6 +178,7 @@ spl_autoload_register(
         case 'WeatherStation\System\Plugin\I18n': $file = LWS_INCLUDES_DIR.'classes/SystemPluginI18n.php'; break;
         case 'WeatherStation\System\Plugin\Loader': $file = LWS_INCLUDES_DIR.'classes/SystemPluginLoader.php'; break;
         case 'WeatherStation\System\Plugin\Stats': $file = LWS_INCLUDES_DIR.'classes/SystemPluginStats.php'; break;
+        case 'WeatherStation\System\Plugin\Uninstaller': $file = LWS_INCLUDES_DIR.'classes/SystemPluginUninstaller.php'; break;
         case 'WeatherStation\System\Plugin\Updater': $file = LWS_INCLUDES_DIR.'classes/SystemPluginUpdater.php'; break;
         case 'WeatherStation\System\Quota\Quota': $file = LWS_INCLUDES_DIR.'system/Quota.php'; break;
         case 'WeatherStation\System\Schedules\Watchdog': $file = LWS_INCLUDES_DIR.'system/Watchdog.php'; break;
@@ -209,6 +211,7 @@ spl_autoload_register(
         case 'WeatherStation\UI\Services\Handling': $file = LWS_INCLUDES_DIR.'classes/ServicesHelper.php'; break;
         case 'WeatherStation\UI\Station\Handling': $file = LWS_INCLUDES_DIR.'classes/StationHelper.php'; break;
         case 'WeatherStation\UI\SVG\Handling': $file = LWS_INCLUDES_DIR.'classes/SvgHelper.php'; break;
+        case 'WeatherStation\UI\Widget\Base': $file = LWS_INCLUDES_DIR.'classes/WidgetBase.php'; break;
         case 'WeatherStation\UI\Widget\Ephemeris': $file = LWS_INCLUDES_DIR.'classes/WidgetEphemeris.php'; break;
         case 'WeatherStation\UI\Widget\Fire': $file = LWS_INCLUDES_DIR.'classes/WidgetFire.php'; break;
         case 'WeatherStation\UI\Widget\Outdoor': $file = LWS_INCLUDES_DIR.'classes/WidgetOutdoor.php'; break;

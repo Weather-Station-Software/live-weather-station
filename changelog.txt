@@ -1,4 +1,10 @@
 
+#3.7.11 / March xxxxxxx, 2019
+
+* Improvement: Weather station now handle correctly wrong measurement formats for clientraw-based stations.
+* Bug fix: in some templates, textual shortcodes doesn't refresh every 2 minutes.
+* Bug fix: widgets are not fully refreshed when WP-Rocket is used as cache manager.
+
 #3.7.10 / February 19th, 2019
 
 * Improvement: optimization of night and day times computation for background changing in widgets.

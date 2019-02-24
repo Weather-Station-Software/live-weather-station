@@ -771,6 +771,14 @@ trait Storage {
                                 '<br/><em>' . __('Note: even if you do not update, Weather Station will continue to work, but I can\'t offer technical support anymore...', 'live-weather-station') . '</em>');
             }
 
+            // OUTDATED WordPress
+            if (!Env::is_wp_version_uptodate()) {
+                Notifier::error(lws__('Your WordPress version is old', 'live-weather-station'),
+                    'https://codex.wordpress.org/Current_events',
+                    lws__('This version of WordPress is old. You should seriously consider to update it.', 'live-weather-station') .
+                    '<br/><em>' . __('Note: even if you do not update, Weather Station will continue to work, but I can\'t offer technical support anymore...', 'live-weather-station') . '</em>');
+            }
+
             // WUG STATION COLLECTED
             $wug = self::wug_stations();
             if (count($wug) > 0) {
@@ -858,9 +866,11 @@ trait Storage {
         $table_name = $wpdb->prefix.self::live_weather_station_histo_daily_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
-        $table_name = $wpdb->prefix.self::live_weather_station_histo_yearly_table();
-        $sql = 'DROP TABLE IF EXISTS '.$table_name;
-        $wpdb->query($sql);
+        if (!(bool)get_option('live_weather_station_keep_tables', true)) {
+            $table_name = $wpdb->prefix.self::live_weather_station_histo_yearly_table();
+            $sql = 'DROP TABLE IF EXISTS '.$table_name;
+            $wpdb->query($sql);
+        }
         $table_name = $wpdb->prefix.self::live_weather_station_module_detail_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);

@@ -48,7 +48,7 @@ trait Output {
         'temperature_ref', 'dew_point', 'frost_point', 'heat_index', 'humidex',
         'wind_chill', 'cloud_ceiling', 'sunrise', 'sunset', 'moonrise',
         'moonset', 'moon_illumination', 'moon_diameter', 'sun_diameter', 'moon_distance', 'sun_distance', 'moon_phase',
-        'moon_age', 'o3_distance', 'co_distance', /*'absolute_humidity', 'alt_pressure', 'alt_density', 'zcast_live', 'zcast_best',*/
+        'moon_age', 'o3_distance', 'co_distance', /**/'absolute_humidity', 'alt_pressure', 'alt_density', 'zcast_live', 'zcast_best',/**/
         'day_length', 'health_idx', 'cbi', 'pressure_ref', 'wet_bulb', 'air_density', 'wood_emc',
         'equivalent_temperature', 'potential_temperature', 'specific_enthalpy', 'partial_vapor_pressure',
         'partial_absolute_humidity', 'irradiance', 'uv_index', 'illuminance', 'sunshine', 'soil_temperature', 'leaf_wetness',
@@ -6798,6 +6798,7 @@ trait Output {
      * @since 3.6.0
      */
     public function livetextual_shortcodes($attributes) {
+        wp_enqueue_script('jquery');
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => '', 'fx'=>'','color'=>'','speed'=>''), $attributes );
         $fingerprint = uniqid('', true);
         $uuid = substr ($fingerprint, strlen($fingerprint)-6, 80);
@@ -6865,6 +6866,7 @@ trait Output {
      * @since 3.8.0
      */
     public function liveicon_shortcodes($attributes) {
+        wp_enqueue_script('jquery');
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => '', 'fx'=>'','color'=>'','speed'=>''), $attributes );
         $fingerprint = uniqid('', true);
         $uuid = substr ($fingerprint, strlen($fingerprint)-6, 80);

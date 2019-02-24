@@ -333,6 +333,12 @@ class Admin {
             array($this, 'lws_system_log_retention_callback'), 'lws_system', 'lws_system_section',
             array(__('Maximum number and maximum age of events stored in the events log.', 'live-weather-station')));
         register_setting('lws_system', 'lws_system_log_retention');
+        if (LWS_PREVIEW) {
+            add_settings_field('lws_system_notif_retention', '',
+                array($this, 'lws_system_notif_retention_callback'), 'lws_system', 'lws_system_section',
+                array(lws__('Maximum age of notifications before deletion.', 'live-weather-station')));
+            register_setting('lws_system', 'lws_system_notif_retention');
+        }
         add_settings_field('lws_system_cron_speed', __('Task scheduler activity', 'live-weather-station'),
             array($this, 'lws_system_cron_speed_callback'), 'lws_system', 'lws_system_section',
             array(sprintf(__('Speed of the task scheduler. Selecting "%s" requires you to have configured an efficient cron.', 'live-weather-station') . InlineHelp::article(0), $this->get_cron_speed_array()[1][1])));
@@ -361,6 +367,12 @@ class Admin {
             array($this, 'lws_system_fa_mode_callback'), 'lws_system', 'lws_system_section',
             array(__('How Font Awesome (used by Weather Station) is enqueued, and which version.', 'live-weather-station')));
         register_setting('lws_system', 'lws_system_fa_mode');
+        if (LWS_PREVIEW) {
+            add_settings_field('lws_system_compatibility', lws__('Compatibility modes', 'live-weather-station'),
+                array($this, 'lws_system_compatibility_callback'), 'lws_system', 'lws_system_section',
+                array());
+            register_setting('lws_system', 'lws_system_notif_retention');
+        }
         add_settings_field('lws_system_redirect_links', __('Links', 'live-weather-station'),
             array($this, 'lws_system_redirect_links_callback'), 'lws_system', 'lws_system_section',
             array());
@@ -617,6 +629,16 @@ class Admin {
      * Renders the interface elements for the corresponding field.
      *
      * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.8.0
+     */
+    public function lws_system_notif_retention_callback($args) {
+        echo $this->field_input_number(get_option('live_weather_station_retention_notifications'), 'lws_system_notif_retention', 1, 30, 1, $args[0], __('days', 'live-weather-station'));
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
      * @since 3.6.0
      */
     public function lws_system_media_callback($args) {
@@ -775,6 +797,38 @@ class Admin {
             'id' => 'lws_system_plugin_stat',
             'checked' => (bool)get_option('live_weather_station_plugin_stat'),
             'description' => sprintf(__('Check this you want to display statistics about the plugin in your dashboard.', 'live-weather-station'), LWS_PLUGIN_NAME));
+        if (LWS_PREVIEW) {
+            $cbxs[] = array('text' => lws__('Keep historical tables', 'live-weather-station'),
+                'id' => 'lws_system_keep_tables',
+                'checked' => (bool)get_option('live_weather_station_keep_tables'),
+                'description' => sprintf(lws__('Check this if you want to keep historical tables after plugin deletion.', 'live-weather-station'), LWS_PLUGIN_NAME));
+        }
+        echo $this->field_multi_checkbox($cbxs);
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.8.0
+     */
+    public function lws_system_compatibility_callback($args) {
+        $cache_name = EnvManager::get_installed_cache_name();
+        if ($cache_name == '') {
+            $description = lws__('Check this to prevent your cache manager to cache widgets.', 'live-weather-station');
+        }
+        else {
+            $description = sprintf(lws__('Check this to prevent your cache manager, %s, to cache widgets.', 'live-weather-station'), $cache_name);
+        }
+        $cbxs = array();
+        $cbxs[] = array('text' => lws__('Tabbed controls', 'live-weather-station'),
+            'id' => 'lws_system_mutation_observer',
+            'checked' => (bool)get_option('live_weather_station_mutation_observer'),
+            'description' => sprintf(lws__('Check this to allow charts to be correctly rendered in tabbed controls (like in Elementor or Divi).', 'live-weather-station'), LWS_PLUGIN_NAME));
+        $cbxs[] = array('text' => lws__('Deferred widgets', 'live-weather-station'),
+            'id' => 'lws_system_ajax_widget',
+            'checked' => (bool)get_option('live_weather_station_ajax_widget'),
+            'description' => $description);
         echo $this->field_multi_checkbox($cbxs);
     }
 
@@ -826,24 +880,6 @@ class Admin {
     public function lws_system_show_technical_callback($args) {
         echo $this->field_checkbox(__('Display technical information', 'live-weather-station'), 'lws_system_show_technical', (bool)get_option('live_weather_station_show_technical'), $args[0]);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     /**
@@ -1095,6 +1131,9 @@ class Admin {
                 update_option('live_weather_station_fa_mode', (integer)$_POST['lws_system_fa_mode']);
                 update_option('live_weather_station_logger_rotate', (integer)$_POST['lws_system_log_rotate']);
                 update_option('live_weather_station_logger_retention', (integer)$_POST['lws_system_log_retention']);
+                update_option('live_weather_station_retention_notifications', (integer)$_POST['lws_system_notif_retention']);
+                update_option('live_weather_station_mutation_observer', (array_key_exists('lws_system_mutation_observer', $_POST) ? 1 : 0));
+                update_option('live_weather_station_ajax_widget', (array_key_exists('lws_system_ajax_widget', $_POST) ? 1 : 0));
                 update_option('live_weather_station_use_cdn', (array_key_exists('lws_system_use_cdn', $_POST) ? 1 : 0));
                 update_option('live_weather_station_footer_scripts', (array_key_exists('lws_system_footer_scripts', $_POST) ? 1 : 0));
                 update_option('live_weather_station_wait_for_dom', (array_key_exists('lws_system_wait_for_dom', $_POST) ? 1 : 0));
@@ -1114,6 +1153,7 @@ class Admin {
                 update_option('live_weather_station_show_analytics', (array_key_exists('lws_system_show_analytics', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_tasks', (array_key_exists('lws_system_show_tasks', $_POST) ? 1 : 0));
                 update_option('live_weather_station_plugin_stat', (array_key_exists('lws_system_plugin_stat', $_POST) ? 1 : 0));
+                update_option('live_weather_station_keep_tables', (array_key_exists('lws_system_keep_tables', $_POST) ? 1 : 0));
                 update_option('live_weather_station_overload_hc', (array_key_exists('lws_system_overload_hc', $_POST) ? 1 : 0));
                 update_option('live_weather_station_analytics_cutoff', (integer)$_POST['lws_system_analytics_cutoff']);
                 update_option('live_weather_station_quota_mode', (integer)$_POST['lws_system_quota']);
@@ -1454,7 +1494,7 @@ class Admin {
                 if ($service == 'station' && ($tab == 'edit' || $tab == 'view') && $action == 'manage') {
                     $view = 'station';
                 }
-                if (($tab == 'current' || $tab == 'daily' || $tab == 'yearly') && $action == 'shortcode') {
+                if (($tab == 'current' || $tab == 'daily' || $tab == 'yearly' || $tab == 'climat') && $action == 'shortcode') {
                     $view = 'station';
                 }
                 if ($service != '' && $tab != '' && $action == 'form') {

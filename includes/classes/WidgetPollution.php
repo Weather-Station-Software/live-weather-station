@@ -14,7 +14,7 @@ use WeatherStation\Data\ID\Handling as ID;
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.1.0
  */
-class Pollution extends \WP_Widget {
+class Pollution extends Base {
 
     use Output, ID;
 
@@ -266,7 +266,19 @@ class Pollution extends \WP_Widget {
         $borders = $instance['show_borders'];
         $background_attachment = $attachment;
         $bg_url = $background;
-        include(LWS_PUBLIC_DIR.'partials/WidgetPollutionDisplayCSS.php');
+        ob_start();
+        include LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php';
+        return ob_get_clean();
+    }
+
+    /**
+     * Enqueues widget styles.
+     *
+     * @since 3.8.0
+     */
+    public function enqueue_styles() {
+        wp_enqueue_style('lws-weather-icons');
+        wp_enqueue_style('lws-weather-icons-wind');
     }
 
     /**
@@ -274,11 +286,10 @@ class Pollution extends \WP_Widget {
      *
      * @param array $args An array containing the widget's arguments.
      * @param array $instance An array containing settings for the widget.
-     * @since 3.1.0
+     * @return string The widget content.
+     * @since 3.8.0
      */
-    public function widget($args, $instance) {
-        wp_enqueue_style('lws-weather-icons');
-        wp_enqueue_style('lws-weather-icons-wind');
+    public function widget_content($args, $instance) {
         $instance = $this->_get_instance($instance);
         $title = $instance['title'];
         $subtitle = $instance['subtitle'];
@@ -433,10 +444,12 @@ class Pollution extends \WP_Widget {
         if (!$follow_risk) {
             $cbi = -99999;
         }
-        echo $args['before_widget'];
-        $id = uniqid();
-        $this->css($instance, $id, $flat, $dawndusk, $bg_url, $background_attachment);
-        include(LWS_PUBLIC_DIR.'partials/WidgetPollutionDisplay.php');
-        echo $args['after_widget'];
+        $result = $args['before_widget'];
+        $result .= $this->css($instance, $id, $flat_design, $health_idx, $bg_url, $background_attachment);
+        ob_start();
+        include LWS_PUBLIC_DIR.'partials/WidgetIndoorDisplay.php';
+        $result .= ob_get_clean();
+        $result .= $args['after_widget'];
+        return $result;
     }
 }
