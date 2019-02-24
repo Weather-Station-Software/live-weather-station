@@ -775,6 +775,9 @@ class InlineHelp {
             if (isset($tab) && $tab == 'yearly') {
                 $s1 = __('This section shows you the the available shortcodes types for the historical data.', 'live-weather-station');
             }
+            if (isset($tab) && $tab == 'climat') {
+                $s1 = lws__('This section shows you the the available shortcodes types for the long-term data.', 'live-weather-station');
+            }
             $s2 = __('To configure a shortcode, just click on its icon then set its parameters and copy/paste it in a page or a post.', 'live-weather-station');
             $tabs[] = array(
                 'title' => __('Overview', 'live-weather-station'),

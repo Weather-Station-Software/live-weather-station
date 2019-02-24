@@ -14,7 +14,7 @@ use WeatherStation\Data\ID\Handling as ID;
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.3.0
  */
-class Solar extends \WP_Widget {
+class Solar extends Base {
 
     use Output, ID;
 
@@ -234,7 +234,9 @@ class Solar extends \WP_Widget {
         else {
             $svg = '';
         }
-        include(LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php');
+        ob_start();
+        include LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php';
+        return ob_get_clean();
     }
 
     /**
@@ -274,15 +276,24 @@ class Solar extends \WP_Widget {
     }
 
     /**
+     * Enqueues widget styles.
+     *
+     * @since 3.8.0
+     */
+    public function enqueue_styles() {
+        wp_enqueue_style('lws-weather-icons');
+        lws_font_awesome();
+    }
+
+    /**
      * Get the widget output.
      *
      * @param array $args An array containing the widget's arguments.
      * @param array $instance An array containing settings for the widget.
-     * @since 3.3.0
+     * @return string The widget content.
+     * @since 3.8.0
      */
-    public function widget($args, $instance) {
-        wp_enqueue_style('lws-weather-icons');
-        lws_font_awesome();
+    public function widget_content($args, $instance) {
         $id = uniqid();
         $instance = $this->_get_instance($instance);
         $title = $instance['title'];
@@ -465,9 +476,12 @@ class Solar extends \WP_Widget {
         if (!$follow_light) {
             $dawndusk = 100;
         }
-        echo $args['before_widget'];
-        $this->css($instance, $id, $flat, $dawndusk, $bg_url, $background_attachment);
-        include(LWS_PUBLIC_DIR.'partials/WidgetSolarDisplay.php');
-        echo $args['after_widget'];
+        $result = $args['before_widget'];
+        $result .= $this->css($instance, $id, $flat, $dawndusk, $bg_url, $background_attachment);
+        ob_start();
+        include LWS_PUBLIC_DIR.'partials/WidgetSolarDisplay.php';
+        $result .= ob_get_clean();
+        $result .= $args['after_widget'];
+        return $result;
     }
 }

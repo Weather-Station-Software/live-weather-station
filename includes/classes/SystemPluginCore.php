@@ -11,6 +11,16 @@ use WeatherStation\Data\Unit\Conversion as Unit_Conversion;
 use WeatherStation\DB\Storage as Storage;
 use WeatherStation\System\Environment\Manager as Env;
 
+use WeatherStation\UI\Widget\Outdoor;
+use WeatherStation\UI\Widget\Indoor;
+use WeatherStation\UI\Widget\Psychrometry;
+use WeatherStation\UI\Widget\Solar;
+use WeatherStation\UI\Widget\Thunderstorm;
+use WeatherStation\UI\Widget\Fire;
+use WeatherStation\UI\Widget\Ephemeris;
+
+
+
 /**
  * The core plugin class.
  *
@@ -194,6 +204,10 @@ class Core {
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_graph_code', $plugin_public, 'lws_graph_code_callback');
         $this->loader->add_action( 'wp_ajax_lws_shortcode', $plugin_public, 'lws_shortcode_callback');
         $this->loader->add_action( 'wp_ajax_nopriv_lws_shortcode', $plugin_public, 'lws_shortcode_callback');
+        foreach (array('ephemeris', 'fire', 'indoor', 'outdoor', 'psychrometry', 'solar', 'thunderstorm') as $widget) {
+            $this->loader->add_action( 'wp_ajax_lws_w_' . $widget, '\WeatherStation\UI\Widget\\' . ucfirst($widget), 'lws_widget_callback');
+            $this->loader->add_action( 'wp_ajax_nopriv_lws_w_' . $widget, '\WeatherStation\UI\Widget\\' . ucfirst($widget), 'lws_widget_callback');
+        }
         add_shortcode( 'live-weather-station-icon', array($plugin_public, 'icon_shortcodes'));
         add_shortcode( 'live-weather-station-liveicon', array($plugin_public, 'liveicon_shortcodes'));
         add_shortcode( 'live-weather-station-textual', array($plugin_public, 'textual_shortcodes'));

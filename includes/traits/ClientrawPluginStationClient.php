@@ -43,372 +43,414 @@ trait StationClient {
         if (!$weather) {
             throw new \Exception('Bad file format.');
         }
-        $timezone = $station['loc_timezone'];
-        $locat_ts = gmmktime($weather[29], $weather[30], $weather[31], $weather[36], $weather[35], $weather[141]);
-        $timestamp = date('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $timezone));
-        
+        try {
+            $timezone = $station['loc_timezone'];
+            $locat_ts = gmmktime($weather[29], $weather[30], $weather[31], $weather[36], $weather[35], $weather[141]);
+            $timestamp = date('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $timezone));
+        }
+        catch (\Exception $e) {
+            throw new \Exception('Bad file format.');
+        }
 
         // NAMain
-        $type = 'NAMain';
-        $updates['device_id'] = $station['station_id'];
-        $updates['device_name'] = $station['station_name'];
-        $updates['module_id'] = $station['station_id'];
-        $updates['module_type'] = $type;
-        $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
-        $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'last_seen';
-        $updates['measure_value'] = $timestamp;
-        $updates['measure_timestamp'] = $timestamp;
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'loc_city';
-        $updates['measure_value'] = $station['loc_city'];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'loc_country';
-        $updates['measure_value'] = $station['loc_country_code'];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'loc_timezone';
-        $updates['measure_value'] = $station['loc_timezone'];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'loc_altitude';
-        $updates['measure_value'] = $station['loc_altitude'];
-        $this->update_data_table($updates, $timezone);
-        $station['loc_latitude'] = $weather[160];
-        $updates['measure_type'] = 'loc_latitude';
-        $updates['measure_value'] = $station['loc_latitude'];
-        $this->update_data_table($updates, $timezone);
-        $station['loc_longitude'] = 0 - $weather[161];
-        $updates['measure_type'] = 'loc_longitude';
-        $updates['measure_value'] = $station['loc_longitude'];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'pressure';
-        $pressure_ref = $this->convert_from_mslp_to_baro($weather[6], $station['loc_altitude'], $weather[4]);
-        $updates['measure_value'] = $pressure_ref;
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'pressure_sl';
-        $updates['measure_value'] = $weather[6];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'pressure_min';
-        $updates['measure_value'] = $this->convert_from_mslp_to_baro($weather[132], $station['loc_altitude'], $weather[4]);
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'pressure_sl_min';
-        $updates['measure_value'] = $weather[132];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'pressure_max';
-        $updates['measure_value'] = $this->convert_from_mslp_to_baro($weather[131], $station['loc_altitude'], $weather[4]);
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'pressure_sl_max';
-        $updates['measure_value'] = $weather[131];
-        $this->update_data_table($updates, $timezone);
-        $trend = 'stable';
-        if ($weather[50] > 0) {
-            $trend = 'up';
+        try {
+            $type = 'NAMain';
+            $updates['device_id'] = $station['station_id'];
+            $updates['device_name'] = $station['station_name'];
+            $updates['module_id'] = $station['station_id'];
+            $updates['module_type'] = $type;
+            $updates['module_name'] = $this->get_fake_module_name($type);
+            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_type'] = 'last_refresh';
+            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'last_seen';
+            $updates['measure_value'] = $timestamp;
+            $updates['measure_timestamp'] = $timestamp;
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'loc_city';
+            $updates['measure_value'] = $station['loc_city'];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'loc_country';
+            $updates['measure_value'] = $station['loc_country_code'];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'loc_timezone';
+            $updates['measure_value'] = $station['loc_timezone'];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'loc_altitude';
+            $updates['measure_value'] = $station['loc_altitude'];
+            $this->update_data_table($updates, $timezone);
+            $station['loc_latitude'] = $weather[160];
+            $updates['measure_type'] = 'loc_latitude';
+            $updates['measure_value'] = $station['loc_latitude'];
+            $this->update_data_table($updates, $timezone);
+            $station['loc_longitude'] = 0 - $weather[161];
+            $updates['measure_type'] = 'loc_longitude';
+            $updates['measure_value'] = $station['loc_longitude'];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'pressure';
+            $pressure_ref = $this->convert_from_mslp_to_baro($weather[6], $station['loc_altitude'], $weather[4]);
+            $updates['measure_value'] = $pressure_ref;
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'pressure_sl';
+            $updates['measure_value'] = $weather[6];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'pressure_min';
+            $updates['measure_value'] = $this->convert_from_mslp_to_baro($weather[132], $station['loc_altitude'], $weather[4]);
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'pressure_sl_min';
+            $updates['measure_value'] = $weather[132];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'pressure_max';
+            $updates['measure_value'] = $this->convert_from_mslp_to_baro($weather[131], $station['loc_altitude'], $weather[4]);
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'pressure_sl_max';
+            $updates['measure_value'] = $weather[131];
+            $this->update_data_table($updates, $timezone);
+            $trend = 'stable';
+            if ($weather[50] > 0) {
+                $trend = 'up';
+            }
+            if ($weather[50] < 0) {
+                $trend = 'down';
+            }
+            $updates['measure_type'] = 'pressure_trend';
+            $updates['measure_value'] = $trend;
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'battery';
+            $updates['measure_value'] = 100;
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'signal';
+            $updates['measure_value'] = 9999;
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'firmware';
+            if (strpos($weather[count($weather)-1], '!!') !== false) {
+                $updates['measure_value'] = str_replace('!!', '', $weather[count($weather)-1]);
+            }
+            else {
+                $updates['measure_value'] = 0;
+            }
+            $this->update_data_table($updates, $timezone);
+            $station['last_refresh'] = date('Y-m-d H:i:s');
+            $station['last_seen'] = $timestamp;
+            $this->update_table(self::live_weather_station_stations_table(), $station);
+            Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        if ($weather[50] < 0) {
-            $trend = 'down';
+        catch (\Exception $e) {
+            Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
-        $updates['measure_type'] = 'pressure_trend';
-        $updates['measure_value'] = $trend;
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'battery';
-        $updates['measure_value'] = 100;
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'signal';
-        $updates['measure_value'] = 9999;
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'firmware';
-        if (strpos($weather[count($weather)-1], '!!') !== false) {
-            $updates['measure_value'] = str_replace('!!', '', $weather[count($weather)-1]);
-        }
-        else {
-            $updates['measure_value'] = 0;
-        }
-        $this->update_data_table($updates, $timezone);
-        $station['last_refresh'] = date('Y-m-d H:i:s');
-        $station['last_seen'] = $timestamp;
-        $this->update_table(self::live_weather_station_stations_table(), $station);
-        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
-
 
         // NAModule1
-        $type = 'NAModule1';
-        $updates['device_id'] = $station['station_id'];
-        $updates['device_name'] = $station['station_name'];
-        $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 1);
-        $updates['module_type'] = $type;
-        $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
-        $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'last_seen';
-        $updates['measure_value'] = $timestamp;
-        $updates['measure_timestamp'] = $timestamp;
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'temperature';
-        $updates['measure_value'] = $weather[4];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'temperature_min';
-        $updates['measure_value'] = $weather[47];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'temperature_max';
-        $updates['measure_value'] = $weather[46];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_timestamp'] = $timestamp;
-        $updates['measure_type'] = 'humidity';
-        $updates['measure_value'] = $weather[5];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'humidity_min';
-        $updates['measure_value'] = $weather[164];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'humidity_max';
-        $updates['measure_value'] = $weather[163];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'absolute_humidity';
-        $updates['measure_value'] = $this->compute_partial_absolute_humidity($weather[4], 100 * $pressure_ref, $weather[5]);
-        $this->update_data_table($updates, $timezone);
-
-        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+        try {
+            $type = 'NAModule1';
+            $updates['device_id'] = $station['station_id'];
+            $updates['device_name'] = $station['station_name'];
+            $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 1);
+            $updates['module_type'] = $type;
+            $updates['module_name'] = $this->get_fake_module_name($type);
+            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_type'] = 'last_refresh';
+            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'last_seen';
+            $updates['measure_value'] = $timestamp;
+            $updates['measure_timestamp'] = $timestamp;
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'temperature';
+            $updates['measure_value'] = $weather[4];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'temperature_min';
+            $updates['measure_value'] = $weather[47];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'temperature_max';
+            $updates['measure_value'] = $weather[46];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_timestamp'] = $timestamp;
+            $updates['measure_type'] = 'humidity';
+            $updates['measure_value'] = $weather[5];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'humidity_min';
+            $updates['measure_value'] = $weather[164];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'humidity_max';
+            $updates['measure_value'] = $weather[163];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'absolute_humidity';
+            $updates['measure_value'] = $this->compute_partial_absolute_humidity($weather[4], 100 * $pressure_ref, $weather[5]);
+            $this->update_data_table($updates, $timezone);
+            Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+        }
+        catch (\Exception $e) {
+            Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
+        }
 
         // NAModule2
-        $type = 'NAModule2';
-        $updates['device_id'] = $station['station_id'];
-        $updates['device_name'] = $station['station_name'];
-        $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 2);
-        $updates['module_type'] = $type;
-        $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
-        $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'last_seen';
-        $updates['measure_value'] = $timestamp;
-        $updates['measure_timestamp'] = $timestamp;
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'windangle';
-        $updates['measure_value'] = $weather[3];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'winddirection';
-        $updates['measure_value'] = (int)floor(($weather[3] + 180) % 360);
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'windstrength';
-        $updates['measure_value'] = $this->get_reverse_wind_speed($weather[2], 4);
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'gustangle';
-        $updates['measure_value'] = $weather[3];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'gustdirection';
-        $updates['measure_value'] = (int)floor(($weather[3] + 180) % 360);
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'guststrength';
-        $updates['measure_value'] = $this->get_reverse_wind_speed($weather[133], 4);
-        $this->update_data_table($updates, $timezone);
-        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+        try {
+            $type = 'NAModule2';
+            $updates['device_id'] = $station['station_id'];
+            $updates['device_name'] = $station['station_name'];
+            $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 2);
+            $updates['module_type'] = $type;
+            $updates['module_name'] = $this->get_fake_module_name($type);
+            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_type'] = 'last_refresh';
+            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'last_seen';
+            $updates['measure_value'] = $timestamp;
+            $updates['measure_timestamp'] = $timestamp;
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'windangle';
+            $updates['measure_value'] = $weather[3];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'winddirection';
+            $updates['measure_value'] = (int)floor(($weather[3] + 180) % 360);
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'windstrength';
+            $updates['measure_value'] = $this->get_reverse_wind_speed($weather[2], 4);
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'gustangle';
+            $updates['measure_value'] = $weather[3];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'gustdirection';
+            $updates['measure_value'] = (int)floor(($weather[3] + 180) % 360);
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'guststrength';
+            $updates['measure_value'] = $this->get_reverse_wind_speed($weather[133], 4);
+            $this->update_data_table($updates, $timezone);
+            Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+        }
+        catch (\Exception $e) {
+            Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
+        }
 
         // NAModule3
-        $type = 'NAModule3';
-        $updates['device_id'] = $station['station_id'];
-        $updates['device_name'] = $station['station_name'];
-        $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 3);
-        $updates['module_type'] = $type;
-        $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
-        $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'last_seen';
-        $updates['measure_value'] = $timestamp;
-        $updates['measure_timestamp'] = $timestamp;
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_timestamp'] = $timestamp;
-        $updates['measure_type'] = 'rain';
-        $updates['measure_value'] = $weather[10];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'rain_day_aggregated';
-        $updates['measure_value'] = $weather[7];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'rain_month_aggregated';
-        $updates['measure_value'] = $weather[8];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'rain_year_aggregated';
-        $updates['measure_value'] = $weather[9];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'rain_yesterday_aggregated';
-        $updates['measure_value'] = $weather[19];
-        $this->update_data_table($updates, $timezone);
-        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+        try {
+            $type = 'NAModule3';
+            $updates['device_id'] = $station['station_id'];
+            $updates['device_name'] = $station['station_name'];
+            $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 3);
+            $updates['module_type'] = $type;
+            $updates['module_name'] = $this->get_fake_module_name($type);
+            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_type'] = 'last_refresh';
+            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'last_seen';
+            $updates['measure_value'] = $timestamp;
+            $updates['measure_timestamp'] = $timestamp;
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_timestamp'] = $timestamp;
+            $updates['measure_type'] = 'rain';
+            $updates['measure_value'] = $weather[10];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'rain_day_aggregated';
+            $updates['measure_value'] = $weather[7];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'rain_month_aggregated';
+            $updates['measure_value'] = $weather[8];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'rain_year_aggregated';
+            $updates['measure_value'] = $weather[9];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'rain_yesterday_aggregated';
+            $updates['measure_value'] = $weather[19];
+            $this->update_data_table($updates, $timezone);
+            Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+        }
+        catch (\Exception $e) {
+            Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
+        }
 
         // NAModule4
-        $type = 'NAModule4';
-        $updates['device_id'] = $station['station_id'];
-        $updates['device_name'] = $station['station_name'];
-        $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 4);
-        $updates['module_type'] = $type;
-        $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
-        $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'last_seen';
-        $updates['measure_value'] = $timestamp;
-        $updates['measure_timestamp'] = $timestamp;
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'temperature';
-        $updates['measure_value'] = $weather[12];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'temperature_min';
-        $updates['measure_value'] = $weather[129];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'temperature_max';
-        $updates['measure_value'] = $weather[128];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'humidity';
-        $updates['measure_value'] = $weather[13];
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'absolute_humidity';
-        $updates['measure_value'] = $this->compute_partial_absolute_humidity($weather[12], 100 * $pressure_ref, $weather[13]);
-        $this->update_data_table($updates, $timezone);
-        $health = $this->compute_health_index($weather[12], $weather[13], null, null);
-        foreach ($health as $key => $idx) {
-            $updates['measure_type'] = $key;
-            $updates['measure_value'] = $idx;
+        try {
+            $type = 'NAModule4';
+            $updates['device_id'] = $station['station_id'];
+            $updates['device_name'] = $station['station_name'];
+            $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 4);
+            $updates['module_type'] = $type;
+            $updates['module_name'] = $this->get_fake_module_name($type);
+            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_type'] = 'last_refresh';
+            $updates['measure_value'] = date('Y-m-d H:i:s');
             $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'last_seen';
+            $updates['measure_value'] = $timestamp;
+            $updates['measure_timestamp'] = $timestamp;
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'temperature';
+            $updates['measure_value'] = $weather[12];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'temperature_min';
+            $updates['measure_value'] = $weather[129];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'temperature_max';
+            $updates['measure_value'] = $weather[128];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'humidity';
+            $updates['measure_value'] = $weather[13];
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'absolute_humidity';
+            $updates['measure_value'] = $this->compute_partial_absolute_humidity($weather[12], 100 * $pressure_ref, $weather[13]);
+            $this->update_data_table($updates, $timezone);
+            $health = $this->compute_health_index($weather[12], $weather[13], null, null);
+            foreach ($health as $key => $idx) {
+                $updates['measure_type'] = $key;
+                $updates['measure_value'] = $idx;
+                $this->update_data_table($updates, $timezone);
+            }
+            Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+        catch (\Exception $e) {
+            Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
+        }
 
         // NAModule5
-        $type = 'NAModule5';
-        $updates['device_id'] = $station['station_id'];
-        $updates['device_name'] = $station['station_name'];
-        $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 5);
-        $updates['module_type'] = $type;
-        $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
-        $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'last_seen';
-        $updates['measure_value'] = $timestamp;
-        $updates['measure_timestamp'] = $timestamp;
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_timestamp'] = $timestamp;
-        $updates['measure_type'] = 'uv_index';
-        if (is_numeric($weather[79])) {
-            $updates['measure_value'] = $weather[79];
+        try {
+            $type = 'NAModule5';
+            $updates['device_id'] = $station['station_id'];
+            $updates['device_name'] = $station['station_name'];
+            $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 5);
+            $updates['module_type'] = $type;
+            $updates['module_name'] = $this->get_fake_module_name($type);
+            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_type'] = 'last_refresh';
+            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'last_seen';
+            $updates['measure_value'] = $timestamp;
+            $updates['measure_timestamp'] = $timestamp;
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_timestamp'] = $timestamp;
+            $updates['measure_type'] = 'uv_index';
+            if (is_numeric($weather[79])) {
+                $updates['measure_value'] = $weather[79];
+            }
+            else {
+                $updates['measure_value'] = 0;
+            }
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_timestamp'] = $timestamp;
+            $updates['measure_type'] = 'irradiance';
+            if (is_numeric($weather[127])) {
+                $updates['measure_value'] = $weather[127];
+            }
+            else {
+                $updates['measure_value'] = 0;
+            }
+            $this->update_data_table($updates, $timezone);
+            Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        else {
-            $updates['measure_value'] = 0;
+        catch (\Exception $e) {
+            Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_timestamp'] = $timestamp;
-        $updates['measure_type'] = 'irradiance';
-        if (is_numeric($weather[127])) {
-            $updates['measure_value'] = $weather[127];
-        }
-        else {
-            $updates['measure_value'] = 0;
-        }
-        $this->update_data_table($updates, $timezone);
-        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
         // NAModule6
-        $type = 'NAModule6';
-        $updates['device_id'] = $station['station_id'];
-        $updates['device_name'] = $station['station_name'];
-        $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 6);
-        $updates['module_type'] = $type;
-        $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
-        $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'last_seen';
-        $updates['measure_value'] = $timestamp;
-        $updates['measure_timestamp'] = $timestamp;
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_timestamp'] = $timestamp;
-        $updates['measure_type'] = 'soil_temperature';
-        if (is_numeric($weather[14])) {
-            $updates['measure_value'] = $weather[14];
+        try {
+            $type = 'NAModule6';
+            $updates['device_id'] = $station['station_id'];
+            $updates['device_name'] = $station['station_name'];
+            $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 6);
+            $updates['module_type'] = $type;
+            $updates['module_name'] = $this->get_fake_module_name($type);
+            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_type'] = 'last_refresh';
+            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'last_seen';
+            $updates['measure_value'] = $timestamp;
+            $updates['measure_timestamp'] = $timestamp;
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_timestamp'] = $timestamp;
+            $updates['measure_type'] = 'soil_temperature';
+            if (is_numeric($weather[14])) {
+                $updates['measure_value'] = $weather[14];
+            }
+            else {
+                $updates['measure_value'] = 0;
+            }
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_timestamp'] = $timestamp;
+            $updates['measure_type'] = 'leaf_wetness';
+            if (is_numeric($weather[156])) {
+                $updates['measure_value'] = $weather[156];
+            }
+            else {
+                $updates['measure_value'] = 0;
+            }
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_timestamp'] = $timestamp;
+            $updates['measure_type'] = 'moisture_tension';
+            if (is_numeric($weather[157])) {
+                $updates['measure_value'] = $weather[157] * 10;
+            }
+            else {
+                $updates['measure_value'] = 0;
+            }
+            $this->update_data_table($updates, $timezone);
+            Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        else {
-            $updates['measure_value'] = 0;
+        catch (\Exception $e) {
+            Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_timestamp'] = $timestamp;
-        $updates['measure_type'] = 'leaf_wetness';
-        if (is_numeric($weather[156])) {
-            $updates['measure_value'] = $weather[156];
-        }
-        else {
-            $updates['measure_value'] = 0;
-        }
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_timestamp'] = $timestamp;
-        $updates['measure_type'] = 'moisture_tension';
-        if (is_numeric($weather[157])) {
-            $updates['measure_value'] = $weather[157] * 10;
-        }
-        else {
-            $updates['measure_value'] = 0;
-        }
-        $this->update_data_table($updates, $timezone);
-        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
         // NAModule7
-        $type = 'NAModule7';
-        $updates['device_id'] = $station['station_id'];
-        $updates['device_name'] = $station['station_name'];
-        $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 7);
-        $updates['module_type'] = $type;
-        $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
-        $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'last_seen';
-        $updates['measure_value'] = $timestamp;
-        $updates['measure_timestamp'] = $timestamp;
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_timestamp'] = $timestamp;
-        $updates['measure_type'] = 'strike_count';
-        if (is_numeric($weather[33])) {
-            $updates['measure_value'] = $weather[33];
+        try {
+            $type = 'NAModule7';
+            $updates['device_id'] = $station['station_id'];
+            $updates['device_name'] = $station['station_name'];
+            $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 7);
+            $updates['module_type'] = $type;
+            $updates['module_name'] = $this->get_fake_module_name($type);
+            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_type'] = 'last_refresh';
+            $updates['measure_value'] = date('Y-m-d H:i:s');
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_type'] = 'last_seen';
+            $updates['measure_value'] = $timestamp;
+            $updates['measure_timestamp'] = $timestamp;
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_timestamp'] = $timestamp;
+            $updates['measure_type'] = 'strike_count';
+            if (is_numeric($weather[33])) {
+                $updates['measure_value'] = $weather[33];
+            }
+            else {
+                $updates['measure_value'] = 0;
+            }
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_timestamp'] = $timestamp;
+            $updates['measure_type'] = 'strike_instant';
+            if (is_numeric($weather[114])) {
+                $updates['measure_value'] = $weather[114];
+            }
+            else {
+                $updates['measure_value'] = 0;
+            }
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_timestamp'] = $timestamp;
+            $updates['measure_type'] = 'strike_distance';
+            if (is_numeric($weather[118])) {
+                $updates['measure_value'] = $weather[118] * 1000;
+            }
+            else {
+                $updates['measure_value'] = 0;
+            }
+            $this->update_data_table($updates, $timezone);
+            $updates['measure_timestamp'] = $timestamp;
+            $updates['measure_type'] = 'strike_bearing';
+            if (is_numeric($weather[119])) {
+                $updates['measure_value'] = $weather[119];
+            }
+            else {
+                $updates['measure_value'] = 0;
+            }
+            $this->update_data_table($updates, $timezone);
+            Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        else {
-            $updates['measure_value'] = 0;
+        catch (\Exception $e) {
+            Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_timestamp'] = $timestamp;
-        $updates['measure_type'] = 'strike_instant';
-        if (is_numeric($weather[114])) {
-            $updates['measure_value'] = $weather[114];
-        }
-        else {
-            $updates['measure_value'] = 0;
-        }
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_timestamp'] = $timestamp;
-        $updates['measure_type'] = 'strike_distance';
-        if (is_numeric($weather[118])) {
-            $updates['measure_value'] = $weather[118] * 1000;
-        }
-        else {
-            $updates['measure_value'] = 0;
-        }
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_timestamp'] = $timestamp;
-        $updates['measure_type'] = 'strike_bearing';
-        if (is_numeric($weather[119])) {
-            $updates['measure_value'] = $weather[119];
-        }
-        else {
-            $updates['measure_value'] = 0;
-        }
-        $this->update_data_table($updates, $timezone);
-        Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
 
         // NAModule9 - max 9 extra modules
         $tmp = array(16, 20, 21, 22,  23,  24,  25, 120, 121);
@@ -430,39 +472,44 @@ trait StationClient {
                 $weather[$hum[$i]] = null;
             }
             if (isset($weather[$tmp[$i]]) || isset($weather[$hum[$i]])) {
-                $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 9, $i);
-                $updates['module_type'] = $type;
-                $updates['module_name'] = $this->get_fake_module_name($type) . ' #' . $i;
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s');
-                $updates['measure_type'] = 'last_refresh';
-                $updates['measure_value'] = date('Y-m-d H:i:s');
-                $this->update_data_table($updates, $timezone);
-                $updates['measure_type'] = 'last_seen';
-                $updates['measure_value'] = $timestamp;
-                $updates['measure_timestamp'] = $timestamp;
-                $this->update_data_table($updates, $timezone);
-                if (isset($weather[$tmp[$i]])) {
-                    $updates['measure_type'] = 'temperature';
-                    $updates['measure_value'] = $weather[$tmp[$i]];
+                try {
+                    $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 9, $i);
+                    $updates['module_type'] = $type;
+                    $updates['module_name'] = $this->get_fake_module_name($type) . ' #' . $i;
+                    $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                    $updates['measure_type'] = 'last_refresh';
+                    $updates['measure_value'] = date('Y-m-d H:i:s');
                     $this->update_data_table($updates, $timezone);
-                }
-                if (isset($weather[$hum[$i]])) {
-                    $updates['measure_type'] = 'humidity';
-                    $updates['measure_value'] = $weather[$hum[$i]];
+                    $updates['measure_type'] = 'last_seen';
+                    $updates['measure_value'] = $timestamp;
+                    $updates['measure_timestamp'] = $timestamp;
                     $this->update_data_table($updates, $timezone);
-                }
-                if (isset($weather[$tmp[$i]]) && isset($weather[$hum[$i]])) {
-                    $updates['measure_type'] = 'absolute_humidity';
-                    $updates['measure_value'] = $this->compute_partial_absolute_humidity($weather[$tmp[$i]], 100 * $pressure_ref, $weather[$hum[$i]]);
-                    $this->update_data_table($updates, $timezone);
-                    $health = $this->compute_health_index($weather[$tmp[$i]], $weather[$hum[$i]], null, null);
-                    foreach ($health as $key => $idx) {
-                        $updates['measure_type'] = $key;
-                        $updates['measure_value'] = $idx;
+                    if (isset($weather[$tmp[$i]])) {
+                        $updates['measure_type'] = 'temperature';
+                        $updates['measure_value'] = $weather[$tmp[$i]];
                         $this->update_data_table($updates, $timezone);
                     }
+                    if (isset($weather[$hum[$i]])) {
+                        $updates['measure_type'] = 'humidity';
+                        $updates['measure_value'] = $weather[$hum[$i]];
+                        $this->update_data_table($updates, $timezone);
+                    }
+                    if (isset($weather[$tmp[$i]]) && isset($weather[$hum[$i]])) {
+                        $updates['measure_type'] = 'absolute_humidity';
+                        $updates['measure_value'] = $this->compute_partial_absolute_humidity($weather[$tmp[$i]], 100 * $pressure_ref, $weather[$hum[$i]]);
+                        $this->update_data_table($updates, $timezone);
+                        $health = $this->compute_health_index($weather[$tmp[$i]], $weather[$hum[$i]], null, null);
+                        foreach ($health as $key => $idx) {
+                            $updates['measure_type'] = $key;
+                            $updates['measure_value'] = $idx;
+                            $this->update_data_table($updates, $timezone);
+                        }
+                    }
+                    Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
                 }
-                Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
+                catch (\Exception $e) {
+                    Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
+                }
             }
         }
     }

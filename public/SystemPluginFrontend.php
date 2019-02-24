@@ -324,4 +324,8 @@ class Frontend {
             exit('<p>' . esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station') . '</p>');
         }
     }
+
+    public static function lws_widget_callback() {
+        exit ('D O N E !');
+    }
 }

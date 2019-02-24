@@ -14,7 +14,7 @@ use WeatherStation\Data\ID\Handling as ID;
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.1.0
  */
-class Fire extends \WP_Widget {
+class Fire extends Base {
 
     use Output, ID;
 
@@ -280,7 +280,19 @@ class Fire extends \WP_Widget {
         else {
             $svg = '';
         }
-        include(LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php');
+        ob_start();
+        include LWS_PUBLIC_DIR.'partials/WidgetDisplayCSS.php';
+        return ob_get_clean();
+    }
+
+    /**
+     * Enqueues widget styles.
+     *
+     * @since 3.8.0
+     */
+    public function enqueue_styles() {
+        wp_enqueue_style('lws-weather-icons');
+        wp_enqueue_style('lws-weather-icons-wind');
     }
 
     /**
@@ -288,11 +300,10 @@ class Fire extends \WP_Widget {
      *
      * @param array $args An array containing the widget's arguments.
      * @param array $instance An array containing settings for the widget.
-     * @since 3.1.0
+     * @return string The widget content.
+     * @since 3.8.0
      */
-    public function widget($args, $instance) {
-        wp_enqueue_style('lws-weather-icons');
-        wp_enqueue_style('lws-weather-icons-wind');
+    public function widget_content($args, $instance) {
         $id = uniqid();
         $instance = $this->_get_instance($instance);
         $title = $instance['title'];
@@ -548,9 +559,12 @@ class Fire extends \WP_Widget {
                 $bg_url = 'background-image: url("' . $low_url . '");';
             }
         }
-        echo $args['before_widget'];
-        $this->css($instance, $id, $flat, $cbi, $bg_url, $background_attachment);
-        include(LWS_PUBLIC_DIR.'partials/WidgetFireDisplay.php');
-        echo $args['after_widget'];
+        $result = $args['before_widget'];
+        $result .= $this->css($instance, $id, $flat, $cbi, $bg_url, $background_attachment);
+        ob_start();
+        include LWS_PUBLIC_DIR.'partials/WidgetFireDisplay.php';
+        $result .= ob_get_clean();
+        $result .= $args['after_widget'];
+        return $result;
     }
 }

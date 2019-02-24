@@ -1952,22 +1952,29 @@ trait Generator {
      * Get period types array.
      *
      * @param boolean $rolling Optional. The array must contains rolling periods.
+     * @param boolean $climat Optional. The array must contains only climat periods.
      * @return array An array containing the period types ready to convert to a JS array.
      * @since 3.4.0
      */
-    protected function get_period_type_js_array($rolling=true) {
+    protected function get_period_type_js_array($rolling=true, $climat=false) {
         $result = array();
-        if ($rolling) {
+        if ($rolling && !$climat) {
             $result[] = array('rolling-days',  __('Rolling days', 'live-weather-station'));
         }
         $result[] = array('fixed-month',  __('Fixed month', 'live-weather-station'));
-        $result[] = array('sliding-month',  __('Sliding month', 'live-weather-station'));
+        if (!$climat) {
+            $result[] = array('sliding-month',  __('Sliding month', 'live-weather-station'));
+        }
         $result[] = array('fixed-mseason',  __('Fixed meteorological season', 'live-weather-station'));
-        $result[] = array('sliding-mseason',  __('Sliding meteorological season', 'live-weather-station'));
+        if (!$climat) {
+            $result[] = array('sliding-mseason',  __('Sliding meteorological season', 'live-weather-station'));
+        }
         //$result[] = array('fixed-aseason',  __('Fixed astronomical season', 'live-weather-station'));
         //$result[] = array('sliding-aseason',  __('Sliding astronomical season', 'live-weather-station'));
         $result[] = array('fixed-year',  __('Fixed year', 'live-weather-station'));
-        $result[] = array('sliding-year',  __('Sliding year', 'live-weather-station'));
+        if (!$climat) {
+            $result[] = array('sliding-year',  __('Sliding year', 'live-weather-station'));
+        }
         return $result;
     }
 

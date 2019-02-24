@@ -784,10 +784,10 @@ abstract class Maintainer {
         elseif ($this->module_type() == 'daily' && !(bool)get_option('live_weather_station_collect_history')) {
             $this->print_error(1);
         }
-        elseif ($this->module_type() == 'yearly' && !(bool)get_option('live_weather_station_build_history')) {
+        elseif (($this->module_type() == 'yearly' || $this->module_type() == 'climat') && !(bool)get_option('live_weather_station_build_history')) {
             $this->print_error(2);
         }
-        elseif ($this->module_type() == 'yearly' && $this->station_information['oldest_data'] == '0000-00-00') {
+        elseif (($this->module_type() == 'yearly' || $this->module_type() == 'climat') && $this->station_information['oldest_data'] == '0000-00-00') {
             $this->print_error(3);
         }
         else {

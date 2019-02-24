@@ -46,6 +46,7 @@ use WeatherStation\Engine\Module\Yearly\Timelapse;
 use WeatherStation\System\Plugin\Deactivator;
 use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Background\ProcessManager;
+use WeatherStation\Engine\Module\Climat\Lines as ClimatLines;
 
 
 /**
@@ -128,6 +129,7 @@ class Handling {
         if ($bsky) {
             Timelapse::register_module('yearly');
         }
+        ClimatLines::register_module('climat');
     }
 
     /**
