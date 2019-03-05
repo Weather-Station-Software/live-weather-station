@@ -583,7 +583,7 @@ abstract class Maintainer {
         // data
         $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_' . $this->station_guid . ' = ' . json_encode($this->data) . ';';
         // period
-        if (self::$module_mode == 'yearly') {
+        if (self::$module_mode == 'yearly' || self::$module_mode == 'climat') {
             $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_period_' . $this->station_guid . ' = ' . json_encode($this->period) . ';';
         }
         // content

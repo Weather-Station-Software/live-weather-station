@@ -24,7 +24,7 @@ use WeatherStation\System\Environment\Manager as EnvManager;
             <?php } ?>
         </li>
         <li>
-            <?php echo sprintf(__( 'Thanks to %1$s for his tools and his reactivity, to %2$s for Netatmo tests and kindness from Austria, to %4$s and to %3$s for advice, patience and benevolence in testing.', 'live-weather-station'), Help::get(-6), Help::get(-7), Help::get(-8),Help::get(-32));?>
+            <?php echo sprintf(__( 'Thanks to %1$s for his tools and his reactivity, to %2$s for Netatmo tests and kindness from Austria, to %5$s for WeatherLink tests from Chile, to %4$s and to %3$s for advice, patience and benevolence in testing.', 'live-weather-station'), Help::get(-6), Help::get(-7), Help::get(-8),Help::get(-32),Help::get(-50));?>
             <?php echo sprintf(__( 'Also, many thanks to all the translation editors and contributors for making %s available and maintained in many languages: girls and guys, you\'re awesome!', 'live-weather-station'), LWS_PLUGIN_NAME);?>
         </li>
     </ul>

@@ -37,12 +37,12 @@ var lws_lcd = (function() {
     var maxValue                = param.maxValue || 100;
     var formerValue             = param.formerValue || minValue;
     var value                   = param.value || minValue;
-    var decimals                = param.decimals || 1;
+    var decimals                = param.decimals || 0;
     var upperLeftText           = param.upperLeftText || '';
     var upperLeftTextVisible    = param.upperLeftTextVisible === undefined ? false : param.upperLeftTextVisible;
     var upperRightText          = param.upperRightText || '';
     var upperRightTextVisible   = param.upperRightTextVisible === undefined ? false : param.upperRightTextVisible;
-    var lowerCenterText         = param.lowerCenterText == undefined ? '' : param.lowerCenterText;
+    var lowerCenterText         = param.lowerCenterText === undefined ? '' : param.lowerCenterText;
     var lowerCenterTextVisible  = param.lowerCenterTextVisible === undefined ? true : param.lowerCenterTextVisible;
     var formerValueVisible      = param.formerValueVisible === undefined ? false : param.formerValueVisible;
     var battery                 = param.battery || 'full';
@@ -703,7 +703,7 @@ var lws_lcd = (function() {
       if (upperLeftTextVisible) {
         ctx.font = lcdSmallFont;
         ctx.textBaseline = 'bottom';
-        upperLeftText = Number(minValue).toFixed(1);
+        upperLeftText = Number(minValue).toFixed(decimals);
         while (upperLeftText.length < backgroundValueText.length) {
           upperLeftText = ' '+upperLeftText;
         }
@@ -714,7 +714,7 @@ var lws_lcd = (function() {
       if (upperRightTextVisible) {
         ctx.font = lcdSmallFont;
         ctx.textBaseline = 'bottom';
-        upperRightText = Number(maxValue).toFixed(1);
+        upperRightText = Number(maxValue).toFixed(decimals);
         while (upperRightText.length < backgroundValueText.length) {
           upperRightText = ' '+upperRightText;
         }
@@ -1248,7 +1248,7 @@ var lws_lcd = (function() {
       _setAlarmVisible(false);
       signalVisible = true;
       signalStrength = 1 ;
-      decimals = 1;
+      decimals = 0;
     };
 
     function getDatas() {

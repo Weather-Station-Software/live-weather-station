@@ -78,7 +78,9 @@ trait Output {
         'winddirection', 'gustdirection', 'windangle_max', 'windangle_day_max', 'windangle_hour_max', 'winddirection_max',
         'winddirection_day_max', 'winddirection_hour_max', 'weather', 'zcast_live', 'zcast_best');
     private $graph_allowed_serie = array('device_id', 'module_id', 'measurement', 'line_mode', 'dot_style', 'line_style', 'line_size');
+    private $ltgraph_allowed_serie = array('set', 'period', 'line_mode', 'dot_style', 'line_style', 'line_size');
     private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
+    private $ltgraph_allowed_parameter = array('device_id', 'module_id', 'measurement', 'cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
 
 
 
@@ -2277,6 +2279,9 @@ trait Output {
             default:
                 $result = 'fixed';
         }
+        if ($measurement == 'alt_density' || $measurement == 'alt_pressure') {
+            $result = 'bottom';
+        }
         switch ($measurement) {
             case 'cloud_ceiling':
             case 'rain':
@@ -4363,6 +4368,544 @@ trait Output {
         return $result;
     }
 
+
+    /**
+     * Prepare a graph query.
+     *
+     * @param array $attributes The type of graph queried by the shortcode.
+     * @return array The prepared query.
+     * @since 3.4.0
+     */
+    public function ltgraph_prepare($attributes){
+        $items = array();
+        $noned = false;
+        for ($i = 1; $i <= 8; $i++) {
+            if (array_key_exists('device_id_'.$i, $attributes)) {
+                if ($attributes['measurement_'.$i] == 'none' || $attributes['measurement_'.$i] == 'none:none') {
+                    $noned = true;
+                    continue;
+                }
+                $item = array();
+                foreach ($this->graph_allowed_serie as $param) {
+                    if (array_key_exists($param.'_'.$i, $attributes)) {
+                        $item[$param] = $attributes[$param.'_'.$i];
+                        if ($param == 'measurement') {
+                            if (strpos ($attributes[$param.'_'.$i], ':') > 0) {
+                                $s = explode(':', $attributes[$param.'_'.$i]);
+                                $item[$param] = $s[1];
+                                $item['set'] = $s[0];
+                            }
+                        }
+                    }
+                }
+                $items[$i] = $item;
+            }
+        }
+        $value_params = array();
+        if (array_key_exists('mode', $attributes)) {
+            $value_params['mode'] = $attributes['mode'];
+        }
+        else {
+            $value_params['mode'] = '';
+        }
+        if (array_key_exists('type', $attributes)) {
+            $value_params['type'] = $attributes['type'];
+        }
+        else {
+            $value_params['type'] = '';
+        }
+        $value_params['args'] = $items;
+        $value_params['noned'] = $noned;
+        if (array_key_exists('cache', $attributes)) {
+            $value_params['cache'] = $attributes['cache'];
+        }
+        else {
+            $value_params['cache'] = 'cache';
+        }
+        if (array_key_exists('periodtype', $attributes)) {
+            $value_params['periodtype'] = $attributes['periodtype'];
+        }
+        else {
+            $value_params['periodtype'] = 'none';
+        }
+        if (array_key_exists('periodvalue', $attributes)) {
+            $value_params['periodvalue'] = $attributes['periodvalue'];
+        }
+        else {
+            $value_params['periodvalue'] = 'none';
+        }
+        if (array_key_exists('timescale', $attributes)) {
+            $value_params['timescale'] = $attributes['timescale'];
+        }
+        else {
+            $value_params['timescale'] = 'none';
+        }
+        if (array_key_exists('valuescale', $attributes)) {
+            $value_params['valuescale'] = $attributes['valuescale'];
+        }
+        else {
+            $value_params['valuescale'] = 'none';
+        }
+        $value_params['periodduration'] = 'none';
+        if (strpos($value_params['periodtype'], 'rolling-days') !== false) {
+            $value_params['periodduration'] = 'rdays';
+        }
+        if (strpos($value_params['periodtype'], '-month') !== false) {
+            $value_params['periodduration'] = 'month';
+        }
+        if (strpos($value_params['periodtype'], '-mseason') !== false) {
+            $value_params['periodduration'] = 'mseason';
+        }
+        if (strpos($value_params['periodtype'], '-year') !== false) {
+            $value_params['periodduration'] = 'year';
+        }
+        if (array_key_exists('color', $attributes)) {
+            $value_params['color'] = $attributes['color'];
+        }
+        else {
+            $value_params['color'] = 'self';
+        }
+        if (array_key_exists('template', $attributes)) {
+            $value_params['template'] = $attributes['template'];
+        }
+        else {
+            $value_params['template'] = 'neutral';
+        }
+        return $value_params;
+    }
+
+
+    /**
+     * Get a long-term graph.
+     *
+     * @param array $attributes The type of graph queried by the shortcode.
+     * @return string The graph ready to print.
+     * @since 3.8.0
+     */
+    public function ltgraph_shortcodes($attributes) {
+        $_attributes = shortcode_atts( array('mode' => '', 'type' => '', 'template' => 'neutral', 'color' => 'Blues', 'label' => 'none', 'interpolation' => 'linear', 'guideline' => 'none', 'height' => '300px', 'timescale' => 'auto', 'valuescale' => 'auto', 'data' => 'inline', 'cache' => 'cache', 'periodtype' => 'none', 'periodvalue' => 'none'), $attributes );
+        $mode = $_attributes['mode'];
+        $type = $_attributes['type'];
+        $color = $_attributes['color'];
+        $inverted = false;
+        if (strpos($color, '_') > 0) {
+            $inverted = true;
+            $color = str_replace('i_', '', $color);
+        }
+        $custom = strpos($color, 'cs') === 0;
+        $data = $_attributes['data'];
+        $label = $_attributes['label'];
+        $interpolation = $_attributes['interpolation'];
+        if (strpos($interpolation, 'olor-step-') > 0) {
+            $interpolation = str_replace('color-step-', '', $interpolation);
+        }
+        $type_guideline = $_attributes['guideline'];
+        $guideline = ($type_guideline != 'standard' && $type_guideline != 'none');
+        $height = $_attributes['height'];
+        $fingerprint = uniqid('', true);
+        $uuid = substr ($fingerprint, strlen($fingerprint)-6, 80);
+        $uniq = 'graph' . $uuid;
+        $container = 'lws-container-' . $uuid;
+        $svg = 'svg' . $uuid;
+        $titl = 'titl' . $uuid;
+        $spinner = 'spinner' . $uuid;
+        $inter = 'inter' . $uuid;
+
+        error_log(print_r($attributes, true));
+        return 'OK COOL';
+
+        // prepare query params
+        $value_params = $this->ltgraph_prepare($attributes);
+        $period_duration = $value_params['periodduration'];
+        $items = $value_params['args'];
+        $cpt = 0;
+        foreach ($items as $item) {
+            if ($item['module_id'] != 'none') {
+                $cpt += 1;
+            }
+        }
+        $full_cpt = $cpt;
+        if ($cpt == 0) {
+            if ($value_params['noned']) {
+                return __('No Data To Display', 'live-weather-station');
+            }
+            else {
+                return __('Malformed shortcode. Please verify it!', 'live-weather-station');
+            }
+        }
+        if ($cpt < 3) {
+            $cpt = 3;
+        }
+        if ($cpt > 8) {
+            $cpt = 8;
+        }
+        if (isset($items[1]) && array_key_exists('measurement', $items[1])) {
+            $measurement1 = $items[1]['measurement'];
+        } else {
+            $measurement1 = '';
+        }
+        if (isset($items[2]) && array_key_exists('measurement', $items[2])) {
+            $measurement2 = $items[2]['measurement'];
+        } else {
+            $measurement2 = '';
+        }
+        $dimension1 = $this->output_unit($measurement1);
+        $dimension1 = $dimension1['dimension'];
+        $dimension2 = $this->output_unit($measurement2);
+        $dimension2 = $dimension2['dimension'];
+
+
+
+        // Compute scales
+        $timescale = $_attributes['timescale'];
+        $focus = false;
+        if ($timescale == 'focus') {
+            $timescale = 'adaptative';
+            $focus = true;
+        }
+        if ($timescale == 'auto' && $mode == 'daily') {
+            $timescale = 'fixed';
+        }
+        if ($timescale == 'auto' && $mode == 'yearly') {
+            $timescale = 'fixed';
+        }
+        $fixed_timescale = ($timescale != 'adaptative');
+        $valuescale = $_attributes['valuescale'];
+        $valuescale2 = $valuescale;
+        if ($valuescale == 'auto') {
+            $valuescale = $this->graph_valuescale($measurement1);
+            $valuescale2 = $this->graph_valuescale($measurement2);
+        }
+        $fixed_valuescale = ($valuescale != 'adaptative');
+
+
+
+        // Queries...
+        $values = $this->graph_query($value_params, true);
+        if (!$values) {
+            return __('Malformed shortcode. Please verify it!', 'live-weather-station');
+        }
+        $domain = $this->graph_domain($values, $valuescale);
+        $time_format = $this->graph_format($values, $mode, $period_duration);
+        $prop = $this->graph_template($_attributes['template']);
+        $label_txt = $this->graph_title($values, $type, $label, $mode, $prop['separator']);
+
+
+
+        // Render...
+        $result = '';
+        $body = '';
+
+        if ($type == 'line' || $type == 'lines') {
+            $ticks = $this->graph_ticks($domain, $valuescale, $measurement1, $height);
+            wp_enqueue_style('lws-nvd3');
+            wp_enqueue_script('lws-nvd3');
+            wp_enqueue_script('lws-colorbrewer');
+            wp_enqueue_script('lws-spin');
+            $legendColors = array();
+            if ($color == 'self' || $custom) {
+                if ($color == 'self') {
+                    $col = new ColorsManipulation($prop['fg_color']);
+                    $col_array = $col->makeSteppedGradient($cpt, 50);
+                }
+                else {
+                    $col_array = Options::get_cschemes_palette($color);
+                }
+                $i = 0;
+                foreach ($col_array as $c) {
+                    if ($i++ == $full_cpt) {
+                        break;
+                    }
+                    $legendColors[] = '"#' . $c . '"';
+                }
+                if ($inverted) {
+                    $legendColors = array_reverse($legendColors);
+                }
+            }
+            $result .= '<style type="text/css">' . PHP_EOL;
+            if ($prop['text'] != '') {
+                $result .= '#' . $svg . ' .nvd3 text {' . $prop['text'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axis-domain'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis path.domain {' . $prop['nv-axis-domain'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axis-line'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis line {' . $prop['nv-axis-line'] . '}' . PHP_EOL;
+            }
+            if ($prop['nv-axislabel'] != '') {
+                $result .= '#' . $svg . ' .nvd3 .nv-axis text.nv-axislabel {' . $prop['nv-axislabel'] . '}' . PHP_EOL;
+            }
+            if ($fixed_timescale) {
+                $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:first-of-type text {text-anchor: start !important;}' . PHP_EOL;
+                $result .= '#' . $svg . ' .nvd3 .nv-x .nv-wrap g .tick:last-of-type text {text-anchor: end !important;}' . PHP_EOL;
+            }
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dashed-line {stroke-dasharray:10,10 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-dotted-line {stroke-dasharray:2,2 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-thin-line {stroke-width: 1 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-regular-line {stroke-width: 2 !important;}' . PHP_EOL;
+            $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-thick-line {stroke-width: 3 !important;}' . PHP_EOL;
+            $i = 1;
+            foreach ($items as $item) {
+                if ($item['dot_style'] == 'small-dot') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
+                }
+                if ($item['dot_style'] == 'large-dot') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:3;}' . PHP_EOL;
+                }
+                if ($item['dot_style'] == 'small-circle') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:12;}' . PHP_EOL;
+                }
+                if ($item['dot_style'] == 'large-circle') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
+                }
+                if ($item['line_mode'] == 'transparent' || $item['line_mode'] == 'area') {
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-area {stroke-opacity:0;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-line {stroke-opacity:0;}' . PHP_EOL;
+                }
+                $i += 1;
+            }
+            $result .= '</style>' . PHP_EOL;
+
+            // BEGIN MAIN BODY
+            $body .= '      var shift' . $uniq . ' = new Date();' . PHP_EOL;
+            $body .= '      var x' . $uniq . ' = 60000 * shift' . $uniq . '.getTimezoneOffset();' . PHP_EOL;
+            if ($fixed_timescale && $mode == 'daily') {
+                $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+            }
+            if ($fixed_timescale && $mode == 'yearly') {
+                $body .= '    var minDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+            }
+            if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
+                $body .= '    var h00Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['04'] . ');' . PHP_EOL;
+                $body .= '    var h08Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['08'] . ');' . PHP_EOL;
+                $body .= '    var h12Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['12'] . ');' . PHP_EOL;
+                $body .= '    var h16Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['16'] . ');' . PHP_EOL;
+                $body .= '    var h20Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['20'] . ');' . PHP_EOL;
+                $body .= '    var h24Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+            }
+            if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
+                $body .= '    var h00Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
+                $body .= '    var h01Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['01'] . ');' . PHP_EOL;
+                $body .= '    var h02Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['02'] . ');' . PHP_EOL;
+                $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
+                $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
+            }
+            if ($color != 'self' && !$custom) {
+                $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[' . $cpt . '].slice(0);' . PHP_EOL;
+                if ($inverted) {
+                    $body .= '    if (colorbrewer.' . $color . '[' . $cpt . '][0] == color' . $uniq . '[0]) {color' . $uniq . ' = color' . $uniq . '.reverse().slice(' . (string)($cpt - $full_cpt) . ');}' . PHP_EOL;
+                }
+            }
+            else {
+                $body .= '    var color' . $uniq . ' = [' . implode(', ', $legendColors) . '];' . PHP_EOL;
+            }
+            //-//$body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
+            $body .= '    nv.addGraph(function() {' . PHP_EOL;
+            $body .= '       chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
+            $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
+            $body .= '               .y(function(d) {return d[1]})' . PHP_EOL;
+            $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
+            if ($focus) {
+                $body .= '               .focusEnable(true)' . PHP_EOL;
+                $body .= '               .focusShowAxisX(false)' . PHP_EOL;
+            }
+            else {
+                $body .= '               .focusEnable(false)' . PHP_EOL;
+            }
+            $body .= '               .showLegend(' . ($type == 'lines'?'true':'false') . ')' . PHP_EOL;
+            if ($fixed_timescale) {
+                $body .= '               .xDomain([minDomain'.$uniq.', maxDomain'.$uniq.'])' . PHP_EOL;
+            }
+            if ($fixed_valuescale) {
+                $body .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
+            }
+            $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
+            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
+            if ($guideline) {
+                $body .= '               .useInteractiveGuideline(true);' . PHP_EOL;
+            }
+            else {
+                $body .= '               .useInteractiveGuideline(false);' . PHP_EOL;
+            }
+            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
+                $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h04Tick'.$uniq.', h08Tick'.$uniq.', h12Tick'.$uniq.', h16Tick'.$uniq.', h20Tick'.$uniq.', h24Tick'.$uniq.']);' . PHP_EOL;
+            }
+            if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
+                $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h01Tick'.$uniq.', h02Tick'.$uniq.', h03Tick'.$uniq.', h04Tick'.$uniq.']);' . PHP_EOL;
+            }
+            if ($timescale == 'none') {
+                $body .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
+            }
+            if ($mode == 'daily') {
+                $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d %H:%M")(new Date(d));});' . PHP_EOL;
+                $body .= '      chart' . $uniq . '.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d %H:%M")(new Date(d));});' . PHP_EOL;
+            }
+            if ($mode == 'yearly') {
+                $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
+                $body .= '      chart' . $uniq . '.tooltip.headerFormatter(function (d) {if (typeof d === "string") {d=parseFloat(d);};return d3.time.format("%Y-%m-%d")(new Date(d));});' . PHP_EOL;
+            }
+            if ($label != 'none') {
+                $body .= '      chart'.$uniq.'.xAxis.axisLabelDistance(6);' . PHP_EOL;
+            }
+            $body .= '      chart'.$uniq.'.interactiveLayer.tooltip.gravity("s");' . PHP_EOL;
+            if ($_attributes['valuescale'] == 'adaptative') {
+                $body .= '      chart'.$uniq.'.yAxis.showMaxMin(true)';
+            }
+            else {
+                $body .= '      chart'.$uniq.'.yAxis.showMaxMin(false)';
+            }
+            if ($dimension1 === 'duration') {
+                $body .= '.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+            }
+            else {
+                $body .= '.tickFormat(function(d) { return d + " ' . $values['legend']['unit']['unit'] . '"; });' . PHP_EOL;
+            }
+            $body .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
+            $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+            $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+            $body .= '      return chart'.$uniq.';' . PHP_EOL;
+            $body .= '    });'.PHP_EOL;
+            // END MAIN BODY
+        }
+
+
+        // FINAL RENDER
+
+        $result .= '<div class="lws-module-chart module-' . $mode . '-' . $type . '" id="' . $container . '">' . PHP_EOL;
+        $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';"><svg id="' . $svg . '" style="overflow:hidden;"></svg></div>' . PHP_EOL;
+        $result .= '</div>' . PHP_EOL;
+        $result .= lws_print_begin_script() . PHP_EOL;
+        $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
+        $result .= '    var chart'.$uniq.' = null;' . PHP_EOL;
+        if ($data == 'inline') {
+            $result .= '    var data'.$uniq.' =' . $values['values'] . ';' . PHP_EOL;
+            $result .= $body;
+        }
+        elseif ($data == 'ajax' || $data == 'ajax_refresh') {
+            $scale = '0.4';
+            if ($this->graph_size($height) == 'small') {
+                $scale = '0.2';
+            }
+            if ($this->graph_size($height) == 'large') {
+                $scale = '0.6';
+            }
+            $result .= '    var opts = {lines: 15, length: 28, width: 8, radius: 42, scale: ' . $scale . ', corners: 1, color: "' . $prop['spinner'] . '", opacity: 0.2, rotate: 0, direction: 1, speed: 1, trail: 60, fps: 20, zIndex: 2e9, className: "c_' . $spinner .'", top: "50%", left: "50%", shadow: false, hwaccel: false, position: "relative"};' . PHP_EOL;
+            $result .= '    var target = document.getElementById("' . $uniq . '");' . PHP_EOL;
+            $result .= '    var ' . $spinner . ' = new Spinner(opts).spin(target);' . PHP_EOL;
+            $result .= '    var observer' . $uniq . ' = null;' . PHP_EOL;
+            $args = array();
+            $args[] = 'action:"lws_query_graph_datas"';
+            foreach ($this->graph_allowed_parameter as $param) {
+                if (array_key_exists($param, $_attributes)) {
+                    $args[] = $param . ':"' . $_attributes[$param] . '"';
+                }
+            }
+            for ($i = 1; $i <= 8; $i++) {
+                if (array_key_exists('device_id_'.$i, $attributes)) {
+                    foreach ($this->graph_allowed_serie as $param) {
+                        if (array_key_exists($param.'_'.$i, $attributes)) {
+                            $args[] = $param.'_'.$i . ':"' . $attributes[$param.'_'.$i] . '"';
+                        }
+                    }
+                }
+            }
+
+            $arg = '{' . implode (', ', $args) . '}';
+            $result .= 'setTimeout(function() {';
+            $result .= '$.post( "' . LWS_AJAX_URL . '", ' . $arg . ').done(function(data) {';
+            $result .= '    var data'.$uniq.' = JSON.parse(data);' . PHP_EOL;
+            $result .= $body;
+            $result .= '    ' . $spinner . '.stop();' . PHP_EOL;
+            $result .= '}, ' . $startdelay . '); ' . PHP_EOL;
+            if ($data == 'ajax_refresh') {
+                $result .= '    var ' . $inter . ' = setInterval(function() {';
+                $result .= '    ' . $spinner . '.spin(target);' . PHP_EOL;
+                $result .= '$.post( "' . LWS_AJAX_URL . '", ' . $arg . ').done(function(data) {';
+                $result .= '    data'.$uniq.' = JSON.parse(data);' . PHP_EOL;
+                if ($type == 'distributionrc' || $type == 'valuerc') {
+                    $result .= '        chart' . $uniq . '.data(data' . $uniq . ').duration(500).update();' . PHP_EOL;
+                }
+                elseif ($type == 'calendarhm') {
+                    $result .= '        chart' . $uniq . '.update(data' . $uniq . ');' . PHP_EOL;
+                }
+                else {
+                    $result .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+                }
+                $result .= '    ' . $spinner . '.stop();})' . PHP_EOL;
+                $result .= '}, ' . $refresh . '); ' . PHP_EOL;
+            }
+            if ((bool)get_option('live_weather_station_mutation_observer') && $type != 'calendarhm' && $type != 'windrose') {
+                $result .= 'if (observer' . $uniq . ' === null) { ' . PHP_EOL;
+                $result .= '  var target' . $uniq . ' = document.getElementById("' . $uniq . '");' . PHP_EOL;
+                $result .= '  var targetNode' . $uniq . ' = target' . $uniq . '.parentElement.parentElement.parentElement.parentElement;' . PHP_EOL;
+                $result .= '  var modeStandard = true;' . PHP_EOL;
+                $result .= '  var modeElementorPopbox = false;' . PHP_EOL;
+                // Is the chart in elementor popup box ?
+                $result .= '  var test' . $uniq . ' = target' . $uniq . '.closest(".modal-body");' . PHP_EOL;
+                $result .= '    if (test' . $uniq . ' != null) {' . PHP_EOL;
+                $result .= '      test' . $uniq . ' = test' . $uniq . '.closest(".modal-content");' . PHP_EOL;
+                $result .= '      if (test' . $uniq . ' != null) {' . PHP_EOL;
+                $result .= '        test' . $uniq . ' = test' . $uniq . '.closest(".modal");' . PHP_EOL;
+                $result .= '        if (test' . $uniq . ' != null) {' . PHP_EOL;
+                $result .= '          targetNode' . $uniq . ' = test' . $uniq . ';'. PHP_EOL;
+                $result .= '          modeStandard = false;' . PHP_EOL;
+                $result .= '          modeElementorPopbox = true;' . PHP_EOL;
+                $result .= '        }' . PHP_EOL;
+                $result .= '      }' . PHP_EOL;
+                $result .= '    }' . PHP_EOL;
+                $result .= 'var callback' . $uniq . ' = function(mutationsList) {' . PHP_EOL;
+                $result .= '    mutationsList.forEach(function (mutation, index) {' . PHP_EOL;
+                $result .= '        if (modeStandard) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display != "none") {if (mutation.oldValue !== null) {if (mutation.oldValue.indexOf("display: none") != -1) {if (chart' . $uniq . ') {chart' . $uniq . '.update();}}}}}}}' . PHP_EOL;
+                $result .= '        if (modeElementorPopbox) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display == "block") {if (chart' . $uniq . ') {chart' . $uniq . '.update();}}}}}' . PHP_EOL;
+                $result .= '    })' . PHP_EOL;
+                $result .= '};' . PHP_EOL;
+                $result .= 'observer' . $uniq . ' = new MutationObserver(callback' . $uniq . ');' . PHP_EOL;
+                $result .= 'observer' . $uniq . '.observe(targetNode' . $uniq . ',{attributes: true, subtree: true, attributeOldValue: true});' . PHP_EOL;
+                $result .= '}' . PHP_EOL;
+                $result .= '' . PHP_EOL;
+                $result .= '' . PHP_EOL;
+            }
+            $result .= '});' . PHP_EOL;
+        }
+        if ((bool)get_option('live_weather_station_mutation_observer') && $type != 'calendarhm' && $type != 'windrose' && $data != 'ajax' && $data != 'ajax_refresh') {
+            $result .= 'var target' . $uniq . ' = document.getElementById("' . $uniq . '");' . PHP_EOL;
+            $result .= 'var targetNode' . $uniq . ' = target' . $uniq . '.parentElement.parentElement.parentElement.parentElement;' . PHP_EOL;
+            $result .= 'var modeStandard = true;' . PHP_EOL;
+            $result .= 'var modeElementorPopbox = false;' . PHP_EOL;
+            // Is the chart in elementor popup box ?
+            $result .= 'var test' . $uniq . ' = target' . $uniq . '.closest(".modal-body");' . PHP_EOL;
+            $result .= '  if (test' . $uniq . ' != null) {' . PHP_EOL;
+            $result .= '    test' . $uniq . ' = test' . $uniq . '.closest(".modal-content");' . PHP_EOL;
+            $result .= '    if (test' . $uniq . ' != null) {' . PHP_EOL;
+            $result .= '      test' . $uniq . ' = test' . $uniq . '.closest(".modal");' . PHP_EOL;
+            $result .= '      if (test' . $uniq . ' != null) {' . PHP_EOL;
+            $result .= '        targetNode' . $uniq . ' = test' . $uniq . ';'. PHP_EOL;
+            $result .= '        modeStandard = false;' . PHP_EOL;
+            $result .= '        modeElementorPopbox = true;' . PHP_EOL;
+            $result .= '      }' . PHP_EOL;
+            $result .= '    }' . PHP_EOL;
+            $result .= '  }' . PHP_EOL;
+            $result .= 'var callback' . $uniq . ' = function(mutationsList) {' . PHP_EOL;
+            $result .= '    mutationsList.forEach(function (mutation, index) {' . PHP_EOL;
+            $result .= '        if (modeStandard) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display != "none") {if (mutation.oldValue !== null) {if (mutation.oldValue.indexOf("display: none") != -1) {if (chart'.$uniq.') {chart'.$uniq.'.update();}}}}}}}' . PHP_EOL;
+            $result .= '        if (modeElementorPopbox) {if (mutation.type == "attributes") {if (mutation.attributeName == "style") {if (mutation.target.style.display == "block") {if (chart'.$uniq.') {chart'.$uniq.'.update();}}}}}' . PHP_EOL;
+            $result .= '    })' . PHP_EOL;
+            $result .= '};' . PHP_EOL;
+            $result .= 'var observer' . $uniq . ' = new MutationObserver(callback' . $uniq . ');' . PHP_EOL;
+            $result .= 'observer' . $uniq . '.observe(targetNode' . $uniq . ',{attributes: true, subtree: true, attributeOldValue: true});' . PHP_EOL;
+            $result .= '' . PHP_EOL;
+            $result .= '' . PHP_EOL;
+        }
+        $result .= '  });' . PHP_EOL;
+        $result .= lws_print_end_script();
+
+        return $result;
+    }
+
     /**
      * Get admin data analytics.
      *
@@ -5251,113 +5794,37 @@ trait Output {
             }
             $min = round($this->get_measurement_min($measure_type, $module_type), $prec);
             $max = round($this->get_measurement_max($measure_type, $module_type), $prec);
-            // Adapted min & max for temperature
-            if ($measure_type == 'temperature' && (get_option('live_weather_station_min_max_mode') == 1)) {
+            // Adapted boundaries
+            if (in_array($measure_type, $this->min_max_trend) && get_option('live_weather_station_min_max_mode') == 1) {
                 $min_t = array();
                 $max_t = array();
                 foreach ($_result as $line) {
-                    if ($line['measure_type'] == 'temperature_min') {
+                    if ($line['measure_type'] == $measure_type . '_min') {
                         $min_t = $line;
                     }
-                    if ($line['measure_type'] == 'temperature_max') {
+                    if ($line['measure_type'] == $measure_type . '_max') {
                         $max_t = $line;
                     }
                 }
                 if (!empty($min_t) && !empty($max_t)) {
                     $min = $min_t['measure_value'];
                     $max = $max_t['measure_value'];
-                    $delta = 3 ;
-                    if (strtolower($module_type)=='namodule1' || strtolower($module_type)=='nacurrent') {
-                        $delta = 6 ;
+                    $delta = $max - $min;
+                    if ($delta == 0) {
+                        $delta = abs($min) * 0.2;
                     }
                     if ($min <= $max) {
                         $min = floor($this->output_value($min - $delta, $measure_type));
                         $max = ceil($this->output_value($max + $delta, $measure_type));
                     }
                 }
-            }
-            // Adapted min & max for MSLP
-            if ($measure_type == 'pressure_sl' && (get_option('live_weather_station_min_max_mode') == 1)) {
-                $min_t = array();
-                $max_t = array();
-                foreach ($_result as $line) {
-                    if ($line['measure_type'] == 'pressure_sl_min') {
-                        $min_t = $line;
-                    }
-                    if ($line['measure_type'] == 'pressure_sl_max') {
-                        $max_t = $line;
-                    }
+                $imin = round($this->get_measurement_min($measure_type, $module_type));
+                $imax = round($this->get_measurement_max($measure_type, $module_type));
+                if ($min < $imin) {
+                    $min = $imin;
                 }
-                if (!empty($min_t) && !empty($max_t)) {
-                    $min = $min_t['measure_value'];
-                    $max = $max_t['measure_value'];
-                    $delta = 5 ;
-                    if ($min <= $max) {
-                        if ($min - $delta < 980) {
-                            $min = 980 + $delta;
-                        }
-                        if ($max + $delta > 1080) {
-                            $max = 1080 - $delta;
-                        }
-                        $min = floor($this->output_value($min - $delta, $measure_type));
-                        $max = ceil($this->output_value($max + $delta, $measure_type));
-                    }
-                }
-            }
-            // Adapted min & max for pressure
-            if ($measure_type == 'pressure' && (get_option('live_weather_station_min_max_mode') == 1)) {
-                $min_t = array();
-                $max_t = array();
-                foreach ($_result as $line) {
-                    if ($line['measure_type'] == 'pressure_min') {
-                        $min_t = $line;
-                    }
-                    if ($line['measure_type'] == 'pressure_max') {
-                        $max_t = $line;
-                    }
-                }
-                if (!empty($min_t) && !empty($max_t)) {
-                    $min = $min_t['measure_value'];
-                    $max = $max_t['measure_value'];
-                    $delta = 5 ;
-                    if ($min <= $max) {
-                        if ($min - $delta < 980) {
-                            $min = 980 + $delta;
-                        }
-                        if ($max + $delta > 1080) {
-                            $max = 1080 - $delta;
-                        }
-                        $min = floor($this->output_value($min - $delta, $measure_type));
-                        $max = ceil($this->output_value($max + $delta, $measure_type));
-                    }
-                }
-            }
-            // Adapted min & max for humidity
-            if ($measure_type == 'humidity' && (get_option('live_weather_station_min_max_mode') == 1)) {
-                $min_t = array();
-                $max_t = array();
-                foreach ($_result as $line) {
-                    if ($line['measure_type'] == 'humidity_min') {
-                        $min_t = $line;
-                    }
-                    if ($line['measure_type'] == 'humidity_max') {
-                        $max_t = $line;
-                    }
-                }
-                if (!empty($min_t) && !empty($max_t)) {
-                    $min = $min_t['measure_value'];
-                    $max = $max_t['measure_value'];
-                    $delta = 10 ;
-                    if ($min <= $max) {
-                        $min = round($this->output_value($min - $delta, $measure_type));
-                        $max = round($this->output_value($max + $delta, $measure_type));
-                        if ($min < 0) {
-                            $min = 0;
-                        }
-                        if ($max > 100) {
-                            $max = 100;
-                        }
-                    }
+                if ($max > $imax) {
+                    $max = $imax;
                 }
             }
             if ($full) {
@@ -5741,8 +6208,7 @@ trait Output {
      * @return  string  $attributes The value queryed.
      * @since    2.2.0
      */
-    public function steelmeter_value($attributes, $full=false)
-    {
+    public function steelmeter_value($attributes, $full=false) {
         $_attributes = shortcode_atts(array('device_id' => '', 'module_id' => '', 'measure_type' => '', 'element' => '', 'format' => ''), $attributes);
         $fingerprint = md5(($full?'full':'partial').json_encode($attributes));
         $result = Cache::get_frontend($fingerprint);
@@ -5798,40 +6264,40 @@ trait Output {
                     if ($line['measure_type'] == $_attributes['measure_type']) {
                         $master = $line;
                     }
-                    if ($line['measure_type'] == 'temperature_min') {
-                        $value_min = $this->output_value($line['measure_value'], $measure_type);
-                    }
-                    if ($line['measure_type'] == 'temperature_max') {
-                        $value_max = $this->output_value($line['measure_value'], $measure_type);
-                    }
-                    if ($line['measure_type'] == 'temperature_trend') {
-                        $value_trend = strtolower($line['measure_value']);
-                        if ($value_trend == 'stable') {
-                            $value_trend = 'steady';
+                    if (strpos($line['measure_type'], '_day_min') !== false) {
+                        if (in_array(str_replace('_day_min', '', $line['measure_type']), $this->min_max_trend)) {
+                            $value_min = $this->output_value($line['measure_value'], $measure_type);
                         }
                     }
-                    if ($line['measure_type'] == 'humidity_min') {
-                        $value_min = $this->output_value($line['measure_value'], $measure_type);
-                    }
-                    if ($line['measure_type'] == 'humidity_max') {
-                        $value_max = $this->output_value($line['measure_value'], $measure_type);
-                    }
-                    if ($line['measure_type'] == 'humidity_trend') {
-                        $value_trend = strtolower($line['measure_value']);
-                        if ($value_trend == 'stable') {
-                            $value_trend = 'steady';
+                    if (strpos($line['measure_type'], '_min') !== false) {
+                        if (in_array(str_replace('_min', '', $line['measure_type']), $this->min_max_trend)) {
+                            $value_min = $this->output_value($line['measure_value'], $measure_type);
                         }
                     }
-                    if ($line['measure_type'] == 'pressure_min') {
-                        $value_min = $this->output_value($line['measure_value'], $measure_type);
+                    if (strpos($line['measure_type'], '_day_max') !== false) {
+                        if (in_array(str_replace('_day_max', '', $line['measure_type']), $this->min_max_trend)) {
+                            $value_max = $this->output_value($line['measure_value'], $measure_type);
+                        }
                     }
-                    if ($line['measure_type'] == 'pressure_max') {
-                        $value_max = $this->output_value($line['measure_value'], $measure_type);
+                    if (strpos($line['measure_type'], '_max') !== false) {
+                        if (in_array(str_replace('_max', '', $line['measure_type']), $this->min_max_trend)) {
+                            $value_max = $this->output_value($line['measure_value'], $measure_type);
+                        }
                     }
-                    if ($line['measure_type'] == 'pressure_trend') {
-                        $value_trend = strtolower($line['measure_value']);
-                        if ($value_trend == 'stable') {
-                            $value_trend = 'steady';
+                    if (strpos($line['measure_type'], '_trend') !== false) {
+                        if (in_array(str_replace('_trend', '', $line['measure_type']), $this->min_max_trend)) {
+                            $value_trend = strtolower($line['measure_value']);
+                            if ($value_trend == 'stable') {
+                                $value_trend = 'steady';
+                            }
+                        }
+                    }
+                    if (strpos($line['measure_type'], '_day_trend') !== false) {
+                        if (in_array(str_replace('_day_trend', '', $line['measure_type']), $this->min_max_trend)) {
+                            $value_trend = strtolower($line['measure_value']);
+                            if ($value_trend == 'stable') {
+                                $value_trend = 'steady';
+                            }
                         }
                     }
                     if ($line['measure_type'] == 'gustangle') {
@@ -5854,112 +6320,37 @@ trait Output {
             }
             $min = round($this->get_measurement_min($measure_type, $module_type), $prec);
             $max = round($this->get_measurement_max($measure_type, $module_type), $prec);
-            // Adapted min & max for temperature
-            if ($measure_type == 'temperature' && (get_option('live_weather_station_min_max_mode') == 1)) {
+            // Adapted boundaries
+            if (in_array($measure_type, $this->min_max_trend) && get_option('live_weather_station_min_max_mode') == 1) {
                 $min_t = array();
                 $max_t = array();
                 foreach ($_result as $line) {
-                    if ($line['measure_type'] == 'temperature_min') {
+                    if ($line['measure_type'] == $measure_type . '_min') {
                         $min_t = $line;
                     }
-                    if ($line['measure_type'] == 'temperature_max') {
+                    if ($line['measure_type'] == $measure_type . '_max') {
                         $max_t = $line;
                     }
                 }
                 if (!empty($min_t) && !empty($max_t)) {
                     $min = $min_t['measure_value'];
                     $max = $max_t['measure_value'];
-                    $delta = 3 ;
-                    if (strtolower($module_type)=='namodule1' || strtolower($module_type)=='nacurrent') {
-                        $delta = 6 ;
+                    $delta = $max - $min;
+                    if ($delta == 0) {
+                        $delta = abs($min) * 0.2;
                     }
                     if ($min <= $max) {
                         $min = floor($this->output_value($min - $delta, $measure_type));
                         $max = ceil($this->output_value($max + $delta, $measure_type));
                     }
                 }
-            }
-            // Adapted min & max for pressure
-            if ($measure_type == 'pressure' && (get_option('live_weather_station_min_max_mode') == 1)) {
-                $min_t = array();
-                $max_t = array();
-                foreach ($_result as $line) {
-                    if ($line['measure_type'] == 'pressure_min') {
-                        $min_t = $line;
-                    }
-                    if ($line['measure_type'] == 'pressure_max') {
-                        $max_t = $line;
-                    }
+                $imin = round($this->get_measurement_min($measure_type, $module_type));
+                $imax = round($this->get_measurement_max($measure_type, $module_type));
+                if ($min < $imin) {
+                    $min = $imin;
                 }
-                if (!empty($min_t) && !empty($max_t)) {
-                    $min = $min_t['measure_value'];
-                    $max = $max_t['measure_value'];
-                    $delta = 5 ;
-                    if ($min <= $max) {
-                        if ($min - $delta < 980) {
-                            $min = 980 + $delta;
-                        }
-                        if ($max + $delta > 1080) {
-                            $max = 1080 - $delta;
-                        }
-                        $min = floor($this->output_value($min - $delta, $measure_type));
-                        $max = ceil($this->output_value($max + $delta, $measure_type));
-                    }
-                }
-            }
-            if ($measure_type == 'pressure_sl' && (get_option('live_weather_station_min_max_mode') == 1)) {
-                $min_t = array();
-                $max_t = array();
-                foreach ($_result as $line) {
-                    if ($line['measure_type'] == 'pressure_sl_min') {
-                        $min_t = $line;
-                    }
-                    if ($line['measure_type'] == 'pressure_sl_max') {
-                        $max_t = $line;
-                    }
-                }
-                if (!empty($min_t) && !empty($max_t)) {
-                    $min = $min_t['measure_value'];
-                    $max = $max_t['measure_value'];
-                    $delta = 5 ;
-                    if ($min <= $max) {
-                        if ($min - $delta < 980) {
-                            $min = 980 + $delta;
-                        }
-                        if ($max + $delta > 1080) {
-                            $max = 1080 - $delta;
-                        }
-                        $min = floor($this->output_value($min - $delta, $measure_type));
-                        $max = ceil($this->output_value($max + $delta, $measure_type));
-                    }
-                }
-            }
-            // Adapted min & max for humidity
-            if ($measure_type == 'humidity' && (get_option('live_weather_station_min_max_mode') == 1)) {
-                $min_t = array();
-                $max_t = array();
-                foreach ($_result as $line) {
-                    if ($line['measure_type'] == 'humidity_min') {
-                        $min_t = $line;
-                    }
-                    if ($line['measure_type'] == 'humidity_max') {
-                        $max_t = $line;
-                    }
-                }
-                if (!empty($min_t) && !empty($max_t)) {
-                    $min = $min_t['measure_value'];
-                    $max = $max_t['measure_value'];
-                    $delta = 10 ;
-                    if ($min <= $max) {
-                        $min = round($this->output_value($min - $delta, $measure_type));
-                        $max = round($this->output_value($max + $delta, $measure_type));
-                        if ($min < 0) {
-                            $min = 0;
-                        }
-                        if ($max > 100) {
-                            $max = 100;
-                        }
-                    }
+                if ($max > $imax) {
+                    $max = $imax;
                 }
             }
         }
@@ -8821,14 +9212,14 @@ trait Output {
                 $result = __('cloud base', 'live-weather-station') ;
                 break;
             case 'alt_pressure':
-                $result = lws__('pressure alt.', 'live-weather-station') ;
+                $result = __('pressure alt.', 'live-weather-station') ;
                 break;
             case 'density_pressure':
-                $result = lws__('density alt.', 'live-weather-station') ;
+                $result = __('density alt.', 'live-weather-station') ;
                 break;
             case 'zcast_live':
             case 'zcast_best':
-                $result = lws__('forecast', 'live-weather-station') ;
+                $result = __('forecast', 'live-weather-station') ;
                 break;
             case 'cloudiness':
             case 'cloudiness_min':
@@ -8975,64 +9366,61 @@ trait Output {
      * @since 3.8.0
      */
     protected function get_current_weather_text($value) {
-        if (!LWS_PREVIEW) {
-            return '';
-        }
         switch ($value) {
-            case 200 : $result = lws__('thunderstorm with light rain', 'live-weather-station'); break;
-            case 201 : $result = lws__('thunderstorm with rain', 'live-weather-station'); break;
-            case 202 : $result = lws__('thunderstorm with heavy rain', 'live-weather-station'); break;
-            case 210 : $result = lws__('light thunderstorm', 'live-weather-station'); break;
-            case 211 : $result = lws__('thunderstorm', 'live-weather-station'); break;
-            case 212 : $result = lws__('heavy thunderstorm', 'live-weather-station'); break;
-            case 221 : $result = lws__('ragged thunderstorm', 'live-weather-station'); break;
-            case 230 : $result = lws__('thunderstorm with light drizzle', 'live-weather-station'); break;
-            case 231 : $result = lws__('thunderstorm with drizzle', 'live-weather-station'); break;
-            case 232 : $result = lws__('thunderstorm with heavy drizzle', 'live-weather-station'); break;
-            case 300 : $result = lws__('light intensity drizzle', 'live-weather-station'); break;
-            case 301 : $result = lws__('drizzle', 'live-weather-station'); break;
-            case 302 : $result = lws__('heavy intensity drizzle', 'live-weather-station'); break;
-            case 310 : $result = lws__('light intensity drizzle rain', 'live-weather-station'); break;
-            case 311 : $result = lws__('drizzle rain', 'live-weather-station'); break;
-            case 312 : $result = lws__('heavy intensity drizzle rain', 'live-weather-station'); break;
-            case 313 : $result = lws__('shower rain and drizzle', 'live-weather-station'); break;
-            case 314 : $result = lws__('heavy shower rain and drizzle', 'live-weather-station'); break;
-            case 321 : $result = lws__('shower drizzle', 'live-weather-station'); break;
-            case 500 : $result = lws__('light rain', 'live-weather-station'); break;
-            case 501 : $result = lws__('moderate rain', 'live-weather-station'); break;
-            case 502 : $result = lws__('heavy intensity rain', 'live-weather-station'); break;
-            case 503 : $result = lws__('very heavy rain', 'live-weather-station'); break;
-            case 504 : $result = lws__('extreme rain', 'live-weather-station'); break;
-            case 511 : $result = lws__('freezing rain', 'live-weather-station'); break;
-            case 520 : $result = lws__('light intensity shower rain', 'live-weather-station'); break;
-            case 521 : $result = lws__('shower rain', 'live-weather-station'); break;
-            case 522 : $result = lws__('heavy intensity shower rain', 'live-weather-station'); break;
-            case 531 : $result = lws__('ragged shower rain', 'live-weather-station'); break;
-            case 600 : $result = lws__('light snow', 'live-weather-station'); break;
-            case 601 : $result = lws__('snow', 'live-weather-station'); break;
-            case 602 : $result = lws__('heavy snow', 'live-weather-station'); break;
-            case 611 : $result = lws__('sleet', 'live-weather-station'); break;
-            case 612 : $result = lws__('shower sleet', 'live-weather-station'); break;
-            case 615 : $result = lws__('light rain and snow', 'live-weather-station'); break;
-            case 616 : $result = lws__('rain and snow', 'live-weather-station'); break;
-            case 620 : $result = lws__('light shower snow', 'live-weather-station'); break;
-            case 621 : $result = lws__('shower snow', 'live-weather-station'); break;
-            case 622 : $result = lws__('heavy shower snow', 'live-weather-station'); break;
-            case 701 : $result = lws__('mist', 'live-weather-station'); break;
-            case 711 : $result = lws__('smoke', 'live-weather-station'); break;
-            case 721 : $result = lws__('haze', 'live-weather-station'); break;
-            case 731 : $result = lws__('sand, dust whirls', 'live-weather-station'); break;
-            case 741 : $result = lws__('fog', 'live-weather-station'); break;
-            case 751 : $result = lws__('sand', 'live-weather-station'); break;
-            case 761 : $result = lws__('dust', 'live-weather-station'); break;
-            case 762 : $result = lws__('volcanic ash', 'live-weather-station'); break;
-            case 771 : $result = lws__('squalls', 'live-weather-station'); break;
-            case 781 : $result = lws__('tornado', 'live-weather-station'); break;
-            case 800 : $result = lws__('clear sky', 'live-weather-station'); break;
-            case 801 : $result = lws__('few clouds', 'live-weather-station'); break;
-            case 802 : $result = lws__('scattered clouds', 'live-weather-station'); break;
-            case 803 : $result = lws__('broken clouds', 'live-weather-station'); break;
-            case 804 : $result = lws__('overcast clouds', 'live-weather-station'); break;
+            case 200 : $result = __('thunderstorm with light rain', 'live-weather-station'); break;
+            case 201 : $result = __('thunderstorm with rain', 'live-weather-station'); break;
+            case 202 : $result = __('thunderstorm with heavy rain', 'live-weather-station'); break;
+            case 210 : $result = __('light thunderstorm', 'live-weather-station'); break;
+            case 211 : $result = __('thunderstorm', 'live-weather-station'); break;
+            case 212 : $result = __('heavy thunderstorm', 'live-weather-station'); break;
+            case 221 : $result = __('ragged thunderstorm', 'live-weather-station'); break;
+            case 230 : $result = __('thunderstorm with light drizzle', 'live-weather-station'); break;
+            case 231 : $result = __('thunderstorm with drizzle', 'live-weather-station'); break;
+            case 232 : $result = __('thunderstorm with heavy drizzle', 'live-weather-station'); break;
+            case 300 : $result = __('light intensity drizzle', 'live-weather-station'); break;
+            case 301 : $result = __('drizzle', 'live-weather-station'); break;
+            case 302 : $result = __('heavy intensity drizzle', 'live-weather-station'); break;
+            case 310 : $result = __('light intensity drizzle rain', 'live-weather-station'); break;
+            case 311 : $result = __('drizzle rain', 'live-weather-station'); break;
+            case 312 : $result = __('heavy intensity drizzle rain', 'live-weather-station'); break;
+            case 313 : $result = __('shower rain and drizzle', 'live-weather-station'); break;
+            case 314 : $result = __('heavy shower rain and drizzle', 'live-weather-station'); break;
+            case 321 : $result = __('shower drizzle', 'live-weather-station'); break;
+            case 500 : $result = __('light rain', 'live-weather-station'); break;
+            case 501 : $result = __('moderate rain', 'live-weather-station'); break;
+            case 502 : $result = __('heavy intensity rain', 'live-weather-station'); break;
+            case 503 : $result = __('very heavy rain', 'live-weather-station'); break;
+            case 504 : $result = __('extreme rain', 'live-weather-station'); break;
+            case 511 : $result = __('freezing rain', 'live-weather-station'); break;
+            case 520 : $result = __('light intensity shower rain', 'live-weather-station'); break;
+            case 521 : $result = __('shower rain', 'live-weather-station'); break;
+            case 522 : $result = __('heavy intensity shower rain', 'live-weather-station'); break;
+            case 531 : $result = __('ragged shower rain', 'live-weather-station'); break;
+            case 600 : $result = __('light snow', 'live-weather-station'); break;
+            case 601 : $result = __('snow', 'live-weather-station'); break;
+            case 602 : $result = __('heavy snow', 'live-weather-station'); break;
+            case 611 : $result = __('sleet', 'live-weather-station'); break;
+            case 612 : $result = __('shower sleet', 'live-weather-station'); break;
+            case 615 : $result = __('light rain and snow', 'live-weather-station'); break;
+            case 616 : $result = __('rain and snow', 'live-weather-station'); break;
+            case 620 : $result = __('light shower snow', 'live-weather-station'); break;
+            case 621 : $result = __('shower snow', 'live-weather-station'); break;
+            case 622 : $result = __('heavy shower snow', 'live-weather-station'); break;
+            case 701 : $result = __('mist', 'live-weather-station'); break;
+            case 711 : $result = __('smoke', 'live-weather-station'); break;
+            case 721 : $result = __('haze', 'live-weather-station'); break;
+            case 731 : $result = __('sand, dust whirls', 'live-weather-station'); break;
+            case 741 : $result = __('fog', 'live-weather-station'); break;
+            case 751 : $result = __('sand', 'live-weather-station'); break;
+            case 761 : $result = __('dust', 'live-weather-station'); break;
+            case 762 : $result = __('volcanic ash', 'live-weather-station'); break;
+            case 771 : $result = __('squalls', 'live-weather-station'); break;
+            case 781 : $result = __('tornado', 'live-weather-station'); break;
+            case 800 : $result = __('clear sky', 'live-weather-station'); break;
+            case 801 : $result = __('few clouds', 'live-weather-station'); break;
+            case 802 : $result = __('scattered clouds', 'live-weather-station'); break;
+            case 803 : $result = __('broken clouds', 'live-weather-station'); break;
+            case 804 : $result = __('overcast clouds', 'live-weather-station'); break;
             default : $result = 'unknown'; break;
         }
         return $result;
@@ -9048,37 +9436,37 @@ trait Output {
     protected function get_zcast_text($value) {
         $result = __('unknown', 'live-weather-station');
         $forecast = array(
-            lws__('Settled fine', 'live-weather-station'),
-            lws__('Fine weather', 'live-weather-station'),
-            lws__('Becoming fine', 'live-weather-station'),
-            lws__('Fine, becoming less settled', 'live-weather-station'),
-            lws__('Fine, possible showers', 'live-weather-station'),
-            lws__('Fairly fine, improving', 'live-weather-station'),
-            lws__('Fairly fine, possible showers early', 'live-weather-station'),
-            lws__('Fairly fine, showery later', 'live-weather-station'),
-            lws__('Showery early, improving', 'live-weather-station'),
-            lws__('Changeable, mending', 'live-weather-station'),
-            lws__('Fairly fine, showers likely', 'live-weather-station'),
-            lws__('Rather unsettled clearing later', 'live-weather-station'),
-            lws__('Unsettled, probably improving', 'live-weather-station'),
-            lws__('Showery, bright intervals', 'live-weather-station'),
-            lws__('Showery, becoming less settled', 'live-weather-station'),
-            lws__('Changeable, some rain', 'live-weather-station'),
-            lws__('Unsettled, short fine intervals', 'live-weather-station'),
-            lws__('Unsettled, rain later', 'live-weather-station'),
-            lws__('Unsettled, some rain', 'live-weather-station'),
-            lws__('Mostly very unsettled', 'live-weather-station'),
-            lws__('Occasional rain, worsening', 'live-weather-station'),
-            lws__('Rain at times, very unsettled', 'live-weather-station'),
-            lws__('Rain at frequent intervals', 'live-weather-station'),
-            lws__('Rain, very unsettled', 'live-weather-station'),
-            lws__('Stormy, may improve', 'live-weather-station'),
-            lws__('Stormy, much rain', 'live-weather-station'));
+            __('Settled fine', 'live-weather-station'),
+            __('Fine weather', 'live-weather-station'),
+            __('Becoming fine', 'live-weather-station'),
+            __('Fine, becoming less settled', 'live-weather-station'),
+            __('Fine, possible showers', 'live-weather-station'),
+            __('Fairly fine, improving', 'live-weather-station'),
+            __('Fairly fine, possible showers early', 'live-weather-station'),
+            __('Fairly fine, showery later', 'live-weather-station'),
+            __('Showery early, improving', 'live-weather-station'),
+            __('Changeable, mending', 'live-weather-station'),
+            __('Fairly fine, showers likely', 'live-weather-station'),
+            __('Rather unsettled clearing later', 'live-weather-station'),
+            __('Unsettled, probably improving', 'live-weather-station'),
+            __('Showery, bright intervals', 'live-weather-station'),
+            __('Showery, becoming less settled', 'live-weather-station'),
+            __('Changeable, some rain', 'live-weather-station'),
+            __('Unsettled, short fine intervals', 'live-weather-station'),
+            __('Unsettled, rain later', 'live-weather-station'),
+            __('Unsettled, some rain', 'live-weather-station'),
+            __('Mostly very unsettled', 'live-weather-station'),
+            __('Occasional rain, worsening', 'live-weather-station'),
+            __('Rain at times, very unsettled', 'live-weather-station'),
+            __('Rain at frequent intervals', 'live-weather-station'),
+            __('Rain, very unsettled', 'live-weather-station'),
+            __('Stormy, may improve', 'live-weather-station'),
+            __('Stormy, much rain', 'live-weather-station'));
         $f = explode(':', $value);
         if (count($f) == 2) {
             if ((int)$f[1] >= 0 && (int)$f[1] <= 25) {
                 if ($f[0] == 'X') {
-                    $result = lws__('Exceptional Weather: ', 'live-weather-station') . lws_lcfirst($forecast[(int)$f[1]]) . '.';
+                    $result = __('Exceptional Weather: ', 'live-weather-station') . lws_lcfirst($forecast[(int)$f[1]]) . '.';
                 }
                 else {
                     $result = $forecast[(int)$f[1]];
@@ -9780,6 +10168,7 @@ trait Output {
             case 'health_idx':
                 $result = $aggregated && !$outdoor;
                 break;
+            case 'absolute_humidity':
             case 'cloudiness':
             case 'pressure':
             case 'pressure_sl':
@@ -9803,6 +10192,7 @@ trait Output {
             case 'windstrength_day_max':
             case 'irradiance':
             case 'sunshine':
+            case 'visibility':
             case 'uv_index':
             case 'illuminance':
             case 'soil_temperature':
@@ -9842,7 +10232,6 @@ trait Output {
             case 'vapor_pressure':
             case 'partial_absolute_humidity':
             case 'saturation_absolute_humidity':
-            case 'absolute_humidity':
             case 'alt_pressure':
             case 'alt_density':
                 $result = $psychrometry;
@@ -9858,12 +10247,11 @@ trait Output {
     /**
      * Format the selected datas for lcd usage.
      *
-     * @param   array   $datas  An array containing the selected datas.
-     * @param   string   $measure_type  The measure type(s) to include.
-     * @param   boolean   $computed  Includes computed measures too.
-     * @return  array   An array containing the formated datas, ready to be displayed by lcd controls.
-     * @since    1.0.0
-     * @access   protected
+     * @param array $datas An array containing the selected datas.
+     * @param string $measure_type The measure type(s) to include.
+     * @param boolean  $computed Includes computed measures too.
+     * @return array An array containing the formated datas, ready to be displayed by lcd controls.
+     * @since 1.0.0
      */
     protected function format_lcd_datas($datas, $measure_type, $computed=false) {
         $save_locale = setlocale(LC_ALL,'');
@@ -9876,10 +10264,7 @@ trait Output {
         $max = array();
         $values = array();
         $value_types = array ('humidity' => 'NAModule1', 'rain' => 'NAModule3', 'windangle' => 'NAModule2', 'windstrength' => 'NAModule2', 'pressure_sl' => 'NAMain', 'temperature' => 'NAModule1');
-        $temperature_trend = array();
-        $pressure_trend = array();
-        $pressure_sl_trend = array();
-        $humidity_trend = array();
+        $mtrend = array();
         $err = 0;
         $aggregated = ($measure_type == 'aggregated');
         $outdoor = ($measure_type == 'outdoor');
@@ -9901,47 +10286,32 @@ trait Output {
         }
         else {
             foreach ($datas as $data) {
+                $mtype = str_replace(array('_min', '_max', '_trend'), '',  str_replace(array('_day_min', '_day_max', '_day_trend'), '',  $data['measure_type']));
+                if (in_array($mtype, $this->min_max_trend)) {
+                    if (strpos($data['measure_type'], '_day_max')) {
+                        $max[$data['module_id']][$mtype] = $this->output_value($data['measure_value'], $data['measure_type']);
+                    }
+                    if (strpos($data['measure_type'], '_max')) {
+                        $max[$data['module_id']][$mtype] = $this->output_value($data['measure_value'], $data['measure_type']);
+                    }
+                    if (strpos($data['measure_type'], '_min')) {
+                        $min[$data['module_id']][$mtype] = $this->output_value($data['measure_value'], $data['measure_type']);
+                    }
+                    if (strpos($data['measure_type'], '_day_min')) {
+                        $min[$data['module_id']][$mtype] = $this->output_value($data['measure_value'], $data['measure_type']);
+                    }
+                    if (strpos($data['measure_type'], '_day_trend')) {
+                        $mtrend[$mtype][$data['module_id']] = ($data['measure_value'] == 'stable' ? 'steady' : $data['measure_value']);
+                    }
+                    if (strpos($data['measure_type'], '_trend')) {
+                        $mtrend[$mtype][$data['module_id']] = ($data['measure_value'] == 'stable' ? 'steady' : $data['measure_value']);
+                    }
+                }
                 if ($data['measure_type'] == 'battery') {
                     $battery[$data['module_id']] = $this->get_battery_lcd_level_text($data['measure_value'], $data['module_type']);
                 }
                 if ($data['measure_type'] == 'signal') {
                     $signal[$data['module_id']] = $this->get_signal_lcd_level_text($data['measure_value'], $data['module_type']);
-                }
-                if ($data['measure_type'] == 'temperature_max') {
-                    $max[$data['module_id']]['temperature'] = $this->output_value($data['measure_value'], $data['measure_type']);
-                }
-                if ($data['measure_type'] == 'temperature_min') {
-                    $min[$data['module_id']]['temperature'] = $this->output_value($data['measure_value'], $data['measure_type']);
-                }
-                if ($data['measure_type'] == 'temperature_trend') {
-                    $temperature_trend[$data['module_id']] = ($data['measure_value'] == 'stable' ? 'steady' : $data['measure_value']);
-                }
-                if ($data['measure_type'] == 'pressure_max') {
-                    $max[$data['module_id']]['pressure'] = $this->output_value($data['measure_value'], $data['measure_type']);
-                }
-                if ($data['measure_type'] == 'pressure_min') {
-                    $min[$data['module_id']]['pressure'] = $this->output_value($data['measure_value'], $data['measure_type']);
-                }
-                if ($data['measure_type'] == 'pressure_trend') {
-                    $pressure_trend[$data['module_id']] = ($data['measure_value'] == 'stable' ? 'steady' : $data['measure_value']);
-                }
-                if ($data['measure_type'] == 'pressure_sl_max') {
-                    $max[$data['module_id']]['pressure_sl'] = $this->output_value($data['measure_value'], $data['measure_type']);
-                }
-                if ($data['measure_type'] == 'pressure_sl_min') {
-                    $min[$data['module_id']]['pressure_sl'] = $this->output_value($data['measure_value'], $data['measure_type']);
-                }
-                if ($data['measure_type'] == 'pressure_sl_trend') {
-                    $pressure_sl_trend[$data['module_id']] = ($data['measure_value'] == 'stable' ? 'steady' : $data['measure_value']);
-                }
-                if ($data['measure_type'] == 'humidity_max') {
-                    $max[$data['module_id']]['humidity'] = $this->output_value($data['measure_value'], $data['measure_type']);
-                }
-                if ($data['measure_type'] == 'humidity_min') {
-                    $min[$data['module_id']]['humidity'] = $this->output_value($data['measure_value'], $data['measure_type']);
-                }
-                if ($data['measure_type'] == 'humidity_trend') {
-                    $humidity_trend[$data['module_id']] = ($data['measure_value'] == 'stable' ? 'steady' : $data['measure_value']);
                 }
                 if ($data['measure_type'] == 'dew_point') {
                     $dew_point = $data['measure_value'];
@@ -9997,7 +10367,7 @@ trait Output {
                         $measure['title'] = lws_iconv(__('O/DR', 'live-weather-station') . ':' .$this->output_abbreviation($data['measure_type']));
                     }
                     else {
-                        $measure['title'] = lws_iconv( DeviceManager::get_module_name($data['device_id'], $data['module_id']));
+                        $measure['title'] = lws_iconv(DeviceManager::get_module_name($data['device_id'], $data['module_id']));
                     }
                 }
                 if (array_key_exists($data['module_id'], $battery)) {
@@ -10008,7 +10378,12 @@ trait Output {
                 }
                 $measure['trend'] = '';
                 $measure['show_trend'] = false;
-                $measure['show_alarm'] = $this->is_alarm_on($data['measure_value'], $data['measure_type'], $data['module_type']);
+                if (strpos($data['measure_type'], 'direction') === false && strpos($data['measure_type'], 'source') === false) {
+                    $measure['show_alarm'] = $this->is_alarm_on($data['measure_value'], $data['measure_type'], $data['module_type']);
+                }
+                else {
+                    $measure['show_alarm'] = false;
+                }
                 if (array_key_exists($data['module_id'], $signal)) {
                     $measure['signal'] = $signal[$data['module_id']];
                 }
@@ -10016,249 +10391,231 @@ trait Output {
                     $measure['signal'] = $this->get_signal_lcd_level_text(-1, 'none');
                 }
                 if (($data['measure_type'] == $measure_type) || (($data['measure_type'] != $measure_type) && $this->is_value_ok($data['measure_type'], $aggregated, $outdoor, $computed, $pollution, $psychrometry))) {
-                    switch (strtolower($data['measure_type'])) {
-                        case 'co2':
-                        case 'o3':
-                        case 'co':
-                        case 'noise':
-                        case 'health_idx':
-                        case 'cbi':
-                            $response[] = $measure;
-                            break;
-                        case 'dew_point':
-                            if ($has_temp_ref && $this->is_valid_dew_point($temp_ref)) {
-                                $response[] = $measure;
-                            }
-                            break;
-                        case 'frost_point':
-                            if ($has_temp_ref && $this->is_valid_frost_point($temp_ref)) {
-                                $response[] = $measure;
-                            }
-                            break;
-                        case 'wind_chill':
-                            if ($has_temp_ref && $has_wind_ref && $this->is_valid_wind_chill($temp_ref, $wind_ref)) {
-                                $response[] = $measure;
-                            }
-                            break;
-                        case 'heat_index':
-                            if ($has_temp_ref && $has_hum_ref && $has_dew_point && $this->is_valid_heat_index($temp_ref, $hum_ref, $dew_point)) {
-                                $response[] = $measure;
-                            }
-                            break;
-                        case 'summer_simmer':
-                            if ($has_temp_ref && $has_hum_ref && $this->is_valid_summer_simmer($temp_ref, $hum_ref)) {
-                                $response[] = $measure;
-                            }
-                            break;
-                        case 'steadman':
-                            if ($has_temp_ref && $has_hum_ref && $this->is_valid_steadman($temp_ref, $hum_ref)) {
-                                $response[] = $measure;
-                            }
-                            break;
-                        case 'humidex':
-                            if ($has_temp_ref && $has_hum_ref && $has_dew_point && $this->is_valid_humidex($temp_ref, $hum_ref, $dew_point)) {
-                                $response[] = $measure;
-                            }
-                            break;
-                        case 'cloud_ceiling':
-                            if ($has_temp_ref && $has_dew_point) {
-                                $response[] = $measure;
-                            }
-                            break;
-                        case 'cloudiness':
-                            if (!$outdoor) {
-                                /* translators: appears in LCD display, so must not be longer than 6 characters, including punctuation  */
-                                $measure['sub_unit'] = __('clouds', 'live-weather-station');
-                                $measure['show_sub_unit'] = true;
-                            }
-                            $response[] = $measure;
-                            break;
-                        case 'humidity':
-                            if (array_key_exists($data['module_id'], $humidity_trend)) {
-                                $measure['trend'] = $humidity_trend[$data['module_id']];
-                                $measure['show_trend'] = true;
-                            }
-                            if (array_key_exists($data['module_id'], $min) && array_key_exists($data['module_id'], $max)) {
-                                if (array_key_exists('humidity', $min[$data['module_id']]) && array_key_exists('humidity', $max[$data['module_id']])) {
-                                    $measure['min'] = $min[$data['module_id']]['humidity'];
-                                    $measure['max'] = $max[$data['module_id']]['humidity'];
-                                    $measure['show_min_max'] = true;
-                                }
-                            }
-                            if (($data['measure_type'] == $measure_type) || ($data['measure_type'] != $measure_type && $aggregated)) {
-                                $response[] = $measure;
-                            }
-                            if ($outdoor && $data['module_type'] == 'NAModule1') {
-                                $response[] = $measure;
-                            }
-                            if ($outdoor && $data['module_type'] == 'NACurrent' && !array_key_exists($data['measure_type'], $values)) {
-                                $response[] = $measure;
-                            }
-                            break;
-                        case 'pressure':
-                            if (array_key_exists($data['module_id'], $pressure_trend)) {
-                                $measure['trend'] = $pressure_trend[$data['module_id']];
-                                $measure['show_trend'] = true;
-                            }
-                            if (array_key_exists($data['module_id'], $min) && array_key_exists($data['module_id'], $max)) {
-                                if (array_key_exists('pressure', $min[$data['module_id']]) && array_key_exists('pressure', $max[$data['module_id']])) {
-                                    $measure['min'] = $min[$data['module_id']]['pressure'];
-                                    $measure['max'] = $max[$data['module_id']]['pressure'];
-                                    $measure['show_min_max'] = true;
-                                }
-                            }
-                            if (($data['measure_type'] == $measure_type) || ($data['measure_type'] != $measure_type && $aggregated)) {
-                                $response[] = $measure;
-                            }
-                            if ($outdoor && $data['module_type'] == 'NAMain') {
-                                $response[] = $measure;
-                            }
-                            if ($outdoor && $data['module_type'] == 'NACurrent' && !array_key_exists($data['measure_type'], $values)) {
-                                $response[] = $measure;
-                            }
-                            break;
-                        case 'pressure_sl':
-                            if (array_key_exists($data['module_id'], $pressure_sl_trend)) {
-                                $measure['trend'] = $pressure_sl_trend[$data['module_id']];
-                                $measure['show_trend'] = true;
-                            }
-                            if (array_key_exists($data['module_id'], $min) && array_key_exists($data['module_id'], $max)) {
-                                if (array_key_exists('pressure_sl', $min[$data['module_id']]) && array_key_exists('pressure_sl', $max[$data['module_id']])) {
-                                    $measure['min'] = $min[$data['module_id']]['pressure_sl'];
-                                    $measure['max'] = $max[$data['module_id']]['pressure_sl'];
-                                    $measure['show_min_max'] = true;
-                                }
-                            }
-                            if (($data['measure_type'] == $measure_type) || ($data['measure_type'] != $measure_type && $aggregated)) {
-                                $response[] = $measure;
-                            }
-                            if ($outdoor && $data['module_type'] == 'NAMain') {
-                                $response[] = $measure;
-                            }
-                            if ($outdoor && $data['module_type'] == 'NACurrent' && !array_key_exists($data['measure_type'], $values)) {
-                                $response[] = $measure;
-                            }
-                            break;
-                        case 'temperature':
-                            if (array_key_exists($data['module_id'], $temperature_trend)) {
-                                $measure['trend'] = $temperature_trend[$data['module_id']];
-                                $measure['show_trend'] = true;
-                            }
-                            if (array_key_exists($data['module_id'], $min) && array_key_exists($data['module_id'], $max)) {
-                                if (array_key_exists('temperature', $min[$data['module_id']]) && array_key_exists('temperature', $max[$data['module_id']])) {
-                                    $measure['min'] = $min[$data['module_id']]['temperature'];
-                                    $measure['max'] = $max[$data['module_id']]['temperature'];
-                                    $measure['show_min_max'] = true;
-                                }
-                            }
-                            if (($data['measure_type'] == $measure_type) || ($data['measure_type'] != $measure_type && $aggregated)) {
-                                $response[] = $measure;
-                            }
-                            if ($outdoor && $data['module_type'] == 'NAModule1') {
-                                $response[] = $measure;
-                            }
-                            if ($outdoor && $data['module_type'] == 'NACurrent' && !array_key_exists($data['measure_type'], $values)) {
-                                $response[] = $measure;
-                            }
-                            break;
-                        case 'rain':
-                            if (($data['measure_type'] == $measure_type) || ($data['measure_type'] != $measure_type && $aggregated)) {
-                                if ($this->is_valid_rain($temperature_test)) {
-                                    $response[] = $measure;
-                                }
-                            }
-                            if ($outdoor && $data['module_type'] == 'NAModule3') {
-                                if ($this->is_valid_rain($temperature_test)) {
-                                    $response[] = $measure;
-                                }
-                            }
-                            if ($outdoor && $data['module_type'] == 'NACurrent' && !array_key_exists($data['measure_type'], $values)) {
-                                if ($this->is_valid_rain($temperature_test)) {
-                                    $response[] = $measure;
-                                }
-                            }
-                            break;
-                        case 'rain_hour_aggregated':
-                        case 'rain_day_aggregated':
-                        case 'rain_yesterday_aggregated':
-                        case 'rain_month_aggregated':
-                        case 'rain_season_aggregated':
-                        case 'rain_year_aggregated':
-                            if ($this->is_valid_rain($temperature_test)) {
-                                $response[] = $measure;
-                            }
-                            break;
-                        case 'snow':
-                            if ($this->is_valid_snow($temperature_test)) {
-                                $response[] = $measure;
-                            }
-                            break;
-                        case 'windangle':
-                        case 'gustangle':
-                        case 'winddirection':
-                        case 'gustdirection':
-                        case 'windangle_max':
-                        case 'windangle_day_max':
-                        case 'windangle_hour_max':
-                        case 'winddirection_max':
-                        case 'winddirection_day_max':
-                        case 'winddirection_hour_max':
-                        case 'windstrength':
-                        case 'guststrength':
-                        case 'windstrength_max':
-                        case 'windstrength_day_max':
-                        case 'windstrength_hour_max':
-                            if (($data['measure_type'] == $measure_type) || $aggregated) {
-                                $response[] = $measure;
-                            }
-                            if (($outdoor && $data['module_type'] == 'NAModule2') || ($data['measure_type'] != $measure_type && $aggregated)) {
-                                $response[] = $measure;
-                            }
-                            if ($outdoor && $data['module_type'] == 'NACurrent' && !array_key_exists($data['measure_type'], $values)) {
-                                $response[] = $measure;
-                            }
-                            break;
-                        case 'irradiance':
-                        case 'sunshine':
-                        case 'uv_index':
-                        case 'illuminance':
-                        case 'strike_count':
-                        case 'strike_instant':
-                        case 'strike_distance':
-                        case 'visibility':
-                        case 'strike_bearing':
-                        if (($data['measure_type'] == $measure_type) || $aggregated || $outdoor) {
-                            $response[] = $measure;
+                    $mtype = str_replace(array('_min', '_max', '_trend'), '',  str_replace(array('_day_min', '_day_max', '_day_trend'), '',  $data['measure_type']));
+                    if (in_array($mtype, $this->min_max_trend)) {
+                        if (array_key_exists($data['module_id'], $mtrend[$mtype])) {
+                            $measure['trend'] = $mtrend[$mtype][$data['module_id']];
+                            $measure['show_trend'] = true;
                         }
-                        case 'soil_temperature':
-                        case 'leaf_wetness':
-                        case 'moisture_content':
-                        case 'moisture_tension':
-                        case 'evapotranspiration':
-                            if (($data['measure_type'] == $measure_type) || $aggregated) {
-                                $response[] = $measure;
+                        if (array_key_exists($data['module_id'], $min) && array_key_exists($data['module_id'], $max)) {
+                            if (array_key_exists($mtype, $min[$data['module_id']]) && array_key_exists($mtype, $max[$data['module_id']])) {
+                                $measure['min'] = $min[$data['module_id']][$mtype];
+                                $measure['max'] = $max[$data['module_id']][$mtype];
+                                $measure['show_min_max'] = true;
                             }
-                            break;
-                        case 'wet_bulb':
-                        case 'delta_t':
-                        case 'air_density':
-                        case 'wood_emc':
-                        case 'emc':
-                        case 'equivalent_temperature':
-                        case 'potential_temperature':
-                        case 'equivalent_potential_temperature':
-                        case 'specific_enthalpy':
-                        case 'partial_vapor_pressure':
-                        case 'saturation_vapor_pressure':
-                        case 'vapor_pressure':
-                        case 'absolute_humidity':
-                        case 'partial_absolute_humidity':
-                        case 'saturation_absolute_humidity':
-                            if ($psychrometry) {
+                        }
+                        switch ($mtype) {
+                            case 'cloudiness':
+                                if (!$outdoor) {
+                                    /* translators: appears in LCD display, so must not be longer than 6 characters, including punctuation  */
+                                    $measure['sub_unit'] = __('clouds', 'live-weather-station');
+                                    $measure['show_sub_unit'] = true;
+                                }
+                                if (($data['measure_type'] == $measure_type) || $aggregated || $outdoor) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'irradiance':
+                            case 'uv_index':
+                            case 'illuminance':
+                            case 'visibility':
+                                if (($data['measure_type'] == $measure_type) || $aggregated || $outdoor) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'soil_temperature':
+                            case 'moisture_content':
+                            case 'moisture_tension':
+                            case 'absolute_humidity':
+                                if (($data['measure_type'] == $measure_type) || $aggregated) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'co2':
+                            case 'noise':
+                                if ((($data['measure_type'] == $measure_type) || $aggregated) && !$outdoor) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'humidity':
+                            case 'temperature':
+                                if ((($data['measure_type'] == $measure_type) || ($data['measure_type'] != $measure_type && $aggregated)) && !$outdoor) {
+                                    $response[] = $measure;
+                                }
+                                if ($outdoor && $data['module_type'] == 'NAModule1') {
+                                    $response[] = $measure;
+                                }
+                                if ($outdoor && $data['module_type'] == 'NACurrent' && !array_key_exists($data['measure_type'], $values)) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'pressure':
+                            case 'pressure_sl':
+                                if (($data['measure_type'] == $measure_type) || ($data['measure_type'] != $measure_type && $aggregated)) {
+                                    $response[] = $measure;
+                                }
+                                if ($outdoor && $data['module_type'] == 'NAMain') {
+                                    $response[] = $measure;
+                                }
+                                if ($outdoor && $data['module_type'] == 'NACurrent' && !array_key_exists($data['measure_type'], $values)) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'guststrength':
+                            case 'windstrength':
+                                if (($data['measure_type'] == $measure_type) || $aggregated) {
+                                    $response[] = $measure;
+                                }
+                                if (($outdoor && $data['module_type'] == 'NAModule2') || ($data['measure_type'] != $measure_type && $aggregated)) {
+                                    $response[] = $measure;
+                                }
+                                if ($outdoor && $data['module_type'] == 'NACurrent' && !array_key_exists($data['measure_type'], $values)) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                        }
+                    }
+                    else {
+                        switch (strtolower($data['measure_type'])) {
+                            case 'o3':
+                            case 'co':
+                            case 'health_idx':
+                            case 'cbi':
                                 $response[] = $measure;
-                            }
-                            break;
+                                break;
+                            case 'dew_point':
+                                if ($has_temp_ref && $this->is_valid_dew_point($temp_ref)) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'frost_point':
+                                if ($has_temp_ref && $this->is_valid_frost_point($temp_ref)) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'wind_chill':
+                                if ($has_temp_ref && $has_wind_ref && $this->is_valid_wind_chill($temp_ref, $wind_ref)) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'heat_index':
+                                if ($has_temp_ref && $has_hum_ref && $has_dew_point && $this->is_valid_heat_index($temp_ref, $hum_ref, $dew_point)) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'summer_simmer':
+                                if ($has_temp_ref && $has_hum_ref && $this->is_valid_summer_simmer($temp_ref, $hum_ref)) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'steadman':
+                                if ($has_temp_ref && $has_hum_ref && $this->is_valid_steadman($temp_ref, $hum_ref)) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'humidex':
+                                if ($has_temp_ref && $has_hum_ref && $has_dew_point && $this->is_valid_humidex($temp_ref, $hum_ref, $dew_point)) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'cloud_ceiling':
+                                if ($has_temp_ref && $has_dew_point) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'rain':
+                                if (($data['measure_type'] == $measure_type) || ($data['measure_type'] != $measure_type && $aggregated)) {
+                                    if ($this->is_valid_rain($temperature_test)) {
+                                        $response[] = $measure;
+                                    }
+                                }
+                                if ($outdoor && $data['module_type'] == 'NAModule3') {
+                                    if ($this->is_valid_rain($temperature_test)) {
+                                        $response[] = $measure;
+                                    }
+                                }
+                                if ($outdoor && $data['module_type'] == 'NACurrent' && !array_key_exists($data['measure_type'], $values)) {
+                                    if ($this->is_valid_rain($temperature_test)) {
+                                        $response[] = $measure;
+                                    }
+                                }
+                                break;
+                            case 'rain_hour_aggregated':
+                            case 'rain_day_aggregated':
+                            case 'rain_yesterday_aggregated':
+                            case 'rain_month_aggregated':
+                            case 'rain_season_aggregated':
+                            case 'rain_year_aggregated':
+                                if ($this->is_valid_rain($temperature_test)) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'snow':
+                                if ($this->is_valid_snow($temperature_test)) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'windangle':
+                            case 'gustangle':
+                            case 'winddirection':
+                            case 'gustdirection':
+                            case 'windangle_max':
+                            case 'windangle_day_max':
+                            case 'windangle_hour_max':
+                            case 'winddirection_max':
+                            case 'winddirection_day_max':
+                            case 'winddirection_hour_max':
+                            case 'windstrength':
+                            case 'guststrength':
+                            case 'windstrength_max':
+                            case 'windstrength_day_max':
+                            case 'windstrength_hour_max':
+                                if (($data['measure_type'] == $measure_type) || $aggregated) {
+                                    $response[] = $measure;
+                                }
+                                if (($outdoor && $data['module_type'] == 'NAModule2') || ($data['measure_type'] != $measure_type && $aggregated)) {
+                                    $response[] = $measure;
+                                }
+                                if ($outdoor && $data['module_type'] == 'NACurrent' && !array_key_exists($data['measure_type'], $values)) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'sunshine':
+                            case 'strike_count':
+                            case 'strike_instant':
+                            case 'strike_distance':
+                            case 'strike_bearing':
+                                if (($data['measure_type'] == $measure_type) || $aggregated || $outdoor) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'leaf_wetness':
+                            case 'evapotranspiration':
+                                if (($data['measure_type'] == $measure_type) || $aggregated) {
+                                    $response[] = $measure;
+                                }
+                                break;
+                            case 'wet_bulb':
+                            case 'delta_t':
+                            case 'air_density':
+                            case 'wood_emc':
+                            case 'emc':
+                            case 'equivalent_temperature':
+                            case 'potential_temperature':
+                            case 'equivalent_potential_temperature':
+                            case 'specific_enthalpy':
+                            case 'partial_vapor_pressure':
+                            case 'saturation_vapor_pressure':
+                            case 'vapor_pressure':
+                            case 'absolute_humidity':
+                            case 'partial_absolute_humidity':
+                            case 'saturation_absolute_humidity':
+                                if ($psychrometry) {
+                                    $response[] = $measure;
+                                }
+                                break;
 
+                        }
                     }
                 }
             }
@@ -10277,7 +10634,7 @@ trait Output {
      * Format the selected datas for stickertags usage.
      *
      * @param array $datas An array containing the selected datas.
-     * @return string The formated datas, ready to be outputed as stickertags.txt file.
+     * @return array The formated datas, ready to be outputed as stickertags.txt file.
      * @since 3.0.0
      *
      */
@@ -10781,10 +11138,12 @@ trait Output {
      * @since 3.0.0
      */
     protected function get_measurement_option ($type, $module_type, $opt) {
+        $t = str_replace(array('_min', '_max', '_trend'), '', $type);
+        if (in_array($t, $this->min_max_trend)) {
+            $type = $t;
+        }
         switch (strtolower($type)) {
             case 'temperature':
-            case 'temperature_min':
-            case 'temperature_max':
             case 'temperature_ref':
             case 'dew_point':
             case 'frost_point':
@@ -10806,8 +11165,6 @@ trait Output {
                 }
                 break;
             case 'humidity':
-            case 'humidity_min':
-            case 'humidity_max':
                 if (strtolower($module_type)=='namodule4' || strtolower($module_type)=='namain') {
                     $t = 'humint';
                 }
@@ -10815,10 +11172,6 @@ trait Output {
                     $t = 'humext';
                 }
                 break;
-            case 'pressure_min':
-            case 'pressure_max':
-            case 'pressure_sl_min':
-            case 'pressure_sl_max':
             case 'pressure_ref':
                 $t = 'pressure';
                 break;

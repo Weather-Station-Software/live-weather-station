@@ -86,7 +86,7 @@
             <?php if ($show_humidity):?>
                 <div class="lws-widget-bevel lws-widget-bevel-<?php echo $id ?>"></div>
                 <!-- HUMIDITY -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Humidity', 'live-weather-station').'"' : ''); ?>>
+                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Reltaive humidity', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <i class="wi wi-x26-<?php echo $id ?> wi-humidity"></i>
                     </div>

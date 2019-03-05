@@ -103,10 +103,8 @@ class Handling {
         add_meta_box('lws-connect-owm', 'OpenWeatherMap', array($this, 'owm_box'), 'lws-settings', 'side');
         //add_meta_box('lws-connect-wug', 'Weather Underground', array($this, 'wug_box'), 'lws-settings', 'side');
         add_meta_box('lws-connect-mapbox', 'Mapbox', array($this, 'mapbox_box'), 'lws-settings', 'column3');
-        if (LWS_PREVIEW) {
-            add_meta_box('lws-connect-maptiler', 'MapTiler', array($this, 'maptiler_box'), 'lws-settings', 'column3');
-            add_meta_box('lws-connect-navionics', 'Navionics', array($this, 'navionics_box'), 'lws-settings', 'column3');
-        }
+        add_meta_box('lws-connect-maptiler', 'MapTiler', array($this, 'maptiler_box'), 'lws-settings', 'column3');
+        add_meta_box('lws-connect-navionics', 'Navionics', array($this, 'navionics_box'), 'lws-settings', 'column3');
         add_meta_box('lws-connect-thunderforest', 'Thunderforest', array($this, 'thunderforest_box'), 'lws-settings', 'column3');
         add_meta_box('lws-connect-windy', 'Windy', array($this, 'windy_box'), 'lws-settings', 'column3');
     }

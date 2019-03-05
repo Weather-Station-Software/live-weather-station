@@ -325,6 +325,7 @@ class Admin {
             array($this, 'lws_system_quota_callback'), 'lws_system', 'lws_system_section',
             array(__('Operation performed when the API usage exceeds quotas allowed by the services.', 'live-weather-station')));
         register_setting('lws_system', 'lws_system_quota');
+
         add_settings_field('lws_system_log_level', __('Logging policy', 'live-weather-station'),
             array($this, 'lws_system_log_level_callback'), 'lws_system', 'lws_system_section',
             array(__('Minimum level of severity that will be recorded in the events log.', 'live-weather-station')));
@@ -333,12 +334,24 @@ class Admin {
             array($this, 'lws_system_log_retention_callback'), 'lws_system', 'lws_system_section',
             array(__('Maximum number and maximum age of events stored in the events log.', 'live-weather-station')));
         register_setting('lws_system', 'lws_system_log_retention');
-        if (LWS_PREVIEW) {
-            add_settings_field('lws_system_notif_retention', '',
-                array($this, 'lws_system_notif_retention_callback'), 'lws_system', 'lws_system_section',
-                array(lws__('Maximum age of notifications before deletion.', 'live-weather-station')));
-            register_setting('lws_system', 'lws_system_notif_retention');
-        }
+        add_settings_field('lws_system_notif_retention', '',
+            array($this, 'lws_system_notif_retention_callback'), 'lws_system', 'lws_system_section',
+            array(__('Maximum age of notifications before deletion.', 'live-weather-station')));
+        register_setting('lws_system', 'lws_system_notif_retention');
+
+
+        add_settings_field('lws_system_upload_allowed', __('Files', 'live-weather-station'),
+            array($this, 'lws_system_upload_allowed_callback'), 'lws_system', 'lws_system_section',
+            array(__('Check this to allow adding files, right in the file manager. As a best-practice, it is recommended to activate it before adding a file, and to disable it just after.', 'live-weather-station')));
+        register_setting('lws_system', 'lws_system_upload_allowed');
+
+        add_settings_field('lws_system_file_retention', '',
+            array($this, 'lws_system_file_retention_callback'), 'lws_system', 'lws_system_section',
+            array(__('Maximum age of files kept in the file manager.', 'live-weather-station')));
+        register_setting('lws_system', 'lws_system_file_retention');
+
+
+
         add_settings_field('lws_system_cron_speed', __('Task scheduler activity', 'live-weather-station'),
             array($this, 'lws_system_cron_speed_callback'), 'lws_system', 'lws_system_section',
             array(sprintf(__('Speed of the task scheduler. Selecting "%s" requires you to have configured an efficient cron.', 'live-weather-station') . InlineHelp::article(0), $this->get_cron_speed_array()[1][1])));
@@ -367,12 +380,10 @@ class Admin {
             array($this, 'lws_system_fa_mode_callback'), 'lws_system', 'lws_system_section',
             array(__('How Font Awesome (used by Weather Station) is enqueued, and which version.', 'live-weather-station')));
         register_setting('lws_system', 'lws_system_fa_mode');
-        if (LWS_PREVIEW) {
-            add_settings_field('lws_system_compatibility', lws__('Compatibility modes', 'live-weather-station'),
-                array($this, 'lws_system_compatibility_callback'), 'lws_system', 'lws_system_section',
-                array());
-            register_setting('lws_system', 'lws_system_notif_retention');
-        }
+        add_settings_field('lws_system_compatibility', __('Compatibility modes', 'live-weather-station'),
+            array($this, 'lws_system_compatibility_callback'), 'lws_system', 'lws_system_section',
+            array());
+        register_setting('lws_system', 'lws_system_notif_retention');
         add_settings_field('lws_system_redirect_links', __('Links', 'live-weather-station'),
             array($this, 'lws_system_redirect_links_callback'), 'lws_system', 'lws_system_section',
             array());
@@ -680,6 +691,26 @@ class Admin {
      * Renders the interface elements for the corresponding field.
      *
      * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.8.0
+     */
+    public function lws_system_upload_allowed_callback($args) {
+        echo $this->field_checkbox(__('Enable "add file" in the file manager', 'live-weather-station'), 'lws_system_upload_allowed', (bool)get_option('live_weather_station_upload_allowed'), $args[0]);
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
+     * @since 3.8.0
+     */
+    public function lws_system_file_retention_callback($args) {
+        echo $this->field_input_number(get_option('live_weather_station_file_retention'), 'lws_system_file_retention', 1, 90, 1, $args[0], __('days', 'live-weather-station'));
+    }
+
+    /**
+     * Renders the interface elements for the corresponding field.
+     *
+     * @param array $args An array of arguments which first element is the description to be displayed next to the control.
      * @since 3.0.0
      */
     public function lws_system_auto_manage_callback($args) {
@@ -797,12 +828,10 @@ class Admin {
             'id' => 'lws_system_plugin_stat',
             'checked' => (bool)get_option('live_weather_station_plugin_stat'),
             'description' => sprintf(__('Check this you want to display statistics about the plugin in your dashboard.', 'live-weather-station'), LWS_PLUGIN_NAME));
-        if (LWS_PREVIEW) {
-            $cbxs[] = array('text' => lws__('Keep historical tables', 'live-weather-station'),
-                'id' => 'lws_system_keep_tables',
-                'checked' => (bool)get_option('live_weather_station_keep_tables'),
-                'description' => sprintf(lws__('Check this if you want to keep historical tables after plugin deletion.', 'live-weather-station'), LWS_PLUGIN_NAME));
-        }
+        $cbxs[] = array('text' => __('Keep historical tables', 'live-weather-station'),
+            'id' => 'lws_system_keep_tables',
+            'checked' => (bool)get_option('live_weather_station_keep_tables'),
+            'description' => sprintf(__('Check this if you want to keep historical tables after plugin deletion.', 'live-weather-station'), LWS_PLUGIN_NAME));
         echo $this->field_multi_checkbox($cbxs);
     }
 
@@ -815,17 +844,17 @@ class Admin {
     public function lws_system_compatibility_callback($args) {
         $cache_name = EnvManager::get_installed_cache_name();
         if ($cache_name == '') {
-            $description = lws__('Check this to prevent your cache manager to cache widgets.', 'live-weather-station');
+            $description = __('Check this to prevent your cache manager to cache widgets.', 'live-weather-station');
         }
         else {
-            $description = sprintf(lws__('Check this to prevent your cache manager, %s, to cache widgets.', 'live-weather-station'), $cache_name);
+            $description = sprintf(__('Check this to prevent your cache manager, %s, to cache widgets.', 'live-weather-station'), $cache_name);
         }
         $cbxs = array();
-        $cbxs[] = array('text' => lws__('Tabbed controls', 'live-weather-station'),
+        $cbxs[] = array('text' => __('Tabbed controls', 'live-weather-station'),
             'id' => 'lws_system_mutation_observer',
             'checked' => (bool)get_option('live_weather_station_mutation_observer'),
-            'description' => sprintf(lws__('Check this to allow charts to be correctly rendered in tabbed controls (like in Elementor or Divi).', 'live-weather-station'), LWS_PLUGIN_NAME));
-        $cbxs[] = array('text' => lws__('Deferred widgets', 'live-weather-station'),
+            'description' => sprintf(__('Check this to allow charts to be correctly rendered in tabbed controls (like in Elementor or Divi).', 'live-weather-station'), LWS_PLUGIN_NAME));
+        $cbxs[] = array('text' => __('Deferred widgets', 'live-weather-station'),
             'id' => 'lws_system_ajax_widget',
             'checked' => (bool)get_option('live_weather_station_ajax_widget'),
             'description' => $description);
@@ -1131,7 +1160,9 @@ class Admin {
                 update_option('live_weather_station_fa_mode', (integer)$_POST['lws_system_fa_mode']);
                 update_option('live_weather_station_logger_rotate', (integer)$_POST['lws_system_log_rotate']);
                 update_option('live_weather_station_logger_retention', (integer)$_POST['lws_system_log_retention']);
+                update_option('live_weather_station_file_retention', (integer)$_POST['lws_system_file_retention']);
                 update_option('live_weather_station_retention_notifications', (integer)$_POST['lws_system_notif_retention']);
+                update_option('live_weather_station_upload_allowed', (integer)$_POST['lws_system_upload_allowed']);
                 update_option('live_weather_station_mutation_observer', (array_key_exists('lws_system_mutation_observer', $_POST) ? 1 : 0));
                 update_option('live_weather_station_ajax_widget', (array_key_exists('lws_system_ajax_widget', $_POST) ? 1 : 0));
                 update_option('live_weather_station_use_cdn', (array_key_exists('lws_system_use_cdn', $_POST) ? 1 : 0));
@@ -1264,7 +1295,7 @@ class Admin {
             case 'thresholds' : $settings_string = __('Thresholds settings', 'live-weather-station'); break;
             case 'history' : $settings_string = __('History settings', 'live-weather-station'); break;
             case 'system' : $settings_string = __('System settings', 'live-weather-station'); break;
-            case 'styles' : $settings_string = lws__('Styles settings', 'live-weather-station'); break;
+            case 'styles' : $settings_string = __('Styles settings', 'live-weather-station'); break;
             default: $settings_string = __('Unknown settings', 'live-weather-station');
         }
         if ($sec) {
@@ -1461,6 +1492,9 @@ class Admin {
                 }
                 if ($service == 'configuration' && $tab == 'import' && $action == 'do') {
                     $this->import_configuration($xid);
+                }
+                if ($service == 'file' && $tab == 'add' && $action == 'do') {
+                    $this->add_file();
                 }
                 break;
             case 'lws-maps':
@@ -2184,7 +2218,7 @@ class Admin {
      */
     private function export_configuration() {
         ProcessManager::register('ConfigurationExporter');
-        $message = lws__('Configuration export has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');
+        $message = __('Configuration export has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');
         add_settings_error('lws_nonce_success', 200, $message, 'updated');
         Logger::notice('Export Manager', null, null, null, null, null, null, 'Configuration export launched.');
     }
@@ -2682,18 +2716,18 @@ class Admin {
                     }
                 }
                 if (!$error) {
-                    $message = lws__('The configuration has been correctly imported.', 'live-weather-station');
+                    $message = __('The configuration has been correctly imported.', 'live-weather-station');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, null, null, null, null, null, 'The configuration has been correctly imported.');
                 }
                 else {
-                    $message = lws__('Unable to import the configuration.', 'live-weather-station');
+                    $message = __('Unable to import the configuration.', 'live-weather-station');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::error($this->service, null, null, null, null, null, null, 'Unable to import the configuration.');
                 }
             }
             else {
-                $message = lws__('Unable to import the configuration.', 'live-weather-station');
+                $message = __('Unable to import the configuration.', 'live-weather-station');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                 Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely import this configuration file.');
@@ -2702,6 +2736,44 @@ class Admin {
         else {
             add_settings_error('lws_nonce_error', 403, 'No configuration file to import.', 'error');
             Logger::error('Security', null, null, null, null, null, null, 'An attempt was made to import a configuration without ID.');
+        }
+    }
+
+    /**
+     * Add a file.
+     *
+     * @since 3.8.0
+     */
+    protected function add_file() {
+        if ((bool)get_option('live_weather_station_upload_allowed')) {
+            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-file')) {
+                $success = false;
+                if (array_key_exists('do-add-file', $_POST)) {
+                    $success = FS::upload_file();
+                }
+                if ($success['done']) {
+                    $message = __('The file has been correctly added.', 'live-weather-station');
+                    add_settings_error('lws_nonce_success', 200, $message, 'updated');
+                    Logger::notice($this->service, null, null, null, null, null, null, 'The file has been correctly added.');
+                }
+                else {
+                    $message = __('Unable to add this file: ', 'live-weather-station') . $success['error'];
+                    add_settings_error('lws_nonce_error', 403, $message, 'error');
+                    Logger::error($this->service, null, null, null, null, null, null, 'Unable to add this file: ' . $success['error']);
+                }
+            }
+            else {
+                $message = __('Unable to add this file.', 'live-weather-station');
+                add_settings_error('lws_nonce_error', 403, $message, 'error');
+                Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
+                Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely add this file.');
+            }
+        }
+        else {
+            $message = __('Unable to add this file.', 'live-weather-station');
+            add_settings_error('lws_nonce_error', 403, $message, 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Attempt to upload a file while this feature is disabled.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely add this file.');
         }
     }
 

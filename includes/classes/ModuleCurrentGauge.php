@@ -272,7 +272,7 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '</div>';
         $special_footer  = '<span id="current-justgage-info-' . $this->station_guid . '" style="display: none;">';
         $special_footer .= '<div id="major-publishing-actions">';
-        $special_footer .= __('This controls will be dynamically resized to fit its parent\'s size.', 'live-weather-station' );
+        $special_footer .= __('This control will be dynamically resized to fit its parent\'s size.', 'live-weather-station' );
         $special_footer .= '</div>';
         $special_footer .= '</span>';
         return $this->get_box('lws-preview-id', $this->preview_title, $content, '', $special_footer);

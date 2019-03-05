@@ -185,6 +185,28 @@ class Frontend {
     }
 
     /**
+     * Callback method for querying code to inject for graphs.
+     *
+     * @since 3.8.0
+     */
+    public function lws_ltgraph_code_callback() {
+        $attributes = array();
+        foreach ($this->ltgraph_allowed_parameter as $param) {
+            if (array_key_exists($param, $_POST)) {
+                $attributes[$param] = wp_kses($_POST[$param], array());
+            }
+        }
+        for ($i = 1; $i <= 8; $i++) {
+            foreach ($this->ltgraph_allowed_serie as $param) {
+                if (array_key_exists($param.'_'.$i, $_POST)) {
+                    $attributes[$param.'_'.$i] = wp_kses($_POST[$param.'_'.$i], array());
+                }
+            }
+        }
+        exit ($this->ltgraph_shortcodes($attributes));
+    }
+
+    /**
      * Callback method for querying datas by the lcd control.
      *
      * @since 1.0.0

@@ -748,7 +748,7 @@ trait Storage {
 
             // VERSION 3.6.3
             if (version_compare($oldversion, '3.6.3', '<')) {
-                ProcessManager::register('IdentifierLowercaser');
+                //ProcessManager::register('IdentifierLowercaser');
                 ProcessManager::register('PressureExpander');
             }
 
@@ -758,6 +758,11 @@ trait Storage {
             // VERSION 3.7.8
             update_option('live_weather_station_absolute_humidity_min_boundary', 0.00001);
 
+            // VERSION 3.8.0
+            if (version_compare($oldversion, '3.8.0', '<')) {
+                ProcessManager::register('SunshineAggregator');
+                ProcessManager::register('IdentifierLowercaser');
+            }
 
 
 
@@ -773,9 +778,9 @@ trait Storage {
 
             // OUTDATED WordPress
             if (!Env::is_wp_version_uptodate()) {
-                Notifier::error(lws__('Your WordPress version is old', 'live-weather-station'),
+                Notifier::error(__('Your WordPress version is old', 'live-weather-station'),
                     'https://codex.wordpress.org/Current_events',
-                    lws__('This version of WordPress is old. You should seriously consider to update it.', 'live-weather-station') .
+                    __('This version of WordPress is old. You should seriously consider to update it.', 'live-weather-station') .
                     '<br/><em>' . __('Note: even if you do not update, Weather Station will continue to work, but I can\'t offer technical support anymore...', 'live-weather-station') . '</em>');
             }
 

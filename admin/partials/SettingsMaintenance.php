@@ -27,10 +27,8 @@ $cache_warning = sprintf(__('The %s events log will be purged. Is it really what
 <p><a class="button button-primary" href="<?php echo esc_url(lws_get_admin_page_url('lws-settings', 'reset-cache', 'maintenance')); ?>"><?php echo __('Invalidate Cache', 'live-weather-station');?></a> &nbsp;&nbsp;&nbsp;
     <a class="button button-primary" href="<?php echo esc_url(lws_get_admin_page_url('lws-settings', 'purge-log', 'maintenance')); ?>" onclick="lws_purgelog_confirmation = confirm('<?php echo $cache_warning; ?>'); return lws_purgelog_confirmation;"><?php echo __('Purge Events Log', 'live-weather-station');?></a></p>
 
-<?php if (LWS_PREVIEW) { ?>
 <p>&nbsp;</p>
 <hr />
-<h2><?php echo lws__('Configuration', 'live-weather-station');?></h2>
-<p><?php echo sprintf(lws__('If you want to backup your configuration or replicate this configuration on another server, you can export the configuration of %s from here.', 'live-weather-station'), LWS_PLUGIN_NAME);?><br/><em><?php echo lws__('To export all settings, stations configuration and maps definitions, just click on the following button:', 'live-weather-station'); ?></em></p>
-    <a class="button button-primary" href="<?php echo esc_url(lws_get_admin_page_url('lws-settings', 'export-configuration', 'maintenance')); ?>"><?php echo lws__('Export Configuration', 'live-weather-station');?></a></p>
-<?php } ?>
+<h2><?php echo __('Configuration', 'live-weather-station');?></h2>
+<p><?php echo sprintf(__('If you want to backup your configuration or replicate this configuration on another server, you can export the configuration of %s from here.', 'live-weather-station'), LWS_PLUGIN_NAME);?><br/><em><?php echo __('To export all settings, stations configuration and maps definitions, just click on the following button:', 'live-weather-station'); ?></em></p>
+    <a class="button button-primary" href="<?php echo esc_url(lws_get_admin_page_url('lws-settings', 'export-configuration', 'maintenance')); ?>"><?php echo __('Export Configuration', 'live-weather-station');?></a></p>

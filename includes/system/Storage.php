@@ -21,6 +21,7 @@ class Manager {
     private static $url = '';
     private static $service = 'Storage Manager';
     private static $file_name_separator = '_';
+    private static $allowed_extension = array('ndjson' => 'text/plain', 'json' => 'text/plain');
 
     /**
      * Initialize the class and set its properties.
@@ -44,6 +45,20 @@ class Manager {
         $upload_dir = wp_upload_dir();
         self::$dir = $upload_dir['basedir'] . '/' . LWS_PLUGIN_SLUG . '/';
         self::$url = $upload_dir['baseurl'] . '/' . LWS_PLUGIN_SLUG . '/';
+    }
+
+    /**
+     * Get the extensions allowed by the file manager.
+     *
+     * @return string The allowed extensions. Comma separated list.
+     * @since 3.8.0
+     */
+    public static function get_allowed_extension() {
+        $tab = array();
+        foreach (self::$allowed_extension as $key => $val) {
+            $tab[] = '.' . $key;
+        }
+        return implode(', ', $tab);
     }
 
     /**
@@ -336,6 +351,48 @@ class Manager {
     }
 
     /**
+     * Purge old files.
+     *
+     * @since 3.8.0
+     */
+    public static function purge() {
+        $count = 0;
+        $time = time() - (86400 * get_option('live_weather_station_file_retention', 7));
+        foreach (self::extended_list_dir(false) as $file) {
+            error_log($file['file'] . ' = ' . $file['date'] . ' / ' . $time);
+            if ($file['date'] < $time) {
+                try {
+                    wp_delete_file(self::$dir . $file['file']);
+                    $count += 1;
+                }
+                catch (\Exception $ex) {
+                    //
+                }
+            }
+        }
+        if ($count == 1) {
+            Logger::notice(self::$service, null, null, null, null, null, null, '1 obsolete file deleted.');
+        }
+        elseif ($count > 1) {
+            Logger::notice(self::$service, null, null, null, null, null, null, sprintf('%s obsolete file(s) deleted.', $count));
+        }
+        else {
+            Logger::notice(self::$service,null,null,null,null,null,null,'No obsolete files to delete.');
+        }
+    }
+
+    /**
+     * Delete old files.
+     *
+     * @since 3.8.0
+     */
+    public function rotate() {
+        $cron_id = Watchdog::init_chrono(Watchdog::$file_rotate_name);
+        self::purge();
+        Watchdog::stop_chrono($cron_id);
+    }
+
+    /**
      * Get a list of valid files.
      *
      * @param array $extension Optional. Includes only these file extensions.
@@ -428,6 +485,84 @@ class Manager {
         }
         catch (\Exception $ex) {
             $result = false;
+        }
+        return $result;
+    }
+
+    /**
+     * Change the upload dir.
+     *
+     * @return array The file manager directory.
+     * @since 3.8.0
+     */
+    public static function change_upload_dir($dirs) {
+        $dirs['subdir'] = '/' . LWS_PLUGIN_SLUG . '/';
+        $dirs['path'] = self::$dir;
+        $dirs['url'] = self::$url;
+        return $dirs;
+    }
+
+    /**
+     * Change the allowed mime types.
+     *
+     * @return array The allowed mime types.
+     * @since 3.8.0
+     */
+    public static function change_upload_mimes($mimes) {
+        foreach (self::$allowed_extension as $key => $val) {
+            $mimes[$key] = $val;
+        }
+        return $mimes;
+    }
+
+    /**
+     * Change the allowed mime types.
+     *
+     * @return array The allowed mime types.
+     * @since 3.8.0
+     */
+    public static function recheck_filetype_and_ext($data=null, $file=null, $filename=null, $mimes=null) {
+        $ext = isset($data['ext'])?$data['ext']:'';
+        if (strlen($ext) < 1) {
+            $exploded = explode('.', $filename);
+            $ext = strtolower(end($exploded));
+        }
+        if ($ext === 'json') {
+            $values['ext'] = 'json';
+            $values['type'] = 'application/json';
+        }
+        if ($ext === 'ndjson') {
+            $values['ext'] = 'ndjson';
+            $values['type'] = 'application/json';
+        }
+        return $data;
+    }
+
+    /**
+     * Get configuration file content.
+     *
+     * @return array An array representing the result.
+     * @since 3.8.0
+     */
+    public static function upload_file() {
+        if (!function_exists( 'wp_handle_upload')) {
+            require_once(ABSPATH . 'wp-admin/includes/file.php');
+        }
+        $result = array('done' => false, 'error' => __('Unknown error', 'live-weather-station'));
+        if(!empty($_FILES['file-to-upload'])) {
+            //add_filter('wp_check_filetype_and_ext', array(get_called_class(), 'recheck_filetype_and_ext'));
+            add_filter('upload_mimes', array(get_called_class(), 'change_upload_mimes'));
+            add_filter('upload_dir', array(get_called_class(), 'change_upload_dir'));
+            $file = wp_handle_upload($_FILES['file-to-upload'], array('test_form' => false));
+            if ($file && !isset($file['error'])) {
+                $result['done'] = true;
+            } else {
+                $result['error'] = lws_lcfirst($file['error']);
+                Logger::error(self::$service, null, null, null, null, null, 99, 'Unable to add this file: ' . $file['error']);
+            }
+            remove_filter('upload_dir', array(get_called_class(), 'change_upload_dir'));
+            remove_filter('upload_mimes', array(get_called_class(), 'change_upload_mimes'));
+            //remove_filter('wp_check_filetype_and_ext', array(get_called_class(), 'recheck_filetype_and_ext'));
         }
         return $result;
     }

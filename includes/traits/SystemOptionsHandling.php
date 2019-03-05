@@ -30,6 +30,7 @@ trait Handling {
 
     private static $live_weather_station_file_retention = 7 ;
     private static $live_weather_station_only_valid_files = true;
+    private static $live_weather_station_upload_allowed = false;
 
     private static $live_weather_station_use_cdn = false;
     private static $live_weather_station_footer_scripts = true;
@@ -251,6 +252,18 @@ trait Handling {
      */
     protected static function live_weather_station_thresholds() {
         return array (
+            'alt_density' => array (            'min_value' => -1000,
+                                                'max_value' => 500,
+                                                'min_alarm' => -1000,
+                                                'max_alarm' => 500,
+                                                'min_boundary' => -1500,
+                                                'max_boundary' => 1000),
+            'alt_pressure' => array (            'min_value' => -1000,
+                                                'max_value' => 500,
+                                                'min_alarm' => -1000,
+                                                'max_alarm' => 500,
+                                                'min_boundary' => -1500,
+                                                'max_boundary' => 1000),
             'pressure' => array (               'min_value' => 900,
                                                 'max_value' => 1080,
                                                 'min_alarm' => 1000,
@@ -609,6 +622,7 @@ trait Handling {
     protected static function delete_options() {
         delete_option('live_weather_station_use_cdn');
         delete_option('live_weather_station_only_valid_files');
+        delete_option('live_weather_station_upload_allowed');
         delete_option('live_weather_station_footer_scripts');
         delete_option('live_weather_station_wait_for_dom');
         delete_option('live_weather_station_fa_mode');
@@ -832,6 +846,7 @@ trait Handling {
     protected static function init_system_options() {
         update_option('live_weather_station_use_cdn', self::$live_weather_station_use_cdn);
         update_option('live_weather_station_only_valid_files', self::$live_weather_station_only_valid_files);
+        update_option('live_weather_station_upload_allowed', self::$live_weather_station_upload_allowed);
         update_option('live_weather_station_footer_scripts', self::$live_weather_station_footer_scripts);
         update_option('live_weather_station_wait_for_dom', self::$live_weather_station_wait_for_dom);
         update_option('live_weather_station_fa_mode', self::$live_weather_station_fa_mode);
@@ -1110,6 +1125,7 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_txt_cache_bypass', self::$live_weather_station_txt_cache_bypass);
         self::verify_option_boolean('live_weather_station_use_cdn', self::$live_weather_station_use_cdn);
         self::verify_option_boolean('live_weather_station_only_valid_files', self::$live_weather_station_only_valid_files);
+        self::verify_option_boolean('live_weather_station_upload_allowed', self::$live_weather_station_upload_allowed);
         self::verify_option_boolean('live_weather_station_footer_scripts', self::$live_weather_station_footer_scripts);
         self::verify_option_boolean('live_weather_station_wait_for_dom', self::$live_weather_station_wait_for_dom);
         self::verify_option_integer('live_weather_station_fa_mode', self::$live_weather_station_fa_mode);

@@ -273,16 +273,6 @@ class Thunderstorm extends Base {
     }
 
     /**
-     * Enqueues widget styles.
-     *
-     * @since 3.8.0
-     */
-    public function enqueue_styles() {
-        wp_enqueue_style('lws-weather-icons');
-        lws_font_awesome();
-    }
-
-    /**
      * Get the widget output.
      *
      * @param array $args An array containing the widget's arguments.
@@ -291,8 +281,6 @@ class Thunderstorm extends Base {
      * @since 3.8.0
      */
     public function widget_content($args, $instance) {
-        wp_enqueue_style('lws-weather-icons');
-        lws_font_awesome();
         $id = uniqid();
         $instance = $this->_get_instance($instance);
         $title = $instance['title'];

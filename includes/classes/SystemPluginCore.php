@@ -146,6 +146,7 @@ class Core {
 	private function define_admin_hooks() {
 		$plugin_admin = new Admin($this->get_Live_Weather_Station(), $this->get_version() );
         $this->loader->add_action('wp_dashboard_setup', 'WeatherStation\UI\Dashboard\Handling', 'add_wp_dashboard_widget');
+        $this->loader->add_action('dashboard_glance_items', 'WeatherStation\UI\Dashboard\Handling', 'add_wp_glance_items');
         $this->loader->add_action('admin_init', $plugin_admin, 'init_settings' );
         $this->loader->add_action('admin_init', $plugin_admin, 'force_resync_if_needed' );
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'register_scripts', 1);
@@ -154,7 +155,7 @@ class Core {
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_scripts');
         $this->loader->add_action('script_loader_tag', $plugin_admin, 'modify_scripts', 10, 2);
         $this->loader->add_action('admin_menu', $plugin_admin, 'lws_admin_menu' );
-        $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Outdoor', 'widget_registering' );
+        $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Outdoor', 'widget_registering');
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Psychrometry', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Ephemeris', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Indoor', 'widget_registering' );
@@ -202,6 +203,8 @@ class Core {
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_graph_datas', $plugin_public, 'lws_graph_data_callback');
         $this->loader->add_action( 'wp_ajax_lws_query_graph_code', $plugin_public, 'lws_graph_code_callback');
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_graph_code', $plugin_public, 'lws_graph_code_callback');
+        $this->loader->add_action( 'wp_ajax_lws_query_ltgraph_code', $plugin_public, 'lws_ltgraph_code_callback');
+        $this->loader->add_action( 'wp_ajax_nopriv_lws_query_ltgraph_code', $plugin_public, 'lws_ltgraph_code_callback');
         $this->loader->add_action( 'wp_ajax_lws_shortcode', $plugin_public, 'lws_shortcode_callback');
         $this->loader->add_action( 'wp_ajax_nopriv_lws_shortcode', $plugin_public, 'lws_shortcode_callback');
         foreach (array('ephemeris', 'fire', 'indoor', 'outdoor', 'psychrometry', 'solar', 'thunderstorm') as $widget) {

@@ -42,12 +42,10 @@ class File extends Base {
         if ($item['state'] === 'none') {
             if ($item['ext'] !== 'ukn') {
                 $result = __('Ready', 'live-weather-station');
-                if (LWS_PREVIEW) {
-                    $actions[] = '<a href="' . $item['url'] . '" target="_blank" >' . lws__('View file', 'live-weather-station').'</a>';
-                }
+                $actions[] = '<a href="' . $item['url'] . '" target="_blank" >' . __('View file', 'live-weather-station').'</a>';
                 $actions[] = '<a href="' . $item['url'] . '" download>' . __('Download file', 'live-weather-station').'</a>';
                 if ($item['ext'] == 'wsconf.json') {
-                    $actions[] = '<a href="' . lws_get_admin_page_url('lws-files', 'form', 'import', 'configuration', false, null, $item['uuid']) . '">' . lws__('Import configuration', 'live-weather-station').'</a>';
+                    $actions[] = '<a href="' . lws_get_admin_page_url('lws-files', 'form', 'import', 'configuration', false, null, $item['uuid']) . '">' . __('Import configuration', 'live-weather-station').'</a>';
                 }
             }
             else {
@@ -82,7 +80,7 @@ class File extends Base {
 
     public function get_columns(){
         $columns = array(
-            'station' => lws__('Element', 'live-weather-station'),
+            'station' => __('Element', 'live-weather-station'),
             'state' => __('State', 'live-weather-station'),
             'from' => __('From', 'live-weather-station'),
             'to' => __('To', 'live-weather-station'),

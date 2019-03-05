@@ -21,7 +21,5 @@ $climat = array('action'=>'shortcode', 'tab'=>'climat', 'service'=>'station');
     <a href="<?php echo lws_re_get_admin_page_url($current); ?>" class="nav-tab <?php echo $active_tab == 'current' ? 'nav-tab-active' : ''; ?>"><?php echo __('Current records', 'live-weather-station');?></a>
     <a href="<?php echo lws_re_get_admin_page_url($daily); ?>" class="nav-tab <?php echo $active_tab == 'daily' ? 'nav-tab-active' : ''; ?>"><?php echo __('Daily data', 'live-weather-station');?></a>
     <a href="<?php echo lws_re_get_admin_page_url($yearly); ?>" class="nav-tab <?php echo $active_tab == 'yearly' ? 'nav-tab-active' : ''; ?>"><?php echo __('Historical data', 'live-weather-station');?></a>
-    <?php if (LWS_PREVIEW) { ?>
-        <a href="<?php echo lws_re_get_admin_page_url($climat); ?>" class="nav-tab <?php echo $active_tab == 'climat' ? 'nav-tab-active' : ''; ?>"><?php echo lws__('Climatological data', 'live-weather-station');?></a>
-    <?php } ?>
+    <a href="<?php echo lws_re_get_admin_page_url($climat); ?>" class="nav-tab <?php echo $active_tab == 'climat' ? 'nav-tab-active' : ''; ?>"><?php echo __('Climatological data', 'live-weather-station');?></a>
 </h2>

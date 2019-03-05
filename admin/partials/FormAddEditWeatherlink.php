@@ -39,10 +39,10 @@ else {
 
 <div class="wrap">
     <?php if ($station['guid'] == 0) { ?>
-        <h1><?php esc_html_e_lws__('Add a station connected to WeatherLink', 'live-weather-station');?></h1>
+        <h1><?php esc_html_e('Add a station connected to WeatherLink', 'live-weather-station');?></h1>
     <?php } ?>
     <?php if ($station['guid'] != 0) { ?>
-        <h1><?php esc_html_e_lws__('Edit a station connected to WeatherLink', 'live-weather-station');?></h1>
+        <h1><?php esc_html_e('Edit a station connected to WeatherLink', 'live-weather-station');?></h1>
     <?php } ?>
     <form method="post" name="add-edit-wlink-form" id="add-edit-wlink-form" action="<?php echo esc_url(lws_get_admin_page_url($url)); ?>">
         <input name="station_id" type="hidden" value="<?php echo $station['station_id']; ?>" />
@@ -66,15 +66,15 @@ else {
                 </td>
             </tr>
             <tr class="form-field form-required">
-                <th scope="row"><label for="service_did"><?php esc_html_e_lws__('Device ID', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
+                <th scope="row"><label for="service_did"><?php esc_html_e('Device ID', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
                 <td><input required name="service_did" aria-required="true" type="text" id="service_did" value="<?php echo htmlspecialchars($id['service_did']) ?>" maxlength="20" style="width:25em;" /></td>
             </tr>
             <tr class="form-field form-required">
-                <th scope="row"><label for="service_apitoken"><?php esc_html_e_lws__('API Token', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
+                <th scope="row"><label for="service_apitoken"><?php esc_html_e('API Token', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
                 <td><input required name="service_apitoken" aria-required="true" type="text" id="service_apitoken" value="<?php echo htmlspecialchars($id['service_apitoken']) ?>" maxlength="20" style="width:25em;" /></td>
             </tr>
             <tr class="form-field form-required">
-                <th scope="row"><label for="service_ownerpass"><?php esc_html_e_lws__('Password', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
+                <th scope="row"><label for="service_ownerpass"><?php esc_html_e('Password', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
                 <td><input required name="service_ownerpass" aria-required="true" type="text" id="service_ownerpass" value="<?php echo htmlspecialchars($id['service_ownerpass']) ?>" maxlength="20" style="width:25em;" /></td>
             </tr>
 

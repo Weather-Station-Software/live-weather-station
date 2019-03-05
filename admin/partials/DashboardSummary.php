@@ -16,7 +16,7 @@ if (REQUIREMENTS_OK) {
         $data_str = __('The system is paused: it has no data to collect.', 'live-weather-station');
     }
     else {
-        $data_str = sprintf(__('The system is up and running: it is currently collecting %3$d measurements from %1$d stations composed of %2$d modules.', 'live-weather-station'), $a['station'], $a['module'], $a['measure']);
+        $data_str = sprintf(_n('The system is up and running: it is currently collecting %3$d measurements from %1$d station composed of %2$d modules.', 'The system is up and running: it is currently collecting %3$d measurements from %1$d stations composed of %2$d modules.', $a['station'], 'live-weather-station'), $a['station'], $a['module'], $a['measure']);
     }
     $p = $stats->get_processes();
     if (count($p) > 0) {

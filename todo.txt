@@ -80,42 +80,22 @@ Fully delete a station in fast collect mode
 DONE:
 -----
 
-* New: Weather Station natively connects to ***WeatherLink Network*** - special thanks to David Aguilera-Riquelme for the test devices.
-* New: Navionics added as mapping service (nautical, sonar and ski layers).
-* New: MapTiler added as mapping service (many standard layers).
-* New: "icon" control to display current data as static or dynamic icons.
-* New: Zambretti forecast is now computed and is available with textual shortcode and the new icon control.  
-* New: pressure and density altitudes are now computed and available in all controls, graphs and charts.
-* New: full configuration export/import feature (settings, stations and maps).
-* Improvement: current conditions can now be displayed as plain text in textual shortcodes.
-* Improvement: duration can now be outputted as hh:mm or hh:mm:ss formats in textual shortcodes (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/) for the suggestion).
-* Improvement: in maps, two new marker types (temperature and colored temperature) allow to display temperature in markers (thanks to [@daguilera](https://weather.station.software/community/profile/daguilera/) for the suggestion).
-* Improvement: the detection of site's timezone is now fully compliant with WordPress rules.
-* Improvement: obsolete notifications are now auto deleted (option in system tab).
-* Improvement: when installing/updating Weather Station on an old WordPress version, a notification is generated.
-* Improvement: it's now possible to activate/deactivate compatibility mode for tabbed controls (option in system tab).
-* Improvement: disabling Weather Station no longer deletes its data.
-* Improvement: uninstalling Weather Station deletes its data, except historical tables (option in system tab).
-* Improvement: Weather Station can now prevent the cache manager to cache widgets (option in system tab).
+
 
 
 
 
 TODO:
 -----
-Rename Humidity in Relative Humidity
-min/max/trend
+
 Shortened types for textual and gauge (shortened meaning ?)
-Main credits with David Aguilera (Davis WeatherLink)
-Fix ModuleCurrentGauge.php line 275 (controls)
-Limits for alt_pressure and alt_density
-Absolute humidity
 
 
 Textual climatological shortcodes
 Weather radial
 Year / season comparison
 Widget styles
+delete files
 
 
 UV sticker
@@ -129,12 +109,13 @@ Hellman's index
 
 TRANSLATION:
 ------------
-at a glance box: singular/plural for station(s)
+
 
 DOCUMENTATION:
 --------------
 Notifier as system
 New settings in system tab
+readme : new station type
 
 
 -----
@@ -143,7 +124,6 @@ New settings in system tab
 
 
 Accumulated rain in yearly charts
-Day duration in yearly charts
 
 Line at 0°
 

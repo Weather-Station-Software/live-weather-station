@@ -151,7 +151,8 @@ trait StationClient {
             $updates['measure_value'] = $pressure_ref;
             $this->update_data_table($updates, $timezone);
         }
-        if (isset($weather[8])) {
+        // TODO: remove after validation
+        /*if (isset($weather[8])) {
             $trend = 'stable';
             if (strpos(strtolower($weather[8]), 'ris') !== false) {
                 $trend = 'up';
@@ -164,7 +165,7 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'pressure_sl_trend';
             $this->update_data_table($updates, $timezone);
-        }
+        }*/
         $station['last_refresh'] = date('Y-m-d H:i:s');
         $station['last_seen'] = $timestamp;
         $this->update_table(self::live_weather_station_stations_table(), $station);

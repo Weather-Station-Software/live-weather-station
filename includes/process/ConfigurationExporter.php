@@ -66,7 +66,7 @@ class ConfigurationExporter extends Process {
      */
     protected function name($translated=true) {
         if ($translated) {
-            return lws__('Configuration exporter', 'live-weather-station');
+            return __('Configuration exporter', 'live-weather-station');
         }
         else {
             return 'Configuration exporter';
@@ -80,7 +80,7 @@ class ConfigurationExporter extends Process {
      * @since 3.8.0
      */
     protected function description() {
-        return lws__('Exporting all settings of Weather Station plugin as a JSON file.', 'live-weather-station');
+        return __('Exporting all settings of Weather Station plugin as a JSON file.', 'live-weather-station');
     }
 
     /**
@@ -126,7 +126,7 @@ class ConfigurationExporter extends Process {
         }
         else {
             $fileurl = FS::get_full_file_url($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension);
-            $result = sprintf(lws__('Configuration from "%s" has been successfully exported.', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
+            $result = sprintf(__('Configuration from "%s" has been successfully exported.', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
             $result .= sprintf(__('The file is now ready to download. It will be kept on your server for %s days.', 'live-weather-station'), get_option('live_weather_station_file_retention', '7')) . "\r\n";
             $result .= "\r\n" . $fileurl . "\r\n";
         }

@@ -31,6 +31,7 @@ use WeatherStation\Data\History\Builder as HistoryBuilder;
 use WeatherStation\Data\History\Cleaner as HistoryCleaner;
 use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Notifications\Notifier;
+use WeatherStation\System\Storage\Manager as FS;
 
 /**
  * Functionalities for schedules & cron handling.
@@ -53,6 +54,7 @@ trait Handling {
     public static $translation_update_name = 'lws_translation_update';
     public static $log_rotate_name = 'lws_log_rotate';
     public static $notif_rotate_name = 'lws_notif_rotate';
+    public static $file_rotate_name = 'lws_file_rotate';
     public static $cache_flush_name = 'lws_cache_flush';
     public static $stats_clean_name = 'lws_stats_clean';
     public static $integrity_check_name = 'lws_integrity_check';
@@ -61,7 +63,7 @@ trait Handling {
     public static $background_process_name = 'lws_background_process';
     public static $cron_system = array('lws_watchdog', 'lws_translation_update', 'lws_log_rotate', 'lws_cache_flush',
                                         'lws_stats_clean', 'lws_integrity_check', 'lws_plugin_stat', 'lws_device_management',
-                                        'lws_background_process', 'lws_notif_rotate');
+                                        'lws_background_process', 'lws_notif_rotate', 'lws_file_rotate');
 
     // HISTORY
     public static $history_build_name = 'lws_history_build';
@@ -346,7 +348,10 @@ trait Handling {
                 return __('Events log rotation', 'live-weather-station');
                 break;
             case 'lws_notif_rotate':
-                return lws__('Obsolete notifications deletion', 'live-weather-station');
+                return __('Obsolete notifications deletion', 'live-weather-station');
+                break;
+            case 'lws_file_rotate':
+                return __('Obsolete files deletion', 'live-weather-station');
                 break;
             case 'lws_cache_flush':
                 return __('Cache flushing', 'live-weather-station');
@@ -388,7 +393,7 @@ trait Handling {
                 return __('WeatherFlow - Weather station', 'live-weather-station');
                 break;
             case 'lws_wlink_station_update':
-                return lws__('WeatherLink - Weather station', 'live-weather-station');
+                return __('WeatherLink - Weather station', 'live-weather-station');
                 break;
             case 'lws_piou_station_update':
                 return __('Pioupiou - Sensor', 'live-weather-station');
@@ -864,6 +869,31 @@ trait Handling {
         if (!wp_next_scheduled(self::$notif_rotate_name)) {
             wp_schedule_event(time() + $timeshift, 'twicedaily', self::$notif_rotate_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$notif_rotate_name).'" (re)scheduled.');
+        }
+    }
+
+    /**
+     * Define files rotate cron job.
+     *
+     * @since 3.8.0
+     */
+    protected static function define_file_rotate_cron() {
+        $filer = new FS(LWS_PLUGIN_NAME, LWS_VERSION);
+        add_action(self::$file_rotate_name, array($filer, 'rotate'));
+    }
+
+    /**
+     * Launch the files rotate cron job if needed.
+     *
+     * @param integer $timeshift Optional. The first start for the cron from now on.
+     * @param string $system Optional. The system which have initiated the launch.
+     *
+     * @since 3.8.0
+     */
+    protected static function launch_file_rotate_cron($timeshift=0, $system='Watchdog') {
+        if (!wp_next_scheduled(self::$file_rotate_name)) {
+            wp_schedule_event(time() + $timeshift, 'twicedaily', self::$file_rotate_name);
+            Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$file_rotate_name).'" (re)scheduled.');
         }
     }
 

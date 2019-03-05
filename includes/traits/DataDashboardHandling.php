@@ -631,7 +631,8 @@ trait Handling {
         $this->update_data_table($updates, $timezone);
 
         // Additional datas about temperature
-        if (array_key_exists('date_max_temp', $datas) &&
+        // TODO: remove after validation
+        /*if (array_key_exists('date_max_temp', $datas) &&
             array_key_exists('date_min_temp', $datas) &&
             array_key_exists('min_temp', $datas) &&
             array_key_exists('max_temp', $datas)) {
@@ -655,7 +656,7 @@ trait Handling {
             $updates['measure_type'] = 'temperature_max';
             $updates['measure_value'] = $datas['max_temp'] ;
             $this->update_data_table($updates, $timezone);
-        }
+        }*/
 
         // Additional datas about temperature trend
         if (array_key_exists('temp_trend', $datas)) {
