@@ -47,7 +47,7 @@ if (get_option('live_weather_station_maptiler_apikey') != '') {
     $maptiler_t = '_self';
 }
 else {
-    $maptiler_s = addslashes(lws__('To add a map of this type, you need to set a Maptiler API key. To set it, click on this logo to be redirected to the services settings.', 'live-weather-station'));
+    $maptiler_s = addslashes(__('To add a map of this type, you need to set a Maptiler API key. To set it, click on this logo to be redirected to the services settings.', 'live-weather-station'));
     $maptiler_l = lws_get_admin_page_url('lws-settings', null, 'services');
     $maptiler_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
@@ -68,12 +68,12 @@ $stamen_l = lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'stamen');
 $stamen_t = '_self';
 
 if (get_option('live_weather_station_navionics_apikey') != '') {
-    $navionics_s = ucfirst(addslashes(lws__('a full featured map from Navionics with nautical, sonar and ski layers.', 'live-weather-station')));
+    $navionics_s = ucfirst(addslashes(__('a full featured map from Navionics with nautical, sonar and ski layers.', 'live-weather-station')));
     $navionics_l = lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'navionics');
     $navionics_t = '_self';
 }
 else {
-    $navionics_s = addslashes(lws__('To add a map of this type, you need to set a Navionics API key. To set it, click on this logo to be redirected to the services settings.', 'live-weather-station'));
+    $navionics_s = addslashes(__('To add a map of this type, you need to set a Navionics API key. To set it, click on this logo to be redirected to the services settings.', 'live-weather-station'));
     $navionics_l = lws_get_admin_page_url('lws-settings', null, 'services');
     $navionics_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
@@ -91,10 +91,8 @@ else {
                 </style>
                 <div style="flex:auto;padding:14px;"><img id="owm" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_owm_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="mapbox" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_mapbox_color_logo());?>" /></div>
-                <?php if (LWS_PREVIEW) { ?>
-                    <div style="flex:auto;padding:14px;"><img id="maptiler" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_maptiler_color_logo());?>" /></div>
-                    <div style="flex:auto;padding:14px;"><img id="navionics" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_navionics_color_logo());?>" /></div>
-                <?php } ?>
+                <div style="flex:auto;padding:14px;"><img id="maptiler" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_maptiler_color_logo());?>" /></div>
+                <div style="flex:auto;padding:14px;"><img id="navionics" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_navionics_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="stamen" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_stamen_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="thunderforest" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_thunderforest_color_logo());?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="windy" class="actionable" style="width:80px;" src="<?php echo set_url_scheme(SVG::get_base64_windy_color_logo());?>" /></div>

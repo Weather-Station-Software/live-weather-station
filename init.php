@@ -25,11 +25,11 @@ use WeatherStation\System\Storage\Manager as FS;
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.7.11');
-define('LWS_PREVIEW', true);
+define('LWS_VERSION', '3.8.0-dev0');
+define('LWS_PREVIEW', false);
 
-define('LWS_CODENAME', '"Déportivo"');
-define('LWS_WHATSNEW', 'https://weather.station.software/blog/weather-station-3-7-deportivo/');
+define('LWS_CODENAME', '"Danakil"');
+define('LWS_WHATSNEW', 'https://weather.station.software/blog/weather-station-3-8-danakil/');
 define('LWS_SHOW_CHANGELOG', false);
 
 //---------------------------------------------------------------------------------------------------

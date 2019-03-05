@@ -6,6 +6,7 @@ use WeatherStation\System\Help\InlineHelp as RSS;
 use WeatherStation\System\I18N\Handling as I18N;
 use WeatherStation\System\Analytics\Performance;
 use WeatherStation\System\Notifications\Notifier;
+use WeatherStation\DB\Query;
 
 /**
  * This class builds elements of the dashboard.
@@ -17,6 +18,8 @@ use WeatherStation\System\Notifications\Notifier;
  */
 
 class Handling {
+
+    use Query;
 
     private $Live_Weather_Station;
     private $version;
@@ -267,6 +270,32 @@ class Handling {
      */
     public static function add_wp_dashboard_widget() {
         wp_add_dashboard_widget('lws_dashboard_widget', LWS_FULL_NAME, array(get_called_class(), '_summary_widget'));
+    }
+
+    /**
+     * Callback for add_action('custom_glance_items'...).
+     *
+     * @since 3.8.0
+     */
+    public static function add_wp_glance_items() {
+        wp_enqueue_style('lws-admin');
+        $stations = self::get_stations_count();
+        if ($stations > 0) {
+            $s = sprintf( '<a class="lws-station-count" href="admin.php?page=lws-stations">%s</a>', sprintf(_n('%s Weather station', '%s Weather stations', $stations, 'live-weather-station'),$stations)) . "\n";
+        }
+        else {
+            $s = sprintf( '<span class="lws-station-count">%s</span>', __('No weather station', 'live-weather-station') ) . "\n";
+        }
+        echo '<li class="lws-station-count">' . $s . '</li>';
+
+        $maps = self::get_maps_count();
+        if ($maps > 0) {
+            $s = sprintf( '<a class="lws-map-count" href="admin.php?page=lws-maps">%s</a>', sprintf(_n('%s Weather map', '%s Weather maps', $maps, 'live-weather-map'),$maps)) . "\n";
+        }
+        else {
+            $s = sprintf( '<span class="lws-map-count">%s</span>', __('No weather map', 'live-weather-map') ) . "\n";
+        }
+        echo '<li class="lws-map-count">' . $s . '</li>';
     }
 
     /**

@@ -119,14 +119,6 @@ class Builder
               'moisture_tension', 'evapotranspiration', 'gustangle', 'guststrength', 'strike_instant', 'strike_count',
               'sunshine', 'gustdirection', 'delta_t');
 
-
-
-
-
-
-
-
-
     private $Live_Weather_Station;
     private $version;
     private $facility = 'History Builder';
@@ -370,9 +362,6 @@ class Builder
                 if ($measure_type == 'rain_day_aggregated') {
                     $result = array();
                 }
-                if ($measure_type == 'sunshine') {
-                    $result = array();
-                }
                 if ($measure_type == 'rain') {
                     $result = array();
                 }
@@ -391,9 +380,6 @@ class Builder
                     $result = array('AVG' => 'avg', 'MID' => 'mid');
                 }
                 if ($measure_type == 'rain_day_aggregated') {
-                    $result = array();
-                }
-                if ($measure_type == 'sunshine') {
                     $result = array();
                 }
                 if ($measure_type == 'rain') {
@@ -436,9 +422,6 @@ class Builder
                 if ($measure_type == 'rain_day_aggregated') {
                     $result = array();
                 }
-                if ($measure_type == 'rain_day_aggregated') {
-                    $result = array();
-                }
                 if ($measure_type == 'sunshine') {
                     $result = array();
                 }
@@ -457,9 +440,6 @@ class Builder
                 if ($measure_type == 'rain_day_aggregated') {
                     $result = array();
                 }
-                if ($measure_type == 'rain_day_aggregated') {
-                    $result = array();
-                }
                 if ($measure_type == 'sunshine') {
                     $result = array();
                 }
@@ -475,6 +455,9 @@ class Builder
             }
             else {
                 $result = array('MAX' => 'max', 'MIN' => 'min', 'AVG' => 'avg', 'STD' => 'dev', 'MID' => 'mid', 'MED' => 'med', 'AMP' => 'amp');
+                if ($measure_type == 'sunshine') {
+                    $result = array('MAX'=>'agg');
+                }
                 if ($measure_type == 'strike_count') {
                     $result = array('HR_MAX'=>'maxhr');
                 }

@@ -42,7 +42,7 @@ class Notifier {
      * @since 3.8.0
      */
     public function rotate() {
-        $cron_id = Watchdog::init_chrono(Watchdog::$log_rotate_name);
+        $cron_id = Watchdog::init_chrono(Watchdog::$notif_rotate_name);
         $days = get_option('live_weather_station_retention_notifications', 0);
         if ($days > 0) {
             $count = $this->purge_table(self::live_weather_station_notifications_table() , 'timestamp', 24 * $days);
@@ -68,7 +68,7 @@ class Notifier {
      * @param $name string Optional. The name of the notification.
      * @param $url string Optional. The URL of the detail.
      * @param $description string Optional. The description of the notification.
-     * @param $shift boolean Optional. Indicates if teher is a decay in the notification.
+     * @param $shift boolean Optional. Indicates if there is a decay in the notification.
      * @since 3.6.0
      */
     private static function _notify($level = 'error', $name='', $url='', $description='', $shift=false) {

@@ -97,9 +97,7 @@ class Handling {
         lws_font_awesome();
         $bsky = self::is_bsky_station($this->station_id);
         Textual::register_module('current');
-        if (LWS_PREVIEW) {
-            Icon::register_module('current');
-        }
+        Icon::register_module('current');
         Gauge::register_module('current');
         Lcd::register_module('current');
         Meter::register_module('current');

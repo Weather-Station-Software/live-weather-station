@@ -19,7 +19,7 @@ trait Query {
     
     use Storage;
 
-    private $dont_filter = array('loc_latitude', 'loc_longitude', 'loc_altitude', 'windstrength_hour_max', 'windangle_hour_max',
+    protected $dont_filter = array('loc_latitude', 'loc_longitude', 'loc_altitude', 'windstrength_hour_max', 'windangle_hour_max',
                                  'windangle_day_max', 'winddirection_hour_max', 'winddirection_day_max','last_seen', 'date_setup', 'last_upgrade',
                                  'co2_min', 'co2_max', 'co2_trend', 'humidity_min', 'humidity_max', 'humidity_trend', 'noise_min', 'noise_max', 'noise_trend',
                                  'pressure_min', 'pressure_max', 'pressure_trend', 'pressure_sl_min', 'pressure_sl_max', 'pressure_sl_trend', 'temperature_min',
@@ -30,7 +30,7 @@ trait Query {
                                  'absolute_humidity_trend', 'loc_city', 'loc_country', 'loc_timezone', 'cloudiness_min', 'cloudiness_max', 'cloudiness_trend',
                                  'guststrength_day_min', 'guststrength_day_max', 'guststrength_day_trend', 'visibility_min', 'visibility_max', 'visibility_trend',
                                  'windstrength_day_min', 'windstrength_day_max', 'windstrength_day_trend');
-    private $min_max_trend = array('absolute_humidity', 'cloudiness', 'co2', 'guststrength', 'humidity', 'illuminance', 'irradiance', 'moisture_content',
+    protected $min_max_trend = array('absolute_humidity', 'cloudiness', 'co2', 'guststrength', 'humidity', 'illuminance', 'irradiance', 'moisture_content',
         'moisture_tension', 'noise', 'pressure', 'pressure_sl', 'temperature', 'soil_temperature', 'uv_index', 'visibility', 'windstrength');
 
     /**
@@ -148,30 +148,6 @@ trait Query {
                 $sub_attributes[] = 'temperature_ref';
                 $sub_attributes[] = 'humidity_ref';
                 break;
-            case 'temperature':
-                $sub_attributes[] = 'temperature';
-                $sub_attributes[] = 'temperature_min';
-                $sub_attributes[] = 'temperature_max';
-                if ($full_mode) {
-                    $sub_attributes[] = 'temperature_trend';
-                }
-                break;
-            case 'pressure':
-                $sub_attributes[] = 'pressure';
-                $sub_attributes[] = 'pressure_min';
-                $sub_attributes[] = 'pressure_max';
-                if ($full_mode) {
-                    $sub_attributes[] = 'pressure_trend';
-                }
-                break;
-            case 'humidity':
-                $sub_attributes[] = 'humidity';
-                $sub_attributes[] = 'humidity_min';
-                $sub_attributes[] = 'humidity_max';
-                if ($full_mode) {
-                    $sub_attributes[] = 'humidity_trend';
-                }
-                break;
             case 'windangle':
                 $sub_attributes[] = 'windangle';
                 if ($full_mode) {
@@ -194,6 +170,23 @@ trait Query {
                 break;
             default:
                 $sub_attributes[] = $attributes['measure_type'];
+        }
+        if (in_array($attributes['measure_type'], $this->min_max_trend)) {
+            $sub_attributes[] = $attributes['measure_type'];
+            if (strpos($attributes['measure_type'], 'strength')) {
+                $sub_attributes[] = $attributes['measure_type'] . '_day_min';
+                $sub_attributes[] = $attributes['measure_type'] . '_day__max';
+                if ($full_mode) {
+                    $sub_attributes[] = $attributes['measure_type'] . '_day_trend';
+                }
+            }
+            else {
+                $sub_attributes[] = $attributes['measure_type'] . '_min';
+                $sub_attributes[] = $attributes['measure_type'] . '_max';
+                if ($full_mode) {
+                    $sub_attributes[] = $attributes['measure_type'] . '_trend';
+                }
+            }
         }
         return $sub_attributes;
     }
@@ -1022,6 +1015,31 @@ trait Query {
     }
 
     /**
+     * Is there a measurement type in historical data?
+     *
+     * @param string $type The measurement type to verify.
+     * @return boolean True if one or more rows are detected..
+     * @since 3.8.0
+     */
+    public function is_historized($type) {
+        global $wpdb;
+        $result = 0;
+        $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
+        $sql = "SELECT COUNT(*) as val FROM " . $table_name . " WHERE measure_type='" . $type . "'" ;
+        $count = $wpdb->get_results($sql, ARRAY_A);
+        if ($count) {
+            if (is_array($count)) {
+                if (count($count) == 1) {
+                    if (array_key_exists('val', $count[0])) {
+                        $result = (int)$count[0]['val'];
+                    }
+                }
+            }
+        }
+        return (0 < $result);
+    }
+
+    /**
      * Update the value 'oldest_data' for a station.
      *
      * @param string $station_id The station id.
@@ -1042,7 +1060,7 @@ trait Query {
      *
      * @param integer $station_id The station id.
      * @return array An array containing the station informations.
-     * @since  2.3.0
+     * @since 2.3.0
      */
     protected function get_station_informations_by_station_id($station_id) {
         global $wpdb;
@@ -1504,8 +1522,8 @@ trait Query {
     /**
      * Get stations informations.
      *
-     * @return  array   An array containing the stations informations.
-     * @since    2.3.0
+     * @return array An array containing the stations informations.
+     * @since 2.3.0
      */
     protected function get_stations_informations() {
         global $wpdb;
@@ -2609,6 +2627,50 @@ trait Query {
         global $wpdb;
         $sql = "SELECT * FROM " . $wpdb->prefix . $table;
         return $wpdb->get_results($sql, ARRAY_A);
+    }
+
+    /**
+     * Count the number of rows in a table.
+     *
+     * @param string $table The table name - without prefix.
+     * @return integer The number of rows.
+     * @since 3.8.0
+     */
+    private static function get_count($table) {
+        $result = 0;
+        global $wpdb;
+        $sql = "SELECT COUNT(*) as val FROM " . $wpdb->prefix . $table;
+        $count = $wpdb->get_results($sql, ARRAY_A);
+        if ($count) {
+            if (is_array($count)) {
+                if (count($count) == 1) {
+                    if (array_key_exists('val', $count[0])) {
+                        $result = (int)$count[0]['val'];
+                    }
+                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Get maps count.
+     *
+     * @return integer The number of maps.
+     * @since 3.8.0
+     */
+    public static function get_maps_count() {
+        return self::get_count(self::live_weather_station_maps_table());
+    }
+
+    /**
+     * Get stations count.
+     *
+     * @return integer The number of stations.
+     * @since 3.8.0
+     */
+    public static function get_stations_count() {
+        return self::get_count(self::live_weather_station_stations_table());
     }
 
     /**

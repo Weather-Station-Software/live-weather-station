@@ -95,7 +95,8 @@ trait StationClient {
             $updates['measure_type'] = 'pressure_sl';
             $updates['measure_value'] = $weather[6];
             $this->update_data_table($updates, $timezone);
-            $updates['measure_type'] = 'pressure_min';
+            // TODO: remove after validation
+            /*$updates['measure_type'] = 'pressure_min';
             $updates['measure_value'] = $this->convert_from_mslp_to_baro($weather[132], $station['loc_altitude'], $weather[4]);
             $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'pressure_sl_min';
@@ -116,7 +117,7 @@ trait StationClient {
             }
             $updates['measure_type'] = 'pressure_trend';
             $updates['measure_value'] = $trend;
-            $this->update_data_table($updates, $timezone);
+            $this->update_data_table($updates, $timezone);*/
             $updates['measure_type'] = 'battery';
             $updates['measure_value'] = 100;
             $this->update_data_table($updates, $timezone);

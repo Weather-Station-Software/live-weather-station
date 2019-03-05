@@ -81,7 +81,7 @@
             <?php endif;?>
             <?php if ($show_humidity):?>
                 <!-- HUMIDITY -->
-                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Humidity', 'live-weather-station').'"' : ''); ?>>
+                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Relative humidity', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
                         <?php echo $datas['humidity']['icon']; ?>
                     </div>

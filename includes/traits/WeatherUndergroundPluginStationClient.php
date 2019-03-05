@@ -207,7 +207,8 @@ trait StationClient {
                 $updates['measure_value'] = $this->convert_from_mslp_to_baro($updates['measure_value'], $station['loc_longitude'], $temperature);
                 $this->update_data_table($updates, $timezone);
             }
-            if (array_key_exists('pressure_trend', $observation)) {
+            // TODO: remove after validation
+            /*if (array_key_exists('pressure_trend', $observation)) {
                 $updates['measure_type'] = 'pressure_trend';
                 $updates['measure_value'] = 'stable';
                 if ($observation['pressure_trend'] == '-') {
@@ -219,7 +220,7 @@ trait StationClient {
                 $this->update_data_table($updates, $timezone);
                 $updates['measure_type'] = 'pressure_sl_trend';
                 $this->update_data_table($updates, $timezone);
-            }
+            }*/
             $station['last_refresh'] = date('Y-m-d H:i:s');
             $station['last_seen'] = $timestamp;
             $this->update_table(self::live_weather_station_stations_table(), $station);

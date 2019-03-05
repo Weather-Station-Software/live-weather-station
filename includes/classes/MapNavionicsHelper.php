@@ -207,7 +207,7 @@ class NavionicsHandling extends BaseHandling {
         $content = '<table cellspacing="0" style="display:table;" class="lws-settings"><tbody>';
         $content .= $this->get_key_value_option_select('options-basemap', __('Base map', 'live-weather-station'), $this->get_basemap_js_array(), true, $this->map_params['specific']['options']['basemap']);
         $content .= $this->get_key_value_option_select('options-overlay', __('Overlay', 'live-weather-station'), $this->get_navionicsmap_overlay_js_array(), true, $this->map_params['specific']['options']['overlay']);
-        $content .= $this->get_key_value_option_select('options-depth', lws__('Safety depth', 'live-weather-station'), $this->get_navionicsmap_depth_js_array(), true, $this->map_params['specific']['options']['depth']);
+        $content .= $this->get_key_value_option_select('options-depth', __('Safety depth', 'live-weather-station'), $this->get_navionicsmap_depth_js_array(), true, $this->map_params['specific']['options']['depth']);
         $content .= '</tbody></table>';
         return $content;
     }

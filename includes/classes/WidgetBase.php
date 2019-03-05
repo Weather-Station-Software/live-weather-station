@@ -30,7 +30,11 @@ abstract class Base extends \WP_Widget {
      *
      * @since 3.8.0
      */
-    public abstract function enqueue_styles();
+    public function enqueue_styles() {
+        wp_enqueue_style('lws-weather-icons');
+        wp_enqueue_style('lws-weather-icons-wind');
+        lws_font_awesome();
+    }
 
     /**
      * Get the widget output.

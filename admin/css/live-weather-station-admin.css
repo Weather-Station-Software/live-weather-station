@@ -1,3 +1,14 @@
+#dashboard_right_now .lws-station-count a:before,
+#dashboard_right_now .lws-station-count span:before {
+    content: "\f230";
+}
+
+#dashboard_right_now .lws-map-count a:before,
+#dashboard_right_now .lws-map-count span:before {
+    content: "\f231";
+}
+
+
 img.lws-logo {
     max-height: 26px;
     max-width: 24px;

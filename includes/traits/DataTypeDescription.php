@@ -237,17 +237,11 @@ trait Description {
             case 'signal':
                 $result = ($abbr ? __('WiFi', 'live-weather-station') : __('RF/WiFi signal quality', 'live-weather-station'));
                 break;
-            case 'co2': //TODO: concentration
-                $result = ($abbr ? __('CO₂', 'live-weather-station') : __('Carbon dioxide', 'live-weather-station'));
-                break;
+            case 'co2':
             case 'co2_min':
-                $result = ($abbr ? __('CO₂', 'live-weather-station') : lws__('Lowest carbon dioxide concentration of the day', 'live-weather-station'));
-                break;
             case 'co2_max':
-                $result = ($abbr ? __('CO₂', 'live-weather-station') : lws__('Highest carbon dioxide concentration of the day', 'live-weather-station'));
-                break;
             case 'co2_trend':
-                $result = ($abbr ? __('CO₂', 'live-weather-station') : lws__('Carbon dioxide concentration trend', 'live-weather-station'));
+                $result = ($abbr ? __('CO₂', 'live-weather-station') : __('Carbon dioxide concentration', 'live-weather-station'));
                 break;
             case 'health_idx':
                 $result = ($abbr ? __('Health', 'live-weather-station') : __('Health index', 'live-weather-station'));
@@ -268,16 +262,10 @@ trait Description {
                 $result = ($abbr ? __('O₃', 'live-weather-station') : __('Ozone layer probe distance', 'live-weather-station'));
                 break;
             case 'humidity':
-                $result = ($abbr ? __('Humidity', 'live-weather-station') : __('Humidity', 'live-weather-station'));
-                break;
             case 'humidity_min':
-                $result = ($abbr ? __('Humidity', 'live-weather-station') : __('Lowest humidity of the day', 'live-weather-station'));
-                break;
             case 'humidity_max':
-                $result = ($abbr ? __('Humidity', 'live-weather-station') : __('Highest humidity of the day', 'live-weather-station'));
-                break;
             case 'humidity_trend':
-                $result = ($abbr ? __('Humidity', 'live-weather-station') : lws__('Humidity trend', 'live-weather-station'));
+                $result = ($abbr ? __('Relative humidity', 'live-weather-station') : __('Relative humidity', 'live-weather-station'));
                 break;
             case 'humint':
                 $result = ($abbr ? __('Indoor humidity', 'live-weather-station') : __('Indoor humidity', 'live-weather-station'));
@@ -286,43 +274,25 @@ trait Description {
                 $result = ($abbr ? __('Outdoor humidity', 'live-weather-station') : __('Outdoor humidity', 'live-weather-station'));
                 break;
             case 'humidity_ref':
-                $result = ($abbr ? __('Humidity', 'live-weather-station') : __('Reference humidity', 'live-weather-station'));
+                $result = ($abbr ? __('Relative humidity', 'live-weather-station') : __('Reference relative humidity', 'live-weather-station'));
                 break;
             case 'noise':
+            case 'noise_min':
+            case 'noise_max':
+            case 'noise_trend':
                 $result = ($abbr ? __('Noise', 'live-weather-station') : __('Noise level', 'live-weather-station'));
                 break;
-            case 'noise_min':
-                $result = ($abbr ? __('Noise', 'live-weather-station') : lws__('Lowest noise level of the day', 'live-weather-station'));
-                break;
-            case 'noise_max':
-                $result = ($abbr ? __('Noise', 'live-weather-station') : lws__('Highest noise level of the day', 'live-weather-station'));
-                break;
-            case 'noise_trend':
-                $result = ($abbr ? __('Noise', 'live-weather-station') : lws__('Noise level trend', 'live-weather-station'));
-                break;
             case 'pressure':
+            case 'pressure_min':
+            case 'pressure_max':
+            case 'pressure_trend':
                 $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Atmospheric pressure', 'live-weather-station'));
                 break;
-            case 'pressure_min':
-                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Lowest atmospheric pressure of the day', 'live-weather-station'));
-                break;
-            case 'pressure_max':
-                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Highest atmospheric pressure of the day', 'live-weather-station'));
-                break;
-            case 'pressure_trend':
-                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Atmospheric pressure trend', 'live-weather-station'));
-                break;
             case 'pressure_sl':
-                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Barometric pressure', 'live-weather-station'));
-                break;
             case 'pressure_sl_min':
-                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Lowest barometric pressure of the day', 'live-weather-station'));
-                break;
             case 'pressure_sl_max':
-                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Highest barometric pressure of the day', 'live-weather-station'));
-                break;
             case 'pressure_sl_trend':
-                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Barometric pressure trend', 'live-weather-station'));
+                $result = ($abbr ? __('Pressure', 'live-weather-station') : __('Barometric pressure', 'live-weather-station'));
                 break;
             case 'temperature':
                 $result = ($abbr ? __('Temperature', 'live-weather-station') : __('Temperature', 'live-weather-station'));
@@ -344,15 +314,11 @@ trait Description {
                 break;
             case 'temperature_max':
             case 'max_temp':
-                $result = ($abbr ? __('Temperature', 'live-weather-station') : __('Highest temperature of the day', 'live-weather-station'));
-                break;
             case 'temperature_min':
             case 'min_temp':
-                $result = ($abbr ? __('Temperature', 'live-weather-station') : __('Lowest temperature of the day', 'live-weather-station'));
-                break;
             case 'temperature_trend':
             case 'temp_trend':
-                $result = ($abbr ? __('Temperature', 'live-weather-station') : __('Temperature trend', 'live-weather-station'));
+                $result = ($abbr ? __('Temperature', 'live-weather-station') : __('Temperature', 'live-weather-station'));
                 break;
             case 'dew_point':
                 $result = ($abbr ? __('Dew point', 'live-weather-station') : __('Dew point', 'live-weather-station'));
@@ -386,31 +352,31 @@ trait Description {
                     $result = ($abbr ? __('Rain', 'live-weather-station') : __('Rain rate', 'live-weather-station'));
                 }
                 else {
-                    $result = ($abbr ? __('Rain', 'live-weather-station') : __('Accumulated rainfall for the last 3 hours', 'live-weather-station'));
+                    $result = ($abbr ? __('Rain', 'live-weather-station') : __('Rain, last 3 hours accumulation', 'live-weather-station'));
                 }
                 break;
             case 'snow':
-                $result = ($abbr ? __('Snow', 'live-weather-station') : __('Accumulated snowfall for the last 3 hours', 'live-weather-station'));
+                $result = ($abbr ? __('Snow', 'live-weather-station') : __('Snow, last 3 hours accumulation', 'live-weather-station'));
                 break;
             case 'rain_hour_aggregated':
             case 'sum_rain_1':
-                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Accumulated rainfall for the last hour', 'live-weather-station'));
+                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Rain, last hour accumulation', 'live-weather-station'));
                 break;
             case 'rain_day_aggregated':
             case 'sum_rain_24':
-                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Accumulated rainfall for today', 'live-weather-station'));
+                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Rain, daily accumulation', 'live-weather-station'));
                 break;
             case 'rain_yesterday_aggregated':
-                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Accumulated rainfall for yesterday', 'live-weather-station'));
+                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Rain, yesterday accumulation', 'live-weather-station'));
                 break;
             case 'rain_month_aggregated':
-                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Accumulated rainfall for the month', 'live-weather-station'));
+                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Rain, monthly accumulation', 'live-weather-station'));
                 break;
             case 'rain_season_aggregated':
-                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Accumulated rainfall for the season', 'live-weather-station'));
+                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Rain, seasonal accumulation', 'live-weather-station'));
                 break;
             case 'rain_year_aggregated':
-                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Accumulated rainfall for the year', 'live-weather-station'));
+                $result = ($abbr ? __('Rain', 'live-weather-station') : __('Rain, yearly accumulation', 'live-weather-station'));
                 break;
             case 'windangle':
                 $result = ($abbr ? __('Wind', 'live-weather-station') : __('Wind source', 'live-weather-station'));
@@ -443,7 +409,7 @@ trait Description {
             case 'windstrength_max':
             case 'windstrength_hour_max':
             case 'max_wind_str':
-                $result = ($abbr ? __('Wind', 'live-weather-station') : __('Maximal wind strength for the last hour', 'live-weather-station'));
+                $result = ($abbr ? __('Wind', 'live-weather-station') : __('Wind strength, maximum of the last hour', 'live-weather-station'));
                 break;
             case 'windangle_day_max':
                 $result = ($abbr ? __('Wind', 'live-weather-station') : __('Wind source for the maximal wind strength today', 'live-weather-station'));
@@ -452,22 +418,14 @@ trait Description {
                 $result = ($abbr ? __('Wind', 'live-weather-station') : __('Wind direction for the maximal wind strength today', 'live-weather-station'));
                 break;
             case 'windstrength_day_min':
-                $result = ($abbr ? __('Wind', 'live-weather-station') : lws__('Lowest wind strength for the day', 'live-weather-station'));
-                break;
             case 'windstrength_day_max':
-                $result = ($abbr ? __('Wind', 'live-weather-station') : lws__('Highest wind strength for the day', 'live-weather-station'));
-                break;
             case 'windstrength_day_trend':
-                $result = ($abbr ? __('Wind', 'live-weather-station') : lws__('Wind strength trend', 'live-weather-station'));
+                $result = ($abbr ? __('Wind', 'live-weather-station') : __('Wind strength', 'live-weather-station'));
                 break;
             case 'guststrength_day_min':
-                $result = ($abbr ? __('Gust', 'live-weather-station') : lws__('Lowest gust strength for the day', 'live-weather-station'));
-                break;
             case 'guststrength_day_max':
-                $result = ($abbr ? __('Gust', 'live-weather-station') : lws__('Highest gust strength for the day', 'live-weather-station'));
-                break;
             case 'guststrength_day_trend':
-                $result = ($abbr ? __('Gust', 'live-weather-station') : lws__('Gust strength trend', 'live-weather-station'));
+                $result = ($abbr ? __('Gust', 'live-weather-station') : __('Gust strength', 'live-weather-station'));
                 break;
             case 'loc_altitude':
             case 'altitude':
@@ -613,16 +571,10 @@ trait Description {
                 $result = ($abbr ? __('Part. abs. humidity', 'live-weather-station') : __('Partial absolute humidity', 'live-weather-station'));
                 break;
             case 'absolute_humidity':
-                $result = ($abbr ? __('Abs. humidity', 'live-weather-station') : __('Absolute humidity', 'live-weather-station'));
-                break;
             case 'absolute_humidity_min':
-                $result = ($abbr ? __('Abs. humidity', 'live-weather-station') : lws__('Lowest absolute humidity of the day', 'live-weather-station'));
-                break;
             case 'absolute_humidity_max':
-                $result = ($abbr ? __('Abs. humidity', 'live-weather-station') : lws__('Highest absolute humidity of the day', 'live-weather-station'));
-                break;
             case 'absolute_humidity_trend':
-                $result = ($abbr ? __('Abs. humidity', 'live-weather-station') : lws__('Absolute humidity trend', 'live-weather-station'));
+                $result = ($abbr ? __('Abs. humidity', 'live-weather-station') : __('Absolute humidity', 'live-weather-station'));
                 break;
             case 'specific_enthalpy':
                 $result = ($abbr ? __('Enthalpy', 'live-weather-station') : __('Specific enthalpy', 'live-weather-station'));
@@ -641,96 +593,60 @@ trait Description {
                 $result = ($abbr ? __('Eq. pot. temperature', 'live-weather-station') : __('Equivalent potential temperature', 'live-weather-station'));
                 break;
             case 'alt_pressure':
-                $result = ($abbr ? lws__('Pressure alt.', 'live-weather-station') : lws__('Pressure altitude', 'live-weather-station'));
+                $result = ($abbr ? __('Pressure alt.', 'live-weather-station') : __('Pressure altitude', 'live-weather-station'));
                 break;
             case 'alt_density':
-                $result = ($abbr ? lws__('Density alt.', 'live-weather-station') : lws__('Density altitude', 'live-weather-station'));
+                $result = ($abbr ? __('Density alt.', 'live-weather-station') : __('Density altitude', 'live-weather-station'));
                 break;
             case 'zcast_best':
-                $result = ($abbr ? lws__('Zambretti', 'live-weather-station') : lws__('Zambretti forecast (at 09:00)', 'live-weather-station'));
+                $result = ($abbr ? __('Zambretti', 'live-weather-station') : __('Zambretti forecast (at 09:00)', 'live-weather-station'));
                 break;
             case 'zcast_live':
-                $result = ($abbr ? lws__('Zambretti', 'live-weather-station') : lws__('Zambretti forecast (live)', 'live-weather-station'));
+                $result = ($abbr ? __('Zambretti', 'live-weather-station') : __('Zambretti forecast (live)', 'live-weather-station'));
                 break;
             // SOLAR
             case 'irradiance':
-                $result = ($abbr ? __('Irradiance', 'live-weather-station') : __('Solar irradiance', 'live-weather-station'));
-                break;
             case 'irradiance_min':
-                $result = ($abbr ? __('Irradiance', 'live-weather-station') : lws__('Lowest solar irradiance of the day', 'live-weather-station'));
-                break;
             case 'irradiance_max':
-                $result = ($abbr ? __('Irradiance', 'live-weather-station') : lws__('Highest solar irradiance of the day', 'live-weather-station'));
-                break;
             case 'irradiance_trend':
-                $result = ($abbr ? __('Irradiance', 'live-weather-station') : lws__('Solar irradiance trend', 'live-weather-station'));
+                $result = ($abbr ? __('Irradiance', 'live-weather-station') : __('Solar irradiance', 'live-weather-station'));
                 break;
             case 'sunshine':
                 $result = ($abbr ? __('Sunshine', 'live-weather-station') : __('Sunshine duration', 'live-weather-station'));
                 break;
             case 'uv_index':
+            case 'uv_index_min':
+            case 'uv_index_max':
+            case 'uv_index_trend':
                 $result = ($abbr ? __('UV', 'live-weather-station') : __('UV index', 'live-weather-station'));
                 break;
-            case 'uv_index_min':
-                $result = ($abbr ? __('UV', 'live-weather-station') : lws__('Lowest UV index of the day', 'live-weather-station'));
-                break;
-            case 'uv_index_max':
-                $result = ($abbr ? __('UV', 'live-weather-station') : lws__('Highest UV index of the day', 'live-weather-station'));
-                break;
-            case 'uv_index_trend':
-                $result = ($abbr ? __('UV', 'live-weather-station') : lws__('UV index trend', 'live-weather-station'));
-                break;
             case 'illuminance':
-                $result = ($abbr ? __('Illuminance', 'live-weather-station') : __('Solar illuminance', 'live-weather-station'));
-                break;
             case 'illuminance_min':
-                $result = ($abbr ? __('Illuminance', 'live-weather-station') : lws__('Lowest solar illuminance of the day', 'live-weather-station'));
-                break;
             case 'illuminance_max':
-                $result = ($abbr ? __('Illuminance', 'live-weather-station') : lws__('Highest solar illuminance of the day', 'live-weather-station'));
-                break;
             case 'illuminance_trend':
-                $result = ($abbr ? __('Illuminance', 'live-weather-station') : lws__('Solar illuminance trend', 'live-weather-station'));
+                $result = ($abbr ? __('Illuminance', 'live-weather-station') : __('Solar illuminance', 'live-weather-station'));
                 break;
             // SOIL
             case 'soil_temperature':
-                $result = ($abbr ? __('Temperature', 'live-weather-station') : __('Soil temperature', 'live-weather-station'));
-                break;
             case 'soil_temperature_min':
-                $result = ($abbr ? __('Temperature', 'live-weather-station') : lws__('Lowest soil temperature of the day', 'live-weather-station'));
-                break;
             case 'soil_temperature_max':
-                $result = ($abbr ? __('Temperature', 'live-weather-station') : lws__('Highest soil temperature of the day', 'live-weather-station'));
-                break;
             case 'soil_temperature_trend':
-                $result = ($abbr ? __('Temperature', 'live-weather-station') : lws__('Soil temperature trend', 'live-weather-station'));
+                $result = ($abbr ? __('Temperature', 'live-weather-station') : __('Soil temperature', 'live-weather-station'));
                 break;
             case 'leaf_wetness':
                 $result = ($abbr ? __('Wetness', 'live-weather-station') : __('Leaf wetness', 'live-weather-station'));
                 break;
             case 'moisture_content':
+            case 'moisture_content_min':
+            case 'moisture_content_max':
+            case 'moisture_content_trend':
                 $result = ($abbr ? __('Moisture', 'live-weather-station') : __('Soil moisture content', 'live-weather-station'));
                 break;
-            case 'moisture_content_min':
-                $result = ($abbr ? __('Moisture', 'live-weather-station') : lws__('Lowest soil moisture content of the day', 'live-weather-station'));
-                break;
-            case 'moisture_content_max':
-                $result = ($abbr ? __('Moisture', 'live-weather-station') : lws__('Highest soil moisture content of the day', 'live-weather-station'));
-                break;
-            case 'moisture_content_trend':
-                $result = ($abbr ? __('Moisture', 'live-weather-station') : lws__('Soil moisture content trend', 'live-weather-station'));
-                break;
             case 'moisture_tension':
-                $result = ($abbr ? __('Moisture', 'live-weather-station') : __('Soil moisture tension', 'live-weather-station'));
-                break;
             case 'moisture_tension_min':
-                $result = ($abbr ? __('Moisture', 'live-weather-station') : lws__('Lowest soil moisture tension of the day', 'live-weather-station'));
-                break;
             case 'moisture_tension_max':
-                $result = ($abbr ? __('Moisture', 'live-weather-station') : lws__('Highest soil moisture tension of the day', 'live-weather-station'));
-                break;
             case 'moisture_tension_trend':
-                $result = ($abbr ? __('Moisture', 'live-weather-station') : lws__('Soil moisture tension trend', 'live-weather-station'));
+                $result = ($abbr ? __('Moisture', 'live-weather-station') : __('Soil moisture tension', 'live-weather-station'));
                 break;
             case 'evapotranspiration':
                 $result = ($abbr ? __('ET', 'live-weather-station') : __('Evapotranspiration', 'live-weather-station'));
@@ -752,28 +668,16 @@ trait Description {
             case 'cloudcover':
             case 'cloud_cover':
             case 'cloudiness':
+            case 'cloudiness_min':
+            case 'cloudiness_max':
+            case 'cloudiness_trend':
                 $result = ($abbr ? __('Cloudiness', 'live-weather-station') : __('Cloudiness', 'live-weather-station'));
                 break;
-            case 'cloudiness_min':
-                $result = ($abbr ? __('Cloudiness', 'live-weather-station') : lws__('Lowest cloudiness of the day', 'live-weather-station'));
-                break;
-            case 'cloudiness_max':
-                $result = ($abbr ? __('Cloudiness', 'live-weather-station') : lws__('Highest cloudiness of the day', 'live-weather-station'));
-                break;
-            case 'cloudiness_trend':
-                $result = ($abbr ? __('Cloudiness', 'live-weather-station') : lws__('Cloudiness trend', 'live-weather-station'));
-                break;
             case 'visibility':
-                $result = ($abbr ? __('Visibility', 'live-weather-station') : __('Visibility', 'live-weather-station'));
-                break;
             case 'visibility_min':
-                $result = ($abbr ? __('Visibility', 'live-weather-station') : lws__('Lowest visibility of the day', 'live-weather-station'));
-                break;
             case 'visibility_max':
-                $result = ($abbr ? __('Visibility', 'live-weather-station') : lws__('Highest visibility of the day', 'live-weather-station'));
-                break;
             case 'visibility_trend':
-                $result = ($abbr ? __('Visibility', 'live-weather-station') : lws__('Visibility trend', 'live-weather-station'));
+                $result = ($abbr ? __('Visibility', 'live-weather-station') : __('Visibility', 'live-weather-station'));
                 break;
             case 'picture':
                 $result = ($abbr ? __('Image', 'live-weather-station') : __('Image', 'live-weather-station'));
@@ -789,6 +693,30 @@ trait Description {
                 break;
             default:
                 $result = ($abbr ? '?' : __('Unknown measurement', 'live-weather-station'));
+        }
+        $spec = (strpos(strtolower($type),'strength_day_') !== false);
+        $t = str_replace('_max', '', $type);
+        $t = str_replace('_min', '', $t);
+        $t = str_replace('_trend', '', $t);
+        if (in_array($t, array('temp', 'absolute_humidity', 'cloudiness', 'co2', 'guststrength', 'humidity', 'illuminance', 'irradiance', 'moisture_content', 'moisture_tension', 'noise', 'pressure', 'pressure_sl', 'temperature', 'soil_temperature', 'uv_index', 'visibility', 'windstrength'))) {
+            $spec = true;
+        }
+        if ($spec && !$abbr) {
+            if (strpos(strtolower($type),'_max') !== false) {
+                $result = sprintf(__('%s, maximum value for today', 'live-weather-station'), $result);
+            }
+            if (strpos(strtolower($type),'_min') !== false) {
+                $result = sprintf(__('%s, minimum value for today', 'live-weather-station'), $result);
+            }
+            if (strpos(strtolower($type),'_trend') !== false) {
+                $result = sprintf(__('%s, trend', 'live-weather-station'), $result);
+            }
+        }
+        if ($type == 'max_temp') {
+            $result = sprintf(__('%s, maximum value for today', 'live-weather-station'), $result);
+        }
+        if ($type == 'min_temp') {
+            $result = sprintf(__('%s, minimum value for today', 'live-weather-station'), $result);
         }
         return $result;
     }
@@ -858,7 +786,7 @@ trait Description {
                 $result =  _n('Density', 'Densities', $n, 'live-weather-station');
                 break;
             case 'humidity':
-                $result =  _n('Humidity', 'Humidity', $n, 'live-weather-station');
+                $result =  _n('Relative humidity', 'Relative humidity', $n, 'live-weather-station');
                 break;
             case 'irradiance':
                 $result =  _n('Power flux density', 'Power flux densities', $n, 'live-weather-station');
@@ -913,7 +841,7 @@ trait Description {
                 case 'agg' : $result = _n('aggregated value', 'aggregated values', $n, 'live-weather-station'); break;
                 case 'dom' : $result = _n('prevalent value', 'prevalent values', $n, 'live-weather-station'); break;
                 case 'amp' : $result = _n('amplitude', 'amplitudes', $n, 'live-weather-station'); break;
-                case 'mid' : $result = _n('middle value', 'middle values', $n, 'live-weather-station'); break;
+                case 'mid' : $result = _n('mid-range value', 'mid-range values', $n, 'live-weather-station'); break;
                 case 'maxhr' : $result = _n('hourly maximum', 'hourly maximum', $n, 'live-weather-station'); break;
                 default : $result = __('unknown', 'live-weather-station');
             }
@@ -938,7 +866,7 @@ trait Description {
             case 'dsv' : $result = __('Delimiter-separated values', 'live-weather-station'); break;
             case 'tsv' : $result = __('Tab-separated values', 'live-weather-station'); break;
             case 'ndjson' : $result = __('Standard import/export values', 'live-weather-station'); break;
-            case 'wsconf.json' : $result = lws__('Weather Station configuration', 'live-weather-station'); break;
+            case 'wsconf.json' : $result = __('Weather Station configuration', 'live-weather-station'); break;
             default : $result = __('Unknown format', 'live-weather-station');
         }
         return $result;

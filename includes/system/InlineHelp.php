@@ -301,6 +301,9 @@ class InlineHelp {
         if ($number == -49) {
             $result = sprintf($message, '<a href="https://www.navionics.com/web-api/download"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
+        if ($number == -50) {
+            $result = '<a href="https://redmeteo.cl/"' . $target . '>David Aguilera-Riquelme</a>'. Intl::get_language_markup(array('es'));
+        }
 
         return $result;
     }
@@ -676,17 +679,17 @@ class InlineHelp {
             'title'    => 'Mapbox',
             'id'       => 'lws-contextual-station-settings-mapbox',
             'content'  => '<p>' . $s1 . '</p><ol><li>' . $s2 . '</li><li>' . $s3 . '</li><li>' . $s4 . '</li></ol>');
-        $s1 = lws__('To obtain an API key from MapTiler please, follow these steps:', 'live-weather-station' );
-        $s2 = self::get(-46, lws__('%s on the MapTiler website.', 'live-weather-station'), __('Create an account', 'live-weather-station'));
-        $s3 = self::get(-47, lws__('After registration, log in to %s (use the key named "Maps - MapTiler Cloud").', 'live-weather-station'), lws__('get your API key', 'live-weather-station'));
-        $s4 = lws__('Then, copy and paste your API key in the corresponding fields of the "MapTiler" box, set your plan and click on the "connect" button.', 'live-weather-station');
+        $s1 = __('To obtain an API key from MapTiler please, follow these steps:', 'live-weather-station' );
+        $s2 = self::get(-46, __('%s on the MapTiler website.', 'live-weather-station'), __('Create an account', 'live-weather-station'));
+        $s3 = self::get(-47, __('After registration, log in to %s (use the key named "Maps - MapTiler Cloud").', 'live-weather-station'), __('get your API key', 'live-weather-station'));
+        $s4 = __('Then, copy and paste your API key in the corresponding fields of the "MapTiler" box, set your plan and click on the "connect" button.', 'live-weather-station');
         $tabs[] = array(
             'title'    => 'MapTiler',
             'id'       => 'lws-contextual-station-settings-maptiler',
             'content'  => '<p>' . $s1 . '</p><ol><li>' . $s2 . '</li><li>' . $s3 . '</li><li>' . $s4 . '</li></ol>');
-        $s1 = self::get(-49, lws__('To obtain an API key from Navionics please, fill %s on the Navionics website.', 'live-weather-station'), lws__('this form', 'live-weather-station'));
-        $s2 = lws__('Then, copy and paste the API key (from the received mail) in the corresponding fields of the "Navionics" box.', 'live-weather-station');
-        $s3 = lws__('Note: your request is handled by a Navionics employee, be patient it may take a few hours or days to receive your API key.');
+        $s1 = self::get(-49, __('To obtain an API key from Navionics please, fill %s on the Navionics website.', 'live-weather-station'), __('this form', 'live-weather-station'));
+        $s2 = __('Then, copy and paste the API key (from the received mail) in the corresponding fields of the "Navionics" box.', 'live-weather-station');
+        $s3 = __('Note: your request is handled by a Navionics employee, be patient it may take a few hours or days to receive your API key.');
         $tabs[] = array(
             'title'    => 'Navionics',
             'id'       => 'lws-contextual-station-settings-navionics',
@@ -776,7 +779,7 @@ class InlineHelp {
                 $s1 = __('This section shows you the the available shortcodes types for the historical data.', 'live-weather-station');
             }
             if (isset($tab) && $tab == 'climat') {
-                $s1 = lws__('This section shows you the the available shortcodes types for the long-term data.', 'live-weather-station');
+                $s1 = __('This section shows you the the available shortcodes types for the long-term data.', 'live-weather-station');
             }
             $s2 = __('To configure a shortcode, just click on its icon then set its parameters and copy/paste it in a page or a post.', 'live-weather-station');
             $tabs[] = array(
@@ -941,7 +944,7 @@ class InlineHelp {
             }
 
             if (isset($service) && $service == 'weatherlink') {
-                $s1 = __('In this screen, you can add or edit:', 'live-weather-station') . ' ' . lws__('a station connected to WeatherLink.', 'live-weather-station');
+                $s1 = __('In this screen, you can add or edit:', 'live-weather-station') . ' ' . __('a station connected to WeatherLink.', 'live-weather-station');
                 $tabs[] = array(
                     'title'    => __('Overview', 'live-weather-station'),
                     'id'       => 'lws-contextual-' . $service . '-overview',
@@ -949,10 +952,10 @@ class InlineHelp {
 
                 $s1 = __('To add a station of this type, complete the fields', 'live-weather-station');
                 $s1 .= ', <strong>' . lws_lcfirst(__('Country', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lws_lcfirst(lws__('Device ID', 'live-weather-station')) . '</strong>';
-                $s1 .= ', <strong>' . lws__('API Token', 'live-weather-station') . '</strong>';
-                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lws_lcfirst(lws__('Password', 'live-weather-station')) . '</strong>.';
-                $s2 = sprintf(lws__('You can learn how to obtain your API key in %s', 'live-weather-station'), self::get(-48, '%s', lws__('this video', 'live-weather-station')));
+                $s1 .= ', <strong>' . lws_lcfirst(__('Device ID', 'live-weather-station')) . '</strong>';
+                $s1 .= ', <strong>' . __('API Token', 'live-weather-station') . '</strong>';
+                $s1 .= ' ' . __('and', 'live-weather-station') . ' <strong>' . lws_lcfirst(__('Password', 'live-weather-station')) . '</strong>.';
+                $s2 = sprintf(__('You can learn how to obtain your API key in %s', 'live-weather-station'), self::get(-48, '%s', __('this video', 'live-weather-station')));
                 $s3 = '<em>' . __('Note that the information you enter here is required for computations and presentations of meteorological and astronomical data. It is therefore crucial that they are as accurate as possible.', 'live-weather-station') . '</em>';
                 $tabs[] = array(
                     'title'    => __('Settings', 'live-weather-station'),
@@ -1168,7 +1171,7 @@ class InlineHelp {
             $s4 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_weatherflow_color_logo()) . '" /><strong>' . 'WeatherFlow' . '</strong> &mdash; ' . __('a public WeatherFlow station.', 'live-weather-station') . '</p>';
             $s12 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_bloomsky_color_logo()) . '" /><strong>' . 'BloomSky' . '</strong> &mdash; ' . __('a Bloomsky station to which you have access to.', 'live-weather-station') . '</p>';
             $s5 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_piou_color_logo()) . '" /><strong>' . 'Pioupiou' . '</strong> &mdash; ' . __('a Pioupiou sensor as a station.', 'live-weather-station') . '</p>';
-            $s14 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_weatherlink_color_logo()) . '" /><strong>' . 'WeatherLink' . '</strong> &mdash; ' .lws__('a personal weather station connected to WeatherLink 2.', 'live-weather-station') . '</p>';
+            $s14 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_weatherlink_color_logo()) . '" /><strong>' . 'WeatherLink' . '</strong> &mdash; ' .__('a personal weather station connected to WeatherLink 2.', 'live-weather-station') . '</p>';
             $s6 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_loc_color_logo()) . '" /><strong>' . __('Virtual', 'live-weather-station') . '</strong> &mdash; ' . __('a "virtual" weather station where only the coordinates or the city are known.', 'live-weather-station') . '</p>';
             if (LWS_OWM_READY) {
                 $s7 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_owm_color_logo()) . '" /><strong>' . 'OpenWeatherMap' . '</strong> &mdash; ' . __('a personal weather station published on OpenWeatherMap.', 'live-weather-station') . '</p>';
@@ -1184,7 +1187,7 @@ class InlineHelp {
             $tabs[] = array(
                 'title'    => __('Stations types', 'live-weather-station'),
                 'id'       => 'lws-contextual-stations-types',
-                'content'  => '<p>' . $s1 . '</p>' . $s2 . $s3 . $s4 . $s12 . $s5 . (LWS_PREVIEW?$s14:'') .$s6 . $s7 . $s8 . $s9 . $s10 . $s11);
+                'content'  => '<p>' . $s1 . '</p>' . $s2 . $s3 . $s4 . $s12 . $s5 . $s14 .$s6 . $s7 . $s8 . $s9 . $s10 . $s11);
 
             $s1 = __('Depending on the type of the station, you can access these features:', 'live-weather-station');
             $s2 = '<strong>' . __('View', 'live-weather-station') . '</strong> &mdash; ' . __('To display the full detailed view of the station.', 'live-weather-station') . ' <strong>[' . __('default action', 'live-weather-station') . ']</strong>';

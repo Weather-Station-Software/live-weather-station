@@ -36,8 +36,8 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
     public function __construct($station_information) {
         self::$module_mode = 'current';
         $this->module_type = 'icon';
-        $this->module_name = ucfirst(lws__('icon data', 'live-weather-station'));
-        $this->module_hint = lws__('Display current data as icon.', 'live-weather-station');
+        $this->module_name = ucfirst(__('icon data', 'live-weather-station'));
+        $this->module_hint = __('Display current data as icon.', 'live-weather-station');
         $this->module_icon = LWS_FAS . (LWS_FA5?' fa-thumbtack':' fa-thumb-tack') . ' fa-fw';
         $this->layout = '12-3-4';
         parent::__construct($station_information);
@@ -94,7 +94,7 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_parameters() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_neutral_option_select('current-icon-datas-format-'. $this->station_guid, lws__('Value', 'live-weather-station'));
+        $content .= $this->get_neutral_option_select('current-icon-datas-format-'. $this->station_guid, __('Value', 'live-weather-station'));
         $content .= $this->get_key_value_option_select('current-icon-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(true, false), true, 'inline');
         $content .= $this->get_key_value_option_select('current-icon-datas-animation-'. $this->station_guid, __('Animation type', 'live-weather-station'), $this->get_textual_animation_js_array(), true, 'none');
         $content .= $this->get_key_value_option_select('current-icon-datas-speed-'. $this->station_guid, __('Animation speed', 'live-weather-station'), $this->get_lcd_speed_js_array(), true, '2000');
@@ -200,7 +200,7 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
     protected function get_preview() {
         $id = 'current-icon-datas-output-'. $this->station_guid;
         $content = '<div style="width:100%;padding:20px;" id="' . $id . '"></div>';
-        $footer = lws__('This control will inherit of size and color when inserted in a post or a page.', 'live-weather-station');
+        $footer = __('This control will inherit of size and color when inserted in a post or a page.', 'live-weather-station');
         return $this->get_box('lws-preview-id', $this->preview_title, $content, $footer);
     }
 }

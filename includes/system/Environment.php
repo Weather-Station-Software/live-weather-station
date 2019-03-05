@@ -309,11 +309,11 @@ class Manager {
                 return $s['city'] . ', ' . $s['country'];
             }
             else {
-                return lws__('unknown location', 'live-weather-station');
+                return __('unknown location', 'live-weather-station');
             }
         }
         else {
-            return lws__('unknown location', 'live-weather-station');
+            return __('unknown location', 'live-weather-station');
         }
     }
 

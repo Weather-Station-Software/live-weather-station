@@ -253,15 +253,6 @@ class Ephemeris extends Base {
     }
 
     /**
-     * Enqueues widget styles.
-     *
-     * @since 3.8.0
-     */
-    public function enqueue_styles() {
-        wp_enqueue_style('lws-weather-icons');
-    }
-
-    /**
      * Get the widget output.
      *
      * @param array $args An array containing the widget's arguments.

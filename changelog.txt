@@ -1,9 +1,44 @@
 
-#3.7.11 / March xxxxxxx, 2019
+#3.8.0 / April xxxxxxx, 2019
 
+* New: Weather Station natively connects to ***WeatherLink Network*** - special thanks to David Aguilera-Riquelme from [RedMeteo.cl](https://redmeteo.cl/) for the tests.
+* New: Navionics added as mapping service (nautical, sonar and ski layers).
+* New: MapTiler added as mapping service (many standard layers).
+* New: "icon" control to display current data as static or dynamic icons.
+* New: Zambretti forecast is now computed and is available with textual shortcode and the new icon control.  
+* New: pressure and density altitudes are now computed and available in all controls, graphs and charts.
+* New: full configuration export/import feature (settings, stations and maps).
+* New: each module recording temperature and relative humidity has now a computed absolute humidity value available in all controls (thanks to [@setmin](https://weather.station.software/community/profile/setmin/) for the suggestion).
+* New: Weather Station now compiles day min, day max and trend for absolute and relative humidity, cloudiness, CO₂, gust strength, illuminance, irradiance, moisture content, moisture tension, noise level, pressures (atmospheric & barometric), temperature, soil temperature, UV index, visibility and wind strength, even if the station does not export this data.
+* Improvement: current conditions can now be displayed as plain text in textual shortcodes.
+* Improvement: duration can now be outputted as hh:mm or hh:mm:ss formats in textual shortcodes (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/) for the suggestion).
+* Improvement: in maps, two new marker types (temperature and colored temperature) allow to display temperature in markers (thanks to [@daguilera](https://weather.station.software/community/profile/daguilera/) for the suggestion).
+* Improvement: the detection of site's timezone is now fully compliant with WordPress rules.
+* Improvement: obsolete notifications are now auto deleted (option in system tab).
+* Improvement: when installing/updating Weather Station on an old WordPress version, a notification is generated.
+* Improvement: it's now possible to activate/deactivate compatibility mode for tabbed controls (option in system tab).
+* Improvement: disabling Weather Station no longer deletes its data.
+* Improvement: deleting Weather Station deletes its data, except historical tables (option in system tab).
+* Improvement: Weather Station can now prevent the cache manager to cache widgets (option in system tab).
 * Improvement: Weather station now handle correctly wrong measurement formats for clientraw-based stations.
+* Improvement: "humidity" has been renamed to "relative humidity" to be more consistent.
+* Improvement: measurement types are now alphabetically ordered in list boxes.
+* Improvement: measurement types declensions have been rewritten for better understanding.
+* Improvement: better computation for adjusted boundaries in clean gauge and steel meter.
+* Improvement: the steel meter control and LCD Display now support min, max and trend for the new compiled measurements.
+* Improvement: "middle value" has been renamed to "mid-range" to avoid confusion with averaged values (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/) for the suggestion).
+* Improvement: weather stations and weather maps counts are now displayed in the WordPress "At a Glance" box.
+* Improvement: it's now possible to manually add a file to the file manager (feature disabled by default, see system tab for settings).
+* Improvement: it's now possible to set the file retention time (option in system tab).
 * Bug fix: in some templates, textual shortcodes doesn't refresh every 2 minutes.
+* Bug fix: the min and max values of the LCD display does not respect decimal specifications.
 * Bug fix: widgets are not fully refreshed when WP-Rocket is used as cache manager.
+* Bug fix: some files are not automatically removed of the file manager when it should.
+* Bug fix: some stations may have _holes_ in historical data, due to myspelled identifier.
+* Bug fix: sunshine duration is not correctly compiled in historical data (see [patch details](https://weather.station.software/handbook/background-processes/sunshine-aggregator/)).
+* Bug fix: there's some typos in clean gauge module.
+* Bug fix: there's a typo in the "at a glance" box when only one station is collected (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+* Removed: alarms for wind direction or source in LCD display, as there's not consistent way to interpret it.
 
 #3.7.10 / February 19th, 2019
 
