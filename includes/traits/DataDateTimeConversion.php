@@ -14,6 +14,121 @@ use WeatherStation\SDK\Generic\Plugin\Season\Calculator;
  */
 trait Conversion {
 
+
+
+    /**
+     * Get period values array.
+     *
+     * @param array $station The station informations.
+     * @param string $oldest_date Oldest record for the station.
+     * @param boolean $rolling Optional. The array must contains rolling periods.
+     * @param boolean $noned Optional. The array must contains the "none" period.
+     * @return array An array containing the period values ready to convert to a JS array.
+     * @since 3.8.0
+     */
+    public function get_period_values($station, $oldest_date, $rolling=true, $noned=false) {
+        $result = array();
+
+        // Rolling days
+        if ($rolling) {
+            $period = array();
+            foreach (array(7, 15, 30, 60, 90) as $i) {
+                $period[] = array('rdays-' . $i, sprintf(__('Last %s days', 'live-weather-station'), $i));
+            }
+            $result[] = array('rolling-days', $period);
+        }
+
+        // Sliding month
+        $period = array();
+        for ($i=0; $i<=12; $i++) {
+            $s = '';
+            if ($i != 0) {
+                $s = ' - ' . $i;
+            }
+            $period[] = array( 'month-'.$i, __('Current month', 'live-weather-station') . $s);
+        }
+        $result[] = array('sliding-month',  $period);
+
+        // Sliding meteorological season
+        $period = array();
+        for ($i=0; $i<=4; $i++) {
+            $s = '';
+            if ($i != 0) {
+                $s = ' - ' . $i;
+            }
+            $period[] = array( 'mseason-'.$i, __('Current meteorological season', 'live-weather-station') . $s);
+        }
+        $result[] = array('sliding-mseason',  $period);
+
+        // Sliding astronomical season
+        $period = array();
+        for ($i=0; $i<=4; $i++) {
+            $s = '';
+            if ($i != 0) {
+                $s = ' - ' . $i;
+            }
+            $period[] = array( 'aseason-'.$i, __('Current astronomical season', 'live-weather-station') . $s);
+        }
+        $result[] = array('sliding-aseason',  $period);
+
+        // Sliding year
+        $period = array();
+        for ($i=0; $i<=1; $i++) {
+            $s = '';
+            if ($i != 0) {
+                $s = ' - ' . $i;
+            }
+            $period[] = array( 'year-'.$i, __('Current year', 'live-weather-station') . $s);
+        }
+        $result[] = array('sliding-year',  $period);
+
+        // Fixed year & month
+        $fixed_month = array();
+        $fixed_year = array();
+        $start = new \DateTime($oldest_date, new \DateTimeZone($station['loc_timezone']));
+        $current = new \DateTime($oldest_date, new \DateTimeZone($station['loc_timezone']));
+        $util = new \DateTime($oldest_date, new \DateTimeZone($station['loc_timezone']));
+        $year = $start->format('Y');
+        $month = $start->format('m');
+        $end = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+        while ($year != $end->format('Y') || $month != $end->format('m')) {
+            $current->setDate($year, $month, 1);
+            $util->setDate($year, $month, $current->format('t'));
+            $fixed_month[] = array($current->format('Y-m-d') . ':' . $util->format('Y-m-d'), date_i18n('Y, F', strtotime($current->format('Y-m-d H:i:s'))));
+            $month += 1;
+            if ($month > 12) {
+                $current->setDate($year, 1, 1);
+                $util->setDate($year, 12, 31);
+                $fixed_year[] = array($current->format('Y-m-d') . ':' . $util->format('Y-m-d'), date_i18n('Y', strtotime($current->format('Y-m-d H:i:s'))));
+                $month = 1;
+                $year += 1;
+            }
+        }
+        $current->setDate($year, $month, 1);
+        $util->setDate($year, $month, $current->format('t'));
+        $fixed_month[] = array($current->format('Y-m-d') . ':' . $util->format('Y-m-d'), date_i18n('Y, F', strtotime($end->format('Y-m-d H:i:s'))));
+        $current->setDate($year, 1, 1);
+        $util->setDate($year, 12, 31);
+        $fixed_year[] = array($current->format('Y-m-d') . ':' . $util->format('Y-m-d'), date_i18n('Y', strtotime($end->format('Y-m-d H:i:s'))));
+        if (empty($fixed_month)) {
+            $fixed_month = array(array('none', 'none'));
+        }
+        $result[] = array('fixed-month', $noned?array_merge(array(array('0', __('None', 'live-weather-station'))), array_reverse($fixed_month)):array_reverse($fixed_month));
+        if (empty($fixed_year)) {
+            $fixed_year = array(array('none', 'none'));
+        }
+        $result[] = array('fixed-year', $noned?array_merge(array(array('0', __('None', 'live-weather-station'))), array_reverse($fixed_year)):array_reverse($fixed_year));
+
+        // Fixed meteorological season
+        $result[] = array('fixed-mseason', $noned?array_merge(array(array('0', __('None', 'live-weather-station'))), Calculator::matchingMeteorologicalSeasons($fixed_month, $station['loc_timezone'], $station['loc_latitude'] >= 0)):Calculator::matchingMeteorologicalSeasons($fixed_month, $station['loc_timezone'], $station['loc_latitude'] >= 0));
+
+        // Fixed astronomical season
+        //$result[] = array('fixed-aseason', Season::matchingAstronomicalSeasons($fixed_month, $station['loc_timezone'], $station['loc_latitude'] >= 0));
+
+        $result[] = array('none',  array(array('none', 'none')));
+        return $result;
+    }
+
     /**
      * Get the timestamp corresponding to midnight of today in a specific timezone.
      *

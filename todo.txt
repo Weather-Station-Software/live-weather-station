@@ -93,9 +93,7 @@ Shortened types for textual and gauge (shortened meaning ?)
 
 Textual climatological shortcodes
 Weather radial
-Year / season comparison
 Widget styles
-delete files
 
 
 UV sticker
