@@ -2,6 +2,7 @@
 #3.8.0 / April xxxxxxx, 2019
 
 * New: Weather Station natively connects to ***WeatherLink Network*** - special thanks to David Aguilera-Riquelme from [RedMeteo.cl](https://redmeteo.cl/) for the tests.
+* New: new multi-lines chart to compare climatological (long-term) data with tons of options and settings.
 * New: Navionics added as mapping service (nautical, sonar and ski layers).
 * New: MapTiler added as mapping service (many standard layers).
 * New: "icon" control to display current data as static or dynamic icons.
@@ -30,6 +31,7 @@
 * Improvement: weather stations and weather maps counts are now displayed in the WordPress "At a Glance" box.
 * Improvement: it's now possible to manually add a file to the file manager (feature disabled by default, see system tab for settings).
 * Improvement: it's now possible to set the file retention time (option in system tab).
+* Improvement: optimization of loading time for data preloaded via ajax in charts and graphs.
 * Bug fix: in some templates, textual shortcodes doesn't refresh every 2 minutes.
 * Bug fix: the min and max values of the LCD display does not respect decimal specifications.
 * Bug fix: widgets are not fully refreshed when WP-Rocket is used as cache manager.
