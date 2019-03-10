@@ -808,7 +808,7 @@ abstract class Maintainer {
         $js_name = self::$module_mode . '_' . $this->module_type;
         $content = '';
 
-        if (self::$module_mode == 'yearly') {
+        if (self::$module_mode == 'yearly' || self::$module_mode == 'climat') {
             $content .= '$("#' . $name . '-datas-period-type-' . $this->station_guid . '").change(function() {';
             $content .= 'var js_array_' . $js_name . '_p_' . $this->station_guid . ' = null;';
             $content .= '$(js_array_' . $js_name . '_period_' . $this->station_guid . ').each(function (i) {';
@@ -860,7 +860,7 @@ abstract class Maintainer {
                 $content .= '$("#' . $name . '-datas-line-style-' . $i . '-' . $this->station_guid . ' option[value=\'solid\']").attr("selected", true);';
                 $content .= '$("#' . $name . '-datas-line-size-' . $i . '-' . $this->station_guid . ' option[value=\'regular\']").attr("selected", true);};';
             }
-            if (self::$module_mode == 'yearly') {
+            if (self::$module_mode == 'yearly' || self::$module_mode == 'climat') {
                 if ($this->module_type !== 'timelapse') {
                     $content .= 'var js_array_' . $js_name . '_set_' . $i . '_' . $this->station_guid . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()][2][$(this).val()][4];';
                     $content .= '$("#' . $name . '-datas-set-' . $i . '-' . $this->station_guid . '").html("");';
@@ -919,7 +919,7 @@ abstract class Maintainer {
             $content .= 'var sc_device_' . $i . ' = "' . $this->station_id . '";';
             $content .= 'var sc_module_' . $i . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()][1];';
             $content .= 'var sc_measurement_' . $i . ' = js_array_' . $js_name . '_' . $this->station_guid . '[$("#' . $name . '-datas-module-' . $i . '-' . $this->station_guid . '").val()][2][$("#' . $name . '-datas-measurement-' . $i . '-' . $this->station_guid . '").val()][1];';
-            if (self::$module_mode == 'yearly') {
+            if (self::$module_mode == 'yearly' || self::$module_mode == 'climat') {
                 if ($this->module_type === 'timelapse') {
                     $content .= 'var sc_set_' . $i . ' = "none";';
                     //$content .= 'sc_measurement_' . $i . ' = sc_measurement_' . $i . ';';
@@ -949,7 +949,7 @@ abstract class Maintainer {
             $content .= ' }';
             $content .= ' }';
         }
-        if (self::$module_mode == 'yearly') {
+        if (self::$module_mode == 'yearly' || self::$module_mode == 'climat') {
             $content .= 'var sc_period_type = $("#' . $name . '-datas-period-type-' . $this->station_guid . '").val();';
             $content .= 'var sc_period_value = $("#' . $name . '-datas-period-value-' . $this->station_guid . '").val();';
         }
@@ -996,7 +996,7 @@ abstract class Maintainer {
         }
         $content .= '$("#' . $name . '-datas-shortcode-' . $this->station_guid . '").html(shortcode);});';
         // INIT
-        if (self::$module_mode === 'yearly') {
+        if (self::$module_mode === 'yearly' || self::$module_mode == 'climat') {
             $content .= 'var js_array_' . $js_name . '_p_' . $this->station_guid . ' = null;';
             $content .= '$(js_array_' . $js_name . '_period_' . $this->station_guid . ').each(function (i) {';
             $content .= 'if (js_array_' . $js_name . '_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-datas-period-type-' . $this->station_guid . '").val()) {js_array_' . $js_name . '_p_' . $this->station_guid . '=js_array_' . $js_name . '_period_' . $this->station_guid . '[i][1]}  ;});';
