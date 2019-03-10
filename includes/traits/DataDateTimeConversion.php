@@ -119,6 +119,15 @@ trait Conversion {
         }
         $result[] = array('fixed-year', $noned?array_merge(array(array('0', __('None', 'live-weather-station'))), array_reverse($fixed_year)):array_reverse($fixed_year));
 
+        // Aggregated year & month
+        $aggregated_month = array();
+        for ($month=1; $month<13; $month++) {
+            $current->setDate(2000, $month, 1);
+            $aggregated_month[] = array($current->format('m'), sprintf(__('All %s', 'live-weather-station'), date_i18n('F', strtotime($current->format('Y-m-d H:i:s')))));
+        }
+        $result[] = array('aggregated-month', $aggregated_month);
+        $result[] = array('aggregated-year', array(array('0', __('All years', 'live-weather-station'))));
+
         // Fixed meteorological season
         $result[] = array('fixed-mseason', $noned?array_merge(array(array('0', __('None', 'live-weather-station'))), Calculator::matchingMeteorologicalSeasons($fixed_month, $station['loc_timezone'], $station['loc_latitude'] >= 0)):Calculator::matchingMeteorologicalSeasons($fixed_month, $station['loc_timezone'], $station['loc_latitude'] >= 0));
 

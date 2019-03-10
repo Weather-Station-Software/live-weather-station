@@ -1394,7 +1394,7 @@ trait Output {
                             $result = array();
                         }
                     }
-                    elseif ($type == 'cstick') {
+                    elseif ($type == 'cstick' || $type == 'ccstick') {
                         if (strpos($args[1]['set'], '|') > 0) {
                             $op = explode('|', $args[1]['set']);
                         }
@@ -1408,18 +1408,18 @@ trait Output {
                         $subyamin = 0;
                         $subyamax = 0;
                         $select = " AND (`measure_set`='min' OR `measure_set`='max' OR `measure_set`='avg' OR `measure_set`='med')";
-                        $sql = "SELECT `timestamp`, `module_type`, `measure_set`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $select . " ORDER BY `timestamp` ASC;";
+                        $sql = "SELECT `timestamp`, `module_type`, `measure_type`, `measure_set`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $select . " ORDER BY `timestamp` ASC;";
                         $rows = $wpdb->get_results($sql, ARRAY_A);
                         $values = array();
                         try {
                             if (count($rows) > 0) {
                                 foreach ($rows as $row) {
-                                    $values[$row['timestamp']][$row['measure_set']] = $this->output_value($row['measure_value'], $arg['measurement'], false, false, $row['module_type']);
+                                    $values[$row['timestamp']][$row['measure_set']] = $this->output_value($row['measure_value'], $row['measure_type'], false, false, $row['module_type']);
                                 }
                                 $module_type = $row['module_type'];
                                 foreach ($values as $key=>$row) {
                                     if (array_key_exists('max', $row) && array_key_exists('min', $row)) {
-                                        $values[$key]['mid'] = $this->output_value($row['min'] + (($row['max'] - $row['min']) / 2), $arg['measurement'], false, false, $module_type);
+                                        $values[$key]['mid'] = $this->output_value($row['min'] + (($row['max'] - $row['min']) / 2), $row['measure_type'], false, false, $module_type);
                                     }
                                 }
                             }
@@ -1431,10 +1431,10 @@ trait Output {
                             foreach ($values as $key=>$row) {
                                 $date = self::get_js_datetime_from_mysql_utc($key, $station['loc_timezone'], $end_date);
                                 if (array_key_exists('max', $row) && array_key_exists('min', $row) && array_key_exists($op[0], $row) && array_key_exists($op[1], $row)) {
-                                    $high = $row['max'];
-                                    $low = $row['min'];
-                                    $close = $row[$op[1]];
-                                    $open = $row[$op[0]];
+                                    $high = $this->output_value($row['max'], $row['measure_type'], false, false, $module_type);
+                                    $low = $this->output_value($row['min'], $row['measure_type'], false, false, $module_type);
+                                    $close = $this->output_value($row[$op[1]], $row['measure_type'], false, false, $module_type);
+                                    $open = $this->output_value($row[$op[0]], $row['measure_type'], false, false, $module_type);
                                     $set[] = array('date'=>$date, 'open'=>$open, 'high'=>$high, 'low'=>$low, 'close'=>$close);
                                     if ($start) {
                                         $ymin = $low;

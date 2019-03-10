@@ -58,6 +58,7 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Module\Yearly\ValueRC': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyValueRC.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Windrose': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyWindrose.php'; break;
         case 'WeatherStation\Engine\Module\Climat\Lines': $file = LWS_INCLUDES_DIR.'classes/ModuleClimatLines.php'; break;
+        case 'WeatherStation\Engine\Module\Climat\CCStick': $file = LWS_INCLUDES_DIR.'classes/ModuleClimatCStick.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\TXTGenerator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneAbstractTXTGenerator.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Framework': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneFramework.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Generator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneGenerator.php'; break;
