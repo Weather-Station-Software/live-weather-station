@@ -762,8 +762,8 @@ trait Storage {
             if (version_compare($oldversion, '3.8.0', '<')) {
                 ProcessManager::register('SunshineAggregator');
                 ProcessManager::register('IdentifierLowercaser');
+                ProcessManager::register('WeatherFlowWindFixer');
             }
-
 
 
             // ALL VERSION

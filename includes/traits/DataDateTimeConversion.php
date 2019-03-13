@@ -119,20 +119,44 @@ trait Conversion {
         }
         $result[] = array('fixed-year', $noned?array_merge(array(array('0', __('None', 'live-weather-station'))), array_reverse($fixed_year)):array_reverse($fixed_year));
 
-        // Aggregated year & month
-        $aggregated_month = array();
-        for ($month=1; $month<13; $month++) {
-            $current->setDate(2000, $month, 1);
-            $aggregated_month[] = array($current->format('m'), sprintf(__('All %s', 'live-weather-station'), date_i18n('F', strtotime($current->format('Y-m-d H:i:s')))));
-        }
-        $result[] = array('aggregated-month', $aggregated_month);
-        $result[] = array('aggregated-year', array(array('0', __('All years', 'live-weather-station'))));
-
         // Fixed meteorological season
         $result[] = array('fixed-mseason', $noned?array_merge(array(array('0', __('None', 'live-weather-station'))), Calculator::matchingMeteorologicalSeasons($fixed_month, $station['loc_timezone'], $station['loc_latitude'] >= 0)):Calculator::matchingMeteorologicalSeasons($fixed_month, $station['loc_timezone'], $station['loc_latitude'] >= 0));
 
         // Fixed astronomical season
         //$result[] = array('fixed-aseason', Season::matchingAstronomicalSeasons($fixed_month, $station['loc_timezone'], $station['loc_latitude'] >= 0));
+
+        // Aggregated year & month
+        $aggregated_month = array();
+        for ($m=1; $m<13; $m++) {
+            if ($m < (int)$start->format('m')) {
+                $y = (int)$start->format('Y') + 1;
+            }
+            else {
+                $y = (int)$start->format('Y');
+            }
+            if ($m > (int)$end->format('m')) {
+                $e = (int)$end->format('Y') - 1;
+            }
+            else {
+                $e = (int)$end->format('Y');
+            }
+            $current->setDate($y, $m, 1);
+            $util->setDate($e, $m, 1);
+            $util->setDate($e, $m, $util->format('t'));
+            if ($y <= $e) {
+                $aggregated_month[] = array($current->format('Y-m-d') . ':' . $util->format('Y-m-d'), sprintf('%s, %s ⇥ %s', date_i18n('F', strtotime($current->format('Y-m-d H:i:s'))), $y, $e));
+            }
+        }
+        $result[] = array('aggregated-month', $aggregated_month);
+        $current->setDate($start->format('Y'), 1, 1);
+        $util->setDate($end->format('Y'), 12, 31);
+        $result[] = array('aggregated-year', array(array($current->format('Y-m-d') . ':' . $util->format('Y-m-d'), sprintf('%s ⇥ %s', $current->format('Y'), $util->format('Y')))));
+
+        // Aggregated meteorological season
+        $result[] = array('aggregated-mseason', $noned?array_merge(array(array('0', __('None', 'live-weather-station'))), Calculator::matchingClimatologicalMeteorologicalSeasons($fixed_month, $station['loc_timezone'], $station['loc_latitude'] >= 0)):Calculator::matchingClimatologicalMeteorologicalSeasons($fixed_month, $station['loc_timezone'], $station['loc_latitude'] >= 0));
+
+        // Aggregated astronomical season
+        //$result[] = array('aggregated-aseason', Season::matchingAstronomicalSeasons($fixed_month, $station['loc_timezone'], $station['loc_latitude'] >= 0));
 
         $result[] = array('none',  array(array('none', 'none')));
         return $result;
@@ -443,6 +467,30 @@ trait Conversion {
             $year -= 1;
         }
         return Calculator::seasonMeteorologicalPeriod($year,$month, $tz);
+    }
+
+    /**
+     * Get a standard meteorological season period.
+     *
+     * @param integer $year The value of the year.
+     * @param integer $month The value of the month.
+     * @param string $tz The timezone.
+     * @return string A standard start:end period.
+     * @since 3.8.0
+     */
+    public static function get_season_meteorological_period($year,$month, $tz) {
+        return Calculator::seasonMeteorologicalPeriod($year,$month, $tz);
+    }
+
+    /**
+     * Get a list of months for a meteorological season.
+     *
+     * @param integer $month The value of the month.
+     * @return array A array containing valid months.
+     * @since 3.8.0
+     */
+    public static function get_meteorological_season_months($month) {
+        return Calculator::meteorologicalSeasonMonths($month);
     }
 
     /**
