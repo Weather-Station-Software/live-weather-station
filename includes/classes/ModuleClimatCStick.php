@@ -91,13 +91,13 @@ class CCStick extends \WeatherStation\Engine\Module\Maintainer {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
         $content .= $this->get_key_value_option_select('climat-ccstick-datas-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
         $content .= $this->get_key_value_option_select('climat-ccstick-datas-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array(true));
-        $content .= $this->get_key_value_option_select('climat-ccstick-datas-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_label_js_array(), true, 'simple');
+        $content .= $this->get_key_value_option_select('climat-ccstick-datas-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_label_js_array(), true, 'generic');
         $content .= $this->get_key_value_option_select('climat-ccstick-datas-guideline-'. $this->station_guid, __('Hint', 'live-weather-station'), $this->get_guideline_js_array(), true, 'standard', true, false);
         $content .= $this->get_key_value_option_select('climat-ccstick-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
         $content .= $this->get_key_value_option_select('climat-ccstick-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(), true, 'auto');
         $content .= $this->get_key_value_option_select('climat-ccstick-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true), true, 'auto');
         $content .= $this->get_key_value_option_select('climat-ccstick-datas-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_interpolation_js_array(), true, 'none', true, false);
-        $content .= $this->get_key_value_option_select('climat-ccstick-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
+        $content .= $this->get_key_value_option_select('climat-ccstick-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(false), true, 'inline');
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }

@@ -115,6 +115,8 @@ Notifier as system
 New settings in system tab
 readme : new station type
 
+https://weather.station.software/handbook/background-processes/sunshine-aggregator/
+https://weather.station.software/handbook/background-processes/weatherflow-wind-fixer/
 
 -----
 

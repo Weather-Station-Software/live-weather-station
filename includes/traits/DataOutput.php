@@ -374,6 +374,9 @@ trait Output {
                     }
 
                     // Compute date limits
+                    if ($mode == 'climat') {
+                        $oldest_data = $this->get_oldest_data($station);
+                    }
                     if ($mode == 'daily') {
                         $min = date('Y-m-d H:i:s', self::get_local_today_midnight($station['loc_timezone']));
                         $max = date('Y-m-d H:i:s', self::get_local_today_noon($station['loc_timezone']));
@@ -383,17 +386,17 @@ trait Output {
                         $result['xdomain']['12'] = $result['xdomain']['min'] + 14400000*3;
                         $result['xdomain']['16'] = $result['xdomain']['min'] + 14400000*4;
                         $result['xdomain']['20'] = $result['xdomain']['min'] + 14400000*5;
-                        $result['xdomain']['max'] = self::get_js_datetime_from_mysql_utc($max, $station['loc_timezone']) + 1000;
+                        $result['xdomain']['max'] = (int)self::get_js_datetime_from_mysql_utc($max, $station['loc_timezone']) + 1000;
                         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
                     }
-                    if ($mode == 'yearly') {
+                    if ($mode == 'yearly' || $type == 'ccstick') {
                         $d = array('1971-08-01', '1971-08-31');
                         $is_rdays = $attributes['periodduration'] == 'rdays';
                         $is_month = $attributes['periodduration'] == 'month';
                         $is_mseason = $attributes['periodduration'] == 'mseason';
                         $is_year = $attributes['periodduration'] == 'year';
                         $v = explode('-', $attributes['periodvalue']);
-                        if (strpos($attributes['periodtype'], 'ixed-') > 0) {
+                        if (strpos($attributes['periodtype'], 'ixed-') > 0 || strpos($attributes['periodtype'], 'ggregated-') > 0) {
                             $d = explode(':', $attributes['periodvalue']);
                         }
                         elseif ($is_rdays) {
@@ -408,8 +411,30 @@ trait Output {
                         elseif ($is_mseason) {
                             $d = explode(':', $this->get_shifted_meteorological_season(-$v[1], $station['loc_timezone']));
                         }
-                        $min = $d[0];
-                        $max = $d[1];
+                        if ($type == 'ccstick') {
+                            $min = $d[0];
+                            $m = substr($min, 5, 2);
+                            $y = substr($min, 0, 4);
+                            if ($is_month) {
+                                $util = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                $util->setDate($y, $m, 1);
+                                $util->setDate($y, $m, $util->format('t'));
+                                $max = $util->format('Y-m-d');
+                            }
+                            elseif ($is_year) {
+                                $util = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                $util->setDate($y, 12, 31);
+                                $max = $util->format('Y-m-d');
+                            }
+                            elseif ($is_mseason) {
+                                $tmp = explode(':', $this->get_season_meteorological_period($y,$m, $station['loc_timezone']));
+                                $max = $tmp[1];
+                            }
+                        }
+                        else {
+                            $min = $d[0];
+                            $max = $d[1];
+                        }
                         $result['xdomain']['min'] = self::get_js_date_from_mysql_utc($min, $station['loc_timezone']);
                         $result['xdomain']['max'] = self::get_js_date_from_mysql_utc($max, $station['loc_timezone']);
                         $month = substr($min, 5, 2);
@@ -443,8 +468,12 @@ trait Output {
                             $result['xdomain']['03'] = self::get_js_date_from_mysql_utc($syear.'-' . (string)($smonth+2) .'-08', $station['loc_timezone']);
                         }
                         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
+                        if ($type == 'ccstick') {
+                            $min = $d[0];
+                            $max = $d[1];
+                        }
                     }
-                    if ($mode == 'climat') {
+                    if ($mode == 'climat' && $type != 'ccstick') {
                         $is_month = $attributes['periodduration'] == 'month';
                         $is_mseason = $attributes['periodduration'] == 'mseason';
                         $is_year = $attributes['periodduration'] == 'year';
@@ -1407,19 +1436,71 @@ trait Output {
                         $subydmax = 0;
                         $subyamin = 0;
                         $subyamax = 0;
-                        $select = " AND (`measure_set`='min' OR `measure_set`='max' OR `measure_set`='avg' OR `measure_set`='med')";
-                        $sql = "SELECT `timestamp`, `module_type`, `measure_type`, `measure_set`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $select . " ORDER BY `timestamp` ASC;";
-                        $rows = $wpdb->get_results($sql, ARRAY_A);
+                        $measure_type = $arg['measurement'];
+                        if ($type == 'cstick') {
+                            $select = " AND (`measure_set`='min' OR `measure_set`='max' OR `measure_set`='avg' OR `measure_set`='med')";
+                            $sql = "SELECT `timestamp`, `module_type`, `measure_type`, `measure_set`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $select . " ORDER BY `timestamp` ASC;";
+                            $rows = $wpdb->get_results($sql, ARRAY_A);
+                        }
+                        elseif ($type == 'ccstick') {
+                            $where = '';
+                            $order = 'MONTH(`timestamp`), DAY(`timestamp`)';
+                            if ($is_month) {
+                                $tm = substr($min, 5, 2);
+                                $where = 'MONTH(`timestamp`)=' . $tm . ' AND ';
+                                $order = 'DAY(`timestamp`)';
+                            }
+                            if ($is_mseason) {
+                                $tm = substr($min, 5, 2);
+                                foreach ($this->get_meteorological_season_months($tm) as $m) {
+                                    if ($where != '') {
+                                        $where .= 'OR';
+                                    }
+                                    $where .= ' MONTH(`timestamp`)=' . $m . ' ';
+                                }
+                                $where = '(' . $where . ') AND ';
+                                $order = 'CASE ';
+                                foreach (array(12, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11) as $k => $o) {
+                                    $order .= ' WHEN MONTH(`timestamp`)=' . $o . ' THEN ' . $k;
+                                }
+                                $order .= ' END, DAY(`timestamp`)';
+                            }
+                            $select = " AND (`measure_set`='min' OR `measure_set`='max' OR `measure_set`='avg' OR `measure_set`='med')";
+                            $sql = "SELECT `timestamp`, MONTH(`timestamp`) as t_month, DAY(`timestamp`) as t_day, `module_type`, `measure_type`, `measure_set`, `measure_value`, AVG(`measure_value`) as v_avg FROM " . $table_name . " WHERE " . $where . "`timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $select . " GROUP BY t_month, t_day, measure_set ORDER BY " . $order . " ASC;";
+                            $rows = $wpdb->get_results($sql, ARRAY_A);
+                        }
                         $values = array();
                         try {
                             if (count($rows) > 0) {
+                                $oldest = (int)substr($min, 0, 4);
+                                $change = (int)substr($min, 5, 2) != 1;
+                                $y = $oldest;
                                 foreach ($rows as $row) {
-                                    $values[$row['timestamp']][$row['measure_set']] = $this->output_value($row['measure_value'], $row['measure_type'], false, false, $row['module_type']);
+                                    if ($type == 'cstick') {
+                                        $values[$row['timestamp']][$row['measure_set']] = $this->output_value($row['measure_value'], $row['measure_type'], false, false, $row['module_type']);
+                                    }
+                                    elseif ($type == 'ccstick') {
+                                        $m = $row['t_month'];
+                                        $d = $row['t_day'];
+                                        if (strlen($m) == 1) {
+                                            $m = '0' . $m;
+                                        }
+                                        if (strlen($d) == 1) {
+                                            $d = '0' . $d;
+                                        }
+                                        if ($d == 1 && $m == 1 && $y == $oldest && $change) {
+                                            $y = $oldest + 1;
+                                        }
+                                        $values[$y . '-' . $m . '-' . $d][$row['measure_set']] = $this->output_value($row['v_avg'], $row['measure_type'], false, false, $row['module_type']);
+                                    }
+                                    $module_type = $row['module_type'];
                                 }
-                                $module_type = $row['module_type'];
+
+                                //error_log(print_r($values, true));
+
                                 foreach ($values as $key=>$row) {
                                     if (array_key_exists('max', $row) && array_key_exists('min', $row)) {
-                                        $values[$key]['mid'] = $this->output_value($row['min'] + (($row['max'] - $row['min']) / 2), $row['measure_type'], false, false, $module_type);
+                                        $values[$key]['mid'] = $this->output_value($row['min'] + (($row['max'] - $row['min']) / 2), $measure_type, false, false, $module_type);
                                     }
                                 }
                             }
@@ -1431,10 +1512,10 @@ trait Output {
                             foreach ($values as $key=>$row) {
                                 $date = self::get_js_datetime_from_mysql_utc($key, $station['loc_timezone'], $end_date);
                                 if (array_key_exists('max', $row) && array_key_exists('min', $row) && array_key_exists($op[0], $row) && array_key_exists($op[1], $row)) {
-                                    $high = $this->output_value($row['max'], $row['measure_type'], false, false, $module_type);
-                                    $low = $this->output_value($row['min'], $row['measure_type'], false, false, $module_type);
-                                    $close = $this->output_value($row[$op[1]], $row['measure_type'], false, false, $module_type);
-                                    $open = $this->output_value($row[$op[0]], $row['measure_type'], false, false, $module_type);
+                                    $high = $row['max'];
+                                    $low = $row['min'];
+                                    $close = $row[$op[1]];
+                                    $open = $row[$op[0]];
                                     $set[] = array('date'=>$date, 'open'=>$open, 'high'=>$high, 'low'=>$low, 'close'=>$close);
                                     if ($start) {
                                         $ymin = $low;
@@ -1468,6 +1549,30 @@ trait Output {
                             $extra = array();
                             $period_name = '';
                             $period_range = 0;
+                            $extra['set_name'] = ucfirst($this->get_operation_name($arg['set'], true));
+                            if ($mode == 'climat') {
+                                if (substr($min, 0, 4) != substr($max, 0, 4)) {
+                                    $period_name = substr($min, 0, 4) . '~' . substr($max, 0, 4);
+                                }
+                                else {
+                                    $period_name = substr($min, 0, 4);
+                                }
+                                if ($is_month) {
+                                    $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                    $now->setDate($year, $month, 1);
+                                    $p_name = date_i18n('F', $now->getTimestamp()) . ' %s';
+                                    $period_range = 1;
+                                }
+                                elseif ($is_year) {
+                                    $p_name = _n('Year %s', 'Years %s', 10, 'live-weather-station');
+                                    $period_range = 12;
+                                }
+                                elseif ($is_mseason) {
+                                    $p_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' %s';
+                                    $period_range = 3;
+                                }
+                                $period_name = sprintf($p_name, $period_name);
+                            }
                             if ($mode == 'yearly') {
                                 if ($is_rdays) {
                                     $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
@@ -1478,7 +1583,7 @@ trait Output {
                                     $period_name = date_i18n('F Y', $now->getTimestamp());
                                     $period_range = 1;
                                 } elseif ($is_year) {
-                                    $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
+                                    $period_name = sprintf(_n('Year %s', 'Years %s', 1, 'live-weather-station'), $year);
                                     $period_range = 12;
                                 } elseif ($is_mseason) {
                                     $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
@@ -1487,7 +1592,6 @@ trait Output {
                                     }
                                     $period_range = 3;
                                 }
-                                $extra['set_name'] = ucfirst($this->get_operation_name($arg['set'], true));
                             }
                             $subydmin = $this->get_measurement_min($arg['measurement'], $module_type);
                             $subydmax = $this->get_measurement_max($arg['measurement'], $module_type);
@@ -1771,9 +1875,7 @@ trait Output {
                                 if ($mode == 'climat') {
                                     $s = '';
                                     if (count($args) > 0) {
-                                        $station_information = $this->get_station_informations_by_station_id($arg['device_id']);
-                                        $oldest_data = $this->get_oldest_data($station_information);
-                                        $periods = $this->get_period_values($station_information, $oldest_data, false, false);
+                                        $periods = $this->get_period_values($station, $oldest_data, false, false);
                                         $s = $arg['period'];
                                         foreach ($periods as $period) {
                                             if (in_array($period[0], array('fixed-month', 'fixed-mseason', 'fixed-year'))) {
@@ -2021,6 +2123,7 @@ trait Output {
             case 'sareas':
             case 'astream':
             case 'cstick':
+            case 'ccstick':
             case 'valuerc':
             case 'windrose':
                 if (is_null($values)) {
@@ -2151,7 +2254,7 @@ trait Output {
                     break;
             }
         }
-        if ($mode == 'climat') {
+        if ($mode == 'climat' && $type != 'ccstick') {
             switch ($label) {
                 case 'simple':
                     $result = ucwords($name);
@@ -2164,6 +2267,31 @@ trait Output {
                     break;
                 case 'located':
                     $result = ucwords($values['extras'][0]['station_loc']) . $sep . ucwords($name);
+                    break;
+                case 'coord':
+                    $result = ucwords($values['extras'][0]['station_coord']) . $sep . $result = ucwords($values['extras'][0]['station_alt']) . $sep . ucwords($name);
+                    break;
+                case 'full':
+                    $result = ucwords($values['extras'][0]['station_name'])  . $sep . ucwords($values['extras'][0]['module_name']) . $sep . ucwords($name);
+                    break;
+            }
+        }
+        if ($mode == 'climat' && $type == 'ccstick') {
+            switch ($label) {
+                case 'simple':
+                    $result = ucwords($name);
+                    break;
+                case 'generic':
+                    $result = ucwords($name) . $sep . ucwords($values['extras'][0]['period_name']);
+                    break;
+                case 'named':
+                    $result = ucwords($values['extras'][0]['measurement_type']) . $sep . ucwords($values['extras'][0]['module_name']);
+                    break;
+                case 'station':
+                    $result = ucwords($values['extras'][0]['station_name']) . $sep . ucwords($name);
+                    break;
+                case 'located':
+                    $result = ucwords($values['extras'][0]['station_loc']) . ', ' . ucwords($values['extras'][0]['period_name']) . $sep . ucwords($name);
                     break;
                 case 'coord':
                     $result = ucwords($values['extras'][0]['station_coord']) . $sep . $result = ucwords($values['extras'][0]['station_alt']) . $sep . ucwords($name);
@@ -2954,7 +3082,7 @@ trait Output {
             /// END MAIN BODY
         }
 
-        if ($type == 'cstick') {
+        if ($type == 'cstick' || $type == 'ccstick') {
             $ticks = $this->graph_ticks($domain, $valuescale, $measurement1, $height);
             wp_enqueue_style('lws-nvd3');
             wp_enqueue_script('lws-nvd3');
@@ -3043,7 +3171,6 @@ trait Output {
             }
             $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
             $body .= '               .useInteractiveGuideline(true);' . PHP_EOL;
-            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
             if ($fixed_timescale && $timescale != 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h01Tick'.$uniq.', h02Tick'.$uniq.', h03Tick'.$uniq.', h04Tick'.$uniq.']);' . PHP_EOL;
             }
@@ -3071,24 +3198,54 @@ trait Output {
             }
             $high = ucfirst($this->get_operation_name('max'));
             $low = ucfirst($this->get_operation_name('min'));
-            $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.contentGenerator(function(d) {';
-            $body .= '      var c=d.series[0].data;' . PHP_EOL;
-            $body .= '      var e=c.open<c.close?' . $legendColors[2] . ':' . $legendColors[0] . ';' . PHP_EOL;
-            $body .= '      var close = chart' . $uniq . '.yAxis.tickFormat()(c.close);' . PHP_EOL;
-            $body .= '      var open = chart' . $uniq . '.yAxis.tickFormat()(c.open);' . PHP_EOL;
-            $body .= '      var low = chart' . $uniq . '.yAxis.tickFormat()(c.low);' . PHP_EOL;
-            $body .= '      var high = chart' . $uniq . '.yAxis.tickFormat()(c.high);' . PHP_EOL;
-            $body .= '      var sth=\'<table><thead><tr><td colspan="3"><strong class="x-value">%s</strong></td></tr></thead><tbody>%s</tbody></table>\';' . PHP_EOL;
-            $body .= '      var str1=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $high . '</td><td class="value">%s</td></tr>\', ' . $legendColors[1] . ', high);' . PHP_EOL;
-            $body .= '      var str3=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $open . '</td><td class="value">%s</td></tr>\', e, open);' . PHP_EOL;
-            $body .= '      var str2=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $close . '</td><td class="value">%s</td></tr>\', e, close);' . PHP_EOL;
-            $body .= '      var str4=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $low . '</td><td class="value">%s</td></tr>\', ' . $legendColors[1] . ', low);' . PHP_EOL;
-            $body .= '      return sprintf(sth, d.value, str1+str2+str3+str4)});' . PHP_EOL;
-            $body .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
-            $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
-            $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
-            $body .= '      return chart'.$uniq.';' . PHP_EOL;
-            $body .= '    });'.PHP_EOL;
+            if ($type == 'cstick') {
+                $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+                $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.contentGenerator(function(d) {';
+                $body .= '      var c=d.series[0].data;' . PHP_EOL;
+                $body .= '      var e=c.open<c.close?' . $legendColors[2] . ':' . $legendColors[0] . ';' . PHP_EOL;
+                $body .= '      var close = chart' . $uniq . '.yAxis.tickFormat()(c.close);' . PHP_EOL;
+                $body .= '      var open = chart' . $uniq . '.yAxis.tickFormat()(c.open);' . PHP_EOL;
+                $body .= '      var low = chart' . $uniq . '.yAxis.tickFormat()(c.low);' . PHP_EOL;
+                $body .= '      var high = chart' . $uniq . '.yAxis.tickFormat()(c.high);' . PHP_EOL;
+                $body .= '      var sth=\'<table><thead><tr><td colspan="3"><strong class="x-value">%s</strong></td></tr></thead><tbody>%s</tbody></table>\';' . PHP_EOL;
+                $body .= '      var str1=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $high . '</td><td class="value">%s</td></tr>\', ' . $legendColors[1] . ', high);' . PHP_EOL;
+                $body .= '      var str3=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $open . '</td><td class="value">%s</td></tr>\', e, open);' . PHP_EOL;
+                $body .= '      var str2=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $close . '</td><td class="value">%s</td></tr>\', e, close);' . PHP_EOL;
+                $body .= '      var str4=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $low . '</td><td class="value">%s</td></tr>\', ' . $legendColors[1] . ', low);' . PHP_EOL;
+                $body .= '      return sprintf(sth, d.value, str1+str2+str3+str4)});' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
+                $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+                $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+                $body .= '      return chart'.$uniq.';' . PHP_EOL;
+                $body .= '    });'.PHP_EOL;
+            }
+            else {
+                if ($period_duration == 'year') {
+                    $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+                }
+                else {
+                    $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("%B, %d")(new Date(d)) });' . PHP_EOL;
+                }
+                $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.contentGenerator(function(d) {';
+                $body .= '      var c=d.series[0].data;' . PHP_EOL;
+                $body .= '      var e=c.open<c.close?' . $legendColors[2] . ':' . $legendColors[0] . ';' . PHP_EOL;
+                $body .= '      var f=c.date;' . PHP_EOL;
+                $body .= '      var close = chart' . $uniq . '.yAxis.tickFormat()(c.close);' . PHP_EOL;
+                $body .= '      var open = chart' . $uniq . '.yAxis.tickFormat()(c.open);' . PHP_EOL;
+                $body .= '      var low = chart' . $uniq . '.yAxis.tickFormat()(c.low);' . PHP_EOL;
+                $body .= '      var high = chart' . $uniq . '.yAxis.tickFormat()(c.high);' . PHP_EOL;
+                $body .= '      var sth=\'<table><thead><tr><td colspan="3"><strong class="x-value">%s</strong></td></tr></thead><tbody>%s</tbody></table>\';' . PHP_EOL;
+                $body .= '      var str1=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $high . '</td><td class="value">%s</td></tr>\', ' . $legendColors[1] . ', high);' . PHP_EOL;
+                $body .= '      var str3=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $open . '</td><td class="value">%s</td></tr>\', e, open);' . PHP_EOL;
+                $body .= '      var str2=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $close . '</td><td class="value">%s</td></tr>\', e, close);' . PHP_EOL;
+                $body .= '      var str4=sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">' . $low . '</td><td class="value">%s</td></tr>\', ' . $legendColors[1] . ', low);' . PHP_EOL;
+                $body .= '      return sprintf(sth, d3.time.format("%B, %d")(new Date(c.date)), str1+str2+str3+str4)});' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
+                $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
+                $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
+                $body .= '      return chart'.$uniq.';' . PHP_EOL;
+                $body .= '    });'.PHP_EOL;
+            }
             // END MAIN BODY
         }
 
@@ -4508,10 +4665,13 @@ trait Output {
                     $item[$param] = $attributes[$param.'_'.$i];
                 }
             }
-            if ($item['period']) {
-                $items[] = $item;
+            if (array_key_exists('period', $item)) {
+                if ($item['period']) {
+                    $items[] = $item;
+                }
             }
         }
+        error_log(print_r($items, true));
         $noned = (count($items) == 0);
         $value_params = array();
         if (array_key_exists('mode', $attributes)) {

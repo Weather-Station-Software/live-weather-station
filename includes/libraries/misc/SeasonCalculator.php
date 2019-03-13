@@ -126,6 +126,58 @@ class Calculator {
         return '';
     }
 
+    public static function meteorologicalSeasonID ($month) {
+        switch ($month) {
+            case 12:
+            case 1:
+            case 2:
+                return 1;
+                break;
+            case 3:
+            case 4:
+            case 5:
+                return 4;
+                break;
+            case 6:
+            case 7:
+            case 8:
+                return 7;
+                break;
+            case 9:
+            case 10:
+            case 11:
+                return 10;
+                break;
+        }
+        return 0;
+    }
+
+    public static function meteorologicalSeasonMonths ($month) {
+        switch ($month) {
+            case 12:
+            case 1:
+            case 2:
+                return array(1, 2, 12);
+                break;
+            case 3:
+            case 4:
+            case 5:
+                return array(3, 4, 5);
+                break;
+            case 6:
+            case 7:
+            case 8:
+                return array(6, 7, 8);
+                break;
+            case 9:
+            case 10:
+            case 11:
+                return array(9, 10, 11);
+                break;
+        }
+        return 0;
+    }
+
     /**
      * Calculate a list of season matching a list of dates.
      */
@@ -137,6 +189,38 @@ class Calculator {
             $start = self::getMeteorologicalSeasonStartDate($e[0], $e[1], $tz);
             $end = self::getMeteorologicalSeasonEndDate($e[0], $e[1], $tz);
             $seasons[] = array($start.':'.$end, $e[0] . ', ' . self::meteorologicalSeasonName($e[1], $north_hemisphere).$suf);
+        }
+        return array_reverse(lws_array_super_unique($seasons, 0));
+    }
+
+    /**
+     * Calculate a list of successive season matching a list of dates.
+     */
+    public static function matchingClimatologicalMeteorologicalSeasons($dates, $tz, $north_hemisphere =true) {
+        $suf = ' (' . __('meteorological', 'live-weather-station') . ')';
+        $sub = array(1 => array(), 4 => array(), 7 => array(), 10 => array());
+        $seasons = array();
+        foreach ($dates as $date) {
+            $e = explode('-', $date[0]);
+            $start = self::getMeteorologicalSeasonStartDate($e[0], $e[1], $tz);
+            $end = self::getMeteorologicalSeasonEndDate($e[0], $e[1], $tz);
+            if (!array_key_exists('start', $sub[self::meteorologicalSeasonID($e[1])])) {
+                $sub[self::meteorologicalSeasonID($e[1])]['start'] = $start;
+                $sub[self::meteorologicalSeasonID($e[1])]['sy'] = $e[0];
+            }
+            $sub[self::meteorologicalSeasonID($e[1])]['end'] = $end;
+            $sub[self::meteorologicalSeasonID($e[1])]['ey'] = $e[0];
+        }
+
+        foreach (array(1, 4, 7, 10) as $m) {
+            if (array_key_exists('start', $sub[self::meteorologicalSeasonID($m)]) && array_key_exists('end', $sub[self::meteorologicalSeasonID($m)])) {
+                if ($sub[self::meteorologicalSeasonID($m)]['sy'] == $sub[self::meteorologicalSeasonID($m)]['ey']) {
+                    $seasons[] = array($sub[self::meteorologicalSeasonID($m)]['start'].':'.$sub[self::meteorologicalSeasonID($m)]['end'], ucfirst(self::meteorologicalSeasonName($m, $north_hemisphere)) . $suf . ', ' . $sub[self::meteorologicalSeasonID($m)]['ey']);
+                }
+                else {
+                    $seasons[] = array($sub[self::meteorologicalSeasonID($m)]['start'].':'.$sub[self::meteorologicalSeasonID($m)]['end'], ucfirst(self::meteorologicalSeasonName($m, $north_hemisphere)) . $suf . ', ' . $sub[self::meteorologicalSeasonID($m)]['sy'] . ' ⇥ ' . $sub[self::meteorologicalSeasonID($m)]['ey']);
+                }
+            }
         }
         return array_reverse(lws_array_super_unique($seasons, 0));
     }

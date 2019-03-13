@@ -3,6 +3,7 @@
 
 * New: Weather Station natively connects to ***WeatherLink Network*** - special thanks to David Aguilera-Riquelme from [RedMeteo.cl](https://redmeteo.cl/) for the tests.
 * New: new multi-lines chart to compare climatological (long-term) data with tons of options and settings.
+* New: new candlestick chart to visualize climatological (long-term) data with tons of options and settings.
 * New: Navionics added as mapping service (nautical, sonar and ski layers).
 * New: MapTiler added as mapping service (many standard layers).
 * New: new "icon" control to display current data as static or dynamic icons.
@@ -34,12 +35,13 @@
 * Improvement: it's now possible to set the file retention time (option in system tab).
 * Improvement: optimization of loading time for data preloaded via ajax in charts and graphs.
 * Bug fix: in some templates, textual shortcodes doesn't refresh every 2 minutes.
+* Bug fix: wind & gust strengths are wrongly recorded with WeatherFlow stations - see [patch details](https://weather.station.software/handbook/background-processes/weatherflow-wind-fixer/) (thanks to [@kent](https://weather.station.software/community/profile/kent/)).
 * Bug fix: the min and max values of the LCD display does not respect decimal specifications.
 * Bug fix: widgets are not fully refreshed when WP-Rocket is used as cache manager.
 * Bug fix: in some conditions, candlestick charts display a wrong mid-range values.
 * Bug fix: some files are not automatically removed of the file manager when it should.
 * Bug fix: some stations may have _holes_ in historical data, due to misspelled identifier.
-* Bug fix: sunshine duration is not correctly compiled in historical data (see [patch details](https://weather.station.software/handbook/background-processes/sunshine-aggregator/)).
+* Bug fix: sunshine duration is not correctly compiled in historical data - see [patch details](https://weather.station.software/handbook/background-processes/sunshine-aggregator/).
 * Bug fix: there's some typos in clean gauge module.
 * Bug fix: there's a typo in the "at a glance" box when only one station is collected (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
 * Removed: alarms for wind direction or source in LCD display, as there's not consistent way to interpret it.

@@ -9,6 +9,7 @@ use WeatherStation\SDK\Generic\Plugin\Ephemeris\Computer as Ephemeris_Computer;
 use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Computer;
 use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\Quota\Quota;
+use WeatherStation\Data\Unit\Conversion;
 
 
 /**
@@ -21,7 +22,7 @@ use WeatherStation\System\Quota\Quota;
  */
 trait PublicClient {
 
-    use BaseClient;
+    use BaseClient, Conversion;
 
     protected $facility = 'Weather Collector';
     public $detected_station_name = '';
@@ -249,18 +250,6 @@ trait PublicClient {
                     $updates['measure_value'] = $station['loc_altitude'];
                     $this->update_data_table($updates, $timezone);
                 }
-                /*if (array_key_exists('barometric_pressure_indoor', $observation)) {
-                    $updates['measure_type'] = 'pressure';
-                    $pressure_ref = $observation['barometric_pressure_indoor'];
-                    $updates['measure_value'] = $pressure_ref;
-                    $this->update_data_table($updates, $timezone);
-                }
-                if (array_key_exists('barometric_pressure', $observation)) {
-                    $updates['measure_type'] = 'pressure';
-                    $pressure_ref = $observation['barometric_pressure'];
-                    $updates['measure_value'] = $pressure_ref;
-                    $this->update_data_table($updates, $timezone);
-                }*/
                 if (array_key_exists('station_pressure_indoor', $observation)) {
                     $updates['measure_type'] = 'pressure';
                     $pressure_ref = $observation['station_pressure_indoor'];
@@ -361,12 +350,12 @@ trait PublicClient {
                     }
                     if (array_key_exists('wind_avg', $observation)) {
                         $updates['measure_type'] = 'windstrength';
-                        $updates['measure_value'] = $observation['wind_avg'];
+                        $updates['measure_value'] = $this->get_reverse_wind_speed($observation['wind_avg'], 2);
                         $this->update_data_table($updates, $timezone);
                     }
                     if (array_key_exists('wind_gust', $observation)) {
                         $updates['measure_type'] = 'guststrength';
-                        $updates['measure_value'] = $observation['wind_gust'];
+                        $updates['measure_value'] = $this->get_reverse_wind_speed($observation['wind_gust'], 2);
                         $this->update_data_table($updates, $timezone);
                     }
                     Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
