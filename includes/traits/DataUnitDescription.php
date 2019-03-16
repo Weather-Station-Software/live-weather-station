@@ -874,7 +874,7 @@ trait Description {
      * @since    2.6.0
      * @access   protected
      */
-    protected function get_pressure_unit_full( $id = 0 ) {
+    protected function get_pressure_unit_full($id = 0) {
         switch ($id) {
             case 1:
                 $result = __( 'inch of mercury' , 'live-weather-station');

@@ -1,0 +1,117 @@
+body {
+    font-size: 10px;
+    font-family: 'Open Sans', sans-serif;
+    font-weight: 400;
+    fill: #8C8C8C;
+    text-align: center;
+    background-color: #e4e4e4;
+}
+
+
+.dropdown-content li>span {
+    clear: both;
+    color: rgba(0, 0, 0, 0.87);
+}
+.title {
+    font-size: 28px;
+    fill: #4F4F4F;
+    font-weight: 300;
+    text-anchor: start;
+}
+
+.subtitle {
+    font-size: 32px;
+    fill: #cacaca;
+    font-weight: 300;
+    text-anchor: start;
+}
+
+.credit {
+    font-size: 12px;
+    fill: #AAAAAA;
+    font-weight: 300;
+    text-anchor: start;
+}
+
+.axis path,
+.axis tick,
+.axis line {
+    fill: none;
+    stroke: none;
+}
+
+.axis text {
+    font-size: 12px;
+    fill: #AAAAAA;
+    font-weight: 400;
+}
+
+.legendTitle {
+    font-size: 14px;
+    fill: #4F4F4F;
+    font-weight: 300;
+}
+.month {
+    font-size: 14px;
+    text-anchor: start;
+    font-weight: 300;
+    fill: #AAAAAA;
+}
+
+.yearLine {
+    stroke: #AAAAAA;
+}
+
+.axisText {
+    fill: #C4C4C4;
+    font-size: 11px;
+    font-weight: 300;
+    text-anchor: middle;
+    text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, -1px 0 0 #fff, 0 -1px 0 #fff;
+}
+
+.axisCircles {
+    fill: none;
+    stroke: #E8E8E8;
+    stroke-width: 1px;
+}
+
+.precipitationCircle {
+    fill: #1959B3;
+    fill-opacity: 0.2;
+}
+
+.monthArc {
+    fill: white;
+    stroke: #E8E8E8;
+    fill-opacity: 0.4;
+}
+
+.card.large {
+    height: 750px;
+}
+
+.select-wrapper input.select-dropdown {
+    border-bottom: none;
+}
+
+.input-field {
+    margin-top: 0rem;
+}
+
+.card-year {
+    font-size: 19px;
+    font-weight: 300;
+    line-height: 48px;
+}
+.row.desciptive-text {
+    margin-top: 20px;
+    margin-bottom: 0px;
+}
+.card.paragraph {
+    height: 495px;
+}
+
+.desc-para {
+    font-size: 16px;
+}

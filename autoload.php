@@ -53,12 +53,14 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Module\Yearly\Line': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyLine.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\DoubleLine': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyDoubleLine.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Lines': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyLines.php'; break;
+        case 'WeatherStation\Engine\Module\Yearly\Radial': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyRadial.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\StackedAreas': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyStackedAreas.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Timelapse': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyTimelapse.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\ValueRC': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyValueRC.php'; break;
         case 'WeatherStation\Engine\Module\Yearly\Windrose': $file = LWS_INCLUDES_DIR.'classes/ModuleYearlyWindrose.php'; break;
         case 'WeatherStation\Engine\Module\Climat\Lines': $file = LWS_INCLUDES_DIR.'classes/ModuleClimatLines.php'; break;
         case 'WeatherStation\Engine\Module\Climat\CCStick': $file = LWS_INCLUDES_DIR.'classes/ModuleClimatCStick.php'; break;
+        case 'WeatherStation\Engine\Module\Climat\Radial': $file = LWS_INCLUDES_DIR.'classes/ModuleClimatRadial.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\TXTGenerator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneAbstractTXTGenerator.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Framework': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneFramework.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Generator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneGenerator.php'; break;

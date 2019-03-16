@@ -200,7 +200,7 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
     protected function get_preview() {
         $id = 'current-icon-datas-output-'. $this->station_guid;
         $content = '<div style="width:100%;padding:20px;" id="' . $id . '"></div>';
-        $footer = __('This control will inherit of size and color when inserted in a post or a page.', 'live-weather-station');
+        $footer = __('This control will inherit from size and color when inserted in a post or a page.', 'live-weather-station');
         return $this->get_box('lws-preview-id', $this->preview_title, $content, $footer);
     }
 }
