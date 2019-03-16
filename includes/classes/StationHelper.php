@@ -43,11 +43,13 @@ use WeatherStation\Engine\Module\Yearly\Lines as YearlyLines;
 use WeatherStation\Engine\Module\Yearly\StackedAreas as YearlyStackedAreas;
 use WeatherStation\Engine\Module\Yearly\Windrose as YearlyWindrose;
 use WeatherStation\Engine\Module\Yearly\Timelapse;
+use WeatherStation\Engine\Module\Yearly\Radial as YearlyRadial;
 use WeatherStation\System\Plugin\Deactivator;
 use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Background\ProcessManager;
 use WeatherStation\Engine\Module\Climat\Lines as ClimatLines;
 use WeatherStation\Engine\Module\Climat\CCStick as ClimatCStick;
+use WeatherStation\Engine\Module\Climat\Radial as ClimatRadial;
 
 
 /**
@@ -125,11 +127,13 @@ class Handling {
         YearlyDistributionRC::register_module('yearly');
         YearlyValueRC::register_module('yearly');
         YearlyAStream::register_module('yearly');
+        YearlyRadial::register_module('yearly');
         if ($bsky) {
             Timelapse::register_module('yearly');
         }
         ClimatLines::register_module('climat');
         ClimatCStick::register_module('climat');
+        ClimatRadial::register_module('climat');
     }
 
     /**

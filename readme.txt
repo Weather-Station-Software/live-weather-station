@@ -37,6 +37,7 @@ Weather Station supports:
 * the BloomSky stations (Sky1, Sky2 & Storm)
 * the Pioupiou wind stations (V1 & V2)
 * all stations published on Ambient Weather Network
+* all stations published on WeatherLink Network
 * all stations supported by softwares like Cumulus, Weather Display, WeeWX, etc. (so, yes, stations from Davis, La Crosse, Oregon Scientific, RainWise, etc. are supported)
 * all stations supported by softwares like WeatherLink, WsWin32, MeteoBridge (with stickertags export)
 * all geolocation from OpenWeatherMap

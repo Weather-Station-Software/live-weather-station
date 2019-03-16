@@ -26,7 +26,7 @@
 * Improvement: "humidity" has been renamed to "relative humidity" to be more consistent.
 * Improvement: measurement types are now alphabetically ordered in list boxes.
 * Improvement: measurement types declensions have been rewritten for better understanding.
-* Improvement: candlestick charts now take care of decimal specifications for averages.
+* Improvement: historical candlestick charts now take care of decimal specifications for averages.
 * Improvement: better computation for adjusted boundaries in clean gauge and steel meter.
 * Improvement: the steel meter control and LCD Display now support min, max and trend for the new compiled measurements.
 * Improvement: "middle value" has been renamed to "mid-range" to avoid confusion with averaged values (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/) for the suggestion).
@@ -34,11 +34,12 @@
 * Improvement: it's now possible to manually add a file to the file manager (feature disabled by default, see system tab for settings).
 * Improvement: it's now possible to set the file retention time (option in system tab).
 * Improvement: optimization of loading time for data preloaded via ajax in charts and graphs.
+* Improvement: in historical charts, it's now possible to choose up to ten years ago when "sliding year" is selected as period type.
 * Bug fix: in some templates, textual shortcodes doesn't refresh every 2 minutes.
 * Bug fix: wind & gust strengths are wrongly recorded with WeatherFlow stations - see [patch details](https://weather.station.software/handbook/background-processes/weatherflow-wind-fixer/) (thanks to [@kent](https://weather.station.software/community/profile/kent/)).
 * Bug fix: the min and max values of the LCD display does not respect decimal specifications.
 * Bug fix: widgets are not fully refreshed when WP-Rocket is used as cache manager.
-* Bug fix: in some conditions, candlestick charts display a wrong mid-range values.
+* Bug fix: in some conditions, historical candlestick charts display a wrong mid-range values.
 * Bug fix: some files are not automatically removed of the file manager when it should.
 * Bug fix: some stations may have _holes_ in historical data, due to misspelled identifier.
 * Bug fix: sunshine duration is not correctly compiled in historical data - see [patch details](https://weather.station.software/handbook/background-processes/sunshine-aggregator/).

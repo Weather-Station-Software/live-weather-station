@@ -203,6 +203,8 @@ class Core {
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_graph_datas', $plugin_public, 'lws_graph_data_callback');
         $this->loader->add_action( 'wp_ajax_lws_query_graph_code', $plugin_public, 'lws_graph_code_callback');
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_graph_code', $plugin_public, 'lws_graph_code_callback');
+        $this->loader->add_action( 'wp_ajax_lws_query_radial_code', $plugin_public, 'lws_radial_code_callback');
+        $this->loader->add_action( 'wp_ajax_nopriv_lws_query_radial_code', $plugin_public, 'lws_radial_code_callback');
         $this->loader->add_action( 'wp_ajax_lws_query_ltgraph_datas', $plugin_public, 'lws_ltgraph_data_callback');
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_ltgraph_datas', $plugin_public, 'lws_ltgraph_data_callback');
         $this->loader->add_action( 'wp_ajax_lws_query_ltgraph_code', $plugin_public, 'lws_ltgraph_code_callback');
@@ -224,6 +226,7 @@ class Core {
 		add_shortcode( 'live-weather-station-justgage', array($plugin_public, 'justgage_shortcodes'));
         add_shortcode( 'live-weather-station-steelmeter', array($plugin_public, 'steelmeter_shortcodes'));
         add_shortcode( 'live-weather-station-graph', array($plugin_public, 'graph_shortcodes'));
+        add_shortcode( 'live-weather-station-radial', array($plugin_public, 'radial_shortcodes'));
         add_shortcode( 'live-weather-station-ltgraph', array($plugin_public, 'ltgraph_shortcodes'));
         add_shortcode( 'live-weather-station-admin-analytics', array($plugin_public, 'admin_analytics_shortcodes'));
         add_shortcode( 'live-weather-station-changelog', array($plugin_public, 'admin_changelog_shortcodes'));

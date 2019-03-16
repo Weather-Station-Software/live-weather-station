@@ -73,7 +73,7 @@ trait Conversion {
 
         // Sliding year
         $period = array();
-        for ($i=0; $i<=1; $i++) {
+        for ($i=0; $i<=10; $i++) {
             $s = '';
             if ($i != 0) {
                 $s = ' - ' . $i;

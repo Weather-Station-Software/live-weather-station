@@ -1891,12 +1891,24 @@ trait Generator {
      * @param boolean $rolling Optional. The array must contains rolling periods.
      * @param boolean $climat Optional. The array must contains only climat periods.
      * @param boolean $aggregated Optional. The array must contains only aggregated climat periods.
+     * @param boolean $onlyyears Optional. The array must contains only yearly climat periods.
+     * @param boolean $rotating Optional. The array must contains rotating climat periods too.
      * @return array An array containing the period types ready to convert to a JS array.
      * @since 3.4.0
      */
-    protected function get_period_type_js_array($rolling=true, $climat=false, $aggregated=false) {
+    protected function get_period_type_js_array($rolling=true, $climat=false, $aggregated=false, $onlyyears=false, $rotating=false) {
         $result = array();
-        if ($aggregated) {
+        if ($onlyyears) {
+            if ($rotating) {
+                $result[] = array('aggregated-year',  __('Aggregated years', 'live-weather-station'));
+                $result[] = array('rotating-year',  __('Rotating years', 'live-weather-station'));
+            }
+            else {
+                $result[] = array('fixed-year',  __('Fixed year', 'live-weather-station'));
+                $result[] = array('sliding-year',  __('Sliding year', 'live-weather-station'));
+            }
+        }
+        elseif ($aggregated) {
             $result[] = array('aggregated-month',  __('Aggregated months', 'live-weather-station'));
             $result[] = array('aggregated-mseason',  __('Aggregated meteorological seasons', 'live-weather-station'));
             $result[] = array('aggregated-year',  __('Aggregated years', 'live-weather-station'));
@@ -2367,16 +2379,24 @@ trait Generator {
      * @return array An array containing the line size ready to convert to a JS array.
      * @since 3.4.0
      */
-    protected function get_graph_size_js_array($autoscale=false) {
+    protected function get_graph_size_js_array($autoscale=false, $large=false) {
         $result = array();
         if ($autoscale) {
             $result[] = array('autoscale',  __('Responsive', 'live-weather-station'));
         }
-        $result[] = array('150px',  __('XS', 'live-weather-station'));
-        $result[] = array('200px',  __('S', 'live-weather-station'));
-        $result[] = array('300px',  __('M', 'live-weather-station'));
-        $result[] = array('400px',  __('L', 'live-weather-station'));
-        $result[] = array('555px',  __('XL', 'live-weather-station'));
+        if ($large) {
+            $result[] = array('300px',  __('M', 'live-weather-station'));
+            $result[] = array('400px',  __('L', 'live-weather-station'));
+            $result[] = array('555px',  __('XL', 'live-weather-station'));
+            $result[] = array('700px',  __('XXL', 'live-weather-station'));
+        }
+        else {
+            $result[] = array('150px',  __('XS', 'live-weather-station'));
+            $result[] = array('200px',  __('S', 'live-weather-station'));
+            $result[] = array('300px',  __('M', 'live-weather-station'));
+            $result[] = array('400px',  __('L', 'live-weather-station'));
+            $result[] = array('555px',  __('XL', 'live-weather-station'));
+        }
         return $result;
     }
 
@@ -2450,6 +2470,20 @@ trait Generator {
         $result[] = array('bwi',  __('Black & white', 'live-weather-station') . ' (' . __('inverted', 'live-weather-station') . ')');
         $result[] = array('terminal',  __('Terminal', 'live-weather-station'));
         $result[] = array('console',  __('Console', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get radial values array.
+     *
+     * @return array An array containing the graph templates ready to convert to a JS array.
+     * @since 3.8.0
+     */
+    protected function get_radial_values_js_array() {
+        $result = array();
+        $result[] = array('temperature',  __('Temperatures only', 'live-weather-station'));
+        $result[] = array('temperature-rain-raw',  __('Temperatures and precipitations (raw)', 'live-weather-station'));
+        $result[] = array('temperature-rain-threshold',  __('Temperatures and precipitations (thresholds)', 'live-weather-station'));
         return $result;
     }
 

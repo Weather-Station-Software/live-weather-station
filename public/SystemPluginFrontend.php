@@ -233,6 +233,21 @@ class Frontend {
     }
 
     /**
+     * Callback method for querying code to inject for graphs.
+     *
+     * @since 3.8.0
+     */
+    public function lws_radial_code_callback() {
+        $attributes = array();
+        foreach ($this->radial_allowed_parameter as $param) {
+            if (array_key_exists($param, $_POST)) {
+                $attributes[$param] = wp_kses($_POST[$param], array());
+            }
+        }
+        exit ($this->radial_shortcodes($attributes));
+    }
+
+    /**
      * Callback method for querying datas by the lcd control.
      *
      * @since 1.0.0
