@@ -2236,7 +2236,7 @@ trait Generator {
      * @return array An array containing the value scale options ready to convert to a JS array.
      * @since 3.4.0
      */
-    protected function get_y_scale_js_array($time_consistent=false, $windrose=false) {
+    protected function get_y_scale_js_array($time_consistent=false, $windrose=false, $reduced=false) {
         $result = array();
         $result[] = array('auto',  __('Automatic', 'live-weather-station'));
         $result[] = array('adaptative',  __('Adaptative', 'live-weather-station'));
@@ -2247,9 +2247,11 @@ trait Generator {
         if (!$windrose) {
             $result[] = array('boundaries',  __('Thresholds limits', 'live-weather-station'));
             $result[] = array('alarm',  __('Thresholds alarms', 'live-weather-station'));
-            $result[] = array('top',  __('0-based - top', 'live-weather-station'));
-            $result[] = array('bottom',  __('0-based - bottom', 'live-weather-station'));
-            $result[] = array('none',  __('None', 'live-weather-station'));
+            if (!$reduced) {
+                $result[] = array('top',  __('0-based - top', 'live-weather-station'));
+                $result[] = array('bottom',  __('0-based - bottom', 'live-weather-station'));
+                $result[] = array('none',  __('None', 'live-weather-station'));
+            }
         }
         return $result;
     }

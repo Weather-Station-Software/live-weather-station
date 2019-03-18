@@ -162,7 +162,7 @@ class Frontend {
     /**
      * Callback method for querying data for graphs.
      *
-     * @since 3.4.0
+     * @since 3.8.0
      */
     public function lws_ltgraph_data_callback() {
         $attributes = array();
@@ -179,6 +179,25 @@ class Frontend {
             }
         }
         $result = $this->graph_query($this->ltgraph_prepare($attributes), true);
+        if (!$result) {
+            $result = '[]';
+        }
+        exit ($result['values']);
+    }
+
+    /**
+     * Callback method for querying data for radial.
+     *
+     * @since 3.8.0
+     */
+    public function lws_radial_data_callback() {
+        $attributes = array();
+        foreach ($this->radial_allowed_parameter as $param) {
+            if (array_key_exists($param, $_POST)) {
+                $attributes[$param] = wp_kses($_POST[$param], array());
+            }
+        }
+        $result = $this->graph_query($this->radial_prepare($attributes), true);
         if (!$result) {
             $result = '[]';
         }

@@ -42,6 +42,7 @@
 * Bug fix: in some conditions, historical candlestick charts display a wrong mid-range values.
 * Bug fix: some files are not automatically removed of the file manager when it should.
 * Bug fix: some stations may have _holes_ in historical data, due to misspelled identifier.
+* Bug fix: in some rare conditions, "time consistent" scale for historical candlestick charts may be wrong.
 * Bug fix: sunshine duration is not correctly compiled in historical data - see [patch details](https://weather.station.software/handbook/background-processes/sunshine-aggregator/).
 * Bug fix: there's some typos in clean gauge module.
 * Bug fix: there's a typo in the "at a glance" box when only one station is collected (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).

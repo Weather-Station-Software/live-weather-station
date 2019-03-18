@@ -39,12 +39,6 @@ class Radial extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.8.0
      */
     protected function enqueue_resources() {
-
-        lws_register_style('lws-radial', LWS_PUBLIC_URL , 'css/radial.min.css');
-
-        wp_enqueue_style('lws-radial');
-
-
         wp_enqueue_style('lws-d4');
         wp_enqueue_script('lws-d4');
         wp_enqueue_script('lws-spin');
@@ -94,7 +88,7 @@ class Radial extends \WeatherStation\Engine\Module\Maintainer {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
         $content .= $this->get_key_value_option_select('yearly-radial-datas-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
         $content .= $this->get_key_value_option_select('yearly-radial-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(false, true), true, '400px');
-        $content .= $this->get_key_value_option_select('yearly-radial-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true), true, 'auto');
+        $content .= $this->get_key_value_option_select('yearly-radial-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true, false, true), true, 'auto');
         $content .= $this->get_key_value_option_select('yearly-radial-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(false), true, 'inline');
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);

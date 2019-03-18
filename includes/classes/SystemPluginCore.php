@@ -203,6 +203,8 @@ class Core {
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_graph_datas', $plugin_public, 'lws_graph_data_callback');
         $this->loader->add_action( 'wp_ajax_lws_query_graph_code', $plugin_public, 'lws_graph_code_callback');
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_graph_code', $plugin_public, 'lws_graph_code_callback');
+        $this->loader->add_action( 'wp_ajax_lws_query_radial_datas', $plugin_public, 'lws_radial_data_callback');
+        $this->loader->add_action( 'wp_ajax_nopriv_lws_query_radial_datas', $plugin_public, 'lws_radial_data_callback');
         $this->loader->add_action( 'wp_ajax_lws_query_radial_code', $plugin_public, 'lws_radial_code_callback');
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_radial_code', $plugin_public, 'lws_radial_code_callback');
         $this->loader->add_action( 'wp_ajax_lws_query_ltgraph_datas', $plugin_public, 'lws_ltgraph_data_callback');
