@@ -158,6 +158,9 @@ trait Conversion {
         // Aggregated astronomical season
         //$result[] = array('aggregated-aseason', Season::matchingAstronomicalSeasons($fixed_month, $station['loc_timezone'], $station['loc_latitude'] >= 0));
 
+        // Rotating year
+        $result[] = array('rotating-year', array(array($current->format('Y-m-d') . ':' . $util->format('Y-m-d'), sprintf('%s ⇥ %s', $current->format('Y'), $util->format('Y')))));
+
         $result[] = array('none',  array(array('none', 'none')));
         return $result;
     }
