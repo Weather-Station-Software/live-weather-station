@@ -44,6 +44,7 @@ trait Handling {
     private static $live_weather_station_widget_cache = true;
     private static $live_weather_station_dgraph_cache = true;
     private static $live_weather_station_ygraph_cache = true;
+    private static $live_weather_station_cgraph_cache = true;
     private static $live_weather_station_purge_cache = true;
     private static $live_weather_station_redirect_internal_links = false;
     private static $live_weather_station_redirect_external_links = true;
@@ -676,6 +677,7 @@ trait Handling {
         delete_option('live_weather_station_widget_cache');
         delete_option('live_weather_station_dgraph_cache');
         delete_option('live_weather_station_ygraph_cache');
+        delete_option('live_weather_station_cgraph_cache');
         delete_option('live_weather_station_query_cache');
         delete_option('live_weather_station_backend_cache');
         delete_option('live_weather_station_redirect_internal_links');
@@ -859,6 +861,7 @@ trait Handling {
         update_option('live_weather_station_widget_cache', self::$live_weather_station_widget_cache);
         update_option('live_weather_station_dgraph_cache', self::$live_weather_station_dgraph_cache);
         update_option('live_weather_station_ygraph_cache', self::$live_weather_station_ygraph_cache);
+        update_option('live_weather_station_cgraph_cache', self::$live_weather_station_cgraph_cache);
         update_option('live_weather_station_query_cache', self::$live_weather_station_query_cache);
         update_option('live_weather_station_backend_cache', self::$live_weather_station_backend_cache);
         update_option('live_weather_station_purge_cache', self::$live_weather_station_purge_cache);
@@ -1133,6 +1136,7 @@ trait Handling {
         self::verify_option_boolean('live_weather_station_widget_cache', self::$live_weather_station_widget_cache);
         self::verify_option_boolean('live_weather_station_dgraph_cache', self::$live_weather_station_dgraph_cache);
         self::verify_option_boolean('live_weather_station_ygraph_cache', self::$live_weather_station_ygraph_cache);
+        self::verify_option_boolean('live_weather_station_cgraph_cache', self::$live_weather_station_cgraph_cache);
         self::verify_option_boolean('live_weather_station_query_cache', self::$live_weather_station_query_cache);
         self::verify_option_boolean('live_weather_station_backend_cache', self::$live_weather_station_backend_cache);
         self::verify_option_boolean('live_weather_station_purge_cache', self::$live_weather_station_purge_cache);

@@ -184,6 +184,7 @@ class Fire extends Base {
      * @since 3.1.0
      */
     public function css($instance, $uid, $flat_design, $cbi=-99999, $background='', $attachment) {
+        lws_font_awesome();
         try
         {
             $maxwidth = round ($instance['width']);

@@ -92,7 +92,6 @@ Shortened types for textual and gauge (shortened meaning ?)
 
 
 Textual climatological shortcodes
-Weather radial
 Widget styles
 
 

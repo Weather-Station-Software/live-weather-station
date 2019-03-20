@@ -74,13 +74,14 @@ class Performance {
         if ($result = Cache::get_backend(Cache::$db_stat_perf_cache)) {
             return $result;
         }
-        $fields = array('backend', 'frontend', 'widget', 'dgraph', 'ygraph');
+        $fields = array('backend', 'frontend', 'widget', 'dgraph', 'ygraph', 'cgraph');
         $dimensions = array('miss', 'hit');
         $field_names = array('backend' => __('backend', 'live-weather-station'),
                             'frontend' => __('control', 'live-weather-station'),
                             'widget' => __('widget', 'live-weather-station'),
                             'dgraph' => __('daily graph', 'live-weather-station'),
-                            'ygraph' => __('historical graph', 'live-weather-station'));
+                            'ygraph' => __('historical graph', 'live-weather-station'),
+                            'cgraph' => __('climatological graph', 'live-weather-station'));
         $dimension_names = array('miss' => __('miss', 'live-weather-station'), 'hit' => __('hit', 'live-weather-station'));
         $metrics = array('count', 'time');
         $aggregates = array('efficiency', 'time_saving');

@@ -159,6 +159,7 @@ class Psychrometry extends Base {
      * @since 3.3.0
      */
     public function css($instance, $uid, $flat_design, $dawndusk=100, $background='', $attachment) {
+        lws_font_awesome();
         try
         {
             $maxwidth = round ($instance['width']);

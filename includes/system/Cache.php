@@ -28,6 +28,7 @@ class Cache {
     public static $widget_expiry = 119;    // 2 minutes - 1 second
     public static $dgraph_expiry = 119;    // 2 minutes - 1 second
     public static $ygraph_expiry = 43200;  // 12 hours
+    public static $cgraph_expiry = 172800;  // 48 hours
     public static $wp_expiry = 7200;       // 2 hours
     public static $i18n_expiry = 43200;    // 12 hours
     public static $db_stat = 'stat';
@@ -44,6 +45,7 @@ class Cache {
     public static $widget = 'lws_cache_widget';
     public static $dgraph = 'lws_cache_dgraph';
     public static $ygraph = 'lws_cache_ygraph';
+    public static $cgraph = 'lws_cache_cgraph';
     public static $frontend = 'lws_cache_control';
     public static $backend = 'lws_cache_backend';
     public static $i18n = 'lws_i18n';
@@ -134,6 +136,9 @@ class Cache {
                 }
                 if (strpos($cache_id, self::$ygraph)!==false) {
                     $key = 'ygraph';
+                }
+                if (strpos($cache_id, self::$cgraph)!==false) {
+                    $key = 'cgraph';
                 }
                 if (!array_key_exists($key, self::$stats)) {
                     self::$stats[$key]['hit_count'] = 0;
@@ -331,7 +336,11 @@ class Cache {
      */
     public static function get_graph($cache_id, $mode='daily') {
         $cache_id = Env::get_cache_prefix() . $cache_id;
-        if ($mode == 'yearly') {
+        if ($mode == 'climat') {
+            $id = self::$cgraph.'_'.$cache_id;
+            $cache = (bool)get_option('live_weather_station_cgraph_cache');
+        }
+        elseif ($mode == 'yearly') {
             $id = self::$ygraph.'_'.$cache_id;
             $cache = (bool)get_option('live_weather_station_ygraph_cache');
         }
@@ -366,7 +375,12 @@ class Cache {
      */
     public static function set_graph($cache_id, $mode, $value) {
         $cache_id = Env::get_cache_prefix() . $cache_id;
-        if ($mode == 'yearly') {
+        if ($mode == 'climat') {
+            $id = self::$cgraph.'_'.$cache_id;
+            $expiry = self::$cgraph_expiry;
+            $cache = (bool)get_option('live_weather_station_cgraph_cache');
+        }
+        elseif ($mode == 'yearly') {
             $id = self::$ygraph.'_'.$cache_id;
             $expiry = self::$ygraph_expiry;
             $cache = (bool)get_option('live_weather_station_ygraph_cache');
@@ -422,7 +436,7 @@ class Cache {
      *
      */
     public static function flush_graph($expired=true) {
-        return self::_flush(self::$dgraph, $expired) + self::_flush(self::$ygraph, $expired);
+        return self::_flush(self::$dgraph, $expired) + self::_flush(self::$ygraph, $expired) + self::_flush(self::$cgraph, $expired);
     }
 
     /**

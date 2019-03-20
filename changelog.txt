@@ -3,6 +3,7 @@
 
 * New: Weather Station natively connects to ***WeatherLink Network*** - special thanks to David Aguilera-Riquelme from [RedMeteo.cl](https://redmeteo.cl/) for the tests.
 * New: new multi-lines chart to compare climatological (long-term) data with tons of options and settings.
+* New: new radial graph for historical and long-termm data with tons of options and settings.
 * New: new candlestick chart to visualize climatological (long-term) data with tons of options and settings.
 * New: Navionics added as mapping service (nautical, sonar and ski layers).
 * New: MapTiler added as mapping service (many standard layers).
@@ -12,6 +13,7 @@
 * New: full configuration export/import feature (settings, stations and maps).
 * New: each module recording temperature and relative humidity has now a computed absolute humidity value available in all controls (thanks to [@setmin](https://weather.station.software/community/profile/setmin/) for the suggestion).
 * New: Weather Station now compiles day min, day max and trend for absolute and relative humidity, cloudiness, CO₂, gust strength, illuminance, irradiance, moisture content, moisture tension, noise level, pressures (atmospheric & barometric), temperature, soil temperature, UV index, visibility and wind strength, even if the station does not export this data.
+* New: long-term cache, essential to be able to use climatological charts and textual values.
 * Improvement: current conditions can now be displayed as plain text in textual shortcodes.
 * Improvement: duration can now be outputted as hh:mm or hh:mm:ss formats in textual shortcodes (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/) for the suggestion).
 * Improvement: in maps, two new marker types (temperature and colored temperature) allow to display temperature in markers (thanks to [@daguilera](https://weather.station.software/community/profile/daguilera/) for the suggestion).
