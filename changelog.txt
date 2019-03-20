@@ -50,6 +50,10 @@
 * Bug fix: there's a typo in the "at a glance" box when only one station is collected (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
 * Removed: alarms for wind direction or source in LCD display, as there's not consistent way to interpret it.
 
+#3.7.11 / March 20th, 2019
+
+* Bug fix: widgets in preview mode may produce a PHP warning with some WordPress setups. 
+
 #3.7.10 / February 19th, 2019
 
 * Improvement: optimization of night and day times computation for background changing in widgets.
