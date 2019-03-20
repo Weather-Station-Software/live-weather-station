@@ -26,7 +26,7 @@ class Radial extends \WeatherStation\Engine\Module\Maintainer {
         self::$module_mode = 'climat';
         $this->module_type = 'radial';
         $this->module_name = ucfirst(__('radial weather', 'live-weather-station'));
-        $this->module_hint = __('Display climat temperatures and precipitations as a beautiful radial graph.', 'live-weather-station');
+        $this->module_hint = __('Display long-term temperatures and precipitations as a beautiful radial graph.', 'live-weather-station');
         $this->module_icon = 'ch fa-lg fa-fw ch-pie-chart-11';
         $this->layout = '12-3-4';
         $this->series_number = 1;

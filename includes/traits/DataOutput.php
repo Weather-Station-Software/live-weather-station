@@ -1479,7 +1479,7 @@ trait Output {
                                 $y = $oldest;
                                 foreach ($rows as $row) {
                                     if ($type == 'cstick') {
-                                        $values[$row['timestamp']][$row['measure_set']] = $this->output_value($row['measure_value'], $row['measure_type'], false, false, $row['module_type']);
+                                        $values[$row['timestamp']][$row['measure_set']] = $row['measure_value'];
                                     }
                                     elseif ($type == 'ccstick') {
                                         $m = $row['t_month'];
@@ -1493,13 +1493,13 @@ trait Output {
                                         if ($d == 1 && $m == 1 && $y == $oldest && $change) {
                                             $y = $oldest + 1;
                                         }
-                                        $values[$y . '-' . $m . '-' . $d][$row['measure_set']] = $this->output_value($row['v_avg'], $row['measure_type'], false, false, $row['module_type']);
+                                        $values[$y . '-' . $m . '-' . $d][$row['measure_set']] = $row['measure_value'];
                                     }
                                     $module_type = $row['module_type'];
                                 }
                                 foreach ($values as $key=>$row) {
                                     if (array_key_exists('max', $row) && array_key_exists('min', $row)) {
-                                        $values[$key]['mid'] = $this->output_value($row['min'] + (($row['max'] - $row['min']) / 2), $measure_type, false, false, $module_type);
+                                        $values[$key]['mid'] = $row['min'] + (($row['max'] - $row['min']) / 2);
                                     }
                                 }
                             }
@@ -1511,10 +1511,10 @@ trait Output {
                             foreach ($values as $key=>$row) {
                                 $date = self::get_js_datetime_from_mysql_utc($key, $station['loc_timezone'], $end_date);
                                 if (array_key_exists('max', $row) && array_key_exists('min', $row) && array_key_exists($op[0], $row) && array_key_exists($op[1], $row)) {
-                                    $high = $row['max'];
-                                    $low = $row['min'];
-                                    $close = $row[$op[1]];
-                                    $open = $row[$op[0]];
+                                    $high = $this->output_value($row['max'], $arg['measurement'], false, false, $module_type);
+                                    $low = $this->output_value($row['min'], $arg['measurement'], false, false, $module_type);
+                                    $close = $this->output_value($row[$op[1]], $arg['measurement'], false, false, $module_type);
+                                    $open = $this->output_value($row[$op[0]], $arg['measurement'], false, false, $module_type);
                                     $set[] = array('date'=>$date, 'open'=>$open, 'high'=>$high, 'low'=>$low, 'close'=>$close);
                                     if ($start) {
                                         $ymin = $low;
@@ -1656,22 +1656,6 @@ trait Output {
                             $result = array();
                         }
                     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     elseif ($type == 'radial') {
                         $aggregated = (strpos($attributes['periodtype'], 'ggregated-') > 0);
                         $select = '';
@@ -1694,10 +1678,11 @@ trait Output {
                                 $select .= " OR " . $s . ")";
                             }
                         }
+                        $step['end_prepare'] = date('H:i:s');
                         $yearmin = substr($min, 0, 4);
                         $yearmax = substr($max, 0, 4);
                         if ($aggregated) {
-                            $sql = "SELECT `timestamp`, YEAR(`timestamp`) as t_year, MONTH(`timestamp`) as t_month, DAY(`timestamp`) as t_day, `module_type`, `measure_type`, `measure_set`, `measure_value`, AVG(`measure_value`) as avg_value FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND (" . $select . ") GROUP BY t_month, t_day, measure_type, measure_set ORDER BY YEAR(`timestamp`), MONTH(`timestamp`), DAY(`timestamp`) ASC;";
+                            $sql = "SELECT `timestamp`, YEAR(`timestamp`) as t_year, MONTH(`timestamp`) as t_month, DAY(`timestamp`) as t_day, `module_type`, `measure_type`, `measure_set`, `measure_value`, AVG(`measure_value`) as avg_value FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND (" . $select . ") GROUP BY t_month, t_day, measure_type, measure_set ORDER BY `timestamp` ASC;";
                             $rows = $wpdb->get_results($sql, ARRAY_A);
                             $yearstr = $yearmin . '~' . $yearmax;
                         }
@@ -1706,6 +1691,7 @@ trait Output {
                             $rows = $wpdb->get_results($sql, ARRAY_A);
                             $yearstr = $yearmin;
                         }
+                        $result['query'] = $sql;
                         $values = array();
                         for ($yy=$yearmin; $yy<=$yearmax; $yy++) {
                             for ($mm=1; $mm<=12; $mm++) {
@@ -1729,9 +1715,8 @@ trait Output {
                                 }
                             }
                         }
-
                         try {
-                            if (count($rows) > 0) {
+                            if (count($rows) > 0) {     //STEP 2
                                 $oldest = (int)substr($min, 0, 4);
                                 foreach ($rows as $row) {
                                     $y = $row['t_year'];
@@ -1745,69 +1730,15 @@ trait Output {
                                     }
                                     if (!$aggregated) {
                                         if (array_key_exists($y . '-' . $m . '-' . $d, $values)) {
-                                            $values[$y . '-' . $m . '-' . $d][$row['measure_set']] = $this->output_value($row['measure_value'], $row['measure_type'], false, false, $row['module_type']);
+                                            $values[$y . '-' . $m . '-' . $d][$row['measure_set']] = $row['measure_value'];
                                         }
                                     }
                                     else {
                                         if (array_key_exists($y . '-' . $m . '-' . $d, $values)) {
-                                            $values[$oldest . '-' . $m . '-' . $d][$row['measure_set']] = $this->output_value($row['avg_value'], $row['measure_type'], false, false, $row['module_type']);
+                                            $values[$oldest . '-' . $m . '-' . $d][$row['measure_set']] = $row['measure_value'];
                                         }
                                     }
                                 }
-
-
-
-
-                                /*if ($mode == 'climat' && !$aggregated) {
-                                    $oldest = (int)substr($min, 0, 4);
-                                    //$change = (int)substr($min, 5, 2) != 1;
-                                    $y = $oldest;
-                                    foreach ($rows as $row) {
-                                        $m = $row['t_month'];
-                                        $d = $row['t_day'];
-                                        if (strlen($m) == 1) {
-                                            $m = '0' . $m;
-                                        }
-                                        if (strlen($d) == 1) {
-                                            $d = '0' . $d;
-                                        }
-                                        if ($d == 1 && $m == 1 && $y == $oldest && $change) {
-                                            $y = $oldest + 1;
-                                        }
-                                        if (array_key_exists($y . '-' . $m . '-' . $d, $values)) {
-                                            $values[$y . '-' . $m . '-' . $d][$row['measure_set']] = $this->output_value($row['measure_value'], $row['measure_type'], false, false, $row['module_type']);
-                                        }
-                                    }
-                                }
-                                else {
-                                    $oldest = (int)substr($min, 0, 4);
-                                    $change = (int)substr($min, 5, 2) != 1;
-                                    $y = $oldest;
-                                    foreach ($rows as $row) {
-                                        $m = $row['t_month'];
-                                        $d = $row['t_day'];
-                                        if (strlen($m) == 1) {
-                                            $m = '0' . $m;
-                                        }
-                                        if (strlen($d) == 1) {
-                                            $d = '0' . $d;
-                                        }
-                                        if ($d == 1 && $m == 1 && $y == $oldest && $change) {
-                                            $y = $oldest + 1;
-                                        }
-                                        if (!$aggregated) {
-                                            if (array_key_exists($y . '-' . $m . '-' . $d, $values)) {
-                                                $values[$y . '-' . $m . '-' . $d][$row['measure_set']] = $this->output_value($row['measure_value'], $row['measure_type'], false, false, $row['module_type']);
-                                            }
-                                        }
-                                        else {
-                                            if (array_key_exists($y . '-' . $m . '-' . $d, $values)) {
-                                                $values[$y . '-' . $m . '-' . $d][$row['measure_set']] = $this->output_value($row['avg_value'], $row['measure_type'], false, false, $row['module_type']);
-                                            }
-                                        }
-                                    }
-                                }*/
-
                             }
                             $subset = array();
                             $start = true;
@@ -1823,6 +1754,9 @@ trait Output {
                                     if ($attributes['values'] == 'temperature') {
                                         $r = 0;
                                     }
+                                    elseif ($attributes['values'] == 'temperature-rain-threshold') {
+                                        $r = 10 * (int)floor($r/10);
+                                    }
                                     $tmax = $row['max'];
                                     $tmin = $row['min'];
                                     $tavg = $row['avg'];
@@ -1837,7 +1771,11 @@ trait Output {
                                     if ($tavg < $ymin) {
                                         $ymin = $tavg;
                                     }
-                                    $subset[] = array('date'=>$key, 'maxTemp'=>$tmax, 'minTemp'=>$tmin, 'meanTemp'=>$tavg, 'precipitation'=>$r);
+                                    $subset[] = array('date'=>$key,
+                                        'maxTemp'=>(int)$this->output_value($tmax, 'temperature'),
+                                        'minTemp'=>(int)$this->output_value($tmin, 'temperature'),
+                                        'meanTemp'=>(int)$this->output_value($tavg, 'temperature'),
+                                        'precipitation'=>(int)$this->output_value($r, 'rain_day_aggregated'));
                                 }
                                 else {
                                     $subset[] = array('date'=>$key,
@@ -1870,28 +1808,6 @@ trait Output {
                             $result = array();
                         }
                     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
                     else {
                         $i = 1;
                         foreach ($args as $arg) {
@@ -5517,7 +5433,6 @@ trait Output {
 
         // prepare query params
         $value_params = $this->radial_prepare($attributes);
-        $items = $value_params['args'];
         $period_type = $value_params['periodtype'];
         $cpt = count($value_params['args']);
         if ($cpt == 0) {
@@ -5671,15 +5586,11 @@ trait Output {
         if ($data == 'inline') {
             if ($period_type == 'rotating-year') {
                 $body .= ' var cpt=0;';
-                //$body .= ' console.log(data'.$uniq.');';
                 $body .= 'd4.interval(function(){';
-                //$body .= ' precipitationScale.domain(d4.extent(data'.$uniq.'[cpt].data, function(d){return Math.sqrt(d.precipitation);}));	';
                 $body .= ' precipitationScale = d4.scaleLinear().range([0,outerRadius/3]).domain(d4.extent(data'.$uniq.'[cpt].data, function(d){return Math.sqrt(d.precipitation);}));' . PHP_EOL;
-
                 $body .= ' var updatePrecipitation = barWrapper.selectAll(".precipitationCircle").data(data'.$uniq.'[cpt].data,function(d) {return d;});';
                 $body .= ' updatePrecipitation.exit().remove();';
                 $body .= ' updatePrecipitation.enter().append("circle").attr("class", "precipitationCircle").transition().duration(750).attr("transform", function(d,i){ return "rotate(" + (angle(d.date)) + ")"; }).attr("cx", 0).attr("cy", function(d){ return barScale(d.meanTemp);}).attr("r", function(d){ return precipitationScale(Math.sqrt(d.precipitation));});';
-
                 $body .= ' var updateTemp = barWrapper.selectAll(".tempBar").data(data'.$uniq.'[cpt].data, function(d) {return d;});';
                 $body .= ' updateTemp.exit().remove();';
                 $body .= ' updateTemp.enter().append("rect").attr("class", "tempBar").transition().duration(750).attr("transform", function(d,i) { return "rotate(" + (angle(d.date)) + ")"; }).attr("width", 1.5).attr("height", function(d,i) { return barScale(d.maxTemp) - barScale(d.minTemp); }).attr("x", -0.75).attr("y", function(d,i) {return barScale(d.minTemp); }).style("fill", function(d) { return colorScale(d.meanTemp); });';
@@ -5744,7 +5655,6 @@ trait Output {
         }
         $result .= '  });' . PHP_EOL;
         $result .= lws_print_end_script();
-
         return $result;
     }
 

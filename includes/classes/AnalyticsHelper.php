@@ -106,6 +106,7 @@ class Handling {
             (bool)get_option('live_weather_station_widget_cache') ||
             (bool)get_option('live_weather_station_dgraph_cache') ||
             (bool)get_option('live_weather_station_ygraph_cache') ||
+            (bool)get_option('live_weather_station_cgraph_cache') ||
             (bool)get_option('live_weather_station_backend_cache')) {
             add_meta_box('lws-perf-cache24', __('Cache performance', 'live-weather-station') . ' - ' . __('24 hours', 'live-weather-station'), array($this, 'perf_cache_widget_24'), 'lws-analytics', 'normal');
         }
@@ -122,6 +123,7 @@ class Handling {
             (bool)get_option('live_weather_station_widget_cache') ||
             (bool)get_option('live_weather_station_dgraph_cache') ||
             (bool)get_option('live_weather_station_ygraph_cache') ||
+            (bool)get_option('live_weather_station_cgraph_cache') ||
             (bool)get_option('live_weather_station_backend_cache')) {
             add_meta_box('lws-perf-cache30', __('Cache performance', 'live-weather-station') . ' - ' . __('30 days', 'live-weather-station'), array($this, 'perf_cache_widget_30'), 'lws-analytics', 'side');
         }

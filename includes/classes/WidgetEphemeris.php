@@ -127,6 +127,7 @@ class Ephemeris extends Base {
      * @since 2.0.0
      */
     public function css($instance, $uid, $flat_design, $dawndusk=100, $background='', $attachment='local') {
+        lws_font_awesome();
         try
         {
             $maxwidth = round ($instance['width']);

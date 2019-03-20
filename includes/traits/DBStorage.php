@@ -461,6 +461,10 @@ trait Storage {
         $sql .= " `ygraph_hit_time` int(11) NOT NULL DEFAULT '0',";
         $sql .= " `ygraph_miss_count` int(11) NOT NULL DEFAULT '0',";
         $sql .= " `ygraph_miss_time` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `cgraph_hit_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `cgraph_hit_time` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `cgraph_miss_count` int(11) NOT NULL DEFAULT '0',";
+        $sql .= " `cgraph_miss_time` int(11) NOT NULL DEFAULT '0',";
         $sql .= " PRIMARY KEY (`timestamp`)";
         $sql .= ") $charset_collate;";
         $wpdb->query($sql);
@@ -763,6 +767,20 @@ trait Storage {
                 ProcessManager::register('SunshineAggregator');
                 ProcessManager::register('IdentifierLowercaser');
                 ProcessManager::register('WeatherFlowWindFixer');
+
+                $table_name = $wpdb->prefix . self::live_weather_station_performance_cache_table();
+                if (self::is_empty_table($table_name)) {
+                    $sql = 'DROP TABLE IF EXISTS ' . $table_name;
+                    $wpdb->query($sql);
+                    self::create_live_weather_station_performance_cache_table();
+                } else {
+                    self::safe_add_column($table_name, 'cgraph_hit_count', "ALTER TABLE " . $table_name . " ADD cgraph_hit_count int(11) NOT NULL DEFAULT '0';");
+                    self::safe_add_column($table_name, 'cgraph_hit_time', "ALTER TABLE " . $table_name . " ADD cgraph_hit_time int(11) NOT NULL DEFAULT '0';");
+                    self::safe_add_column($table_name, 'cgraph_miss_count', "ALTER TABLE " . $table_name . " ADD cgraph_miss_count int(11) NOT NULL DEFAULT '0';");
+                    self::safe_add_column($table_name, 'cgraph_miss_time', "ALTER TABLE " . $table_name . " ADD cgraph_miss_time int(11) NOT NULL DEFAULT '0';");
+                }
+
+
             }
 
 
