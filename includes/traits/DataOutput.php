@@ -260,6 +260,18 @@ trait Output {
     }
 
     /**
+     * Convert an amplitude to the right unit system.
+     *
+     * @param float $value The amplitude to convert.
+     * @param string $type The type of measurement.
+     * @return string The converted amplitude.
+     * @since 3.8.0
+     */
+    protected function rebase_value ($value, $type) {
+        return $this->output_value($value, $type) - $this->output_value('0', $type);
+    }
+
+    /**
      * Query values for graph.
      *
      * @param array $attributes The type of values queried.
@@ -392,7 +404,7 @@ trait Output {
                         $result['xdomain']['max'] = (int)self::get_js_datetime_from_mysql_utc($max, $station['loc_timezone']) + 1000;
                         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
                     }
-                    if ($mode == 'yearly' || $type == 'ccstick') {
+                    if ($mode == 'yearly' || $type == 'ccstick' || $type == 'calendarhm') {
                         $d = array('1971-08-01', '1971-08-31');
                         $is_rdays = $attributes['periodduration'] == 'rdays';
                         $is_month = $attributes['periodduration'] == 'month';
@@ -476,7 +488,8 @@ trait Output {
                             $max = $d[1];
                         }
                     }
-                    if ($mode == 'climat' && $type != 'ccstick') {
+                    if ($mode == 'climat' && $type != 'ccstick' && $type != 'calendarhm') {
+                        $is_rdays = false;
                         $is_month = $attributes['periodduration'] == 'month';
                         $is_mseason = $attributes['periodduration'] == 'mseason';
                         $is_year = $attributes['periodduration'] == 'year';
@@ -1828,16 +1841,44 @@ trait Output {
                                 $module_type = 'NAMain';
                                 $set = '';
                                 $val = '`measure_value`';
+                                $aux = array();
                                 if ($mode == 'yearly' || $mode == 'climat') {
                                     $set = " AND `measure_set`='" . $arg['set'] . "'";
+                                    if ($mode == 'climat' && $type == 'calendarhm') {
+                                        $aux_set = " AND `measure_set`='" . $arg['set'] . "' GROUP BY MONTH(`timestamp`), DAY(`timestamp`)";
+                                        $aux_val = 'AVG(`measure_value`) as aux_val';
+                                        $aux_sql = "SELECT `timestamp`, " . $aux_val . " FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $aux_set . " ORDER BY `timestamp` ASC;";
+                                        $aux_query = $wpdb->get_results($aux_sql, ARRAY_A);
+                                        foreach ($aux_query as $a) {
+                                            $aux[substr($a['timestamp'], 5, 5)] = $a['aux_val'];
+                                        }
+                                    }
                                 }
                                 if (($mode == 'yearly' || $mode == 'climat') && strtolower($arg['set']) == 'amp') {
                                     $set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
                                     $val = 'ABS(MAX(`measure_value`)-MIN(`measure_value`)) as computed_value';
+                                    if ($mode == 'climat' && $type == 'calendarhm') {
+                                        $aux_set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY MONTH(`timestamp`), DAY(`timestamp`)";
+                                        $aux_val = 'ABS(MAX(`measure_value`)-MIN(`measure_value`)) as aux_val';
+                                        $aux_sql = "SELECT `timestamp`, " . $aux_val . " FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $aux_set . " ORDER BY `timestamp` ASC;";
+                                        $aux_query = $wpdb->get_results($aux_sql, ARRAY_A);
+                                        foreach ($aux_query as $a) {
+                                            $aux[substr($a['timestamp'], 5, 5)] = $a['aux_val'];
+                                        }
+                                    }
                                 }
                                 if (($mode == 'yearly' || $mode == 'climat') && strtolower($arg['set']) == 'mid') {
                                     $set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
                                     $val = 'AVG(`measure_value`) as computed_value';
+                                    if ($mode == 'climat' && $type == 'calendarhm') {
+                                        $aux_set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY MONTH(`timestamp`), DAY(`timestamp`)";
+                                        $aux_val = 'MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as aux_val';
+                                        $aux_sql = "SELECT `timestamp`, " . $aux_val . " FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $aux_set . " ORDER BY `timestamp` ASC;";
+                                        $aux_query = $wpdb->get_results($aux_sql, ARRAY_A);
+                                        foreach ($aux_query as $a) {
+                                            $aux[substr($a['timestamp'], 5, 5)] = $a['aux_val'];
+                                        }
+                                    }
                                 }
                                 $sql = "SELECT `timestamp`, `module_type`, " . $val . " FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $set . " ORDER BY `timestamp` ASC;";
                                 try {
@@ -1895,6 +1936,39 @@ trait Output {
                                     foreach ($query_a as $val) {
                                         $a = (array)$val;
                                         $module_type = $a['module_type'];
+                                        if (!array_key_exists('measure_value', $a)) {
+                                            if (array_key_exists('computed_value', $a)) {
+                                                $a['measure_value'] = $a['computed_value'];
+                                            } else {
+                                                continue;
+                                            }
+                                        }
+                                        if ($mode == 'climat' && $type == 'calendarhm') {
+                                            if (strtolower($arg['set']) == 'amp') {
+                                                if (array_key_exists(substr($a['timestamp'], 5, 5), $aux)) {
+                                                    $a['measure_value'] = $this->rebase_value($a['measure_value'] - $aux[substr($a['timestamp'], 5, 5)], $arg['measurement']);
+                                                }
+                                                else {
+                                                    $a['measure_value'] = $this->rebase_value($a['measure_value'], $arg['measurement']);
+                                                }
+                                            }
+                                            else {
+                                                if (array_key_exists(substr($a['timestamp'], 5, 5), $aux)) {
+                                                    $a['measure_value'] = $this->rebase_value($a['measure_value'] - $aux[substr($a['timestamp'], 5, 5)], $arg['measurement']);
+                                                }
+                                                else {
+                                                    $a['measure_value'] = $this->output_value($a['measure_value'], $arg['measurement'], false, false, $a['module_type']);
+                                                }
+                                            }
+                                        }
+                                        else {
+                                            if (strtolower($arg['set']) == 'amp') {
+                                                $a['measure_value'] = $this->rebase_value($a['measure_value'], $arg['measurement']);
+                                            }
+                                            else {
+                                                $a['measure_value'] = $this->output_value($a['measure_value'], $arg['measurement'], false, false, $a['module_type']);
+                                            }
+                                        }
                                         if ($mode == 'daily') {
                                             $a['timestamp'] = self::get_js_datetime_from_mysql_utc($a['timestamp'], $station['loc_timezone'], $end_date);
                                         }
@@ -1904,14 +1978,6 @@ trait Output {
                                         if ($mode == 'climat') {
                                             $a['timestamp'] = self::get_js_date_from_mysql_utc($a['timestamp'], $station['loc_timezone'], $end_date) - ($arg['offset']);
                                         }
-                                        if (!array_key_exists('measure_value', $a)) {
-                                            if (array_key_exists('computed_value', $a)) {
-                                                $a['measure_value'] = $a['computed_value'];
-                                            } else {
-                                                continue;
-                                            }
-                                        }
-                                        $a['measure_value'] = $this->output_value($a['measure_value'], $arg['measurement'], false, false, $a['module_type']);
                                         if ($start) {
                                             $ymin = $a['measure_value'];
                                             $ymax = $a['measure_value'];
@@ -2052,7 +2118,7 @@ trait Output {
                                 $extra = array();
                                 $period_name = '';
                                 $period_range = 0;
-                                if ($mode == 'yearly') {
+                                if ($mode == 'yearly' || $mode == 'climat') {
                                     if ($is_rdays) {
                                         $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
                                         $period_range = 0;
@@ -2143,6 +2209,10 @@ trait Output {
             if ($type != 'none') {
                 if ($valuescale == 'consistent') {
                     $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
+                    $ymin = null;
+                    $ymax = null;
+                    $cmin = null;
+                    $cmax = null;
                     if ($type == 'radial') {
                         $dev = '';
                         $mod = '';
@@ -2152,47 +2222,112 @@ trait Output {
                                 $mod = $arg['module_id'];
                             }
                         }
-                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $dev . "' AND `module_id`='" . $mod . "' AND `measure_type`='temperature' AND `measure_set`='avg';";
+                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $dev . "' AND `module_id`='" . $mod . "' AND `measure_type`='temperature' AND `measure_set`='avg';";
                         $query = $wpdb->get_results($sql, ARRAY_A);
-                        $ymin = $query[0]['min_val'];
-                        $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $dev . "' AND `module_id`='" . $mod . "' AND `measure_type`='temperature' AND `measure_set`='avg';";
+                        $ymin = $this->output_value($query[0]['min_val'], 'temperature');
+                        $ymax = $this->output_value($query[0]['max_val'], 'temperature');
+                    }
+                    elseif ($type == 'cstick' || $type == 'ccstick') {
+                        $arg = array_values($args)[0];
+                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND (`measure_set`='min' OR `measure_set`='max');";
                         $query = $wpdb->get_results($sql, ARRAY_A);
-                        $ymax = $query[0]['max_val'];
+                        $ymin = $this->output_value($query[0]['min_val'], $arg['measurement']);
+                        $ymax = $this->output_value($query[0]['max_val'], $arg['measurement']);
                     }
                     elseif ($type == 'doubleline' || $type == 'bcline') {
-                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND `measure_set`='min';";
-                        $query = $wpdb->get_results($sql, ARRAY_A);
-                        $result['extras'][0]['ydomain']['min'] = $query[0]['min_val'];
-                        $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND `measure_set`='max';";
-                        $query = $wpdb->get_results($sql, ARRAY_A);
-                        $result['extras'][0]['ydomain']['max'] = $query[0]['max_val'];
-                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND `measure_set`='min';";
-                        $query = $wpdb->get_results($sql, ARRAY_A);
-                        $result['extras'][1]['ydomain']['min'] = $query[0]['min_val'];
-                        $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND `measure_set`='max';";
-                        $query = $wpdb->get_results($sql, ARRAY_A);
-                        $result['extras'][1]['ydomain']['max'] = $query[0]['max_val'];
+                        if ($args[1]['set'] == 'amp') {
+                            $sql = "SELECT MIN(T2.amplitude) as min_val, MAX(T2.amplitude) as max_val FROM(SELECT (MAX(`measure_value`)-MIN(`measure_value`)) as amplitude FROM (SELECT `timestamp`, `measure_value` FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND (`measure_set`='min' OR `measure_set`='max')) as T1 GROUP BY T1.timestamp) as T2";
+                            $query = $wpdb->get_results($sql, ARRAY_A);
+                            $result['extras'][0]['ydomain']['min'] = $query[0]['min_val'];
+                            $result['extras'][0]['ydomain']['max'] = $query[0]['max_val'];
+                        }
+                        elseif ($args[1]['set'] == 'mid') {
+                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND `measure_set`='min';";
+                            $query = $wpdb->get_results($sql, ARRAY_A);
+                            $tm = $query[0]['min_val'];
+                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND `measure_set`='max';";
+                            $query = $wpdb->get_results($sql, ARRAY_A);
+                            $result['extras'][0]['ydomain']['min'] = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $args[1]['measurement']);
+                            $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND `measure_set`='min';";
+                            $query = $wpdb->get_results($sql, ARRAY_A);
+                            $tm = $query[0]['min_val'];
+                            $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND `measure_set`='max';";
+                            $query = $wpdb->get_results($sql, ARRAY_A);
+                            $result['extras'][0]['ydomain']['max'] = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $args[1]['measurement']);
+                        }
+                        else {
+                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND `measure_set`='" . $args[1]['set'] . "';";
+                            $query = $wpdb->get_results($sql, ARRAY_A);
+                            $result['extras'][0]['ydomain']['min'] = $this->output_value($query[0]['min_val'], $args[1]['measurement']);
+                            $result['extras'][0]['ydomain']['max'] = $this->output_value($query[0]['max_val'], $args[1]['measurement']);
+                        }
+                        if ($args[2]['set'] == 'amp') {
+                            $sql = "SELECT MIN(T2.amplitude) as min_val, MAX(T2.amplitude) as max_val FROM(SELECT (MAX(`measure_value`)-MIN(`measure_value`)) as amplitude FROM (SELECT `timestamp`, `measure_value` FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND (`measure_set`='min' OR `measure_set`='max')) as T1 GROUP BY T1.timestamp) as T2";
+                            $query = $wpdb->get_results($sql, ARRAY_A);
+                            $result['extras'][1]['ydomain']['min'] = $query[0]['min_val'];
+                            $result['extras'][1]['ydomain']['max'] = $query[0]['max_val'];
+                        }
+                        elseif ($args[2]['set'] == 'mid') {
+                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND `measure_set`='min';";
+                            $query = $wpdb->get_results($sql, ARRAY_A);
+                            $tm = $query[1]['min_val'];
+                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND `measure_set`='max';";
+                            $query = $wpdb->get_results($sql, ARRAY_A);
+                            $result['extras'][1]['ydomain']['min'] = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $args[2]['measurement']);
+                            $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND `measure_set`='min';";
+                            $query = $wpdb->get_results($sql, ARRAY_A);
+                            $tm = $query[1]['min_val'];
+                            $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND `measure_set`='max';";
+                            $query = $wpdb->get_results($sql, ARRAY_A);
+                            $result['extras'][1]['ydomain']['max'] = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $args[2]['measurement']);
+                        }
+                        else {
+                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND `measure_set`='" . $args[2]['set'] . "';";
+                            $query = $wpdb->get_results($sql, ARRAY_A);
+                            $result['extras'][1]['ydomain']['min'] = $this->output_value($query[0]['min_val'], $args[2]['measurement']);
+                            $result['extras'][1]['ydomain']['max'] = $this->output_value($query[0]['max_val'], $args[2]['measurement']);
+                        }
                     }
                     else {
                         foreach ($args as $arg) {
                             if (strpos($arg['module_id'], ':') == 2) {
                                 try {
-                                    $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='min';";
-                                    $query = $wpdb->get_results($sql, ARRAY_A);
-                                    $min = $query[0]['min_val'];
-                                    $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='max';";
-                                    $query = $wpdb->get_results($sql, ARRAY_A);
-                                    $max = $query[0]['max_val'];
-                                    if ($min < $ymin) {
+                                    if ($arg['set'] == 'amp') {
+                                        $sql = "SELECT MIN(T2.amplitude) as min_val, MAX(T2.amplitude) as max_val FROM(SELECT (MAX(`measure_value`)-MIN(`measure_value`)) as amplitude FROM (SELECT `timestamp`, `measure_value` FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND (`measure_set`='min' OR `measure_set`='max')) as T1 GROUP BY T1.timestamp) as T2";
+                                        $query = $wpdb->get_results($sql, ARRAY_A);
+                                        $min = $this->rebase_value($query[0]['min_val'], $arg['measurement']);
+                                        $max = $this->rebase_value($query[0]['max_val'], $arg['measurement']);
+                                    }
+                                    elseif ($arg['set'] == 'mid') {
+                                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='min';";
+                                        $query = $wpdb->get_results($sql, ARRAY_A);
+                                        $tm = $query[0]['min_val'];
+                                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='max';";
+                                        $query = $wpdb->get_results($sql, ARRAY_A);
+                                        $min = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $arg['measurement']);
+                                        $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='min';";
+                                        $query = $wpdb->get_results($sql, ARRAY_A);
+                                        $tm = $query[0]['min_val'];
+                                        $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='max';";
+                                        $query = $wpdb->get_results($sql, ARRAY_A);
+                                        $max = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $arg['measurement']);
+                                    }
+                                    else {
+                                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='" . $arg['set'] . "';";
+                                        $query = $wpdb->get_results($sql, ARRAY_A);
+                                        $min = $this->output_value($query[0]['min_val'], $arg['measurement']);
+                                        $max = $this->output_value($query[0]['max_val'], $arg['measurement']);
+                                    }
+                                    if (!isset($ymin) || $min < $ymin) {
                                         $ymin = $min;
                                     }
-                                    if ($min < $cmin) {
+                                    if (!isset($cmin) || $min < $cmin) {
                                         $cmin = $min;
                                     }
-                                    if ($max > $ymax) {
+                                    if (!isset($ymax) || $max > $ymax) {
                                         $ymax = $max;
                                     }
-                                    if ($max > $cmax) {
+                                    if (!isset($cmax) || $max > $cmax) {
                                         $cmax = $max;
                                     }
                                 }
@@ -2323,6 +2458,9 @@ trait Output {
                     if ($wind) {
                         $name = __('Wind', 'live-weather-station');
                     }
+                    if ($wind) {
+                        $name = __('Wind', 'live-weather-station');
+                    }
                 }
                 if ($mode == 'yearly' && $type != 'valuerc') {
                     $rain = false;
@@ -2338,6 +2476,9 @@ trait Output {
                     if ($rain) {
                         $name = __('Rainfall', 'live-weather-station');
                     }
+                }
+                if ($type == 'calendarhm' && $mode == 'climat') {
+                    $name .= ' (' . __('deviation', 'live-weather-station') . ')';
                 }
                 break;
             case 'distributionrc':
@@ -4462,7 +4603,6 @@ trait Output {
             if ($label == 'none') {
                 $inner_height = ((integer)(str_replace('px', '', $height))+0);
             }
-            $inner_height = $inner_height . 'px';
             if ($label_txt != '') {
                 $label_txt = '<div style="padding-top:' . $ptop . 'px;' . str_replace('fill', 'color', $prop['text']) . '"><text style="' . $prop['nv-axislabel'] . '">' . $label_txt . '</text></div>';
             }
@@ -5459,6 +5599,10 @@ trait Output {
 
         // Domain & unit...
         $domain = $this->graph_domain($values, $valuescale);
+        if ($valuescale != 'consistent') {
+            $domain['min'] = $this->output_value($domain['min'], 'temperature');
+            $domain['max'] = $this->output_value($domain['max'], 'temperature');
+        }
         if ($_attributes['valuescale'] != 'boundaries' && $_attributes['valuescale'] != 'alarm') {
             $domain['min'] = $domain['min'] - 5;
             $domain['max'] = $domain['max'] + 5;
