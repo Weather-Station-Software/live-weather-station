@@ -98,7 +98,7 @@ Support is provided via the official [Community Support](https://weather.station
 You can find instructions [here](https://weather.station.software/handbook/).
 
 = Where can I report a bug? =
-
+ 
 You can report bugs and suggest ideas via the official [Community Support](https://weather.station.software/community/).
 
 == Changelog ==

@@ -48,6 +48,7 @@ use WeatherStation\System\Plugin\Deactivator;
 use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Background\ProcessManager;
 use WeatherStation\Engine\Module\Climat\Lines as ClimatLines;
+use WeatherStation\Engine\Module\Climat\CalendarHM as ClimatCalendarHM;
 use WeatherStation\Engine\Module\Climat\CCStick as ClimatCStick;
 use WeatherStation\Engine\Module\Climat\Radial as ClimatRadial;
 
@@ -133,6 +134,7 @@ class Handling {
         }
         ClimatLines::register_module('climat');
         ClimatCStick::register_module('climat');
+        ClimatCalendarHM::register_module('climat');
         ClimatRadial::register_module('climat');
     }
 

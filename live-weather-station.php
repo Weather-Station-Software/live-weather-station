@@ -47,7 +47,7 @@ function activate_Live_Weather_Station() {
  * @since 1.0.0
  */
 function deactivate_Live_Weather_Station() {
-	Deactivator::deactivate();
+    Deactivator::deactivate();
 }
 
 /**
