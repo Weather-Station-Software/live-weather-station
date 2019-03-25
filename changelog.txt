@@ -4,7 +4,7 @@
 * New: Weather Station natively connects to ***WeatherLink Network*** - special thanks to David Aguilera-Riquelme from [RedMeteo.cl](https://redmeteo.cl/) for the tests.
 * New: new multi-lines chart to compare climatological (long-term) data with tons of options and settings.
 * New: new calendar heatmap to display climatological (long-term) deviations or anomalies with tons of options and settings.
-* New: new radial graph for historical and long-termm data with tons of options and settings.
+* New: new radial graph for historical and long-term data with tons of options and settings.
 * New: new candlestick chart to visualize climatological (long-term) data with tons of options and settings.
 * New: Navionics added as mapping service (nautical, sonar and ski layers).
 * New: MapTiler added as mapping service (many standard layers).
@@ -21,12 +21,16 @@
 * Improvement: the detection of site's timezone is now fully compliant with WordPress rules.
 * Improvement: obsolete notifications are now auto deleted (option in system tab).
 * Improvement: when installing/updating Weather Station on an old WordPress version, a notification is generated.
+* Improvement: textual shortcodes and clean gauges have now a "meaning" (human-readable short type) for use in label or title (thanks to [@alanyoungblood](https://weather.station.software/community/profile/alanyoungblood/) for the suggestion).
 * Improvement: it's now possible to activate/deactivate compatibility mode for tabbed controls (option in system tab).
 * Improvement: disabling Weather Station no longer deletes its data.
 * Improvement: deleting Weather Station deletes its data, except historical tables (option in system tab).
 * Improvement: Weather Station can now prevent the cache manager to cache widgets (option in system tab).
+* Improvement: the count of notifications now dynamically shows deleted ones (thanks to [@setmin](https://weather.station.software/community/profile/setmin/) for the suggestion).
 * Improvement: Weather station now handle correctly wrong measurement formats for clientraw-based stations.
 * Improvement: "humidity" has been renamed to "relative humidity" to be more consistent.
+* Improvement: maps popups have now the last refresh time of shown values.
+* Improvement: maps popups can now embed a link to a station's page (thanks to [@daguilera](https://weather.station.software/community/profile/daguilera/) for the suggestion).
 * Improvement: measurement types are now alphabetically ordered in list boxes.
 * Improvement: measurement types declensions have been rewritten for better understanding.
 * Improvement: historical candlestick charts now take care of decimal specifications for averages.
@@ -41,6 +45,7 @@
 * Improvement: optimization of loading time for data preloaded via ajax in charts and graphs.
 * Improvement: optimized computation for amplitude and mid-range datasets in non-metric system.
 * Improvement: in historical charts, it's now possible to choose up to ten years ago when "sliding year" is selected as period type.
+* Improvement: better layout in station's view.
 * Bug fix: in some templates, textual shortcodes doesn't refresh every 2 minutes.
 * Bug fix: wind & gust strengths are wrongly recorded with WeatherFlow stations - see [patch details](https://weather.station.software/handbook/background-processes/weatherflow-wind-fixer/) (thanks to [@kent](https://weather.station.software/community/profile/kent/)).
 * Bug fix: the min and max values of the LCD display does not respect decimal specifications.

@@ -66,7 +66,6 @@ trait Client {
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
                     $this->bloomsky_datas = $this->bloomsky_client->getData();
-                    //error_log(print_r($this->bloomsky_datas, true));
                     $this->normalize_bloomsky_datas();
                     if ($store) {
                         $this->store_bloomsky_datas($this->get_all_bsky_stations());

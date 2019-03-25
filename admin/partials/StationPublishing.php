@@ -49,7 +49,6 @@ $message_real = sprintf(__('This file can be accessed at %s or at %s.', 'live-we
             <?php if ($station['txt_sync']) { ?>
                 <p class="description"><?php echo $message_txt; ?></p>
             <?php } ?>
-
             <fieldset style="padding-top: 10px;">
                 <label>
                     <input name="yow_sync" id="yow_sync" type="checkbox" value="1"<?php echo ($station['yow_sync'] ? ' checked="checked"' : ''); ?>/>
@@ -62,7 +61,7 @@ $message_real = sprintf(__('This file can be accessed at %s or at %s.', 'live-we
         </div>
     </div>
     <div id="major-publishing-actions">
-        <div id="publishing-action" style="margin-top: -24px;margin-bottom: -20px;">
+        <div id="publishing-action" style="margin-top: -30px;margin-bottom: -26px;">
             <?php echo get_submit_button('', 'primary large', 'submit-publish'); ?>
         </div>
         <div class="clear"></div>

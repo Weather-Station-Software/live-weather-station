@@ -2830,7 +2830,7 @@ trait Output {
                 $result = 'fixed';
         }
         if ($measurement == 'alt_density' || $measurement == 'alt_pressure') {
-            $result = 'bottom';
+            $result = 'fixed';
         }
         switch ($measurement) {
             case 'cloud_ceiling':
@@ -4972,7 +4972,6 @@ trait Output {
                 }
             }
         }
-        error_log(print_r($items, true));
         $noned = (count($items) == 0);
         $value_params = array();
         if (array_key_exists('mode', $attributes)) {
@@ -6656,6 +6655,7 @@ trait Output {
             if ($full) {
                 $result['type'] = $this->get_measurement_type($_attributes['measure_type']);
                 $result['shorttype'] = $this->get_measurement_type($_attributes['measure_type'], true);
+                $result['meaningtype'] = $this->get_measurement_type($_attributes['measure_type'], true, '', true);
                 $result['unit'] = $this->output_unit($_attributes['measure_type'])['unit'];
                 $_attributes['measure_type'] = 'sos';
                 $_result = $this->get_line_datas($_attributes, false, true);
@@ -6728,6 +6728,7 @@ trait Output {
                 $result['module'] = DeviceManager::get_module_name($master['device_id'], $master['module_id']);
                 $result['type'] = $this->get_measurement_type($measure_type, false, $module_type);
                 $result['shorttype'] = $this->get_measurement_type($measure_type, true, $module_type);
+                $result['meaningtype'] = $this->get_measurement_type($_attributes['measure_type'], true, '', true);
                 $result['unit'] = $this->output_unit($measure_type, $module_type)['unit'];
             }
         }
@@ -7840,6 +7841,14 @@ trait Output {
                         $result = $err ;
                 }
                 break;
+            case 'type-meaning':
+                switch ($_attributes['element']) {
+                    case 'measure_type':
+                        $result = $this->get_measurement_type($result, false, $module_type, true);
+                        break;
+                    default:
+                        $result = $err ;
+                }
             case 'type-unit-full':
                 switch ($_attributes['element']) {
                     case 'measure_type':
@@ -8792,6 +8801,7 @@ trait Output {
                         'equivalent_temperature' => 'wi-thermometer-exterior',
                         'evapotranspiration' => 'wi-flood',
                         'export' => 'fa-upload',
+                        'external_link' => 'fa-' . (LWS_FA5?'external-link-alt':'external-link'),
                         'firmware' => 'fa-cog',
                         'first_setup' => 'fa-wrench',
                         'frost_point' => 'wi-stars',

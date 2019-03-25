@@ -31,11 +31,11 @@ To see all available widgets, controls and viewers, please take a look at the [l
 = Supported devices & services =
 Weather Station supports:
 
+* the BloomSky stations (Sky1, Sky2 & Storm)
 * the Netatmo station (all modules)
 * the Netatmo *Healthy Home Coach*
-* the WeatherFlow station (Sky & Air modules)
-* the BloomSky stations (Sky1, Sky2 & Storm)
 * the Pioupiou wind stations (V1 & V2)
+* the WeatherFlow station (Sky & Air modules)
 * all stations published on Ambient Weather Network
 * all stations published on WeatherLink Network
 * all stations supported by softwares like Cumulus, Weather Display, WeeWX, etc. (so, yes, stations from Davis, La Crosse, Oregon Scientific, RainWise, etc. are supported)

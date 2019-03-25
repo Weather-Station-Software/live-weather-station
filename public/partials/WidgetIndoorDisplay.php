@@ -39,7 +39,7 @@
             <?php endif;?>
             <?php if ($show_co2):?>
                 <!-- CO2 -->
-                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Carbon dioxide', 'live-weather-station').'"' : ''); ?>>
+                <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Carbon dioxide concentration', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
                         <?php echo $datas['co2']['icon']; ?>
                     </div>

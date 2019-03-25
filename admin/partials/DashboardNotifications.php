@@ -16,7 +16,7 @@ $t = '<i style="font-size:80%" class="' . LWS_FAS . ' fa-trash fa-fw"></i>&nbsp;
 foreach (Notifier::get() as $notification) {
     $id = $notification['id'];
     $url = '';
-    $delete = '<a onclick="jQuery.post( ajaxurl, {action: \'delete_notification\',id: ' . $id . '});jQuery(\'#notification-' . $id . '\').animate({opacity: 0}, 500, function() {jQuery(\'#notification-' . $id . '\').hide();});return false;" href="">' . $t . __('delete', 'live-weather-station') . '</a>';
+    $delete = '<a onclick="jQuery.post( ajaxurl, {action: \'delete_notification\',id: ' . $id . '});jQuery(\'#notification-' . $id . '\').animate({opacity: 0}, 500, function() {jQuery(\'#notification-' . $id . '\').hide();var i = parseInt(jQuery(\'.lws-notification .plugin-count\').html(),10)-1;if (i>0){jQuery(\'.lws-notification .plugin-count\').html(i.toString())}else{jQuery(\'.lws-notification\').hide()}});return false;" href="">' . $t . __('delete', 'live-weather-station') . '</a>';
     $expand = '<span id="ex-' . $id . '"><a onclick="jQuery(\'#dx-' . $id . '\').show();jQuery(\'#ex-' . $id . '\').hide();jQuery(\'#co-' . $id . '\').show();return false;" style="cursor:pointer">' . $d . __('expand', 'live-weather-station') . '</a></span>';
     $collapse = '<span id="co-' . $id . '" style="display:none;"><a onclick="jQuery(\'#dx-' . $id . '\').hide();jQuery(\'#ex-' . $id . '\').show();jQuery(\'#co-' . $id . '\').hide();return false;" style="cursor:pointer">' . $c . __('collapse', 'live-weather-station') . '</a></span>';
     $ago = '<span style="float:left;">' . sprintf( __('%s ago', 'live-weather-station'), human_time_diff(strtotime($notification['timestamp']))) . '</span>';

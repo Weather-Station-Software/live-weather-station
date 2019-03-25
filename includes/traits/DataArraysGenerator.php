@@ -166,13 +166,14 @@ trait Generator {
      */
     private function get_td_measure_type_format($sample) {
         $result = array();
-        $result[0] = array (__('Raw value', 'live-weather-station'), 'raw', $sample[0]);
-        $result[1] = array (__('Formated value', 'live-weather-station'), 'type-formated', $sample[1]);
-        $result[2] = array (__('Unit symbol or abbreviation', 'live-weather-station'), 'type-unit', $sample[2]);
-        $result[3] = array (__('Unit with complement (if any)', 'live-weather-station'), 'type-unit-full', $sample[3]);
-        $result[4] = array (__('Unit name', 'live-weather-station'), 'type-unit-long', $sample[4]);
-        $result[5] = array (__('Raw dimension', 'live-weather-station'), 'type-raw-dimension', $sample[5]);
-        $result[6] = array (__('Formated dimension', 'live-weather-station'), 'type-formated-dimension', $sample[6]);
+        $result[] = array (__('Raw value', 'live-weather-station'), 'raw', $sample[0]);
+        $result[] = array (__('Formated value', 'live-weather-station'), 'type-formated', $sample[1]);
+        $result[] = array (__('Human-readable meaning', 'live-weather-station'), 'type-meaning', $sample[7]);
+        $result[] = array (__('Unit symbol or abbreviation', 'live-weather-station'), 'type-unit', $sample[2]);
+        $result[] = array (__('Unit with complement (if any)', 'live-weather-station'), 'type-unit-full', $sample[3]);
+        $result[] = array (__('Unit name', 'live-weather-station'), 'type-unit-long', $sample[4]);
+        $result[] = array (__('Raw dimension', 'live-weather-station'), 'type-raw-dimension', $sample[5]);
+        $result[] = array (__('Formated dimension', 'live-weather-station'), 'type-formated-dimension', $sample[6]);
         return $result;
     }
 
@@ -413,7 +414,7 @@ trait Generator {
             $result[] = array(__('Module name', 'live-weather-station'), 'module_name', $this->get_td_module_name_format(array($ref['module_name'])));
             $result[] = array(__('Measurement timestamp', 'live-weather-station'), 'measure_timestamp', $this->get_td_time_format(array($ts, $this->get_date_from_mysql_utc($ts, $ref['loc_timezone']), $this->get_time_from_mysql_utc($ts, $ref['loc_timezone']), $this->get_time_diff_from_mysql_utc($ts))));
             $unit = $this->output_unit($mtype, false, $ref['module_type']);
-            $result[] = array(__('Measurement type', 'live-weather-station'), 'measure_type', $this->get_td_measure_type_format(array($mtype,$this->get_measurement_type($mtype, false, $ref['module_type']),$unit['unit'],$unit['full'],$unit['long'],$unit['dimension'], $this->get_dimension_name($unit['dimension']))));
+            $result[] = array(__('Measurement type', 'live-weather-station'), 'measure_type', $this->get_td_measure_type_format(array($mtype,$this->get_measurement_type($mtype, false, $ref['module_type']),$unit['unit'],$unit['full'],$unit['long'],$unit['dimension'], $this->get_dimension_name($unit['dimension']), $this->get_measurement_type($mtype, false, $ref['module_type'], true))));
         }
         switch ($mtype) {
             case 'battery':
@@ -1540,6 +1541,7 @@ trait Generator {
         $result[] = array('station',  __('Station name', 'live-weather-station'));
         $result[] = array('module',  __('Module name', 'live-weather-station'));
         $result[] = array('shorttype',  __('Short measurement type', 'live-weather-station'));
+        $result[] = array('meaningtype',  __('Measurement type meaning', 'live-weather-station'));
         $result[] = array('type',  __('Measurement type', 'live-weather-station'));
         $result[] = array('unit',  __('Measurement unit', 'live-weather-station'));
         $result[] = array('station-module',  __('Station name', 'live-weather-station').' - '.__('Module name', 'live-weather-station'));
@@ -3334,6 +3336,21 @@ trait Generator {
         $result[] = array('none',  __('None', 'live-weather-station'));
         $result[] = array('medium',  __('Medium', 'live-weather-station'));
         $result[] = array('dark',  __('Dark', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get page array for maps.
+     *
+     * @return array An array containing marker shadow to convert to a JS array.
+     * @since 3.7.0
+     */
+    protected function get_map_page_js_array() {
+        $result = array();
+        $result[] = array('none',  __('None', 'live-weather-station'));
+        $result[] = array('link1',  __('Link 1', 'live-weather-station'));
+        $result[] = array('link2',  __('Link 2', 'live-weather-station'));
+        $result[] = array('link3',  __('Link 3', 'live-weather-station'));
         return $result;
     }
 

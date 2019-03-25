@@ -66,6 +66,9 @@ abstract class BaseHandling {
             $this->map_id = $map['id'];
             $this->map_name = $map['name'];
             $this->map_params = unserialize($map['params']);
+            if (!array_key_exists('page', $this->map_params['marker'])) {
+                $this->map_params['marker']['page'] = 'none';
+            }
             $this->set = true;
         }
         $fingerprint = uniqid('', true);
@@ -99,6 +102,7 @@ abstract class BaseHandling {
         $params['marker']['style'] = 'standard';
         $params['marker']['contrast'] = 'medium';
         $params['marker']['shadow'] = 'medium';
+        $params['marker']['page'] = 'none';
         $params['specific'] = $this->specific_params();
         return $this->add_new_map($this->type, sprintf(__('New %s map', 'live-weather-station'), $this->service), $params);
     }
@@ -171,6 +175,11 @@ abstract class BaseHandling {
         if (array_key_exists('marker-shadow', $_POST)) {
             if (in_array($_POST['marker-shadow'], array('none', 'medium', 'dark'))) {
                 $params['marker']['shadow'] = $_POST['marker-shadow'];
+            }
+        }
+        if (array_key_exists('marker-page', $_POST)) {
+            if (in_array($_POST['marker-page'], array('none', 'link1', 'link2', 'link3'))) {
+                $params['marker']['page'] = $_POST['marker-page'];
             }
         }
         $params['specific'] = $this->get_specific_post_values();
@@ -344,10 +353,31 @@ abstract class BaseHandling {
             $result .= '}';
             $result .= '#' . $this->uniq .' .leaflet-popup-content .values {';
             $result .= 'font-size:14px;';
-            $result .= 'padding-top:8px;';
+            $result .= 'padding-top:9px;';
             $result .= 'line-height: 1.8em;';
             $result .= '}';
         }
+        $result .= '#' . $this->uniq .' .leaflet-popup-content .update {';
+        $result .= 'font-size:10px;';
+        $result .= 'margin-bottom: -4px;';
+        $result .= 'text-align:left;';
+        $result .= 'float:left;';
+        $result .= 'margin-top: 8px;';
+        $result .= 'color: ' . $this->color(3) . ';';
+        $result .= '}';
+        $result .= '#' . $this->uniq .' .leaflet-popup-content .page {';
+        $result .= 'font-size:10px;';
+        $result .= 'margin-bottom: -4px;';
+        $result .= 'text-align:right;';
+        $result .= 'margin-top: 8px;';
+        $result .= 'color: ' . $this->color(3) . ';';
+        $result .= '}';
+        $result .= '#' . $this->uniq .' .leaflet-popup-content .page a,';
+        $result .= '#' . $this->uniq .' .leaflet-popup-content .page a:hover';
+        $result .= '#' . $this->uniq .' .leaflet-popup-content .page a:visited {';
+        $result .= 'text-decoration: none;';
+        $result .= 'color: ' . $this->color(3) . ';';
+        $result .= '}';
         $result .= '</style>';
         return $result;
     }
@@ -421,6 +451,14 @@ abstract class BaseHandling {
             $s['id'] = $station['guid'];
             $s['lat'] = $station['loc_latitude'];
             $s['lon'] = $station['loc_longitude'];
+            $s['url'] = '';
+            for ($i=1; $i<=3; $i++) {
+                if ($this->map_params['marker']['page'] == 'link' . $i) {
+                    if (array_key_exists('link_' . $i, $station) && isset($station['link_' . $i])) {
+                        $s['url'] = $station['link_' . $i];
+                    }
+                }
+            }
             $s['iconUrl'] = SVG::get_base64_station_icon($station['station_type'], $this->color(3));
             $image = "<img style='width:28px;padding-top: 0px' src='" . set_url_scheme(SVG::get_base64_station_color_logo($station['station_type'])) . "' />";
             if ($this->map_params['marker']['data'] == 'current' || $this->map_params['marker']['data'] == 'station' || $this->map_params['marker']['type'] == 'weather:current' || $this->map_params['marker']['type'] == 'weather:wind') {
@@ -435,6 +473,7 @@ abstract class BaseHandling {
                 $humidity = null;
                 $pressure = null;
                 $params = null;
+                $timestamp = 0;
                 $alt = $this->output_value($station['loc_altitude'], 'loc_altitude', true);
                 $lat = $this->output_coordinate($station['loc_latitude'], 'loc_latitude', 6);
                 $lon = $this->output_coordinate($station['loc_longitude'], 'loc_longitude', 6);
@@ -448,29 +487,69 @@ abstract class BaseHandling {
                                 }
                                 if (array_key_exists('weather', $module['datas'])) {
                                     $weather = $module['datas']['weather']['raw_value'];
+                                    if (array_key_exists('timestamp', $module['datas']['weather'])) {
+                                        if ($module['datas']['weather']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['datas']['weather']['timestamp'];
+                                        }
+                                    }
                                 }
                                 if (array_key_exists('windangle', $module['datas']) && array_key_exists('windstrength', $module['datas']) && !isset($wind_force)) {
                                     $wind_angle = $this->get_angle_text($module['datas']['windangle']['raw_value']);
                                     $wind_strength = $this->output_value($module['datas']['windstrength']['raw_value'], 'windstrength', true);
                                     $wind_force = $this->get_wind_speed($module['datas']['windstrength']['raw_value'], 3);
+                                    if (array_key_exists('timestamp', $module['datas']['windangle'])) {
+                                        if ($module['datas']['windangle']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['datas']['windangle']['timestamp'];
+                                        }
+                                    }
+                                    if (array_key_exists('timestamp', $module['datas']['windstrength'])) {
+                                        if ($module['datas']['windstrength']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['datas']['windstrength']['timestamp'];
+                                        }
+                                    }
                                 }
                                 if (array_key_exists('humidity', $module['datas']) && !isset($humidity)) {
                                     $humidity = $this->output_value($module['datas']['humidity']['raw_value'], 'humidity', true);
+                                    if (array_key_exists('timestamp', $module['datas']['humidity'])) {
+                                        if ($module['datas']['humidity']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['datas']['humidity']['timestamp'];
+                                        }
+                                    }
                                 }
                                 if (array_key_exists('temperature', $module['datas']) && !isset($temperature)) {
                                     $temperature = $this->output_value($module['datas']['temperature']['raw_value'], 'temperature', true);
                                     $temperature_ref = $module['datas']['temperature']['raw_value'];
+                                    if (array_key_exists('timestamp', $module['datas']['temperature'])) {
+                                        if ($module['datas']['temperature']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['datas']['temperature']['timestamp'];
+                                        }
+                                    }
                                 }
                                 if (array_key_exists('pressure_sl', $module['datas']) && !isset($pressure)){
                                     $pressure = $this->output_value($module['datas']['pressure_sl']['raw_value'], 'pressure_sl', true);
+                                    if (array_key_exists('timestamp', $module['datas']['pressure_sl'])) {
+                                        if ($module['datas']['pressure_sl']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['datas']['pressure_sl']['timestamp'];
+                                        }
+                                    }
                                 }
                                 if (array_key_exists('rain', $module['datas']) && !isset($rain)) {
                                     $rain = $this->output_value($module['datas']['rain']['raw_value'], 'rain', true, false, 'NACurrent');
+                                    if (array_key_exists('timestamp', $module['datas']['rain'])) {
+                                        if ($module['datas']['rain']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['datas']['rain']['timestamp'];
+                                        }
+                                    }
                                 }
                                 break;
                             case 'NAModule3': // Rain gauge
                                 if (array_key_exists('rain', $module['datas'])) {
                                     $rain = $this->output_value($module['datas']['rain']['raw_value'], 'rain', true, false, 'NAModule3');
+                                    if (array_key_exists('timestamp', $module['datas']['rain'])) {
+                                        if ($module['datas']['rain']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['datas']['rain']['timestamp'];
+                                        }
+                                    }
                                 }
                                 break;
                             case 'NAModule2': // Wind gauge
@@ -478,20 +557,45 @@ abstract class BaseHandling {
                                     $wind_angle = $this->get_angle_text($module['datas']['windangle']['raw_value']);
                                     $wind_strength = $this->output_value($module['datas']['windstrength']['raw_value'], 'windstrength', true);
                                     $wind_force = $this->get_wind_speed($module['datas']['windstrength']['raw_value'], 3);
+                                    if (array_key_exists('timestamp', $module['datas']['windangle'])) {
+                                        if ($module['datas']['windangle']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['datas']['windangle']['timestamp'];
+                                        }
+                                    }
+                                    if (array_key_exists('timestamp', $module['datas']['windstrength'])) {
+                                        if ($module['datas']['windstrength']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['datas']['windstrength']['timestamp'];
+                                        }
+                                    }
                                 }
                                 break;
                             case 'NAModule1': // Outdoor module
                                 if (array_key_exists('humidity', $module['datas'])) {
                                     $humidity = $this->output_value($module['datas']['humidity']['raw_value'], 'humidity', true);
+                                    if (array_key_exists('timestamp', $module['datas']['humidity'])) {
+                                        if ($module['datas']['humidity']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['datas']['humidity']['timestamp'];
+                                        }
+                                    }
                                 }
                                 if (array_key_exists('temperature', $module['datas'])) {
                                     $temperature = $this->output_value($module['datas']['temperature']['raw_value'], 'temperature', true);
                                     $temperature_ref = $module['datas']['temperature']['raw_value'];
+                                    if (array_key_exists('timestamp', $module['datas']['temperature'])) {
+                                        if ($module['datas']['temperature']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['datas']['temperature']['timestamp'];
+                                        }
+                                    }
                                 }
                                 break;
                             case 'NAMain':
                                 if (array_key_exists('pressure_sl', $module['datas'])){
                                     $pressure = $this->output_value($module['datas']['pressure_sl']['raw_value'], 'pressure_sl', true);
+                                    if (array_key_exists('timestamp', $module['datas']['pressure_sl'])) {
+                                        if ($module['datas']['pressure_sl']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['datas']['pressure_sl']['timestamp'];
+                                        }
+                                    }
                                 }
                                 break;
                         }
@@ -618,6 +722,18 @@ abstract class BaseHandling {
                     }
                     break;
             }
+            $lr = $this->output_iconic_value(0, 'last_refresh');
+            $date = new \DateTime(date('Y-m-d H:i:s', $timestamp));
+            $date->setTimezone(new \DateTimeZone($station['loc_timezone']));
+            $lr = $lr . '&nbsp;' . $date->format('H:i');
+            if ($s['url'] != '') {
+                $ic = '&nbsp;' . $this->output_iconic_value(0, 'external_link');
+                $url = '<a href="' . $s['url'] . '">' . __('station', 'live-weather-station') . $ic . '</a>';
+            }
+            else {
+                $url = '&nbsp;';
+            }
+            $content .= '<div class="update">' . $lr . '</div><div class="page">' . $url . '</div>';
             if (array_key_exists('marker-style', $_POST)) {
                 if (in_array($_POST['marker-style'], array('minimalist', 'standard', 'extended'))) {
                     $params['marker']['style'] = $_POST['marker-style'];
@@ -657,10 +773,6 @@ abstract class BaseHandling {
             $result .= " var marker = L.marker([stations[id].lat, stations[id].lon], {icon: stationIcon}).addTo(map).addTo(map).bindPopup(stations[id].cnt, {" . $minwidth . "keepInView: true, closeButton: false, autoClose: true, className:'" . $classname . "'});" . PHP_EOL;
             $result .= "}";
         }
-
-
-
-
         $result .= '';
         return $result;
     }
@@ -944,6 +1056,7 @@ abstract class BaseHandling {
         $content .= $this->get_key_value_option_select('marker-style', __('Style', 'live-weather-station'), $this->get_map_style_js_array(), true, $this->map_params['marker']['style']);
         $content .= $this->get_key_value_option_select('marker-contrast', __('Contrast', 'live-weather-station'), $this->get_map_contrast_js_array(), true, $this->map_params['marker']['contrast']);
         $content .= $this->get_key_value_option_select('marker-shadow', __('Shadows', 'live-weather-station'), $this->get_map_shadow_js_array(), true, $this->map_params['marker']['shadow']);
+        $content .= $this->get_key_value_option_select('marker-page', __('Page', 'live-weather-station'), $this->get_map_page_js_array(), true, $this->map_params['marker']['page']);
         $content .= '</tbody></table>';
         return $content;
     }
