@@ -88,15 +88,7 @@ DONE:
 TODO:
 -----
 
-Shortened types for textual and gauge (shortened meaning ?)
-
-
 Textual climatological shortcodes
-Widget styles
-
-
-UV sticker
-Link in map popup
 
 
 New indexes:
@@ -112,7 +104,7 @@ DOCUMENTATION:
 --------------
 Notifier as system
 New settings in system tab
-readme : new station type
+stations's page
 
 https://weather.station.software/handbook/background-processes/sunshine-aggregator/
 https://weather.station.software/handbook/background-processes/weatherflow-wind-fixer/
@@ -134,9 +126,8 @@ style : area and line opacity, widget scale, ...
 
 use wind classification (textual, charts, )
 
-dynamic refresh for notifications
 
-
+UV sticker
 
 
 
@@ -146,3 +137,5 @@ dynamic refresh for notifications
 Bonus : banner
 
 
+
+php72 /usr/local/bin/wp core update --version=trunk

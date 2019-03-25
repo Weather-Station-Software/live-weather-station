@@ -393,6 +393,9 @@ trait Storage {
         $sql .= " wug_user varchar(60) DEFAULT '' NOT NULL,";
         $sql .= " wug_password varchar(60) DEFAULT '' NOT NULL,";
         $sql .= " wug_sync boolean DEFAULT 0 NOT NULL,";
+        $sql .= " link_1 varchar(2000) DEFAULT '',";
+        $sql .= " link_2 varchar(2000) DEFAULT '',";
+        $sql .= " link_3 varchar(2000) DEFAULT '',";
         $sql .= " last_refresh datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,";
         $sql .= " last_seen datetime DEFAULT '0000-00-00 00:00:00' NOT NULL,";
         $sql .= " oldest_data date NOT NULL DEFAULT '0000-00-00',";
@@ -780,7 +783,10 @@ trait Storage {
                     self::safe_add_column($table_name, 'cgraph_miss_time', "ALTER TABLE " . $table_name . " ADD cgraph_miss_time int(11) NOT NULL DEFAULT '0';");
                 }
 
-
+                $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+                self::safe_add_column($table_name, 'link_1', "ALTER TABLE " . $table_name . " ADD link_1 varchar(2000) DEFAULT '';");
+                self::safe_add_column($table_name, 'link_2', "ALTER TABLE " . $table_name . " ADD link_2 varchar(2000) DEFAULT '';");
+                self::safe_add_column($table_name, 'link_3', "ALTER TABLE " . $table_name . " ADD link_3 varchar(2000) DEFAULT '';");
             }
 
 
@@ -1103,7 +1109,7 @@ trait Storage {
      * @return array The $limit newer rows.
      * @since 3.6.0
      */
-    protected static function get_newest_rows($table_name, $limit=20) {
+    protected static function get_newest_rows($table_name, $limit=30) {
         global $wpdb;
         $table_name = $wpdb->prefix . $table_name;
         $sql = "SELECT * FROM " . $table_name . " ORDER BY `timestamp` DESC LIMIT ".$limit;
@@ -1118,7 +1124,7 @@ trait Storage {
      * @return array The $limit newer rows.
      * @since 3.6.0
      */
-    protected static function get_oldest_rows($table_name, $limit=20) {
+    protected static function get_oldest_rows($table_name, $limit=30) {
         global $wpdb;
         $table_name = $wpdb->prefix . $table_name;
         $sql = "SELECT * FROM " . $table_name . " ORDER BY `timestamp` ASC LIMIT ".$limit;

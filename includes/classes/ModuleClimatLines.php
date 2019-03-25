@@ -60,7 +60,7 @@ class Lines extends \WeatherStation\Engine\Module\Maintainer {
         else {
             $this->data = null;
         }
-        $this->period = $this->get_period_value_js_array($this->station_information, false, false);
+        $this->period = $this->get_period_value_js_array($this->station_information, false, true);
     }
 
     /**

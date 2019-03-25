@@ -185,7 +185,6 @@ trait BaseClient {
                         } else {
                             Logger::warning($this->facility, $this->service_name, $device['_id'], $device['station_name'], null, null, 111, 'Module is removed or out of battery.');
                         }
-                        //error_log(print_r($module));
                     }
                 } else {
                     if ($this->netatmo_type == LWS_NETATMO_SID) {

@@ -275,6 +275,17 @@ class Handling {
                                 }
                                 $save = true;
                             }
+                            if (array_key_exists('submit-pages', $_POST)) {
+                                for ($i=1; $i<=3; $i++) {
+                                    if (array_key_exists('st-link' . $i, $_POST)) {
+                                        $station['link_' . $i] = wp_kses($_POST['st-link' . $i], array());
+                                    }
+                                    else {
+                                        $station['link_' . $i] = '';
+                                    }
+                                }
+                                $save = true;
+                            }
                             if (array_key_exists('wow-unshare', $_POST)) {
                                 $station['wow_sync'] = 0;
                                 $station['wow_user'] = '';
@@ -732,6 +743,7 @@ class Handling {
                     add_meta_box('lws-sharing-wug', __('Sharing with Weather Underground', 'live-weather-station'), array($this, 'sharing_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station, 'service' => 'wug'));
                 }
             }
+            add_meta_box('lws-stationpages', __('Stations\'s pages', 'live-weather-station' ), array($this, 'stationpages_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
             // Right column
             if (count($data) > 0) {
                 if (count($data['module']) > 0) {
@@ -814,6 +826,19 @@ class Handling {
             $station = $args['args']['station'];
         }
         include(LWS_ADMIN_DIR.'partials/StationPublishing.php');
+    }
+
+    /**
+     * Get content of the stations's pages widget box.
+     *
+     * @since 3.8.0
+     */
+    public function stationpages_widget($n, $args) {
+        $station = array();
+        if (array_key_exists('station', $args['args'])) {
+            $station = $args['args']['station'];
+        }
+        include(LWS_ADMIN_DIR.'partials/StationPages.php');
     }
 
     /**

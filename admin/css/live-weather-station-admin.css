@@ -157,6 +157,11 @@ select.option-at-100 {
     padding: 0;
 }
 
+#lws-stationpages .inside {
+    margin: 0;
+    padding: 0;
+}
+
 #lws-sharing-wow .inside {
     margin: 0;
     padding: 0;
