@@ -713,12 +713,13 @@ trait Generator {
      * @param boolean $picture Optional. The line is for picture records only.
      * @param boolean $icon Optional. The array is for icons only.
      * @param boolean $climat Optional. The array is for climate records only.
+     * @param boolean $scores Optional. The array must contain scores.
      * @return array|null An array containing a single module measure line.
      * @since 3.4.0
      */
-    private function get_line_array($ref, $data, $reduced, $module_type, $measurement_type, $comparison=false, $distribution=false, $current=false, $video=false, $picture=false, $icon=false, $climat=false) {
+    private function get_line_array($ref, $data, $reduced, $module_type, $measurement_type, $comparison=false, $distribution=false, $current=false, $video=false, $picture=false, $icon=false, $climat=false, $scores=false) {
         $unit = $this->output_unit($measurement_type, $module_type);
-        $available_operations = $this->get_available_operations($measurement_type, $module_type, $comparison, $distribution);
+        $available_operations = $this->get_available_operations($measurement_type, $module_type, $comparison, $distribution, $scores);
         if ($video) {
             if (strpos($measurement_type, 'video') !== false) {
                 return array($this->get_measurement_type($measurement_type, false, $module_type), $measurement_type, ($reduced ? array() : $this->get_measure_array($ref, $data, $measurement_type, $icon, $climat)), $unit['dimension'], $available_operations);
@@ -767,10 +768,11 @@ trait Generator {
      * @param boolean $icon Optional. The array is for icons only.
      * @param boolean $climat Optional. The array is for climate records only.
      * @param boolean $trend Optional. The array must contain trends.
+     * @param boolean $scores Optional. The array must contain scores.
      * @return array An array containing the module measure lines.
      * @since 3.0.0
      */
-    private function get_module_array($ref, $data, $full=false, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $noned=false, $comparison=false, $distribution=false, $current=false, $video=false, $picture=false, $icon=false, $climat=false, $trend=true) {
+    private function get_module_array($ref, $data, $full=false, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $noned=false, $comparison=false, $distribution=false, $current=false, $video=false, $picture=false, $icon=false, $climat=false, $trend=true, $scores=false) {
         $result = array();
         $netatmo = OWM_Base_Collector::is_netatmo_station($ref['device_id']);
         $wug = OWM_Base_Collector::is_wug_station($ref['device_id']);
@@ -1120,13 +1122,13 @@ trait Generator {
             if ($aggregated) {
                 if (in_array($type, $aggregated_list)) {
                     if (($type == 'nacomputed' && $computed) || ($type != 'nacomputed')) {
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $type, 'aggregated', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $type, 'aggregated', $comparison, $distribution, $current, $video, $picture, $icon, $climat, $scores);
                     }
                 }
                 if ($type == 'aggregated') {
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $type, 'aggregated', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $type,'outdoor', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
-                    $result[] = $this->get_line_array($ref, $data, $reduced, $type,'psychrometric', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $type, 'aggregated', $comparison, $distribution, $current, $video, $picture, $icon, $climat, $scores);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $type,'outdoor', $comparison, $distribution, $current, $video, $picture, $icon, $climat, $scores);
+                    $result[] = $this->get_line_array($ref, $data, $reduced, $type,'psychrometric', $comparison, $distribution, $current, $video, $picture, $icon, $climat, $scores);
                 }
             }
             if (array_key_exists($type, $capacities)) {
@@ -1135,26 +1137,26 @@ trait Generator {
                 }
                 if (array_key_exists('full', $capacities[$type]) && $full) {
                     foreach ($capacities[$type]['full'] as $cap) {
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $type, $cap, $comparison, $distribution, $current, $video, $picture, $icon, $climat);
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $type, $cap, $comparison, $distribution, $current, $video, $picture, $icon, $climat, $scores);
                     }
                 }
                 if (array_key_exists('standard', $capacities[$type])) {
                     foreach ($capacities[$type]['standard'] as $cap) {
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $type, $cap, $comparison, $distribution, $current, $video, $picture, $icon, $climat);
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $type, $cap, $comparison, $distribution, $current, $video, $picture, $icon, $climat, $scores);
                     }
                 }
                 if (array_key_exists('extended', $capacities[$type])) {
                     foreach ($capacities[$type]['extended'] as $cap) {
-                        $result[] = $this->get_line_array($ref, $data, $reduced, $type, $cap, $comparison, $distribution, $current, $video, $picture, $icon, $climat);
+                        $result[] = $this->get_line_array($ref, $data, $reduced, $type, $cap, $comparison, $distribution, $current, $video, $picture, $icon, $climat, $scores);
                         if (in_array($cap, $day_list)) {
                             $cap = $cap . '_day';
                         }
                         if (!$mono && $trend) {
-                            $result[] = $this->get_line_array($ref, $data, $reduced, $type, $cap . '_trend', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
+                            $result[] = $this->get_line_array($ref, $data, $reduced, $type, $cap . '_trend', $comparison, $distribution, $current, $video, $picture, $icon, $climat, $scores);
                         }
                         if (($full || $mono)) {
-                            $result[] = $this->get_line_array($ref, $data, $reduced, $type,$cap . '_min', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
-                            $result[] = $this->get_line_array($ref, $data, $reduced, $type,$cap . '_max', $comparison, $distribution, $current, $video, $picture, $icon, $climat);
+                            $result[] = $this->get_line_array($ref, $data, $reduced, $type,$cap . '_min', $comparison, $distribution, $current, $video, $picture, $icon, $climat, $scores);
+                            $result[] = $this->get_line_array($ref, $data, $reduced, $type,$cap . '_max', $comparison, $distribution, $current, $video, $picture, $icon, $climat, $scores);
                         }
                     }
                 }
@@ -1203,10 +1205,11 @@ trait Generator {
      * @param boolean $icon Optional. The array is for icons only.
      * @param boolean $climat Optional. The array is for climate records only.
      * @param boolean $trend Optional. The array must contain trends.
+     * @param boolean $scores Optional. The array must contain scores.
      * @return array An array containing the available station's datas ready to convert to a JS array.
      * @since 3.0.0
      */
-    protected function get_station_array($guid, $full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $noned=false, $comparison=false, $distribution=false, $current=false, $video=false, $picture=false, $icon=false, $climat=false, $trend=true) {
+    protected function get_station_array($guid, $full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $noned=false, $comparison=false, $distribution=false, $current=false, $video=false, $picture=false, $icon=false, $climat=false, $trend=true, $scores=false) {
         $data = $this->get_all_formated_datas($guid, false, true);
         $result = array();
         $modules = array();
@@ -1259,7 +1262,7 @@ trait Generator {
                 $ref['loc_latitude'] = $data['station']['loc_latitude'];
                 $ref['loc_longitude'] = $data['station']['loc_longitude'];
                 $ref['loc_timezone'] = $data['station']['loc_timezone'];
-                $m = $this->get_module_array($ref, $mainbase, $full, $aggregated, $reduced, $computed, $mono, $daily, $historical, $noned, $comparison, $distribution, $current, $video, $picture, $icon, $climat, $trend);
+                $m = $this->get_module_array($ref, $mainbase, $full, $aggregated, $reduced, $computed, $mono, $daily, $historical, $noned, $comparison, $distribution, $current, $video, $picture, $icon, $climat, $trend, $scores);
                 if (!empty($m)){
                     $modules[] = $m;
                 }
@@ -1288,7 +1291,7 @@ trait Generator {
                     continue;
                 }
                 if (DeviceManager::is_visible($ref['device_id'], $ref['module_id'])) {
-                    $m = $this->get_module_array($ref, $module, $full, $aggregated, $reduced, $computed, $mono, $daily, $historical, $noned, $comparison, $distribution, $current, $video, $picture, $icon, $climat, $trend);
+                    $m = $this->get_module_array($ref, $module, $full, $aggregated, $reduced, $computed, $mono, $daily, $historical, $noned, $comparison, $distribution, $current, $video, $picture, $icon, $climat, $trend, $scores);
                     if (!empty($m)){
                         $modules[] = $m;
                     }
@@ -1319,10 +1322,11 @@ trait Generator {
      * @param boolean $icon Optional. The array is for icons only.
      * @param boolean $climat Optional. The array is for climate records only.
      * @param boolean $trend Optional. The array must contain trends.
+     * @param boolean $scores Optional. The array must contain scores.
      * @return array An array containing the available station's datas ready to convert to a JS array.
      * @since 3.0.0
      */
-    protected function get_all_stations_array($full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $noned=false, $guids=array(), $comparison=false, $distribution=false, $current=false, $video=false, $picture=false, $icon=false, $climat=false, $trend=true) {
+    protected function get_all_stations_array($full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $noned=false, $guids=array(), $comparison=false, $distribution=false, $current=false, $video=false, $picture=false, $icon=false, $climat=false, $trend=true, $scores=false) {
         $result = array();
         $stations = $this->get_stations_list();
         if (count($stations) > 0) {
@@ -1334,7 +1338,7 @@ trait Generator {
                     $todo = true;
                 }
                 if ($todo && ($station['comp_bas'] + $station['comp_ext'] + $station['comp_int'] + $station['comp_xtd'] + $station['comp_vrt']) > 0) {
-                    $result[$station['guid']] = $this->get_station_array($station['guid'], $full, $aggregated, $reduced, $computed, $mono, $daily, $historical, $noned, $comparison, $distribution, $current, $video, $picture, $icon, $climat, $trend);
+                    $result[$station['guid']] = $this->get_station_array($station['guid'], $full, $aggregated, $reduced, $computed, $mono, $daily, $historical, $noned, $comparison, $distribution, $current, $video, $picture, $icon, $climat, $trend, $scores);
                 }
             }
         }
@@ -1895,10 +1899,11 @@ trait Generator {
      * @param boolean $aggregated Optional. The array must contains only aggregated climat periods.
      * @param boolean $onlyyears Optional. The array must contains only yearly climat periods.
      * @param boolean $rotating Optional. The array must contains rotating climat periods too.
+     * @param boolean $climattextual Optional. The array must contains only textual climat periods.
      * @return array An array containing the period types ready to convert to a JS array.
      * @since 3.4.0
      */
-    protected function get_period_type_js_array($rolling=true, $climat=false, $aggregated=false, $onlyyears=false, $rotating=false) {
+    protected function get_period_type_js_array($rolling=true, $climat=false, $aggregated=false, $onlyyears=false, $rotating=false, $climattextual=false) {
         $result = array();
         if ($onlyyears) {
             if ($rotating) {
@@ -1913,6 +1918,14 @@ trait Generator {
         elseif ($aggregated) {
             $result[] = array('aggregated-month',  __('Aggregated months', 'live-weather-station'));
             $result[] = array('aggregated-mseason',  __('Aggregated meteorological seasons', 'live-weather-station'));
+            $result[] = array('aggregated-year',  __('Aggregated years', 'live-weather-station'));
+        }
+        elseif ($climattextual) {
+            $result[] = array('fixed-month',  __('Fixed month', 'live-weather-station'));
+            $result[] = array('aggregated-month',  __('Aggregated months', 'live-weather-station'));
+            $result[] = array('fixed-mseason',  __('Fixed meteorological season', 'live-weather-station'));
+            $result[] = array('aggregated-mseason',  __('Aggregated meteorological seasons', 'live-weather-station'));
+            $result[] = array('fixed-year',  __('Fixed year', 'live-weather-station'));
             $result[] = array('aggregated-year',  __('Aggregated years', 'live-weather-station'));
         }
         else {
@@ -1947,6 +1960,22 @@ trait Generator {
         $result = array();
         $result[] = array('sliding-timelapse',  __('Sliding day', 'live-weather-station'));
         $result[] = array('fixed-timelapse',  __('Fixed day', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get available computation types array.
+     *
+     * @return array An array containing the available computation types ready to convert to a JS array.
+     * @since 3.8.0
+     */
+    protected function get_computation_js_array() {
+        $result = array();
+        $result[] = array('simple-val',     array('fixed', 'aggregated'),   array('hell', 'frst'),                                                          0, __('Strict value', 'live-weather-station'));
+        $result[] = array('simple-avg',     array('fixed', 'aggregated'),   array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev'),                  0, __('Mean value', 'live-weather-station'));
+        $result[] = array('simple-min',     array('fixed', 'aggregated'),   array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev'),                  0, __('Lowest value', 'live-weather-station'));
+        $result[] = array('simple-max',     array('fixed', 'aggregated'),   array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev'),                  0, __('Highest value', 'live-weather-station'));
+        $result[] = array('simple-dev',     array('fixed'),                 array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev', 'hell', 'frst'),  0, __('Normal deviation', 'live-weather-station'));
         return $result;
     }
 

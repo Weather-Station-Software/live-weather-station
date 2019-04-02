@@ -41,6 +41,7 @@ abstract class Maintainer {
     protected $station_information;
     protected $data = null;
     protected $period = null;
+    protected $computation = null;
     protected $layout = '';
     protected $fingerprint = '';
     public static $classes = array();
@@ -585,6 +586,9 @@ abstract class Maintainer {
         // period
         if (self::$module_mode == 'yearly' || self::$module_mode == 'climat') {
             $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_period_' . $this->station_guid . ' = ' . json_encode($this->period) . ';';
+            if (isset($this->computation) && is_array($this->computation)) {
+                $result .= 'var js_array_' . str_replace('-', '_',$this->module_id) . '_computation_' . $this->station_guid . ' = ' . json_encode($this->computation) . ';';
+            }
         }
         // content
         $result .= $content;

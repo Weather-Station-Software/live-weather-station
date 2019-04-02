@@ -51,6 +51,7 @@ use WeatherStation\Engine\Module\Climat\Lines as ClimatLines;
 use WeatherStation\Engine\Module\Climat\CalendarHM as ClimatCalendarHM;
 use WeatherStation\Engine\Module\Climat\CCStick as ClimatCStick;
 use WeatherStation\Engine\Module\Climat\Radial as ClimatRadial;
+use WeatherStation\Engine\Module\Climat\Textual as ClimatTextual;
 
 
 /**
@@ -132,6 +133,7 @@ class Handling {
         if ($bsky) {
             Timelapse::register_module('yearly');
         }
+        ClimatTextual::register_module('climat');
         ClimatLines::register_module('climat');
         ClimatCStick::register_module('climat');
         ClimatCalendarHM::register_module('climat');

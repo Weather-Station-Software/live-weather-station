@@ -7,7 +7,7 @@
  */
 
 $fields = array('frontend', 'widget', 'backend', 'dgraph', 'ygraph', 'cgraph');
-$names = array(__('controls', 'live-weather-station'), __('widgets', 'live-weather-station'), __('backend', 'live-weather-station'), __('daily graph', 'live-weather-station'), __('historical graph', 'live-weather-station'), __('climatological graph', 'live-weather-station'));
+$names = array(__('controls', 'live-weather-station'), __('widgets', 'live-weather-station'), __('backend', 'live-weather-station'), __('daily graph', 'live-weather-station'), __('historical graph', 'live-weather-station'), __('climatological data', 'live-weather-station'));
 $values = array();
 foreach ($fields as $key=>$field) {
     $values[$field]['txt'] = ucfirst($names[$key]);

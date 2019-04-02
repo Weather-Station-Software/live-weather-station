@@ -759,10 +759,10 @@ class Admin {
             'id' => 'lws_system_ygraph_cache',
             'checked' => (bool)get_option('live_weather_station_ygraph_cache'),
             'description' => sprintf(__('Check this to activate the cache manager of %s for all historical graphs rendering.', 'live-weather-station'), LWS_PLUGIN_NAME));
-        $cbxs[] = array('text' => __('Cache climatological graphs', 'live-weather-station'),
+        $cbxs[] = array('text' => __('Cache climatological data', 'live-weather-station'),
             'id' => 'lws_system_cgraph_cache',
             'checked' => (bool)get_option('live_weather_station_cgraph_cache'),
-            'description' => sprintf(__('Check this to activate the cache manager of %s for all climatological (long-term) graphs rendering.', 'live-weather-station'), LWS_PLUGIN_NAME));
+            'description' => sprintf(__('Check this to activate the cache manager of %s for all climatological (long-term) data rendering.', 'live-weather-station'), LWS_PLUGIN_NAME));
         $cbxs[] = array('text' => __('Cache backend features', 'live-weather-station'),
             'id' => 'lws_system_backend_cache',
             'checked' => (bool)get_option('live_weather_station_backend_cache'),

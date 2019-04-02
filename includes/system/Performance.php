@@ -81,7 +81,7 @@ class Performance {
                             'widget' => __('widget', 'live-weather-station'),
                             'dgraph' => __('daily graph', 'live-weather-station'),
                             'ygraph' => __('historical graph', 'live-weather-station'),
-                            'cgraph' => __('climatological graph', 'live-weather-station'));
+                            'cgraph' => __('climatological data', 'live-weather-station'));
         $dimension_names = array('miss' => __('miss', 'live-weather-station'), 'hit' => __('hit', 'live-weather-station'));
         $metrics = array('count', 'time');
         $aggregates = array('efficiency', 'time_saving');

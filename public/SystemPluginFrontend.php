@@ -252,6 +252,21 @@ class Frontend {
     }
 
     /**
+     * Callback method for querying code to inject for climat textual.
+     *
+     * @since 3.8.0
+     */
+    public function lws_lttextual_code_callback() {
+        $attributes = array();
+        foreach ($this->lttextual_allowed_parameter as $param) {
+            if (array_key_exists($param, $_POST)) {
+                $attributes[$param] = wp_kses($_POST[$param], array());
+            }
+        }
+        exit ($this->lttextual_shortcodes($attributes));
+    }
+
+    /**
      * Callback method for querying code to inject for graphs.
      *
      * @since 3.8.0
