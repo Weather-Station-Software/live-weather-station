@@ -83,6 +83,7 @@ trait Output {
     private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
     private $ltgraph_allowed_parameter = array('device_id', 'module_id', 'measurement', 'cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
     private $radial_allowed_parameter = array('device_id', 'cache', 'mode', 'type', 'values', 'valuescale', 'template', 'height', 'data', 'periodtype', 'period');
+    private $lttextual_allowed_parameter = array('device_id', 'module_id', 'measurement', 'set', 'cache', 'periodtype', 'period', 'computed');
 
 
 
@@ -5798,6 +5799,131 @@ trait Output {
         }
         $result .= '  });' . PHP_EOL;
         $result .= lws_print_end_script();
+        return $result;
+    }
+
+    /**
+     * Get a long-term textual data.
+     *
+     * @param array $attributes The type of textual data queried by the shortcode.
+     * @return string The graph ready to print.
+     * @since 3.8.0
+     */
+    public function lttextual_shortcodes($attributes) {
+        $_attributes = shortcode_atts( array('device_id' => '', 'module_id' => '', 'measurement' => '', 'set' => '', 'computed' => 'simple-avg', 'periodtype' => 'none', 'period' => 'none', 'cache' => 'cache'), $attributes );
+        $fingerprint = md5(json_encode($attributes));
+        if ($_attributes['cache'] != 'no_cache') {
+            $result = Cache::get_graph($fingerprint, 'climat');
+            if ($result) {
+                return $result;
+            }
+        }
+        else {
+            $result = __('Malformed shortcode. Please verify it!', 'live-weather-station');
+        }
+        $device = $_attributes['device_id'];
+        $module = $_attributes['module_id'];
+        $measurement = $_attributes['measurement'];
+        $set = $_attributes['set'];
+        $computed = $_attributes['computed'];
+        $periodtype = $_attributes['periodtype'];
+        $periodvalue = $_attributes['period'];
+        $aggregated = (strpos($periodtype, 'aggregated') !== false);
+        $fixed = (strpos($periodtype, 'fixed') !== false);
+        $both = false;
+        if ($device == '' || $module == '' || $measurement == '' || $set == '' || $computed == '' || $periodtype == '' || $periodvalue == '' || !($aggregated || $fixed || $both)) {
+            return $result;
+        }
+        $d = explode(':', $periodvalue);
+        $min = $d[0];
+        $max = $d[1];
+        $fixed_where = "`timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND";
+        $aggregated_where = "";
+        if ($periodtype == 'aggregated-month') {
+            $val = (int)substr($periodvalue, 5, 2);
+            $aggregated_where = "MONTH(`timestamp`)=" . $val . " AND";
+        }
+        if ($periodtype == 'aggregated-season') {
+            $val = (int)substr($periodvalue, 5, 2);
+            switch ($val) {
+                case 3: $aggregated_where = "MONTH(`timestamp`) IN (3, 4, 5) AND"; break;
+                case 6: $aggregated_where = "MONTH(`timestamp`) IN (6, 7, 8) AND"; break;
+                case 9: $aggregated_where = "MONTH(`timestamp`) IN (9, 10, 11) AND"; break;
+                case 12: $aggregated_where = "MONTH(`timestamp`) IN (1, 2, 12) AND"; break;
+            }
+        }
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
+        $simple_fixed_sql = "SELECT {SELECT} FROM " . $table_name . " WHERE " . $fixed_where . " `device_id`='" . $device . "' AND `module_id`='" . $module . "' AND `measure_type`='" . $measurement . "' AND {WHERE};";
+        $simple_aggregated_sql = "SELECT {SELECT} FROM " . $table_name . " WHERE " . $aggregated_where . " `device_id`='" . $device . "' AND `module_id`='" . $module . "' AND `measure_type`='" . $measurement . "' AND {WHERE};";
+
+        try {
+            switch ($computed) {
+                case 'simple-val':
+                    if ($set == 'hell') {
+                        $select = "ABS(SUM(`measure_value`)) as val";
+                        $where = "`measure_value`<0 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'frst') {
+                        $select = "ABS(SUM(`measure_value`)) as val";
+                        $where = "`measure_value`<0 AND (`measure_set`='min' OR `measure_set`='min')";
+                    }
+                    break;
+                case 'simple-avg':
+                    $select = 'AVG(`measure_value`) as val';
+                    $where = "`measure_set`='" . $set . "'";
+                    break;
+                case 'simple-min':
+                    $select = 'MIN(`measure_value`) as val';
+                    $where = "`measure_set`='" . $set . "'";
+                    break;
+                case 'simple-max':
+                    $select = 'MAX(`measure_value`) as val';
+                    $where = "`measure_set`='" . $set . "'";
+                    break;
+                default:
+                    return $result;
+            }
+            $simple_fixed_sql = str_replace('{SELECT}', $select, $simple_fixed_sql);
+            $simple_fixed_sql = str_replace('{WHERE}', $where, $simple_fixed_sql);
+            $simple_aggregated_sql = str_replace('{SELECT}', $select, $simple_aggregated_sql);
+            $simple_aggregated_sql = str_replace('{WHERE}', $where, $simple_aggregated_sql);
+            switch ($computed) {
+                case 'simple-val':
+                    if ($fixed) {
+                        $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
+                    }
+                    if ($aggregated) {
+                        $rows = $wpdb->get_results($simple_aggregated_sql, ARRAY_A);
+                    }
+                    if ($set == 'hell') {
+                        $result = $this->output_value($rows[0]['val'], $measurement);
+                    }
+                    if ($set == 'frst') {
+                        $result = $this->output_value($rows[0]['val'], $measurement);
+                    }
+                    break;
+                case 'simple-avg':
+                case 'simple-min':
+                case 'simple-max':
+                    if ($fixed) {
+                        $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
+                    }
+                    if ($aggregated) {
+                        $rows = $wpdb->get_results($simple_aggregated_sql, ARRAY_A);
+                    }
+                    $result = $this->output_value($rows[0]['val'], $measurement, true);
+                    break;
+                default:
+                    return $result;
+            }
+        }
+        catch (\Exception $ex) {
+            return $result;
+        }
+        if ($_attributes['cache'] != 'no_cache') {
+            Cache::set_graph($fingerprint, 'climat', $result);
+        }
         return $result;
     }
 
@@ -12433,10 +12559,11 @@ trait Output {
      * @param string $module_type Optional. The type of the module.
      * @param boolean $comparison Optional. The array must contain only the comparison set.
      * @param boolean $distribution Optional. The line must contain only the distribution set.
+     * @param boolean $scores Optional. The array must contain scores too.
      * @return array An array containing the available operations.
      * @since 3.4.0
      */
-    public function get_available_operations($measurement_type, $module_type='NAMain', $comparison=false, $distribution=false) {
+    public function get_available_operations($measurement_type, $module_type='NAMain', $comparison=false, $distribution=false, $scores=false) {
         $result = array();
         if ((bool)get_option('live_weather_station_collect_history') && (bool)get_option('live_weather_station_build_history')) {
             $history = new History(LWS_PLUGIN_NAME, LWS_VERSION);
@@ -12450,6 +12577,10 @@ trait Output {
             }
             if (strpos($measurement_type, 'video') !== false) {
                 $result[] = array('none', '-');
+            }
+            if ($scores && $measurement_type == 'temperature') {
+                $result[] = array('frst', __('Frost score', 'live-weather-station'));
+                $result[] = array('hell', __('Hellmann score', 'live-weather-station'));
             }
         }
         return $result;

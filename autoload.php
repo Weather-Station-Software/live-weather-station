@@ -62,6 +62,7 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Module\Climat\CalendarHM': $file = LWS_INCLUDES_DIR.'classes/ModuleClimatCalendarHM.php'; break;
         case 'WeatherStation\Engine\Module\Climat\CCStick': $file = LWS_INCLUDES_DIR.'classes/ModuleClimatCStick.php'; break;
         case 'WeatherStation\Engine\Module\Climat\Radial': $file = LWS_INCLUDES_DIR.'classes/ModuleClimatRadial.php'; break;
+        case 'WeatherStation\Engine\Module\Climat\Textual': $file = LWS_INCLUDES_DIR.'classes/ModuleClimatTextual.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\TXTGenerator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneAbstractTXTGenerator.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Framework': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneFramework.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Generator': $file = LWS_INCLUDES_DIR.'classes/PageStandaloneGenerator.php'; break;
