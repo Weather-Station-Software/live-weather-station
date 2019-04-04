@@ -1971,11 +1971,29 @@ trait Generator {
      */
     protected function get_computation_js_array() {
         $result = array();
-        $result[] = array('simple-val',     array('fixed', 'aggregated'),   array('hell', 'frst'),                                                          0, __('Strict value', 'live-weather-station'));
-        $result[] = array('simple-avg',     array('fixed', 'aggregated'),   array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev'),                  0, __('Mean value', 'live-weather-station'));
-        $result[] = array('simple-min',     array('fixed', 'aggregated'),   array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev'),                  0, __('Lowest value', 'live-weather-station'));
-        $result[] = array('simple-max',     array('fixed', 'aggregated'),   array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev'),                  0, __('Highest value', 'live-weather-station'));
-        $result[] = array('simple-dev',     array('fixed'),                 array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev', 'hell', 'frst'),  0, __('Normal deviation', 'live-weather-station'));
+        $result[] = array('simple-val',     array('fixed', 'aggregated'),   array('hell', 'frst', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),                                                          0, __('Strict measure', 'live-weather-station'));
+        $result[] = array('simple-avg',     array('fixed', 'aggregated'),   array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev'),                                                                                                                      0, __('Average measure', 'live-weather-station'));
+        $result[] = array('simple-min',     array('fixed', 'aggregated'),   array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),                  0, __('Lowest measure', 'live-weather-station'));
+        $result[] = array('simple-max',     array('fixed', 'aggregated'),   array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),                  0, __('Highest measure', 'live-weather-station'));
+        $result[] = array('date-min',       array('fixed', 'aggregated'),   array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),                  0, __('Date of lowest measure', 'live-weather-station'));
+        $result[] = array('date-max',       array('fixed', 'aggregated'),   array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),                  0, __('Date of highest measure', 'live-weather-station'));
+        $result[] = array('simple-dev',     array('fixed'),                 array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev', 'hell', 'frst', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),  0, __('Normal deviation', 'live-weather-station'));
+        $result[] = array('count-day',      array('fixed'),                 array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),                  1, __('Day count', 'live-weather-station'));
+        $result[] = array('duration-day',   array('fixed'),                 array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),                  1, __('Longest duration', 'live-weather-station'));
+        return $result;
+    }
+
+    /**
+     * Get available comaprison array.
+     *
+     * @return array An array containing the available comparisons ready to convert to a JS array.
+     * @since 3.8.0
+     */
+    protected function get_comparison_js_array() {
+        $result = array();
+        $result[] = array('',  __('Measure is equal to threshold', 'live-weather-station'));
+        $result[] = array('',  __('Measure is less than threshold', 'live-weather-station'));
+        $result[] = array('',  __('Measure is greater than threshold', 'live-weather-station'));
         return $result;
     }
 

@@ -990,6 +990,23 @@ trait Query {
     }
 
     /**
+     * Get the youngest data array.
+     *
+     * @param array $station The station.
+     * @return mixed The youngest date or false.
+     * @since 3.8.0
+     */
+    public function get_youngest_data($station) {
+        $data = $this->_get_youngest_data($station);
+        if (count($data) > 0) {
+            return $data[0]['timestamp'];
+        }
+        else {
+            return false;
+        }
+    }
+
+    /**
      * Get the oldest data array.
      *
      * @param array $station The station.
@@ -1000,6 +1017,31 @@ trait Query {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
         $sql = "SELECT DISTINCT(`timestamp`) FROM ".$table_name. " WHERE device_id='".$station['station_id']."' ORDER BY `timestamp` ASC LIMIT 3" ;
+        try {
+            $query = (array)$wpdb->get_results($sql);
+            $query_a = (array)$query;
+            $data = array();
+            foreach ($query_a as $val) {
+                $data[] = (array)$val;
+            }
+            return $data;
+        }
+        catch(\Exception $ex) {
+            return array();
+        }
+    }
+
+    /**
+     * Get the youngest data array.
+     *
+     * @param array $station The station.
+     * @return array The 3 youngest dates.
+     * @since 3.8.0
+     */
+    private function _get_youngest_data($station) {
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
+        $sql = "SELECT DISTINCT(`timestamp`) FROM ".$table_name. " WHERE device_id='".$station['station_id']."' ORDER BY `timestamp` DESC LIMIT 3" ;
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -1058,7 +1100,7 @@ trait Query {
     /**
      * Get station informations.
      *
-     * @param integer $station_id The station id.
+     * @param string $station_id The station id.
      * @return array An array containing the station informations.
      * @since 2.3.0
      */

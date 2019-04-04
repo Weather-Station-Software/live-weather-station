@@ -115,12 +115,19 @@ class MaptilerHandling extends BaseHandling {
             if ($style[1] == 'hybrid') {
                 $ext = 'jpg';
             }
+            if ($style[0] == 'styles') {
+                $style[0] = 'maps';
+            }
+            if ($style[0] == 'data') {
+                $style[0] = 'tiles';
+            }
             $result = '';
-            $result .= "var layer = new L.tileLayer('https://maps.tilehosting.com/" . $style[0] . "/" . $style[1] . "/{z}/{x}/{y}." . $ext . "?key={accessToken}', {" . PHP_EOL;
+            $result .= "console.log('https://api.maptiler.com/" . $style[0] . "/" . $style[1] . "/{z}/{x}/{y}." . $ext . "?key={accessToken}');" . PHP_EOL;
+            $result .= "var layer = new L.tileLayer('https://api.maptiler.com/" . $style[0] . "/" . $style[1] . "/{z}/{x}/{y}." . $ext . "?key={accessToken}', {" . PHP_EOL;
         }
         else {
             $result = '';
-            $result .= "var layer = new L.tileLayer('https://maps.tilehosting.com/styles/hybrid/{z}/{x}/{y}.jpg?key={accessToken}', {" . PHP_EOL;
+            $result .= "var layer = new L.tileLayer('https://api.maptiler.com/styles/hybrid/{z}/{x}/{y}.jpg?key={accessToken}', {" . PHP_EOL;
         }
 
         $result .= '  attribution: "Maps &copy; <a href=\"https://www.maptiler.com/\">Maptiler</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
