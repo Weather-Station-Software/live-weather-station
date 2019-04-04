@@ -95,9 +95,11 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_parameters() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_neutral_option_select('climat-textual-datas-computed-'. $this->station_guid, __('Value', 'live-weather-station'));
-        $content .= $this->get_neutral_option_select('climat-textual-datas-data-'. $this->station_guid, __('DUMMY', 'live-weather-station'));
-
+        $content .= $this->get_neutral_option_select('climat-textual-datas-computed-'. $this->station_guid, __('Computation', 'live-weather-station'));
+        $content .= $this->get_key_value_option_select('climat-textual-datas-condition-'. $this->station_guid, __('Condition', 'live-weather-station'), $this->get_comparison_js_array(), true, 'fixed-month');
+        $content .= $this->get_neutral_option_select('climat-textual-datas-value-'. $this->station_guid, __('Threshold', 'live-weather-station'));
+        $content .= $this->get_placeholder_option_select();
+        $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', __('2. Choose the computation to perform', 'live-weather-station'), $content);
     }

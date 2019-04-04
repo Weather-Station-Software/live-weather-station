@@ -166,6 +166,39 @@ trait Conversion {
     }
 
     /**
+     * Add months to a date.
+     *
+     * @param \DateTime $date The date.
+     * @param integer $months The number of months to add (may be positive or negative).
+     * @return \DateTime The modified date.
+     * @since 3.8.0
+     */
+    public function date_add_month($date,$months){
+        $years = floor(abs($months / 12));
+        $leap = 29 <= $date->format('d');
+        $m = 12 * (0 <= $months?1:-1);
+        for ($a = 1;$a < $years;++$a) {
+            $date = $this->date_add_month($date, $m);
+        }
+        $months -= ($a - 1) * $m;
+        $init = clone $date;
+        if (0 != $months) {
+            $modifier = $months . ' months';
+            $date->modify($modifier);
+            if ($date->format('m') % 12 != (12 + $months + (int)$init->format('m')) % 12) {
+                $day = $date->format('d');
+                $init->modify("-{$day} days");
+            }
+            $init->modify($modifier);
+        }
+        $y = $init->format('Y');
+        if ($leap && ($y % 4) == 0 && ($y % 100) != 0 && 28 == $init->format('d')) {
+            $init->modify('+1 day');
+        }
+        return $init;
+    }
+
+/**
      * Get the timestamp corresponding to midnight of today in a specific timezone.
      *
      * @param string  $tz The timezone.

@@ -1,5 +1,5 @@
 
-#3.8.0 / April xxxxxxx, 2019
+#3.8.0 / May xxxxxxx, 2019
 
 * New: Weather Station natively connects to ***WeatherLink Network*** - special thanks to David Aguilera-Riquelme from [RedMeteo.cl](https://redmeteo.cl/) for the tests.
 * New: new multi-lines chart to compare climatological (long-term) data with tons of options and settings.
@@ -13,7 +13,9 @@
 * New: pressure and density altitudes are now computed and available in all controls, graphs and charts.
 * New: full configuration export/import feature (settings, stations and maps).
 * New: each module recording temperature and relative humidity has now a computed absolute humidity value available in all controls (thanks to [@setmin](https://weather.station.software/community/profile/setmin/) for the suggestion).
-* New: Weather Station now compiles day min, day max and trend for absolute and relative humidity, cloudiness, CO₂, gust strength, illuminance, irradiance, moisture content, moisture tension, noise level, pressures (atmospheric & barometric), temperature, soil temperature, UV index, visibility and wind strength, even if the station does not export this data.
+* New: Weather Station now compiles day min, day max and trend for absolute and relative humidity, cloudiness, CO₂, gust strength, illuminance, irradiance, moisture content, moisture tension, noise level, pressures (atmospheric & barometric), temperature, soil temperature, UV index, visibility and wind strength, for all types of stations.
+* New: heating and cooling degree day (Denmark, E.U., Finland, Switzerland and U.S.A. standards) as new datasets available for relevant climatological data and charts.
+* New: Hellmann and Frost scores as new datasets available for relevant climatological data and charts (thanks to [@gerhard](https://weather.station.software/community/profile/gerhard/) for the suggestion).
 * New: long-term cache, essential to be able to use climatological charts and textual values.
 * Improvement: current conditions can now be displayed as plain text in textual shortcodes.
 * Improvement: duration can now be outputted as hh:mm or hh:mm:ss formats in textual shortcodes (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/) for the suggestion).

@@ -2,6 +2,7 @@
 
 namespace WeatherStation\Data;
 
+use Monolog\Handler\PHPConsoleHandler;
 use WeatherStation\Data\DateTime\Conversion as Datetime_Conversion;
 use WeatherStation\Data\Type\Description as Type_Description;
 use WeatherStation\Data\Unit\Description as Unit_Description;
@@ -5810,8 +5811,8 @@ trait Output {
      * @since 3.8.0
      */
     public function lttextual_shortcodes($attributes) {
-        $_attributes = shortcode_atts( array('device_id' => '', 'module_id' => '', 'measurement' => '', 'set' => '', 'computed' => 'simple-avg', 'periodtype' => 'none', 'period' => 'none', 'cache' => 'cache'), $attributes );
-        $fingerprint = md5(json_encode($attributes));
+        $_attributes = shortcode_atts( array('mode' => 'climat', 'type' => 'textual', 'device_id' => '', 'module_id' => '', 'measurement' => '', 'set' => '', 'computed' => 'simple-avg', 'periodtype' => 'none', 'period' => 'none', 'cache' => 'cache'), $attributes );
+        $fingerprint = md5(json_encode($_attributes));
         if ($_attributes['cache'] != 'no_cache') {
             $result = Cache::get_graph($fingerprint, 'climat');
             if ($result) {
@@ -5819,7 +5820,7 @@ trait Output {
             }
         }
         else {
-            $result = __('Malformed shortcode. Please verify it!', 'live-weather-station');
+            $result =  __('Malformed shortcode. Please verify it!', 'live-weather-station');
         }
         $device = $_attributes['device_id'];
         $module = $_attributes['module_id'];
@@ -5830,43 +5831,172 @@ trait Output {
         $periodvalue = $_attributes['period'];
         $aggregated = (strpos($periodtype, 'aggregated') !== false);
         $fixed = (strpos($periodtype, 'fixed') !== false);
-        $both = false;
+        if ($computed == 'simple-dev') {
+            $both = true;
+        }
+        else {
+            $both = false;
+        }
         if ($device == '' || $module == '' || $measurement == '' || $set == '' || $computed == '' || $periodtype == '' || $periodvalue == '' || !($aggregated || $fixed || $both)) {
             return $result;
+        }
+        $station = $this->get_station_informations_by_station_id($device);
+        $modules = DeviceManager::get_modules_details($device);
+        $moduletype = 'NAMain';
+        foreach ($modules as $m) {
+            if ($m['module_id'] == $module) {
+                $moduletype = $m['module_type'];
+            }
         }
         $d = explode(':', $periodvalue);
         $min = $d[0];
         $max = $d[1];
-        $fixed_where = "`timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND";
-        $aggregated_where = "";
-        if ($periodtype == 'aggregated-month') {
-            $val = (int)substr($periodvalue, 5, 2);
-            $aggregated_where = "MONTH(`timestamp`)=" . $val . " AND";
-        }
-        if ($periodtype == 'aggregated-season') {
-            $val = (int)substr($periodvalue, 5, 2);
-            switch ($val) {
-                case 3: $aggregated_where = "MONTH(`timestamp`) IN (3, 4, 5) AND"; break;
-                case 6: $aggregated_where = "MONTH(`timestamp`) IN (6, 7, 8) AND"; break;
-                case 9: $aggregated_where = "MONTH(`timestamp`) IN (9, 10, 11) AND"; break;
-                case 12: $aggregated_where = "MONTH(`timestamp`) IN (1, 2, 12) AND"; break;
+        $min_aux = '';
+        $max_aux = '';
+        $num_period = 1;
+        $year_period = array();
+        $year1_period = array();
+        $year2_period = array();
+        if ($aggregated || $both) {
+            $o_date = $this->get_oldest_data($station);
+            $y_date = $this->get_youngest_data($station);
+            $oldest_date = new \DateTime($o_date, new \DateTimeZone($station['loc_timezone']));
+            $youngest_date = new \DateTime($y_date, new \DateTimeZone($station['loc_timezone']));
+            if ($both) {
+                $min_date = new \DateTime(substr($o_date, 0, 4) . substr($min, 4, 6), new \DateTimeZone($station['loc_timezone']));
+                $max_date = new \DateTime(substr($y_date, 0, 4) . substr($max, 4, 6), new \DateTimeZone($station['loc_timezone']));
+            }
+            else {
+                $min_date = new \DateTime($min, new \DateTimeZone($station['loc_timezone']));
+                $max_date = new \DateTime($max, new \DateTimeZone($station['loc_timezone']));
+            }
+            if ($min_date < $oldest_date) {
+                $min_date = $this->date_add_month($min_date, 12);
+            }
+            if ($max_date > $youngest_date) {
+                $max_date = $this->date_add_month($max_date, -12);
+            }
+            if ($both) {
+                $min_aux = $min_date->format('Y-m-d');
+                $max_aux = $max_date->format('Y-m-d');
+            }
+            else {
+                $min = $min_date->format('Y-m-d');
+                $max = $max_date->format('Y-m-d');
+            }
+            $min_year = (int)$min_date->format('Y');
+            $max_year = (int)$max_date->format('Y');
+            if ($min_year <= $max_year) {
+                for ($i=$min_year; $i<=$max_year; $i++) {
+                    $year_period[] = $i;
+                    if ($i == $min_year) {
+                        $year1_period[] = $i;
+                    }
+                    elseif ($i == $max_year) {
+                        $year2_period[] = $i;
+                    }
+                    else {
+                        $year1_period[] = $i;
+                        $year2_period[] = $i;
+                    }
+                }
+            }
+            if (strpos($periodtype, 'mseason') !== false) {
+                if (count($year1_period) == 0) {
+                    return __('Not enough data to perform this computation.', 'live-weather-station');
+                }
+                else {
+                    $num_period = count($year1_period);
+                }
+            }
+            else {
+                if (count($year_period) == 0) {
+                    return __('Not enough data to perform this computation.', 'live-weather-station');
+                }
+                else {
+                    $num_period = count($year_period);
+                }
             }
         }
+        $fixed_where = "`timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND";
+        $aggregated_where = "";
+        if (strpos($periodtype, 'month') !== false) {
+            $val = (int)substr($periodvalue, 5, 2);
+            $aggregated_where = "MONTH(`timestamp`)=" . $val . " AND YEAR(`timestamp`) IN (" . implode(', ', $year_period) . ") AND";
+        }
+        elseif (strpos($periodtype, 'mseason') !== false) {
+            $val = (int)substr($periodvalue, 5, 2);
+            switch ($val) {
+                case 3: case 4: case 5: $aggregated_where = "MONTH(`timestamp`) IN (3, 4, 5) AND YEAR(`timestamp`) IN (" . implode(', ', $year_period) . ") AND"; break;
+                case 6: case 7: case 8: $aggregated_where = "MONTH(`timestamp`) IN (6, 7, 8) AND YEAR(`timestamp`) IN (" . implode(', ', $year_period) . ") AND"; break;
+                case 9: case 10: case 11: $aggregated_where = "MONTH(`timestamp`) IN (9, 10, 11) AND YEAR(`timestamp`) IN (" . implode(', ', $year_period) . ") AND"; break;
+                case 1: case 2: case 12: $aggregated_where = "((MONTH(`timestamp`) IN (1, 2) AND YEAR(`timestamp`) IN (" . implode(', ', $year2_period) . ")) OR (MONTH(`timestamp`)=12 AND YEAR(`timestamp`) IN (" . implode(', ', $year1_period) . "))) AND"; break;
+            }
+        }
+        elseif (strpos($periodtype, 'year') !== false) {
+            $aggregated_where = "YEAR(`timestamp`) IN (" . implode(', ', $year_period) . ") AND";
+        }
+
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
-        $simple_fixed_sql = "SELECT {SELECT} FROM " . $table_name . " WHERE " . $fixed_where . " `device_id`='" . $device . "' AND `module_id`='" . $module . "' AND `measure_type`='" . $measurement . "' AND {WHERE};";
-        $simple_aggregated_sql = "SELECT {SELECT} FROM " . $table_name . " WHERE " . $aggregated_where . " `device_id`='" . $device . "' AND `module_id`='" . $module . "' AND `measure_type`='" . $measurement . "' AND {WHERE};";
-
+        $simple_fixed_sql = "SELECT {SELECT} FROM " . $table_name . " WHERE " . $fixed_where . " `device_id`='" . $device . "' AND `module_id`='" . $module . "' AND `measure_type`='" . $measurement . "' AND {WHERE} {GROUPBY} {ORDERBY};";
+        $simple_aggregated_sql = "SELECT {SELECT} FROM " . $table_name . " WHERE " . $aggregated_where . " `device_id`='" . $device . "' AND `module_id`='" . $module . "' AND `measure_type`='" . $measurement . "' AND {WHERE} {GROUPBY} {ORDERBY};";
+        $group = '';
+        $order = '';
+        $fgroup = '';
+        $forder = '';
+        $agroup = '';
+        $aorder = '';
         try {
             switch ($computed) {
                 case 'simple-val':
                     if ($set == 'hell') {
-                        $select = "ABS(SUM(`measure_value`)) as val";
+                        $select = "ABS(SUM(`measure_value`)/" . $num_period . ") as val";
                         $where = "`measure_value`<0 AND `measure_set`='avg'";
                     }
                     if ($set == 'frst') {
-                        $select = "ABS(SUM(`measure_value`)) as val";
-                        $where = "`measure_value`<0 AND (`measure_set`='min' OR `measure_set`='min')";
+                        $select = "ABS(SUM(`measure_value`)/" . $num_period . ") as val";
+                        $where = "`measure_value`<0 AND (`measure_set`='min' OR `measure_set`='max')";
+                    }
+                    if ($set == 'hdd-da') {
+                        $select = "ABS(SUM(17-`measure_value`)/" . $num_period . ") as val";
+                        $where = "`measure_value`<17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-eu') {
+                        $select = "ABS(SUM(15.5-`measure_value`)/" . $num_period . ") as val";
+                        $where = "`measure_value`<15.5 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-fi') {
+                        $select = "ABS(SUM(17-`measure_value`)/" . $num_period . ") as val";
+                        $where = "`measure_value`<17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-ch') {
+                        $select = "ABS(SUM(12-`measure_value`)/" . $num_period . ") as val";
+                        $where = "`measure_value`<12 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-us') {
+                        $select = "ABS(SUM(18-`measure_value`)/" . $num_period . ") as val";
+                        $where = "`measure_value`<18 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-da') {
+                        $select = "ABS(SUM(`measure_value`-17)/" . $num_period . ") as val";
+                        $where = "`measure_value`>17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-eu') {
+                        $select = "ABS(SUM(`measure_value`-15.5)/" . $num_period . ") as val";
+                        $where = "`measure_value`>15.5 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-fi') {
+                        $select = "ABS(SUM(`measure_value`-17)/" . $num_period . ") as val";
+                        $where = "`measure_value`>17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-ch') {
+                        $select = "ABS(SUM(`measure_value`-12)/" . $num_period . ") as val";
+                        $where = "`measure_value`>12 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-us') {
+                        $select = "ABS(SUM(`measure_value`-18)/" . $num_period . ") as val";
+                        $where = "`measure_value`>18 AND `measure_set`='avg'";
                     }
                     break;
                 case 'simple-avg':
@@ -5876,18 +6006,284 @@ trait Output {
                 case 'simple-min':
                     $select = 'MIN(`measure_value`) as val';
                     $where = "`measure_set`='" . $set . "'";
+                    if ($set == 'hdd-da') {
+                        $select = "MIN(ABS(17-`measure_value`)) as val";
+                        $where = "`measure_value`<17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-eu') {
+                        $select = "MIN(ABS(15.5-`measure_value`)) as val";
+                        $where = "`measure_value`<15.5 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-fi') {
+                        $select = "MIN(ABS(17-`measure_value`)) as val";
+                        $where = "`measure_value`<17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-ch') {
+                        $select = "MIN(ABS(12-`measure_value`)) as val";
+                        $where = "`measure_value`<12 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-us') {
+                        $select = "MIN(ABS(18-`measure_value`)) as val";
+                        $where = "`measure_value`<18 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-da') {
+                        $select = "MIN(ABS(`measure_value`-17)) as val";
+                        $where = "`measure_value`>17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-eu') {
+                        $select = "MIN(ABS(`measure_value`-15.5)) as val";
+                        $where = "`measure_value`>15.5 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-fi') {
+                        $select = "MIN(ABS(`measure_value`-17)) as val";
+                        $where = "`measure_value`>17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-ch') {
+                        $select = "MIN(ABS(`measure_value`-12)) as val";
+                        $where = "`measure_value`>12 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-us') {
+                        $select = "MIN(ABS(`measure_value`-18)) as val";
+                        $where = "`measure_value`>18 AND `measure_set`='avg'";
+                    }
                     break;
                 case 'simple-max':
                     $select = 'MAX(`measure_value`) as val';
                     $where = "`measure_set`='" . $set . "'";
+                    if ($set == 'hdd-da') {
+                        $select = "MAX(ABS(17-`measure_value`)) as val";
+                        $where = "`measure_value`<17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-eu') {
+                        $select = "MAX(ABS(15.5-`measure_value`)) as val";
+                        $where = "`measure_value`<15.5 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-fi') {
+                        $select = "MAX(ABS(17-`measure_value`)) as val";
+                        $where = "`measure_value`<17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-ch') {
+                        $select = "MAX(ABS(12-`measure_value`)) as val";
+                        $where = "`measure_value`<12 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-us') {
+                        $select = "MAX(ABS(18-`measure_value`)) as val";
+                        $where = "`measure_value`<18 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-da') {
+                        $select = "MAX(ABS(`measure_value`-17)) as val";
+                        $where = "`measure_value`>17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-eu') {
+                        $select = "MAX(ABS(`measure_value`-15.5)) as val";
+                        $where = "`measure_value`>15.5 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-fi') {
+                        $select = "MAX(ABS(`measure_value`-17)) as val";
+                        $where = "`measure_value`>17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-ch') {
+                        $select = "MAX(ABS(`measure_value`-12)) as val";
+                        $where = "`measure_value`>12 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-us') {
+                        $select = "MAX(ABS(`measure_value`-18)) as val";
+                        $where = "`measure_value`>18 AND `measure_set`='avg'";
+                    }
+                    break;
+                case 'simple-dev':
+                    $fselect = 'AVG(`measure_value`) as val';
+                    $fwhere = "`measure_set`='" . $set . "'";
+                    $aselect = 'AVG(`measure_value`) as val';
+                    $awhere = "`measure_set`='" . $set . "'";
+                    if ($set == 'hell') {
+                        $fselect = "ABS(SUM(`measure_value`)) as val";
+                        $fwhere = "`measure_value`<0 AND `measure_set`='avg'";
+                        $aselect = "ABS(SUM(`measure_value`)/" . $num_period . ") as val";
+                        $awhere = "`measure_value`<0 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'frst') {
+                        $fselect = "ABS(SUM(`measure_value`)) as val";
+                        $fwhere = "`measure_value`<0 AND (`measure_set`='min' OR `measure_set`='max')";
+                        $aselect = "ABS(SUM(`measure_value`)/" . $num_period . ") as val";
+                        $awhere = "`measure_value`<0 AND (`measure_set`='min' OR `measure_set`='max')";
+                    }
+                    if ($set == 'hdd-da') {
+                        $fselect = "ABS(SUM(17-`measure_value`)) as val";
+                        $fwhere = "`measure_value`<17 AND `measure_set`='avg'";
+                        $aselect = "ABS(SUM(17-`measure_value`)/" . $num_period . ") as val";
+                        $awhere = "`measure_value`<17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-eu') {
+                        $fselect = "ABS(SUM(15.5-`measure_value`)) as val";
+                        $fwhere = "`measure_value`<15.5 AND `measure_set`='avg'";
+                        $aselect = "ABS(SUM(15.5-`measure_value`)/" . $num_period . ") as val";
+                        $awhere = "`measure_value`<15.5 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-fi') {
+                        $fselect = "ABS(SUM(17-`measure_value`)) as val";
+                        $fwhere = "`measure_value`<17 AND `measure_set`='avg'";
+                        $aselect = "ABS(SUM(17-`measure_value`)/" . $num_period . ") as val";
+                        $awhere = "`measure_value`<17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-ch') {
+                        $fselect = "ABS(SUM(12-`measure_value`)) as val";
+                        $fwhere = "`measure_value`<12 AND `measure_set`='avg'";
+                        $aselect = "ABS(SUM(12-`measure_value`)/" . $num_period . ") as val";
+                        $awhere = "`measure_value`<12 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-us') {
+                        $fselect = "ABS(SUM(18-`measure_value`)) as val";
+                        $fwhere = "`measure_value`<18 AND `measure_set`='avg'";
+                        $aselect = "ABS(SUM(18-`measure_value`)/" . $num_period . ") as val";
+                        $awhere = "`measure_value`<18 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-da') {
+                        $fselect = "ABS(SUM(`measure_value`-17)) as val";
+                        $fwhere = "`measure_value`>17 AND `measure_set`='avg'";
+                        $aselect = "ABS(SUM(`measure_value`-17)/" . $num_period . ") as val";
+                        $awhere = "`measure_value`>17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-eu') {
+                        $fselect = "ABS(SUM(`measure_value`-15.5)) as val";
+                        $fwhere = "`measure_value`>15.5 AND `measure_set`='avg'";
+                        $aselect = "ABS(SUM(`measure_value`-15.5)/" . $num_period . ") as val";
+                        $awhere = "`measure_value`>15.5 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-fi') {
+                        $fselect = "ABS(SUM(`measure_value`-17)) as val";
+                        $fwhere = "`measure_value`>17 AND `measure_set`='avg'";
+                        $aselect = "ABS(SUM(`measure_value`-17)/" . $num_period . ") as val";
+                        $awhere = "`measure_value`>17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-ch') {
+                        $fselect = "ABS(SUM(`measure_value`-12)) as val";
+                        $fwhere = "`measure_value`>12 AND `measure_set`='avg'";
+                        $aselect = "ABS(SUM(`measure_value`-12)/" . $num_period . ") as val";
+                        $awhere = "`measure_value`>12 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-us') {
+                        $fselect = "ABS(SUM(`measure_value`-18)) as val";
+                        $fwhere = "`measure_value`>18 AND `measure_set`='avg'";
+                        $aselect = "ABS(SUM(`measure_value`-18)/" . $num_period . ") as val";
+                        $awhere = "`measure_value`>18 AND `measure_set`='avg'";
+                    }
+                    break;
+                case 'date-min':
+                    $select = '`timestamp` as ts, `measure_value` as val';
+                    $where = "`measure_set`='" . $set . "'";
+                    $order = 'ORDER BY val ASC';
+                    if ($set == 'hdd-da') {
+                        $select = "`timestamp` as ts, ABS(17-`measure_value`) as val";
+                        $where = "`measure_value`<17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-eu') {
+                        $select = "`timestamp` as ts, ABS(15.5-`measure_value`) as val";
+                        $where = "`measure_value`<15.5 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-fi') {
+                        $select = "`timestamp` as ts, ABS(17-`measure_value`) as val";
+                        $where = "`measure_value`<17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-ch') {
+                        $select = "`timestamp` as ts, ABS(12-`measure_value`) as val";
+                        $where = "`measure_value`<12 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-us') {
+                        $select = "`timestamp` as ts, ABS(18-`measure_value`) as val";
+                        $where = "`measure_value`<18 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-da') {
+                        $select = "`timestamp` as ts, ABS(`measure_value`-17) as val";
+                        $where = "`measure_value`>17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-eu') {
+                        $select = "`timestamp` as ts, ABS(`measure_value`-15.5) as val";
+                        $where = "`measure_value`>15.5 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-fi') {
+                        $select = "`timestamp` as ts, ABS(`measure_value`-17)) as val";
+                        $where = "`measure_value`>17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-ch') {
+                        $select = "`timestamp` as ts, ABS(`measure_value`-12) as val";
+                        $where = "`measure_value`>12 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-us') {
+                        $select = "`timestamp` as ts, ABS(`measure_value`-18) as val";
+                        $where = "`measure_value`>18 AND `measure_set`='avg'";
+                    }
+                    break;
+                case 'date-max':
+                    $select = '`timestamp` as ts, `measure_value` as val';
+                    $where = "`measure_set`='" . $set . "'";
+                    $order = 'ORDER BY val DESC';
+                    if ($set == 'hdd-da') {
+                        $select = "`timestamp` as ts, ABS(17-`measure_value`) as val";
+                        $where = "`measure_value`<17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-eu') {
+                        $select = "`timestamp` as ts, ABS(15.5-`measure_value`) as val";
+                        $where = "`measure_value`<15.5 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-fi') {
+                        $select = "`timestamp` as ts, ABS(17-`measure_value`) as val";
+                        $where = "`measure_value`<17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-ch') {
+                        $select = "`timestamp` as ts, ABS(12-`measure_value`) as val";
+                        $where = "`measure_value`<12 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'hdd-us') {
+                        $select = "`timestamp` as ts, ABS(18-`measure_value`) as val";
+                        $where = "`measure_value`<18 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-da') {
+                        $select = "`timestamp` as ts, ABS(`measure_value`-17) as val";
+                        $where = "`measure_value`>17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-eu') {
+                        $select = "`timestamp` as ts, ABS(`measure_value`-15.5) as val";
+                        $where = "`measure_value`>15.5 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-fi') {
+                        $select = "`timestamp` as ts, ABS(`measure_value`-17)) as val";
+                        $where = "`measure_value`>17 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-ch') {
+                        $select = "`timestamp` as ts, ABS(`measure_value`-12) as val";
+                        $where = "`measure_value`>12 AND `measure_set`='avg'";
+                    }
+                    if ($set == 'cdd-us') {
+                        $select = "`timestamp` as ts, ABS(`measure_value`-18) as val";
+                        $where = "`measure_value`>18 AND `measure_set`='avg'";
+                    }
                     break;
                 default:
                     return $result;
             }
-            $simple_fixed_sql = str_replace('{SELECT}', $select, $simple_fixed_sql);
-            $simple_fixed_sql = str_replace('{WHERE}', $where, $simple_fixed_sql);
-            $simple_aggregated_sql = str_replace('{SELECT}', $select, $simple_aggregated_sql);
-            $simple_aggregated_sql = str_replace('{WHERE}', $where, $simple_aggregated_sql);
+
+            if ($both) {
+                $simple_fixed_sql = str_replace('{SELECT}', $fselect, $simple_fixed_sql);
+                $simple_fixed_sql = str_replace('{WHERE}', $fwhere, $simple_fixed_sql);
+                $simple_fixed_sql = str_replace('{GROUPBY}', $fgroup, $simple_fixed_sql);
+                $simple_fixed_sql = str_replace('{ORDERBY}', $forder, $simple_fixed_sql);
+                $simple_aggregated_sql = str_replace('{SELECT}', $aselect, $simple_aggregated_sql);
+                $simple_aggregated_sql = str_replace('{WHERE}', $awhere, $simple_aggregated_sql);
+                $simple_aggregated_sql = str_replace('{GROUPBY}', $agroup, $simple_aggregated_sql);
+                $simple_aggregated_sql = str_replace('{ORDERBY}', $aorder, $simple_aggregated_sql);
+            }
+            else {
+                $simple_fixed_sql = str_replace('{SELECT}', $select, $simple_fixed_sql);
+                $simple_fixed_sql = str_replace('{WHERE}', $where, $simple_fixed_sql);
+                $simple_fixed_sql = str_replace('{GROUPBY}', $group, $simple_fixed_sql);
+                $simple_fixed_sql = str_replace('{ORDERBY}', $order, $simple_fixed_sql);
+                $simple_aggregated_sql = str_replace('{SELECT}', $select, $simple_aggregated_sql);
+                $simple_aggregated_sql = str_replace('{WHERE}', $where, $simple_aggregated_sql);
+                $simple_aggregated_sql = str_replace('{GROUPBY}', $group, $simple_aggregated_sql);
+                $simple_aggregated_sql = str_replace('{ORDERBY}', $order, $simple_aggregated_sql);
+            }
+
             switch ($computed) {
                 case 'simple-val':
                     if ($fixed) {
@@ -5896,11 +6292,8 @@ trait Output {
                     if ($aggregated) {
                         $rows = $wpdb->get_results($simple_aggregated_sql, ARRAY_A);
                     }
-                    if ($set == 'hell') {
-                        $result = $this->output_value($rows[0]['val'], $measurement);
-                    }
-                    if ($set == 'frst') {
-                        $result = $this->output_value($rows[0]['val'], $measurement);
+                    if ($set == 'hell' || $set == 'frst' || $set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
+                        $result = $this->rebase_value($rows[0]['val'], $measurement);
                     }
                     break;
                 case 'simple-avg':
@@ -5912,7 +6305,37 @@ trait Output {
                     if ($aggregated) {
                         $rows = $wpdb->get_results($simple_aggregated_sql, ARRAY_A);
                     }
-                    $result = $this->output_value($rows[0]['val'], $measurement, true);
+                    if ($set == 'hell' || $set == 'frst' || $set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
+                        $result = $this->rebase_value($rows[0]['val'], $measurement);
+                    }
+                    else {
+                        $result = $this->output_value($rows[0]['val'], $measurement, true);
+                    }
+                    break;
+                case 'simple-dev':
+                    $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
+                    $ref_rows = $wpdb->get_results($simple_aggregated_sql, ARRAY_A);
+                    $val = $this->rebase_value($rows[0]['val'] - $ref_rows[0]['val'], $measurement);
+                    if ($set == 'hell' || $set == 'frst' || $set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
+                        $result = $val;
+                    }
+                    else {
+                        $result = $val . ' ' . $this->output_unit($measurement, $moduletype)['unit'];
+                    }
+                    if ($val > 0) {
+                        $result = '+' . $result;
+                    }
+                    break;
+                case 'date-min':
+                case 'date-max':
+                    if ($fixed) {
+                        $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
+                    }
+                    if ($aggregated) {
+                        $rows = $wpdb->get_results($simple_aggregated_sql, ARRAY_A);
+                    }
+                    $date = new \DateTime($rows[0]['ts'], new \DateTimeZone($station['loc_timezone']));
+                    $result = date_i18n(get_option('date_format'), $date->getTimestamp());
                     break;
                 default:
                     return $result;
@@ -12579,6 +13002,16 @@ trait Output {
                 $result[] = array('none', '-');
             }
             if ($scores && $measurement_type == 'temperature') {
+                $result[] = array('cdd-da', __('Cooling degree day (Denmark)', 'live-weather-station'));
+                $result[] = array('cdd-eu', __('Cooling degree day (E.U.)', 'live-weather-station'));
+                $result[] = array('cdd-fi', __('Cooling degree day (Finland)', 'live-weather-station'));
+                $result[] = array('cdd-ch', __('Cooling degree day (Switzerland)', 'live-weather-station'));
+                $result[] = array('cdd-us', __('Cooling degree day (U.S.A.)', 'live-weather-station'));
+                $result[] = array('hdd-da', __('Heating degree day (Denmark)', 'live-weather-station'));
+                $result[] = array('hdd-eu', __('Heating degree day (E.U.)', 'live-weather-station'));
+                $result[] = array('hdd-fi', __('Heating degree day (Finland)', 'live-weather-station'));
+                $result[] = array('hdd-ch', __('Heating degree day (Switzerland)', 'live-weather-station'));
+                $result[] = array('hdd-us', __('Heating degree day (U.S.A.)', 'live-weather-station'));
                 $result[] = array('frst', __('Frost score', 'live-weather-station'));
                 $result[] = array('hell', __('Hellmann score', 'live-weather-station'));
             }
