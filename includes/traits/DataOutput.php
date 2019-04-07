@@ -84,7 +84,7 @@ trait Output {
     private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
     private $ltgraph_allowed_parameter = array('device_id', 'module_id', 'measurement', 'cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
     private $radial_allowed_parameter = array('device_id', 'cache', 'mode', 'type', 'values', 'valuescale', 'template', 'height', 'data', 'periodtype', 'period');
-    private $lttextual_allowed_parameter = array('device_id', 'module_id', 'measurement', 'set', 'cache', 'periodtype', 'period', 'computed');
+    private $lttextual_allowed_parameter = array('device_id', 'module_id', 'measurement', 'set', 'cache', 'periodtype', 'period', 'computed', 'condition', 'ref', 'th1', 'th2');
 
 
 
@@ -5811,7 +5811,7 @@ trait Output {
      * @since 3.8.0
      */
     public function lttextual_shortcodes($attributes) {
-        $_attributes = shortcode_atts( array('mode' => 'climat', 'type' => 'textual', 'device_id' => '', 'module_id' => '', 'measurement' => '', 'set' => '', 'computed' => 'simple-avg', 'periodtype' => 'none', 'period' => 'none', 'cache' => 'cache'), $attributes );
+        $_attributes = shortcode_atts( array('mode' => 'climat', 'type' => 'textual', 'device_id' => '', 'module_id' => '', 'measurement' => '', 'set' => '', 'th1' => '', 'th2' => '', 'computed' => 'simple-avg', 'condition' => 'comp-eq', 'ref' => '0', 'periodtype' => 'none', 'period' => 'none', 'cache' => 'cache'), $attributes );
         $fingerprint = md5(json_encode($_attributes));
         if ($_attributes['cache'] != 'no_cache') {
             $result = Cache::get_graph($fingerprint, 'climat');
@@ -5830,6 +5830,34 @@ trait Output {
         $periodtype = $_attributes['periodtype'];
         $periodvalue = $_attributes['period'];
         $aggregated = (strpos($periodtype, 'aggregated') !== false);
+        $condition = $_attributes['condition'];
+        if (is_numeric($_attributes['th1'])) {
+            $th1 = $_attributes['th1'];
+        }
+        else {
+            $th1 = 0;
+        }
+        if (is_numeric($_attributes['th2'])) {
+            $th2 = $_attributes['th2'];
+        }
+        else {
+            $th2 = 0;
+        }
+        if (is_numeric($_attributes['ref'])) {
+            $ref_unit = $_attributes['ref'];
+        }
+        else {
+            $ref_unit = 9999;
+        }
+        $th1 = $this->convert_value($th1, $measurement, $ref_unit);
+        $th2 = $this->convert_value($th2, $measurement, $ref_unit);
+        if ($condition == 'comp-b' || $condition == 'comp-nb') {
+            if ($th2 < $th1) {
+                $th = $th1;
+                $th1 = $th2;
+                $th2 = $th;
+            }
+        }
         $fixed = (strpos($periodtype, 'fixed') !== false);
         if ($computed == 'simple-dev') {
             $both = true;
@@ -5863,12 +5891,12 @@ trait Output {
             $oldest_date = new \DateTime($o_date, new \DateTimeZone($station['loc_timezone']));
             $youngest_date = new \DateTime($y_date, new \DateTimeZone($station['loc_timezone']));
             if ($both) {
-                $min_date = new \DateTime(substr($o_date, 0, 4) . substr($min, 4, 6), new \DateTimeZone($station['loc_timezone']));
-                $max_date = new \DateTime(substr($y_date, 0, 4) . substr($max, 4, 6), new \DateTimeZone($station['loc_timezone']));
+                $min_date = new \DateTime(substr($o_date, 0, 4) . substr($min, 4, 6));
+                $max_date = new \DateTime(substr($y_date, 0, 4) . substr($max, 4, 6));
             }
             else {
-                $min_date = new \DateTime($min, new \DateTimeZone($station['loc_timezone']));
-                $max_date = new \DateTime($max, new \DateTimeZone($station['loc_timezone']));
+                $min_date = new \DateTime($min);
+                $max_date = new \DateTime($max);
             }
             if ($min_date < $oldest_date) {
                 $min_date = $this->date_add_month($min_date, 12);
@@ -5919,6 +5947,7 @@ trait Output {
             }
         }
         $fixed_where = "`timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND";
+        $nested_where = "nested.`timestamp`>='" . $min . "' AND nested.`timestamp`<='" . $max . "' AND nested.`device_id`='" . $device . "' AND nested.`module_id`='" . $module . "' AND nested.`measure_type`='" . $measurement . "' AND ";
         $aggregated_where = "";
         if (strpos($periodtype, 'month') !== false) {
             $val = (int)substr($periodvalue, 5, 2);
@@ -5940,6 +5969,7 @@ trait Output {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
         $simple_fixed_sql = "SELECT {SELECT} FROM " . $table_name . " WHERE " . $fixed_where . " `device_id`='" . $device . "' AND `module_id`='" . $module . "' AND `measure_type`='" . $measurement . "' AND {WHERE} {GROUPBY} {ORDERBY};";
+        $nested_fixed_sql = "SELECT {SELECT} FROM {FROM} WHERE {WHERE} {GROUPBY} {ORDERBY};";
         $simple_aggregated_sql = "SELECT {SELECT} FROM " . $table_name . " WHERE " . $aggregated_where . " `device_id`='" . $device . "' AND `module_id`='" . $module . "' AND `measure_type`='" . $measurement . "' AND {WHERE} {GROUPBY} {ORDERBY};";
         $group = '';
         $order = '';
@@ -5947,6 +5977,7 @@ trait Output {
         $forder = '';
         $agroup = '';
         $aorder = '';
+        $from = '';
         try {
             switch ($computed) {
                 case 'simple-val':
@@ -6259,6 +6290,102 @@ trait Output {
                         $where = "`measure_value`>18 AND `measure_set`='avg'";
                     }
                     break;
+                case 'count-day':
+                    $select = 'COUNT(*) as val';
+                    $where = "`measure_set`='" . $set . "' AND ";
+                    switch ($condition) {
+                        case 'comp-l': $where2 = "`measure_value`<" . $th1 ;break;
+                        case 'comp-eq': $where2 = "`measure_value`=" . $th1 ;break;
+                        case 'comp-g': $where2 = "`measure_value`>" . $th1 ;break;
+                        case 'comp-b': $where2 = "(`measure_value`>" . $th1 . " AND `measure_value`<" . $th2 . ")";break;
+                        case 'comp-nb': $where2 = "(`measure_value`<" . $th1 . " OR `measure_value`>" . $th2 . ")";break;
+                    }
+                    if ($set == 'hdd-da') {
+                        $from = "(SELECT ABS(17-nested.`measure_value`) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`<17 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'hdd-eu') {
+                        $from = "(SELECT ABS(15.5-nested.`measure_value`) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`<15.5 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'hdd-fi') {
+                        $from = "(SELECT ABS(17-nested.`measure_value`) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`<17 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'hdd-ch') {
+                        $from = "(SELECT ABS(12-nested.`measure_value`) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`<12 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'hdd-us') {
+                        $from = "(SELECT ABS(18-nested.`measure_value`) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`<18 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'cdd-da') {
+                        $from = "(SELECT ABS(nested.`measure_value`-17) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`>17 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'cdd-eu') {
+                        $from = "(SELECT ABS(nested.`measure_value`-15.5) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`>15.5 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'cdd-fi') {
+                        $from = "(SELECT ABS(nested.`measure_value`-17) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`>17 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'cdd-ch') {
+                        $from = "(SELECT ABS(nested.`measure_value`-12) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`>12 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'cdd-us') {
+                        $from = "(SELECT ABS(nested.`measure_value`-18) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`>18 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
+                        $where = " ";
+                        $where2 = str_replace('`measure_value`', 'result.ddval', $where2);
+                    }
+                    $where = $where . $where2;
+                    break;
+                case 'duration-day':
+                case 'duration-dates':
+                    $select = '`timestamp` as val';
+                    $where = "`measure_set`='" . $set . "' AND ";
+                    $order = 'ORDER BY val ASC';
+                    switch ($condition) {
+                        case 'comp-l': $where2 = "`measure_value`<" . $th1 ;break;
+                        case 'comp-eq': $where2 = "`measure_value`=" . $th1 ;break;
+                        case 'comp-g': $where2 = "`measure_value`>" . $th1 ;break;
+                        case 'comp-b': $where2 = "(`measure_value`>" . $th1 . " AND `measure_value`<" . $th2 . ")";break;
+                        case 'comp-nb': $where2 = "(`measure_value`<" . $th1 . " OR `measure_value`>" . $th2 . ")";break;
+                    }
+                    if ($set == 'hdd-da') {
+                        $from = "(SELECT nested.`timestamp` as ts, ABS(17-nested.`measure_value`) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`<17 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'hdd-eu') {
+                        $from = "(SELECT nested.`timestamp` as ts, ABS(15.5-nested.`measure_value`) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`<15.5 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'hdd-fi') {
+                        $from = "(SELECT nested.`timestamp` as ts, ABS(17-nested.`measure_value`) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`<17 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'hdd-ch') {
+                        $from = "(SELECT nested.`timestamp` as ts, ABS(12-nested.`measure_value`) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`<12 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'hdd-us') {
+                        $from = "(SELECT nested.`timestamp` as ts, ABS(18-nested.`measure_value`) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`<18 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'cdd-da') {
+                        $from = "(SELECT nested.`timestamp` as ts, ABS(nested.`measure_value`-17) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`>17 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'cdd-eu') {
+                        $from = "(SELECT nested.`timestamp` as ts, ABS(nested.`measure_value`-15.5) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`>15.5 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'cdd-fi') {
+                        $from = "(SELECT nested.`timestamp` as ts, ABS(nested.`measure_value`-17) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`>17 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'cdd-ch') {
+                        $from = "(SELECT nested.`timestamp` as ts, ABS(nested.`measure_value`-12) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`>12 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'cdd-us') {
+                        $from = "(SELECT nested.`timestamp` as ts, ABS(nested.`measure_value`-18) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`>18 AND nested.`measure_set`='avg') AS result ";
+                    }
+                    if ($set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
+                        $where = " ";
+                        $where2 = str_replace('`measure_value`', 'result.ddval', $where2);
+                        //$order = str_replace('`timestamp`', 'result.ts', $order);
+                        $select = str_replace('`timestamp`', 'result.ts', $select);
+                    }
+                    $where = $where . $where2;
+                    break;
                 default:
                     return $result;
             }
@@ -6278,11 +6405,18 @@ trait Output {
                 $simple_fixed_sql = str_replace('{WHERE}', $where, $simple_fixed_sql);
                 $simple_fixed_sql = str_replace('{GROUPBY}', $group, $simple_fixed_sql);
                 $simple_fixed_sql = str_replace('{ORDERBY}', $order, $simple_fixed_sql);
+                $nested_fixed_sql = str_replace('{SELECT}', $select, $nested_fixed_sql);
+                $nested_fixed_sql = str_replace('{FROM}', $from, $nested_fixed_sql);
+                $nested_fixed_sql = str_replace('{WHERE}', $where, $nested_fixed_sql);
+                $nested_fixed_sql = str_replace('{GROUPBY}', $group, $nested_fixed_sql);
+                $nested_fixed_sql = str_replace('{ORDERBY}', $order, $nested_fixed_sql);
                 $simple_aggregated_sql = str_replace('{SELECT}', $select, $simple_aggregated_sql);
                 $simple_aggregated_sql = str_replace('{WHERE}', $where, $simple_aggregated_sql);
                 $simple_aggregated_sql = str_replace('{GROUPBY}', $group, $simple_aggregated_sql);
                 $simple_aggregated_sql = str_replace('{ORDERBY}', $order, $simple_aggregated_sql);
             }
+
+            //return $nested_fixed_sql;
 
             switch ($computed) {
                 case 'simple-val':
@@ -6336,6 +6470,47 @@ trait Output {
                     }
                     $date = new \DateTime($rows[0]['ts'], new \DateTimeZone($station['loc_timezone']));
                     $result = date_i18n(get_option('date_format'), $date->getTimestamp());
+                    break;
+                case 'count-day':
+                    if ($set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
+                        $rows = $wpdb->get_results($nested_fixed_sql, ARRAY_A);
+                    }
+                    else {
+                        $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
+                    }
+                    $result = sprintf(_n('%s day', '%s days', $rows[0]['val'], 'live-weather-station'), $rows[0]['val']);
+                    break;
+                case 'duration-day':
+                case 'duration-dates':
+                    if ($set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
+                        $rows = $wpdb->get_results($nested_fixed_sql, ARRAY_A);
+                    }
+                    else {
+                        $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
+                    }
+                    $period = $this->get_longest_period($rows);
+                    if ($computed == 'duration-day') {
+                        if ($period['length'] != 0) {
+                            $result = sprintf(_n('%s day', '%s days', $period['length'], 'live-weather-station'), $period['length']);
+                        }
+                        else {
+                            $result = __('N/A', 'live-weather-station');
+                        }
+                    }
+                    if ($computed == 'duration-dates') {
+                        if ($period['length'] == 1) {
+                            $start = new \DateTime($period['start']);
+                            $result = date_i18n(get_option('date_format'), $start->getTimestamp());
+                        }
+                        elseif ($period['length'] > 1) {
+                            $start = new \DateTime($period['start']);
+                            $end = new \DateTime($period['end']);
+                            $result = sprintf(__('%s to %s', 'live-weather-station'), date_i18n(get_option('date_format'), $start->getTimestamp()), date_i18n(get_option('date_format'), $end->getTimestamp()));
+                        }
+                        else {
+                            $result = __('N/A', 'live-weather-station');
+                        }
+                    }
                     break;
                 default:
                     return $result;
@@ -9820,7 +9995,7 @@ trait Output {
      * @since    1.0.0
      * @access   protected
      */
-    protected function output_unit($type, $module_type='NAMain', $force_ref=0) {
+    protected function output_unit($type, $module_type='NAMain', $force_ref=9999) {
         $result = array('unit'=>'', 'comp'=>'', 'full'=>'', 'long'=>'', 'dimension'=>'unknown', 'ref'=>-1);
         $ref = -1;
         switch ($type) {
@@ -9829,7 +10004,7 @@ trait Output {
             case 'alt_density':
             case 'cloud_ceiling':
                 $ref = get_option('live_weather_station_unit_altitude');
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_altitude_unit($ref) ;
@@ -9838,7 +10013,7 @@ trait Output {
                 break;
             case 'battery':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_battery_unit($ref) ;
@@ -9847,7 +10022,7 @@ trait Output {
                 break;
             case 'signal':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_signal_unit($ref) ;
@@ -9858,7 +10033,7 @@ trait Output {
             case 'co2_min':
             case 'co2_max':
                 $ref = get_option('live_weather_station_unit_gas');
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_co2_unit($ref) ;
@@ -9867,7 +10042,7 @@ trait Output {
                 break;
             case 'co':
                 $ref = get_option('live_weather_station_unit_gas');
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_co_unit($ref) ;
@@ -9876,7 +10051,7 @@ trait Output {
                 break;
             case 'o3':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_o3_unit($ref) ;
@@ -9890,7 +10065,7 @@ trait Output {
             case 'humext':
             case 'humidity_ref':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_humidity_unit($ref) ;
@@ -9903,7 +10078,7 @@ trait Output {
             case 'cloudiness_max':
             case 'cloud_cover':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_cloudiness_unit($ref) ;
@@ -9914,7 +10089,7 @@ trait Output {
             case 'noise_min':
             case 'noise_max':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_noise_unit($ref) ;
@@ -9923,7 +10098,7 @@ trait Output {
                 break;
             case 'health_idx':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_health_index_unit($ref) ;
@@ -9933,7 +10108,7 @@ trait Output {
                 break;
             case 'cbi':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_cbi_unit($ref) ;
@@ -9948,7 +10123,7 @@ trait Output {
                     $ref = $ref + 1;
                     $result['dimension'] = 'rate';
                 }
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['comp'] = __('now', 'live-weather-station') ;
@@ -9961,7 +10136,7 @@ trait Output {
                 break;
             case 'rain_hour_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['comp'] = __('/ 1 hr', 'live-weather-station') ;
@@ -9971,7 +10146,7 @@ trait Output {
                 break;
             case 'rain_month_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['comp'] = __('month', 'live-weather-station') ;
@@ -9981,7 +10156,7 @@ trait Output {
                 break;
             case 'rain_year_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['comp'] = __('year', 'live-weather-station') ;
@@ -9991,7 +10166,7 @@ trait Output {
                 break;
             case 'rain_day_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['comp'] = __('today', 'live-weather-station') ;
@@ -10001,7 +10176,7 @@ trait Output {
                 break;
             case 'rain_yesterday_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['comp'] = __('yda.', 'live-weather-station') ;
@@ -10011,7 +10186,7 @@ trait Output {
                 break;
             case 'rain_season_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['comp'] = __('season', 'live-weather-station') ;
@@ -10022,7 +10197,7 @@ trait Output {
             case 'snow':
                 $result['dimension'] = 'length';
                 $ref = get_option('live_weather_station_unit_rain_snow') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 if (strtolower($module_type)=='nacurrent') {
@@ -10043,7 +10218,7 @@ trait Output {
             case 'winddirection_day_max':
             case 'winddirection_hour_max':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 if ($type == 'windangle' || $type == 'winddirection') {
@@ -10071,7 +10246,7 @@ trait Output {
             case 'guststrength_day_min':
             case 'windstrength_hour_max':
                 $ref = get_option('live_weather_station_unit_wind_strength');
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 if ($type == 'windstrength') {
@@ -10099,7 +10274,7 @@ trait Output {
             case 'pressure_sl_max':
             case 'pressure_sl_ref':
                 $ref = get_option('live_weather_station_unit_pressure') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_pressure_unit($ref);
@@ -10116,7 +10291,7 @@ trait Output {
             case 'frost_point':
             case 'wind_chill':
                 $ref = get_option('live_weather_station_unit_temperature') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_temperature_unit($ref);
@@ -10143,7 +10318,7 @@ trait Output {
                 break;
             case 'moon_illumination':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_moon_illumination_unit($ref);
@@ -10153,7 +10328,7 @@ trait Output {
             case 'moon_diameter':
             case 'sun_diameter':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_degree_diameter_unit($ref);
@@ -10163,7 +10338,7 @@ trait Output {
             case 'moon_distance':
             case 'sun_distance':
                 $ref = get_option('live_weather_station_unit_distance');
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_distance_unit($ref);
@@ -10177,7 +10352,7 @@ trait Output {
             case 'potential_temperature':
             case 'equivalent_potential_temperature':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_temperature_unit($ref);
@@ -10186,7 +10361,7 @@ trait Output {
                 break;
             case 'air_density':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_density_unit($ref) ;
@@ -10197,7 +10372,7 @@ trait Output {
             case 'wood_emc':
             case 'emc':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_emc_unit($ref) ;
@@ -10206,7 +10381,7 @@ trait Output {
                 break;
             case 'specific_enthalpy':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_enthalpy_unit($ref) ;
@@ -10216,7 +10391,7 @@ trait Output {
             case 'partial_vapor_pressure':
             case 'vapor_pressure':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_precise_pressure_unit($ref) ;
@@ -10225,7 +10400,7 @@ trait Output {
                 break;
             case 'saturation_vapor_pressure':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_precise_pressure_unit($ref) ;
@@ -10238,7 +10413,7 @@ trait Output {
             case 'absolute_humidity_min':
             case 'absolute_humidity_max':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_absolute_humidity_unit($ref) ;
@@ -10247,7 +10422,7 @@ trait Output {
                 break;
             case 'saturation_absolute_humidity':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_absolute_humidity_unit($ref) ;
@@ -10260,7 +10435,7 @@ trait Output {
             case 'irradiance_min':
             case 'irradiance_max':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_irradiance_unit($ref) ;
@@ -10269,7 +10444,7 @@ trait Output {
                 break;
             case 'sunshine':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_sunshine_unit($ref) ;
@@ -10280,7 +10455,7 @@ trait Output {
             case 'illuminance_min':
             case 'illuminance_max':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_illuminance_unit($ref) ;
@@ -10298,7 +10473,7 @@ trait Output {
             case 'soil_temperature_min':
             case 'soil_temperature_max':
                 $ref = get_option('live_weather_station_unit_temperature') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_temperature_unit($ref) ;
@@ -10307,7 +10482,7 @@ trait Output {
                 break;
             case 'leaf_wetness':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_humidity_unit($ref) ;
@@ -10319,7 +10494,7 @@ trait Output {
             case 'moisture_content_min':
             case 'moisture_content_max':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_humidity_unit($ref) ;
@@ -10331,7 +10506,7 @@ trait Output {
             case 'moisture_tension_min':
             case 'moisture_tension_max':
                 $ref = get_option('live_weather_station_unit_pressure') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_pressure_unit($ref) ;
@@ -10341,7 +10516,7 @@ trait Output {
                 break;
             case 'evapotranspiration':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_rain_unit($ref) ;
@@ -10352,7 +10527,7 @@ trait Output {
             // THUNDERSTORM
             case 'strike_instant':
                 $ref = get_option('live_weather_station_unit_distance');
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['comp'] = __('now', 'live-weather-station') ;
@@ -10360,7 +10535,7 @@ trait Output {
                 break;
             case 'strike_count':
                 $ref = get_option('live_weather_station_unit_distance');
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['comp'] = __('total', 'live-weather-station') ;
@@ -10368,7 +10543,7 @@ trait Output {
                 break;
             case 'strike_distance':
                 $ref = get_option('live_weather_station_unit_distance');
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_distance_unit($ref);
@@ -10378,7 +10553,7 @@ trait Output {
                 break;
             case 'strike_bearing':
                 $ref = 0;
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_wind_angle_unit($ref);
@@ -10390,7 +10565,7 @@ trait Output {
             case 'visibility_min':
             case 'visibility_max':
                 $ref = get_option('live_weather_station_unit_distance');
-                if ($force_ref != 0) {
+                if ($force_ref != 9999) {
                     $ref = $force_ref;
                 }
                 $result['unit'] = $this->get_altitude_unit($ref);

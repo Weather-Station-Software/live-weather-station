@@ -944,4 +944,54 @@ trait Conversion {
         return round(100 * $result, 0);
     }
 
+    /**
+     * Get the longest continuous period.
+     *
+     * @param array $list The list of sorted dates.
+     * @return array An array containing length (in days), start and end UTC dates.
+     * @since 3.8.0
+     */
+    public function get_longest_period($list) {
+        $result = array('length' => 0, 'start' => '1971-08-21', 'end' => '1971-08-21');
+        $start = null;
+        $last = null;
+        $maxstart = null;
+        $maxend = null;
+        $count = 0;
+        $max = 0;
+        if (count($list) > 0) {
+            foreach ($list as $d) {
+                $date = $d['val'];
+                if (isset($start)) {
+                    $dlast = new \DateTime($last);
+                    $ddate = new \DateTime($date);
+                    if ($ddate->getTimestamp() - $dlast->getTimestamp() == 86400) {
+                        $last = $date;
+                        $count += 1;
+                    }
+                    else {
+                        if ($count >= $max) {
+                            $maxstart = $start;
+                            $maxend = $last;
+                            $max = $count;
+                        }
+                        $count = 1;
+                        $start = $date;
+                        $last = $date;
+                    }
+                }
+                else {
+                    $count = 1;
+                    $max = 1;
+                    $start = $date;
+                    $last = $date;
+                }
+            }
+            $result['length'] = $max;
+            $result['start'] = $maxstart;
+            $result['end'] = $maxend;
+        }
+        return $result;
+    }
+
 }

@@ -96,9 +96,9 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
     protected function get_parameters() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
         $content .= $this->get_neutral_option_select('climat-textual-datas-computed-'. $this->station_guid, __('Computation', 'live-weather-station'));
-        $content .= $this->get_key_value_option_select('climat-textual-datas-condition-'. $this->station_guid, __('Condition', 'live-weather-station'), $this->get_comparison_js_array(), true, 'fixed-month');
-        $content .= $this->get_neutral_option_select('climat-textual-datas-value-'. $this->station_guid, __('Threshold', 'live-weather-station'));
-        $content .= $this->get_placeholder_option_select();
+        $content .= $this->get_key_value_option_select('climat-textual-datas-condition-'. $this->station_guid, __('Condition', 'live-weather-station'), $this->get_comparison_js_array(), true, 'comp-eq');
+        $content .= $this->get_number_input('climat-textual-datas-value1-'. $this->station_guid, __('Threshold 1', 'live-weather-station'), '&nbsp;');
+        $content .= $this->get_number_input('climat-textual-datas-value2-'. $this->station_guid, __('Threshold 2', 'live-weather-station'), '&nbsp;');
         $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', __('2. Choose the computation to perform', 'live-weather-station'), $content);
@@ -126,7 +126,7 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var js_array_climat_textual_measurement_' . $this->station_guid . ' = js_array_climat_textual_' . $this->station_guid . '[$(this).val()][2];';
         $content .= '$("#climat-textual-datas-measurement-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_climat_textual_measurement_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#climat-textual-datas-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_climat_textual_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$("#climat-textual-datas-measurement-' . $this->station_guid . '").append("<option class=\"lws-measurement-' . $this->station_guid . '\" unit="+js_array_climat_textual_measurement_' . $this->station_guid . '[i][5]+" ref="+js_array_climat_textual_measurement_' . $this->station_guid . '[i][6]+" value="+i+">"+js_array_climat_textual_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
         $content .= '$("#climat-textual-datas-measurement-' . $this->station_guid . '" ).change();});';
         $content .= '$("#climat-textual-datas-measurement-' . $this->station_guid . '").change(function() {';
         $content .= 'var js_array_climat_textual_set_' . $this->station_guid . ' = js_array_climat_textual_' . $this->station_guid . '[$("#climat-textual-datas-module-' . $this->station_guid . '").val()][2][$(this).val()][4];';
@@ -148,15 +148,31 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '  if ($("#climat-textual-datas-set-' . $this->station_guid . '").val().includes(s)) {ok_set = true;}';
         $content .= ' });';
         $content .= ' if (ok_period && ok_set) {';
-        $content .= '  $("#climat-textual-datas-computed-' . $this->station_guid . '").append("<option value="+js_array_climat_textual_computation_' . $this->station_guid . '[i][0]+">"+js_array_climat_textual_computation_' . $this->station_guid . '[i][4]+"</option>");';
+        $content .= '  $("#climat-textual-datas-computed-' . $this->station_guid . '").append("<option class=\"lws-compute-' . $this->station_guid . '\" value="+js_array_climat_textual_computation_' . $this->station_guid . '[i][0]+" conditional="+js_array_climat_textual_computation_' . $this->station_guid . '[i][3]+">"+js_array_climat_textual_computation_' . $this->station_guid . '[i][4]+"</option>");';
         $content .= ' }';
         $content .= '});';
         $content .= '$("#climat-textual-datas-computed-' . $this->station_guid . '" ).change();});';
         $content .= '$("#climat-textual-datas-computed-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#climat-textual-datas-data-' . $this->station_guid . '" ).change();});';
+        $content .= ' if($("option.lws-compute-' . $this->station_guid . ':selected").attr("conditional") == 1) {';
+        $content .= '  $("#climat-textual-datas-condition-' . $this->station_guid . '").prop("disabled",false);';
+        $content .= '  $("#climat-textual-datas-value1-' . $this->station_guid . '").prop("disabled",false);';
+        $content .= '  $("#climat-textual-datas-value1-' . $this->station_guid . '-unit").html($("option.lws-measurement-' . $this->station_guid . ':selected").attr("unit"));';
+        $content .= '  $("#climat-textual-datas-value2-' . $this->station_guid . '").prop("disabled",false);';
+        $content .= '  $("#climat-textual-datas-value2-' . $this->station_guid . '-unit").html($("option.lws-measurement-' . $this->station_guid . ':selected").attr("unit"));';
+        $content .= ' } else {';
+        $content .= '  $("#climat-textual-datas-condition-' . $this->station_guid . '").prop("disabled",true);';
+        $content .= '  $("#climat-textual-datas-value1-' . $this->station_guid . '").prop("disabled",true);';
+        $content .= '  $("#climat-textual-datas-value1-' . $this->station_guid . '-unit").html("&nbsp;");';
+        $content .= '  $("#climat-textual-datas-value2-' . $this->station_guid . '").prop("disabled",true);';
+        $content .= '  $("#climat-textual-datas-value2-' . $this->station_guid . '-unit").html("&nbsp;");';
+        $content .= ' }';
+        $content .= '$("#climat-textual-datas-condition-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#climat-textual-datas-condition-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#climat-textual-datas-value1-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#climat-textual-datas-value1-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#climat-textual-datas-value2-' . $this->station_guid . '" ).change();});';
 
-
-        $content .= '$("#climat-textual-datas-data-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#climat-textual-datas-value2-' . $this->station_guid . '").change(function() {';
         $content .= '  var sc_device_id = "' . $this->station_id . '";';
         $content .= '  var sc_module_id = js_array_climat_textual_' . $this->station_guid . '[$("#climat-textual-datas-module-' . $this->station_guid . '").val()][1];';
         $content .= '  var sc_period_type = $("#climat-textual-datas-period-type-' . $this->station_guid . '").val();';
@@ -164,12 +180,16 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '  var sc_measurement = js_array_climat_textual_' . $this->station_guid . '[$("#climat-textual-datas-module-' . $this->station_guid . '").val()][2][$("#climat-textual-datas-measurement-' . $this->station_guid . '").val()][1];';
         $content .= '  var sc_set = $("#climat-textual-datas-set-' . $this->station_guid . '").val();';
         $content .= '  var sc_computed = $("#climat-textual-datas-computed-' . $this->station_guid . '").val();';
+        $content .= '  var sc_ref = $("option.lws-measurement-' . $this->station_guid . ':selected").attr("ref");';
+        $content .= '  var sc_condition = $("#climat-textual-datas-condition-' . $this->station_guid . '").val();';
+        $content .= '  var sc_value1 = $("#climat-textual-datas-value1-' . $this->station_guid . '").val();';
+        $content .= '  var sc_value2 = $("#climat-textual-datas-value2-' . $this->station_guid . '").val();';
 
-        $content .= '  var shortcode = "[live-weather-station-lttextual device_id=\'"+sc_device_id+"\' module_id=\'"+sc_module_id+"\' periodtype=\'"+sc_period_type+"\' period=\'"+sc_period+"\' measurement=\'"+sc_measurement+"\' set=\'"+sc_set+"\' computed=\'"+sc_computed+"\']";';
+        $content .= '  var shortcode = "[live-weather-station-lttextual device_id=\'"+sc_device_id+"\' module_id=\'"+sc_module_id+"\' periodtype=\'"+sc_period_type+"\' period=\'"+sc_period+"\' measurement=\'"+sc_measurement+"\' set=\'"+sc_set+"\' computed=\'"+sc_computed+"\' ref=\'"+sc_ref+"\' condition=\'"+sc_condition+"\' th1=\'"+sc_value1+"\' th2=\'"+sc_value2+"\']";';
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
         $content .= '$("#climat-textual-datas-shortcode-' . $this->station_guid . '").html(shortcode);';
-        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_lttextual_code", cache:"no_cache", device_id:sc_device_id, module_id:sc_module_id, periodtype:sc_period_type, period:sc_period, measurement:sc_measurement, set:sc_set, computed:sc_computed ';
+        $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_lttextual_code", cache:"no_cache", device_id:sc_device_id, module_id:sc_module_id, periodtype:sc_period_type, period:sc_period, measurement:sc_measurement, set:sc_set, computed:sc_computed, ref:sc_ref, condition:sc_condition, th1:sc_value1, th2:sc_value2';
         $content .= '}).done(function(data) {$("#climat-textual-datas-output-' . $this->station_guid . '").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
         $content .= '});';
 
