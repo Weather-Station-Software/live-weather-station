@@ -359,7 +359,6 @@ class Manager {
         $count = 0;
         $time = time() - (86400 * get_option('live_weather_station_file_retention', 7));
         foreach (self::extended_list_dir(false) as $file) {
-            error_log($file['file'] . ' = ' . $file['date'] . ' / ' . $time);
             if ($file['date'] < $time) {
                 try {
                     wp_delete_file(self::$dir . $file['file']);
