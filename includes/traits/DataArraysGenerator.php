@@ -722,7 +722,7 @@ trait Generator {
         $available_operations = $this->get_available_operations($measurement_type, $module_type, $comparison, $distribution, $scores);
         if ($video) {
             if (strpos($measurement_type, 'video') !== false) {
-                return array($this->get_measurement_type($measurement_type, false, $module_type), $measurement_type, ($reduced ? array() : $this->get_measure_array($ref, $data, $measurement_type, $icon, $climat)), $unit['dimension'], $available_operations);
+                return array($this->get_measurement_type($measurement_type, false, $module_type), $measurement_type, ($reduced ? array() : $this->get_measure_array($ref, $data, $measurement_type, $icon, $climat)), $unit['dimension'], $available_operations, $unit['unit'], $unit['ref']);
             }
             else {
                 return null;
@@ -730,7 +730,7 @@ trait Generator {
         }
         elseif ($picture) {
             if (strpos($measurement_type, 'picture') !== false) {
-                return array($this->get_measurement_type($measurement_type, false, $module_type), $measurement_type, ($reduced ? array() : $this->get_measure_array($ref, $data, $measurement_type, $icon, $climat)), $unit['dimension'], $available_operations);
+                return array($this->get_measurement_type($measurement_type, false, $module_type), $measurement_type, ($reduced ? array() : $this->get_measure_array($ref, $data, $measurement_type, $icon, $climat)), $unit['dimension'], $available_operations, $unit['unit'], $unit['ref']);
             }
             else {
                 return null;
@@ -738,7 +738,7 @@ trait Generator {
         }
         else {
             if (count($available_operations) > 0 || $current) {
-                return array($this->get_measurement_type($measurement_type, false, $module_type), $measurement_type, ($reduced ? array() : $this->get_measure_array($ref, $data, $measurement_type, $icon, $climat)), $unit['dimension'], $available_operations);
+                return array($this->get_measurement_type($measurement_type, false, $module_type), $measurement_type, ($reduced ? array() : $this->get_measure_array($ref, $data, $measurement_type, $icon, $climat)), $unit['dimension'], $available_operations, $unit['unit'], $unit['ref']);
             }
             else {
                 return null;
@@ -1980,20 +1980,23 @@ trait Generator {
         $result[] = array('simple-dev',     array('fixed'),                 array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev', 'hell', 'frst', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),  0, __('Normal deviation', 'live-weather-station'));
         $result[] = array('count-day',      array('fixed'),                 array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),                  1, __('Day count', 'live-weather-station'));
         $result[] = array('duration-day',   array('fixed'),                 array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),                  1, __('Longest duration', 'live-weather-station'));
+        $result[] = array('duration-dates', array('fixed'),                 array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),                  1, __('Dates of longest duration', 'live-weather-station'));
         return $result;
     }
 
     /**
-     * Get available comaprison array.
+     * Get available comparison array.
      *
      * @return array An array containing the available comparisons ready to convert to a JS array.
      * @since 3.8.0
      */
     protected function get_comparison_js_array() {
         $result = array();
-        $result[] = array('',  __('Measure is equal to threshold', 'live-weather-station'));
-        $result[] = array('',  __('Measure is less than threshold', 'live-weather-station'));
-        $result[] = array('',  __('Measure is greater than threshold', 'live-weather-station'));
+        $result[] = array('comp-l',  __('Value is less than threshold 1', 'live-weather-station'));
+        $result[] = array('comp-eq',  __('Value is equal to threshold 1', 'live-weather-station'));
+        $result[] = array('comp-g',  __('Value is greater than threshold 1', 'live-weather-station'));
+        $result[] = array('comp-b',  __('Value is between threshold 1 and threshold 2', 'live-weather-station'));
+        $result[] = array('comp-nb',  __('Value is not between threshold 1 and threshold 2', 'live-weather-station'));
         return $result;
     }
 

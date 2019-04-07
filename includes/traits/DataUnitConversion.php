@@ -1525,18 +1525,25 @@ trait Conversion {
      *
      * @param mixed $value The value to output.
      * @param string $type The type of the value.
+     * @param integer $force_ref Optional. The unit in which the value is originally expressed.
      * @return string The value expressed in the standard unit.
      * @since 3.0.0
      */
 
-    protected function convert_value($value, $type) {
+    protected function convert_value($value, $type, $force_ref=9999) {
         $result = $value;
         switch (strtolower($type)) {
             case 'pressure':
             case 'pressure_min':
             case 'pressure_max':
             case 'moisture_tension':
-                $result = $this->get_reverse_pressure($value, get_option('live_weather_station_unit_pressure'));
+                if ($force_ref != 9999) {
+                    $ref = $force_ref;
+                }
+                else {
+                    $ref = get_option('live_weather_station_unit_pressure');
+                }
+                $result = $this->get_reverse_pressure($value, $ref);
                 break;
             case 'humidity':
             case 'humidity_min':
@@ -1563,25 +1570,49 @@ trait Conversion {
             case 'steadman':
             case 'delta_t':
             case 'summer_simmer':
-                $result = $this->get_reverse_temperature($value, get_option('live_weather_station_unit_temperature'));
+                if ($force_ref != 9999) {
+                    $ref = $force_ref;
+                }
+                else {
+                    $ref = get_option('live_weather_station_unit_temperature');
+                }
+                $result = $this->get_reverse_temperature($value, $ref);
                 break;
             case 'loc_altitude':
             case 'cloud_ceiling':
             case 'alt_pressure':
             case 'alt_density':
-                $result = $this->get_reverse_altitude($value, get_option('live_weather_station_unit_altitude'));
+                if ($force_ref != 9999) {
+                    $ref = $force_ref;
+                }
+                else {
+                    $ref = get_option('live_weather_station_unit_altitude');
+                }
+                $result = $this->get_reverse_altitude($value, $ref);
                 break;
             case 'cloudiness':
                 $result = $this->get_cloudiness($value);
                 break;
             case 'co2':
-                $result = $this->get_reverse_co2($value, get_option('live_weather_station_unit_gas'));
+                if ($force_ref != 9999) {
+                    $ref = $force_ref;
+                }
+                else {
+                    $ref = get_option('live_weather_station_unit_gas');
+                }
+                $result = $this->get_reverse_co2($value, $ref);
                 break;
             case 'o3':
                 $result = $this->get_reverse_o3($value);
                 break;
             case 'co':
-                $result = $this->get_reverse_co($value, get_option('live_weather_station_unit_gas'));
+                if ($force_ref != 9999) {
+                    $ref = $force_ref;
+                }
+                else {
+                    $ref = get_option('live_weather_station_unit_gas');
+                }
+                $result = $this->get_reverse_co($value, $ref);
                 break;
             case 'noise':
                 $result = $this->get_reverse_noise($value);
@@ -1594,10 +1625,22 @@ trait Conversion {
             case 'rain_season_aggregated':
             case 'rain_year_aggregated':
             case 'evapotranspiration':
-                $result = $this->get_reverse_rain($value, get_option('live_weather_station_unit_rain_snow'));
+                if ($force_ref != 9999) {
+                    $ref = $force_ref;
+                }
+                else {
+                    $ref = get_option('live_weather_station_unit_rain_snow');
+                }
+                $result = $this->get_reverse_rain($value, $ref);
                 break;
             case 'snow':
-                $result = $this->get_reverse_snow($value, get_option('live_weather_station_unit_rain_snow'));
+                if ($force_ref != 9999) {
+                    $ref = $force_ref;
+                }
+                else {
+                    $ref = get_option('live_weather_station_unit_rain_snow');
+                }
+                $result = $this->get_reverse_snow($value, $ref);
                 break;
             case 'windangle':
             case 'gustangle':
@@ -1616,26 +1659,62 @@ trait Conversion {
             case 'windstrength_day_max':
             case 'windstrength_hour_max':
             case 'wind_ref':
-                $result = $this->get_reverse_wind_speed($value, get_option('live_weather_station_unit_wind_strength'));
+                if ($force_ref != 9999) {
+                    $ref = $force_ref;
+                }
+                else {
+                    $ref = get_option('live_weather_station_unit_wind_strength');
+                }
+                $result = $this->get_reverse_wind_speed($value, $ref);
                 break;
             case 'air_density':
-                $result = $this->get_reverse_density($value, get_option('live_weather_station_unit_psychrometry'));
+                if ($force_ref != 9999) {
+                    $ref = $force_ref;
+                }
+                else {
+                    $ref = get_option('live_weather_station_unit_psychrometry');
+                }
+                $result = $this->get_reverse_density($value, $ref);
                 break;
             case 'specific_enthalpy':
-                $result = $this->get_reverse_enthalpy($value, get_option('live_weather_station_unit_psychrometry'));
+                if ($force_ref != 9999) {
+                    $ref = $force_ref;
+                }
+                else {
+                    $ref = get_option('live_weather_station_unit_psychrometry');
+                }
+                $result = $this->get_reverse_enthalpy($value, $ref);
                 break;
             case 'vapor_pressure':
-                $result = $this->get_reverse_precise_pressure($value, get_option('live_weather_station_unit_psychrometry'));
+                if ($force_ref != 9999) {
+                    $ref = $force_ref;
+                }
+                else {
+                    $ref = get_option('live_weather_station_unit_psychrometry');
+                }
+                $result = $this->get_reverse_precise_pressure($value, $ref);
                 break;
             case 'absolute_humidity':
-                $result = $this->get_reverse_absolute_humidity($value, get_option('live_weather_station_unit_psychrometry'));
+                if ($force_ref != 9999) {
+                    $ref = $force_ref;
+                }
+                else {
+                    $ref = get_option('live_weather_station_unit_psychrometry');
+                }
+                $result = $this->get_reverse_absolute_humidity($value, $ref);
                 break;
             case 'illuminance':
                 $result = $this->get_reverse_illuminance($value);
                 break;
             case 'strike_distance':
             case 'visibility':
-                $result = $this->get_reverse_altitude($value, get_option('live_weather_station_unit_distance'));
+            if ($force_ref != 9999) {
+                $ref = $force_ref;
+            }
+            else {
+                $ref = get_option('live_weather_station_unit_distance');
+            }
+                $result = $this->get_reverse_altitude($value, $ref);
                 break;
         }
         return $result;

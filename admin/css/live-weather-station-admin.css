@@ -355,3 +355,14 @@ div.lws-brandicon {
     font-size: 2.1em !important;
     line-height: 1em !important;
 }
+
+.lws-input-unit {
+    padding-left: 12px !important;
+    color: #666666 !important;
+    font-style: italic !important;
+    width: 30% !important;
+}
+
+.lws-input-field {
+    width: 70% !important;
+}

@@ -325,6 +325,60 @@ abstract class Maintainer {
     }
 
     /**
+     * Get an input control.
+     *
+     * @param string $id The control id.
+     * @param string $title The control title.
+     * @param string $type The input type.
+     * @param string $unit Optional. The control unit.
+     * @param string $options Optional. The options of the control.
+     * @param boolean $label Optional. Display the th of the table.
+     * @param boolean $hidden Optional. Hide the select option.
+     * @param boolean $displayed Optional. Display the select option.
+     * @return string The control ready to print.
+     * @since 3.8.0
+     */
+    private function get_input($id, $title, $type, $unit='', $options='', $label=true, $hidden=false, $displayed=true) {
+        $visibility = '';
+        if ($id == '') {
+            $visibility = ' class="lws-placeholder" style="visibility:hidden;"';
+            $id = 'o' . md5(random_bytes(20));
+            $title = '';
+        }
+        $style = array();
+        if ($hidden) {
+            $style[] = 'visibility:hidden';
+        }
+        if (!$displayed) {
+            $style[] = 'display:none';
+        }
+        if (count($style) > 0) {
+            $visibility .= ' style="' . implode(';', $style) . '"';
+        }
+        $result = '';
+        $result .= '<tr' . $visibility .'>';
+        if ($label) {
+            $result .= '<th class="lws-option" width="35%" align="left" scope="row">' . $title . '</th>';
+            $result .= '<td width="2%"/>';
+        }
+        if (self::$module_mode == 'current') {
+            $result .= '<td align="left" class="lws-option-setting">';
+        }
+        else {
+            $result .= '<td align="left">';
+        }
+        $result .= '<span class="lws-input-field">';
+        $result .= '<input style="width: 70%" type="' . $type . '" id="' . $id .'"' . $options . '>';
+        $result .= '</span>';
+        $result .= '<span class="lws-input-unit" id="' . $id .'-unit">';
+        $result .= $unit;
+        $result .= '</span>';
+        $result .= '</td>';
+        $result .= '</tr>';
+        return $result;
+    }
+
+    /**
      * Get color picker control.
      *
      * @param string $id The control id.
@@ -455,6 +509,21 @@ abstract class Maintainer {
      */
     protected function get_neutral_option_select($id, $title, $hidden=false, $displayed=true) {
         return $this->get_option_select($id, $title, '', true, $hidden, $displayed);
+    }
+
+    /**
+     * Get an option select control.
+     *
+     * @param string $id The control id.
+     * @param string $title The control title.
+     * @param string $unit Optional. The control unit.
+     * @param boolean $hidden Optional. Hide the select option.
+     * @param boolean $displayed Optional. Display the select option.
+     * @return string The control ready to print.
+     * @since 3.8.0
+     */
+    protected function get_number_input($id, $title, $unit='', $hidden=false, $displayed=true) {
+        return $this->get_input($id, $title, 'number', $unit, '', true, $hidden, $displayed);
     }
 
     /**
