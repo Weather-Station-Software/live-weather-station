@@ -10842,10 +10842,10 @@ trait Output {
                 $result = __('cloud base', 'live-weather-station') ;
                 break;
             case 'alt_pressure':
-                $result = __('pressure alt.', 'live-weather-station') ;
+                $result = lws_lcfirst(__('pressure alt.', 'live-weather-station'));
                 break;
             case 'density_pressure':
-                $result = __('density alt.', 'live-weather-station') ;
+                $result = lws_lcfirst(__('Density alt.', 'live-weather-station'));
                 break;
             case 'zcast_live':
             case 'zcast_best':

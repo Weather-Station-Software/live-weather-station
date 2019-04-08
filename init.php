@@ -25,7 +25,7 @@ use WeatherStation\System\Storage\Manager as FS;
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.8.0-rc1');
+define('LWS_VERSION', '3.8.0-rc2');
 define('LWS_PREVIEW', false);
 
 define('LWS_CODENAME', '"Danakil"');
