@@ -10842,7 +10842,7 @@ trait Output {
                 $result = __('cloud base', 'live-weather-station') ;
                 break;
             case 'alt_pressure':
-                $result = lws_lcfirst(__('pressure alt.', 'live-weather-station'));
+                $result = lws_lcfirst(__('Pressure alt.', 'live-weather-station'));
                 break;
             case 'density_pressure':
                 $result = lws_lcfirst(__('Density alt.', 'live-weather-station'));
