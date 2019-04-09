@@ -95,6 +95,12 @@ abstract class BaseHandling {
     public function new_map($common) {
         $params = array();
         $params['common'] = $common;
+        if ($params['common']['loc_zoom'] < $this->minzoom) {
+            $params['common']['loc_zoom'] = $this->minzoom;
+        }
+        if ($params['common']['loc_zoom'] > $this->maxzoom) {
+            $params['common']['loc_zoom'] = $this->maxzoom;
+        }
         $params['stations'] = array();
         $params['marker'] = array();
         $params['marker']['type'] = 'pin';

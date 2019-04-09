@@ -41,7 +41,7 @@ class MaptilerHandling extends BaseHandling {
     protected function specific_params() {
         $result = array();
         $result['controls']['zoom'] = true;
-        $result['options']['overlay'] = 'outdoors';
+        $result['options']['overlay'] = 'styles:basic';
         return $result;
     }
 
@@ -122,7 +122,6 @@ class MaptilerHandling extends BaseHandling {
                 $style[0] = 'tiles';
             }
             $result = '';
-            //$result .= "console.log('https://api.maptiler.com/" . $style[0] . "/" . $style[1] . "/{z}/{x}/{y}." . $ext . "?key={accessToken}');" . PHP_EOL;
             $result .= "var layer = new L.tileLayer('https://api.maptiler.com/" . $style[0] . "/" . $style[1] . "/{z}/{x}/{y}." . $ext . "?key={accessToken}', {" . PHP_EOL;
         }
         else {

@@ -88,12 +88,6 @@ DONE:
 TODO:
 -----
 
-Textual climatological shortcodes
-
-
-New indexes:
-Hellman's index
-
 
 
 TRANSLATION:
@@ -139,3 +133,5 @@ Bonus : banner
 
 
 php72 /usr/local/bin/wp core update --version=trunk
+
+ 

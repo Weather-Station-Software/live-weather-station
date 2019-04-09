@@ -1971,7 +1971,7 @@ trait Generator {
      */
     protected function get_computation_js_array() {
         $result = array();
-        $result[] = array('simple-val',     array('fixed', 'aggregated'),   array('hell', 'frst', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),                                                          0, __('Strict measure', 'live-weather-station'));
+        $result[] = array('simple-val',     array('fixed', 'aggregated'),   array('hell', 'frst', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),                                                          0, __('Compiled measure', 'live-weather-station'));
         $result[] = array('simple-avg',     array('fixed', 'aggregated'),   array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev'),                                                                                                                      0, __('Average measure', 'live-weather-station'));
         $result[] = array('simple-min',     array('fixed', 'aggregated'),   array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),                  0, __('Lowest measure', 'live-weather-station'));
         $result[] = array('simple-max',     array('fixed', 'aggregated'),   array('agg', 'amp', 'avg', 'max', 'med', 'mid', 'min', 'dev', 'cdd-da', 'cdd-eu', 'cdd-fi', 'cdd-ch', 'cdd-us', 'hdd-da', 'hdd-eu', 'hdd-fi', 'hdd-ch', 'hdd-us'),                  0, __('Highest measure', 'live-weather-station'));
