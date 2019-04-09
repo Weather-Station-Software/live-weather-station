@@ -96,7 +96,7 @@ class CalendarHM extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_key_value_option_select('climat-calendarhm-datas-guideline-'. $this->station_guid, __('Legend', 'live-weather-station'), $this->get_legend_position_js_array(), true, 'center');
         $content .= $this->get_key_value_option_select('climat-calendarhm-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '200px');
         $content .= $this->get_key_value_option_select('climat-calendarhm-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true, true), true, 'auto');
-        $content .= $this->get_key_value_option_select('climat-calendarhm-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
+        $content .= $this->get_key_value_option_select('climat-calendarhm-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(false), true, 'inline');
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }
