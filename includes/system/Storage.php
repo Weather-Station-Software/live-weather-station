@@ -357,15 +357,17 @@ class Manager {
      */
     public static function purge() {
         $count = 0;
-        $time = time() - (86400 * get_option('live_weather_station_file_retention', 7));
-        foreach (self::extended_list_dir(false) as $file) {
-            if ($file['date'] < $time) {
-                try {
-                    wp_delete_file(self::$dir . $file['file']);
-                    $count += 1;
-                }
-                catch (\Exception $ex) {
-                    //
+        if ((int)get_option('live_weather_station_file_retention', 7) > 0) {
+            $time = time() - (86400 * get_option('live_weather_station_file_retention', 7));
+            foreach (self::extended_list_dir(false) as $file) {
+                if ($file['date'] < $time) {
+                    try {
+                        wp_delete_file(self::$dir . $file['file']);
+                        $count += 1;
+                    }
+                    catch (\Exception $ex) {
+                        //
+                    }
                 }
             }
         }
