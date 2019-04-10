@@ -770,16 +770,16 @@ class InlineHelp {
         $tabs = array();
         if (isset($action) && $action == 'shortcode') {
             if (isset($tab) && $tab == 'current') {
-                $s1 = __('This section shows you the the available shortcodes types for the current records.', 'live-weather-station');
+                $s1 = __('This section shows you the the available shortcode types for current records.', 'live-weather-station');
             }
             if (isset($tab) && $tab == 'daily') {
-                $s1 = __('This section shows you the the available shortcodes types for the daily values.', 'live-weather-station');
+                $s1 = __('This section shows you the the available shortcode types for daily values.', 'live-weather-station');
             }
             if (isset($tab) && $tab == 'yearly') {
-                $s1 = __('This section shows you the the available shortcodes types for the historical data.', 'live-weather-station');
+                $s1 = __('This section shows you the the available shortcode types for historical data.', 'live-weather-station');
             }
             if (isset($tab) && $tab == 'climat') {
-                $s1 = __('This section shows you the the available shortcodes types for the long-term data.', 'live-weather-station');
+                $s1 = __('This section shows you the the available shortcode types for long-term data.', 'live-weather-station');
             }
             $s2 = __('To configure a shortcode, just click on its icon then set its parameters and copy/paste it in a page or a post.', 'live-weather-station');
             $tabs[] = array(
