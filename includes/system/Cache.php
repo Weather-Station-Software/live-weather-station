@@ -73,18 +73,45 @@ class Cache {
      */
     private static function _flush($pref='lws_', $expired=true) {
         $cron_id = Watchdog::init_chrono(Watchdog::$cache_flush_name);
-        global $wpdb;
-        $result = 0;
-        if ($expired) {
-            $delete = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_" . $pref . "%' AND option_value < ".time().";");
+        if (LWS_FILE_CACHE) {
+            $expiry = 0;
+            if (strpos($pref, self::$widget) !== false) {
+                $expiry = self::$widget_expiry;
+            }
+            if (strpos($pref, self::$dgraph) !== false) {
+                $expiry = self::$dgraph_expiry;
+            }
+            if (strpos($pref, self::$ygraph) !== false) {
+                $expiry = self::$ygraph_expiry;
+            }
+            if (strpos($pref, self::$cgraph) !== false) {
+                $expiry = self::$cgraph_expiry;
+            }
+            if (strpos($pref, self::$frontend) !== false) {
+                $expiry = self::$frontend_expiry;
+            }
+            if (strpos($pref, self::$backend) !== false) {
+                $expiry = self::$backend_expiry;
+            }
+            if (strpos($pref, self::$i18n) !== false) {
+                $expiry = self::$i18n_expiry;
+            }
+            $result = lws_meta_flcache($pref, $expiry);
         }
         else {
-            $delete = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_" . $pref . "%';");
-        }
-        foreach($delete as $transient) {
-            $key = str_replace('_transient_timeout_', '', $transient);
-            if (delete_transient($key)) {
-                $result += 1;
+            global $wpdb;
+            $result = 0;
+            if ($expired) {
+                $delete = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_" . $pref . "%' AND option_value < ".time().";");
+            }
+            else {
+                $delete = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_" . $pref . "%';");
+            }
+            foreach($delete as $transient) {
+                $key = str_replace('_transient_timeout_', '', $transient);
+                if (delete_transient($key)) {
+                    $result += 1;
+                }
             }
         }
         Watchdog::stop_chrono($cron_id);
@@ -170,7 +197,7 @@ class Cache {
             return false;
         }
         else {
-            if ($r = get_transient(self::$backend.'_'.$cache_id)) {
+            if ($r = lws_meta_uncache(self::$backend.'_'.$cache_id, self::$backend_expiry)) {
                 self::_stop_chrono(self::$backend.'_'.$cache_id);
             }
             return $r;
@@ -195,7 +222,7 @@ class Cache {
             return false;
         }
         else {
-            $r = set_transient(self::$backend.'_'.$cache_id, $value, self::$backend_expiry);
+            $r = lws_meta_cache(self::$backend.'_'.$cache_id, $value, self::$backend_expiry);
             self::_stop_chrono(self::$backend.'_'.$cache_id, false);
             return $r;
         }
@@ -215,7 +242,7 @@ class Cache {
             return false;
         }
         else {
-            return delete_transient(self::$backend.'_'.$cache_id);
+            return lws_meta_rmcache(self::$backend.'_'.$cache_id);
         }
     }
 
@@ -261,7 +288,7 @@ class Cache {
             return false;
         }
         else {
-            if ($r = get_transient(self::$frontend.'_'.$cache_id)) {
+            if ($r = lws_meta_uncache(self::$frontend.'_'.$cache_id, self::$frontend_expiry)) {
                 self::_stop_chrono(self::$frontend.'_'.$cache_id);
             }
             return $r;
@@ -286,7 +313,7 @@ class Cache {
             return false;
         }
         else {
-            $r = set_transient(self::$frontend.'_'.$cache_id, $value, self::$frontend_expiry);
+            $r = lws_meta_cache(self::$frontend.'_'.$cache_id, $value, self::$frontend_expiry);
             self::_stop_chrono(self::$frontend.'_'.$cache_id, false);
             return $r;
         }
@@ -306,7 +333,7 @@ class Cache {
             return false;
         }
         else {
-            return delete_transient(self::$frontend.'_'.$cache_id);
+            return lws_meta_rmcache(self::$frontend.'_'.$cache_id);
         }
     }
 
@@ -338,14 +365,17 @@ class Cache {
         $cache_id = Env::get_cache_prefix() . $cache_id;
         if ($mode == 'climat') {
             $id = self::$cgraph.'_'.$cache_id;
+            $expiry = self::$cgraph_expiry;
             $cache = (bool)get_option('live_weather_station_cgraph_cache');
         }
         elseif ($mode == 'yearly') {
             $id = self::$ygraph.'_'.$cache_id;
+            $expiry = self::$ygraph_expiry;
             $cache = (bool)get_option('live_weather_station_ygraph_cache');
         }
         else {
             $id = self::$dgraph.'_'.$cache_id;
+            $expiry = self::$dgraph_expiry;
             $cache = (bool)get_option('live_weather_station_dgraph_cache');
         }
         self::_init_chrono($id);
@@ -353,7 +383,7 @@ class Cache {
             return false;
         }
         else {
-            if ($r = get_transient($id)) {
+            if ($r = lws_meta_uncache($id, $expiry)) {
                 self::_stop_chrono($id);
             }
             return $r;
@@ -394,7 +424,7 @@ class Cache {
             return false;
         }
         else {
-            $r = set_transient($id, $value, $expiry);
+            $r = lws_meta_cache($id, $value, $expiry);
             self::_stop_chrono($id, false);
             return $r;
         }
@@ -423,7 +453,7 @@ class Cache {
             return false;
         }
         else {
-            return delete_transient($id);
+            return lws_meta_rmcache($id);
         }
     }
 
@@ -457,7 +487,7 @@ class Cache {
             return false;
         }
         else {
-            if ($r = get_transient(self::$widget.'_'.$cache_id)) {
+            if ($r = lws_meta_uncache(self::$widget.'_'.$cache_id, self::$widget_expiry)) {
                 self::_stop_chrono(self::$widget.'_'.$cache_id);
             }
             return $r;
@@ -482,7 +512,7 @@ class Cache {
             return false;
         }
         else {
-            $r = set_transient(self::$widget.'_'.$cache_id, $value, self::$widget_expiry);
+            $r = lws_meta_cache(self::$widget.'_'.$cache_id, $value, self::$widget_expiry);
             self::_stop_chrono(self::$widget.'_'.$cache_id, false);
             return $r;
         }
@@ -502,7 +532,7 @@ class Cache {
             return false;
         }
         else {
-            return delete_transient(self::$widget.'_'.$cache_id);
+            return lws_meta_rmcache(self::$widget.'_'.$cache_id);
         }
     }
 
@@ -531,7 +561,7 @@ class Cache {
      */
     public static function get_i18n($cache_id) {
         self::_init_chrono(self::$i18n.'_'.$cache_id);
-        if ($r = get_transient(self::$i18n.'_'.$cache_id)) {
+        if ($r = lws_meta_uncache(self::$i18n.'_'.$cache_id, self::$i18n_expiry)) {
             self::_stop_chrono(self::$i18n.'_'.$cache_id);
         }
         return $r;
@@ -550,7 +580,7 @@ class Cache {
      *
      */
     public static function set_i18n($cache_id, $value) {
-        $r = set_transient(self::$i18n.'_'.$cache_id, $value, self::$i18n_expiry);
+        $r = lws_meta_cache(self::$i18n.'_'.$cache_id, $value, self::$i18n_expiry);
         self::_stop_chrono(self::$i18n.'_'.$cache_id, false);
         return $r;
     }
@@ -564,7 +594,7 @@ class Cache {
      *
      */
     public static function invalidate_i18n($cache_id) {
-        return delete_transient(self::$i18n.'_'.$cache_id);
+        return lws_meta_rmcache(self::$i18n.'_'.$cache_id);
     }
 
     /**

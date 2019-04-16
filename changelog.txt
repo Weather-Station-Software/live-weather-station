@@ -1,5 +1,5 @@
 
-#3.8.0 / April 24th, 2019
+#3.8.0 / April 16th, 2019
 
 * New: Weather Station natively connects to ***WeatherLink Network*** - special thanks to David Aguilera-Riquelme from [RedMeteo.cl](https://redmeteo.cl/) for the tests.
 * New: new multi-lines chart to compare climatological (long-term) data with tons of options and settings.

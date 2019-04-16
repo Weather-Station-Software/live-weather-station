@@ -12,7 +12,9 @@ $values = array();
 foreach ($fields as $key=>$field) {
     $values[$field]['txt'] = ucfirst($names[$key]);
     $values[$field]['txt'] .= ' - ' .  sprintf(__('%s efficiency', 'live-weather-station'), $val[$field.'_success'].__('%', 'live-weather-station'));
-    $values[$field]['txt'] .= ', ' . sprintf(__('%s saved per request', 'live-weather-station'), $val[$field.'_time_saving'].' '.__('ms', 'live-weather-station'));
+    if ($val[$field.'_time_saving'] > 0) {
+        $values[$field]['txt'] .= ', ' . sprintf(__('%s saved per request', 'live-weather-station'), $val[$field.'_time_saving'].' '.__('ms', 'live-weather-station'));
+    }
     $values[$field]['txt'] .= '.';
     $color1 = 154 - round($val[$field.'_success']/1.4, 0);
     $color2 = 154 + round($val[$field.'_success'], 0);
