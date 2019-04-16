@@ -616,3 +616,145 @@ function esc_html_lws__($text, $domain='default') {
 function esc_html_e_lws__($text, $domain='default') {
     echo $text;
 }
+
+/**
+ * Set/update the value of a cache item.
+ *
+ * @param string $name  Cache name. Expected to not be SQL-escaped. Must be 172 characters or fewer in length.
+ * @param mixed $value Cache value. Must be serializable if non-scalar. Expected to not be SQL-escaped.
+ * @param int $expiration Optional. Time until expiration in seconds. Default 0 (no expiration).
+ * @return bool False if value was not set and true if value was set.
+ * @since 3.8.0
+ */
+function lws_meta_cache($name, $value, $expiration=0) {
+    if (defined('LWS_FILE_CACHE')) {
+        if (LWS_FILE_CACHE && ($expiration == 0 || $expiration >= 120)) {
+            $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
+            if (!file_exists($cache_dir)) {
+                try {
+                    mkdir($cache_dir, 0755, true);
+                }
+                catch (\Exception $ex) {
+                    return false;
+                }
+            }
+            if (is_dir($cache_dir) && wp_is_writable($cache_dir)) {
+                $blog_id = get_current_blog_id();
+                $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $name);
+                try {
+                    file_put_contents($cache_file, serialize($value));
+                }
+                catch (\Exception $ex) {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return set_transient($name, $value, $expiration);
+        }
+    }
+    else {
+        return set_transient($name, $value, $expiration);
+    }
+}
+
+/**
+ * Read the value of a cache item.
+ *
+ * @param string $name  Cache name. Expected to not be SQL-escaped. Must be 172 characters or fewer in length.
+ * @param int $expiration Optional. Time until expiration in seconds. Default 0 (no expiration).
+ * @return bool|mixed False if value was not set and value if it was set.
+ * @since 3.8.0
+ */
+function lws_meta_uncache($name, $expiration=0) {
+    if (defined('LWS_FILE_CACHE')) {
+        if (LWS_FILE_CACHE && ($expiration == 0 || $expiration >= 120)) {
+            $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
+            $blog_id = get_current_blog_id();
+            $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $name);
+            if (file_exists($cache_file)) {
+                try {
+                    $t = filemtime($cache_file);
+                    if (time() - $t > $expiration) {
+                        unlink($cache_file);
+                        return false;
+                    }
+                    else {
+                        return unserialize(file_get_contents($cache_file));
+                    }
+                }
+                catch (\Exception $ex) {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return get_transient($name);
+        }
+    }
+    else {
+        return get_transient($name);
+    }
+}
+
+/**
+ * Remove a cache item.
+ *
+ * @param string $name  Cache name. Expected to not be SQL-escaped. Must be 172 characters or fewer in length.
+ * @return bool True if it was removed, false otherwise.
+ * @since 3.8.0
+ */
+function lws_meta_rmcache($name) {
+    if (defined('LWS_FILE_CACHE')) {
+        if (LWS_FILE_CACHE) {
+            $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
+            $blog_id = get_current_blog_id();
+            $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $name);
+            if (file_exists($cache_file)) {
+                try {
+                    unlink($cache_file);
+                }
+                catch (\Exception $ex) {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return delete_transient($name);
+        }
+    }
+    else {
+        return delete_transient($name);
+    }
+}
+
+/**
+ * Flush the cache.
+ *
+ * @param string $pref Prefix name. Expected to not be SQL-escaped. Must be 172 characters or fewer in length.
+ * @param int $expiration Optional. Time until expiration in seconds. Default 0 (no expiration).
+ * @return int Count of removed items.
+ * @since 3.8.0
+ */
+function lws_meta_flcache($pref, $expiration=0) {
+    $result = 0;
+    if (defined('LWS_FILE_CACHE')) {
+        if (LWS_FILE_CACHE) {
+            $cache_dir = WP_CONTENT_DIR . '/cache/live-weather-station/';
+            $blog_id = get_current_blog_id();
+            $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $pref . '*');
+
+            // TODO : implement flush
+        }
+    }
+    return $result;
+}

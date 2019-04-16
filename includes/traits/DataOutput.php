@@ -1786,18 +1786,18 @@ trait Output {
                                     if ($tavg < $ymin) {
                                         $ymin = $tavg;
                                     }
-                                    $subset[] = array('date'=>$key,
-                                        'maxTemp'=>(int)$this->output_value($tmax, 'temperature'),
-                                        'minTemp'=>(int)$this->output_value($tmin, 'temperature'),
-                                        'meanTemp'=>(int)$this->output_value($tavg, 'temperature'),
-                                        'precipitation'=>(int)$this->output_value($r, 'rain_day_aggregated'));
+                                    $subset[] = array('ts'=>$key,
+                                        'maT'=>(int)$this->output_value($tmax, 'temperature'),
+                                        'miT'=>(int)$this->output_value($tmin, 'temperature'),
+                                        'meT'=>(int)$this->output_value($tavg, 'temperature'),
+                                        'pr'=>(int)$this->output_value($r, 'rain_day_aggregated'));
                                 }
                                 else {
-                                    $subset[] = array('date'=>$key,
-                                        'maxTemp'=>(int)$this->output_value(0, 'temperature'),
-                                        'minTemp'=>(int)$this->output_value(0, 'temperature'),
-                                        'meanTemp'=>(int)$this->output_value(0, 'temperature'),
-                                        'precipitation'=>0);
+                                    $subset[] = array('ts'=>$key,
+                                        'maT'=>(int)$this->output_value(0, 'temperature'),
+                                        'miT'=>(int)$this->output_value(0, 'temperature'),
+                                        'meT'=>(int)$this->output_value(0, 'temperature'),
+                                        'pr'=>0);
                                 }
                                 if (substr($key, 5, 2) == '12' && substr($key, 8, 2) == '31') {
                                     if ($mode == 'climat' && !$aggregated) {
@@ -5678,11 +5678,11 @@ trait Output {
         if ($data == 'inline') {
             $body .= 'var data'.$uniq.' = ' . $values['values'] . ';' . PHP_EOL;
             $body .= 'var parseDate = d4.timeParse("%Y-%m-%d");' . PHP_EOL;
-            $body .= 'data'.$uniq.'.forEach(function(Y){Y.data.forEach(function(d) {d.date = parseDate(d.date);});});' . PHP_EOL;
+            $body .= 'data'.$uniq.'.forEach(function(Y){Y.data.forEach(function(d) {d.ts = parseDate(d.ts);});});' . PHP_EOL;
         }
         else {
             $body .= 'var parseDate = d4.timeParse("%Y-%m-%d");' . PHP_EOL;
-            $body .= 'data'.$uniq.'.forEach(function(Y){Y.data.forEach(function(d) {d.date = parseDate(d.date);});});' . PHP_EOL;
+            $body .= 'data'.$uniq.'.forEach(function(Y){Y.data.forEach(function(d) {d.ts = parseDate(d.ts);});});' . PHP_EOL;
         }
 
         // -- SCALES
@@ -5692,8 +5692,8 @@ trait Output {
         $body .= 'var innerRadius = outerRadius * 0.4;' . PHP_EOL;
         $body .= 'var colorScale = d4.scaleLinear().domain([minOfminTemp,(minOfminTemp+maxOfmaxTemp)/2, maxOfmaxTemp]).range(["#2c7bb6", "#ffff8c", "#d7191c"]).interpolate(d4.interpolateHcl);' . PHP_EOL;
         $body .= 'var barScale = d4.scaleLinear().range([innerRadius, outerRadius]).domain([minOfminTemp,maxOfmaxTemp]);' . PHP_EOL;
-        $body .= 'var precipitationScale = d4.scaleLinear().range([0,outerRadius/3]).domain(d4.extent(data'.$uniq.'[0].data, function(d){return Math.sqrt(d.precipitation);}));' . PHP_EOL;
-        $body .= 'var angle = d4.scaleLinear().range([-180, 180]).domain(d4.extent(data'.$uniq.'[0].data, function(d) { return d.date; }));' . PHP_EOL;
+        $body .= 'var precipitationScale = d4.scaleLinear().range([0,outerRadius/3]).domain(d4.extent(data'.$uniq.'[0].data, function(d){return Math.sqrt(d.pr);}));' . PHP_EOL;
+        $body .= 'var angle = d4.scaleLinear().range([-180, 180]).domain(d4.extent(data'.$uniq.'[0].data, function(d) { return d.ts; }));' . PHP_EOL;
 
         // -- TITLES
         $body .= 'var title = d4.select("#' . $svg . ' svg").append("text").attr("class", "labelTitle").attr("x", "50%").attr("y", "48%").attr("dominant-baseline", "middle").attr("text-anchor", "middle").text("");' . PHP_EOL;
@@ -5732,13 +5732,13 @@ trait Output {
             if ($period_type == 'rotating-year') {
                 $body .= ' var cpt=0;';
                 $body .= 'd4.interval(function(){';
-                $body .= ' precipitationScale = d4.scaleLinear().range([0,outerRadius/3]).domain(d4.extent(data'.$uniq.'[cpt].data, function(d){return Math.sqrt(d.precipitation);}));' . PHP_EOL;
+                $body .= ' precipitationScale = d4.scaleLinear().range([0,outerRadius/3]).domain(d4.extent(data'.$uniq.'[cpt].data, function(d){return Math.sqrt(d.pr);}));' . PHP_EOL;
                 $body .= ' var updatePrecipitation = barWrapper.selectAll(".precipitationCircle").data(data'.$uniq.'[cpt].data,function(d) {return d;});';
                 $body .= ' updatePrecipitation.exit().remove();';
-                $body .= ' updatePrecipitation.enter().append("circle").attr("class", "precipitationCircle").transition().duration(750).attr("transform", function(d,i){ return "rotate(" + (angle(d.date)) + ")"; }).attr("cx", 0).attr("cy", function(d){ return barScale(d.meanTemp);}).attr("r", function(d){ return precipitationScale(Math.sqrt(d.precipitation));});';
+                $body .= ' updatePrecipitation.enter().append("circle").attr("class", "precipitationCircle").transition().duration(750).attr("transform", function(d,i){ return "rotate(" + (angle(d.ts)) + ")"; }).attr("cx", 0).attr("cy", function(d){ return barScale(d.meT);}).attr("r", function(d){ return precipitationScale(Math.sqrt(d.pr));});';
                 $body .= ' var updateTemp = barWrapper.selectAll(".tempBar").data(data'.$uniq.'[cpt].data, function(d) {return d;});';
                 $body .= ' updateTemp.exit().remove();';
-                $body .= ' updateTemp.enter().append("rect").attr("class", "tempBar").transition().duration(750).attr("transform", function(d,i) { return "rotate(" + (angle(d.date)) + ")"; }).attr("width", 1.5).attr("height", function(d,i) { return barScale(d.maxTemp) - barScale(d.minTemp); }).attr("x", -0.75).attr("y", function(d,i) {return barScale(d.minTemp); }).style("fill", function(d) { return colorScale(d.meanTemp); });';
+                $body .= ' updateTemp.enter().append("rect").attr("class", "tempBar").transition().duration(750).attr("transform", function(d,i) { return "rotate(" + (angle(d.ts)) + ")"; }).attr("width", 1.5).attr("height", function(d,i) { return barScale(d.maT) - barScale(d.miT); }).attr("x", -0.75).attr("y", function(d,i) {return barScale(d.miT); }).style("fill", function(d) { return colorScale(d.meT); });';
                 $body .= ' title.text(data'.$uniq.'[cpt].station);' . PHP_EOL;
                 $body .= ' subtitle.transition().duration(750).text(data'.$uniq.'[cpt].year);' . PHP_EOL;
                 $body .= ' cpt++;';
@@ -5746,15 +5746,15 @@ trait Output {
                 $body .= '},2000);' . PHP_EOL;
             }
             else {
-                $body .= 'barWrapper.selectAll(".precipitationCircle").data(data'.$uniq.'[0].data).enter().append("circle").transition().duration(750).attr("class", "precipitationCircle").attr("transform", function(d,i){ return "rotate(" + (angle(d.date)) + ")"; }).attr("cx", 0).attr("cy", function(d){ return barScale(d.meanTemp);}).attr("r", function(d){ return precipitationScale(Math.sqrt(d.precipitation));});' . PHP_EOL;
-                $body .= 'barWrapper.selectAll(".tempBar").data(data'.$uniq.'[0].data).enter().append("rect").transition().duration(750).attr("class", "tempBar").attr("transform", function(d,i) { return "rotate(" + (angle(d.date)) + ")"; }).attr("width", 1.5).attr("height", function(d,i) { return barScale(d.maxTemp) - barScale(d.minTemp); }).attr("x", -0.75).attr("y", function(d,i) {return barScale(d.minTemp); }).style("fill", function(d) { return colorScale(d.meanTemp); });' . PHP_EOL;
+                $body .= 'barWrapper.selectAll(".precipitationCircle").data(data'.$uniq.'[0].data).enter().append("circle").transition().duration(750).attr("class", "precipitationCircle").attr("transform", function(d,i){ return "rotate(" + (angle(d.ts)) + ")"; }).attr("cx", 0).attr("cy", function(d){ return barScale(d.meT);}).attr("r", function(d){ return precipitationScale(Math.sqrt(d.pr));});' . PHP_EOL;
+                $body .= 'barWrapper.selectAll(".tempBar").data(data'.$uniq.'[0].data).enter().append("rect").transition().duration(750).attr("class", "tempBar").attr("transform", function(d,i) { return "rotate(" + (angle(d.ts)) + ")"; }).attr("width", 1.5).attr("height", function(d,i) { return barScale(d.maT) - barScale(d.miT); }).attr("x", -0.75).attr("y", function(d,i) {return barScale(d.miT); }).style("fill", function(d) { return colorScale(d.meT); });' . PHP_EOL;
                 $body .= 'title.text(data'.$uniq.'[0].station);' . PHP_EOL;
                 $body .= 'subtitle.transition().duration(750).text(data'.$uniq.'[0].year);' . PHP_EOL;
             }
         }
         else {
-            $body .= 'barWrapper.selectAll(".precipitationCircle").data(data'.$uniq.'[0].data).enter().append("circle").transition().duration(750).attr("class", "precipitationCircle").attr("transform", function(d,i){ return "rotate(" + (angle(d.date)) + ")"; }).attr("cx", 0).attr("cy", function(d){ return barScale(d.meanTemp);}).attr("r", function(d){ return precipitationScale(Math.sqrt(d.precipitation));});' . PHP_EOL;
-            $body .= 'barWrapper.selectAll(".tempBar").data(data'.$uniq.'[0].data).enter().append("rect").transition().duration(750).attr("class", "tempBar").attr("transform", function(d,i) { return "rotate(" + (angle(d.date)) + ")"; }).attr("width", 1.5).attr("height", function(d,i) { return barScale(d.maxTemp) - barScale(d.minTemp); }).attr("x", -0.75).attr("y", function(d,i) {return barScale(d.minTemp); }).style("fill", function(d) { return colorScale(d.meanTemp); });' . PHP_EOL;
+            $body .= 'barWrapper.selectAll(".precipitationCircle").data(data'.$uniq.'[0].data).enter().append("circle").transition().duration(750).attr("class", "precipitationCircle").attr("transform", function(d,i){ return "rotate(" + (angle(d.ts)) + ")"; }).attr("cx", 0).attr("cy", function(d){ return barScale(d.meT);}).attr("r", function(d){ return precipitationScale(Math.sqrt(d.pr));});' . PHP_EOL;
+            $body .= 'barWrapper.selectAll(".tempBar").data(data'.$uniq.'[0].data).enter().append("rect").transition().duration(750).attr("class", "tempBar").attr("transform", function(d,i) { return "rotate(" + (angle(d.ts)) + ")"; }).attr("width", 1.5).attr("height", function(d,i) { return barScale(d.maT) - barScale(d.miT); }).attr("x", -0.75).attr("y", function(d,i) {return barScale(d.miT); }).style("fill", function(d) { return colorScale(d.meT); });' . PHP_EOL;
             $body .= 'title.text(data'.$uniq.'[0].station);' . PHP_EOL;
             $body .= 'subtitle.text(data'.$uniq.'[0].year);' . PHP_EOL;
         }
