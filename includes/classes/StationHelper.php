@@ -259,6 +259,7 @@ class Handling {
                     if (array_key_exists('guid', $_POST)) {
                         $guid = stripslashes(htmlspecialchars_decode($_POST['guid']));
                         $save = false;
+                        $reset = false;
                         $connect = false;
                         $owm = false;
                         $wug = false;
@@ -368,6 +369,10 @@ class Handling {
                                         $save = true;
                                     }
                                 }
+                            }
+                            if (array_key_exists('reset-manage-modules', $_POST)) {
+                                DeviceManager::reset_modules_details($station['station_id']);
+                                $reset = true;
                             }
                             if (array_key_exists('do-export-data', $_POST)) {
                                 $success = false;
@@ -508,7 +513,7 @@ class Handling {
                             }
                             if ($update) {
                                 if ($this->update_stations_table($station)) {
-                                    if ($save) {
+                                    if ($save || $reset) {
                                         $message = __('The station %s has been correctly updated.', 'live-weather-station');
                                         $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
                                         add_settings_error('lws_nonce_success', 200, $message, 'updated');
@@ -555,13 +560,14 @@ class Handling {
      */
     public function station_add_footer() {
         $result = '';
-        $result .= lws_print_begin_script();
+        $jsInitId = md5(random_bytes(18));
+        $result .= lws_print_begin_script($jsInitId);
         $result .= "    jQuery(document).ready( function($) {";
         $result .= "        $('.if-js-closed').removeClass('if-js-closed').addClass('closed');";
         $result .= "        if(typeof postboxes !== 'undefined')";
         $result .= "            postboxes.add_postbox_toggles('" . $this->screen_id . "');";
         $result .= "    });";
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
         echo $result;
     }
 

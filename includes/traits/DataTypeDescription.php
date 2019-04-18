@@ -295,6 +295,13 @@ trait Description {
                 if ($meaning){$abbr = false;}
                 $result = ($abbr ? __('Relative humidity', 'live-weather-station') : __('Relative humidity', 'live-weather-station'));
                 break;
+            case 'a_humidity':
+            case 'a_humidity_min':
+            case 'a_humidity_max':
+            case 'a_humidity_trend':
+                if ($meaning){$abbr = false;}
+                $result = ($abbr ? __('Absolute humidity', 'live-weather-station') : __('Absolute humidity', 'live-weather-station'));
+                break;
             case 'humint':
                 if ($meaning){$abbr = false;}
                 $result = ($abbr ? __('Indoor humidity', 'live-weather-station') : __('Indoor humidity', 'live-weather-station'));
@@ -1035,6 +1042,9 @@ trait Description {
             case 'humidity':
                 $result =  _n('Relative humidity', 'Relative humidity', $n, 'live-weather-station');
                 break;
+            case 'a-humidity':
+                $result =  _n('Absolute humidity', 'Absolute humidity', $n, 'live-weather-station');
+                break;
             case 'irradiance':
                 $result =  _n('Power flux density', 'Power flux densities', $n, 'live-weather-station');
                 break;
@@ -1062,7 +1072,7 @@ trait Description {
      * @since 3.4.0
      */
     protected function get_comparable_dimensions() {
-        return array('percentage', 'pressure-h', 'pressure', 'temperature', 'concentration-m', 'duration', 'length', 'angle', 'speed', 'humidity', 'area-density', 'rate', 'density', 'irradiance', 'illuminance', 'specific-energy', 'specific-energy-k');
+        return array('percentage', 'pressure-h', 'pressure', 'temperature', 'concentration-m', 'duration', 'length', 'angle', 'speed', 'humidity', 'area-density', 'rate', 'density', 'irradiance', 'illuminance', 'specific-energy', 'specific-energy-k', 'a-humidity');
     }
 
     /**

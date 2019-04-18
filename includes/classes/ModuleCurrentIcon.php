@@ -100,7 +100,8 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
         $content .= $this->get_key_value_option_select('current-icon-datas-speed-'. $this->station_guid, __('Animation speed', 'live-weather-station'), $this->get_lcd_speed_js_array(), true, '2000');
         $content .= $this->get_color_picker('current-icon-datas-color-'. $this->station_guid, __('Animation color', 'live-weather-station'));
         $content .= '<style>.wp-picker-container .wp-color-result.button {width: 100% !important;}</style>';
-        $content .= lws_print_begin_script();
+        $jsInitId = md5(random_bytes(18));
+        $content .= lws_print_begin_script($jsInitId);
         $content .= '    ( function( $ ){';
         $content .= '        function initColorPicker( widget ) {';
         $content .= '            widget.find( ".wp-color-picker" ).wpColorPicker( {';
@@ -124,7 +125,7 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '            }';
         $content .= '        } );';
         $content .= '    }( jQuery ) );';
-        $content .= lws_print_end_script();
+        $content .= lws_print_end_script($jsInitId);
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }

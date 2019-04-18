@@ -201,7 +201,8 @@ class Handling {
      */
     public function map_add_footer() {
         $result = '';
-        $result .= lws_print_begin_script();
+        $jsInitId = md5(random_bytes(18));
+        $result .= lws_print_begin_script($jsInitId);
         $result .= "    jQuery(document).ready( function($) {";
         $result .= "        $('.if-js-closed').removeClass('if-js-closed').addClass('closed');";
         $result .= "        if(typeof postboxes !== 'undefined')";
@@ -211,7 +212,7 @@ class Handling {
         $result .= "        });";
         $result .= "        $('#common-station-selector').change()";
         $result .= "    });";
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
         echo $result;
     }
 
@@ -307,11 +308,12 @@ class Handling {
     protected function get_shortcode_box() {
         wp_enqueue_script('lws-clipboard');
         $id = 'lws-map-sc-' . $this->map_id;
-        $result = lws_print_begin_script();
+        $jsInitId = md5(random_bytes(18));
+        $result = lws_print_begin_script($jsInitId);
         $result .= 'jQuery(document).ready(function($) {';
         $result .= '  new Clipboard(".copy-sc-map-button");';
         $result .= '});';
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
         $title = __('Shortcode', 'live-weather-station');
         $content = '<textarea readonly rows="1" style="width:100%;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="' . $id . '">[live-weather-station-map id="' . $this->map_id . '"]</textarea>';
         $footer = '<button data-clipboard-target="#' . $id . '" class="button button-primary copy-sc-map-button">' . __('Copy', 'live-weather-station'). '</button>';

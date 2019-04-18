@@ -198,7 +198,7 @@ trait Conversion {
         return $init;
     }
 
-/**
+    /**
      * Get the timestamp corresponding to midnight of today in a specific timezone.
      *
      * @param string  $tz The timezone.

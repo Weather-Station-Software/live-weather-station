@@ -403,7 +403,8 @@ trait Output {
                         $result['xdomain']['12'] = $result['xdomain']['min'] + 14400000*3;
                         $result['xdomain']['16'] = $result['xdomain']['min'] + 14400000*4;
                         $result['xdomain']['20'] = $result['xdomain']['min'] + 14400000*5;
-                        $result['xdomain']['max'] = (int)self::get_js_datetime_from_mysql_utc($max, $station['loc_timezone']) + 1000;
+                        //$result['xdomain']['max'] = (int)self::get_js_datetime_from_mysql_utc($max, $station['loc_timezone']) + 1000;
+                        $result['xdomain']['max'] = self::get_js_datetime_from_mysql_utc($max, $station['loc_timezone']);
                         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
                     }
                     if ($mode == 'yearly' || $type == 'ccstick' || $type == 'calendarhm') {
@@ -498,7 +499,7 @@ trait Output {
                         $first = true;
                         $ref='';
                         $res = array();
-                        foreach ($args as $arg) {
+                        foreach ($args as &$arg) {
                             $d = explode(':', $arg['period']);
                             $min = $d[0];
                             $max = $d[1];
@@ -1964,7 +1965,7 @@ trait Output {
                                             }
                                         }
                                         else {
-                                            if (strtolower($arg['set']) == 'amp') {
+                                            if (array_key_exists('set', $arg) && strtolower($arg['set']) == 'amp') {
                                                 $a['measure_value'] = $this->rebase_value($a['measure_value'], $arg['measurement']);
                                             }
                                             else {
@@ -3788,7 +3789,13 @@ trait Output {
                 $body .= '      chart'.$uniq.'.style("expand");' . PHP_EOL;
             }
             $body .= '      chart'.$uniq.'.interactiveLayer.tooltip.gravity("s");' . PHP_EOL;
-            $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+            //$body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+            if ($dimension1 === 'duration') {
+                $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+            }
+            else {
+                $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+            }
             $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
             $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
             $body .= '      return chart'.$uniq.';' . PHP_EOL;
@@ -4214,7 +4221,7 @@ trait Output {
                 $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
-            if ($color != 'self' && !$c) {
+            if ($color != 'self' /*&& !$c*/) {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[3].slice(0);' . PHP_EOL;
                 $refcolor = ColorBrewer::get($color, 3, 0);
                 if ($inverted) {
@@ -4649,6 +4656,13 @@ trait Output {
             $body .= '          start: start_date,' . PHP_EOL;
             $body .= '          minDate: min_date,' . PHP_EOL;
             $body .= '          considerMissingDataAsZero: false,' . PHP_EOL;
+            if ($dimension1 == 'duration') {
+                $body .= '          isDuration: true,' . PHP_EOL;
+                $body .= '          symbolDuration: "' . __('h', 'live-weather-station') . '",' . PHP_EOL;
+            }
+            else {
+                $body .= '          isDuration: false,' . PHP_EOL;
+            }
             $body .= '          legend: ' . $legend . ',' . PHP_EOL;
             $body .= '          cellSize: ' . $cSize . ',' . PHP_EOL;
             $body .= '          cellRadius: ' . $cRadius . ',' . PHP_EOL;
@@ -4661,7 +4675,12 @@ trait Output {
             else {
                 $body .= '          displayLegend: false,' . PHP_EOL;
             }
-            $body .= '          subDomainTitleFormat: {empty: "' . sprintf(__('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>'). '", filled: "' . sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s %s</strong>', '{date}', $values['extras'][0]['measurement_type'] . ' - ' . $values['extras'][0]['set_name'], '{count}', $values['legend']['unit']['unit']). '"},' . PHP_EOL;
+            if ($dimension1 == 'duration') {
+                $body .= '          subDomainTitleFormat: {empty: "' . sprintf(__('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>'). '", filled: "' . sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s</strong>', '{date}', $values['extras'][0]['measurement_type'] . ' - ' . $values['extras'][0]['set_name'], '{count}'). '"},' . PHP_EOL;
+            }
+            else {
+                $body .= '          subDomainTitleFormat: {empty: "' . sprintf(__('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>'). '", filled: "' . sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s %s</strong>', '{date}', $values['extras'][0]['measurement_type'] . ' - ' . $values['extras'][0]['set_name'], '{count}', $values['legend']['unit']['unit']). '"},' . PHP_EOL;
+            }
             $body .= '          i18nDomainDateFormat: {' . $i18n . '},' . PHP_EOL;
             $body .= '          legendTitleFormat: {lower: "",inner: "",upper: ""}' . PHP_EOL;
             $body .= '      });' . PHP_EOL;
@@ -4820,7 +4839,8 @@ trait Output {
             $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';"><svg id="' . $svg . '" style="overflow:hidden;"></svg></div>' . PHP_EOL;
         }
         $result .= '</div>' . PHP_EOL;
-        $result .= lws_print_begin_script() . PHP_EOL;
+        $jsInitId = md5(random_bytes(18));
+        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         $result .= '    var chart'.$uniq.' = null;' . PHP_EOL;
         if ($data == 'inline') {
@@ -4943,7 +4963,7 @@ trait Output {
             $result .= '' . PHP_EOL;
         }
         $result .= '  });' . PHP_EOL;
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
 
         return $result;
     }
@@ -5348,7 +5368,8 @@ trait Output {
         $result .= '<div class="lws-module-chart module-' . $mode . '-' . $type . '" id="' . $container . '">' . PHP_EOL;
         $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';"><svg id="' . $svg . '" style="overflow:hidden;"></svg></div>' . PHP_EOL;
         $result .= '</div>' . PHP_EOL;
-        $result .= lws_print_begin_script() . PHP_EOL;
+        $jsInitId = md5(random_bytes(18));
+        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         $result .= '    var chart'.$uniq.' = null;' . PHP_EOL;
         if ($data == 'inline') {
@@ -5451,7 +5472,7 @@ trait Output {
             $result .= '' . PHP_EOL;
         }
         $result .= '  });' . PHP_EOL;
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
 
         return $result;
     }
@@ -5764,7 +5785,8 @@ trait Output {
         $result .= '<div class="lws-module-chart module-' . $mode . '-' . $type . '" id="' . $container . '">' . PHP_EOL;
         $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';width: ' . $height . ';display:inline-block;text-align:center;overflow: hidden;"><div id="' . $svg . '"></div></div>' . PHP_EOL;
         $result .= '</div>' . PHP_EOL;
-        $result .= lws_print_begin_script() . PHP_EOL;
+        $jsInitId = md5(random_bytes(18));
+        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         $result .= '    var chart'.$uniq.' = null;' . PHP_EOL;
         if ($data == 'inline') {
@@ -5799,7 +5821,7 @@ trait Output {
             $result .= '});' . PHP_EOL;
         }
         $result .= '  });' . PHP_EOL;
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
         return $result;
     }
 
@@ -6032,6 +6054,10 @@ trait Output {
                     break;
                 case 'simple-avg':
                     $select = 'AVG(`measure_value`) as val';
+                    $where = "`measure_set`='" . $set . "'";
+                    break;
+                case 'simple-sum':
+                    $select = 'SUM(`measure_value`) as val';
                     $where = "`measure_set`='" . $set . "'";
                     break;
                 case 'simple-min':
@@ -6431,6 +6457,7 @@ trait Output {
                     }
                     break;
                 case 'simple-avg':
+                case 'simple-sum':
                 case 'simple-min':
                 case 'simple-max':
                     if ($fixed) {
@@ -6550,7 +6577,8 @@ trait Output {
                 wp_enqueue_script('lws-nvd3');
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg style="overflow:visible;"></svg></div>' . PHP_EOL;
-                $result .= lws_print_begin_script() . PHP_EOL;
+                $jsInitId = md5(random_bytes(18));
+                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . $perf['dat']['count'][$_attributes['metric']] . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -6570,7 +6598,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script();
+                $result .= lws_print_end_script($jsInitId);
             }
 
             if ($_attributes['metric'] == 'call_short' || $_attributes['metric'] == 'call_long' || $_attributes['metric'] == 'rate_short' || $_attributes['metric'] == 'rate_long') {
@@ -6617,7 +6645,8 @@ trait Output {
                 }
                 $result .= '<div>' . PHP_EOL;
                 $result .= '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
-                $result .= lws_print_begin_script() . PHP_EOL;
+                $jsInitId = md5(random_bytes(18));
+                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 foreach ($services as $service) {
                     $s = str_replace(' ', '', strtolower($service));
@@ -6656,7 +6685,7 @@ trait Output {
                 $s = str_replace('-', '', $s);
                 $result .= '    $("#selector-'.$s.'-'.$uniq.'").click();' . PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script();
+                $result .= lws_print_end_script($jsInitId);
             }
         }
 
@@ -6670,7 +6699,8 @@ trait Output {
                 wp_enqueue_script('lws-nvd3');
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg style="overflow:visible;"></svg></div>' . PHP_EOL;
-                $result .= lws_print_begin_script() . PHP_EOL;
+                $jsInitId = md5(random_bytes(18));
+                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . $perf['dat'][$_attributes['metric']] . ';' . PHP_EOL;
                 //$result .= '    var xValues'.$uniq.' = ' . $perf['dat'][$_attributes['metric'].'_values'] . ';' . PHP_EOL;
@@ -6691,7 +6721,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script();
+                $result .= lws_print_end_script($jsInitId);
             }
 
             if ($_attributes['metric'] == 'density' || $_attributes['metric'] == 'criticality') {
@@ -6725,7 +6755,8 @@ trait Output {
                 $result .= '  <div id="next-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;"><i class="'. LWS_FAS . ' fa-caret-right"></i></div>' . PHP_EOL;
                 $result .= '</div>' . PHP_EOL;
                 $result .= '<div id="' . $uniq . '" ></div>' . PHP_EOL;
-                $result .= lws_print_begin_script() . PHP_EOL;
+                $jsInitId = md5(random_bytes(18));
+                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '      var chart'.$uniq.' = new CalHeatMap();' . PHP_EOL;
                 $result .= '      var today_date= new Date();' . PHP_EOL;
@@ -6762,7 +6793,7 @@ trait Output {
                 }
                 $result .= '      });' . PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script();
+                $result .= lws_print_end_script($jsInitId);
             }
         }
 
@@ -6774,7 +6805,8 @@ trait Output {
             if ($_attributes['metric'] == 'count_by_pool') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
-                $result .= lws_print_begin_script() . PHP_EOL;
+                $jsInitId = md5(random_bytes(18));
+                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . $perf['dat']['count_by_pool'] . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -6798,12 +6830,13 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script();
+                $result .= lws_print_end_script($jsInitId);
             }
             if ($_attributes['metric'] == 'time_by_pool') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
-                $result .= lws_print_begin_script() . PHP_EOL;
+                $jsInitId = md5(random_bytes(18));
+                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . $perf['dat']['time_by_pool'] . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -6825,7 +6858,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script();
+                $result .= lws_print_end_script($jsInitId);
             }
             if ($_attributes['metric'] == 'time_for_history' || $_attributes['metric'] == 'time_for_system' || $_attributes['metric'] == 'time_for_pull' || $_attributes['metric'] == 'time_for_push') {
                 wp_enqueue_script('lws-colorbrewer');
@@ -6838,7 +6871,8 @@ trait Output {
                 }
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
-                $result .= lws_print_begin_script() . PHP_EOL;
+                $jsInitId = md5(random_bytes(18));
+                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . $perf['dat'][$_attributes['metric']] . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -6860,7 +6894,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script();
+                $result .= lws_print_end_script($jsInitId);
             }
         }
 
@@ -6872,7 +6906,8 @@ trait Output {
             if ($_attributes['metric'] == 'count') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
-                $result .= lws_print_begin_script() . PHP_EOL;
+                $jsInitId = md5(random_bytes(18));
+                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . $perf['dat']['count'] . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -6896,12 +6931,13 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script();
+                $result .= lws_print_end_script($jsInitId);
             }
             if ($_attributes['metric'] == 'time') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
-                $result .= lws_print_begin_script() . PHP_EOL;
+                $jsInitId = md5(random_bytes(18));
+                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . $perf['dat']['time'] . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -6921,12 +6957,13 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script();
+                $result .= lws_print_end_script($jsInitId);
             }
             if ($_attributes['metric'] == 'efficiency') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
-                $result .= lws_print_begin_script() . PHP_EOL;
+                $jsInitId = md5(random_bytes(18));
+                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . $perf['dat']['efficiency'] . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -6948,12 +6985,13 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script();
+                $result .= lws_print_end_script($jsInitId);
             }
             if ($_attributes['metric'] == 'time_saving') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
-                $result .= lws_print_begin_script() . PHP_EOL;
+                $jsInitId = md5(random_bytes(18));
+                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . $perf['dat']['time_saving'] . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -6976,7 +7014,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script();
+                $result .= lws_print_end_script($jsInitId);
             }
         }
 
@@ -6988,7 +7026,8 @@ trait Output {
             if ($_attributes['metric'] == 'table_size' || $_attributes['metric'] == 'row_count') {
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result = '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
-                $result .= lws_print_begin_script() . PHP_EOL;
+                $jsInitId = md5(random_bytes(18));
+                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    var data'.$uniq.' =' . $perf['dat'][$_attributes['metric']] . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
@@ -7017,7 +7056,7 @@ trait Output {
                 $result .= '      return chart'.$uniq.';' . PHP_EOL;
                 $result .= '    });'.PHP_EOL;
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script();
+                $result .= lws_print_end_script($jsInitId);
             }
         }
         return $result;
@@ -7156,7 +7195,8 @@ trait Output {
         $time = 1000 * (120 + rand(-20, 20));
         $shortcode = '[live-weather-station-snapshot device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' size=\'' . $_attributes['size'] . '\' fx=\'' . $_attributes['fx'] . '\' speed=\'' . $_attributes['speed'] . '\' mode=\'url\']';
         $result = $this->snapshot_shortcodes($_attributes);
-        $result .= lws_print_begin_script() . PHP_EOL;
+        $jsInitId = md5(random_bytes(18));
+        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         switch ((string)$_attributes['size']) {
             case 'micro': $scale = '0.2'; break;
@@ -7189,7 +7229,7 @@ trait Output {
                 $result .= '  ' . $image .'.onload = function() {$("#' . $uniq . '").css("background-image", "url(" + ' . $image .'.src + ")");}'.PHP_EOL;
                 $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {' . $image .'.src = data;});}, '.$time.');})'.PHP_EOL;
         }
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
         return $result;
     }
 
@@ -7216,7 +7256,8 @@ trait Output {
         wp_enqueue_style('lws-lcd');
         wp_enqueue_script('lws-lcd');
         $result  = '<div id="'.$uniq.'"></div>'.PHP_EOL;
-        $result .= lws_print_begin_script() . PHP_EOL;
+        $jsInitId = md5(random_bytes(18));
+        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         $result .= '    var c'.$uniq.' = new lws_lcd.LCDPanel({'.PHP_EOL;
         $result .= '                    id              : "id'.$uniq.'",'.PHP_EOL;
@@ -7232,7 +7273,7 @@ trait Output {
         $result .= '                    cycleSpeed      : "'.$_attributes['speed'].'"'.PHP_EOL;
         $result .= '    });'.PHP_EOL;
         $result .= '  });'.PHP_EOL;
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
         return $result;
     }
 
@@ -7797,7 +7838,8 @@ trait Output {
         $style = 'width:'.$w.';height:'.$h.';';
         wp_enqueue_script('lws-justgage');
         $result  = '<div id="'.$uniq.'" style="'.$style.'"></div>'.PHP_EOL;
-        $result .= lws_print_begin_script() . PHP_EOL;
+        $jsInitId = md5(random_bytes(18));
+        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         $result .= '    var g'.$uniq.' = new JustGage('.$values.');'.PHP_EOL;
         $result .= '  setInterval(function() {'.PHP_EOL;
@@ -7819,7 +7861,7 @@ trait Output {
         $result .= '    http.send(params);'.PHP_EOL;
         $result .= '  }, '.$time.');'.PHP_EOL;
         $result .= '});'.PHP_EOL;
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
         return $result;
     }
 
@@ -8391,7 +8433,8 @@ trait Output {
         $style = 'width:'.$w.';height:'.$h.';';
         wp_enqueue_script('lws-steelseries');
         $result  = '<canvas id="'.$uniq.'" style="'.$style.'"></canvas>'.PHP_EOL;
-        $result .= lws_print_begin_script() . PHP_EOL;
+        $jsInitId = md5(random_bytes(18));
+        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         $result .= '    var g'.$uniq.' = new steelseries.'.$control.'('.$uniq.', '.$params.');'.PHP_EOL;
         if ($aux) {
@@ -8453,7 +8496,7 @@ trait Output {
             $result .= '      });'.PHP_EOL;
         }
         $result .= '    });'.PHP_EOL;
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
         return $result;
     }
 
@@ -8827,7 +8870,8 @@ trait Output {
         $speed = (int)$_attributes['speed'] / 2;
         $shortcode = 'live-weather-station-textual device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' element=\'' . $_attributes['element'] . '\' format=\'' . $_attributes['format'] . '\'';
         $result = '<span id="' . $uniq . '" class="lws-livetextual lws-measurement-type-' . str_replace('_', '-', $_attributes['measure_type']) . '">' . do_shortcode('[' . $shortcode . ']') . '</span>';
-        $result .= lws_print_begin_script() . PHP_EOL;
+        $jsInitId = md5(random_bytes(18));
+        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         switch ($_attributes['fx']) {
             case 'fade-to-initial':
@@ -8845,7 +8889,7 @@ trait Output {
             default:
                 $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);});}, '.$time.');});'.PHP_EOL;
         }
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
         return $result;
     }
 
@@ -8895,7 +8939,8 @@ trait Output {
         $speed = (int)$_attributes['speed'] / 2;
         $shortcode = 'live-weather-station-icon device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' element=\'' . $_attributes['element'] . '\' format=\'' . $_attributes['format'] . '\'';
         $result = '<span id="' . $uniq . '" class="lws-liveicon-value lws-measurement-type-' . str_replace('_', '-', $_attributes['measure_type']) . '">' . do_shortcode('[' . $shortcode . ']') . '</span>';
-        $result .= lws_print_begin_script() . PHP_EOL;
+        $jsInitId = md5(random_bytes(18));
+        $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         switch ($_attributes['fx']) {
             case 'fade-to-initial':
@@ -8913,7 +8958,7 @@ trait Output {
             default:
                 $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);});}, '.$time.');});'.PHP_EOL;
         }
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
         return $result;
     }
 
@@ -10418,7 +10463,7 @@ trait Output {
                 }
                 $result['unit'] = $this->get_absolute_humidity_unit($ref) ;
                 $result['long'] = $this->get_absolute_humidity_unit_full($ref) ;
-                $result['dimension'] = 'humidity';
+                $result['dimension'] = 'a-humidity';
                 break;
             case 'saturation_absolute_humidity':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;

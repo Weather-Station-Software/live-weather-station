@@ -1,4 +1,16 @@
 
+#3.8.1 / April 18th, 2019
+
+* Improvement: the query builder (textual climatological data) can now compute the sum of aggregated values (thanks to [@HWIM](https://weather.station.software/community/profile/HWIM/) for the suggestion).
+* Improvement: defered scripts can now detect if the DOM is fully loaded (improves compatibility with some cache managers).
+* Improvement: heatmaps now display durations as hours and minutes (thanks to [@gerhard](https://weather.station.software/community/profile/gerhard/) for the suggestion).
+* Improvement: stacked areas charts now display durations as hours and minutes.
+* Improvement: it's now possible to reset module details to defaults (individually, per station) after a station major change.
+* Bug fix: on some servers (with a common DST issue, especially with Windows), timescales (X-axis for the most of them) are wrongly rendered in daily charts and graphs (thanks to [@zerog981](https://weather.station.software/community/profile/zerog981/)).
+* Bug fix: the absolute humidity is not present in comparable dimensions (thanks to [@setmin](https://weather.station.software/community/profile/setmin/)).
+* Bug fix: in some conditions, double lines may trigger a PHP notice.
+* Bug fix: in some conditions, some climatological charts may trigger a PHP notice.
+
 #3.8.0 / April 16th, 2019
 
 * New: Weather Station natively connects to ***WeatherLink Network*** - special thanks to David Aguilera-Riquelme from [RedMeteo.cl](https://redmeteo.cl/) for the tests.

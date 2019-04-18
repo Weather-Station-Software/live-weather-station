@@ -135,6 +135,12 @@ var CalHeatMap = function() {
 		// Threshold for the legend
 		legend: [10, 20, 30, 40],
 
+		// Is it a duration (and so, must be displayed as hours and minutes)
+		isDuration: false,
+
+		// symbol of hours for duration
+		symbolDuration: "h",
+
 		// Whether to display the legend
 		displayLegend: true,
 
@@ -1672,6 +1678,10 @@ CalHeatMap.prototype = {
 		}
 	},
 
+	getDuration:function(d) {
+		return Math.floor(d/3600).toString() + this.options.symbolDuration + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;
+	},
+
 	getSubDomainTitle: function(d) {
 		"use strict";
 
@@ -1686,8 +1696,13 @@ CalHeatMap.prototype = {
 				value = 0;
 			}
 
+			var countDisplay = this.formatNumber(value);
+			if (this.options.isDuration) {
+				countDisplay = this.getDuration(value);
+			}
+
 			return (this.options.subDomainTitleFormat.filled).format({
-				count: this.formatNumber(value),
+				count: countDisplay,
 				name: this.options.itemName[(value !== 1 ? 1: 0)],
 				connector: this._domainType[this.options.subDomain].format.connector,
 				date: this.formatDate(new Date(d.t), this.options.subDomainDateFormat)

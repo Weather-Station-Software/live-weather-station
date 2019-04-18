@@ -207,6 +207,30 @@ class Manager
     }
 
     /**
+     * Reset modules.
+     *
+     * @param string $device_id Device id of the station.
+     * @return boolean True if operation was successful, false otherwise.
+     * @since 3.8.0
+     */
+    public static function reset_modules_details($device_id) {
+        $cache_id = 'module-detail-' . $device_id;
+        $result = true;
+        try {
+            global $wpdb;
+            $table_name = $wpdb->prefix . self::live_weather_station_module_detail_table();
+            $sql = "DELETE FROM ".$table_name." WHERE device_id='" . $device_id . "'";
+            $wpdb->query($sql);
+            Cache::invalidate_query($cache_id);
+            self::synchronize_modules();
+        }
+        catch (\Exception $ex) {
+            $result = false;
+        }
+        return $result;
+    }
+
+    /**
      * Initialize the class and set its properties.
      *
      * @since 3.4.0
