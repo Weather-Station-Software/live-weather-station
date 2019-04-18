@@ -426,11 +426,12 @@ abstract class BaseHandling {
      * @since 3.7.0
      */
     protected function output_script() {
-        $result = lws_print_begin_script();
+        $jsInitId = md5(random_bytes(18));
+        $result = lws_print_begin_script($jsInitId);
         $result .= 'jQuery(document).ready(function($) {';
         $result .= $this->specific_script();
         $result .= '});';
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
         return $result;
     }
 

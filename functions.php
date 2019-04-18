@@ -457,12 +457,21 @@ function lws_send_alert_message() {
 /**
  * Print the begining of the script tag.
  *
+ * @param string $jsInitId Optional. The uid of the init function.
+ * @return string The output ready to print.
  * @since 3.7.0
  */
-function lws_print_begin_script() {
+function lws_print_begin_script($jsInitId='') {
     $result = '<script language="javascript" type="text/javascript">';
     if ((bool)get_option('live_weather_station_wait_for_dom', 1) && !is_admin()) {
-        $result .= 'document.addEventListener("DOMContentLoaded", function(event) {';
+        if ($jsInitId == '') {
+            $result .= 'document.addEventListener("DOMContentLoaded", function(event) {';
+        }
+        else {
+            $result .= 'if (document.readyState !== "loading") {lwsInitDefered' . $jsInitId . '();} else {document.addEventListener("DOMContentLoaded", function () {lwsInitDefered' . $jsInitId . '();});}';
+            $result .= 'function lwsInitDefered' . $jsInitId . '() {';
+            //$result .= 'console.log("defered loading")';
+        }
     }
     return $result;
 }
@@ -470,12 +479,19 @@ function lws_print_begin_script() {
 /**
  * Print the end of the script tag.
  *
+ * @param string $jsInitId Optional. The uid of the init function.
+ * @return string The output ready to print.
  * @since 3.7.0
  */
-function lws_print_end_script() {
+function lws_print_end_script($jsInitId='') {
     $result = '';
     if ((bool)get_option('live_weather_station_wait_for_dom', 1) && !is_admin()) {
-        $result .= '});';
+        if ($jsInitId == '') {
+            $result .= '});';
+        }
+        else {
+            $result .= '}';
+        }
     }
     $result .= '</script>';
     return $result;

@@ -62,11 +62,12 @@ abstract class Base extends \WP_Widget {
                     $after = $args['after_widget'];
                 }
                 $result = $before . '&nbsp;';
-                $result .= lws_print_begin_script() . PHP_EOL;
+                $jsInitId = md5(random_bytes(18));
+                $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
                 $result .= '    $.post( "' . LWS_AJAX_URL . '", {action: "lws_w_' . $widget . '", ' . str_replace('\'', '\\\'', $this->outputvar($args, $instance)) . '}).done(function(data) {$("#' . $uniq . '").html(data);})';
                 $result .= '  });' . PHP_EOL;
-                $result .= lws_print_end_script();
+                $result .= lws_print_end_script($jsInitId);
                 $result .= $after;
                 Cache::set_widget($cache_id, $result);
             }

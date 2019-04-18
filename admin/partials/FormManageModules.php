@@ -12,7 +12,7 @@ $timezone_icn = $this->output_iconic_value(0, 'timezone', false, false, '#999');
 $histo_icn = $this->output_iconic_value(0, 'historical', false, false, '#999');
 $static_display = false;
 $manage_modules = true;
-
+$buttons = str_replace('</p>', '', get_submit_button(__('Save Changes', 'live-weather-station'), 'primary', 'do-manage-modules')) . ' &nbsp;&nbsp;&nbsp; ' . str_replace('<p class="submit">', '', str_replace('</p>', ' &nbsp;&nbsp;&nbsp; ', get_submit_button(__('Reset to Defaults', 'live-weather-station'), 'secondary', 'reset-manage-modules')));
 
 ?>
 
@@ -44,8 +44,8 @@ $manage_modules = true;
             </div>
         </div>
         <div style="width: 100%;clear: both;">
-            <p class="submit"><input type="submit" name="do-manage-modules" id="do-manage-modules" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;
-                <a href="<?php echo esc_url(lws_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
+            <?php echo $buttons;?>
+            <a href="<?php echo esc_url(lws_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a></p>
         </div>
     </form>
 </div>

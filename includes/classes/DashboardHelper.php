@@ -65,13 +65,14 @@ class Handling {
      */
     public function dashboard_add_footer() {
         $result = '';
-        $result .= lws_print_begin_script();
+        $jsInitId = md5(random_bytes(18));
+        $result .= lws_print_begin_script($jsInitId);
         $result .= "    jQuery(document).ready( function($) {";
         $result .= "        $('.if-js-closed').removeClass('if-js-closed').addClass('closed');";
         $result .= "        if(typeof postboxes !== 'undefined')";
         $result .= "            postboxes.add_postbox_toggles('lws-dashboard');";
         $result .= "    });";
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
         echo $result;
     }
 

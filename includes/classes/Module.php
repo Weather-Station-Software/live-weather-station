@@ -472,7 +472,8 @@ abstract class Maintainer {
         }
         $result .= '</td>';
         $result .= '</tr>';
-        $result .= lws_print_begin_script();
+        $jsInitId = md5(random_bytes(18));
+        $result .= lws_print_begin_script($jsInitId);
         $result .= 'jQuery(document).ready(function($) {';
         for ($i=1 ; $i<=count($args) ; $i++) {
             $result .= '$(".' . $tab_id . $i . '").click(function() {';
@@ -483,7 +484,7 @@ abstract class Maintainer {
             $result .= '});';
         }
         $result .= '});' . PHP_EOL;
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
         return $result;
     }
 
@@ -635,7 +636,8 @@ abstract class Maintainer {
      */
     protected function get_script_box($content) {
         $result = '';
-        $result .= lws_print_begin_script();
+        $jsInitId = md5(random_bytes(18));
+        $result .= lws_print_begin_script($jsInitId);
         $result .= 'jQuery(document).ready(function($) {';
         // copy button attach action
         $result .= 'new Clipboard(".' . $this->module_id . '-cpy-' . $this->station_guid . '");';
@@ -662,7 +664,7 @@ abstract class Maintainer {
         // content
         $result .= $content;
         $result .= '});';
-        $result .= lws_print_end_script();
+        $result .= lws_print_end_script($jsInitId);
         return $result;
     }
 
