@@ -4221,7 +4221,7 @@ trait Output {
                 $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
-            if ($color != 'self' /*&& !$c*/) {
+            if ($color != 'self' && !$custom) {
                 $body .= '    var color' . $uniq . ' = colorbrewer.' . $color . '[3].slice(0);' . PHP_EOL;
                 $refcolor = ColorBrewer::get($color, 3, 0);
                 if ($inverted) {
@@ -5907,7 +5907,7 @@ trait Output {
         $year_period = array();
         $year1_period = array();
         $year2_period = array();
-        if ($aggregated || $both) {
+        if (($aggregated || $both) && $computed != 'aaaaaasimple-sum'){
             $o_date = $this->get_oldest_data($station);
             $y_date = $this->get_youngest_data($station);
             $oldest_date = new \DateTime($o_date, new \DateTimeZone($station['loc_timezone']));
@@ -6444,6 +6444,8 @@ trait Output {
 
             //return $nested_fixed_sql;
 
+            //return $simple_fixed_sql;
+
             switch ($computed) {
                 case 'simple-val':
                     if ($fixed) {
@@ -6495,7 +6497,7 @@ trait Output {
                     if ($aggregated) {
                         $rows = $wpdb->get_results($simple_aggregated_sql, ARRAY_A);
                     }
-                    $date = new \DateTime($rows[0]['ts'], new \DateTimeZone($station['loc_timezone']));
+                    $date = new \DateTime($rows[0]['ts']);
                     $result = date_i18n(get_option('date_format'), $date->getTimestamp());
                     break;
                 case 'count-day':
@@ -10473,7 +10475,7 @@ trait Output {
                 $result['unit'] = $this->get_absolute_humidity_unit($ref) ;
                 $result['long'] = $this->get_absolute_humidity_unit_full($ref) ;
                 $result['comp'] = __('sat.', 'live-weather-station') ;
-                $result['dimension'] = 'humidity';
+                $result['dimension'] = 'a-humidity';
                 break;
             // SOLAR
             case 'irradiance':

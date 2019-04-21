@@ -34,7 +34,7 @@ trait Handling {
 
     private static $live_weather_station_use_cdn = false;
     private static $live_weather_station_footer_scripts = true;
-    private static $live_weather_station_wait_for_dom = true;
+    private static $live_weather_station_wait_for_dom = false;
     private static $live_weather_station_fa_mode = 0;
     private static $live_weather_station_advanced_mode = false;
     private static $live_weather_station_txt_cache_bypass = false;
@@ -60,7 +60,7 @@ trait Handling {
     private static $live_weather_station_show_update = true;
     private static $live_weather_station_plugin_stat = false;
     private static $live_weather_station_keep_tables = true;
-    private static $live_weather_station_ajax_widget = true;
+    private static $live_weather_station_ajax_widget = false;
     private static $live_weather_station_collection_http_timeout = 45;
     private static $live_weather_station_sharing_http_timeout = 45;
     private static $live_weather_station_system_http_timeout = 20;

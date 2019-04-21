@@ -58,7 +58,12 @@ abstract class Base extends \WP_Widget {
                 $before = '<div id="' . $uniq . '" class="widget lws-widget-wrapper">';
                 $after = '</div>';
                 if (array_key_exists('before_widget', $args) && array_key_exists('after_widget', $args)) {
-                    $before = preg_replace('/(id=".*")/iU', $id,  $args['before_widget'], 1);
+                    if (strpos($args['before_widget'], 'id=') != false) {
+                        $before = preg_replace('/(id=".*")/iU', $id,  $args['before_widget'], 1);
+                    }
+                    else {
+                        $before = str_replace('class=', $id . ' class=', $args['before_widget']);
+                    }
                     $after = $args['after_widget'];
                 }
                 $result = $before . '&nbsp;';
