@@ -1072,7 +1072,7 @@ trait Description {
      * @since 3.4.0
      */
     protected function get_comparable_dimensions() {
-        return array('percentage', 'pressure-h', 'pressure', 'temperature', 'concentration-m', 'duration', 'length', 'angle', 'speed', 'humidity', 'area-density', 'rate', 'density', 'irradiance', 'illuminance', 'specific-energy', 'specific-energy-k', 'a-humidity');
+        return array('percentage', 'pressure-h', 'pressure', 'temperature', 'concentration-m', 'duration', 'length', 'angle', 'speed', 'area-density', 'rate', 'density', 'irradiance', 'illuminance', 'specific-energy', 'specific-energy-k', 'a-humidity');
     }
 
     /**
