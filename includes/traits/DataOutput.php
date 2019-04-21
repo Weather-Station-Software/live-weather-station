@@ -1978,6 +1978,12 @@ trait Output {
                                         if ($mode == 'yearly') {
                                             $a['timestamp'] = self::get_js_date_from_mysql_utc($a['timestamp'], $station['loc_timezone'], $end_date);
                                         }
+                                        if (!array_key_exists('offset', $arg)) {
+                                            $arg['offset'] = 0;
+                                        }
+                                        if (!is_numeric($arg['offset'])) {
+                                            $arg['offset'] = 0;
+                                        }
                                         if ($mode == 'climat') {
                                             $a['timestamp'] = self::get_js_date_from_mysql_utc($a['timestamp'], $station['loc_timezone'], $end_date) - ($arg['offset']);
                                         }

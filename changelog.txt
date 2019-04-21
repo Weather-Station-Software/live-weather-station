@@ -1,9 +1,13 @@
 
+#3.8.3 / April 21st, 2019
+
+* Bug fix: in some conditions, some climatological charts may trigger a PHP warning.
+
 #3.8.2 / April 21st, 2019
 
-* Improvement: the deferred loading of widget is now operational even if the theme doesn't comply with WordPress guidelines (special thanks to [@marcelc](https://weather.station.software/community/profile/marcelc/ for his invaluable help).
+* Improvement: the deferred loading of widget is now operational even if the theme doesn't comply with WordPress guidelines (special thanks to [@marcelc](https://weather.station.software/community/profile/marcelc/) for his invaluable help).
 * Improvement: for first time installation of the plugin, "Wait for DOM" and "Deferred widgets" are now unchecked.
-* Bug fix: in some DST conditions, the dates in climatological data (as text) may have a one day shift (thanks to [@HWIM](https://weather.station.software/community/profile/HWIM/)
+* Bug fix: in some DST conditions, the dates in climatological data (as text) may have a one day shift (thanks to [@HWIM](https://weather.station.software/community/profile/HWIM/)).
 * Bug fix: using custom palette may produce and error in some charts (thanks to [@gerhard](https://weather.station.software/community/profile/gerhard/)).
 * Removed: humidity is no more a comparable dimension because it was causing a lot of confusion. To compare absolute humidity, use "absolute humidity" as dimension. To compare relative humidity, use "percentage" as dimension.
 
