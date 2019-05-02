@@ -6061,6 +6061,11 @@ trait Output {
                 case 'simple-avg':
                     $select = 'AVG(`measure_value`) as val';
                     $where = "`measure_set`='" . $set . "'";
+                    /*if ($set == 'amp' || $set == 'mid') {
+                        $select = '(MAX(`measure_value`)-MIN(`measure_value`)) as amplitude, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as midrange';
+                        $where = "(`measure_set`='min' OR `measure_set`='max')";
+                        $group = "GROUP BY `timestamp`";
+                    }*/
                     break;
                 case 'simple-sum':
                     $select = 'SUM(`measure_value`) as val';
@@ -6413,7 +6418,6 @@ trait Output {
                     if ($set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
                         $where = " ";
                         $where2 = str_replace('`measure_value`', 'result.ddval', $where2);
-                        //$order = str_replace('`timestamp`', 'result.ts', $order);
                         $select = str_replace('`timestamp`', 'result.ts', $select);
                     }
                     $where = $where . $where2;
@@ -6451,6 +6455,7 @@ trait Output {
             //return $nested_fixed_sql;
 
             //return $simple_fixed_sql;
+
 
             switch ($computed) {
                 case 'simple-val':
@@ -9398,7 +9403,7 @@ trait Output {
             case 'uv_index':
             case 'uv_index_min':
             case 'uv_index_max':
-                $result = (string)$value;
+                $result = (string)$this->get_uv($value);
                 break;
             case 'illuminance':
             case 'illuminance_min':

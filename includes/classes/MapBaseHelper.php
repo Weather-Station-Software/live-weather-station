@@ -730,7 +730,8 @@ abstract class BaseHandling {
                     break;
             }
             $lr = $this->output_iconic_value(0, 'last_refresh');
-            $date = new \DateTime(date('Y-m-d H:i:s', $timestamp));
+            //$date = new \DateTime(date('Y-m-d H:i:s', $timestamp));
+            $date = new \DateTime($station['last_refresh']);
             $date->setTimezone(new \DateTimeZone($station['loc_timezone']));
             $lr = $lr . '&nbsp;' . $date->format('H:i');
             if ($s['url'] != '') {

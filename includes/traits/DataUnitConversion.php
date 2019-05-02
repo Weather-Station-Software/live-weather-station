@@ -663,6 +663,20 @@ trait Conversion {
     }
 
     /**
+     * Get the uv expressed in its unique unit.
+     *
+     * @param mixed $value The value of the uv.
+     * @return string The uv expressed in its unique unit.
+     * @since 3.8.4
+     */
+    protected function get_uv($value)
+    {
+        $result = $value;
+        return sprintf('%.2F', round($result, 2));
+    }
+
+
+    /**
      * Get the illuminance expressed in its unique unit.
      *
      * @param mixed $value The value of the illuminance.

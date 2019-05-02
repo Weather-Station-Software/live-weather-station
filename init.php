@@ -29,7 +29,7 @@ define('LWS_FILE_CACHE', false);
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.8.3');
+define('LWS_VERSION', '3.8.4');
 define('LWS_PREVIEW', false);
 
 define('LWS_CODENAME', '"Danakil"');
