@@ -291,10 +291,10 @@ class Handling {
 
         $maps = self::get_maps_count();
         if ($maps > 0) {
-            $s = sprintf( '<a class="lws-map-count" href="admin.php?page=lws-maps">%s</a>', sprintf(_n('%s Weather map', '%s Weather maps', $maps, 'live-weather-map'),$maps)) . "\n";
+            $s = sprintf( '<a class="lws-map-count" href="admin.php?page=lws-maps">%s</a>', sprintf(_n('%s Weather map', '%s Weather maps', $maps, 'live-weather-station'),$maps)) . "\n";
         }
         else {
-            $s = sprintf( '<span class="lws-map-count">%s</span>', __('No weather map', 'live-weather-map') ) . "\n";
+            $s = sprintf( '<span class="lws-map-count">%s</span>', __('No weather map', 'live-weather-station') ) . "\n";
         }
         echo '<li class="lws-map-count">' . $s . '</li>';
     }

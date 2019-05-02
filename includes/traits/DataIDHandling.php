@@ -25,7 +25,7 @@ trait Handling {
     private static $piou_id ='zz';
 
     private static $bsky_id ='94';
-    private static $ambt_id ='00';
+    private static $netatmo_id ='70';
 
     private static $owm_current_id ='wm';
     private static $owm_pollution_id ='po';
@@ -275,7 +275,12 @@ trait Handling {
      * @since 3.3.0
      */
     public static function is_ambt_station($station_id) {
-        return (substr($station_id, 0, 2) == self::$ambt_id);
+        //return (substr($station_id, 0, 2) == self::$ambt_id);
+        return (!self::is_owm_station($station_id) && !self::is_wug_station($station_id) &&
+            !self::is_raw_station($station_id) && !self::is_real_station($station_id) &&
+            !self::is_txt_station($station_id) && !self::is_wflw_station($station_id) &&
+            !self::is_piou_station($station_id) && !self::is_bsky_station($station_id) &&
+            !self::is_netatmo_station($station_id) && !self::is_wlink_station($station_id));
     }
 
     /**
@@ -297,11 +302,7 @@ trait Handling {
      * @since 3.0.0
      */
     public static function is_netatmo_station($station_id) {
-        return (!self::is_owm_station($station_id) && !self::is_wug_station($station_id) &&
-                !self::is_raw_station($station_id) && !self::is_real_station($station_id) &&
-                !self::is_txt_station($station_id) && !self::is_wflw_station($station_id) &&
-                !self::is_piou_station($station_id) && !self::is_bsky_station($station_id) &&
-            !self::is_ambt_station($station_id) && !self::is_wlink_station($station_id));
+        return (substr($station_id, 0, 2) == self::$netatmo_id);
     }
 
     /**

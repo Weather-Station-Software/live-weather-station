@@ -821,7 +821,7 @@ trait Generator {
             $capacities['napollution']['full'] = array('firmware', 'last_refresh', 'o3_distance', 'co_distance');
             $capacities['napollution']['standard'] = array('o3', 'co');
         }
-        if ($wug) {
+        elseif ($wug) {
             $capacities['namain']['full'] = array('last_seen', 'last_refresh', 'loc_timezone', 'loc_altitude', 'loc_latitude', 'loc_longitude');
             $capacities['namain']['extended'] = array('pressure', 'pressure_sl');
             $capacities['namodule1']['full'] = array('last_seen', 'last_refresh');
@@ -842,7 +842,7 @@ trait Generator {
             $capacities['napollution']['full'] = array('firmware', 'last_refresh', 'o3_distance', 'co_distance');
             $capacities['napollution']['standard'] = array('o3', 'co');
         }
-        if ($raw) {
+        elseif ($raw) {
             $capacities['namain']['full'] = array('battery', 'firmware', 'signal', 'last_seen', 'last_refresh', 'loc_timezone', 'loc_altitude', 'loc_latitude', 'loc_longitude');
             $capacities['namain']['extended'] = array('pressure', 'pressure_sl');
             $capacities['namodule1']['full'] = array('last_seen', 'last_refresh');
@@ -877,7 +877,7 @@ trait Generator {
             $capacities['napollution']['full'] = array('firmware', 'last_refresh', 'o3_distance', 'co_distance');
             $capacities['napollution']['standard'] = array('o3', 'co');
         }
-        if ($real) {
+        elseif ($real) {
             $capacities['namain']['full'] = array('battery', 'firmware', 'signal', 'last_seen', 'last_refresh', 'loc_timezone', 'loc_altitude', 'loc_latitude', 'loc_longitude');
             $capacities['namain']['extended'] = array('pressure', 'pressure_sl');
             $capacities['namodule1']['full'] = array('last_seen', 'last_refresh');
@@ -910,7 +910,7 @@ trait Generator {
             $capacities['napollution']['full'] = array('firmware', 'last_refresh', 'o3_distance', 'co_distance');
             $capacities['napollution']['standard'] = array('o3', 'co');
         }
-        if ($txt) {
+        elseif ($txt) {
             $capacities['namain']['full'] = array('last_refresh', 'loc_timezone', 'loc_altitude', 'loc_latitude', 'loc_longitude');
             $capacities['namain']['extended'] = array('pressure', 'pressure_sl');
             $capacities['namodule1']['full'] = array('last_seen', 'last_refresh');
@@ -936,7 +936,7 @@ trait Generator {
             $capacities['napollution']['full'] = array('firmware', 'last_refresh', 'o3_distance', 'co_distance');
             $capacities['napollution']['standard'] = array('o3', 'co');
         }
-        if ($wflw) {
+        elseif ($wflw) {
             $capacities['namain']['full'] = array('last_seen', 'last_refresh', 'loc_timezone', 'loc_altitude', 'loc_latitude', 'loc_longitude');
             $capacities['namain']['extended'] = array('pressure', 'pressure_sl');
             $capacities['namodule1']['full'] = array('last_seen', 'last_refresh');
@@ -964,7 +964,7 @@ trait Generator {
             $capacities['napollution']['full'] = array('firmware', 'last_refresh', 'o3_distance', 'co_distance');
             $capacities['napollution']['standard'] = array('o3', 'co');
         }
-        if ($piou) {
+        elseif ($piou) {
             $capacities['namain']['full'] = array('battery', 'signal', 'last_seen', 'last_refresh', 'loc_timezone', 'loc_altitude', 'loc_latitude', 'loc_longitude');
             $capacities['namain']['extended'] = array('pressure', 'pressure_sl');
             $capacities['namodule1']['full'] = array('last_refresh');
@@ -984,7 +984,7 @@ trait Generator {
             $capacities['napollution']['full'] = array('firmware', 'last_refresh', 'o3_distance', 'co_distance');
             $capacities['napollution']['standard'] = array('o3', 'co');
         }
-        if ($bsky) {
+        elseif ($bsky) {
             $capacities['namain']['full'] = array('last_refresh', 'loc_timezone', 'loc_altitude', 'loc_latitude', 'loc_longitude');
             $capacities['namain']['extended'] = array('pressure', 'pressure_sl');
             $capacities['namodule1']['full'] = array('last_refresh');
@@ -1011,7 +1011,7 @@ trait Generator {
             $capacities['napollution']['full'] = array('firmware', 'last_refresh', 'o3_distance', 'co_distance');
             $capacities['napollution']['standard'] = array('o3', 'co');
         }
-        if ($bstorm) {
+        elseif ($bstorm) {
             $capacities['namain']['full'] = array('last_refresh', 'loc_timezone', 'loc_altitude', 'loc_latitude', 'loc_longitude');
             $capacities['namain']['extended'] = array('pressure', 'pressure_sl');
             $capacities['namodule1']['full'] = array('last_refresh');
@@ -1031,7 +1031,6 @@ trait Generator {
             $capacities['namodulev']['full'] = array('last_refresh');
             $capacities['namodulev']['standard'] = array('video_metric', 'video_imperial');
 
-
             $capacities['nacomputed']['full'] = array('last_refresh', 'firmware', 'temperature_ref', 'humidity_ref', 'pressure_ref', 'wind_ref', 'zcast_live', 'zcast_best');
             $capacities['nacomputed']['standard'] = array('dew_point', 'frost_point', 'heat_index', 'steadman', 'summer_simmer', 'humidex', 'humidex', 'wind_chill', 'cloud_ceiling', 'cbi', 'air_density', 'wet_bulb', 'delta_t', 'wood_emc', 'specific_enthalpy', 'equivalent_temperature', 'potential_temperature', 'equivalent_potential_temperature', 'partial_vapor_pressure',  'saturation_vapor_pressure', 'partial_absolute_humidity', 'saturation_absolute_humidity', 'alt_pressure', 'alt_density');
             $capacities['nacurrent']['full'] = array('firmware', 'last_refresh', 'weather');
@@ -1042,7 +1041,7 @@ trait Generator {
             $capacities['napollution']['full'] = array('firmware', 'last_refresh', 'o3_distance', 'co_distance');
             $capacities['napollution']['standard'] = array('o3', 'co');
         }
-        if ($ambt) {
+        elseif ($ambt) {
             $capacities['namain']['full'] = array('last_refresh', 'loc_timezone', 'loc_altitude', 'loc_latitude', 'loc_longitude');
             $capacities['namain']['extended'] = array('pressure', 'pressure_sl');
             $capacities['namodule1']['full'] = array('last_refresh');
@@ -1071,7 +1070,7 @@ trait Generator {
             $capacities['napollution']['full'] = array('firmware', 'last_refresh', 'o3_distance', 'co_distance');
             $capacities['napollution']['standard'] = array('o3', 'co');
         }
-        if ($wlink) {
+        elseif ($wlink) {
             $capacities['namain']['full'] = array('firmware', 'last_seen', 'last_setup', 'last_refresh', 'loc_timezone', 'loc_altitude', 'loc_latitude', 'loc_longitude');
             $capacities['namain']['extended'] = array('pressure', 'pressure_sl');
             $capacities['namodule1']['full'] = array('last_seen', 'last_refresh');
@@ -1100,7 +1099,7 @@ trait Generator {
             $capacities['napollution']['full'] = array('firmware', 'last_refresh', 'o3_distance', 'co_distance');
             $capacities['napollution']['standard'] = array('o3', 'co');
         }
-        if ($owm) {
+        elseif ($owm) {
             $capacities['namain']['full'] = array('last_refresh', 'loc_timezone', 'loc_altitude', 'loc_latitude', 'loc_longitude');
             $capacities['nacomputed']['full'] = array('last_refresh', 'firmware', 'temperature_ref', 'humidity_ref', 'pressure_ref', 'wind_ref', 'zcast_live', 'zcast_best');
             $capacities['nacomputed']['standard'] = array('dew_point', 'frost_point', 'heat_index', 'steadman', 'summer_simmer', 'humidex', 'humidex', 'wind_chill', 'cloud_ceiling', 'cbi', 'air_density', 'wet_bulb', 'delta_t', 'wood_emc', 'specific_enthalpy', 'equivalent_temperature', 'potential_temperature', 'equivalent_potential_temperature', 'partial_vapor_pressure',  'saturation_vapor_pressure', 'partial_absolute_humidity', 'saturation_absolute_humidity', 'alt_pressure', 'alt_density');
@@ -1225,7 +1224,7 @@ trait Generator {
             $piou = OWM_Base_Collector::is_piou_station($data['station']['station_id']);
             $bsky = OWM_Base_Collector::is_bsky_station($data['station']['station_id']);
             $ambt = OWM_Base_Collector::is_ambt_station($data['station']['station_id']);
-            $wlink = OWM_Base_Collector::is_ambt_station($data['station']['station_id']);
+            $wlink = OWM_Base_Collector::is_wlink_station($data['station']['station_id']);
             $mainbase = array();
             if (count($data['module']) > 0) {
                 foreach ($data['module'] as $module) {

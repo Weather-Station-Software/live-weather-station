@@ -364,6 +364,29 @@ function lws_font_awesome($all=false) {
                 define('LWS_FA_SVG', true);
             }
             break;
+        case 6:                                             // Font Awesome official plugin
+            wp_dequeue_style('lws-font-awesome-4');
+            wp_dequeue_style('lws-font-awesome-5');
+            wp_dequeue_script('lws-fa-all');
+            wp_dequeue_script('lws-fa-brands');
+            wp_dequeue_script('lws-fa-regular');
+            wp_dequeue_script('lws-fa-solid');
+            if (!defined('LWS_FAR')) {
+                define('LWS_FAR', 'far');
+            }
+            if (!defined('LWS_FAB')) {
+                define('LWS_FAB', 'fab');
+            }
+            if (!defined('LWS_FAS')) {
+                define('LWS_FAS', 'fas');
+            }
+            if (!defined('LWS_FA5')) {
+                define('LWS_FA5', true);
+            }
+            if (!defined('LWS_FA_SVG')) {
+                define('LWS_FA_SVG', true);
+            }
+            break;
     }
 }
 
