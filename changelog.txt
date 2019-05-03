@@ -1,4 +1,8 @@
 
+#3.8.5 / May 3rd, 2019
+
+* Bug fix: in some rare conditions, icons may be hidden (thanks to [@remember](https://weather.station.software/community/profile/remember/)).
+
 #3.8.4 / May 2nd, 2019
 
 * Improvement: better capacities detection for stations collected via WeatherLink Network.
