@@ -8914,6 +8914,9 @@ trait Output {
      * @since 3.8.0
      */
     public function icon_shortcodes($attributes) {
+        wp_enqueue_style('lws-weather-icons');
+        wp_enqueue_style('lws-weather-icons-wind');
+        lws_font_awesome();
         $_attributes = shortcode_atts(array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => ''), $attributes);
         $args = $_attributes;
         if ($_attributes['format'] !== 'none') {
@@ -8944,6 +8947,9 @@ trait Output {
      */
     public function liveicon_shortcodes($attributes) {
         wp_enqueue_script('jquery');
+        wp_enqueue_style('lws-weather-icons');
+        wp_enqueue_style('lws-weather-icons-wind');
+        lws_font_awesome();
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => '', 'fx'=>'','color'=>'','speed'=>''), $attributes );
         $fingerprint = uniqid('', true);
         $uuid = substr ($fingerprint, strlen($fingerprint)-6, 80);
