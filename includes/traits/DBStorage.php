@@ -789,6 +789,10 @@ trait Storage {
                 self::safe_add_column($table_name, 'link_3', "ALTER TABLE " . $table_name . " ADD link_3 varchar(2000) DEFAULT '';");
             }
 
+            // VERSION 3.8.6
+            update_option('live_weather_station_rain_day_aggregated_max_boundary', 300);
+            update_option('live_weather_station_rain_month_aggregated_max_boundary', 1000);
+
 
             // ALL VERSION
 

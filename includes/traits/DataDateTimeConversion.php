@@ -970,14 +970,14 @@ trait Conversion {
                         $count += 1;
                     }
                     else {
-                        if ($count >= $max) {
-                            $maxstart = $start;
-                            $maxend = $last;
-                            $max = $count;
-                        }
                         $count = 1;
                         $start = $date;
                         $last = $date;
+                    }
+                    if ($count >= $max) {
+                        $maxstart = $start;
+                        $maxend = $last;
+                        $max = $count;
                     }
                 }
                 else {

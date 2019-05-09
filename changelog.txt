@@ -1,4 +1,14 @@
 
+#3.8.6 / May 9th, 2019
+
+* Improvement: base stations (for file-based stations) have now a "last seen" measurement (thanks to [@daguilera](https://weather.station.software/community/profile/daguilera/) for the suggestion).
+* Improvement: in maps, if the station allows it, the given time is now the last seen time, else it is just the last refresh time (thanks to [@daguilera](https://weather.station.software/community/profile/daguilera/) for the suggestion).
+* Improvement: amplitude and mid-range datasets evaluations have been optimized in climatological textual data.
+* Improvement: daily and monthly aggregated rain have now an increased maximum limit (thanks to [@thomas](https://weather.station.software/community/profile/thomas/) for the suggestion).
+* Bug fix: in climatological textual data, "longest duration" computation is erroneous when it is equivalent to the observed period.
+* Bug fix: in climatological textual data, highest an lowest values may be wrong for amplitude and mid-range datasets.
+* Bug fix: with some browsers, all the controls may be wrongly hidden in Windy maps (thanks to [@janvizage](https://weather.station.software/community/profile/janvizage/)).
+
 #3.8.5 / May 3rd, 2019
 
 * Bug fix: in some rare conditions, icons may be hidden (thanks to [@remember](https://weather.station.software/community/profile/remember/)).
