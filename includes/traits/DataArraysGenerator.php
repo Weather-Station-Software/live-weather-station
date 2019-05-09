@@ -911,7 +911,7 @@ trait Generator {
             $capacities['napollution']['standard'] = array('o3', 'co');
         }
         elseif ($txt) {
-            $capacities['namain']['full'] = array('last_refresh', 'loc_timezone', 'loc_altitude', 'loc_latitude', 'loc_longitude');
+            $capacities['namain']['full'] = array('last_seen', 'last_refresh', 'loc_timezone', 'loc_altitude', 'loc_latitude', 'loc_longitude');
             $capacities['namain']['extended'] = array('pressure', 'pressure_sl');
             $capacities['namodule1']['full'] = array('last_seen', 'last_refresh');
             $capacities['namodule1']['extended'] = array('absolute_humidity', 'humidity', 'temperature');

@@ -493,7 +493,6 @@ function lws_print_begin_script($jsInitId='') {
         else {
             $result .= 'if (document.readyState !== "loading") {lwsInitDefered' . $jsInitId . '();} else {document.addEventListener("DOMContentLoaded", function () {lwsInitDefered' . $jsInitId . '();});}';
             $result .= 'function lwsInitDefered' . $jsInitId . '() {';
-            //$result .= 'console.log("defered loading")';
         }
     }
     return $result;

@@ -4,7 +4,7 @@ Tags: weather, openweathermap, netatmo, weatherflow
 Requires at least: 4.9
 Requires PHP: 7.1
 Tested up to: 5.2
-Stable tag: 3.8.5
+Stable tag: 3.8.6
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://support.laquadrature.net/

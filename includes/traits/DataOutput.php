@@ -5913,7 +5913,7 @@ trait Output {
         $year_period = array();
         $year1_period = array();
         $year2_period = array();
-        if (($aggregated || $both) && $computed != 'aaaaaasimple-sum'){
+        if (($aggregated || $both)){
             $o_date = $this->get_oldest_data($station);
             $y_date = $this->get_youngest_data($station);
             $oldest_date = new \DateTime($o_date, new \DateTimeZone($station['loc_timezone']));
@@ -6061,19 +6061,29 @@ trait Output {
                 case 'simple-avg':
                     $select = 'AVG(`measure_value`) as val';
                     $where = "`measure_set`='" . $set . "'";
-                    /*if ($set == 'amp' || $set == 'mid') {
-                        $select = '(MAX(`measure_value`)-MIN(`measure_value`)) as amplitude, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as midrange';
+                    if ($set == 'amp' || $set == 'mid') {
+                        $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
                         $where = "(`measure_set`='min' OR `measure_set`='max')";
                         $group = "GROUP BY `timestamp`";
-                    }*/
+                    }
                     break;
                 case 'simple-sum':
                     $select = 'SUM(`measure_value`) as val';
                     $where = "`measure_set`='" . $set . "'";
+                    if ($set == 'amp' || $set == 'mid') {
+                        $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
+                        $where = "(`measure_set`='min' OR `measure_set`='max')";
+                        $group = "GROUP BY `timestamp`";
+                    }
                     break;
                 case 'simple-min':
                     $select = 'MIN(`measure_value`) as val';
                     $where = "`measure_set`='" . $set . "'";
+                    if ($set == 'amp' || $set == 'mid') {
+                        $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
+                        $where = "(`measure_set`='min' OR `measure_set`='max')";
+                        $group = "GROUP BY `timestamp`";
+                    }
                     if ($set == 'hdd-da') {
                         $select = "MIN(ABS(17-`measure_value`)) as val";
                         $where = "`measure_value`<17 AND `measure_set`='avg'";
@@ -6118,6 +6128,11 @@ trait Output {
                 case 'simple-max':
                     $select = 'MAX(`measure_value`) as val';
                     $where = "`measure_set`='" . $set . "'";
+                    if ($set == 'amp' || $set == 'mid') {
+                        $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
+                        $where = "(`measure_set`='min' OR `measure_set`='max')";
+                        $group = "GROUP BY `timestamp`";
+                    }
                     if ($set == 'hdd-da') {
                         $select = "MAX(ABS(17-`measure_value`)) as val";
                         $where = "`measure_value`<17 AND `measure_set`='avg'";
@@ -6164,6 +6179,14 @@ trait Output {
                     $fwhere = "`measure_set`='" . $set . "'";
                     $aselect = 'AVG(`measure_value`) as val';
                     $awhere = "`measure_set`='" . $set . "'";
+                    if ($set == 'amp' || $set == 'mid') {
+                        $fselect = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
+                        $fwhere = "(`measure_set`='min' OR `measure_set`='max')";
+                        $fgroup = "GROUP BY `timestamp`";
+                        $aselect = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
+                        $awhere = "(`measure_set`='min' OR `measure_set`='max')";
+                        $agroup = "GROUP BY `timestamp`";
+                    }
                     if ($set == 'hell') {
                         $fselect = "ABS(SUM(`measure_value`)) as val";
                         $fwhere = "`measure_value`<0 AND `measure_set`='avg'";
@@ -6241,6 +6264,12 @@ trait Output {
                     $select = '`timestamp` as ts, `measure_value` as val';
                     $where = "`measure_set`='" . $set . "'";
                     $order = 'ORDER BY val ASC';
+                    if ($set == 'amp' || $set == 'mid') {
+                        $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
+                        $where = "(`measure_set`='min' OR `measure_set`='max')";
+                        $group = "GROUP BY `timestamp`";
+                        $order = '';
+                    }
                     if ($set == 'hdd-da') {
                         $select = "`timestamp` as ts, ABS(17-`measure_value`) as val";
                         $where = "`measure_value`<17 AND `measure_set`='avg'";
@@ -6286,6 +6315,12 @@ trait Output {
                     $select = '`timestamp` as ts, `measure_value` as val';
                     $where = "`measure_set`='" . $set . "'";
                     $order = 'ORDER BY val DESC';
+                    if ($set == 'amp' || $set == 'mid') {
+                        $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
+                        $where = "(`measure_set`='min' OR `measure_set`='max')";
+                        $group = "GROUP BY `timestamp`";
+                        $order = '';
+                    }
                     if ($set == 'hdd-da') {
                         $select = "`timestamp` as ts, ABS(17-`measure_value`) as val";
                         $where = "`measure_value`<17 AND `measure_set`='avg'";
@@ -6330,12 +6365,19 @@ trait Output {
                 case 'count-day':
                     $select = 'COUNT(*) as val';
                     $where = "`measure_set`='" . $set . "' AND ";
-                    switch ($condition) {
-                        case 'comp-l': $where2 = "`measure_value`<" . $th1 ;break;
-                        case 'comp-eq': $where2 = "`measure_value`=" . $th1 ;break;
-                        case 'comp-g': $where2 = "`measure_value`>" . $th1 ;break;
-                        case 'comp-b': $where2 = "(`measure_value`>" . $th1 . " AND `measure_value`<" . $th2 . ")";break;
-                        case 'comp-nb': $where2 = "(`measure_value`<" . $th1 . " OR `measure_value`>" . $th2 . ")";break;
+                    if ($set == 'amp' || $set == 'mid') {
+                        $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
+                        $where = "(`measure_set`='min' OR `measure_set`='max')";
+                        $group = "GROUP BY `timestamp`";
+                        $order = '';
+                    } else {
+                        switch ($condition) {
+                            case 'comp-l': $where2 = "`measure_value`<" . $th1 ;break;
+                            case 'comp-eq': $where2 = "`measure_value`=" . $th1 ;break;
+                            case 'comp-g': $where2 = "`measure_value`>" . $th1 ;break;
+                            case 'comp-b': $where2 = "(`measure_value`>" . $th1 . " AND `measure_value`<" . $th2 . ")";break;
+                            case 'comp-nb': $where2 = "(`measure_value`<" . $th1 . " OR `measure_value`>" . $th2 . ")";break;
+                        }
                     }
                     if ($set == 'hdd-da') {
                         $from = "(SELECT ABS(17-nested.`measure_value`) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`<17 AND nested.`measure_set`='avg') AS result ";
@@ -6378,12 +6420,19 @@ trait Output {
                     $select = '`timestamp` as val';
                     $where = "`measure_set`='" . $set . "' AND ";
                     $order = 'ORDER BY val ASC';
-                    switch ($condition) {
-                        case 'comp-l': $where2 = "`measure_value`<" . $th1 ;break;
-                        case 'comp-eq': $where2 = "`measure_value`=" . $th1 ;break;
-                        case 'comp-g': $where2 = "`measure_value`>" . $th1 ;break;
-                        case 'comp-b': $where2 = "(`measure_value`>" . $th1 . " AND `measure_value`<" . $th2 . ")";break;
-                        case 'comp-nb': $where2 = "(`measure_value`<" . $th1 . " OR `measure_value`>" . $th2 . ")";break;
+                    if ($set == 'amp' || $set == 'mid') {
+                        $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
+                        $where = "(`measure_set`='min' OR `measure_set`='max')";
+                        $group = "GROUP BY `timestamp`";
+                        $order = 'ORDER BY timestamp ASC';
+                    } else {
+                        switch ($condition) {
+                            case 'comp-l': $where2 = "`measure_value`<" . $th1 ;break;
+                            case 'comp-eq': $where2 = "`measure_value`=" . $th1 ;break;
+                            case 'comp-g': $where2 = "`measure_value`>" . $th1 ;break;
+                            case 'comp-b': $where2 = "(`measure_value`>" . $th1 . " AND `measure_value`<" . $th2 . ")";break;
+                            case 'comp-nb': $where2 = "(`measure_value`<" . $th1 . " OR `measure_value`>" . $th2 . ")";break;
+                        }
                     }
                     if ($set == 'hdd-da') {
                         $from = "(SELECT nested.`timestamp` as ts, ABS(17-nested.`measure_value`) as ddval FROM " . $table_name . " AS nested WHERE " . $nested_where . " nested.`measure_value`<17 AND nested.`measure_set`='avg') AS result ";
@@ -6456,6 +6505,8 @@ trait Output {
 
             //return $simple_fixed_sql;
 
+            //return $simple_aggregated_sql;
+
 
             switch ($computed) {
                 case 'simple-val':
@@ -6479,6 +6530,39 @@ trait Output {
                     if ($aggregated) {
                         $rows = $wpdb->get_results($simple_aggregated_sql, ARRAY_A);
                     }
+                    if ($set == 'amp' || $set == 'mid') {
+                        $avg = 0;
+                        $sum = 0;
+                        $min = 0;
+                        $max = 0;
+                        $start = true;
+                        foreach ($rows as $row) {
+                            if ($start) {
+                                $min = $row[$set];
+                                $max = $row[$set];
+                                $start = false;
+                            }
+                            else {
+                                if ($row[$set] < $min) {
+                                    $min = $row[$set];
+                                }
+                                if ($row[$set] > $max) {
+                                    $max = $row[$set];
+                                }
+                            }
+                            $sum = $sum + $row[$set];
+                        }
+                        if (count($rows) > 0) {
+                            $avg = $sum / count($rows);
+                        }
+                        $rows = array();
+                        switch ($computed) {
+                            case 'simple-avg': $rows[0]['val'] = $avg; break;
+                            case 'simple-sum': $rows[0]['val'] = $sum; break;
+                            case 'simple-min': $rows[0]['val'] = $min; break;
+                            case 'simple-max': $rows[0]['val'] = $max; break;
+                        }
+                    }
                     if ($set == 'hell' || $set == 'frst' || $set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
                         $result = $this->rebase_value($rows[0]['val'], $measurement);
                     }
@@ -6489,6 +6573,32 @@ trait Output {
                 case 'simple-dev':
                     $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
                     $ref_rows = $wpdb->get_results($simple_aggregated_sql, ARRAY_A);
+
+
+                    if ($set == 'amp' || $set == 'mid') {
+                        $avg = 0;
+                        $sum = 0;
+                        foreach ($rows as $row) {
+                            $sum = $sum + $row[$set];
+                        }
+                        if (count($rows) > 0) {
+                            $avg = $sum / count($rows);
+                        }
+                        $rows = array();
+                        $rows[0]['val'] = $avg;
+                        $avg = 0;
+                        $sum = 0;
+                        foreach ($ref_rows as $row) {
+                            $sum = $sum + $row[$set];
+                        }
+                        if (count($ref_rows) > 0) {
+                            $avg = $sum / count($ref_rows);
+                        }
+                        $ref_rows = array();
+                        $ref_rows[0]['val'] = $avg;
+                    }
+
+
                     $val = $this->rebase_value($rows[0]['val'] - $ref_rows[0]['val'], $measurement);
                     if ($set == 'hell' || $set == 'frst' || $set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
                         $result = $val;
@@ -6508,15 +6618,61 @@ trait Output {
                     if ($aggregated) {
                         $rows = $wpdb->get_results($simple_aggregated_sql, ARRAY_A);
                     }
+                    if ($set == 'amp' || $set == 'mid') {
+                        $min = 0;
+                        $max = 0;
+                        $start = true;
+                        foreach ($rows as $row) {
+                            if ($start) {
+                                $min = $row[$set];
+                                $datemin = $row['timestamp'];
+                                $max = $row[$set];
+                                $datemax = $row['timestamp'];
+                                $start = false;
+                            }
+                            else {
+                                if ($row[$set] < $min) {
+                                    $min = $row[$set];
+                                    $datemin = $row['timestamp'];
+                                }
+                                if ($row[$set] > $max) {
+                                    $max = $row[$set];
+                                    $datemax = $row['timestamp'];
+                                }
+                            }
+                        }
+                        $rows = array();
+                        switch ($computed) {
+                            case 'date-min': $rows[0]['ts'] = $datemin; break;
+                            case 'date-max': $rows[0]['ts'] = $datemax; break;
+                        }
+                    }
                     $date = new \DateTime($rows[0]['ts']);
                     $result = date_i18n(get_option('date_format'), $date->getTimestamp());
                     break;
                 case 'count-day':
-                    if ($set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
-                        $rows = $wpdb->get_results($nested_fixed_sql, ARRAY_A);
+                    if ($set == 'amp' || $set == 'mid') {
+                        $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
+                        $count = 0;
+                        foreach ($rows as $row) {
+                            switch ($condition) {
+                                case 'comp-l': if ($row[$set] < $th1) {$count += 1;} break;
+                                case 'comp-eq': if ($row[$set] == $th1) {$count += 1;} break;
+                                case 'comp-g': if ($row[$set] > $th1) {$count += 1;} break;
+                                case 'comp-b': if ($row[$set] > $th1 && $row[$set] < $th2) {$count += 1;} break;
+                                case 'comp-nb': if ($row[$set] < $th1 || $row[$set] > $th2) {$count += 1;} break;
+                            }
+                        }
+                        $rows = array();
+                        $rows[0]['val'] = $count;
                     }
                     else {
-                        $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
+                        if ($set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
+                            $rows = $wpdb->get_results($nested_fixed_sql, ARRAY_A);
+                        }
+                        else {
+                            $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
+                        }
                     }
                     $result = sprintf(_n('%s day', '%s days', $rows[0]['val'], 'live-weather-station'), $rows[0]['val']);
                     break;
@@ -6528,7 +6684,21 @@ trait Output {
                     else {
                         $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
                     }
+                    if ($set == 'amp' || $set == 'mid') {
+                        $ts = array();
+                        foreach ($rows as $row) {
+                            switch ($condition) {
+                                case 'comp-l': if ($row[$set] < $th1) {$ts[] = array('val' => $row['timestamp']);} break;
+                                case 'comp-eq': if ($row[$set] == $th1) {$ts[] = array('val' => $row['timestamp']);} break;
+                                case 'comp-g': if ($row[$set] > $th1) {$ts[] = array('val' => $row['timestamp']);} break;
+                                case 'comp-b': if ($row[$set] > $th1 && $row[$set] < $th2) {$ts[] = array('val' => $row['timestamp']);} break;
+                                case 'comp-nb': if ($row[$set] < $th1 || $row[$set] > $th2) {$ts[] = array('val' => $row['timestamp']);} break;
+                            }
+                        }
+                        $rows = $ts;
+                    }
                     $period = $this->get_longest_period($rows);
+                    //return print_r($rows, true);
                     if ($computed == 'duration-day') {
                         if ($period['length'] != 0) {
                             $result = sprintf(_n('%s day', '%s days', $period['length'], 'live-weather-station'), $period['length']);
