@@ -339,12 +339,12 @@ class Thunderstorm extends Base {
                         break;
                     case 'NAEphemer':
                         if (array_key_exists('sunrise', $module['datas']) && array_key_exists('sunset', $module['datas'])) {
-                            $sunrise = $module['datas']['sunrise']['value'];
-                            $sunset = $module['datas']['sunset']['value'];
+                            $sunrise = $module['datas']['sunrise']['raw_value'];
+                            $sunset = $module['datas']['sunset']['raw_value'];
                         }
                         if (array_key_exists('sunrise_a', $module['datas']) && array_key_exists('sunset_a', $module['datas'])) {
-                            $sunrise_a = $module['datas']['sunrise_a']['value'];
-                            $sunset_a = $module['datas']['sunset_a']['value'];
+                            $sunrise_a = $module['datas']['sunrise_a']['raw_value'];
+                            $sunset_a = $module['datas']['sunset_a']['raw_value'];
                         }
                         break;
                     case 'NAModule7': // Thunderstorm
