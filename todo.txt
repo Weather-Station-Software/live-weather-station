@@ -25,7 +25,6 @@
  * 3.x - Simple Weather Widget
  * 4.x - Soil widget
  * 4.x - UV widget
- * 4.x - Icons dashboard
  * 4.x - Pollution widget
  * 5.x - Marine widget
  * 5.x - Aero widget
@@ -66,7 +65,7 @@ Fully delete a station in fast collect mode
 
 ***********************
 * TRADUCTION          *
-***********************
+***********************  
 
 
 ***********************
@@ -97,9 +96,15 @@ TRANSLATION:
 DOCUMENTATION:
 --------------
 
-stations's page
+API stations
 
------
+Reports
+
+OpenAQ
+
+Push to Windy
+
+
 
 
 
@@ -116,6 +121,33 @@ style : area and line opacity, widget scale, ...
 
 use wind classification (textual, charts, )
 
+shortcode modification
+
+extrapolation
+
+graph on 24h
+
+force units for graph, controls, etc.
+
+dualscale for line charts
+
+manual entry
+
+weather camera management
+
+Windrun
+
+Pause station
+
+Warning alerts
+
+Widget for external websites
+
+Modules names : https://weather.station.software/community/ideas-suggestions/show-module-name-when-using-chart-with-two-lines/
+
+Sunshine rate / solar radiation
+
+http://brunob.github.io/leaflet.fullscreen/
 
 UV sticker
 

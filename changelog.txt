@@ -1,4 +1,9 @@
 
+#3.8.7 / 17th, 2019
+
+* Improvement: night/day computation has been optimized for some version of PHP (thanks to [@mjasinski](https://weather.station.software/community/profile/mjasinski/) for the suggestion).
+* Bug fix: it's not possible to set barometric pressure thresholds when in non metric units (thanks to [@thomas](https://weather.station.software/community/profile/thomas/)).
+
 #3.8.6 / May 9th, 2019
 
 * Improvement: base stations (for file-based stations) have now a "last seen" measurement (thanks to [@daguilera](https://weather.station.software/community/profile/daguilera/) for the suggestion).

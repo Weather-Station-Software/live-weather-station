@@ -1548,6 +1548,7 @@ trait Conversion {
         $result = $value;
         switch (strtolower($type)) {
             case 'pressure':
+            case 'pressure_sl':
             case 'pressure_min':
             case 'pressure_max':
             case 'moisture_tension':

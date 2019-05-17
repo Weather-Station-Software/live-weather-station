@@ -14,7 +14,7 @@ use WeatherStation\System\Plugin\Uninstaller;
  * Plugin Name:       Weather Station
  * Plugin URI:        https://weather.station.software/
  * Description:       Display on your WordPress site, in many elegant ways, the meteorological data collected by public or personal weather stations.
- * Version:           3.8.6
+ * Version:           3.8.7
  * Author:            Pierre Lannoy
  * Author URI:        https://pierre.lannoy.fr
  * License:           GPLv2 or later
