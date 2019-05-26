@@ -106,7 +106,7 @@ Push to Windy
 
 
 
-
+New mapbox counting and pricing
 
 
 Accumulated rain in yearly charts
