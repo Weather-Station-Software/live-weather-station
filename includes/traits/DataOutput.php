@@ -10362,8 +10362,8 @@ trait Output {
                 }
                 $result['comp'] = __('now', 'live-weather-station') ;
                 if (strtolower($module_type)=='nacurrent') {
-                    $result['comp'] = __('/ 3 hr', 'live-weather-station') ;
-                    $result['dimension'] = 'rate';
+                    $result['comp'] = __('/ 1 hr', 'live-weather-station') ;
+                    $result['dimension'] = 'length';
                 }
                 $result['unit'] = $this->get_rain_unit($ref) ;
                 $result['long'] = $this->get_rain_unit_full($ref) ;
@@ -10436,7 +10436,7 @@ trait Output {
                 }
                 if (strtolower($module_type)=='nacurrent') {
                     $result['comp'] = __('/ 3 hr', 'live-weather-station') ;
-                    $result['dimension'] = 'rate';
+                    $result['dimension'] = 'length';
                 }
                 $result['unit'] = $this->get_snow_unit($ref) ;
                 $result['long'] = $this->get_snow_unit_full($ref) ;

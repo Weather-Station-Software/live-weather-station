@@ -128,8 +128,11 @@ trait CurrentClient {
                 $dashboard['winddirection'] = 0;
                 $dashboard['windstrength'] = 0;
             }
-            if (array_key_exists('rain', $weather) && isset($weather['rain']['3h'])) {
-                $dashboard['rain'] = $weather['rain']['3h'];
+            if (array_key_exists('rain', $weather) && isset($weather['rain']['1h'])) {
+                $dashboard['rain'] = $weather['rain']['1h'];
+                $result['data_type'][] = 'rain';
+            } elseif (array_key_exists('rain', $weather) && isset($weather['rain']['3h'])) {
+                $dashboard['rain'] = (int)($weather['rain']['3h']) / 3;
                 $result['data_type'][] = 'rain';
             } else {
                 $dashboard['rain'] = 0;

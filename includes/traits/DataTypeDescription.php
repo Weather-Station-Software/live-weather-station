@@ -50,6 +50,7 @@ trait Description {
                 break;
             case 11:
                 $result = 'Ambient';
+                break;
             case 12:
                 $result = 'WeatherLink';
                 break;
@@ -438,10 +439,10 @@ trait Description {
                     $result = ($abbr ? __('Rain', 'live-weather-station') : __('Rain rate', 'live-weather-station'));
                 }
                 else {
-                    $result = ($abbr ? __('Rain', 'live-weather-station') : __('Rain, last 3 hours accumulation', 'live-weather-station'));
+                    $result = ($abbr ? __('Rain', 'live-weather-station') : __('Rain, last hour accumulation', 'live-weather-station'));
                     if ($meaning) {
                         /* translators: appears in controls as "meaning" of the measurement, must not have more than 18 car. You can use abbreviated words. */
-                        $result = __('Rain last 3h', 'live-weather-station');
+                        $result = __('Rain last hour', 'live-weather-station');
                     }
                 }
                 break;

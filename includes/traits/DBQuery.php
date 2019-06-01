@@ -329,6 +329,8 @@ trait Query {
                     case 'namodule5': // Solar module
                     case 'namodule6': // Soil module
                     case 'namodule7': // Thunderstorm module
+                    case 'namodulep': // Picture module
+                    case 'namodulev': // Video module
                         $result[$line['device_id']]['comp_ext'] = $result[$line['device_id']]['comp_ext'] + 1;
                         break;
                     case 'namodule4': // Additional indoor module
