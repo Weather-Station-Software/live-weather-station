@@ -1,5 +1,14 @@
 
-#3.8.7 / 17th, 2019
+#3.8.8 / June 1st, 2019
+
+* Improvement: optimized algorithm for stations publishing rain as last 1h/3h accumulation.
+* Improvement: better detection of stations having an embedded camera.
+* Improvement: quota management for MapBox follows [new pricing and counting](https://blog.mapbox.com/new-pricing-46b7c26166e7) structure.
+* Bug fix: rain is not properly collected for OpenWeatherMap stations since they changed their model (thanks to [@florence](https://weather.station.software/community/profile/florence/)).
+* Bug fix: in some rare cases, Ambient stations may be reported as WeatherLink attached stations.
+* Bug fix: the count of external modules is wrong when the station have a camera (thanks to [@bobeckman](https://weather.station.software/community/profile/bobeckman/)).
+
+#3.8.7 / May 17th, 2019
 
 * Improvement: night/day computation has been optimized for some version of PHP (thanks to [@mjasinski](https://weather.station.software/community/profile/mjasinski/) for the suggestion).
 * Bug fix: it's not possible to set barometric pressure thresholds when in non metric units (thanks to [@thomas](https://weather.station.software/community/profile/thomas/)).

@@ -104,10 +104,7 @@ OpenAQ
 
 Push to Windy
 
-
-
-New mapbox counting and pricing
-
+file caching
 
 Accumulated rain in yearly charts
 

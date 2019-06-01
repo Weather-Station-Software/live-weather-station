@@ -258,7 +258,7 @@ class Quota {
             case 'Mapbox':
                 switch ($verb) {
                     case 'GET' :
-                        $quota = 1610;
+                        $quota = 1700;
                         break;
                 }
                 break;
