@@ -30,7 +30,7 @@ foreach ($modules as $module) {
             <h3 style="border-bottom: 1px solid #EEE;cursor:default;"><span><?php echo sprintf(__('The type of %s currently selected is %s', 'live-weather-station'), $type, '<em>' . $name . '</em>');?>&hellip;</span></h3>
         <?php } ?>
         <div style="width: 100%;text-align: center;padding: 0px;margin-bottom: 0px;" class="inside">
-            <div style="padding: 0px 16px 0px 0px;display:flex;flex-direction:row;flex-wrap:wrap;justify-content: center;align-items: center;align-content: center;">
+            <div style="padding: 0px 16px 16px 0px;display:flex;flex-direction:row;flex-wrap:wrap;justify-content: center;align-items: center;align-content: center;">
                 <style>
                     .container-actionable {flex:auto;margin: 16px;width: 40px;height: 40px;}
                     .actionable {width:40px;height:40px;padding:10px 10px 13px 10px;font-size:30px;border-radius:6px;cursor:pointer; -moz-transition: all .5s ease-in; -o-transition: all .5s ease-in; -webkit-transition: all .5s ease-in; transition: all .5s ease-in; background: transparent;border:1px solid transparent;}
