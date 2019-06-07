@@ -24,11 +24,12 @@ trait Handling {
     private static $wflw_id ='zy';
     private static $piou_id ='zz';
 
-    private static $bsky_id1 ='04';
-    private static $bsky_id2 ='94';
-    private static $bsky_id3 ='e0';
-    private static $netatmo_id ='70';
+    private static $bsky_id = array('04:e6:76', '40:ed:98', '44:2c:05', '94:a1:a2', 'e0:76:d0');
+    //private static $bsky_id1 ='04';
+    //private static $bsky_id2 ='94';
+    //private static $bsky_id3 ='e0';
 
+    private static $netatmo_id ='70';
     private static $owm_current_id ='wm';
     private static $owm_pollution_id ='po';
     private static $computed_id ='00';
@@ -266,7 +267,15 @@ trait Handling {
      * @since 3.3.0
      */
     public static function is_bsky_station($station_id) {
-        return (substr($station_id, 0, 2) == self::$bsky_id1 || substr($station_id, 0, 2) == self::$bsky_id2 || substr($station_id, 0, 2) == self::$bsky_id3);
+        $result = false;
+        foreach (self::$bsky_id as $id) {
+            if (substr($station_id, 0, 8) == $id) {
+                $result = true;
+                break;
+            }
+        }
+        //return (substr($station_id, 0, 2) == self::$bsky_id1 || substr($station_id, 0, 2) == self::$bsky_id2 || substr($station_id, 0, 2) == self::$bsky_id3);
+        return $result;
     }
 
     /**

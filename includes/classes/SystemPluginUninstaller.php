@@ -8,9 +8,9 @@ use WeatherStation\DB\Storage as Storage;
 use WeatherStation\System\Cache\Cache;
 
 /**
- * Fired during plugin deactivation.
+ * Fired during plugin deletion.
  *
- * This class defines all code necessary to run during the plugin's deactivation.
+ * This class defines all code necessary to run during the plugin's deletion.
  *
  * @package Includes\Classes
  * @author Pierre Lannoy <https://pierre.lannoy.fr/>.

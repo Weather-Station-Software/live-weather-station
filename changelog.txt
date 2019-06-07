@@ -1,3 +1,8 @@
+#3.8.9 / June 7th, 2019
+
+* Improvement: better layout in shortcode module selection.
+* Improvement: better detection of embedded camera for Bloomsky stations.
+* Bug fix: some Bloomsky stations are not correctly detected (thanks to [@bobeckman](https://weather.station.software/community/profile/bobeckman/)).
 
 #3.8.8 / June 1st, 2019
 
