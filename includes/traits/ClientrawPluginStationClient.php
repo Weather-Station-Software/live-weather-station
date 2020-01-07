@@ -40,17 +40,20 @@ trait StationClient {
      */
     private function format_and_store($raw_data, $station) {
         $weather = $this->explode_data($raw_data);
-        if (!$weather) {
-            throw new \Exception('Bad file format.');
+        if ($weather) {
+            throw new \Exception('Empty or unreadable file.');
         }
-        try {
-            $timezone = $station['loc_timezone'];
-            $locat_ts = gmmktime($weather[29], $weather[30], $weather[31], $weather[36], $weather[35], $weather[141]);
-            $timestamp = date('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $timezone));
+        else {
+            try {
+                $timezone = $station['loc_timezone'];
+                $locat_ts = gmmktime((int)$weather[29], (int)$weather[30], (int)$weather[31], (int)$weather[36], (int)$weather[35], (int)$weather[141]);
+                $timestamp = date('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $timezone));
+            }
+            catch (\Exception $e) {
+                throw new \Exception('Bad file format.');
+            }
         }
-        catch (\Exception $e) {
-            throw new \Exception('Bad file format.');
-        }
+
 
         // NAMain
         try {
@@ -95,29 +98,6 @@ trait StationClient {
             $updates['measure_type'] = 'pressure_sl';
             $updates['measure_value'] = $weather[6];
             $this->update_data_table($updates, $timezone);
-            // TODO: remove after validation
-            /*$updates['measure_type'] = 'pressure_min';
-            $updates['measure_value'] = $this->convert_from_mslp_to_baro($weather[132], $station['loc_altitude'], $weather[4]);
-            $this->update_data_table($updates, $timezone);
-            $updates['measure_type'] = 'pressure_sl_min';
-            $updates['measure_value'] = $weather[132];
-            $this->update_data_table($updates, $timezone);
-            $updates['measure_type'] = 'pressure_max';
-            $updates['measure_value'] = $this->convert_from_mslp_to_baro($weather[131], $station['loc_altitude'], $weather[4]);
-            $this->update_data_table($updates, $timezone);
-            $updates['measure_type'] = 'pressure_sl_max';
-            $updates['measure_value'] = $weather[131];
-            $this->update_data_table($updates, $timezone);
-            $trend = 'stable';
-            if ($weather[50] > 0) {
-                $trend = 'up';
-            }
-            if ($weather[50] < 0) {
-                $trend = 'down';
-            }
-            $updates['measure_type'] = 'pressure_trend';
-            $updates['measure_value'] = $trend;
-            $this->update_data_table($updates, $timezone);*/
             $updates['measure_type'] = 'battery';
             $updates['measure_value'] = 100;
             $this->update_data_table($updates, $timezone);
@@ -528,6 +508,7 @@ trait StationClient {
             $weather = explode(' ', $raw_data);
             Logger::debug($this->facility, $this->service, null, null, null, null, null, print_r($weather, true));
             if (count($weather) < 167) {
+                Logger::warning($this->facility, $this->service, null, null, null, null, null, '');
                 return false;
             }
             else {
@@ -554,13 +535,16 @@ trait StationClient {
     public function test($connection_type, $resource) {
         $result = '';
         $raw_data = $this->get_data($connection_type, $resource);
-        if (strpos($raw_data, '2345 ') != 1) {
-            $result = __('The source you specified is not accessible.', 'live-weather-station');
+        if (strpos($raw_data, 'Err #') !== false) {
+            $result = $raw_data;
+        }
+        elseif (strpos($raw_data, '2345 ') != 1) {
+            $result = __('The source you specified is not in the correct format or is corrupted.', 'live-weather-station');
         }
         else {
             $weather = $this->explode_data($raw_data);
             if (!is_array($weather)) {
-                $result = __('Bad file format.', 'live-weather-station');
+                $result = __('Unable to read this file. This may mean that the file is inaccessible, unreadable, contains corrupted data, or is not in the correct format.', 'live-weather-station');
             }
         }
         return $result;
@@ -584,8 +568,12 @@ trait StationClient {
         }
         catch(\Exception $ex)
         {
-            $result = $ex->getMessage();
-            Logger::warning($this->facility, $this->service, $device_id, $device_name, null, null, $ex->getCode(), $ex->getMessage());
+            $msg = $ex->getMessage();
+            if ($msg == '') {
+                $msg = 'Unknown error';
+            }
+            $result = 'Err #' . $ex->getCode() . ' / ' . $msg;
+            Logger::warning($this->facility, $this->service, $device_id, $device_name, null, null, $ex->getCode(), $msg);
         }
         return $result;
     }

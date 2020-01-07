@@ -230,9 +230,7 @@ function lws_register_script($handle, $source, $file, $deps = array(), $cdn_avai
 function lws_font_awesome($all=false) {
     $mode = get_option('live_weather_station_fa_mode');
     if (is_admin()) {
-        if ($mode > 2) {
-            $mode -= 3;
-        }
+        $mode = 1;
     }
     switch ($mode) {
         case 0:                                             // Font Awesome 4 outputed by Weather Station

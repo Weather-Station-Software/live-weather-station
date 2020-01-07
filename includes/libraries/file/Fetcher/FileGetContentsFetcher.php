@@ -14,8 +14,11 @@ class FileGetContentsFetcher implements FetcherInterface
     /**
      * {@inheritdoc}
      */
-    public function fetch($url)
-    {
-        return file_get_contents($url);
+    public function fetch($url){
+        $result = @file_get_contents($url);
+        if (!$result) {
+            throw new \Exception('Unable to access file', 12);
+        }
+        return $result;
     }
 }

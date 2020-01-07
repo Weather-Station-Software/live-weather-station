@@ -20,6 +20,11 @@ class WPFetcher implements FetcherInterface
             'blocking'    => true,
         );
         $response = wp_remote_get($url, $args);
+        if (is_wp_error($response)) {
+            $code = wp_remote_retrieve_response_code($response);
+            $message = wp_remote_retrieve_response_message($response);
+            throw new \Exception($message, (int)$code);
+        }
         return wp_remote_retrieve_body($response);
     }
 }

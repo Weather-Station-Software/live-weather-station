@@ -72,7 +72,7 @@ class Cache {
      *
      */
     private static function _flush($pref='lws_', $expired=true) {
-        $cron_id = Watchdog::init_chrono(Watchdog::$cache_flush_name);
+    	$cron_id = Watchdog::init_chrono(Watchdog::$cache_flush_name);
         if (LWS_FILE_CACHE) {
             $expiry = 0;
             if (strpos($pref, self::$widget) !== false) {
@@ -109,9 +109,9 @@ class Cache {
             }
             foreach($delete as $transient) {
                 $key = str_replace('_transient_timeout_', '', $transient);
-                if (delete_transient($key)) {
+                /*if (delete_transient($key)) {
                     $result += 1;
-                }
+                }*/
             }
         }
         Watchdog::stop_chrono($cron_id);
@@ -682,6 +682,7 @@ class Cache {
      *
      */
     public static function flush_query() {
+    	return true;
         if (!(bool)get_option('live_weather_station_query_cache')) {
             return false;
         }

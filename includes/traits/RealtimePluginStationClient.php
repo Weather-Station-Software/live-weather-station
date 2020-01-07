@@ -39,7 +39,7 @@ trait StationClient {
      */
     private function format_and_store($raw_data, $station) {
         $weather = $this->explode_data($raw_data);
-        if (!$weather) {
+        if ($weather === false) {
             throw new \Exception('Bad file format.');
         }
         Logger::debug($this->facility, $this->service, null, null, null, null, null, print_r($weather, true));
@@ -74,7 +74,7 @@ trait StationClient {
             $pressure_unit = 0;
         }
         if (strtolower($weather[16]) == 'in') {
-            $rain_unit = 2;
+            $rain_unit = 1;
         }
         else {
             $rain_unit = 0;
@@ -121,31 +121,6 @@ trait StationClient {
         $updates['measure_value'] = $this->convert_from_mslp_to_baro($updates['measure_value'], $station['loc_latitude'], $this->get_reverse_temperature($weather[2], $temperature_unit));
         $pressure_ref = $updates['measure_value'];
         $this->update_data_table($updates, $timezone);
-        // TODO: remove after validation
-        /*$updates['measure_type'] = 'pressure_sl_min';
-        $updates['measure_value'] = $this->get_reverse_pressure($weather[36], $pressure_unit);
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'pressure_min';
-        $updates['measure_value'] = $this->convert_from_mslp_to_baro($updates['measure_value'], $station['loc_latitude'], $this->get_reverse_temperature($weather[2], $temperature_unit));
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'pressure_sl_max';
-        $updates['measure_value'] = $this->get_reverse_pressure($weather[34], $pressure_unit);
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'pressure_max';
-        $updates['measure_value'] = $this->convert_from_mslp_to_baro($updates['measure_value'], $station['loc_latitude'], $this->get_reverse_temperature($weather[2], $temperature_unit));
-        $this->update_data_table($updates, $timezone);
-        $trend = 'stable';
-        if ($weather[18] > 0) {
-            $trend = 'up';
-        }
-        if ($weather[18] < 0) {
-            $trend = 'down';
-        }
-        $updates['measure_type'] = 'pressure_trend';
-        $updates['measure_value'] = $trend;
-        $this->update_data_table($updates, $timezone);
-        $updates['measure_type'] = 'pressure_sl_trend';
-        $this->update_data_table($updates, $timezone);*/
         $updates['measure_type'] = 'battery';
         $updates['measure_value'] = 100;
         $this->update_data_table($updates, $timezone);
@@ -417,9 +392,14 @@ trait StationClient {
     public function test($connection_type, $resource) {
         $result = '';
         $raw_data = $this->get_data($connection_type, $resource);
-        $weather = $this->explode_data($raw_data);
-        if (!is_array($weather)) {
-            $result = __('Bad file format.', 'live-weather-station');
+        if (strpos($raw_data, 'Err #') !== false) {
+            $result = $raw_data;
+        }
+        else {
+            $weather = $this->explode_data($raw_data);
+            if (!is_array($weather)) {
+                $result = __('Unable to read this file. This may mean that the file is inaccessible, unreadable, contains corrupted data, or is not in the correct format.', 'live-weather-station');
+            }
         }
         return $result;
     }
@@ -442,8 +422,12 @@ trait StationClient {
         }
         catch(\Exception $ex)
         {
-            $result = $ex->getMessage();
-            Logger::warning($this->facility, $this->service, $device_id, $device_name, null, null, $ex->getCode(), $ex->getMessage());
+            $msg = $ex->getMessage();
+            if ($msg == '') {
+                $msg = 'Unknown error';
+            }
+            $result = 'Err #' . $ex->getCode() . ' / ' . $msg;
+            Logger::warning($this->facility, $this->service, $device_id, $device_name, null, null, $ex->getCode(), $msg);
         }
         return $result;
     }
