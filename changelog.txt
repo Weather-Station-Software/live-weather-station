@@ -1,3 +1,9 @@
+#3.8.10 / XXXXXXXXXXXX, 2019
+
+* Improvement: .
+* Bug fix: the rain unit in `realtime` files are wrongly interpreted (thanks to [@kclifton](https://weather.station.software/community/profile/kclifton/)).
+* Bug fix: in some cases, icon for timelapse module is not shown in admin pages (thanks to [@bobeckman](https://weather.station.software/community/profile/bobeckman/)).
+
 #3.8.9 / June 7th, 2019
 
 * Improvement: better layout in shortcode module selection.

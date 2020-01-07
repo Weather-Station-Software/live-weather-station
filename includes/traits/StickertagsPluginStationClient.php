@@ -293,9 +293,14 @@ trait StationClient {
     public function test($connection_type, $resource) {
         $result = '';
         $raw_data = $this->get_data($connection_type, $resource);
-        $weather = $this->explode_data($raw_data);
-        if (!is_array($weather)) {
-            $result = __('Bad file format.', 'live-weather-station');
+        if (strpos($raw_data, 'Err #') !== false) {
+            $result = $raw_data;
+        }
+        else {
+            $weather = $this->explode_data($raw_data);
+            if (!is_array($weather)) {
+                $result = __('Unable to read this file. This may mean that the file is inaccessible, unreadable, contains corrupted data, or is not in the correct format.', 'live-weather-station');
+            }
         }
         return $result;
     }
@@ -318,8 +323,12 @@ trait StationClient {
         }
         catch(\Exception $ex)
         {
-            $result = $ex->getMessage();
-            Logger::warning($this->facility, $this->service, $device_id, $device_name, null, null, $ex->getCode(), $ex->getMessage());
+            $msg = $ex->getMessage();
+            if ($msg == '') {
+                $msg = 'Unknown error';
+            }
+            $result = 'Err #' . $ex->getCode() . ' / ' . $msg;
+            Logger::warning($this->facility, $this->service, $device_id, $device_name, null, null, $ex->getCode(), $msg);
         }
         return $result;
     }

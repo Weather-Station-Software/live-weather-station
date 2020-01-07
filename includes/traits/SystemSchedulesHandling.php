@@ -803,8 +803,8 @@ trait Handling {
      * @since    2.7.0
      */
     protected static function define_owm_pollution_update_cron() {
-        $plugin_owm_pollution_cron = new Owm_Pollution_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
-        add_action(self::$owm_update_pollution_schedule_name, array($plugin_owm_pollution_cron, 'cron_run'));
+        //$plugin_owm_pollution_cron = new Owm_Pollution_Updater(LWS_PLUGIN_NAME, LWS_VERSION);
+        //add_action(self::$owm_update_pollution_schedule_name, array($plugin_owm_pollution_cron, 'cron_run'));
     }
 
     /**
@@ -816,10 +816,10 @@ trait Handling {
      * @since    2.7.0
      */
     protected static function launch_owm_pollution_update_cron($timeshift=0, $system='Watchdog') {
-        if (!wp_next_scheduled(self::$owm_update_pollution_schedule_name)) {
+        /*if (!wp_next_scheduled(self::$owm_update_pollution_schedule_name)) {
             wp_schedule_event(time() + $timeshift, 'thirty_minutes', self::$owm_update_pollution_schedule_name);
             Logger::info($system,null,null,null,null,null,null,'Task "'.self::get_cron_name(self::$owm_update_pollution_schedule_name).'" (re)scheduled.');
-        }
+        }*/
     }
 
     /**
