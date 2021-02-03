@@ -1799,7 +1799,7 @@ trait Storage {
     protected function clean_owm_from_table($values) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
-        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'xx:%' AND device_id NOT IN ( '" . implode($values, "', '") . "' )";
+        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'xx:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }
 
@@ -1813,7 +1813,7 @@ trait Storage {
     protected function clean_owm_true_from_table($values) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
-        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'xy:%' AND device_id NOT IN ( '" . implode($values, "', '") . "' )";
+        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'xy:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }
 
@@ -1827,7 +1827,7 @@ trait Storage {
     protected function clean_wug_from_table($values) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
-        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'xz:%' AND device_id NOT IN ( '" . implode($values, "', '") . "' )";
+        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'xz:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }
 
@@ -1841,7 +1841,7 @@ trait Storage {
     protected function clean_wflw_from_table($values) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
-        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zy:%' AND device_id NOT IN ( '" . implode($values, "', '") . "' )";
+        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zy:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }
 
@@ -1855,7 +1855,7 @@ trait Storage {
     protected function clean_piou_from_table($values) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
-        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zz:%' AND device_id NOT IN ( '" . implode($values, "', '") . "' )";
+        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zz:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }
 
@@ -1869,7 +1869,7 @@ trait Storage {
     protected function clean_clientraw_from_table($values) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
-        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'yx:%' AND device_id NOT IN ( '" . implode($values, "', '") . "' )";
+        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'yx:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }
 
@@ -1883,7 +1883,7 @@ trait Storage {
     protected function clean_realtime_from_table($values) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
-        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'yy:%' AND device_id NOT IN ( '" . implode($values, "', '") . "' )";
+        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'yy:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }
 
@@ -1897,7 +1897,7 @@ trait Storage {
     protected function clean_stickertags_from_table($values) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
-        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zx:%' AND device_id NOT IN ( '" . implode($values, "', '") . "' )";
+        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zx:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }
 
