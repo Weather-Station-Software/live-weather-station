@@ -1165,9 +1165,11 @@ trait Generator {
             $temp = array();
             $h = new History(LWS_PLUGIN_NAME, LWS_VERSION);
             foreach ($result as $item) {
-                if ($h->is_allowed_measurement($item[1]) || $item[1] == 'none') {
-                    $temp[] = $item;
-                }
+            	if ( isset( $item ) ) {
+		            if ($h->is_allowed_measurement($item[1]) || $item[1] == 'none') {
+			            $temp[] = $item;
+		            }
+	            }
             }
             $result = $temp;
         }

@@ -1166,7 +1166,7 @@ class Admin {
                 update_option('live_weather_station_logger_retention', (integer)$_POST['lws_system_log_retention']);
                 update_option('live_weather_station_file_retention', (integer)$_POST['lws_system_file_retention']);
                 update_option('live_weather_station_retention_notifications', (integer)$_POST['lws_system_notif_retention']);
-                update_option('live_weather_station_upload_allowed', (integer)$_POST['lws_system_upload_allowed']);
+                update_option('live_weather_station_upload_allowed', (array_key_exists('lws_system_upload_allowed', $_POST) ? 1 : 0));
                 update_option('live_weather_station_mutation_observer', (array_key_exists('lws_system_mutation_observer', $_POST) ? 1 : 0));
                 update_option('live_weather_station_ajax_widget', (array_key_exists('lws_system_ajax_widget', $_POST) ? 1 : 0));
                 update_option('live_weather_station_use_cdn', (array_key_exists('lws_system_use_cdn', $_POST) ? 1 : 0));
