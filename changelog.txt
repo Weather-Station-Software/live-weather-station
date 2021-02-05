@@ -1,8 +1,10 @@
 #3.8.10 / XXXXXXXXXXXX, 2019
 
-* Improvement: .
+* Bug fix: a PHP notice may be triggered when unchecking "Enable "add file" in the file manager" in system settings.
 * Bug fix: the rain unit in `realtime` files are wrongly interpreted (thanks to [@kclifton](https://weather.station.software/community/profile/kclifton/)).
 * Bug fix: in some cases, icon for timelapse module is not shown in admin pages (thanks to [@bobeckman](https://weather.station.software/community/profile/bobeckman/)).
+* Bug fix: historical visualization may produce PHP warnings when the dataset contains only data older than 366 days. 
+* Bug fix: sliding-month period may be miscomputed (thanks to [@ramon11232](https://wordpress.org/support/users/ramon11232/)).
 
 #3.8.9 / June 7th, 2019
 

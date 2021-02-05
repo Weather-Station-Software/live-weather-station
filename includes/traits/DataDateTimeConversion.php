@@ -469,11 +469,11 @@ trait Conversion {
         $month = (integer)$current->format('m') + $value;
         while ($month > 12) {
             $month -= 12;
-            $year -= 1;
+            $year += 1;
         }
         while ($month < 0) {
             $month += 12;
-            $year += 1;
+            $year -= 1;
         }
         $start = new \DateTime('now', new \DateTimeZone($tz));
         $start->setDate($year, $month, 1);
