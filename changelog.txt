@@ -1,3 +1,8 @@
+#3.8.11 / March 25th, 2021
+
+* Bug fix: Weather Station may be unable to collect data from Clientraw-based stations with erroneous data in missing modules.
+* Bug fix: with some station models, the last strike distance may be wrong, inaccurate or non-existent.
+
 #3.8.10 / March 8th, 2021
 
 * Improvement: full support for WordPress 5.7.

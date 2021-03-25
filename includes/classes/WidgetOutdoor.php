@@ -575,7 +575,7 @@ class Outdoor extends Base {
                             $datas['strike_distance']['value'] = '';
                             $datas['strike_distance']['unit'] = '';
                             $datas['strike_distance']['ts'] = '';
-                            $datas['strike_distance']['icon'] = $this->output_iconic_value($module['datas']['strike_distance']['raw_value'], 'strike_distance', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $datas['strike_distance']['icon'] = $this->output_iconic_value(0, 'strike_distance', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         break;
                     case 'NACurrent': // Current weather -> OpenWeatherMap

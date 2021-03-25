@@ -40,7 +40,7 @@ trait StationClient {
      */
     private function format_and_store($raw_data, $station) {
         $weather = $this->explode_data($raw_data);
-        if ($weather) {
+        if (false === $weather) {
             throw new \Exception('Empty or unreadable file.');
         }
         else {
