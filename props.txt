@@ -9,7 +9,7 @@ Pierre is truly inspirational, he maintained Live Weather Station plugin without
 Our approaches are very similar: I'm doing it because I love open source and want to give something back to the community.
 
 For the context, Pierre and I knew each other. We're both French, so we met at French WordCamp events like the WordCamp Paris in April 2023 and online via the French WordPress community slack.
- This obviously helped speed things up. And we dealed the transfer on June the 23rd 2023 in a really effective video call!
+ This obviously helped speed things up. And we dealt the transfer on June the 23rd 2023 in a really effective video call!
 
 I am dedicating my props to his tireless work over all these years. I wouldn't have been able to come up with the idea of this plugin. Now the responsibility for maintaining and enhancing it is mine and I’m honnored by his trust!
 
