@@ -9,7 +9,7 @@ use WeatherStation\Utilities\ColorsManipulation;
  *
  * @package Includes\Libraries
  * @author Color specifications and designs developed by Cynthia Brewer (http://colorbrewer.org/)
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.4.0
  */

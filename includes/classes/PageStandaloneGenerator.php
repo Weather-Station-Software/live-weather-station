@@ -11,7 +11,7 @@ require_once(dirname(__FILE__) . '/PageStandaloneFramework.php');
  * Generic class to generate standalone page in the wordpress context.
  *
  * @package Includes\Classes
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */

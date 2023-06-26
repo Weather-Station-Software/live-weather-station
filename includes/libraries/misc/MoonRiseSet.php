@@ -8,7 +8,7 @@ namespace WeatherStation\SDK\Generic\Plugin\Astronomy;
  *
  * @package Includes\Libraries
  * @author Originally written by Matt "dxprog" Hackmann <dxprog.com>.
- * @author Modified by Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
  * @since 2.0.0
  * @license GPL
  */

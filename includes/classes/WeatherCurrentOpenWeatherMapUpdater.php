@@ -10,7 +10,7 @@ use WeatherStation\SDK\Generic\Plugin\Weather\Index\Computer as Weather_Index_Co
  * This class is responsible for all the croned updates from OpenWeatherMap current weather data.
  *
  * @package Includes\Classes
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 2.0.0
  */

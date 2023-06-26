@@ -15,7 +15,7 @@ use WeatherStation\System\Logs\Logger;
  *
  * @package Includes\Libraries
  * @author Originally written by Christian Flach <https://github.com/cmfcmf>.
- * @author Modified by Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
  * @since 3.5.0
  * @license MIT
  */
@@ -28,7 +28,7 @@ class AMBTApiClient
     private $mainUrl = "https://api.ambientweather.net/v1/devices?applicationKey={application}&apiKey={key}";
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    // these application key is property of Ambient licensed to Pierre Lannoy, you CAN'T use it for your apps.
+    // these application key is property of Ambient licensed to Jason Rouet, you CAN'T use it for your apps.
     // If you are thinking to develop something, get your application key here: https://dashboard.ambientweather.net
     private $application_key = 'aa2fe7d796fa4ccfa484c41592fc27044970de1019234d0599e7af14d42797fa';
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
