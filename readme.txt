@@ -1,5 +1,5 @@
 === Weather Station ===
-Contributors: jaz_on
+Contributors: jaz_on, pierrelannoy
 Tags: weather, openweathermap, netatmo, weatherflow
 Requires at least: 4.9
 Requires PHP: 7.1
