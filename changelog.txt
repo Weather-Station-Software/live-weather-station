@@ -1,3 +1,6 @@
+#3.8.12 / June 26th, 2023
+* Minor changes following the appointment of the plugin's new owner and maintainer. Pierre Lannoy has handed over the management of the project to Jason Rouet with his full support.
+
 #3.8.11 / March 25th, 2021
 
 * Bug fix: Weather Station may be unable to collect data from Clientraw-based stations with erroneous data in missing modules.
