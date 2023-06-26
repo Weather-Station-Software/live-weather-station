@@ -9,7 +9,7 @@ namespace WeatherStation\UI\ListTable;
  *
  * @package Includes\Classes
  * @author WordPress
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 2.0.0
  */

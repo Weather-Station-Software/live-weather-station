@@ -13,7 +13,7 @@ use WeatherStation\System\Cache\Cache;
  * This class defines all code necessary to run during the plugin's deactivation.
  *
  * @package Includes\Classes
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */

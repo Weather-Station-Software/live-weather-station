@@ -9,7 +9,7 @@ use WeatherStation\System\Logs\Logger;
  * The class to manage and detect environment.
  *
  * @package Includes\System
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.0.0
  */

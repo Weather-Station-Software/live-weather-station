@@ -5,7 +5,7 @@ namespace WeatherStation\SDK\Netatmo\Common;
 /**
  * @package Includes\Libraries
  * @author Originally written by Thomas Rosenblatt <thomas.rosenblatt@netatmo.com>.
- * @author Modified by Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
  * @since 3.0.0
  */
 class NAClientErrorCode
