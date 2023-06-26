@@ -1,10 +1,10 @@
 === Weather Station ===
 Contributors: jaz_on, pierrelannoy
-Tags: weather, openweathermap, netatmo, weatherflow
+Tags: weather, openweathermap, netatmo, weatherflow, weatherstation
 Requires at least: 4.9
 Requires PHP: 7.1
-Tested up to: 5.7
-Stable tag: 3.8.11
+Tested up to: 6.2.2
+Stable tag: 3.8.12
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://support.laquadrature.net/
