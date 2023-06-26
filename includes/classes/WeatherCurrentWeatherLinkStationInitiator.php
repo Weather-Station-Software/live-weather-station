@@ -6,7 +6,7 @@ namespace WeatherStation\SDK\WeatherLink\Plugin;
  * This class is responsible for the first update from WeatherLink stations.
  *
  * @package Includes\Classes
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.8.0
  */

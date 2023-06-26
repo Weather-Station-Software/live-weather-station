@@ -15,7 +15,7 @@ use WeatherStation\Data\DateTime\Handling as TimeHandling;
  * Arrays generator for javascript conversion.
  *
  * @package Includes\Traits
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  */

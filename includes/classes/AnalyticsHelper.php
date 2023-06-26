@@ -8,7 +8,7 @@ use WeatherStation\System\Analytics\Performance;
  * This class builds elements of general tab for analytics page.
  *
  * @package Includes\Classes
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.1.0
  */

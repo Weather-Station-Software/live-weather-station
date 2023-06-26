@@ -1,5 +1,5 @@
 /*!
- * This control is a modified version (by Pierre Lannoy) of the awesome EnzoJS library from Gerrit Grunwald
+ * This control is a modified version (by Jason Rouet) of the awesome EnzoJS library from Gerrit Grunwald
  *
  * **********************************************************************************************************
  *   ORIGINAL HEADER ->

@@ -8,7 +8,7 @@ use WeatherStation\Data\Output ;
  * A process to export old data as xSV file.
  *
  * @package Includes\Process
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */

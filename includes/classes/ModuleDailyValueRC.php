@@ -6,7 +6,7 @@ namespace WeatherStation\Engine\Module\Daily;
  * Class to generate parameter daily valuerc form.
  *
  * @package Includes\Classes
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.5.0
  */

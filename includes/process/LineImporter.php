@@ -12,7 +12,7 @@ use WeatherStation\System\Logs\Logger;
  * A process to import old data from a line file.
  *
  * @package Includes\Process
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.7.0
  */

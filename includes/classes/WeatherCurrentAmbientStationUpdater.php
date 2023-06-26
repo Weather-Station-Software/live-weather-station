@@ -6,7 +6,7 @@ namespace WeatherStation\SDK\Ambient\Plugin;
  * This class is responsible for all the croned updates from Ambient station data.
  *
  * @package Includes\Classes
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.6.0
  */

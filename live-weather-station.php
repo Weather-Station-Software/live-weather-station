@@ -6,7 +6,7 @@ use WeatherStation\System\Plugin\Uninstaller;
 
 /**
  * @package Bootstrap
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 1.0.0
  *
@@ -15,8 +15,8 @@ use WeatherStation\System\Plugin\Uninstaller;
  * Plugin URI:        https://weather.station.software/
  * Description:       Display on your WordPress site, in many elegant ways, the meteorological data collected by public or personal weather stations.
  * Version:           3.8.11
- * Author:            Pierre Lannoy
- * Author URI:        https://pierre.lannoy.fr
+ * Author:            Jason Rouet
+ * Author URI:        https://www.jasonrouet.com/
  * License:           GPLv2 or later
  * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
  * Text Domain:       live-weather-station

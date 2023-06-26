@@ -4,7 +4,7 @@ use WeatherStation\System\Logs\Logger;
 
 /**
  * @package Admin\Partials
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 2.0.0
  */

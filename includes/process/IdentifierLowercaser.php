@@ -8,7 +8,7 @@ use WeatherStation\System\Logs\Logger;
  * A fix to lowercase all IDs.
  *
  * @package Includes\Process
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.6.3
  */

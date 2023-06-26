@@ -9,7 +9,7 @@ use WeatherStation\Data\Arrays\Generator;
  * Class to generate parameter icon form.
  *
  * @package Includes\Classes
- * @author Pierre Lannoy <https://pierre.lannoy.fr/>.
+ * @author Jason Rouet <https://www.jasonrouet.com/>.
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.8.0
  */
