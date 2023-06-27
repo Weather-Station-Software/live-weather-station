@@ -1,17 +1,17 @@
-The Live Weather Station WordPress plugin has originally been founded and developed by Pierre Lannoy <https://pierre.lannoy.fr>.
+The Weather Station WordPress plugin has originally been founded and developed by Pierre Lannoy <https://pierre.lannoy.fr>.
 On June 1st 2023, Pierre published a blog post in which he explained that he was looking for someone to adopt his plugin.
 
 After a few weeks, I (Jason Rouet) got in touch with Pierre to find out if he had found a suitable match to continue caring for his extension.
 I was surprised when he told me that he hadn't found any serious candidates to continue his great work!
-During our discussion, it was clear I had to do something and so I decided to take over the whole project: the plugin, the website, the community, the domain names, the social media accounts and so on...
+During our discussion, it was clear I had to do something. So I decided to jump in and take over the whole project: the plugin, the website, the community, the domain names, the social media accounts and so on...
 
-Pierre is truly inspirational, he maintained Live Weather Station plugin without seeking any financial contribution since November 14, 2015.
+Pierre is truly inspirational, he maintained the Weather Station plugin without seeking any financial contribution since November 14, 2015.
 Our approaches are very similar: I'm doing it because I love open source and want to give something back to the community.
 
 For the context, Pierre and I knew each other. We're both French, so we met at French WordCamp events like the WordCamp Paris in April 2023 and online via the French WordPress community slack.
 This obviously helped speed things up. And we dealt the transfer on June the 23rd 2023 in a really effective video call!
 
-I am dedicating my props to his tireless work over all these years. I wouldn't have been able to come up with the idea of this plugin. Now the responsibility for maintaining and enhancing it is mine and I’m honnored by his trust!
+I am dedicating my props to his tireless work over all these years. I wouldn't have been able to come up with the idea of this plugin. Now the responsibility for maintaining and enhancing it is mine. I’m honoured by his trust!
 
 This new playground opens up a whole new and exciting field of possibilities.
 I can't wait to see where it takes me!
