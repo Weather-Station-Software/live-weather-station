@@ -1,5 +1,7 @@
 #3.8.12 / June 26th, 2023
-* Minor changes following the appointment of the plugin's new owner and maintainer. Pierre Lannoy has handed over the management of the project to Jason Rouet with his full support.
+* Improvement: full support for WordPress 6.2.
+* New: Pierre Lannoy has handed over the management of the project to Jason Rouet, who becomes the new owner and maintainer of the Weather Station plugin.
+* [For further detail, here is the blog post about it.](https://weather.station.software/blog/lets-go-for-another-round/)
 
 #3.8.11 / March 25th, 2021
 
