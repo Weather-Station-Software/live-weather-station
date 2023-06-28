@@ -117,10 +117,6 @@ Alternatively, you can also [contact me directly by email](mailto:weather@statio
 NO. Weather Station is a free software. That means, you (the users) have the freedom to run, copy, distribute, study, change and improve the software.
 Although it is not free of charge for its maintainer, I'd rather have your help to improve the plugin's code than receive money to pay for my coffee or beers. 🫶
 
-
-=  =
-
-
 == Changelog ==
 
 See [full changelog](https://weather.station.software/handbook/changelog/).
