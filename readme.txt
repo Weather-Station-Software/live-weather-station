@@ -1,5 +1,5 @@
 === Weather Station ===
-Contributors: jaz_on, pierrelannoy
+Contributors: jaz_on
 Tags: weather, openweathermap, netatmo, weatherflow, weatherstation
 Requires at least: 4.9
 Requires PHP: 7.1
@@ -53,8 +53,15 @@ You can find a more in-depth description and instructions to configure [in the h
 
 = Support =
 This plugin is free and provided without warranty of any kind. Use it at your own risk, I'm not responsible for any improper use of this plugin, nor for any damage it might cause to your site. Always backup all your data before installing a new plugin.
+- Community support [via the support forums on wordpress.org](https://wordpress.org/support/plugin/live-weather-station/)
 
-Anyway, I'll be glad to help you if you encounter issues when using this plugin. Just use the support section of this plugin page.
+= Contribution =
+- Active development of this plugin [is handled on GitHub](https://github.com/Weather-Station-Software/live-weather-station). Pull requests are highly appreciated!
+- If you want to help us translate "Weather Station" into your language, [you can do so on WordPress Translate.](https://translate.wordpress.org/projects/wp-plugins/live-weather-station/)
+
+= Credits =
+- Original author: [Pierre Lannoy](https://profiles.wordpress.org/pierrelannoy/)
+- Actual maintainer (since v3.8.12): [Jason Rouet](https://profiles.wordpress.org/jaz_on/)
 
 = Donation =
 If you like this plugin or find it useful and want to thank me for the work done, please consider making a donation to [La Quadrature Du Net](https://www.laquadrature.net/en) which is an advocacy group defending the rights and freedoms of citizens on the Internet. By supporting them, you help the daily actions they perform to defend our fundamental freedoms!
@@ -92,7 +99,7 @@ Yes. You can install it via the network admin plugins page but the plugin **must
 
 = Where can I get support? =
 
-Support is provided via the official [Community Support](https://weather.station.software/community/).
+Support is provided via [the plugin's official support forum here on wordpress.org](https://wordpress.org/support/plugin/live-weather-station/).
 
 = Where can I find documentation? =
 
@@ -100,7 +107,20 @@ You can find instructions [here](https://weather.station.software/handbook/).
 
 = Where can I report a bug? =
  
-You can report bugs and suggest ideas via the official [Community Support](https://weather.station.software/community/).
+You can report bugs and suggest ideas [via the Github repository](https://github.com/Weather-Station-Software/live-weather-station/issues).
+
+= Where do I report security bugs found in this plugin? =
+Please report security bugs found in the source code of the Weather Station plugin through the [Patchstack Vulnerability Disclosure Program](https://patchstack.com/database/vdp/live-weather-station).
+The Patchstack team will assist you with verification, CVE assignment, and notify the developers of this plugin.
+Alternatively, you can also [contact me directly by email](mailto:weather@station.network).
+
+= Are there some paid services or limitations? =
+NO. Weather Station is a free software. That means, you (the users) have the freedom to run, copy, distribute, study, change and improve the software.
+Although it is not free of charge for its maintainer, I'd rather have your help to improve the plugin's code than receive money to pay for my coffee or beers. 🫶
+
+
+=  =
+
 
 == Changelog ==
 
