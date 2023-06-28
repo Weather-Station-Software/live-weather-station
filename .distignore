@@ -1,9 +1,10 @@
+# A set of files and folders I don't want in my WordPress.org SVN repo:
 /.git
 /.github
 /node_modules
 /src
 /.wordpress-org
-
+.github/workflows 
 .distignore
 .eslintrc.js
 .gitignore
