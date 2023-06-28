@@ -3,6 +3,7 @@ Name: Deploy any new release of the plugin from Git to the WordPress.org SVN rep
 on:
   release:
     types: [published]
+on: workflow_dispatch
 
 jobs:
   tag:
