@@ -14,7 +14,7 @@ jobs:
         uses: jaz-on/wordpress-actions/dotorg-plugin-deploy@master
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SLUG: the-plugin-slug
-          NAME: The Plugin Name
+          SLUG: live-weather-station
+          NAME: Weather Station
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
