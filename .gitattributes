@@ -1,0 +1,17 @@
+# A set of files and folders I don't want in my WordPress.org SVN repo:
+
+```gitattributes
+/.git export-ignore
+/.github export-ignore
+/node_modules export-ignore
+/src export-ignore
+/.wordpress-org export-ignore
+/.github/workflows export-ignore
+/.distignore export-ignore
+/.eslintrc.js export-ignore
+/.gitignore export-ignore
+/Makefile export-ignore
+/package.json export-ignore
+/package-lock.json export-ignore
+/readme.md export-ignore
+```
