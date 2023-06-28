@@ -11,16 +11,16 @@ use WeatherStation\System\Plugin\Uninstaller;
  * @since 1.0.0
  *
  * @wordpress-plugin
- * Plugin Name:       Weather Station
- * Plugin URI:        https://weather.station.software/
- * Description:       Display on your WordPress site, in many elegant ways, the meteorological data collected by public or personal weather stations.
- * Version:           3.8.12
- * Author:            Jason Rouet
- * Author URI:        https://www.jasonrouet.com/
- * License:           GPLv2 or later
- * License URI:       http://www.gnu.org/licenses/gpl-2.0.txt
- * Text Domain:       live-weather-station
- * Domain Path:       /languages
+ * Plugin Name:     Weather Station
+ * Description:     Display on your WordPress site, in many elegant ways, the meteorological data collected by public or personal weather stations.
+ * Author:          Jason Rouet
+ * Author URI:      https://www.jasonrouet.com/
+ * Plugin URI:      https://weather.station.software/
+ * Text Domain:     live-weather-station
+ * Domain Path:     /languages
+ * License:         GPLv2 or later
+ * License URI:     http://www.gnu.org/licenses/gpl-2.0.txt
+ * Version:         3.8.12
  */
 
 // If this file is called directly, abort.
