@@ -2,9 +2,8 @@
 Contributors: jaz_on
 Tags: weather, openweathermap, netatmo, weatherflow, weatherstation
 Requires at least: 4.9
-Requires PHP: 7.1
 Tested up to: 6.2.2
-Version: 3.8.12
+Requires PHP: 7.1
 Stable tag: 3.8.12
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
