@@ -20,7 +20,7 @@ $i18n = new i18n();
         <?php echo sprintf(__('%s runs currently in extended mode. If you want to make your life easier, switch to simplified mode.', 'live-weather-station'), LWS_PLUGIN_NAME);?><br/>
         <em><?php echo __('Note: if you choose the simplified mode, all settings (like display options, units, etc.) will be automatically set for you.', 'live-weather-station');?></em>
     </p>
-    <p><a class="button button-primary" href="<?php echo esc_url(wp_nonce_url( lws_get_admin_page_url('lws-settings', 'switch-simplified'), 'lwssettingsswitchsimplifiednonce', 'lwssettingsswitchsimplifiednonce')); ?>"><?php echo __('Switch to Simplified Mode', 'live-weather-station');?></a></p>
+    <p><a class="button button-primary" href="<?php echo esc_url(wp_nonce_url( lws_get_admin_page_url('lws-settings', 'switch-simplified'), 'lwssettingsswitchsimpliefiednonce', 'lwssettingsswitchsimpliefiednonce')); ?>"><?php echo __('Switch to Simplified Mode', 'live-weather-station');?></a></p>
 <?php } else { ?>
     <p>&nbsp;</p>
     <p><?php echo sprintf(__('%s runs currently in simplified mode. If you want to access all the available settings, you must switch to extended mode.', 'live-weather-station'), LWS_PLUGIN_NAME);?></p>
