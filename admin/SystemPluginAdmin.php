@@ -2050,7 +2050,7 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_simplified() {
-        if( isset($_GET['lwssettingsswitchsimpliefiednonce']) && wp_verify_nonce( $_GET['lwssettingsswitchsimpliefiednonce'], 'lwssettingsswitchsimpliefiednonce') ) {
+        if( isset($_GET['lwssettingsswitchsimplifiednonce']) && wp_verify_nonce( $_GET['lwssettingsswitchsimplifiednonce'], 'lwssettingsswitchsimplifiednonce') ) {
             update_option('live_weather_station_advanced_mode', 0);
             add_settings_error('lws_nonce_success', 200, sprintf(__('%s now runs in simplified mode.', 'live-weather-station'), LWS_PLUGIN_NAME), 'updated');
             Logger::info($this->service, null, null, null, null, null, 0, 'Weather Station now runs in simplified mode.');
@@ -2081,7 +2081,7 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_metric() {
-        if( isset($_GET['lwssettingsswitchmetricnonce']) && wp_verify_nonce( $_GET['lwssettingsswitchmetricnonce'], 'lwssettingsswitchmetricnonce' ) ) {
+        if( isset($_GET['lwssettingsswitchmetricnonce']) && wp_verify_nonce( $_GET['lwssettingsswitchmetricnonce'], 'lwssettingsswitchmetricnonce') ) {
             self::switch_to_metric();
             add_settings_error('lws_nonce_success', 200, sprintf(__('%s now displays its data in the metric system.', 'live-weather-station'), LWS_PLUGIN_NAME), 'updated');
             Logger::info($this->service, null, null, null, null, null, 0, 'Weather Station now displays its data in the metric system.');
