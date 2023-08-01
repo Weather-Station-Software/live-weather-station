@@ -2050,7 +2050,7 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_simplified() {
-        if( isset($_GET['lws-settingsswitchsimplified-nonce']) && wp_verify_nonce( $_GET['lwsessettingsswitchsimplifiednonce'], 'lws-settingsswitchsimplified-nonce') ) {
+        if( isset($_GET['lwsessettingsswitchsimplifiednonce']) && wp_verify_nonce( $_GET['lwsessettingsswitchsimplifiednonce'], 'lwsessettingsswitchsimplifiednonce') ) {
             update_option('live_weather_station_advanced_mode', 0);
             add_settings_error('lws_nonce_success', 200, sprintf(__('%s now runs in simplified mode.', 'live-weather-station'), LWS_PLUGIN_NAME), 'updated');
             Logger::info($this->service, null, null, null, null, null, 0, 'Weather Station now runs in simplified mode.');
@@ -2066,7 +2066,7 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_extended() {
-        if( isset($_GET['lws-settingsswitchextended-nonce']) && wp_verify_nonce( $_GET['lwssettingsswitchextendednonce'], 'lws-settingsswitchextended-nonce') ) {
+        if( isset($_GET['lwssettingsswitchextendednonce']) && wp_verify_nonce( $_GET['lwssettingsswitchextendednonce'], 'lwssettingsswitchextendednonce') ) {
             update_option('live_weather_station_advanced_mode', 1);
             add_settings_error('lws_nonce_success', 200, sprintf(__('%s now runs in extended mode.', 'live-weather-station'), LWS_PLUGIN_NAME), 'updated');
             Logger::info($this->service, null, null, null, null, null, 0, 'Weather Station now runs in extended mode.');
@@ -2081,7 +2081,7 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_metric() {
-        if( isset($_GET['lws-settingsswitchmetric-nonce']) && wp_verify_nonce( $_GET['lwssettingsswitchmetricnonce'], 'lws-settingsswitchmetric-nonce' ) ) {
+        if( isset($_GET['lwssettingsswitchmetricnonce']) && wp_verify_nonce( $_GET['lwssettingsswitchmetricnonce'], 'lwssettingsswitchmetricnonce' ) ) {
             self::switch_to_metric();
             add_settings_error('lws_nonce_success', 200, sprintf(__('%s now displays its data in the metric system.', 'live-weather-station'), LWS_PLUGIN_NAME), 'updated');
             Logger::info($this->service, null, null, null, null, null, 0, 'Weather Station now displays its data in the metric system.');
@@ -2096,7 +2096,7 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_imperial() {
-        if( isset($_GET['lws-settingsswitchimperial-nonce']) && wp_verify_nonce( $_GET['lwssettingsswitchimperialnonce'], 'lws-settingsswitchimperial-nonce' ) ) {
+        if( isset($_GET['lwssettingsswitchimperialnonce']) && wp_verify_nonce( $_GET['lwssettingsswitchimperialnonce'], 'lwssettingsswitchimperialnonce' ) ) {
             self::switch_to_imperial();
             add_settings_error('lws_nonce_success', 200, sprintf(__('%s now displays its data in the imperial system.', 'live-weather-station'), LWS_PLUGIN_NAME), 'updated');
             Logger::info($this->service, null, null, null, null, null, 0, 'Weather Station now displays its data in the imperial system.');
@@ -2111,7 +2111,7 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_full_translation() {
-        if( isset($_GET['lwssettingsswitchfulltranslationnonce']) && wp_verify_nonce( $_GET['lwssettingsswitchfulltranslationnonce'], 'lws-settingsswitchfulltranslation-nonce' ) ) {
+        if( isset($_GET['lwssettingsswitchfulltranslationnonce']) && wp_verify_nonce( $_GET['lwssettingsswitchfulltranslationnonce'], 'lwssettingsswitchfulltranslationnonce' ) ) {
             update_option('live_weather_station_partial_translation', 0);
             $i18n = new Intl();
             $i18n->delete_mo_files();
@@ -2128,7 +2128,7 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_partial_translation() {
-        if( isset($_GET['lwssettingsswitchpartialtranslationnonce']) && wp_verify_nonce( $_GET['lwssettingsswitchpartialtranslationnoncee'], 'lws-settingsswitchpartialtranslation-nonc' ) ) {
+        if( isset($_GET['lwssettingsswitchpartialtranslationnonce']) && wp_verify_nonce( $_GET['lwssettingsswitchpartialtranslationnonce'], 'lwssettingsswitchpartialtranslationnonce' ) ) {
             update_option('live_weather_station_partial_translation', 1);
             $i18n = new Intl();
             $i18n->cron_run();
