@@ -1,3 +1,6 @@
+#3.8.13 / August 1st, 2023
+* Improvement: nonces implemented to several lws-setting to avoid potential Cross Site Request Forgery (CSRF) attack.
+
 #3.8.12 / June 26th, 2023
 * Improvement: full support for WordPress 6.2.
 * New: Pierre Lannoy has handed over the management of the project to Jason Rouet, who becomes the new owner and maintainer of the Weather Station plugin.
