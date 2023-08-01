@@ -2054,7 +2054,6 @@ class Admin {
             update_option('live_weather_station_advanced_mode', 0);
             add_settings_error('lws_nonce_success', 200, sprintf(__('%s now runs in simplified mode.', 'live-weather-station'), LWS_PLUGIN_NAME), 'updated');
             Logger::info($this->service, null, null, null, null, null, 0, 'Weather Station now runs in simplified mode.');
-            $this->switch_metric();
         } else {
             wp_die('NOPE');
         }
