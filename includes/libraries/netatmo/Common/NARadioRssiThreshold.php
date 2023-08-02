@@ -8,7 +8,7 @@ namespace WeatherStation\SDK\Netatmo\Common;
  * @author Modified by Jason Rouet <https://www.jasonrouet.com/>.
  * @since 3.0.0
  */
-class NARadioRssiTreshold
+class NARadioRssiThreshold
 {
     const RADIO_THRESHOLD_0 = 90;/*low signal*/
     const RADIO_THRESHOLD_1 = 80;/*signal medium*/

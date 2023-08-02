@@ -69,7 +69,7 @@ $real_s = ucfirst(addslashes(__('a station exporting its data via a <em>realtime
 $real_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'realtime', $dashboard);
 $real_t = '_self';
 
-$raw_s = ucfirst(addslashes(__('a station exporting its data via a <em>clientraw.txt</em> file (Weather Display, WeeWX, etc.).', 'live-weather-station')));
+$raw_s = ucfirst(addslashes(__('a station exporting its data via a <em>clientraw.txt</em> file (Weather Display, WeWX, etc.).', 'live-weather-station')));
 $raw_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'clientraw', $dashboard);
 $raw_t = '_self';
 

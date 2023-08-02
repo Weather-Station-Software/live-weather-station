@@ -52,7 +52,7 @@ trait CurrentClient {
     /**
      * Get station's data array.
      *
-     * @param   string  $json_weather    Weather array json formated.
+     * @param   string  $json_weather    Weather array json formatted.
      * @param   array   $station    Station array.
      * @param   string  $device_id  The device id.
      * @return  array     A standard array with value.

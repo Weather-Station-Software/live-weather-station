@@ -403,9 +403,9 @@ abstract class BaseHandling {
      * @since 3.7.0
      */
     protected function output_container() {
-        $heigth = ($this->size === 'auto' ? $this->map_params['common']['height'] : $this->size);
+        $height = ($this->size === 'auto' ? $this->map_params['common']['height'] : $this->size);
         $width = ($this->size === 'auto' ? $this->map_params['common']['width'] : '100%');
-        $result = '<div id="' . $this->uniq . '" class="lws-map" style="width:' . $width . ';height:' . $heigth . ';">' . PHP_EOL;
+        $result = '<div id="' . $this->uniq . '" class="lws-map" style="width:' . $width . ';height:' . $height . ';">' . PHP_EOL;
         $result .= $this->specific_container() . PHP_EOL;
         $result .= '</div>';
         return $result;
@@ -647,7 +647,7 @@ abstract class BaseHandling {
             if (isset($temperature)) {
                 $ref = get_option('live_weather_station_unit_temperature') ;
                 $t = (integer)round($this->get_temperature($temperature_ref, $ref), 0);
-                $temp = $t . str_replace('&nbsp;', '', $this->unit_espace.$this->get_temperature_unit($ref));
+                $temp = $t . str_replace('&nbsp;', '', $this->unit_escape.$this->get_temperature_unit($ref));
                 $colors = ColorBrewer::getGradient('RdYlBu', 8, 56, true);
                 if ($t < -15) {
                     $t = -15;

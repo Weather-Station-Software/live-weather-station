@@ -102,7 +102,7 @@ class Quota {
      *
      * @param string $service The service to query.
      * @param string $verb The verb to apply (GET, POST, PUT, etc.).
-     * @param intger $count Optional. The number of calls to do.
+     * @param integer $count Optional. The number of calls to do.
      * @param boolean $import Optional. Set mode for import (3="Distribute queries in the remaining time").
      * @return boolean True if it's ok to query, false otherwise.
      *

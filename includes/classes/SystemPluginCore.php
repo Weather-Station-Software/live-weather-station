@@ -280,7 +280,7 @@ class Core {
 	 *
 	 * @since 2.0.0
 	 */
-	private function check_and_perfom_update() {
+	private function check_and_perform_update() {
         $old_version = '-';
         $option_overwrite = false;
 		if (get_option('live_weather_station_version')) {
@@ -306,7 +306,7 @@ class Core {
 	 */
 	public function run() {
 		$this->loader->run();
-        $this->check_and_perfom_update();
+        $this->check_and_perform_update();
 	}
 
 	/**

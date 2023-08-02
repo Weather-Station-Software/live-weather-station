@@ -190,7 +190,7 @@ trait Utilities {
     /**
      * Computes the vapor pressure.
      *
-     * @param float $t Temperature in celcius.
+     * @param float $t Temperature in celsius.
      * @param float $h Humidity in percent.
      * @return float The computed partial vapor pressure (in Pascal).
      * @since 3.3.0
@@ -203,7 +203,7 @@ trait Utilities {
     /**
      * Computes the saturation vapor pressure.
      *
-     * @param float $t Temperature in celcius.
+     * @param float $t Temperature in celsius.
      * @return float The computed saturation vapor pressure (in Pascal).
      * @since 3.3.0
      */
@@ -220,7 +220,7 @@ trait Utilities {
     /**
      * Computes the absolute humidity.
      *
-     * @param float $t Temperature in celcius.
+     * @param float $t Temperature in celsius.
      * @param float $p Pressure in pascal.
      * @param float $h Humidity in percent.
      * @return float The computed absolute humidity (in kg/kg).
@@ -234,7 +234,7 @@ trait Utilities {
     /**
      * Computes the saturation absolute humidity.
      *
-     * @param integer $t Temperature in celcius.
+     * @param integer $t Temperature in celsius.
      * @param integer $p Pressure in pascal.
      * @return float The computed saturation absolute humidity (in kg/kg).
      * @since 3.3.0
@@ -247,7 +247,7 @@ trait Utilities {
     /**
      * Computes the specific enthalpy.
      *
-     * @param integer $t Temperature in celcius.
+     * @param integer $t Temperature in celsius.
      * @param integer $p Pressure in pascal.
      * @param integer $h Humidity in percent.
      * @return float The computed specific enthalpy (in J/kg).
@@ -261,7 +261,7 @@ trait Utilities {
     /**
      * Computes the air density.
      *
-     * @param float $t Temperature in celcius.
+     * @param float $t Temperature in celsius.
      * @param float $p Pressure in pascal.
      * @param float $h Humidity in percent.
      * @return float The computed air density (in kg/m^3).
@@ -279,7 +279,7 @@ trait Utilities {
     /**
      * Computes the equilibrium moisture content (for wood).
      *
-     * @param integer $t Temperature in celcius.
+     * @param integer $t Temperature in celsius.
      * @param integer $h Humidity in percent.
      * @return float The computed equilibrium moisture content.
      * @since 3.3.0
@@ -301,9 +301,9 @@ trait Utilities {
     /**
      * Computes the wet bulb temperature.
      *
-     * @param integer $t Temperature in celcius.
+     * @param integer $t Temperature in celsius.
      * @param integer $h Humidity in percent.
-     * @return float The computed wet bulb temperature (in celcius).
+     * @return float The computed wet bulb temperature (in celsius).
      * @since 3.3.0
      */
     protected function compute_wet_bulb($t, $h) {
@@ -313,9 +313,9 @@ trait Utilities {
     /**
      * Computes the delta-t.
      *
-     * @param integer $t Temperature in celcius.
+     * @param integer $t Temperature in celsius.
      * @param integer $h Humidity in percent.
-     * @return float The computed delta-t (in celcius).
+     * @return float The computed delta-t (in celsius).
      * @since 3.7.0
      */
     protected function compute_delta_t($t, $h) {
@@ -325,9 +325,9 @@ trait Utilities {
     /**
      * Computes the potential temperature.
      *
-     * @param integer $t Temperature in celcius.
+     * @param integer $t Temperature in celsius.
      * @param integer $p Pressure in pascal.
-     * @return float The computed potential temperature (in celcius).
+     * @return float The computed potential temperature (in celsius).
      * @since 3.3.0
      */
     protected function compute_potential_temperature($t, $p) {
@@ -337,9 +337,9 @@ trait Utilities {
     /**
      * Computes the equivalent temperature.
      *
-     * @param integer $t Temperature in celcius.
+     * @param integer $t Temperature in celsius.
      * @param integer $p Pressure in pascal.
-     * @return float The computed equivalent temperature (in celcius).
+     * @return float The computed equivalent temperature (in celsius).
      * @since 3.3.0
      */
     protected function compute_equivalent_temperature($t, $p) {
@@ -351,9 +351,9 @@ trait Utilities {
     /**
      * Computes the equivalent potential temperature.
      *
-     * @param integer $t Temperature in celcius.
+     * @param integer $t Temperature in celsius.
      * @param integer $p Pressure in pascal.
-     * @return float The computed equivalent potential temperature (in celcius).
+     * @return float The computed equivalent potential temperature (in celsius).
      * @since 3.3.0
      */
     protected function compute_equivalent_potential_temperature($t, $p) {
@@ -368,7 +368,7 @@ trait Utilities {
     /**
      * Computes the density altitude.
      *
-     * @param integer $t Temperature in celcius.
+     * @param integer $t Temperature in celsius.
      * @param integer $p Pressure in pascal.
      * @param integer $h Humidity in percent.
      * @return integer The computed density altitude (in meters).
@@ -399,7 +399,7 @@ trait Utilities {
     /**
      * Computes the Chandler Burning index.
      *
-     * @param integer $t Temperature in celcius.
+     * @param integer $t Temperature in celsius.
      * @param integer $h Humidity in percent.
      * @return float The computed Chandler Burning index.
      * @since 3.1.0
@@ -411,7 +411,7 @@ trait Utilities {
     /**
      * Computes the dew point.
      *
-     * @param integer $t Temperature in celcius.
+     * @param integer $t Temperature in celsius.
      * @param integer $h Humidity in percent.
      * @return float The computed dew point.
      * @since 3.1.0
@@ -423,8 +423,8 @@ trait Utilities {
     /**
      * Computes the frost point.
      *
-     * @param integer $t Temperature in celcius.
-     * @param integer $dew Dew point temperature in celcius.
+     * @param integer $t Temperature in celsius.
+     * @param integer $dew Dew point temperature in celsius.
      * @return float The computed frost point.
      * @since 3.1.0
      */
@@ -438,7 +438,7 @@ trait Utilities {
     /**
      * Computes the heat index.
      *
-     * @param integer $t Temperature in celcius.
+     * @param integer $t Temperature in celsius.
      * @param integer $h Humidity in percent.
      * @return integer The heat index.
      * @since 3.1.0
@@ -469,8 +469,8 @@ trait Utilities {
     /**
      * Computes the humidex index.
      *
-     * @param integer $t Temperature in celcius.
-     * @param integer $dew Dew point temperature in celcius.
+     * @param integer $t Temperature in celsius.
+     * @param integer $dew Dew point temperature in celsius.
      * @return float The computed humidex.
      * @since 3.1.0
      */
@@ -484,7 +484,7 @@ trait Utilities {
     /**
      * Computes the wind chill.
      *
-     * @param integer $t Temperature in celcius.
+     * @param integer $t Temperature in celsius.
      * @param integer $w Windspeed in km/h.
      * @return float The computed wind chill.
      * @since 3.1.0
@@ -502,7 +502,7 @@ trait Utilities {
     /**
      * Computes the Steadman index (Australian Apparent Temperature).
      *
-     * @param integer $t Temperature in celcius.
+     * @param integer $t Temperature in celsius.
      * @param integer $h Humidity in percent.
      * @param integer $w Windspeed in km/h.
      * @return float The computed Steadman index.
@@ -518,7 +518,7 @@ trait Utilities {
     /**
      * Computes the Summer Simmer index.
      *
-     * @param integer $t Temperature in celcius.
+     * @param integer $t Temperature in celsius.
      * @param integer $h Humidity in percent.
      * @return integer The summer simmer index.
      * @since 3.1.0
@@ -532,8 +532,8 @@ trait Utilities {
     /**
      * Computes the cloud ceiling distance.
      *
-     * @param integer $t Temperature in celcius.
-     * @param integer $dew Dew point temperature in celcius.
+     * @param integer $t Temperature in celsius.
+     * @param integer $dew Dew point temperature in celsius.
      * @return float The computed cloud ceiling distance in meters.
      * @since 3.1.0
      */

@@ -69,7 +69,7 @@ class ColorsManipulation {
         'gainsboro'=>'DCDCDC',
         'ghostwhite'=>'F8F8FF',
         'gold'=>'FFD700',
-        'goldenrod'=>'DAA520',
+        'goldenrod'=>'DATA520',
         'gray'=>'808080',
         'green'=>'008000',
         'greenyellow'=>'ADFF2F',

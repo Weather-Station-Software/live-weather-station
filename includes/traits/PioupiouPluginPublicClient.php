@@ -74,7 +74,7 @@ trait PublicClient {
     /**
      * Format and store data.
      *
-     * @param string $json_weather Weather array json formated.
+     * @param string $json_weather Weather array json formatted.
      * @param array $station Station array.
      * @throws \Exception
      * @since 3.5.0
