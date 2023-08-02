@@ -119,7 +119,7 @@ abstract class Pusher {
     /**
      * Post station's datas to service.
      *
-     * @param array $stations Optional. Test specificaly these stations.
+     * @param array $stations Optional. Test specifically these stations.
      * @return string Error string if any.
      * @since 3.0.0
      */

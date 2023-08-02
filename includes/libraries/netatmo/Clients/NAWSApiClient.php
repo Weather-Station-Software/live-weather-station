@@ -48,10 +48,10 @@ class NAWSApiClient extends NAApiClient
     * @param timestamp (utc) $start (optional) : starting timestamp of requested measurements
     * @param timestamp (utc) $end (optional) : ending timestamp of requested measurements.
     * @param int $limit (optional) : limits numbers of measurements returned (default & max : 1024)
-    * @param bool $optimize (optional) : optimize the bandwith usage if true. Optimize = FALSE enables an easier result parsing
+    * @param bool $optimize (optional) : optimize the bandwidth usage if true. Optimize = FALSE enables an easier result parsing
     * @param bool $realtime (optional) : Remove time offset (+scale/2) for scale bigger than max
     * @return array of measures and timestamp
-    * @brief Method used to retrieve specifig measures of the given weather station
+    * @brief Method used to retrieve specific measures of the given weather station
     */
    public function getMeasure($device_id, $module_id, $scale, $type, $start = NULL, $end = NULL, $limit = 1024, $optimize = true, $realtime = NULL)
    {

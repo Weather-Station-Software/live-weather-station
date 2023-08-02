@@ -81,7 +81,7 @@ trait Client {
      * @param integer $start Optional. Starting timestamp of requested measurements
      * @param integer $end Optional. Ending timestamp of requested measurements.
      * @param int $limit Optional. Limits numbers of measurements returned (default & max : 1024)
-     * @param bool $optimize Optional. Optimize the bandwith usage if true. Optimize = FALSE enables an easier result parsing
+     * @param bool $optimize Optional. Optimize the bandwidth usage if true. Optimize = FALSE enables an easier result parsing
      * @param bool $realtime Optional. Remove time offset (+scale/2) for scale bigger than max
      *
      * @return boolean True if it was a success, false otherwise.
@@ -259,7 +259,7 @@ trait Client {
     }
 
     /**
-     * Detect the Netatmo stations and, optionaly, store them in the stations table.
+     * Detect the Netatmo stations and, optionally, store them in the stations table.
      *
      * @param boolean $store Optional. Store the found stations in the stations table.
      * @return array An array containing stations details.

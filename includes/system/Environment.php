@@ -142,7 +142,7 @@ class Manager {
     }
 
     /**
-     * Get the ip adresss of the server.
+     * Get the ip address of the server.
      *
      * @since 3.1.0
      */
@@ -891,7 +891,7 @@ class Manager {
     }
 
     /**
-     * Get the Wordpress version human readable.
+     * Get the WordPress version human readable.
      *
      * @since 3.0.0
      */
@@ -905,7 +905,7 @@ class Manager {
     }
 
     /**
-     * Get the Wordpress version.
+     * Get the WordPress version.
      *
      * @since 3.0.0
      */
@@ -915,7 +915,7 @@ class Manager {
     }
 
     /**
-     * Get the Wordpress debug statu.
+     * Get the WordPress debug status.
      *
      * @since 3.0.0
      */
@@ -1120,7 +1120,7 @@ class Manager {
     }
 
     /**
-     * Get the Wordpress cache text.
+     * Get the WordPress cache text.
      *
      * @since 3.4.1
      */

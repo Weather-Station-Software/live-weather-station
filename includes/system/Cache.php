@@ -638,7 +638,7 @@ class Cache {
      *
      * @param string $cache_id The cached element slug. Expected to not be SQL-escaped.
      * @param mixed $value Cached element value, must be serializable if non-scalar. Expected to not be SQL-escaped.
-     * @param intger $expiry Optional. Override default cahe expiry time.
+     * @param integer $expiry Optional. Override default cache expiry time.
      * @return bool False if value was not set and true if value was set.
      * @since 3.0.0
      *

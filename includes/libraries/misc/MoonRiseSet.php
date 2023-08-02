@@ -84,7 +84,7 @@ class MoonRiseSet {
     }
 
     /**
-     *	finds the parabola throuh the three points (-1,ym), (0,yz), (1, yp)
+     *	finds the parabola through the three points (-1,ym), (0,yz), (1, yp)
      *  and returns the coordinates of the max/min (if any) xe, ye
      *  the values of x where the parabola crosses zero (roots of the self::quadratic)
      *  and the number of roots (0, 1 or 2) within the interval [-1, 1]

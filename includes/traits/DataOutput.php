@@ -30,7 +30,7 @@ use WeatherStation\UI\Map\NavionicsHandling;
 
 
 /**
- * Outputing / shortcoding functionalities for Weather Station plugin.
+ * Outputting / shortcoding functionalities for Weather Station plugin.
  *
  * @package Includes\Traits
  * @author Jason Rouet <https://www.jasonrouet.com/>.
@@ -41,7 +41,7 @@ trait Output {
     
     use Unit_Description, Type_Description, Datetime_Conversion, Unit_Conversion, Query;
 
-    private $unit_espace = '&nbsp;';
+    private $unit_nbspace = '&nbsp;';
     private $showable_measurements = array('co2', 'co', 'o3', 'humidity', 'humint', 'humext', 'humidity_ref',
         'cloudiness', 'noise', 'rain', 'rain_hour_aggregated', 'rain_day_aggregated' , 'rain_yesterday_aggregated',
         'rain_month_aggregated','rain_season_aggregated', 'rain_year_aggregated','snow', 'windangle', 'gustangle',
@@ -8770,7 +8770,7 @@ trait Output {
         switch ($_attributes['format']) {
             case 'raw':
                 break;
-            case 'type-formated':
+            case 'type-formatted':
                 switch ($_attributes['element']) {
                     case 'module_type':
                         $result = $this->get_module_type($result);
@@ -8826,7 +8826,7 @@ trait Output {
                         $result = $err ;
                 }
                 break;
-            case 'type-formated-dimension':
+            case 'type-formatted-dimension':
                 switch ($_attributes['element']) {
                     case 'measure_type':
                         $result = $this->get_dimension_name($this->output_unit($result, $module_type)['dimension']);
@@ -9193,7 +9193,7 @@ trait Output {
      * @param string $module_type Optional. The type of the module.
      * @param string $tz Optional. The timezone.
      * @param string $format Optional. Special format if needed.
-     * @return string The value outputed with the right unit.
+     * @return string The value outputted with the right unit.
      * @since 1.0.0
      */
     protected function output_value($value, $type, $unit=false , $textual=false, $module_type='NAMain', $tz='', $format='') {
@@ -9208,7 +9208,7 @@ trait Output {
         switch (strtolower($type)) {
             case 'battery':
                 $result = $this->get_battery_percentage($value, $module_type);
-                $result .= ($unit ? $this->unit_espace.$this->get_battery_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_battery_unit() : '');
                 if ($textual) {
                     $result = $this->get_battery_level_text($value, $module_type);
                 }
@@ -9228,21 +9228,21 @@ trait Output {
                 break;
             case 'signal':
                 $result = $this->get_signal_percentage($value, $module_type);
-                $result .= ($unit ? $this->unit_espace.$this->get_signal_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_signal_unit() : '');
                 if ($textual) {
                     $result = $this->get_signal_level_text($value, $module_type);
                 }
                 break;
             case 'health_idx':
                 $result = $this->get_health_index($value);
-                $result .= ($unit ? $this->unit_espace.$this->get_health_index_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_health_index_unit() : '');
                 if ($textual) {
                     $result = $this->get_health_index_text($value);
                 }
                 break;
             case 'cbi':
                 $result = $this->get_cbi($value);
-                $result .= ($unit ? $this->unit_espace.$this->get_cbi_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_cbi_unit() : '');
                 if ($textual) {
                     $result = $this->get_cbi_text($value);
                 }
@@ -9252,16 +9252,16 @@ trait Output {
             case 'co2_max':
                 $ref = get_option('live_weather_station_unit_gas');
                 $result = $this->get_co2($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_co2_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_co2_unit($ref) : '');
                 break;
             case 'co':
                 $ref = get_option('live_weather_station_unit_gas');
                 $result = $this->get_co($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_co_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_co_unit($ref) : '');
                 break;
             case 'o3':
                 $result = $this->get_o3($value);
-                $result .= ($unit ? $this->unit_espace.$this->get_o3_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_o3_unit() : '');
                 break;
             case 'humidity':
             case 'humint':
@@ -9270,19 +9270,19 @@ trait Output {
             case 'humidity_min':
             case 'humidity_max':
                 $result = $this->get_humidity($value);
-                $result .= ($unit ? $this->unit_espace.$this->get_humidity_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_humidity_unit() : '');
                 break;
             case 'cloudiness':
             case 'cloudiness_min':
             case 'cloudiness_max':
                 $result = $this->get_cloudiness($value);
-                $result .= ($unit ? $this->unit_espace.$this->get_cloudiness_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_cloudiness_unit() : '');
                 break;
             case 'noise':
             case 'noise_min':
             case 'noise_max':
                 $result = $this->get_noise($value);
-                $result .= ($unit ? $this->unit_espace.$this->get_noise_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_noise_unit() : '');
                 break;
             case 'rain':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
@@ -9290,7 +9290,7 @@ trait Output {
                 if (strtolower($module_type)=='namodule3') {
                     $ref = $ref + 1;
                 }
-                $result .= ($unit ? $this->unit_espace.$this->get_rain_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_rain_unit($ref) : '');
                 break;
             case 'rain_hour_aggregated':
             case 'rain_day_aggregated':
@@ -9300,12 +9300,12 @@ trait Output {
             case 'rain_yesterday_aggregated':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
                 $result = $this->get_rain($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_rain_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_rain_unit($ref) : '');
                 break;
             case 'snow':
                 $ref = get_option('live_weather_station_unit_rain_snow') ;
                 $result = $this->get_snow($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_snow_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_snow_unit($ref) : '');
                 break;
             case 'angle':
             case 'windangle':
@@ -9319,7 +9319,7 @@ trait Output {
             case 'winddirection_day_max':
             case 'winddirection_hour_max':
                 $result = $this->get_wind_angle($value);
-                $result .= ($unit ? $this->unit_espace.$this->get_wind_angle_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_wind_angle_unit() : '');
                 break;
             case 'windstrength':
             case 'guststrength':
@@ -9332,7 +9332,7 @@ trait Output {
             case 'wind_ref':
                 $ref = get_option('live_weather_station_unit_wind_strength');
                 $result = $this->get_wind_speed($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_wind_speed_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_wind_speed_unit($ref) : '');
                 break;
             case 'pressure':
             case 'pressure_min':
@@ -9344,7 +9344,7 @@ trait Output {
             case 'pressure_sl_ref':
                 $ref = get_option('live_weather_station_unit_pressure') ;
                 $result = $this->get_pressure($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_pressure_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_pressure_unit($ref) : '');
                 break;
             case 'temperature':
             case 'tempint':
@@ -9356,7 +9356,7 @@ trait Output {
             case 'frost_point':
                 $ref = get_option('live_weather_station_unit_temperature') ;
                 $result = $this->get_temperature($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_temperature_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_temperature_unit($ref) : '');
                 break;
             case 'heat_index':
             case 'humidex':
@@ -9372,18 +9372,18 @@ trait Output {
             case 'loc_altitude':
                 $ref = get_option('live_weather_station_unit_altitude');
                 $result = $this->get_altitude($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_altitude_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_altitude_unit($ref) : '');
                 break;
             case 'cloud_ceiling':
                 $ref = get_option('live_weather_station_unit_altitude');
                 $result = $this->get_cloud_ceiling($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_altitude_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_altitude_unit($ref) : '');
                 break;
             case 'alt_pressure':
             case 'alt_density':
                 $ref = get_option('live_weather_station_unit_altitude');
                 $result = $this->get_alt_pressure_density($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_altitude_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_altitude_unit($ref) : '');
                 break;
             case 'co2_trend':
             case 'humidity_trend':
@@ -9438,7 +9438,7 @@ trait Output {
                 else {
                     if ($unit) {
                         $result = $this->get_dusk_dawn($value);
-                        $result .= ($unit ? $this->unit_espace . $this->get_dusk_dawn_unit() : '');
+                        $result .= ($unit ? $this->unit_nbspace . $this->get_dusk_dawn_unit() : '');
                     }
                     if ($textual) {
                         $result = $this->get_age_hours_from_seconds($value, $format);
@@ -9456,7 +9456,7 @@ trait Output {
                 else {
                     if ($unit) {
                         $result = $this->get_day_length($value);
-                        $result .= ($unit ? $this->unit_espace . $this->get_day_length_unit() : '');
+                        $result .= ($unit ? $this->unit_nbspace . $this->get_day_length_unit() : '');
                     }
                     if ($textual) {
                         $result = $this->get_age_hours_from_seconds($value, $format);
@@ -9474,18 +9474,18 @@ trait Output {
                 break;
             case 'moon_illumination':
                 $result = $this->get_moon_illumination($value);
-                $result .= ($unit ? $this->unit_espace.$this->get_moon_illumination_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_moon_illumination_unit() : '');
                 break;
             case 'moon_diameter':
             case 'sun_diameter':
                 $result = $this->get_degree_diameter($value);
-                $result .= ($unit ? $this->unit_espace.$this->get_degree_diameter_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_degree_diameter_unit() : '');
                 break;
             case 'moon_distance':
             case 'sun_distance':
                 $ref = get_option('live_weather_station_unit_distance');
                 $result = $this->get_distance_from_kilometers($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_distance_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_distance_unit($ref) : '');
                 break;
             case 'moon_phase':
                 if ($unit || $textual) {
@@ -9501,7 +9501,7 @@ trait Output {
             case 'co_distance':
                 $ref = get_option('live_weather_station_unit_distance');
                 $result = $this->get_distance_from_meters($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_distance_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_distance_unit($ref) : '');
                 break;
             case 'loc_timezone':
             case 'timezone':
@@ -9523,41 +9523,41 @@ trait Output {
             case 'wet_bulb':
                 $ref = get_option('live_weather_station_unit_temperature') ;
                 $result = $this->get_temperature($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_temperature_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_temperature_unit($ref) : '');
                 break;
             case 'delta_t':
                 $ref = get_option('live_weather_station_unit_temperature') ;
                 $result = $this->get_temperature($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_temperature_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_temperature_unit($ref) : '');
                 break;
             case 'air_density':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
                 $result = $this->get_density($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_density_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_density_unit($ref) : '');
                 break;
             case 'wood_emc':
             case 'emc':
                 $result = $this->get_emc($value);
-                $result .= ($unit ? $this->unit_espace.$this->get_emc_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_emc_unit() : '');
                 break;
             case 'equivalent_temperature':
             case 'potential_temperature':
             case 'equivalent_potential_temperature':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
                 $result = $this->get_temperature($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_temperature_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_temperature_unit($ref) : '');
                 break;
             case 'specific_enthalpy':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
                 $result = $this->get_enthalpy($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_enthalpy_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_enthalpy_unit($ref) : '');
                 break;
             case 'partial_vapor_pressure':
             case 'saturation_vapor_pressure':
             case 'vapor_pressure':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
                 $result = $this->get_precise_pressure($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_precise_pressure_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_precise_pressure_unit($ref) : '');
                 break;
             case 'absolute_humidity':
             case 'absolute_humidity_min':
@@ -9566,7 +9566,7 @@ trait Output {
             case 'saturation_absolute_humidity':
                 $ref = get_option('live_weather_station_unit_psychrometry') ;
                 $result = $this->get_absolute_humidity($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_absolute_humidity_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_absolute_humidity_unit($ref) : '');
                 break;
 
             // SOLAR
@@ -9574,7 +9574,7 @@ trait Output {
             case 'irradiance_min':
             case 'irradiance_max':
                 $result = $this->get_irradiance($value);
-                $result .= ($unit ? $this->unit_espace.$this->get_irradiance_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_irradiance_unit() : '');
                 break;
             case 'uv_index':
             case 'uv_index_min':
@@ -9585,7 +9585,7 @@ trait Output {
             case 'illuminance_min':
             case 'illuminance_max':
                 $result = $this->get_illuminance($value);
-                $result .= ($unit ? $this->unit_espace.$this->get_illuminance_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_illuminance_unit() : '');
                 break;
             // SOIL
             case 'soil_temperature':
@@ -9593,26 +9593,26 @@ trait Output {
             case 'soil_temperature_max':
                 $ref = get_option('live_weather_station_unit_temperature') ;
                 $result = $this->get_temperature($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_temperature_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_temperature_unit($ref) : '');
                 break;
             case 'leaf_wetness':
             case 'moisture_content':
             case 'moisture_content_min':
             case 'moisture_content_max':
                 $result = $this->get_humidity($value);
-                $result .= ($unit ? $this->unit_espace.$this->get_humidity_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_humidity_unit() : '');
                 break;
             case 'moisture_tension':
             case 'moisture_tension_min':
             case 'moisture_tension_max':
                 $ref = get_option('live_weather_station_unit_pressure') ;
                 $result = $this->get_pressure($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_pressure_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_pressure_unit($ref) : '');
                 break;
             case 'evapotranspiration':
                 $ref = 2 * get_option('live_weather_station_unit_rain_snow') ;
                 $result = $this->get_rain($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_rain_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_rain_unit($ref) : '');
                 break;
             // THUNDERSTORM
             case 'strike_count':
@@ -9622,18 +9622,18 @@ trait Output {
             case 'strike_distance':
                 $ref = get_option('live_weather_station_unit_distance');
                 $result = $this->get_distance_from_meters($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_distance_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_distance_unit($ref) : '');
                 break;
             case 'strike_bearing':
                 $result = $this->get_wind_angle($value);
-                $result .= ($unit ? $this->unit_espace.$this->get_wind_angle_unit() : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_wind_angle_unit() : '');
                 break;
             case 'visibility':
             case 'visibility_min':
             case 'visibility_max':
                 $ref = get_option('live_weather_station_unit_distance');
                 $result = $this->get_visibility($value, $ref);
-                $result .= ($unit ? $this->unit_espace.$this->get_altitude_unit($ref) : '');
+                $result .= ($unit ? $this->unit_nbspace.$this->get_altitude_unit($ref) : '');
                 break;
             }
         return $result;
@@ -10149,14 +10149,14 @@ trait Output {
      *
      * @param   mixed       $value          The value to output.
      * @param   string      $type           The type of the value.
-     * @param   integer     $mode           Optional. The mode in wich to output:
+     * @param   integer     $mode           Optional. The mode in which to output:
      *                                          1: Geodetic system WGS 84
      *                                          2: Geodetic system WGS 84 with unit
      *                                          3: DMS
      *                                          4: DMS starting with cardinal
      *                                          5: DMS ending with cardinal
      * @param   boolean     $html           Optional. Replace space by &nbsp;
-     * @return  string      The value outputed with the right unit.
+     * @return  string      The value outputted with the right unit.
      * @since    1.1.0
      * @access   protected
      */
@@ -10965,7 +10965,7 @@ trait Output {
      * Outputs the abbreviation of a measure type.
      *
      * @param   string  $type   The type of the value.
-     * @return  string   The value of the abreviation.
+     * @return  string   The value of the abbreviation.
      * @since    1.0.0
      * @access   protected
      */
@@ -11944,7 +11944,7 @@ trait Output {
      * @param string $id The device or module id.
      * @param string $type Optional. The type of widget.
      * @param boolean $obsolescence_filtering Optional. True if data must be filtered.
-     * @return array An array containing the formated datas, ready to be read by widgets.
+     * @return array An array containing the formatted datas, ready to be read by widgets.
      * @since 3.1.0
      */
     protected function get_widget_data($id, $type='outdoor', $obsolescence_filtering=false) {
@@ -12114,7 +12114,7 @@ trait Output {
      * @param array $datas An array containing the selected datas.
      * @param string $measure_type The measure type(s) to include.
      * @param boolean  $computed Includes computed measures too.
-     * @return array An array containing the formated datas, ready to be displayed by lcd controls.
+     * @return array An array containing the formatted datas, ready to be displayed by lcd controls.
      * @since 1.0.0
      */
     protected function format_lcd_datas($datas, $measure_type, $computed=false) {
@@ -12498,7 +12498,7 @@ trait Output {
      * Format the selected datas for stickertags usage.
      *
      * @param array $datas An array containing the selected datas.
-     * @return array The formated datas, ready to be outputed as stickertags.txt file.
+     * @return array The formatted datas, ready to be outputted as stickertags.txt file.
      * @since 3.0.0
      *
      */
@@ -12625,7 +12625,7 @@ trait Output {
      * Format the selected datas for YoWindow usage.
      *
      * @param array $datas An array containing the selected datas.
-     * @return string The formated datas, ready to be outputed as YoWindow.xml file.
+     * @return string The formatted datas, ready to be outputted as YoWindow.xml file.
      * @since 3.3.0
      *
      */
@@ -12853,7 +12853,7 @@ trait Output {
     /**
      * Indicates if rain is valid (i.e. must be displayed).
      *
-     * @param   integer   $temp_ref      Reference temperature in celcius degrees.
+     * @param   integer   $temp_ref      Reference temperature in celsius degrees.
      * @return  boolean   True if rain is valid, false otherwise.
      * @since    2.0.0
      */
@@ -12868,7 +12868,7 @@ trait Output {
     /**
      * Indicates if snow is valid (i.e. must be displayed).
      *
-     * @param   integer   $temp_ref      Reference temperature in celcius degrees.
+     * @param   integer   $temp_ref      Reference temperature in celsius degrees.
      * @return  boolean   True if snow is valid, false otherwise.
      * @since    2.0.0
      */
@@ -12883,7 +12883,7 @@ trait Output {
     /**
      * Indicates if dew point is valid (i.e. must be displayed).
      *
-     * @param   integer   $temp_ref      Reference temperature in celcius degrees (reference = as it was at compute time).
+     * @param   integer   $temp_ref      Reference temperature in celsius degrees (reference = as it was at compute time).
      * @return  boolean   True if dew point is valid, false otherwise.
      * @since    1.1.0
      */
@@ -12898,7 +12898,7 @@ trait Output {
     /**
      * Indicates if frost point is valid (i.e. must be displayed).
      *
-     * @param   integer   $temp_ref      Reference temperature in celcius degrees (reference = as it was at compute time).
+     * @param   integer   $temp_ref      Reference temperature in celsius degrees (reference = as it was at compute time).
      * @return  boolean   True if frost point is valid, false otherwise.
      * @since    1.1.0
      */
@@ -12913,7 +12913,7 @@ trait Output {
     /**
      * Indicates if wind chill is valid (i.e. must be displayed).
      *
-     * @param   float   $temp_ref      Reference temperature in celcius degrees (reference = as it was at compute time).
+     * @param   float   $temp_ref      Reference temperature in celsius degrees (reference = as it was at compute time).
      * @param   float   $wind_chill     The wind chill value
      * @return  boolean   True if wind chill is valid, false otherwise.
      * @since    1.1.0
@@ -12929,9 +12929,9 @@ trait Output {
     /**
      * Indicates if heat index is valid (i.e. must be displayed).
      *
-     * @param   integer   $temp_ref      Reference temperature in celcius degrees (reference = as it was at compute time).
+     * @param   integer   $temp_ref      Reference temperature in celsius degrees (reference = as it was at compute time).
      * @param   integer   $hum_ref      Reference humidity in % (reference = as it was at compute time).
-     * @param   integer   $dew_ref      Reference dew point in celcius degrees (reference = as it was at compute time).
+     * @param   integer   $dew_ref      Reference dew point in celsius degrees (reference = as it was at compute time).
      * @return  boolean   True if heat index is valid, false otherwise.
      * @since    1.1.0
      */
@@ -12946,7 +12946,7 @@ trait Output {
     /**
      * Indicates if steadman index is valid (i.e. must be displayed).
      *
-     * @param   integer   $temp_ref      Reference temperature in celcius degrees (reference = as it was at compute time).
+     * @param   integer   $temp_ref      Reference temperature in celsius degrees (reference = as it was at compute time).
      * @param   integer   $hum_ref      Reference humidity in % (reference = as it was at compute time).
      * @return  boolean   True if heat index is valid, false otherwise.
      * @since 3.7.0
@@ -12962,7 +12962,7 @@ trait Output {
     /**
      * Indicates if summer simmer index is valid (i.e. must be displayed).
      *
-     * @param   integer   $temp_ref      Reference temperature in celcius degrees (reference = as it was at compute time).
+     * @param   integer   $temp_ref      Reference temperature in celsius degrees (reference = as it was at compute time).
      * @param   integer   $hum_ref      Reference humidity in % (reference = as it was at compute time).
      * @return  boolean   True if heat index is valid, false otherwise.
      * @since 3.7.0
@@ -12978,9 +12978,9 @@ trait Output {
     /**
      * Indicates if humidex is valid (i.e. must be displayed).
      *
-     * @param   integer   $temp_ref      Reference temperature in celcius degrees (reference = as it was at compute time).
+     * @param   integer   $temp_ref      Reference temperature in celsius degrees (reference = as it was at compute time).
      * @param   integer   $hum_ref      Reference humidity in % (reference = as it was at compute time).
-     * @param   integer   $dew_ref      Reference dew point in celcius degrees (reference = as it was at compute time).
+     * @param   integer   $dew_ref      Reference dew point in celsius degrees (reference = as it was at compute time).
      * @return  boolean   True if humidex is valid, false otherwise.
      * @since    1.1.0
      */
@@ -13171,15 +13171,15 @@ trait Output {
     }
 
     /**
-     * Get all formated datas for a single station.
+     * Get all formatted datas for a single station.
      *
      * @param integer $guid The device GUID.
      * @param boolean $obsolescence_filtering Don't return obsolete data.
      * @param boolean $full Optional. Get all data (not just only "writable").
-     * @return array An array containing all the formated datas.
+     * @return array An array containing all the formatted datas.
      * @since 3.0.0
      */
-    protected function get_all_formated_datas($guid, $obsolescence_filtering=false, $full=false) {
+    protected function get_all_formatted_datas($guid, $obsolescence_filtering=false, $full=false) {
         $station = $this->get_station_informations_by_guid($guid);
         $raw_data = $this->get_all_datas($station['station_id'], $obsolescence_filtering);
         $result = array();
@@ -13672,7 +13672,7 @@ trait Output {
     }
 
     /**
-     * Get the tranlations.
+     * Get the translations.
      *
      * @return string $attributes The type of analytics queryed by the shortcode.
      * @since 3.4.0
