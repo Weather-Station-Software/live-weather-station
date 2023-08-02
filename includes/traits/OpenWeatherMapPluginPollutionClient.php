@@ -45,7 +45,7 @@ trait PollutionClient {
      * Get pollution datas.
      *
      * @param   array   $data       Collected Netatmo datas.
-     * @param   array   $stations   Optional. Test specificaly these stations.
+     * @param   array   $stations   Optional. Test specifically these stations.
      * @return  string  Error string if any.
      * @since    2.5.0
      */
@@ -73,7 +73,7 @@ trait PollutionClient {
     /**
      * Get pollution's data array.
      *
-     * @param   string  $json_pollution    Pollution array json formated.
+     * @param   string  $json_pollution    Pollution array json formatted.
      * @param   array   $station    Station array.
      * @param   string  $device_id  The device id.
      * @return  array     A standard array with value.

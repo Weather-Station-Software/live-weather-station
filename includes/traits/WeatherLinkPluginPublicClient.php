@@ -113,8 +113,8 @@ trait PublicClient {
     /**
      * Format and store data.
      *
-     * @param string $json_meta Metadata array json formated.
-     * @param string $json_data Data array json formated.
+     * @param string $json_meta Metadata array json formatted.
+     * @param string $json_data Data array json formatted.
      * @param array $station Station array.
      * @throws \Exception
      * @since 3.8.0

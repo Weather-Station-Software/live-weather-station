@@ -147,7 +147,7 @@ trait HCClient {
     }
 
     /**
-     * Detect the Netatmo stations and, optionaly, store them in the stations table.
+     * Detect the Netatmo stations and, optionally, store them in the stations table.
      *
      * @param boolean $store Optional. Store the found stations in the stations table.
      * @return array An array containing stations details.

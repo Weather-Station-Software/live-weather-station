@@ -186,7 +186,7 @@ class Handling {
     /**
      * Get the module array.
      *
-     * @return array An array containing the available instanciated modules;
+     * @return array An array containing the available instantiated modules;
      * @since 3.4.0
      */
     private function get_modules() {
@@ -734,7 +734,7 @@ class Handling {
      */
     public function add_metaboxes() {
         if ($this->station_guid != 0) {
-            $data = $this->get_all_formated_datas($this->station_guid);
+            $data = $this->get_all_formatted_datas($this->station_guid);
             $station = $data['station'];
             $gid = strtolower(str_replace(':', '', $station['station_id']));
             // Left column

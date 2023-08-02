@@ -233,7 +233,7 @@ function lws_font_awesome($all=false) {
         $mode = 1;
     }
     switch ($mode) {
-        case 0:                                             // Font Awesome 4 outputed by Weather Station
+        case 0:                                             // Font Awesome 4 outputted by Weather Station
             wp_enqueue_style('lws-font-awesome-4');
             if (!defined('LWS_FAR')) {
                 define('LWS_FAR', 'fa');
@@ -251,7 +251,7 @@ function lws_font_awesome($all=false) {
                 define('LWS_FA_SVG', false);
             }
             break;
-        case 1:                                             // Font Awesome 5 outputed by Weather Station as CSS
+        case 1:                                             // Font Awesome 5 outputted by Weather Station as CSS
             wp_enqueue_style('lws-font-awesome-5');
             if (!defined('LWS_FAR')) {
                 define('LWS_FAR', 'far');
@@ -269,7 +269,7 @@ function lws_font_awesome($all=false) {
                 define('LWS_FA_SVG', false);
             }
             break;
-        case 2:                                             // Font Awesome 5 outputed by Weather Station as JS+SVG
+        case 2:                                             // Font Awesome 5 outputted by Weather Station as JS+SVG
             if ($all) {
                 wp_enqueue_script('lws-fa-all');
             }
@@ -293,7 +293,7 @@ function lws_font_awesome($all=false) {
                 define('LWS_FA_SVG', true);
             }
             break;
-        case 3:                                             // Font Awesome 4 outputed by theme or other plugin
+        case 3:                                             // Font Awesome 4 outputted by theme or other plugin
             wp_dequeue_style('lws-font-awesome-4');
             wp_dequeue_style('lws-font-awesome-5');
             wp_dequeue_script('lws-fa-all');
@@ -316,7 +316,7 @@ function lws_font_awesome($all=false) {
                 define('LWS_FA_SVG', false);
             }
             break;
-        case 4:                                             // Font Awesome 5 outputed by theme or other plugin as CSS
+        case 4:                                             // Font Awesome 5 outputted by theme or other plugin as CSS
             wp_dequeue_style('lws-font-awesome-4');
             wp_dequeue_style('lws-font-awesome-5');
             wp_dequeue_script('lws-fa-all');
@@ -339,7 +339,7 @@ function lws_font_awesome($all=false) {
                 define('LWS_FA_SVG', false);
             }
             break;
-        case 5:                                             // Font Awesome 5 outputed by theme or other plugin as JS+SVG
+        case 5:                                             // Font Awesome 5 outputted by theme or other plugin as JS+SVG
             wp_dequeue_style('lws-font-awesome-4');
             wp_dequeue_style('lws-font-awesome-5');
             wp_dequeue_script('lws-fa-all');
@@ -476,7 +476,7 @@ function lws_send_alert_message() {
 }
 
 /**
- * Print the begining of the script tag.
+ * Print the beginning of the script tag.
  *
  * @param string $jsInitId Optional. The uid of the init function.
  * @return string The output ready to print.
@@ -489,8 +489,8 @@ function lws_print_begin_script($jsInitId='') {
             $result .= 'document.addEventListener("DOMContentLoaded", function(event) {';
         }
         else {
-            $result .= 'if (document.readyState !== "loading") {lwsInitDefered' . $jsInitId . '();} else {document.addEventListener("DOMContentLoaded", function () {lwsInitDefered' . $jsInitId . '();});}';
-            $result .= 'function lwsInitDefered' . $jsInitId . '() {';
+            $result .= 'if (document.readyState !== "loading") {lwsInitDeferred' . $jsInitId . '();} else {document.addEventListener("DOMContentLoaded", function () {lwsInitDeferred' . $jsInitId . '();});}';
+            $result .= 'function lwsInitDeferred' . $jsInitId . '() {';
         }
     }
     return $result;
@@ -525,7 +525,7 @@ function lws_print_end_script($jsInitId='') {
  * @return string The sanitized size.
  * @since 3.7.0
  */
-function lws_sanitize_width_heigth_field($s, $u=array('px')) {
+function lws_sanitize_width_height_field($s, $u=array('px')) {
     $s = trim(strtolower(sanitize_text_field($s)));
     switch ($s) {
         case 'auto':
@@ -558,7 +558,7 @@ function lws_sanitize_width_heigth_field($s, $u=array('px')) {
  * @since 3.7.0
  */
 function lws_sanitize_width_field($w) {
-    return lws_sanitize_width_heigth_field($w, array('cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax', '%'));
+    return lws_sanitize_width_height_field($w, array('cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax', '%'));
 }
 
 /**
@@ -569,7 +569,7 @@ function lws_sanitize_width_field($w) {
  * @since 3.7.0
  */
 function lws_sanitize_height_field($h) {
-    return lws_sanitize_width_heigth_field($h, array('cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax'));
+    return lws_sanitize_width_height_field($h, array('cm', 'mm', 'in', 'px', 'pt', 'pc', 'em', 'ex', 'ch', 'rem', 'vw', 'vh', 'vmin', 'vmax'));
 }
 
 

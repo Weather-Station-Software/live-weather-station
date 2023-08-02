@@ -927,7 +927,7 @@ trait Description {
                 $result = __( 'kelvin' , 'live-weather-station');
                 break;
             default:
-                $result = __( 'celcius degree' , 'live-weather-station');
+                $result = __( 'celsius degree' , 'live-weather-station');
         }
         return $result;
     }
@@ -1100,7 +1100,7 @@ trait Description {
                 $result = __( 'Fahrenheit - °F' , 'live-weather-station');
                 break;
             default:
-                $result = __( 'Celcius - °C' , 'live-weather-station');
+                $result = __( 'Celsius - °C' , 'live-weather-station');
         }
         return $result;
     }
