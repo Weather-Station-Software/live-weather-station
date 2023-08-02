@@ -525,7 +525,7 @@ trait StationClient {
     }
 
     /**
-     * Test the resource (is it accessible, is it correctly formated?).
+     * Test the resource (is it accessible, is it correctly formatted?).
      *
      * @param integer $connection_type Type of connection.
      * @param string $resource The resource to query.

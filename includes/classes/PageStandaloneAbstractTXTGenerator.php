@@ -20,7 +20,7 @@ abstract class TXTGenerator {
     /**
      * Send headers.
      *
-     * @param mixed $filename The filename to generate as attachement.
+     * @param mixed $filename The filename to generate as attachment.
      * @since 3.0.0
      */
     private function send_header($filename=false) {
@@ -64,7 +64,7 @@ abstract class TXTGenerator {
      *
      * @param array $params Parameters for selecting data to send.
      * @param string $subformat Optional. The subformat request.
-     * @param mixed $filename Optional. The filename has to be generatee as attachement.
+     * @param mixed $filename Optional. The filename has to be generatee as attachment.
      * @since 3.0.0
      */
     public function send($params, $subformat='standard', $filename=false) {

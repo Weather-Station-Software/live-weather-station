@@ -38,8 +38,8 @@ Weather Station supports:
 * the WeatherFlow station (Sky & Air modules)
 * all stations published on Ambient Weather Network
 * all stations published on WeatherLink Network
-* all stations supported by softwares like Cumulus, Weather Display, WeeWX, etc. (so, yes, stations from Davis, La Crosse, Oregon Scientific, RainWise, etc. are supported)
-* all stations supported by softwares like WeatherLink, WsWin32, MeteoBridge (with stickertags export)
+* all stations supported by software like Cumulus, Weather Display, WeeWX, etc. (so, yes, stations from Davis, La Crosse, Oregon Scientific, RainWise, etc. are supported)
+* all stations supported by software like WeatherLink, WsWin32, MeteoBridge (with stickertags export)
 * all geolocation from OpenWeatherMap
 
 If you want, Weather Station can send outdoor data to the following services:

@@ -74,7 +74,7 @@ class InlineHelp {
             'documentation/specifications-techniques#url', //16 stickertags documentation
             'documentation', //17 main documentation
             'assistance', //18 main support page
-            'documentation/controles', //19 Controles
+            'documentation/controles', //19 controls
             ),*/
     );
 

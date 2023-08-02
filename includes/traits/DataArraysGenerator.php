@@ -76,7 +76,7 @@ trait Generator {
     private function get_td_module_type_format($sample) {
         $result = array();
         $result[0] = array (__('Raw value', 'live-weather-station'), 'raw', $sample[0]);
-        $result[1] = array (__('Formated value', 'live-weather-station'), 'type-formated', $sample[1]);
+        $result[1] = array (__('Formatted value', 'live-weather-station'), 'type-formatted', $sample[1]);
         return $result;
     }
 
@@ -105,8 +105,8 @@ trait Generator {
     private function get_td_time_format($sample) {
         $result = array();
         $result[0] = array (__('UTC timestamp', 'live-weather-station'), 'raw', $sample[0]);
-        $result[1] = array (__('Formated local date', 'live-weather-station'), 'local-date', $sample[1]);
-        $result[2] = array (__('Formated local time', 'live-weather-station'), 'local-time', $sample[2]);
+        $result[1] = array (__('Formatted local date', 'live-weather-station'), 'local-date', $sample[1]);
+        $result[2] = array (__('Formatted local time', 'live-weather-station'), 'local-time', $sample[2]);
         $result[3] = array (__('Elapsed or remaining approximative time', 'live-weather-station'), 'local-diff', $sample[3]);
         return $result;
     }
@@ -150,8 +150,8 @@ trait Generator {
     private function get_std_time_format($sample) {
         $result = array();
         $result[0] = array (__('Unix timestamp', 'live-weather-station'), 'raw', $sample[0]);
-        $result[1] = array (__('Formated local date', 'live-weather-station'), 'local-date', $sample[1]);
-        $result[2] = array (__('Formated local time', 'live-weather-station'), 'local-time', $sample[2]);
+        $result[1] = array (__('Formatted local date', 'live-weather-station'), 'local-date', $sample[1]);
+        $result[2] = array (__('Formatted local time', 'live-weather-station'), 'local-time', $sample[2]);
         $result[3] = array (__('Elapsed or remaining approximative time', 'live-weather-station'), 'local-diff', $sample[3]);
         return $result;
     }
@@ -167,13 +167,13 @@ trait Generator {
     private function get_td_measure_type_format($sample) {
         $result = array();
         $result[] = array (__('Raw value', 'live-weather-station'), 'raw', $sample[0]);
-        $result[] = array (__('Formated value', 'live-weather-station'), 'type-formated', $sample[1]);
+        $result[] = array (__('Formatted value', 'live-weather-station'), 'type-formatted', $sample[1]);
         $result[] = array (__('Human-readable meaning', 'live-weather-station'), 'type-meaning', $sample[7]);
         $result[] = array (__('Unit symbol or abbreviation', 'live-weather-station'), 'type-unit', $sample[2]);
         $result[] = array (__('Unit with complement (if any)', 'live-weather-station'), 'type-unit-full', $sample[3]);
         $result[] = array (__('Unit name', 'live-weather-station'), 'type-unit-long', $sample[4]);
         $result[] = array (__('Raw dimension', 'live-weather-station'), 'type-raw-dimension', $sample[5]);
-        $result[] = array (__('Formated dimension', 'live-weather-station'), 'type-formated-dimension', $sample[6]);
+        $result[] = array (__('Formatted dimension', 'live-weather-station'), 'type-formatted-dimension', $sample[6]);
         return $result;
     }
 
@@ -1211,7 +1211,7 @@ trait Generator {
      * @since 3.0.0
      */
     protected function get_station_array($guid, $full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $noned=false, $comparison=false, $distribution=false, $current=false, $video=false, $picture=false, $icon=false, $climat=false, $trend=true, $scores=false) {
-        $data = $this->get_all_formated_datas($guid, false, true);
+        $data = $this->get_all_formatted_datas($guid, false, true);
         $result = array();
         $modules = array();
         if (count($data) > 0) {

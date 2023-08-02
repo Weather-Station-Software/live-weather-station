@@ -794,7 +794,7 @@ msgid "Custom palette has not been updated. Please try again."
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:2158
-msgid "Unkonwn service."
+msgid "Unknown service."
 msgstr ""
 
 #: admin/SystemPluginAdmin.php:2161 admin/SystemPluginAdmin.php:2169
@@ -4971,7 +4971,7 @@ msgid ""
 msgstr ""
 
 #: includes/system/InlineHelp.php:397
-msgid "Sheduled tasks"
+msgid "Scheduled tasks"
 msgstr ""
 
 #: includes/system/InlineHelp.php:397
@@ -5678,7 +5678,7 @@ msgstr ""
 
 #: includes/traits/DataArraysGenerator.php:79
 #: includes/traits/DataArraysGenerator.php:170
-msgid "Formated value"
+msgid "Formatted value"
 msgstr ""
 
 #: includes/traits/DataArraysGenerator.php:107
@@ -5687,12 +5687,12 @@ msgstr ""
 
 #: includes/traits/DataArraysGenerator.php:108
 #: includes/traits/DataArraysGenerator.php:153
-msgid "Formated local date"
+msgid "Formatted local date"
 msgstr ""
 
 #: includes/traits/DataArraysGenerator.php:109
 #: includes/traits/DataArraysGenerator.php:154
-msgid "Formated local time"
+msgid "Formatted local time"
 msgstr ""
 
 #: includes/traits/DataArraysGenerator.php:110
@@ -5726,7 +5726,7 @@ msgid "Raw dimension"
 msgstr ""
 
 #: includes/traits/DataArraysGenerator.php:175
-msgid "Formated dimension"
+msgid "Formatted dimension"
 msgstr ""
 
 #: includes/traits/DataArraysGenerator.php:190
@@ -9407,7 +9407,7 @@ msgid "kelvin"
 msgstr ""
 
 #: includes/traits/DataUnitDescription.php:930
-msgid "celcius degree"
+msgid "celsius degree"
 msgstr ""
 
 #: includes/traits/DataUnitDescription.php:946
@@ -9494,7 +9494,7 @@ msgid "Fahrenheit - °F"
 msgstr ""
 
 #: includes/traits/DataUnitDescription.php:1103
-msgid "Celcius - °C"
+msgid "Celsius - °C"
 msgstr ""
 
 #: includes/traits/DataUnitDescription.php:1119

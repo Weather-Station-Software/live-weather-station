@@ -143,7 +143,7 @@ class OWMApiClient
      */
     public function getWeather($query, $units = 'imperial', $lang = 'en', $appid = '')
     {
-        // Disable default error handling of SimpleXML (Do not throw E_WARNINGs).
+        // Disable default error handling of SimpleXML (Do not throw E_WARNING-s).
         libxml_use_internal_errors(true);
         libxml_clear_errors();
 
@@ -207,7 +207,7 @@ class OWMApiClient
      */
     public function getWeatherForecast($query, $units = 'imperial', $lang = 'en', $appid = '', $days = 1)
     {
-        // Disable default error handling of SimpleXML (Do not throw E_WARNINGs).
+        // Disable default error handling of SimpleXML (Do not throw E_WARNING-s).
         libxml_use_internal_errors(true);
         libxml_clear_errors();
 

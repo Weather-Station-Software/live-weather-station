@@ -365,7 +365,7 @@ trait Conversion {
      * Sub x days to a MySql date.
      *
      * @param string $date The MySql date.
-     * @param string $days Number of days to substract.
+     * @param string $days Number of days to subtract.
      * @return string The new MySql date.
      * @since 3.7.0
      */

@@ -2404,7 +2404,7 @@ class Admin {
         }
         if ($sec) {
             if ($action == 'connect') {
-                $s = __('Unkonwn service.', 'live-weather-station');
+                $s = __('Unknown service.', 'live-weather-station');
                 if ($service == 'Bloomsky') {
                     if ($apikey == '') {
                         $s = __('the API key can not be empty', 'live-weather-station');
@@ -3017,7 +3017,7 @@ class Admin {
      * Connect to a BloomSky account.
      *
      * @param string $apikey The API key of the account.
-     * @return string The error string if an error occured, empty string if none.
+     * @return string The error string if an error occurred, empty string if none.
      *
      * @since 3.6.0
      */
@@ -3053,7 +3053,7 @@ class Admin {
      * Connect to a Ambient account.
      *
      * @param string $apikey The API key of the account.
-     * @return string The error string if an error occured, empty string if none.
+     * @return string The error string if an error occurred, empty string if none.
      *
      * @since 3.6.0
      */
@@ -3090,7 +3090,7 @@ class Admin {
      *
      * @param string $login The login for the account.
      * @param string $password The password for the account.
-     * @return string The error string if an error occured, empty string if none.
+     * @return string The error string if an error occurred, empty string if none.
      *
      * @since    3.0.0
      */
@@ -3127,7 +3127,7 @@ class Admin {
      *
      * @param string $login The login for the account.
      * @param string $password The password for the account.
-     * @return string The error string if an error occured, empty string if none.
+     * @return string The error string if an error occurred, empty string if none.
      *
      * @since 3.1.0
      */
@@ -3164,7 +3164,7 @@ class Admin {
      *
      * @param string $key The API key of the account.
      * @param string $plan The plan of the account.
-     * @return string The error string if an error occured, empty string if none.
+     * @return string The error string if an error occurred, empty string if none.
      *
      * @since    3.0.0
      */
@@ -3200,7 +3200,7 @@ class Admin {
      *
      * @param string $key The API key of the account.
      * @param string $plan The plan of the account.
-     * @return string The error string if an error occured, empty string if none.
+     * @return string The error string if an error occurred, empty string if none.
      *
      * @since    3.0.0
      */
@@ -3221,7 +3221,7 @@ class Admin {
      *
      * @param string $key The API key of the account.
      * @param string $plan The plan of the account.
-     * @return string The error string if an error occured, empty string if none.
+     * @return string The error string if an error occurred, empty string if none.
      *
      * @since 3.7.0
      */
@@ -3237,7 +3237,7 @@ class Admin {
      *
      * @param string $key The API key of the account.
      * @param string $plan The plan of the account.
-     * @return string The error string if an error occured, empty string if none.
+     * @return string The error string if an error occurred, empty string if none.
      *
      * @since 3.7.0
      */
@@ -3253,7 +3253,7 @@ class Admin {
      *
      * @param string $key The API key of the account.
      * @param string $plan The plan of the account.
-     * @return string The error string if an error occured, empty string if none.
+     * @return string The error string if an error occurred, empty string if none.
      *
      * @since 3.7.0
      */
@@ -3269,7 +3269,7 @@ class Admin {
      *
      * @param string $key The API key of the account.
      * @param string $plan The plan of the account.
-     * @return string The error string if an error occured, empty string if none.
+     * @return string The error string if an error occurred, empty string if none.
      *
      * @since 3.8.0
      */
@@ -3284,7 +3284,7 @@ class Admin {
      * Connect to a Navionics account.
      *
      * @param string $key The API key of the account.
-     * @return string The error string if an error occured, empty string if none.
+     * @return string The error string if an error occurred, empty string if none.
      *
      * @since 3.8.0
      */
