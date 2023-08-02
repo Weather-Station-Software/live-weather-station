@@ -647,7 +647,7 @@ abstract class BaseHandling {
             if (isset($temperature)) {
                 $ref = get_option('live_weather_station_unit_temperature') ;
                 $t = (integer)round($this->get_temperature($temperature_ref, $ref), 0);
-                $temp = $t . str_replace('&nbsp;', '', $this->unit_escape.$this->get_temperature_unit($ref));
+                $temp = $t . str_replace('&nbsp;', '', $this->unit_nbspace.$this->get_temperature_unit($ref));
                 $colors = ColorBrewer::getGradient('RdYlBu', 8, 56, true);
                 if ($t < -15) {
                     $t = -15;
