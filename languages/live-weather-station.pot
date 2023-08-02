@@ -1101,7 +1101,7 @@ msgstr ""
 #: admin/partials/ChooseStationType.php:72 includes/system/InlineHelp.php:697
 msgid ""
 "a station exporting its data via a <em>clientraw.txt</em> file (Weather "
-"Display, WeWX, etc.)."
+"Display, WeeWX, etc.)."
 msgstr ""
 
 #: admin/partials/ChooseStationType.php:76 includes/system/InlineHelp.php:698
