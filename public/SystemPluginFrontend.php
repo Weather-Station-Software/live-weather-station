@@ -282,11 +282,11 @@ class Frontend {
     }
 
     /**
-     * Callback method for querying datas by the lcd control.
+     * Callback method for querying measurements by the lcd control.
      *
      * @since 1.0.0
      */
-    public function lws_query_lcd_datas_callback() {
+    public function lws_query_lcd_measurements_callback() {
         $_attributes = array();
         $_attributes['device_id'] = wp_kses($_POST['device_id'], array());
         $_attributes['module_id'] = wp_kses($_POST['module_id'], array());
@@ -321,11 +321,11 @@ class Frontend {
     }
 
     /**
-     * Callback method for querying datas by the clean gauge control.
+     * Callback method for querying measurements by the clean gauge control.
      *
      * @since 2.1.0
      */
-    public function lws_query_justgage_datas_callback() {
+    public function lws_query_justgage_measurements_callback() {
         $_attributes = array();
         $_attributes['device_id'] = wp_kses($_POST['device_id'], array());
         $_attributes['module_id'] = wp_kses($_POST['module_id'], array());
@@ -366,11 +366,11 @@ class Frontend {
     }
 
     /**
-     * Callback method for querying datas by the clean gauge control.
+     * Callback method for querying measurements by the clean gauge control.
      *
      * @since 2.2.0
      */
-    public function lws_query_steelmeter_datas_callback() {
+    public function lws_query_steelmeter_measurements_callback() {
         $_attributes = array();
         $_attributes['device_id'] = wp_kses($_POST['device_id'], array());
         $_attributes['module_id'] = wp_kses($_POST['module_id'], array());

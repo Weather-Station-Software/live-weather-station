@@ -489,118 +489,118 @@ abstract class BaseHandling {
                     foreach ($modules['modules'] as $module) {
                         switch ($module['type']) {
                             case 'NACurrent':
-                                if (array_key_exists('is_day', $module['datas'])) {
-                                    $day = ($module['datas']['is_day']['raw_value'] == 1 ? 'day' : 'night');
+                                if (array_key_exists('is_day', $module['measurements'])) {
+                                    $day = ($module['measurements']['is_day']['raw_value'] == 1 ? 'day' : 'night');
                                 }
-                                if (array_key_exists('weather', $module['datas'])) {
-                                    $weather = $module['datas']['weather']['raw_value'];
-                                    if (array_key_exists('timestamp', $module['datas']['weather'])) {
-                                        if ($module['datas']['weather']['timestamp'] > $timestamp) {
-                                            $timestamp = $module['datas']['weather']['timestamp'];
+                                if (array_key_exists('weather', $module['measurements'])) {
+                                    $weather = $module['measurements']['weather']['raw_value'];
+                                    if (array_key_exists('timestamp', $module['measurements']['weather'])) {
+                                        if ($module['measurements']['weather']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['measurements']['weather']['timestamp'];
                                         }
                                     }
                                 }
-                                if (array_key_exists('windangle', $module['datas']) && array_key_exists('windstrength', $module['datas']) && !isset($wind_force)) {
-                                    $wind_angle = $this->get_angle_text($module['datas']['windangle']['raw_value']);
-                                    $wind_strength = $this->output_value($module['datas']['windstrength']['raw_value'], 'windstrength', true);
-                                    $wind_force = $this->get_wind_speed($module['datas']['windstrength']['raw_value'], 3);
-                                    if (array_key_exists('timestamp', $module['datas']['windangle'])) {
-                                        if ($module['datas']['windangle']['timestamp'] > $timestamp) {
-                                            $timestamp = $module['datas']['windangle']['timestamp'];
+                                if (array_key_exists('windangle', $module['measurements']) && array_key_exists('windstrength', $module['measurements']) && !isset($wind_force)) {
+                                    $wind_angle = $this->get_angle_text($module['measurements']['windangle']['raw_value']);
+                                    $wind_strength = $this->output_value($module['measurements']['windstrength']['raw_value'], 'windstrength', true);
+                                    $wind_force = $this->get_wind_speed($module['measurements']['windstrength']['raw_value'], 3);
+                                    if (array_key_exists('timestamp', $module['measurements']['windangle'])) {
+                                        if ($module['measurements']['windangle']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['measurements']['windangle']['timestamp'];
                                         }
                                     }
-                                    if (array_key_exists('timestamp', $module['datas']['windstrength'])) {
-                                        if ($module['datas']['windstrength']['timestamp'] > $timestamp) {
-                                            $timestamp = $module['datas']['windstrength']['timestamp'];
-                                        }
-                                    }
-                                }
-                                if (array_key_exists('humidity', $module['datas']) && !isset($humidity)) {
-                                    $humidity = $this->output_value($module['datas']['humidity']['raw_value'], 'humidity', true);
-                                    if (array_key_exists('timestamp', $module['datas']['humidity'])) {
-                                        if ($module['datas']['humidity']['timestamp'] > $timestamp) {
-                                            $timestamp = $module['datas']['humidity']['timestamp'];
+                                    if (array_key_exists('timestamp', $module['measurements']['windstrength'])) {
+                                        if ($module['measurements']['windstrength']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['measurements']['windstrength']['timestamp'];
                                         }
                                     }
                                 }
-                                if (array_key_exists('temperature', $module['datas']) && !isset($temperature)) {
-                                    $temperature = $this->output_value($module['datas']['temperature']['raw_value'], 'temperature', true);
-                                    $temperature_ref = $module['datas']['temperature']['raw_value'];
-                                    if (array_key_exists('timestamp', $module['datas']['temperature'])) {
-                                        if ($module['datas']['temperature']['timestamp'] > $timestamp) {
-                                            $timestamp = $module['datas']['temperature']['timestamp'];
+                                if (array_key_exists('humidity', $module['measurements']) && !isset($humidity)) {
+                                    $humidity = $this->output_value($module['measurements']['humidity']['raw_value'], 'humidity', true);
+                                    if (array_key_exists('timestamp', $module['measurements']['humidity'])) {
+                                        if ($module['measurements']['humidity']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['measurements']['humidity']['timestamp'];
                                         }
                                     }
                                 }
-                                if (array_key_exists('pressure_sl', $module['datas']) && !isset($pressure)){
-                                    $pressure = $this->output_value($module['datas']['pressure_sl']['raw_value'], 'pressure_sl', true);
-                                    if (array_key_exists('timestamp', $module['datas']['pressure_sl'])) {
-                                        if ($module['datas']['pressure_sl']['timestamp'] > $timestamp) {
-                                            $timestamp = $module['datas']['pressure_sl']['timestamp'];
+                                if (array_key_exists('temperature', $module['measurements']) && !isset($temperature)) {
+                                    $temperature = $this->output_value($module['measurements']['temperature']['raw_value'], 'temperature', true);
+                                    $temperature_ref = $module['measurements']['temperature']['raw_value'];
+                                    if (array_key_exists('timestamp', $module['measurements']['temperature'])) {
+                                        if ($module['measurements']['temperature']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['measurements']['temperature']['timestamp'];
                                         }
                                     }
                                 }
-                                if (array_key_exists('rain', $module['datas']) && !isset($rain)) {
-                                    $rain = $this->output_value($module['datas']['rain']['raw_value'], 'rain', true, false, 'NACurrent');
-                                    if (array_key_exists('timestamp', $module['datas']['rain'])) {
-                                        if ($module['datas']['rain']['timestamp'] > $timestamp) {
-                                            $timestamp = $module['datas']['rain']['timestamp'];
+                                if (array_key_exists('pressure_sl', $module['measurements']) && !isset($pressure)){
+                                    $pressure = $this->output_value($module['measurements']['pressure_sl']['raw_value'], 'pressure_sl', true);
+                                    if (array_key_exists('timestamp', $module['measurements']['pressure_sl'])) {
+                                        if ($module['measurements']['pressure_sl']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['measurements']['pressure_sl']['timestamp'];
+                                        }
+                                    }
+                                }
+                                if (array_key_exists('rain', $module['measurements']) && !isset($rain)) {
+                                    $rain = $this->output_value($module['measurements']['rain']['raw_value'], 'rain', true, false, 'NACurrent');
+                                    if (array_key_exists('timestamp', $module['measurements']['rain'])) {
+                                        if ($module['measurements']['rain']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['measurements']['rain']['timestamp'];
                                         }
                                     }
                                 }
                                 break;
                             case 'NAModule3': // Rain gauge
-                                if (array_key_exists('rain', $module['datas'])) {
-                                    $rain = $this->output_value($module['datas']['rain']['raw_value'], 'rain', true, false, 'NAModule3');
-                                    if (array_key_exists('timestamp', $module['datas']['rain'])) {
-                                        if ($module['datas']['rain']['timestamp'] > $timestamp) {
-                                            $timestamp = $module['datas']['rain']['timestamp'];
+                                if (array_key_exists('rain', $module['measurements'])) {
+                                    $rain = $this->output_value($module['measurements']['rain']['raw_value'], 'rain', true, false, 'NAModule3');
+                                    if (array_key_exists('timestamp', $module['measurements']['rain'])) {
+                                        if ($module['measurements']['rain']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['measurements']['rain']['timestamp'];
                                         }
                                     }
                                 }
                                 break;
                             case 'NAModule2': // Wind gauge
-                                if (array_key_exists('windangle', $module['datas']) && array_key_exists('windstrength', $module['datas'])) {
-                                    $wind_angle = $this->get_angle_text($module['datas']['windangle']['raw_value']);
-                                    $wind_strength = $this->output_value($module['datas']['windstrength']['raw_value'], 'windstrength', true);
-                                    $wind_force = $this->get_wind_speed($module['datas']['windstrength']['raw_value'], 3);
-                                    if (array_key_exists('timestamp', $module['datas']['windangle'])) {
-                                        if ($module['datas']['windangle']['timestamp'] > $timestamp) {
-                                            $timestamp = $module['datas']['windangle']['timestamp'];
+                                if (array_key_exists('windangle', $module['measurements']) && array_key_exists('windstrength', $module['measurements'])) {
+                                    $wind_angle = $this->get_angle_text($module['measurements']['windangle']['raw_value']);
+                                    $wind_strength = $this->output_value($module['measurements']['windstrength']['raw_value'], 'windstrength', true);
+                                    $wind_force = $this->get_wind_speed($module['measurements']['windstrength']['raw_value'], 3);
+                                    if (array_key_exists('timestamp', $module['measurements']['windangle'])) {
+                                        if ($module['measurements']['windangle']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['measurements']['windangle']['timestamp'];
                                         }
                                     }
-                                    if (array_key_exists('timestamp', $module['datas']['windstrength'])) {
-                                        if ($module['datas']['windstrength']['timestamp'] > $timestamp) {
-                                            $timestamp = $module['datas']['windstrength']['timestamp'];
+                                    if (array_key_exists('timestamp', $module['measurements']['windstrength'])) {
+                                        if ($module['measurements']['windstrength']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['measurements']['windstrength']['timestamp'];
                                         }
                                     }
                                 }
                                 break;
                             case 'NAModule1': // Outdoor module
-                                if (array_key_exists('humidity', $module['datas'])) {
-                                    $humidity = $this->output_value($module['datas']['humidity']['raw_value'], 'humidity', true);
-                                    if (array_key_exists('timestamp', $module['datas']['humidity'])) {
-                                        if ($module['datas']['humidity']['timestamp'] > $timestamp) {
-                                            $timestamp = $module['datas']['humidity']['timestamp'];
+                                if (array_key_exists('humidity', $module['measurements'])) {
+                                    $humidity = $this->output_value($module['measurements']['humidity']['raw_value'], 'humidity', true);
+                                    if (array_key_exists('timestamp', $module['measurements']['humidity'])) {
+                                        if ($module['measurements']['humidity']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['measurements']['humidity']['timestamp'];
                                         }
                                     }
                                 }
-                                if (array_key_exists('temperature', $module['datas'])) {
-                                    $temperature = $this->output_value($module['datas']['temperature']['raw_value'], 'temperature', true);
-                                    $temperature_ref = $module['datas']['temperature']['raw_value'];
-                                    if (array_key_exists('timestamp', $module['datas']['temperature'])) {
-                                        if ($module['datas']['temperature']['timestamp'] > $timestamp) {
-                                            $timestamp = $module['datas']['temperature']['timestamp'];
+                                if (array_key_exists('temperature', $module['measurements'])) {
+                                    $temperature = $this->output_value($module['measurements']['temperature']['raw_value'], 'temperature', true);
+                                    $temperature_ref = $module['measurements']['temperature']['raw_value'];
+                                    if (array_key_exists('timestamp', $module['measurements']['temperature'])) {
+                                        if ($module['measurements']['temperature']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['measurements']['temperature']['timestamp'];
                                         }
                                     }
                                 }
                                 break;
                             case 'NAMain':
-                                if (array_key_exists('pressure_sl', $module['datas'])){
-                                    $pressure = $this->output_value($module['datas']['pressure_sl']['raw_value'], 'pressure_sl', true);
-                                    if (array_key_exists('timestamp', $module['datas']['pressure_sl'])) {
-                                        if ($module['datas']['pressure_sl']['timestamp'] > $timestamp) {
-                                            $timestamp = $module['datas']['pressure_sl']['timestamp'];
+                                if (array_key_exists('pressure_sl', $module['measurements'])){
+                                    $pressure = $this->output_value($module['measurements']['pressure_sl']['raw_value'], 'pressure_sl', true);
+                                    if (array_key_exists('timestamp', $module['measurements']['pressure_sl'])) {
+                                        if ($module['measurements']['pressure_sl']['timestamp'] > $timestamp) {
+                                            $timestamp = $module['measurements']['pressure_sl']['timestamp'];
                                         }
                                     }
                                 }
@@ -619,13 +619,13 @@ abstract class BaseHandling {
                     foreach ($modules['modules'] as $module) {
                         switch ($module['type']) {
                             case 'NAEphemer':
-                                if (array_key_exists('sunrise', $module['datas']) && array_key_exists('sunset', $module['datas'])) {
-                                    $sunrise = $this->output_value($module['datas']['sunrise']['raw_value'], 'sunrise', true, false, '', $station['loc_timezone']);
-                                    $sunset = $this->output_value($module['datas']['sunset']['raw_value'], 'sunset', true, false, '', $station['loc_timezone']);
+                                if (array_key_exists('sunrise', $module['measurements']) && array_key_exists('sunset', $module['measurements'])) {
+                                    $sunrise = $this->output_value($module['measurements']['sunrise']['raw_value'], 'sunrise', true, false, '', $station['loc_timezone']);
+                                    $sunset = $this->output_value($module['measurements']['sunset']['raw_value'], 'sunset', true, false, '', $station['loc_timezone']);
                                 }
-                                if (array_key_exists('moonrise', $module['datas']) && array_key_exists('moonset', $module['datas'])) {
-                                    $moonrise = $this->output_value($module['datas']['moonrise']['raw_value'], 'moonrise', true, false, '', $station['loc_timezone']);
-                                    $moonset = $this->output_value($module['datas']['moonset']['raw_value'], 'moonset', true, false, '', $station['loc_timezone']);
+                                if (array_key_exists('moonrise', $module['measurements']) && array_key_exists('moonset', $module['measurements'])) {
+                                    $moonrise = $this->output_value($module['measurements']['moonrise']['raw_value'], 'moonrise', true, false, '', $station['loc_timezone']);
+                                    $moonset = $this->output_value($module['measurements']['moonset']['raw_value'], 'moonset', true, false, '', $station['loc_timezone']);
                                 }
                                 break;
                         }

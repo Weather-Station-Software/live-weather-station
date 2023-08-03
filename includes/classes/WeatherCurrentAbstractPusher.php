@@ -117,7 +117,7 @@ abstract class Pusher {
     }
 
     /**
-     * Post station's datas to service.
+     * Post station's measurements to service.
      *
      * @param array $stations Optional. Test specifically these stations.
      * @return string Error string if any.
@@ -137,7 +137,7 @@ abstract class Pusher {
             }
             $sid = $station['station_id'];
             $sname = $station['station_name'];
-            $values = $this->complete_pushed_data($this->process_data($this->get_all_datas_for_push($station['station_id'])), $station);
+            $values = $this->complete_pushed_data($this->process_data($this->get_all_measurements_for_push($station['station_id'])), $station);
             $auth = $this->get_userpwd($station);
             try {
                 $args = array();

@@ -32,9 +32,9 @@ trait Client {
      * @since 2.0.0
      */
     public function compute($station_type=false) {
-        $datas = $this->get_reference_values($station_type);
+        $measurements = $this->get_reference_values($station_type);
         $result = array();
-        foreach ($datas as $id => $data) {
+        foreach ($measurements as $id => $data) {
             $temperature_ref = $this->value_unknown;
             $humidity_ref = $this->value_unknown;
             $wind_ref = $this->value_unknown;
@@ -68,7 +68,7 @@ trait Client {
             $place['city'] = $data['loc_city'];
             $place['altitude'] = $data['loc_altitude'];
             $place['timezone'] = $data['loc_timezone'];
-            if (array_key_exists('loc_longitude', $datas) && array_key_exists('loc_latitude', $datas)) {
+            if (array_key_exists('loc_longitude', $measurements) && array_key_exists('loc_latitude', $measurements)) {
                 $place['location'] = array($data['loc_longitude'], $data['loc_latitude']);
             }
             $nm = array();

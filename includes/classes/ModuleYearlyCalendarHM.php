@@ -67,11 +67,11 @@ class CalendarHM extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_datasource() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-period-type-'. $this->station_guid, __('Period type', 'live-weather-station'), $this->get_period_type_js_array(false), true, 'sliding-month');
-        $content .= $this->get_neutral_option_select('yearly-calendarhm-datas-period-value-'. $this->station_guid, __('Period', 'live-weather-station'));
-        $content .= $this->get_assoc_option_select('yearly-calendarhm-datas-module-1-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
-        $content .= $this->get_neutral_option_select('yearly-calendarhm-datas-measurement-1-'. $this->station_guid, __('Measurement', 'live-weather-station'));
-        $content .= $this->get_neutral_option_select('yearly-calendarhm-datas-set-1-'. $this->station_guid, __('Dataset', 'live-weather-station'));
+        $content .= $this->get_key_value_option_select('yearly-calendarhm-measurements-period-type-'. $this->station_guid, __('Period type', 'live-weather-station'), $this->get_period_type_js_array(false), true, 'sliding-month');
+        $content .= $this->get_neutral_option_select('yearly-calendarhm-measurements-period-value-'. $this->station_guid, __('Period', 'live-weather-station'));
+        $content .= $this->get_assoc_option_select('yearly-calendarhm-measurements-module-1-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
+        $content .= $this->get_neutral_option_select('yearly-calendarhm-measurements-measurement-1-'. $this->station_guid, __('Measurement', 'live-weather-station'));
+        $content .= $this->get_neutral_option_select('yearly-calendarhm-measurements-set-1-'. $this->station_guid, __('Dataset', 'live-weather-station'));
         $content .= $this->get_placeholder_option_select();
         $content .= $this->get_placeholder_option_select();
         $content .= $this->get_placeholder_option_select();
@@ -88,15 +88,15 @@ class CalendarHM extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_parameters() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array(true, true, true, false));
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-interpolation-'. $this->station_guid, __('Color thresholds', 'live-weather-station'), $this->get_color_threshold_js_array(), true, 'color-step-5');
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-timescale-'. $this->station_guid, __('Day format', 'live-weather-station'), $this->get_day_format_js_array(), true, 'rdsquare');
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_multi_2_label_js_array(), true, 'simple');
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-guideline-'. $this->station_guid, __('Legend', 'live-weather-station'), $this->get_legend_position_js_array(), true, 'center');
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '200px');
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true), true, 'adaptative');
-        $content .= $this->get_key_value_option_select('yearly-calendarhm-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
+        $content .= $this->get_key_value_option_select('yearly-calendarhm-measurements-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
+        $content .= $this->get_key_value_option_select('yearly-calendarhm-measurements-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array(true, true, true, false));
+        $content .= $this->get_key_value_option_select('yearly-calendarhm-measurements-interpolation-'. $this->station_guid, __('Color thresholds', 'live-weather-station'), $this->get_color_threshold_js_array(), true, 'color-step-5');
+        $content .= $this->get_key_value_option_select('yearly-calendarhm-measurements-timescale-'. $this->station_guid, __('Day format', 'live-weather-station'), $this->get_day_format_js_array(), true, 'rdsquare');
+        $content .= $this->get_key_value_option_select('yearly-calendarhm-measurements-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_multi_2_label_js_array(), true, 'simple');
+        $content .= $this->get_key_value_option_select('yearly-calendarhm-measurements-guideline-'. $this->station_guid, __('Legend', 'live-weather-station'), $this->get_legend_position_js_array(), true, 'center');
+        $content .= $this->get_key_value_option_select('yearly-calendarhm-measurements-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '200px');
+        $content .= $this->get_key_value_option_select('yearly-calendarhm-measurements-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true), true, 'adaptative');
+        $content .= $this->get_key_value_option_select('yearly-calendarhm-measurements-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }

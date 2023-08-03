@@ -19,7 +19,7 @@ class Stickertags extends TXTGenerator {
     use Output;
 
     /**
-     * Get formatted datas ready to send.
+     * Get formatted measurements ready to send.
      *
      * @param array $params Parameters for selecting data to send.
      * @param string $subformat Optional. The subformat requested.
@@ -40,7 +40,7 @@ class Stickertags extends TXTGenerator {
                  throw new LoggableException('error', 'Stickertags Renderer', null, $params['station'], null, null, null , 400, 'Not a valid station ID.');
              }
              if (array_key_exists('txt_sync', $station) && $station['txt_sync'] == 1) {
-                 $data = $this->format_stickertags_data($this->get_outdoor_datas($params['station'], false, true));
+                 $data = $this->format_stickertags_data($this->get_outdoor_measurements($params['station'], false, true));
                  $result = $data['values'];
                  $this->timestamp = $data['timestamp'];
                  Logger::info('Stickertags Renderer', null, $station['station_id'], $station['station_name'], null, null , 0, 'Success while rendering data.');
