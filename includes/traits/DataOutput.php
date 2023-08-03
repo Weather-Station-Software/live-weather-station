@@ -79,8 +79,8 @@ trait Output {
         'warn_windstrength_max', 'warn_windstrength_day_max', 'warn_windstrength_hour_max', 'warn_wind_ref', 'windangle', 'gustangle',
         'winddirection', 'gustdirection', 'windangle_max', 'windangle_day_max', 'windangle_hour_max', 'winddirection_max',
         'winddirection_day_max', 'winddirection_hour_max', 'weather', 'zcast_live', 'zcast_best');
-    private $graph_allowed_serie = array('device_id', 'module_id', 'measurement', 'line_mode', 'dot_style', 'line_style', 'line_size');
-    private $ltgraph_allowed_serie = array('set', 'period', 'line_mode', 'dot_style', 'line_style', 'line_size');
+    private $graph_allowed_series = array('device_id', 'module_id', 'measurement', 'line_mode', 'dot_style', 'line_style', 'line_size');
+    private $ltgraph_allowed_series = array('set', 'period', 'line_mode', 'dot_style', 'line_style', 'line_size');
     private $graph_allowed_parameter = array('cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
     private $ltgraph_allowed_parameter = array('device_id', 'module_id', 'measurement', 'cache', 'mode', 'type', 'template', 'color', 'label', 'interpolation', 'guideline', 'height', 'timescale', 'valuescale', 'data', 'periodtype', 'periodvalue');
     private $radial_allowed_parameter = array('device_id', 'cache', 'mode', 'type', 'values', 'valuescale', 'template', 'height', 'data', 'periodtype', 'period');
@@ -1258,7 +1258,7 @@ trait Output {
                                         $result['extras'][] = $extra;
                                         $result['legend']['unit'] = $this->output_unit($args[2]['measurement'], $module_type);
                                         $classes = array();
-                                        $classes[] = 'lws-serie-' . $key;
+                                        $classes[] = 'lws-series-' . $key;
                                         if (count($classes) > 0) {
                                             $info['classed'] = implode(' ', $classes);
                                         }
@@ -2174,7 +2174,7 @@ trait Output {
                                 $result['extras'][] = $extra;
                                 $result['legend']['unit'] = $this->output_unit($arg['measurement'], $module_type);
                                 $classes = array();
-                                $classes[] = 'lws-serie-' . $i;
+                                $classes[] = 'lws-series-' . $i;
                                 if (array_key_exists('line_mode', $arg) && $type != 'bar' && $type != 'bars' && $type != 'sareas') {
                                     if ($arg['line_mode'] == 'area' || $arg['line_mode'] == 'arealine') {
                                         $info['area'] = true;
@@ -3027,7 +3027,7 @@ trait Output {
                     continue;
                 }
                 $item = array();
-                foreach ($this->graph_allowed_serie as $param) {
+                foreach ($this->graph_allowed_series as $param) {
                     if (array_key_exists($param.'_'.$i, $attributes)) {
                         $item[$param] = $attributes[$param.'_'.$i];
                         if ($param == 'measurement') {
@@ -3974,20 +3974,20 @@ trait Output {
             $i = 1;
             foreach ($items as $item) {
                 if ($item['dot_style'] == 'small-dot') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
                 }
                 if ($item['dot_style'] == 'large-dot') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:3;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:3;}' . PHP_EOL;
                 }
                 if ($item['dot_style'] == 'small-circle') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:12;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:12;}' . PHP_EOL;
                 }
                 if ($item['dot_style'] == 'large-circle') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
                 }
                 if ($item['line_mode'] == 'transparent' || $item['line_mode'] == 'area') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-area {stroke-opacity:0;}' . PHP_EOL;
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-line {stroke-opacity:0;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-area {stroke-opacity:0;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-line {stroke-opacity:0;}' . PHP_EOL;
                 }
                 $i += 1;
             }
@@ -4180,20 +4180,20 @@ trait Output {
             $i = 1;
             foreach ($items as $item) {
                 if ($item['dot_style'] == 'small-dot') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
                 }
                 if ($item['dot_style'] == 'large-dot') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:3;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:3;}' . PHP_EOL;
                 }
                 if ($item['dot_style'] == 'small-circle') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:12;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:12;}' . PHP_EOL;
                 }
                 if ($item['dot_style'] == 'large-circle') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
                 }
                 if ($item['line_mode'] == 'transparent' || $item['line_mode'] == 'area') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-area {stroke-opacity:0;}' . PHP_EOL;
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-line {stroke-opacity:0;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-area {stroke-opacity:0;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-line {stroke-opacity:0;}' . PHP_EOL;
                 }
                 $i += 1;
             }
@@ -4874,7 +4874,7 @@ trait Output {
             }
             for ($i = 1; $i <= 8; $i++) {
                 if (array_key_exists('device_id_'.$i, $attributes)) {
-                    foreach ($this->graph_allowed_serie as $param) {
+                    foreach ($this->graph_allowed_series as $param) {
                         if (array_key_exists($param.'_'.$i, $attributes)) {
                             $args[] = $param.'_'.$i . ':"' . $attributes[$param.'_'.$i] . '"';
                         }
@@ -4989,7 +4989,7 @@ trait Output {
             $item['device_id'] = $attributes['device_id'];
             $item['module_id'] = $attributes['module_id'];
             $item['measurement'] = $attributes['measurement'];
-            foreach ($this->ltgraph_allowed_serie as $param) {
+            foreach ($this->ltgraph_allowed_series as $param) {
                 if (array_key_exists($param.'_'.$i, $attributes)) {
                     $item[$param] = $attributes[$param.'_'.$i];
                 }
@@ -5229,20 +5229,20 @@ trait Output {
             $i = 1;
             foreach ($items as $item) {
                 if ($item['dot_style'] == 'small-dot') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:1;}' . PHP_EOL;
                 }
                 if ($item['dot_style'] == 'large-dot') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:3;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-point {fill-opacity:1;stroke-opacity:1;stroke-width:3;}' . PHP_EOL;
                 }
                 if ($item['dot_style'] == 'small-circle') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:12;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:12;}' . PHP_EOL;
                 }
                 if ($item['dot_style'] == 'large-circle') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-point {fill-opacity:0;stroke-opacity:1;stroke-width:16;}' . PHP_EOL;
                 }
                 if ($item['line_mode'] == 'transparent' || $item['line_mode'] == 'area') {
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-area {stroke-opacity:0;}' . PHP_EOL;
-                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-serie-' . $i . ' .nv-line {stroke-opacity:0;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-area {stroke-opacity:0;}' . PHP_EOL;
+                    $result .= '#' . $svg . ' .nvd3 .nv-groups .lws-series-' . $i . ' .nv-line {stroke-opacity:0;}' . PHP_EOL;
                 }
                 $i += 1;
             }
@@ -5402,7 +5402,7 @@ trait Output {
                 }
             }
             for ($i = 1; $i <= 8; $i++) {
-                foreach ($this->ltgraph_allowed_serie as $param) {
+                foreach ($this->ltgraph_allowed_series as $param) {
                     if (array_key_exists($param.'_'.$i, $attributes)) {
                         $args[] = $param.'_'.$i . ':"' . $attributes[$param.'_'.$i] . '"';
                     }

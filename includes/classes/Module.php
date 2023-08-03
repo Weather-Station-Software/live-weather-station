@@ -1061,7 +1061,7 @@ abstract class Maintainer {
             $t = array();
             for ($i=1; $i<=$this->series_number; $i++) {
                 $u = array();
-                foreach ($this->graph_allowed_serie as $param) {
+                foreach ($this->graph_allowed_series as $param) {
                     $u[] = $param . '_' . $i . ':sc_' . str_replace('_id', '', $param) . '_' . $i;
                 }
                 $t[] = implode(', ', $u);
