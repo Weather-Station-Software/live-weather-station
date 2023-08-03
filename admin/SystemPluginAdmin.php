@@ -1541,7 +1541,7 @@ class Admin {
                     switch (strtolower($service)) {
                         case 'ambient':
                             if ($id) {
-                                $station = $this->get_station_informations_by_guid($id);
+                                $station = $this->get_station_information_by_guid($id);
                             }
                             else {
                                 $station = $this->get_ambt_station();
@@ -1553,7 +1553,7 @@ class Admin {
                             break;
                         case 'location':
                             if ($id) {
-                                $station = $this->get_station_informations_by_guid($id);
+                                $station = $this->get_station_information_by_guid($id);
                             }
                             else {
                                 $station = $this->get_loc_station();
@@ -1565,7 +1565,7 @@ class Admin {
                             break;
                         case 'clientraw':
                             if ($id) {
-                                $station = $this->get_station_informations_by_guid($id);
+                                $station = $this->get_station_information_by_guid($id);
                             }
                             else {
                                 $station = $this->get_raw_station();
@@ -1580,7 +1580,7 @@ class Admin {
                             break;
                         case 'pioupiou':
                             if ($id) {
-                                $station = $this->get_station_informations_by_guid($id);
+                                $station = $this->get_station_information_by_guid($id);
                             }
                             else {
                                 $station = $this->get_piou_station();
@@ -1594,7 +1594,7 @@ class Admin {
                             break;
                         case 'realtime':
                             if ($id) {
-                                $station = $this->get_station_informations_by_guid($id);
+                                $station = $this->get_station_information_by_guid($id);
                             }
                             else {
                                 $station = $this->get_real_station();
@@ -1609,7 +1609,7 @@ class Admin {
                             break;
                         case 'weatherflow':
                             if ($id) {
-                                $station = $this->get_station_informations_by_guid($id);
+                                $station = $this->get_station_information_by_guid($id);
                             }
                             else {
                                 $station = $this->get_wlink_station();
@@ -1621,7 +1621,7 @@ class Admin {
                             break;
                         case 'weatherlink':
                             if ($id) {
-                                $station = $this->get_station_informations_by_guid($id);
+                                $station = $this->get_station_information_by_guid($id);
                             }
                             else {
                                 $station = $this->get_wlink_station();
@@ -1633,7 +1633,7 @@ class Admin {
                             break;
                         case 'stickertags':
                             if ($id) {
-                                $station = $this->get_station_informations_by_guid($id);
+                                $station = $this->get_station_information_by_guid($id);
                             }
                             else {
                                 $station = $this->get_txt_station();
@@ -1647,7 +1647,7 @@ class Admin {
                             $args = compact('station', 'countries', 'timezones', 'error', 'error_message', 'servertypes', 'models', 'dashboard');
                             break;
                         case 'station':
-                            $station = $this->get_station_informations_by_guid($id);
+                            $station = $this->get_station_information_by_guid($id);
                             $station['txt_location'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
                             $station['txt_timezone'] = $this->output_timezone($station['loc_timezone']);
                             if ($station['oldest_data'] != '0000-00-00') {
@@ -1662,7 +1662,7 @@ class Admin {
                             break;
                         case 'modules':
                             DeviceManager::synchronize_modules();
-                            $station = $this->get_station_informations_by_guid($id);
+                            $station = $this->get_station_information_by_guid($id);
                             $station['txt_location'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
                             $station['txt_timezone'] = $this->output_timezone($station['loc_timezone']);
                             if ($station['oldest_data'] != '0000-00-00') {
@@ -1678,7 +1678,7 @@ class Admin {
                             break;
                         case 'data':
                             DeviceManager::synchronize_modules();
-                            $station = $this->get_station_informations_by_guid($id);
+                            $station = $this->get_station_information_by_guid($id);
                             $station['txt_location'] = $station['loc_city'] . ', ' . $this->get_country_name($station['loc_country_code']);
                             $station['txt_timezone'] = $this->output_timezone($station['loc_timezone']);
                             if ($station['oldest_data'] != '0000-00-00') {
@@ -1699,7 +1699,7 @@ class Admin {
                             break;
                         case 'weatherunderground':
                             if ($id) {
-                                $station = $this->get_station_informations_by_guid($id);
+                                $station = $this->get_station_information_by_guid($id);
                             }
                             else {
                                 $station = $this->get_wug_station();
@@ -2671,7 +2671,7 @@ class Admin {
      */
     protected function delete_station($guid=null) {
         if (isset($guid) && $guid) {
-            $station = $this->get_station_informations_by_guid($guid);
+            $station = $this->get_station_information_by_guid($guid);
             $service = $this->get_service_name($station['station_type']);
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'delete-station')) {
                 if ($res = $this->delete_stations_table(array($guid))) {
@@ -3537,7 +3537,7 @@ class Admin {
                 }
                 if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-ambient')) {
                     if ($guid = $this->update_stations_table($station, !$update)) {
-                        $st = $this->get_station_informations_by_guid($guid);
+                        $st = $this->get_station_information_by_guid($guid);
                         $station_id = $st['station_id'];
                         $station_name = $st['station_name'];
                         if ($update) {
@@ -3684,7 +3684,7 @@ class Admin {
             }
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-loc')) {
                 if ($guid = $this->update_stations_table($station, true)) {
-                    $st = $this->get_station_informations_by_guid($guid);
+                    $st = $this->get_station_information_by_guid($guid);
                     $station_id = $st['station_id'];
                     $station_name = $st['station_name'];
                     if ($update) {
@@ -3699,7 +3699,7 @@ class Admin {
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, 'OpenWeatherMap', $station_id, $station_name, null, null, null, $log);
                     $this->get_current_and_pollution();
-                    $st = $this->get_station_informations_by_guid($guid);
+                    $st = $this->get_station_information_by_guid($guid);
                     $this->modify_table(self::live_weather_station_log_table(), 'device_id', $station_id, $st['station_id']);
                 }
                 else {
@@ -3814,7 +3814,7 @@ class Admin {
             }
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-raw')) {
                 if ($guid = $this->update_stations_table($station, true)) {
-                    $st = $this->get_station_informations_by_guid($guid);
+                    $st = $this->get_station_information_by_guid($guid);
                     $station_id = $st['station_id'];
                     $station_name = $st['station_name'];
                     if ($update) {
@@ -3829,7 +3829,7 @@ class Admin {
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
                     $this->get_raw();
-                    $st = $this->get_station_informations_by_guid($guid);
+                    $st = $this->get_station_information_by_guid($guid);
                     $this->modify_table(self::live_weather_station_log_table(), 'device_id', $station_id, $st['station_id']);
                 }
                 else {
@@ -3936,7 +3936,7 @@ class Admin {
             }
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-piou')) {
                 if ($guid = $this->update_stations_table($station, true)) {
-                    $st = $this->get_station_informations_by_guid($guid);
+                    $st = $this->get_station_information_by_guid($guid);
                     $station_id = $st['station_id'];
                     $station_name = $st['station_name'];
                     if ($update) {
@@ -3951,7 +3951,7 @@ class Admin {
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
                     $this->get_piou();
-                    $st = $this->get_station_informations_by_guid($guid);
+                    $st = $this->get_station_information_by_guid($guid);
                     $this->modify_table(self::live_weather_station_log_table(), 'device_id', $station_id, $st['station_id']);
                 }
                 else {
@@ -4075,7 +4075,7 @@ class Admin {
             }
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-real')) {
                 if ($guid = $this->update_stations_table($station, true)) {
-                    $st = $this->get_station_informations_by_guid($guid);
+                    $st = $this->get_station_information_by_guid($guid);
                     $station_id = $st['station_id'];
                     $station_name = $st['station_name'];
                     if ($update) {
@@ -4090,7 +4090,7 @@ class Admin {
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
                     $this->get_real();
-                    $st = $this->get_station_informations_by_guid($guid);
+                    $st = $this->get_station_information_by_guid($guid);
                     $this->modify_table(self::live_weather_station_log_table(), 'device_id', $station_id, $st['station_id']);
                 }
                 else {
@@ -4214,7 +4214,7 @@ class Admin {
             }
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-txt')) {
                 if ($guid = $this->update_stations_table($station, true)) {
-                    $st = $this->get_station_informations_by_guid($guid);
+                    $st = $this->get_station_information_by_guid($guid);
                     $station_id = $st['station_id'];
                     $station_name = $st['station_name'];
                     if ($update) {
@@ -4229,7 +4229,7 @@ class Admin {
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
                     $this->get_txt();
-                    $st = $this->get_station_informations_by_guid($guid);
+                    $st = $this->get_station_information_by_guid($guid);
                     $this->modify_table(self::live_weather_station_log_table(), 'device_id', $station_id, $st['station_id']);
                 }
                 else {
@@ -4348,7 +4348,7 @@ class Admin {
                                 add_settings_error('lws_nonce_success', 200, $message, 'updated');
                                 Logger::notice($this->service, 'Weather Underground', $station_id, $station_name, null, null, null, 'Station added.');
                                 $this->get_wug();
-                                $st = $this->get_station_informations_by_guid($guid);
+                                $st = $this->get_station_information_by_guid($guid);
                                 $this->modify_table(self::live_weather_station_log_table(), 'device_id', $station_id, $st['station_id']);
                             }
                             else {
@@ -4443,7 +4443,7 @@ class Admin {
             }
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-wflw')) {
                 if ($guid = $this->update_stations_table($station, true)) {
-                    $st = $this->get_station_informations_by_guid($guid);
+                    $st = $this->get_station_information_by_guid($guid);
                     $station_id = $st['station_id'];
                     $station_name = $st['station_name'];
                     if ($update) {
@@ -4458,7 +4458,7 @@ class Admin {
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
                     $this->get_wflw();
-                    $st = $this->get_station_informations_by_guid($guid);
+                    $st = $this->get_station_information_by_guid($guid);
                     $this->modify_table(self::live_weather_station_log_table(), 'device_id', $station_id, $st['station_id']);
                 }
                 else {
@@ -4572,7 +4572,7 @@ class Admin {
             }
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-wlink')) {
                 if ($guid = $this->update_stations_table($station, true)) {
-                    $st = $this->get_station_informations_by_guid($guid);
+                    $st = $this->get_station_information_by_guid($guid);
                     $station_id = $st['station_id'];
                     $station_name = $st['station_name'];
                     if ($update) {
@@ -4587,7 +4587,7 @@ class Admin {
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
                     $this->get_wlink();
-                    $st = $this->get_station_informations_by_guid($guid);
+                    $st = $this->get_station_information_by_guid($guid);
                     $this->modify_table(self::live_weather_station_log_table(), 'device_id', $station_id, $st['station_id']);
                 }
                 else {

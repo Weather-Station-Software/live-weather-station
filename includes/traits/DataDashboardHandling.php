@@ -358,7 +358,7 @@ trait Handling {
         if ($module_type == 'NAMain') {
             $types[] = 'AbsolutePressure';
             $this->pressure_ref = null;
-            $station = $this->get_station_informations_by_station_id($device_id);
+            $station = $this->get_station_information_by_station_id($device_id);
             if (count($station) > 0) {
                 if ($station['station_name'] == '') {
                     $station['station_name'] = $device_name;

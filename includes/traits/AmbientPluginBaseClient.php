@@ -54,7 +54,7 @@ trait BaseClient {
                 }
             }
             if ($store) {
-                $s = $this->get_station_informations_by_station_id($device['device_id']);
+                $s = $this->get_station_information_by_station_id($device['device_id']);
                 $place = array();
                 $place['city'] = $s['loc_city'] ;
                 $place['country'] = $s['loc_country_code'];
@@ -204,7 +204,7 @@ trait BaseClient {
                 }
                 if (array_key_exists('macAddress', $station)) {
                     $dat['device_id'] = strtolower($station['macAddress']);
-                    $st = $this->get_station_informations_by_station_id($dat['device_id']);
+                    $st = $this->get_station_information_by_station_id($dat['device_id']);
                     if (array_key_exists('loc_altitude', $st)) {
                         $altitude = $st['loc_altitude'];
                     }

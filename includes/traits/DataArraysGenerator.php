@@ -2005,7 +2005,7 @@ trait Generator {
     /**
      * Get period values array.
      *
-     * @param array $station The station informations.
+     * @param array $station The station information.
      * @param boolean $rolling Optional. The array must contains rolling periods.
      * @param boolean $noned Optional. The array must contains the "none" period.
      * @return array An array containing the period values ready to convert to a JS array.
@@ -2018,7 +2018,7 @@ trait Generator {
     /**
      * Get timelapse period values array.
      *
-     * @param array $station The station informations.
+     * @param array $station The station information.
      * @return array An array containing the period values ready to convert to a JS array.
      * @since 3.4.0
      */

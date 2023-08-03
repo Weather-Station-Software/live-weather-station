@@ -12,7 +12,7 @@ use WeatherStation\System\Logs\Logger;
 $OS = Env::server_os();
 
 if (!$OS || !Env::server_cpu() || !Env::server_core()) {
-    Logger::warning('Core',null,null,null,null,null,null,'Your server configuration does not allow to query system informations.');
+    Logger::warning('Core',null,null,null,null,null,null,'Your server configuration does not allow to query system information.');
 }
 
 ?>
