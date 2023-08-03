@@ -19,7 +19,7 @@ class Yowindow extends TXTGenerator {
     use Output;
 
     /**
-     * Get formatted datas ready to send.
+     * Get formatted measurements ready to send.
      *
      * @param array $params Parameters for selecting data to send.
      * @param string $subformat Optional. The subformat requested.
@@ -41,7 +41,7 @@ class Yowindow extends TXTGenerator {
                 throw new LoggableException('error', 'YoWindow XML Renderer', null, $params['station'], null, null, null , 400, 'Not a valid station ID.');
             }
             if (array_key_exists('yow_sync', $station) && $station['yow_sync'] == 1) {
-                $data = $this->format_yowindow_data($this->get_outdoor_datas($params['station'], false, true));
+                $data = $this->format_yowindow_data($this->get_outdoor_measurements($params['station'], false, true));
                 $result = $data['values'];
                 $this->timestamp = $data['timestamp'];
                 Logger::info('YoWindow XML Renderer', null, $station['station_id'], $station['station_name'], null, null , 0, 'Success while rendering data.');

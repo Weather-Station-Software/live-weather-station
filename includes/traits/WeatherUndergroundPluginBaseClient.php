@@ -25,7 +25,7 @@ trait BaseClient {
     public $last_wug_error;
 
     /**
-     * Get station's datas.
+     * Get station's measurements.
      *
      * @param string $key The API key of the account.
      * @param string $plan The plan of the account.

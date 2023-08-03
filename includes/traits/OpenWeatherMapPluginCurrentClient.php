@@ -23,11 +23,11 @@ trait CurrentClient {
     use BaseClient, Conversion;
 
     protected $owm_client;
-    protected $owm_datas;
+    protected $owm_measurements;
     protected $facility = 'Weather Collector';
 
     /**
-     * Get station's datas.
+     * Get station's measurements.
      *
      * @param   string  $city       The city name.
      * @param   string  $country    The country ISO-2 code.
@@ -59,7 +59,7 @@ trait CurrentClient {
      * @throws  \Exception
      * @since    2.0.0
      */
-    private function get_owm_datas_array($json_weather, $station, $device_id) {
+    private function get_owm_measurements_array($json_weather, $station, $device_id) {
         $weather = json_decode($json_weather, true);
         if (!is_array($weather)) {
             throw new \Exception('JSON / '.(string)$json_weather);
@@ -176,18 +176,18 @@ trait CurrentClient {
     }
     
     /**
-     * Get station's datas.
+     * Get station's measurements.
      *
-     * @return  array     OWM collected datas.
+     * @return  array     OWM collected measurements.
      * @since    2.0.0
      */
-    public function get_datas() {
+    public function get_measurements() {
         if (get_option('live_weather_station_owm_apikey') == '') {
-            $this->owm_datas = array ();
+            $this->owm_measurements = array ();
             return array ();
         }
         $this->synchronize_owm();
-        $this->owm_datas = array ();
+        $this->owm_measurements = array ();
         $stations = $this->get_located_operational_stations_list();
         $owm = new OWMApiClient();
         foreach ($stations as $key => $station) {
@@ -202,7 +202,7 @@ trait CurrentClient {
                         Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 135, 'Can\'t get current weather for a station without coordinates.');
                         continue;
                     }
-                    $values = $this->get_owm_datas_array($raw_data, $station, $key);
+                    $values = $this->get_owm_measurements_array($raw_data, $station, $key);
                     $place = array();
                     $place['country'] = $station['loc_country'];
                     $place['city'] = $station['loc_city'];
@@ -214,7 +214,7 @@ trait CurrentClient {
                 }
                 else {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');
-                    $this->owm_datas = array ();
+                    $this->owm_measurements = array ();
                     return array ();
                 }
             }
@@ -233,11 +233,11 @@ trait CurrentClient {
                 }
             }
             if (isset($values) && is_array($values)) {
-                $this->owm_datas[] = $values;
+                $this->owm_measurements[] = $values;
             }
         }
-        $this->store_owm_datas($this->owm_datas);
-        return $this->owm_datas;
+        $this->store_owm_measurements($this->owm_measurements);
+        return $this->owm_measurements;
     }
 
     /**
@@ -251,7 +251,7 @@ trait CurrentClient {
         $err = '';
         try {
             $err = 'collecting weather';
-            $this->get_datas();
+            $this->get_measurements();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
             $weather->compute();

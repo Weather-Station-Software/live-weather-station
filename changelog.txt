@@ -993,7 +993,7 @@ After upgrading, please, review all your settings.
 * Improvement: pressure displayed in inHg have now reasonable accuracy with 2 decimals.
 * Improvement: the data collecting method for Netatmo & OpenWeatherMap is now "bullet-proof".
 * Improvement: an improved connection mode that should avoid unwanted disconnections (on Netatmo servers temporary errors).
-* Improvement: refresh cycle for live controls goes from 5 minutes to 2 minutes - datas are fresher than ever ;).
+* Improvement: refresh cycle for live controls goes from 5 minutes to 2 minutes - measurements are fresher than ever ;).
 * Improvement: the *About* box is now much more readable.
 * Bug fix: some typos in french translation.
 

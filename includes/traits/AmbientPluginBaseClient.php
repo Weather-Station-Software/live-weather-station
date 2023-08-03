@@ -26,7 +26,7 @@ trait BaseClient {
     public $last_ambient_error = '';
 
     protected $ambient_client = null;
-    protected $ambient_datas = array();
+    protected $ambient_measurements = array();
 
 
     protected $facility = 'Weather Collector';
@@ -35,14 +35,14 @@ trait BaseClient {
 
 
     /**
-     * Store station's datas.
+     * Store station's measurements.
      *
      * @param array $stations The station list.
      * @since 3.6.0
      */
-    private function store_ambient_datas($stations) {
-        $datas = $this->ambient_datas;
-        foreach($datas as &$device){
+    private function store_ambient_measurements($stations) {
+        $measurements = $this->ambient_measurements;
+        foreach($measurements as &$device){
             if (!array_key_exists('device_id', $device)) {
                 continue;
             }
@@ -179,14 +179,14 @@ trait BaseClient {
     }
 
     /**
-     * Corrects station's datas.
+     * Corrects station's measurements.
      *
      * @since 3.6.0
      */
-    private function normalize_ambient_datas() {
+    private function normalize_ambient_measurements() {
         $result = array();
-        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($this->ambient_datas, true));
-        foreach($this->ambient_datas as $station) {
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($this->ambient_measurements, true));
+        foreach($this->ambient_measurements as $station) {
             if (is_array($station)) {
                 $temperature = 15.0;
                 $altitude = 0;
@@ -287,6 +287,6 @@ trait BaseClient {
                 }
             }
         }
-        $this->ambient_datas = $result;
+        $this->ambient_measurements = $result;
     }
 }

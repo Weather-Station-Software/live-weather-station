@@ -105,9 +105,9 @@ trait Client {
             try {
                 if (Quota::verify($this->service_name, 'GET', true)) {
                     if (true) {
-                        //if (isset($this->netatmo_datas)) {
-                        $this->netatmo_datas = $this->netatmo_client->getMeasure($device_id, $module_id, $scale, implode(',', $type), $start, $end, $limit, $optimize, $realtime);
-                        $this->normalize_netatmo_historical_datas($type);
+                        //if (isset($this->netatmo_measurements)) {
+                        $this->netatmo_measurements = $this->netatmo_client->getMeasure($device_id, $module_id, $scale, implode(',', $type), $start, $end, $limit, $optimize, $realtime);
+                        $this->normalize_netatmo_historical_measurements($type);
                         update_option('live_weather_station_netatmo_refresh_token', $this->netatmo_client->getRefreshToken());
                         update_option('live_weather_station_netatmo_access_token', $this->netatmo_client->getAccessToken()['access_token']);
                         update_option('live_weather_station_netatmo_connected', 1);
@@ -161,7 +161,7 @@ trait Client {
     }
 
     /**
-     * Get station's datas.
+     * Get station's measurements.
      *
      * @param string $device_id The device_id.
      * @param string $module_id Optional. If specified will retrieve the module's measurements, else it will retrieve the main device's measurements
@@ -172,14 +172,14 @@ trait Client {
         $this->get_measures($device_id, $module_id, '30min', $this->available_types[$module_type], null, null, 1, false);
     }
     /**
-     * Get station's datas.
+     * Get station's measurements.
      *
      * @param boolean $store Optional. Store the data.
      *
-     * @return array The netatmo collected datas.
+     * @return array The netatmo collected measurements.
      * @since 1.0.0
      */
-    public function get_datas($store=true) {
+    public function get_measurements($store=true) {
         $refresh_token = get_option('live_weather_station_netatmo_refresh_token');
         $access_token = get_option('live_weather_station_netatmo_access_token');
         $this->last_netatmo_error = '';
@@ -196,12 +196,12 @@ trait Client {
             }
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
-                    $this->netatmo_datas = $this->netatmo_client->getData();
+                    $this->netatmo_measurements = $this->netatmo_client->getData();
                     if (true) {
-                    //if (isset($this->netatmo_datas)) {
-                        $this->normalize_netatmo_datas(LWS_NETATMO_SID);
+                    //if (isset($this->netatmo_measurements)) {
+                        $this->normalize_netatmo_measurements(LWS_NETATMO_SID);
                         if ($store) {
-                            $this->store_netatmo_datas($this->get_all_netatmo_stations());
+                            $this->store_netatmo_measurements($this->get_all_netatmo_stations());
                         }
                         update_option('live_weather_station_netatmo_refresh_token', $this->netatmo_client->getRefreshToken());
                         update_option('live_weather_station_netatmo_access_token', $this->netatmo_client->getAccessToken()['access_token']);
@@ -255,7 +255,7 @@ trait Client {
                 return array();
             }
         }
-        return $this->netatmo_datas;
+        return $this->netatmo_measurements;
     }
 
     /**
@@ -269,11 +269,11 @@ trait Client {
     protected function __get_stations($store=false){
         $result = array();
         try {
-            $this->get_datas(false);
+            $this->get_measurements(false);
             if (true) {
-                //if (isset($this->netatmo_datas)) {
-                $datas = $this->netatmo_datas ;
-                foreach($datas['devices'] as $device){
+                //if (isset($this->netatmo_measurements)) {
+                $measurements = $this->netatmo_measurements ;
+                foreach($measurements['devices'] as $device){
                     $result[] = array('device_id' => $device['_id'], 'station_name' => $device['station_name'], 'installed' => false);
                 }
                 if ($store) {
@@ -320,7 +320,7 @@ trait Client {
         $err = '';
         try {
             $err = 'collecting weather';
-            $this->get_datas();
+            $this->get_measurements();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
             $weather->compute(LWS_NETATMO_SID);

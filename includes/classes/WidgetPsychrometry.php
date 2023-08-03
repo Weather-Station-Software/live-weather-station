@@ -359,58 +359,58 @@ class Psychrometry extends Base {
         $timestamp = '';
         $tz = '';
         $location = '';
-        $datas = array();
+        $measurements = array();
         $current = array();
         if (array_key_exists('modules', $modules)) {
             foreach ($modules['modules'] as $module) {
                 switch ($module['type']) {
                     case 'NAMain':
-                        if (array_key_exists('pressure', $module['datas'])){
+                        if (array_key_exists('pressure', $module['measurements'])){
                             $NAMain = true;
-                            $datas['pressure'] = array();
-                            $datas['pressure']['value'] = $module['datas']['pressure']['value'];
-                            $datas['pressure']['unit'] = $module['datas']['pressure']['unit']['unit'];
-                            $datas['pressure']['icon'] = $this->output_iconic_value($module['datas']['pressure']['raw_value'], 'pressure', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['pressure'] = array();
+                            $measurements['pressure']['value'] = $module['measurements']['pressure']['value'];
+                            $measurements['pressure']['unit'] = $module['measurements']['pressure']['unit']['unit'];
+                            $measurements['pressure']['icon'] = $this->output_iconic_value($module['measurements']['pressure']['raw_value'], 'pressure', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_pressure = false ;
                         }
-                        if (array_key_exists('loc_latitude', $module['datas']) && array_key_exists('loc_longitude', $module['datas']) && array_key_exists('loc_altitude', $module['datas'])) {
-                            $location = $this->output_coordinate($module['datas']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
-                                $this->output_coordinate($module['datas']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
-                                $this->output_value($module['datas']['loc_altitude']['value'], 'loc_altitude', true) . ')';
+                        if (array_key_exists('loc_latitude', $module['measurements']) && array_key_exists('loc_longitude', $module['measurements']) && array_key_exists('loc_altitude', $module['measurements'])) {
+                            $location = $this->output_coordinate($module['measurements']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
+                                $this->output_coordinate($module['measurements']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
+                                $this->output_value($module['measurements']['loc_altitude']['value'], 'loc_altitude', true) . ')';
                         }
-                        if (array_key_exists('loc_timezone', $module['datas'])) {
-                            $tz = $module['datas']['loc_timezone']['value'];
+                        if (array_key_exists('loc_timezone', $module['measurements'])) {
+                            $tz = $module['measurements']['loc_timezone']['value'];
                         }
                         break;
                     case 'NAEphemer':
-                        if (array_key_exists('sunrise', $module['datas']) && array_key_exists('sunset', $module['datas'])) {
-                            $sunrise = $module['datas']['sunrise']['raw_value'];
-                            $sunset = $module['datas']['sunset']['raw_value'];
+                        if (array_key_exists('sunrise', $module['measurements']) && array_key_exists('sunset', $module['measurements'])) {
+                            $sunrise = $module['measurements']['sunrise']['raw_value'];
+                            $sunset = $module['measurements']['sunset']['raw_value'];
                         }
-                        if (array_key_exists('sunrise_a', $module['datas']) && array_key_exists('sunset_a', $module['datas'])) {
-                            $sunrise_a = $module['datas']['sunrise_a']['raw_value'];
-                            $sunset_a = $module['datas']['sunset_a']['raw_value'];
+                        if (array_key_exists('sunrise_a', $module['measurements']) && array_key_exists('sunset_a', $module['measurements'])) {
+                            $sunrise_a = $module['measurements']['sunrise_a']['raw_value'];
+                            $sunset_a = $module['measurements']['sunset_a']['raw_value'];
                         }
                         break;
                     case 'NAModule1': // Outdoor module
-                        if (array_key_exists('humidity', $module['datas'])) {
+                        if (array_key_exists('humidity', $module['measurements'])) {
                             $NAModule1 = true;
-                            $datas['humidity'] = array();
-                            $datas['humidity']['value'] = $module['datas']['humidity']['value'];
-                            $datas['humidity']['unit'] = $module['datas']['humidity']['unit']['unit'];
-                            $datas['humidity']['icon'] = $this->output_iconic_value($module['datas']['humidity']['raw_value'], 'humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['humidity'] = array();
+                            $measurements['humidity']['value'] = $module['measurements']['humidity']['value'];
+                            $measurements['humidity']['unit'] = $module['measurements']['humidity']['unit']['unit'];
+                            $measurements['humidity']['icon'] = $this->output_iconic_value($module['measurements']['humidity']['raw_value'], 'humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_humidity = false;
                         }
-                        if (array_key_exists('temperature', $module['datas'])) {
+                        if (array_key_exists('temperature', $module['measurements'])) {
                             $NAModule1 = true;
-                            $datas['temperature'] = array();
-                            $datas['temperature']['value'] = $module['datas']['temperature']['value'];
-                            $datas['temperature']['unit'] = $module['datas']['temperature']['unit']['unit'];
-                            $datas['temperature']['icon'] = $this->output_iconic_value($module['datas']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['temperature'] = array();
+                            $measurements['temperature']['value'] = $module['measurements']['temperature']['value'];
+                            $measurements['temperature']['unit'] = $module['measurements']['temperature']['unit']['unit'];
+                            $measurements['temperature']['icon'] = $this->output_iconic_value($module['measurements']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_temperature = false;
@@ -418,109 +418,109 @@ class Psychrometry extends Base {
                         break;
                     case 'NACurrent': // Current weather -> OpenWeatherMap
                         $NACurrent = true;
-                        if (array_key_exists('is_day', $module['datas'])) {
-                            $datas['day']['value'] = ($module['datas']['is_day']['value'] == 1 ? '-day' : '-night');
+                        if (array_key_exists('is_day', $module['measurements'])) {
+                            $measurements['day']['value'] = ($module['measurements']['is_day']['value'] == 1 ? '-day' : '-night');
                         } else {
-                            $datas['day']['value'] = '';
+                            $measurements['day']['value'] = '';
                         }
                         $current = $module;
                         break;
                     case 'NAComputed': // Computed values
                         $NAComputed = true;
                         // Dew point
-                        if (array_key_exists('temperature_ref', $module['datas']) &&
-                            array_key_exists('dew_point', $module['datas']) &&
-                            array_key_exists('frost_point', $module['datas'])) {
-                            $temp_ref = $module['datas']['temperature_ref']['raw_value'];
-                            $datas['dew'] = array();
-                            $datas['dew']['value'] = $module['datas']['dew_point']['value'];
-                            $datas['dew']['unit'] = $module['datas']['dew_point']['unit']['unit'];
-                            $datas['dew']['icon'] = $this->output_iconic_value($module['datas']['dew_point']['raw_value'], 'dew_point', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('temperature_ref', $module['measurements']) &&
+                            array_key_exists('dew_point', $module['measurements']) &&
+                            array_key_exists('frost_point', $module['measurements'])) {
+                            $temp_ref = $module['measurements']['temperature_ref']['raw_value'];
+                            $measurements['dew'] = array();
+                            $measurements['dew']['value'] = $module['measurements']['dew_point']['value'];
+                            $measurements['dew']['unit'] = $module['measurements']['dew_point']['unit']['unit'];
+                            $measurements['dew']['icon'] = $this->output_iconic_value($module['measurements']['dew_point']['raw_value'], 'dew_point', null, true, 'inherit', 'lws-widget-icon-' . $id);
                             $show_dew = $show_dew && $this->is_valid_dew_point($temp_ref);
                         } else {
                             $show_dew = false;
                         }
                         // Equivalent & Potential temperatures
-                        if (array_key_exists('equivalent_temperature', $module['datas']) &&
-                            array_key_exists('potential_temperature', $module['datas'])) {
-                            $datas['equivalent_temperature'] = array();
-                            $datas['equivalent_temperature']['value'] = $module['datas']['equivalent_temperature']['value'];
-                            $datas['equivalent_temperature']['unit'] = $module['datas']['equivalent_temperature']['unit']['unit'] . ' ' . __('equiv.', 'live-weather-station');
-                            $datas['potential_temperature'] = array();
-                            $datas['potential_temperature']['value'] = $module['datas']['potential_temperature']['value'];
-                            $datas['potential_temperature']['unit'] = $module['datas']['potential_temperature']['unit']['unit'] . ' ' . __('pot.', 'live-weather-station');
-                            $datas['equivalent_temperature']['icon'] = $this->output_iconic_value($module['datas']['equivalent_temperature']['raw_value'], 'equivalent_temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            $datas['potential_temperature']['icon'] = $this->output_iconic_value($module['datas']['potential_temperature']['raw_value'], 'potential_temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('equivalent_temperature', $module['measurements']) &&
+                            array_key_exists('potential_temperature', $module['measurements'])) {
+                            $measurements['equivalent_temperature'] = array();
+                            $measurements['equivalent_temperature']['value'] = $module['measurements']['equivalent_temperature']['value'];
+                            $measurements['equivalent_temperature']['unit'] = $module['measurements']['equivalent_temperature']['unit']['unit'] . ' ' . __('equiv.', 'live-weather-station');
+                            $measurements['potential_temperature'] = array();
+                            $measurements['potential_temperature']['value'] = $module['measurements']['potential_temperature']['value'];
+                            $measurements['potential_temperature']['unit'] = $module['measurements']['potential_temperature']['unit']['unit'] . ' ' . __('pot.', 'live-weather-station');
+                            $measurements['equivalent_temperature']['icon'] = $this->output_iconic_value($module['measurements']['equivalent_temperature']['raw_value'], 'equivalent_temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['potential_temperature']['icon'] = $this->output_iconic_value($module['measurements']['potential_temperature']['raw_value'], 'potential_temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         // Wet Bulb
-                        if (array_key_exists('wet_bulb', $module['datas'])) {
-                            $datas['wet_bulb'] = array();
-                            $datas['wet_bulb']['value'] = $module['datas']['wet_bulb']['value'];
-                            $datas['wet_bulb']['unit'] = $module['datas']['wet_bulb']['unit']['unit'];
-                            $datas['wet_bulb']['icon'] = $this->output_iconic_value($module['datas']['wet_bulb']['raw_value'], 'wet_bulb', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            $datas['delta_t'] = array();
-                            $datas['delta_t']['value'] = '-';
-                            $datas['delta_t']['unit'] = '';
-                            if (array_key_exists('delta_t', $module['datas'])) {
-                                $datas['delta_t'] = array();
-                                $datas['delta_t']['value'] = $module['datas']['delta_t']['value'];
-                                $datas['delta_t']['unit'] = $module['datas']['wet_bulb']['unit']['unit'];
+                        if (array_key_exists('wet_bulb', $module['measurements'])) {
+                            $measurements['wet_bulb'] = array();
+                            $measurements['wet_bulb']['value'] = $module['measurements']['wet_bulb']['value'];
+                            $measurements['wet_bulb']['unit'] = $module['measurements']['wet_bulb']['unit']['unit'];
+                            $measurements['wet_bulb']['icon'] = $this->output_iconic_value($module['measurements']['wet_bulb']['raw_value'], 'wet_bulb', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['delta_t'] = array();
+                            $measurements['delta_t']['value'] = '-';
+                            $measurements['delta_t']['unit'] = '';
+                            if (array_key_exists('delta_t', $module['measurements'])) {
+                                $measurements['delta_t'] = array();
+                                $measurements['delta_t']['value'] = $module['measurements']['delta_t']['value'];
+                                $measurements['delta_t']['unit'] = $module['measurements']['wet_bulb']['unit']['unit'];
                             }
                         } else {
                             $show_wet_bulb = false;
                         }
                         // Absolute Humidity
-                        if (array_key_exists('partial_absolute_humidity', $module['datas']) &&
-                            array_key_exists('saturation_absolute_humidity', $module['datas'])) {
-                            $datas['partial_absolute_humidity'] = array();
-                            $datas['partial_absolute_humidity']['value'] = $module['datas']['partial_absolute_humidity']['value'];
-                            $datas['partial_absolute_humidity']['unit'] = $module['datas']['partial_absolute_humidity']['unit']['unit'];
-                            $datas['saturation_absolute_humidity'] = array();
-                            $datas['saturation_absolute_humidity']['value'] = $module['datas']['saturation_absolute_humidity']['value'];
-                            $datas['saturation_absolute_humidity']['unit'] = $module['datas']['saturation_absolute_humidity']['unit']['unit'];
-                            $datas['partial_absolute_humidity']['icon'] = $this->output_iconic_value($module['datas']['partial_absolute_humidity']['raw_value'], 'partial_absolute_humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            $datas['saturation_absolute_humidity']['icon'] = $this->output_iconic_value($module['datas']['saturation_absolute_humidity']['raw_value'], 'saturation_absolute_humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('partial_absolute_humidity', $module['measurements']) &&
+                            array_key_exists('saturation_absolute_humidity', $module['measurements'])) {
+                            $measurements['partial_absolute_humidity'] = array();
+                            $measurements['partial_absolute_humidity']['value'] = $module['measurements']['partial_absolute_humidity']['value'];
+                            $measurements['partial_absolute_humidity']['unit'] = $module['measurements']['partial_absolute_humidity']['unit']['unit'];
+                            $measurements['saturation_absolute_humidity'] = array();
+                            $measurements['saturation_absolute_humidity']['value'] = $module['measurements']['saturation_absolute_humidity']['value'];
+                            $measurements['saturation_absolute_humidity']['unit'] = $module['measurements']['saturation_absolute_humidity']['unit']['unit'];
+                            $measurements['partial_absolute_humidity']['icon'] = $this->output_iconic_value($module['measurements']['partial_absolute_humidity']['raw_value'], 'partial_absolute_humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['saturation_absolute_humidity']['icon'] = $this->output_iconic_value($module['measurements']['saturation_absolute_humidity']['raw_value'], 'saturation_absolute_humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         } else {
                             $show_absolute_humidity = false;
                         }
                         // Vapor Pressure
-                        if (array_key_exists('partial_vapor_pressure', $module['datas']) &&
-                            array_key_exists('saturation_vapor_pressure', $module['datas'])) {
-                            $datas['partial_vapor_pressure'] = array();
-                            $datas['partial_vapor_pressure']['value'] = $module['datas']['partial_vapor_pressure']['value'];
-                            $datas['partial_vapor_pressure']['unit'] = $module['datas']['partial_vapor_pressure']['unit']['unit'];
-                            $datas['saturation_vapor_pressure'] = array();
-                            $datas['saturation_vapor_pressure']['value'] = $module['datas']['saturation_vapor_pressure']['value'];
-                            $datas['saturation_vapor_pressure']['unit'] = $module['datas']['saturation_vapor_pressure']['unit']['unit'];
-                            $datas['partial_vapor_pressure']['icon'] = $this->output_iconic_value($module['datas']['partial_vapor_pressure']['raw_value'], 'partial_vapor_pressure', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            $datas['saturation_vapor_pressure']['icon'] = $this->output_iconic_value($module['datas']['saturation_vapor_pressure']['raw_value'], 'saturation_vapor_pressure', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('partial_vapor_pressure', $module['measurements']) &&
+                            array_key_exists('saturation_vapor_pressure', $module['measurements'])) {
+                            $measurements['partial_vapor_pressure'] = array();
+                            $measurements['partial_vapor_pressure']['value'] = $module['measurements']['partial_vapor_pressure']['value'];
+                            $measurements['partial_vapor_pressure']['unit'] = $module['measurements']['partial_vapor_pressure']['unit']['unit'];
+                            $measurements['saturation_vapor_pressure'] = array();
+                            $measurements['saturation_vapor_pressure']['value'] = $module['measurements']['saturation_vapor_pressure']['value'];
+                            $measurements['saturation_vapor_pressure']['unit'] = $module['measurements']['saturation_vapor_pressure']['unit']['unit'];
+                            $measurements['partial_vapor_pressure']['icon'] = $this->output_iconic_value($module['measurements']['partial_vapor_pressure']['raw_value'], 'partial_vapor_pressure', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['saturation_vapor_pressure']['icon'] = $this->output_iconic_value($module['measurements']['saturation_vapor_pressure']['raw_value'], 'saturation_vapor_pressure', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         } else {
                             $show_vapor_pressure = false;
                         }
                         // Air Density
-                        if (array_key_exists('air_density', $module['datas'])) {
-                            $datas['air_density'] = array();
-                            $datas['air_density']['value'] = $module['datas']['air_density']['value'];
-                            $datas['air_density']['unit'] = $module['datas']['air_density']['unit']['unit'];
-                            $datas['air_density']['icon'] = $this->output_iconic_value($module['datas']['air_density']['raw_value'], 'air_density', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('air_density', $module['measurements'])) {
+                            $measurements['air_density'] = array();
+                            $measurements['air_density']['value'] = $module['measurements']['air_density']['value'];
+                            $measurements['air_density']['unit'] = $module['measurements']['air_density']['unit']['unit'];
+                            $measurements['air_density']['icon'] = $this->output_iconic_value($module['measurements']['air_density']['raw_value'], 'air_density', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         } else {
                             $show_air_density = false;
                         }
                         // Specific Enthalpy
-                        if (array_key_exists('specific_enthalpy', $module['datas'])) {
-                            $datas['specific_enthalpy'] = array();
-                            $datas['specific_enthalpy']['value'] = $module['datas']['specific_enthalpy']['value'];
-                            $datas['specific_enthalpy']['unit'] = $module['datas']['specific_enthalpy']['unit']['unit'];
-                            $datas['specific_enthalpy']['icon'] = $this->output_iconic_value($module['datas']['specific_enthalpy']['raw_value'], 'specific_enthalpy', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('specific_enthalpy', $module['measurements'])) {
+                            $measurements['specific_enthalpy'] = array();
+                            $measurements['specific_enthalpy']['value'] = $module['measurements']['specific_enthalpy']['value'];
+                            $measurements['specific_enthalpy']['unit'] = $module['measurements']['specific_enthalpy']['unit']['unit'];
+                            $measurements['specific_enthalpy']['icon'] = $this->output_iconic_value($module['measurements']['specific_enthalpy']['raw_value'], 'specific_enthalpy', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         } else {
                             $show_enthalpy = false;
                         }
                         // EMC
-                        if (array_key_exists('wood_emc', $module['datas'])) {
-                            $datas['wood_emc'] = array();
-                            $datas['wood_emc']['value'] = $module['datas']['wood_emc']['value'];
-                            $datas['wood_emc']['unit'] = $module['datas']['wood_emc']['unit']['unit'];
-                            $datas['wood_emc']['icon'] = $this->output_iconic_value($module['datas']['wood_emc']['raw_value'], 'wood_emc', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('wood_emc', $module['measurements'])) {
+                            $measurements['wood_emc'] = array();
+                            $measurements['wood_emc']['value'] = $module['measurements']['wood_emc']['value'];
+                            $measurements['wood_emc']['unit'] = $module['measurements']['wood_emc']['unit']['unit'];
+                            $measurements['wood_emc']['icon'] = $this->output_iconic_value($module['measurements']['wood_emc']['raw_value'], 'wood_emc', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         } else {
                             $show_emc = false;
                         }
@@ -532,35 +532,35 @@ class Psychrometry extends Base {
         $has_current = (count($current) > 0);
         if (!$NAMain && $has_current) {
             $NAMain = true;
-            if (array_key_exists('pressure', $current['datas'])) {
-                $datas['pressure'] = array();
-                $datas['pressure']['value'] = $current['datas']['pressure']['value'];
-                $datas['pressure']['unit'] = $current['datas']['pressure']['unit']['unit'];
-                $datas['pressure']['icon'] = $this->output_iconic_value($current['datas']['pressure']['raw_value'], 'pressure', null, true, 'inherit', 'lws-widget-icon-' . $id);
+            if (array_key_exists('pressure', $current['measurements'])) {
+                $measurements['pressure'] = array();
+                $measurements['pressure']['value'] = $current['measurements']['pressure']['value'];
+                $measurements['pressure']['unit'] = $current['measurements']['pressure']['unit']['unit'];
+                $measurements['pressure']['icon'] = $this->output_iconic_value($current['measurements']['pressure']['raw_value'], 'pressure', null, true, 'inherit', 'lws-widget-icon-' . $id);
             } else {
                 $show_pressure = false;
             }
-            if (array_key_exists('loc_latitude', $current['datas']) && array_key_exists('loc_longitude', $current['datas']) && array_key_exists('loc_altitude', $current['datas'])) {
-                $location = $this->output_coordinate($current['datas']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
-                    $this->output_coordinate($current['datas']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
-                    $this->output_value($current['datas']['loc_altitude']['value'], 'loc_altitude', true) . ')';
+            if (array_key_exists('loc_latitude', $current['measurements']) && array_key_exists('loc_longitude', $current['measurements']) && array_key_exists('loc_altitude', $current['measurements'])) {
+                $location = $this->output_coordinate($current['measurements']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
+                    $this->output_coordinate($current['measurements']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
+                    $this->output_value($current['measurements']['loc_altitude']['value'], 'loc_altitude', true) . ')';
             }
         }
         if (!$NAModule1 && $has_current) {
             $NAModule1 = true;
-            if (array_key_exists('humidity', $current['datas'])) {
-                $datas['humidity'] = array();
-                $datas['humidity']['value'] = $current['datas']['humidity']['value'];
-                $datas['humidity']['unit'] = $current['datas']['humidity']['unit']['unit'];
-                $datas['humidity']['icon'] = $this->output_iconic_value($current['datas']['humidity']['raw_value'], 'humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
+            if (array_key_exists('humidity', $current['measurements'])) {
+                $measurements['humidity'] = array();
+                $measurements['humidity']['value'] = $current['measurements']['humidity']['value'];
+                $measurements['humidity']['unit'] = $current['measurements']['humidity']['unit']['unit'];
+                $measurements['humidity']['icon'] = $this->output_iconic_value($current['measurements']['humidity']['raw_value'], 'humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
             } else {
                 $show_humidity = false;
             }
-            if (array_key_exists('temperature', $current['datas'])) {
-                $datas['temperature'] = array();
-                $datas['temperature']['value'] = $current['datas']['temperature']['value'];
-                $datas['temperature']['unit'] = $current['datas']['temperature']['unit']['unit'];
-                $datas['temperature']['icon'] = $this->output_iconic_value($current['datas']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
+            if (array_key_exists('temperature', $current['measurements'])) {
+                $measurements['temperature'] = array();
+                $measurements['temperature']['value'] = $current['measurements']['temperature']['value'];
+                $measurements['temperature']['unit'] = $current['measurements']['temperature']['unit']['unit'];
+                $measurements['temperature']['icon'] = $this->output_iconic_value($current['measurements']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
             } else {
                 $show_temperature = false;
             }
