@@ -708,7 +708,7 @@
 * New: twilight for dawn and dusk (civil, nautical and astronomical) are computed and available in textual data.
 * New: ephemeris widget can now display standard, civil, nautical and astronomical daylight times.
 * New: support for the ***Healthy Home Coach*** from Netatmo.
-* New: a screen (reachable from 'versions' box) displays servers informations useful for local file-based stations.
+* New: a screen (reachable from 'versions' box) displays servers information useful for local file-based stations.
 * New: a dashboard widget displays statistics on cache efficiency.
 * Improvement: all widgets and controls can now be cached (settings in *system* tab).
 * Improvement: outdoor weather and ephemeris widgets can have background images for day, twilight and night.

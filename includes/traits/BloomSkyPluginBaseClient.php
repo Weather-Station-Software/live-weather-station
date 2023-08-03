@@ -118,7 +118,7 @@ trait BaseClient {
                 $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                 Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
 
-                $s = $this->get_station_informations_by_station_id($device['device_id']);
+                $s = $this->get_station_information_by_station_id($device['device_id']);
                 if (array_key_exists('device_name', $device)) {
                     $s['station_name'] = $device['device_name'];
                 }
@@ -174,7 +174,7 @@ trait BaseClient {
                 }
                 if (array_key_exists('DeviceID', $station)) {
                     $dat['device_id'] = self::compute_unique_bsky_id($station['DeviceID']);
-                    $st = $this->get_station_informations_by_station_id($dat['device_id']);
+                    $st = $this->get_station_information_by_station_id($dat['device_id']);
                     if (array_key_exists('loc_altitude', $st)) {
                         $altitude = $st['loc_altitude'];
                     }

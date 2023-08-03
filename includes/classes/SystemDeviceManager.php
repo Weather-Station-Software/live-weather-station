@@ -256,7 +256,7 @@ class Manager
             $cron_id = Watchdog::init_chrono(Watchdog::$history_build_name);
             $hb = new HistoryBuilder(LWS_PLUGIN_NAME, LWS_VERSION);
             foreach ($this->stations as $device_id) {
-                $hb->build_for($this->get_station_informations_by_station_id($device_id));
+                $hb->build_for($this->get_station_information_by_station_id($device_id));
             }
             Cache::flush_full(false);
             Watchdog::stop_chrono($cron_id);

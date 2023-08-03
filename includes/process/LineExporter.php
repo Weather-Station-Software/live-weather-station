@@ -215,7 +215,7 @@ abstract class LineExporter extends Process {
         }
 
         $this->uuid = $this->meta_uuid();
-        $station = $this->get_station_informations_by_station_id($this->params['init']['station_id']);
+        $station = $this->get_station_information_by_station_id($this->params['init']['station_id']);
         $this->params['init']['station_name'] = trim($station['station_name']);
         $this->params['init']['loc_timezone'] = $station['loc_timezone'];
         global $wpdb;

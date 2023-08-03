@@ -385,7 +385,7 @@ trait Output {
                 if ($station_id != '') {
                     global $wpdb;
                     // Get extended station information
-                    $station = $this->get_extended_station_informations_by_station_id($station_id);
+                    $station = $this->get_extended_station_information_by_station_id($station_id);
                     if (count($station) === 0) {
                         return false;
                     }
@@ -5896,7 +5896,7 @@ trait Output {
         if ($device == '' || $module == '' || $measurement == '' || $set == '' || $computed == '' || $periodtype == '' || $periodvalue == '' || !($aggregated || $fixed || $both)) {
             return $result;
         }
-        $station = $this->get_station_informations_by_station_id($device);
+        $station = $this->get_station_information_by_station_id($device);
         $modules = DeviceManager::get_modules_details($device);
         $moduletype = 'NAMain';
         foreach ($modules as $m) {
@@ -7260,7 +7260,7 @@ trait Output {
             case 'sliding-timelapse':
                 $d = explode('-', $_attributes['periodvalue']);
                 if (!empty($d) && count($d) === 2) {
-                    $station = $this->get_station_informations_by_station_id($_attributes['device_id_1']);
+                    $station = $this->get_station_information_by_station_id($_attributes['device_id_1']);
                     $date = self::get_date_from_mysql_utc(date('Y-m-d', strtotime(sprintf('-%s days', $d[1]))), $station['loc_timezone'], 'Y-m-d') . ' 12:00:00';
                 }
                 break;
@@ -8701,7 +8701,7 @@ trait Output {
         }
         switch ($_attributes['element']) {
             case 'device_model':
-                $info = $this->get_station_informations_by_station_id($_attributes['device_id']);
+                $info = $this->get_station_information_by_station_id($_attributes['device_id']);
                 $_result['result'][$_attributes['measure_type']] = $info['station_model'];
                 break;
             case 'module_name':
@@ -13180,7 +13180,7 @@ trait Output {
      * @since 3.0.0
      */
     protected function get_all_formatted_datas($guid, $obsolescence_filtering=false, $full=false) {
-        $station = $this->get_station_informations_by_guid($guid);
+        $station = $this->get_station_information_by_guid($guid);
         $raw_data = $this->get_all_datas($station['station_id'], $obsolescence_filtering);
         $result = array();
         $result['station'] = $station;

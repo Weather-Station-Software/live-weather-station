@@ -522,7 +522,7 @@ trait Query {
             if ((bool)get_option('live_weather_station_build_history')) {
                 $ret = get_option('live_weather_station_retention_history');
                 if ($ret == 0 || $ret > 52) {
-                    $station = $this->get_station_informations_by_station_id($device_id);
+                    $station = $this->get_station_information_by_station_id($device_id);
                     if (array_key_exists('oldest_data', $station) && $station['oldest_data'] != '0000-00-00') {
                         $old = \DateTime::createFromFormat('Y-m-d', $station['oldest_data']);
                         if (time() - $old->getTimestamp() > 60 * 60 * 24 * 365) {
@@ -1090,7 +1090,7 @@ trait Query {
      * @since 3.7.0
      */
     public function update_oldest_data($station_id) {
-        $station = $this->get_station_informations_by_station_id($station_id);
+        $station = $this->get_station_information_by_station_id($station_id);
         if (is_array($station) && !empty($station)) {
             if ($date = $this->get_oldest_data($station)) {
                 $station['oldest_data'] = $date;
@@ -1100,13 +1100,13 @@ trait Query {
     }
 
     /**
-     * Get station informations.
+     * Get station information.
      *
      * @param string $station_id The station id.
-     * @return array An array containing the station informations.
+     * @return array An array containing the station information.
      * @since 2.3.0
      */
-    protected function get_station_informations_by_station_id($station_id) {
+    protected function get_station_information_by_station_id($station_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
         $sql = "SELECT * FROM " . $table_name . " WHERE station_id='" . $station_id."'";
@@ -1129,14 +1129,14 @@ trait Query {
     }
 
     /**
-     * Get extended station informations.
+     * Get extended station information.
      *
      * @param integer $station_id The station id.
-     * @return array An array containing the extended station informations.
+     * @return array An array containing the extended station information.
      * @since 3.4.0
      */
-    protected function get_extended_station_informations_by_station_id($station_id) {
-        $result = $this->get_station_informations_by_station_id($station_id);
+    protected function get_extended_station_information_by_station_id($station_id) {
+        $result = $this->get_station_information_by_station_id($station_id);
         if (count($result) !== 0) {
             $modules = DeviceManager::get_modules_details($station_id);
             $result['modules_names'] = array();
@@ -1273,7 +1273,7 @@ trait Query {
         $modules = $this->get_operational_modules_list();
         if (count($modules) > 0) {
             foreach ($modules as $key => $module) {
-                $station = $this->get_station_informations_by_station_id($key);
+                $station = $this->get_station_information_by_station_id($key);
                 if (count($station) > 0) {
                     $station['comp_bas'] = $module['comp_bas'];
                     $station['comp_ext'] = $module['comp_ext'];
@@ -1288,10 +1288,10 @@ trait Query {
     }
 
     /**
-     * Get station informations.
+     * Get station information.
      *
      * @param integer $guid The station guid.
-     * @return array An array containing the station informations.
+     * @return array An array containing the station information.
      * @since 3.0.0
      */
     protected static function get_station($guid) {
@@ -1471,13 +1471,13 @@ trait Query {
     }
 
     /**
-     * Get modules informations.
+     * Get modules information.
      *
      * @param string $device_id The station device id.
      * @return array An array containing the modules details.
      * @since  3.5.0
      */
-    protected static function get_modules_informations($device_id) {
+    protected static function get_modules_information($device_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_module_detail_table();
         $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $device_id."'";
@@ -1553,23 +1553,23 @@ trait Query {
     }
 
     /**
-     * Get station informations.
+     * Get station information.
      *
      * @param integer $guid The station guid.
-     * @return array An array containing the station informations.
+     * @return array An array containing the station information.
      * @since  3.0.0
      */
-    protected function get_station_informations_by_guid($guid) {
+    protected function get_station_information_by_guid($guid) {
         return self::get_station($guid);
     }
 
     /**
-     * Get stations informations.
+     * Get stations information.
      *
-     * @return array An array containing the stations informations.
+     * @return array An array containing the stations information.
      * @since 2.3.0
      */
-    protected function get_stations_informations() {
+    protected function get_stations_information() {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
         $sql = "SELECT * FROM " . $table_name ;

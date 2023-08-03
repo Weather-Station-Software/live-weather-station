@@ -1351,7 +1351,7 @@ trait Storage {
             }
         }
         if (!$result && isset($station_id)) {
-            $station = $this->get_station_informations_by_station_id($station_id);
+            $station = $this->get_station_information_by_station_id($station_id);
             if (isset($station) && is_array($station)) {
                 if (array_key_exists('loc_timezone', $station)) {
                     $result = $station['loc_timezone'];

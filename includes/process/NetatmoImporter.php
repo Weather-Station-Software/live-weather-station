@@ -168,7 +168,7 @@ abstract class NetatmoImporter extends Process {
      */
     protected function init_core(){
 
-        $station = $this->get_station_informations_by_station_id($this->params['init']['station_id']);
+        $station = $this->get_station_information_by_station_id($this->params['init']['station_id']);
         $this->params['init']['station_name'] = $station['station_name'];
         $this->params['init']['loc_timezone'] = $station['loc_timezone'];
         $this->params['init']['loc_altitude'] = $station['loc_altitude'];

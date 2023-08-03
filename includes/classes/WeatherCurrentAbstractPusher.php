@@ -126,7 +126,7 @@ abstract class Pusher {
     public function push_data($stations = array()) {
         if (empty($stations)) {
             $test = false;
-            $stations = $this->get_stations_informations();
+            $stations = $this->get_stations_information();
         }
         else {
             $test = true;
