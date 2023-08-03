@@ -15,7 +15,7 @@ class BCLine extends \WeatherStation\Engine\Module\Maintainer {
     /**
      * Initialize the class and set its properties.
      *
-     * @param array $station_information An array containing the station informations.
+     * @param array $station_information An array containing the station information.
      * @since 3.4.0
      */
     public function __construct($station_information) {

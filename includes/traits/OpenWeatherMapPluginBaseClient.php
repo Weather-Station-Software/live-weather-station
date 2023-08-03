@@ -79,7 +79,7 @@ trait BaseClient {
         if (count($stations) > 0) {
             foreach ($stations as $station) {
                 $device_id = self::get_unique_owm_id($station['guid']);
-                $s = $this->get_station_informations_by_guid($station['guid']);
+                $s = $this->get_station_information_by_guid($station['guid']);
                 $s['station_id'] = $device_id;
                 $s['last_refresh'] = date('Y-m-d H:i:s');
                 $this->update_stations_table($s);
@@ -128,7 +128,7 @@ trait BaseClient {
         if (count($stations) > 0) {
             foreach ($stations as $station) {
                 $device_id = self::get_unique_owm_true_id($station['guid']);
-                $s = $this->get_station_informations_by_guid($station['guid']);
+                $s = $this->get_station_information_by_guid($station['guid']);
                 $s['station_id'] = $device_id;
                 $s['last_refresh'] = date('Y-m-d H:i:s');
                 $this->update_stations_table($s);

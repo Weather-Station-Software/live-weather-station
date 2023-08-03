@@ -30,7 +30,7 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
     /**
      * Initialize the class and set its properties.
      *
-     * @param array $station_information An array containing the station informations.
+     * @param array $station_information An array containing the station information.
      * @since 3.8.0
      */
     public function __construct($station_information) {
