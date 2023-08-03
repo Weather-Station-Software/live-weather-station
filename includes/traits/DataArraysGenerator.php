@@ -378,7 +378,7 @@ trait Generator {
     }
 
     /**
-     * Get measure's datas array.
+     * Get measure's measurements array.
      *
      * @param array $ref An array containing value of reference.
      * @param array $data An array containing measures.
@@ -748,11 +748,11 @@ trait Generator {
 
 
     /**
-     * Get module's datas array.
+     * Get module's measurements array.
      *
      * @param array $ref An array containing value of reference.
      * @param array $data An array containing measures.
-     * @param boolean $full The array must contain all measured data types including operational datas.
+     * @param boolean $full The array must contain all measured data types including operational measurements.
      * @param boolean $aggregated The array must contain aggregated data types.
      * @param boolean $reduced The array is reduced. i.e. contains only modules and measures.
      * @param boolean $computed The array must contain computed data types.
@@ -1187,10 +1187,10 @@ trait Generator {
     }
 
     /**
-     * Get station's datas array.
+     * Get station's measurements array.
      *
      * @param integer $guid The station GUID.
-     * @param boolean $full Optional. The array must contain all measured data types including operational datas.
+     * @param boolean $full Optional. The array must contain all measured data types including operational measurements.
      * @param boolean $aggregated Optional. The array must contain aggregated data types.
      * @param boolean $reduced Optional. The array is reduced. i.e. contains only modules and measures.
      * @param boolean $computed Optional. The array must contain computed data types.
@@ -1207,11 +1207,11 @@ trait Generator {
      * @param boolean $climat Optional. The array is for climate records only.
      * @param boolean $trend Optional. The array must contain trends.
      * @param boolean $scores Optional. The array must contain scores.
-     * @return array An array containing the available station's datas ready to convert to a JS array.
+     * @return array An array containing the available station's measurements ready to convert to a JS array.
      * @since 3.0.0
      */
     protected function get_station_array($guid, $full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $noned=false, $comparison=false, $distribution=false, $current=false, $video=false, $picture=false, $icon=false, $climat=false, $trend=true, $scores=false) {
-        $data = $this->get_all_formatted_datas($guid, false, true);
+        $data = $this->get_all_formatted_measurements($guid, false, true);
         $result = array();
         $modules = array();
         if (count($data) > 0) {
@@ -1304,9 +1304,9 @@ trait Generator {
     }
 
     /**
-     * Get all station's datas array.
+     * Get all station's measurements array.
      *
-     * @param boolean $full Optional. The array must contain all measured data types including operational datas.
+     * @param boolean $full Optional. The array must contain all measured data types including operational measurements.
      * @param boolean $aggregated Optional. The array must contain aggregated data types.
      * @param boolean $reduced Optional. The array is reduced. i.e. contains only modules and measures.
      * @param boolean $computed Optional. The array must contain computed data types.
@@ -1324,7 +1324,7 @@ trait Generator {
      * @param boolean $climat Optional. The array is for climate records only.
      * @param boolean $trend Optional. The array must contain trends.
      * @param boolean $scores Optional. The array must contain scores.
-     * @return array An array containing the available station's datas ready to convert to a JS array.
+     * @return array An array containing the available station's measurements ready to convert to a JS array.
      * @since 3.0.0
      */
     protected function get_all_stations_array($full=true, $aggregated=false, $reduced=false, $computed=false, $mono=false, $daily=false, $historical=false, $noned=false, $guids=array(), $comparison=false, $distribution=false, $current=false, $video=false, $picture=false, $icon=false, $climat=false, $trend=true, $scores=false) {

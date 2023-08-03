@@ -300,7 +300,7 @@ class Ephemeris extends Base {
         $show_moonphase = false;
         $show_sundetails = false;
         $show_moondetails = false;
-        $datas = array();
+        $measurements = array();
         $current = array();
         $timestamp = '';
         $tz = '';
@@ -308,8 +308,8 @@ class Ephemeris extends Base {
             foreach ($modules['modules'] as $module) {
                 switch ($module['type']) {
                     case 'NAMain':
-                        if (array_key_exists('loc_timezone', $module['datas'])) {
-                            $tz = $module['datas']['loc_timezone']['value'];
+                        if (array_key_exists('loc_timezone', $module['measurements'])) {
+                            $tz = $module['measurements']['loc_timezone']['value'];
                         }
                         break;
                 }
@@ -317,93 +317,93 @@ class Ephemeris extends Base {
             foreach ($modules['modules'] as $module) {
                 switch ($module['type']) {
                     case 'NAMain':
-                        if (array_key_exists('loc_latitude', $module['datas']) && array_key_exists('loc_longitude', $module['datas']) && array_key_exists('loc_altitude', $module['datas'])) {
-                            $location = $this->output_coordinate($module['datas']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
-                                $this->output_coordinate($module['datas']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
-                                $this->output_value($module['datas']['loc_altitude']['value'], 'loc_altitude', true) . ')';
+                        if (array_key_exists('loc_latitude', $module['measurements']) && array_key_exists('loc_longitude', $module['measurements']) && array_key_exists('loc_altitude', $module['measurements'])) {
+                            $location = $this->output_coordinate($module['measurements']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
+                                $this->output_coordinate($module['measurements']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
+                                $this->output_value($module['measurements']['loc_altitude']['value'], 'loc_altitude', true) . ')';
                         }
                         break;
                     case 'NAEphemer':
-                        $datas['sun']['icon'] = $this->output_iconic_value(0, 'sun', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                        if (array_key_exists('sunrise', $module['datas']) && array_key_exists('sunset', $module['datas'])) {
+                        $measurements['sun']['icon'] = $this->output_iconic_value(0, 'sun', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('sunrise', $module['measurements']) && array_key_exists('sunset', $module['measurements'])) {
                             if ($mode==0) {
-                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise']['raw_value'], 'sunrise', true, false, '', $tz);
-                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset']['raw_value'], 'sunset', true, false, '', $tz);
-                                $datas['sunrise']['icon'] = $this->output_iconic_value($module['datas']['sunrise']['raw_value'], 'sunrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                                $datas['sunset']['icon'] = $this->output_iconic_value($module['datas']['sunset']['raw_value'], 'sunset', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                                $measurements['sunrise']['value'] = $this->output_value($module['measurements']['sunrise']['raw_value'], 'sunrise', true, false, '', $tz);
+                                $measurements['sunset']['value'] = $this->output_value($module['measurements']['sunset']['raw_value'], 'sunset', true, false, '', $tz);
+                                $measurements['sunrise']['icon'] = $this->output_iconic_value($module['measurements']['sunrise']['raw_value'], 'sunrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                                $measurements['sunset']['icon'] = $this->output_iconic_value($module['measurements']['sunset']['raw_value'], 'sunset', null, true, 'inherit', 'lws-widget-icon-' . $id);
                                 $show_sun = true;
                             }
-                            $sunrise = $module['datas']['sunrise']['raw_value'];
-                            $sunset = $module['datas']['sunset']['raw_value'];
+                            $sunrise = $module['measurements']['sunrise']['raw_value'];
+                            $sunset = $module['measurements']['sunset']['raw_value'];
                         }
-                        if (array_key_exists('sunrise_c', $module['datas']) && array_key_exists('sunset_c', $module['datas'])) {
+                        if (array_key_exists('sunrise_c', $module['measurements']) && array_key_exists('sunset_c', $module['measurements'])) {
                             if ($mode==1) {
-                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise_c']['raw_value'], 'sunrise_c', true, false, '', $tz);
-                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset_c']['raw_value'], 'sunset_c', true, false, '', $tz);
-                                $datas['sunrise']['icon'] = $this->output_iconic_value($module['datas']['sunrise_c']['raw_value'], 'sunrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                                $datas['sunset']['icon'] = $this->output_iconic_value($module['datas']['sunset_c']['raw_value'], 'sunset', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                                $measurements['sunrise']['value'] = $this->output_value($module['measurements']['sunrise_c']['raw_value'], 'sunrise_c', true, false, '', $tz);
+                                $measurements['sunset']['value'] = $this->output_value($module['measurements']['sunset_c']['raw_value'], 'sunset_c', true, false, '', $tz);
+                                $measurements['sunrise']['icon'] = $this->output_iconic_value($module['measurements']['sunrise_c']['raw_value'], 'sunrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                                $measurements['sunset']['icon'] = $this->output_iconic_value($module['measurements']['sunset_c']['raw_value'], 'sunset', null, true, 'inherit', 'lws-widget-icon-' . $id);
                                 $show_sun = true;
                             }
                         }
-                        if (array_key_exists('sunrise_n', $module['datas']) && array_key_exists('sunset_n', $module['datas'])) {
+                        if (array_key_exists('sunrise_n', $module['measurements']) && array_key_exists('sunset_n', $module['measurements'])) {
                             if ($mode==2) {
-                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise_n']['raw_value'], 'sunrise_n', true, false, '', $tz);
-                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset_n']['raw_value'], 'sunset_n', true, false, '', $tz);
-                                $datas['sunrise']['icon'] = $this->output_iconic_value($module['datas']['sunrise_n']['raw_value'], 'sunrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                                $datas['sunset']['icon'] = $this->output_iconic_value($module['datas']['sunset_n']['raw_value'], 'sunset', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                                $measurements['sunrise']['value'] = $this->output_value($module['measurements']['sunrise_n']['raw_value'], 'sunrise_n', true, false, '', $tz);
+                                $measurements['sunset']['value'] = $this->output_value($module['measurements']['sunset_n']['raw_value'], 'sunset_n', true, false, '', $tz);
+                                $measurements['sunrise']['icon'] = $this->output_iconic_value($module['measurements']['sunrise_n']['raw_value'], 'sunrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                                $measurements['sunset']['icon'] = $this->output_iconic_value($module['measurements']['sunset_n']['raw_value'], 'sunset', null, true, 'inherit', 'lws-widget-icon-' . $id);
                                 $show_sun = true;
                             }
                         }
-                        if (array_key_exists('sunrise_a', $module['datas']) && array_key_exists('sunset_a', $module['datas'])) {
+                        if (array_key_exists('sunrise_a', $module['measurements']) && array_key_exists('sunset_a', $module['measurements'])) {
                             if ($mode==3) {
-                                $datas['sunrise']['value'] = $this->output_value($module['datas']['sunrise_a']['raw_value'], 'sunrise_a', true, false, '', $tz);
-                                $datas['sunset']['value'] = $this->output_value($module['datas']['sunset_a']['raw_value'], 'sunset_a', true, false, '', $tz);
-                                $datas['sunrise']['icon'] = $this->output_iconic_value($module['datas']['sunrise_a']['raw_value'], 'sunrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                                $datas['sunset']['icon'] = $this->output_iconic_value($module['datas']['sunset_a']['raw_value'], 'sunset', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                                $measurements['sunrise']['value'] = $this->output_value($module['measurements']['sunrise_a']['raw_value'], 'sunrise_a', true, false, '', $tz);
+                                $measurements['sunset']['value'] = $this->output_value($module['measurements']['sunset_a']['raw_value'], 'sunset_a', true, false, '', $tz);
+                                $measurements['sunrise']['icon'] = $this->output_iconic_value($module['measurements']['sunrise_a']['raw_value'], 'sunrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                                $measurements['sunset']['icon'] = $this->output_iconic_value($module['measurements']['sunset_a']['raw_value'], 'sunset', null, true, 'inherit', 'lws-widget-icon-' . $id);
                                 $show_sun = true;
                             }
-                            $sunrise_a = $module['datas']['sunrise_a']['raw_value'];
-                            $sunset_a = $module['datas']['sunset_a']['raw_value'];
+                            $sunrise_a = $module['measurements']['sunrise_a']['raw_value'];
+                            $sunset_a = $module['measurements']['sunset_a']['raw_value'];
                         }
-                        if (array_key_exists('sun_distance', $module['datas']) && array_key_exists('sun_diameter', $module['datas'])) {
-                            $datas['sun_distance']['value'] = $this->output_value($module['datas']['sun_distance']['raw_value'], 'sun_distance');
-                            $datas['sun_distance']['unit'] = $module['datas']['sun_distance']['unit']['unit'];
-                            $datas['sun_diameter']['value'] = $this->output_value($module['datas']['sun_diameter']['raw_value'], 'sun_diameter');
-                            $datas['sun_diameter']['unit'] = $module['datas']['sun_diameter']['unit']['unit'];
-                            $datas['sun_distance']['icon'] = $this->output_iconic_value($module['datas']['sun_distance']['raw_value'], 'sun_distance', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            $datas['sun_diameter']['icon'] = $this->output_iconic_value($module['datas']['sun_diameter']['raw_value'], 'sun_diameter', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('sun_distance', $module['measurements']) && array_key_exists('sun_diameter', $module['measurements'])) {
+                            $measurements['sun_distance']['value'] = $this->output_value($module['measurements']['sun_distance']['raw_value'], 'sun_distance');
+                            $measurements['sun_distance']['unit'] = $module['measurements']['sun_distance']['unit']['unit'];
+                            $measurements['sun_diameter']['value'] = $this->output_value($module['measurements']['sun_diameter']['raw_value'], 'sun_diameter');
+                            $measurements['sun_diameter']['unit'] = $module['measurements']['sun_diameter']['unit']['unit'];
+                            $measurements['sun_distance']['icon'] = $this->output_iconic_value($module['measurements']['sun_distance']['raw_value'], 'sun_distance', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['sun_diameter']['icon'] = $this->output_iconic_value($module['measurements']['sun_diameter']['raw_value'], 'sun_diameter', null, true, 'inherit', 'lws-widget-icon-' . $id);
                             $show_sundetails = true;
                         }
-                        if (array_key_exists('moonrise', $module['datas']) && array_key_exists('moonset', $module['datas'])) {
-                            $datas['moonrise']['value'] = $this->output_value($module['datas']['moonrise']['raw_value'], 'moonrise', true, false, '', $tz);
-                            $datas['moonset']['value'] = $this->output_value($module['datas']['moonset']['raw_value'], 'moonset', true, false, '', $tz);
-                            $datas['moonrise']['icon'] = $this->output_iconic_value($module['datas']['moonrise']['raw_value'], 'moonrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            $datas['moonset']['icon'] = $this->output_iconic_value($module['datas']['moonset']['raw_value'], 'moonset', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('moonrise', $module['measurements']) && array_key_exists('moonset', $module['measurements'])) {
+                            $measurements['moonrise']['value'] = $this->output_value($module['measurements']['moonrise']['raw_value'], 'moonrise', true, false, '', $tz);
+                            $measurements['moonset']['value'] = $this->output_value($module['measurements']['moonset']['raw_value'], 'moonset', true, false, '', $tz);
+                            $measurements['moonrise']['icon'] = $this->output_iconic_value($module['measurements']['moonrise']['raw_value'], 'moonrise', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['moonset']['icon'] = $this->output_iconic_value($module['measurements']['moonset']['raw_value'], 'moonset', null, true, 'inherit', 'lws-widget-icon-' . $id);
                             $show_moon = true;
                         }
-                        if (array_key_exists('moon_phase', $module['datas'])) {
-                            $datas['moon_phase']['value'] = $this->get_moon_phase_icon($module['datas']['moon_phase']['raw_value']);
-                            $datas['moon_phase']['name'] = $this->output_value($module['datas']['moon_phase']['raw_value'], 'moon_phase', true);
-                            $datas['moon_phase']['icon'] = $this->output_iconic_value($module['datas']['moon_phase']['raw_value'], 'moon_phase', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('moon_phase', $module['measurements'])) {
+                            $measurements['moon_phase']['value'] = $this->get_moon_phase_icon($module['measurements']['moon_phase']['raw_value']);
+                            $measurements['moon_phase']['name'] = $this->output_value($module['measurements']['moon_phase']['raw_value'], 'moon_phase', true);
+                            $measurements['moon_phase']['icon'] = $this->output_iconic_value($module['measurements']['moon_phase']['raw_value'], 'moon_phase', null, true, 'inherit', 'lws-widget-icon-' . $id);
                             $show_moonphase = true;
                         }
-                        if (array_key_exists('moon_age', $module['datas'])) {
-                            $datas['moon_age']['value'] = $this->output_value($module['datas']['moon_age']['raw_value'], 'moon_age', true, true);
+                        if (array_key_exists('moon_age', $module['measurements'])) {
+                            $measurements['moon_age']['value'] = $this->output_value($module['measurements']['moon_age']['raw_value'], 'moon_age', true, true);
                         } else {
-                            $datas['moon_age']['value'] = '';
+                            $measurements['moon_age']['value'] = '';
                         }
-                        if (array_key_exists('moon_illumination', $module['datas'])) {
-                            $datas['moon_illumination']['value'] = $this->output_value($module['datas']['moon_illumination']['raw_value'], 'moon_illumination');
-                            $datas['moon_illumination']['unit'] = $module['datas']['moon_illumination']['unit']['unit'];
+                        if (array_key_exists('moon_illumination', $module['measurements'])) {
+                            $measurements['moon_illumination']['value'] = $this->output_value($module['measurements']['moon_illumination']['raw_value'], 'moon_illumination');
+                            $measurements['moon_illumination']['unit'] = $module['measurements']['moon_illumination']['unit']['unit'];
                         } else {
-                            $datas['moon_illumination']['value'] = '';
-                            $datas['moon_illumination']['unit'] = '';
+                            $measurements['moon_illumination']['value'] = '';
+                            $measurements['moon_illumination']['unit'] = '';
                         }
-                        if (array_key_exists('moon_distance', $module['datas']) && array_key_exists('moon_diameter', $module['datas'])) {
-                            $datas['moon_distance']['value'] = $this->output_value($module['datas']['moon_distance']['raw_value'], 'sun_distance');
-                            $datas['moon_distance']['unit'] = $module['datas']['moon_distance']['unit']['unit'];
-                            $datas['moon_diameter']['value'] = $this->output_value($module['datas']['moon_diameter']['raw_value'], 'sun_diameter');
-                            $datas['moon_diameter']['unit'] = $module['datas']['moon_diameter']['unit']['unit'];
+                        if (array_key_exists('moon_distance', $module['measurements']) && array_key_exists('moon_diameter', $module['measurements'])) {
+                            $measurements['moon_distance']['value'] = $this->output_value($module['measurements']['moon_distance']['raw_value'], 'sun_distance');
+                            $measurements['moon_distance']['unit'] = $module['measurements']['moon_distance']['unit']['unit'];
+                            $measurements['moon_diameter']['value'] = $this->output_value($module['measurements']['moon_diameter']['raw_value'], 'sun_diameter');
+                            $measurements['moon_diameter']['unit'] = $module['measurements']['moon_diameter']['unit']['unit'];
                             $show_moondetails = true;
                         }
                         break;

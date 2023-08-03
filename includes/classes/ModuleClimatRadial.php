@@ -70,9 +70,9 @@ class Radial extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_datasource() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('climat-radial-datas-period-type-'. $this->station_guid, __('Period type', 'live-weather-station'), $this->get_period_type_js_array(false, false, false, true, true), true, 'aggregated-year');
-        $content .= $this->get_neutral_option_select('climat-radial-datas-period-value-' . $this->station_guid, __('Period', 'live-weather-station'));
-        $content .= $this->get_key_value_option_select('climat-radial-datas-values-'. $this->station_guid, __('Values', 'live-weather-station'), $this->get_radial_values_js_array(), true, 'temperature-rain-threshold');
+        $content .= $this->get_key_value_option_select('climat-radial-measurements-period-type-'. $this->station_guid, __('Period type', 'live-weather-station'), $this->get_period_type_js_array(false, false, false, true, true), true, 'aggregated-year');
+        $content .= $this->get_neutral_option_select('climat-radial-measurements-period-value-' . $this->station_guid, __('Period', 'live-weather-station'));
+        $content .= $this->get_key_value_option_select('climat-radial-measurements-values-'. $this->station_guid, __('Values', 'live-weather-station'), $this->get_radial_values_js_array(), true, 'temperature-rain-threshold');
         $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
         return $this->get_box('lws-datasource-id', $this->datasource_title, $content);
@@ -86,10 +86,10 @@ class Radial extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_parameters() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('climat-radial-datas-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
-        $content .= $this->get_key_value_option_select('climat-radial-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(false, true), true, '400px');
-        $content .= $this->get_key_value_option_select('climat-radial-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true, false, true), true, 'auto');
-        $content .= $this->get_key_value_option_select('climat-radial-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(false), true, 'inline');
+        $content .= $this->get_key_value_option_select('climat-radial-measurements-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
+        $content .= $this->get_key_value_option_select('climat-radial-measurements-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(false, true), true, '400px');
+        $content .= $this->get_key_value_option_select('climat-radial-measurements-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true, false, true), true, 'auto');
+        $content .= $this->get_key_value_option_select('climat-radial-measurements-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(false), true, 'inline');
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }
@@ -104,42 +104,42 @@ class Radial extends \WeatherStation\Engine\Module\Maintainer {
         $name = self::$module_mode . '-' . $this->module_type;
         $js_name = self::$module_mode . '_' . $this->module_type;
         $content = '';
-        $content .= '$("#' . $name . '-datas-period-type-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#' . $name . '-measurements-period-type-' . $this->station_guid . '").change(function() {';
         $content .= '  var js_array_' . $js_name . '_p_' . $this->station_guid . ' = null;';
         $content .= '  $(js_array_' . $js_name . '_period_' . $this->station_guid . ').each(function (i) {';
-        $content .= '    if (js_array_' . $js_name . '_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-datas-period-type-' . $this->station_guid . '").val()) {js_array_' . $js_name . '_p_' . $this->station_guid . '=js_array_' . $js_name . '_period_' . $this->station_guid . '[i][1]};});';
-        $content .= '  $("#' . $name . '-datas-period-value-' . $this->station_guid . '").html("");';
+        $content .= '    if (js_array_' . $js_name . '_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-measurements-period-type-' . $this->station_guid . '").val()) {js_array_' . $js_name . '_p_' . $this->station_guid . '=js_array_' . $js_name . '_period_' . $this->station_guid . '[i][1]};});';
+        $content .= '  $("#' . $name . '-measurements-period-value-' . $this->station_guid . '").html("");';
         $content .= '  $(js_array_' . $js_name . '_p_' . $this->station_guid . ').each(function (i) {';
-        $content .= '    $("#' . $name . '-datas-period-value-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]+"</option>");});';
-        $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '" ).change();';
+        $content .= '    $("#' . $name . '-measurements-period-value-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]+"</option>");});';
+        $content .= '$("#' . $name . '-measurements-period-value-' . $this->station_guid . '" ).change();';
         $content .= '});';
-        $content .= '$("#' . $name . '-datas-period-value-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#' . $name . '-datas-values-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#' . $name . '-datas-values-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#' . $name . '-datas-template-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#' . $name . '-datas-height-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#' . $name . '-datas-height-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#' . $name . '-datas-valuescale-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#' . $name . '-datas-valuescale-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#' . $name . '-datas-data-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#' . $name . '-datas-data-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#' . $name . '-measurements-period-value-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#' . $name . '-measurements-values-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#' . $name . '-measurements-values-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#' . $name . '-measurements-template-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#' . $name . '-measurements-template-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#' . $name . '-measurements-height-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#' . $name . '-measurements-height-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#' . $name . '-measurements-valuescale-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#' . $name . '-measurements-valuescale-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#' . $name . '-measurements-data-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#' . $name . '-measurements-data-' . $this->station_guid . '").change(function() {';
         $content .= '  var sc_device = "' . $this->station_id . '";';
-        $content .= '  var sc_period_type = $("#' . $name . '-datas-period-type-' . $this->station_guid . '").val();';
-        $content .= '  var sc_period = $("#' . $name . '-datas-period-value-' . $this->station_guid . '").val();';
-        $content .= '  var sc_values = $("#' . $name . '-datas-values-' . $this->station_guid . '").val();';
-        $content .= '  var sc_template = $("#' . $name . '-datas-template-' . $this->station_guid . '").val();';
-        $content .= '  var sc_height = $("#' . $name . '-datas-height-' . $this->station_guid . '").val();';
-        $content .= '  var sc_valuescale = $("#' . $name . '-datas-valuescale-' . $this->station_guid . '").val();';
-        $content .= '  var sc_data = $("#' . $name . '-datas-data-' . $this->station_guid . '").val();';
+        $content .= '  var sc_period_type = $("#' . $name . '-measurements-period-type-' . $this->station_guid . '").val();';
+        $content .= '  var sc_period = $("#' . $name . '-measurements-period-value-' . $this->station_guid . '").val();';
+        $content .= '  var sc_values = $("#' . $name . '-measurements-values-' . $this->station_guid . '").val();';
+        $content .= '  var sc_template = $("#' . $name . '-measurements-template-' . $this->station_guid . '").val();';
+        $content .= '  var sc_height = $("#' . $name . '-measurements-height-' . $this->station_guid . '").val();';
+        $content .= '  var sc_valuescale = $("#' . $name . '-measurements-valuescale-' . $this->station_guid . '").val();';
+        $content .= '  var sc_data = $("#' . $name . '-measurements-data-' . $this->station_guid . '").val();';
         $content .= '  var shortcode = "[live-weather-station-radial mode=\'' . self::$module_mode . '\' type=\'' . $this->module_type . '\' device_id=\'"+sc_device+"\' periodtype=\'"+sc_period_type+"\' period=\'"+sc_period+"\' values=\'"+sc_values+"\' template=\'"+sc_template+"\' valuescale=\'"+sc_valuescale+"\' data=\'"+sc_data+"\' height=\'"+sc_height+"\']";';
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
-        $content .= '$("#' . $name . '-datas-shortcode-' . $this->station_guid . '").html(shortcode);';
+        $content .= '$("#' . $name . '-measurements-shortcode-' . $this->station_guid . '").html(shortcode);';
         $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_query_radial_code", data:sc_data, cache:"no_cache", mode:"' . self::$module_mode . '", type:"' . $this->module_type . '", device_id:sc_device, periodtype:sc_period_type, period:sc_period, template:sc_template, values:sc_values, valuescale:sc_valuescale, height:sc_height ';
         $content .= '}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
         $content .= '});';
-        $content .= '$("#' . $name . '-datas-period-type-' . $this->station_guid . '").change();';
+        $content .= '$("#' . $name . '-measurements-period-type-' . $this->station_guid . '").change();';
         return $this->get_script_box($content);
     }
 

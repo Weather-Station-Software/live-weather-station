@@ -456,7 +456,7 @@ class Handling {
 
                             if ($connect) {
                                 $this->update_stations_table($station);
-                                $datas = array();
+                                $measurements = array();
                                 $save = true;
                                 $service_name = null;
                                 $result = 'unknown reason...';
@@ -734,7 +734,7 @@ class Handling {
      */
     public function add_metaboxes() {
         if ($this->station_guid != 0) {
-            $data = $this->get_all_formatted_datas($this->station_guid);
+            $data = $this->get_all_formatted_measurements($this->station_guid);
             $station = $data['station'];
             $gid = strtolower(str_replace(':', '', $station['station_id']));
             // Left column

@@ -50,7 +50,7 @@ abstract class TXTGenerator {
     }
 
     /**
-     * Get formatted datas ready to send.
+     * Get formatted measurements ready to send.
      *
      * @param array $params Parameters for selecting data to send.
      * @param string $subformat Optional. The subformat requested.

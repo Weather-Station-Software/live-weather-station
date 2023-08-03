@@ -26,7 +26,7 @@ trait BaseClient {
     public $last_bloomsky_error = '';
 
     protected $bloomsky_client = null;
-    protected $bloomsky_datas = array();
+    protected $bloomsky_measurements = array();
 
 
     protected $facility = 'Weather Collector';
@@ -35,14 +35,14 @@ trait BaseClient {
 
 
     /**
-     * Store station's datas.
+     * Store station's measurements.
      *
      * @param array $stations The station list.
      * @since 3.6.0
      */
-    private function store_bloomsky_datas($stations) {
-        $datas = $this->bloomsky_datas ;
-        foreach($datas as &$device){
+    private function store_bloomsky_measurements($stations) {
+        $measurements = $this->bloomsky_measurements ;
+        foreach($measurements as &$device){
             if (!array_key_exists('device_id', $device)) {
                 continue;
             }
@@ -153,14 +153,14 @@ trait BaseClient {
     }
 
     /**
-     * Corrects station's datas.
+     * Corrects station's measurements.
      *
      * @since 3.6.0
      */
-    private function normalize_bloomsky_datas() {
+    private function normalize_bloomsky_measurements() {
         $result = array();
-        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($this->bloomsky_datas, true));
-        foreach($this->bloomsky_datas as $station) {
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($this->bloomsky_measurements, true));
+        foreach($this->bloomsky_measurements as $station) {
             if (is_array($station)) {
                 $temperature = 15.0;
                 $altitude = 0;
@@ -319,6 +319,6 @@ trait BaseClient {
                 }
             }
         }
-        $this->bloomsky_datas = $result;
+        $this->bloomsky_measurements = $result;
     }
 }

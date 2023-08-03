@@ -77,8 +77,8 @@ class Lcd extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_datasource() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_assoc_option_select('current-lcd-datas-module-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
-        $content .= $this->get_neutral_option_select('current-lcd-datas-measurement-'. $this->station_guid, __('Measurement', 'live-weather-station'));
+        $content .= $this->get_assoc_option_select('current-lcd-measurements-module-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
+        $content .= $this->get_neutral_option_select('current-lcd-measurements-measurement-'. $this->station_guid, __('Measurement', 'live-weather-station'));
         $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
         return $this->get_box('lws-datasource-id', $this->datasource_title, $content);
@@ -92,9 +92,9 @@ class Lcd extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_parameters() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('current-lcd-datas-design-'. $this->station_guid, __('Design', 'live-weather-station'), $this->get_lcd_design_js_array());
-        $content .= $this->get_key_value_option_select('current-lcd-datas-size-'. $this->station_guid, __('Size', 'live-weather-station'), $this->get_size_js_array());
-        $content .= $this->get_key_value_option_select('current-lcd-datas-speed-'. $this->station_guid, __('Speed', 'live-weather-station'), $this->get_lcd_speed_js_array());
+        $content .= $this->get_key_value_option_select('current-lcd-measurements-design-'. $this->station_guid, __('Design', 'live-weather-station'), $this->get_lcd_design_js_array());
+        $content .= $this->get_key_value_option_select('current-lcd-measurements-size-'. $this->station_guid, __('Size', 'live-weather-station'), $this->get_size_js_array());
+        $content .= $this->get_key_value_option_select('current-lcd-measurements-speed-'. $this->station_guid, __('Speed', 'live-weather-station'), $this->get_lcd_speed_js_array());
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }
@@ -115,42 +115,42 @@ class Lcd extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'qModule: "aggregated",';
         $content .= 'qMeasure: "aggregated",';
         $content .= 'qPostUrl: "' . LWS_AJAX_URL . '"});';
-        $content .= '$("#current-lcd-datas-module-' . $this->station_guid . '").change(function() {';
-        $content .= 'c' . $this->fingerprint . '.setModule(js_array_current_lcd_' . $this->station_guid . '[$("#current-lcd-datas-module-' . $this->station_guid . '").val()][1]);';
+        $content .= '$("#current-lcd-measurements-module-' . $this->station_guid . '").change(function() {';
+        $content .= 'c' . $this->fingerprint . '.setModule(js_array_current_lcd_' . $this->station_guid . '[$("#current-lcd-measurements-module-' . $this->station_guid . '").val()][1]);';
         $content .= 'var js_array_current_lcd_measurement_' . $this->station_guid . ' = js_array_current_lcd_' . $this->station_guid . '[$(this).val()][2];';
-        $content .= '$("#current-lcd-datas-measurement-' . $this->station_guid . '").html("");';
+        $content .= '$("#current-lcd-measurements-measurement-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_lcd_measurement_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#current-lcd-datas-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_lcd_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
-        $content .= '$( "#current-lcd-datas-measurement-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-lcd-measurements-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_lcd_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$( "#current-lcd-measurements-measurement-' . $this->station_guid . '" ).change();});';
         
-        $content .= '$("#current-lcd-datas-measurement-' . $this->station_guid . '").change(function() {';
-        $content .= 'c' . $this->fingerprint . '.setMeasure(js_array_current_lcd_' . $this->station_guid . '[$("#current-lcd-datas-module-' . $this->station_guid . '").val()][2][$("#current-lcd-datas-measurement-' . $this->station_guid . '").val()][1]);';
-        $content .= '$( "#current-lcd-datas-design-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-lcd-measurements-measurement-' . $this->station_guid . '").change(function() {';
+        $content .= 'c' . $this->fingerprint . '.setMeasure(js_array_current_lcd_' . $this->station_guid . '[$("#current-lcd-measurements-module-' . $this->station_guid . '").val()][2][$("#current-lcd-measurements-measurement-' . $this->station_guid . '").val()][1]);';
+        $content .= '$( "#current-lcd-measurements-design-' . $this->station_guid . '" ).change();});';
 
-        $content .= '$("#current-lcd-datas-design-' . $this->station_guid . '").change(function() {';
-        $content .= 'c' . $this->fingerprint . '.setDesign($("#current-lcd-datas-design-' . $this->station_guid . '").val());';
-        $content .= '$("#current-lcd-datas-size-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-lcd-measurements-design-' . $this->station_guid . '").change(function() {';
+        $content .= 'c' . $this->fingerprint . '.setDesign($("#current-lcd-measurements-design-' . $this->station_guid . '").val());';
+        $content .= '$("#current-lcd-measurements-size-' . $this->station_guid . '" ).change();});';
 
-        $content .= '$("#current-lcd-datas-size-' . $this->station_guid . '").change(function() {';
-        $content .= 'if ($("#current-lcd-datas-size-' . $this->station_guid . '").val()=="scalable") {';
+        $content .= '$("#current-lcd-measurements-size-' . $this->station_guid . '").change(function() {';
+        $content .= 'if ($("#current-lcd-measurements-size-' . $this->station_guid . '").val()=="scalable") {';
         $content .= 'c' . $this->fingerprint . '.setSize("small", false);';
         $content .= '$("#current-lcd-info-' . $this->station_guid . '").show();}';
-        $content .= 'else {c' . $this->fingerprint . '.setSize($("#current-lcd-datas-size-' . $this->station_guid . '").val(), false);';
+        $content .= 'else {c' . $this->fingerprint . '.setSize($("#current-lcd-measurements-size-' . $this->station_guid . '").val(), false);';
         $content .= '$("#current-lcd-info-' . $this->station_guid . '").hide();}';
-        $content .= '$("#current-lcd-datas-speed-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-lcd-measurements-speed-' . $this->station_guid . '" ).change();});';
 
-        $content .= '$("#current-lcd-datas-speed-' . $this->station_guid . '").change(function() {';
-        $content .= 'c' . $this->fingerprint . '.setCycleSpeed($("#current-lcd-datas-speed-' . $this->station_guid . '").val());';
+        $content .= '$("#current-lcd-measurements-speed-' . $this->station_guid . '").change(function() {';
+        $content .= 'c' . $this->fingerprint . '.setCycleSpeed($("#current-lcd-measurements-speed-' . $this->station_guid . '").val());';
         $content .= 'var sc_device = "' . $this->station_id . '";';
-        $content .= 'var sc_module = js_array_current_lcd_' . $this->station_guid . '[$("#current-lcd-datas-module-' . $this->station_guid . '").val()][1];';
-        $content .= 'var sc_measurement = js_array_current_lcd_' . $this->station_guid . '[$("#current-lcd-datas-module-' . $this->station_guid . '").val()][2][$("#current-lcd-datas-measurement-' . $this->station_guid . '").val()][1];';
-        $content .= 'var sc_design = $("#current-lcd-datas-design-' . $this->station_guid . '").val();';
-        $content .= 'var sc_size = $("#current-lcd-datas-size-' . $this->station_guid . '").val();';
-        $content .= 'var sc_speed = $("#current-lcd-datas-speed-' . $this->station_guid . '").val();';
+        $content .= 'var sc_module = js_array_current_lcd_' . $this->station_guid . '[$("#current-lcd-measurements-module-' . $this->station_guid . '").val()][1];';
+        $content .= 'var sc_measurement = js_array_current_lcd_' . $this->station_guid . '[$("#current-lcd-measurements-module-' . $this->station_guid . '").val()][2][$("#current-lcd-measurements-measurement-' . $this->station_guid . '").val()][1];';
+        $content .= 'var sc_design = $("#current-lcd-measurements-design-' . $this->station_guid . '").val();';
+        $content .= 'var sc_size = $("#current-lcd-measurements-size-' . $this->station_guid . '").val();';
+        $content .= 'var sc_speed = $("#current-lcd-measurements-speed-' . $this->station_guid . '").val();';
         $content .= 'var shortcode = "[live-weather-station-lcd device_id=\'"+sc_device+"\' module_id=\'"+sc_module+"\' measure_type=\'"+sc_measurement+"\' design=\'"+sc_design+"\' size=\'"+sc_size+"\' speed=\'"+sc_speed+"\']";';
-        $content .= '$("#current-lcd-datas-shortcode-' . $this->station_guid . '").html(shortcode);});';
+        $content .= '$("#current-lcd-measurements-shortcode-' . $this->station_guid . '").html(shortcode);});';
 
-        $content .= '$("#current-lcd-datas-module-' . $this->station_guid . '" ).change();';
+        $content .= '$("#current-lcd-measurements-module-' . $this->station_guid . '" ).change();';
 
         return $this->get_script_box($content);
     }

@@ -77,9 +77,9 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_datasource() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_assoc_option_select('current-icon-datas-module-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
-        $content .= $this->get_neutral_option_select('current-icon-datas-measurement-'. $this->station_guid, __('Measurement', 'live-weather-station'));
-        $content .= $this->get_neutral_option_select('current-icon-datas-element-'. $this->station_guid, __('Element', 'live-weather-station'));
+        $content .= $this->get_assoc_option_select('current-icon-measurements-module-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
+        $content .= $this->get_neutral_option_select('current-icon-measurements-measurement-'. $this->station_guid, __('Measurement', 'live-weather-station'));
+        $content .= $this->get_neutral_option_select('current-icon-measurements-element-'. $this->station_guid, __('Element', 'live-weather-station'));
         $content .= $this->get_placeholder_option_select();
         $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
@@ -94,11 +94,11 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_parameters() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_neutral_option_select('current-icon-datas-format-'. $this->station_guid, __('Value', 'live-weather-station'));
-        $content .= $this->get_key_value_option_select('current-icon-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(true, false), true, 'inline');
-        $content .= $this->get_key_value_option_select('current-icon-datas-animation-'. $this->station_guid, __('Animation type', 'live-weather-station'), $this->get_textual_animation_js_array(), true, 'none');
-        $content .= $this->get_key_value_option_select('current-icon-datas-speed-'. $this->station_guid, __('Animation speed', 'live-weather-station'), $this->get_lcd_speed_js_array(), true, '2000');
-        $content .= $this->get_color_picker('current-icon-datas-color-'. $this->station_guid, __('Animation color', 'live-weather-station'));
+        $content .= $this->get_neutral_option_select('current-icon-measurements-format-'. $this->station_guid, __('Value', 'live-weather-station'));
+        $content .= $this->get_key_value_option_select('current-icon-measurements-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(true, false), true, 'inline');
+        $content .= $this->get_key_value_option_select('current-icon-measurements-animation-'. $this->station_guid, __('Animation type', 'live-weather-station'), $this->get_textual_animation_js_array(), true, 'none');
+        $content .= $this->get_key_value_option_select('current-icon-measurements-speed-'. $this->station_guid, __('Animation speed', 'live-weather-station'), $this->get_lcd_speed_js_array(), true, '2000');
+        $content .= $this->get_color_picker('current-icon-measurements-color-'. $this->station_guid, __('Animation color', 'live-weather-station'));
         $content .= '<style>.wp-picker-container .wp-color-result.button {width: 100% !important;}</style>';
         $jsInitId = md5(random_bytes(18));
         $content .= lws_print_begin_script($jsInitId);
@@ -138,57 +138,57 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_script() {
         $content = '';
-        $content .= '$("#current-icon-datas-module-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#current-icon-measurements-module-' . $this->station_guid . '").change(function() {';
         $content .= 'var js_array_current_icon_measurement_' . $this->station_guid . ' = js_array_current_icon_' . $this->station_guid . '[$(this).val()][2];';
-        $content .= '$("#current-icon-datas-measurement-' . $this->station_guid . '").html("");';
+        $content .= '$("#current-icon-measurements-measurement-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_icon_measurement_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#current-icon-datas-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_icon_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
-        $content .= '$("#current-icon-datas-measurement-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#current-icon-datas-measurement-' . $this->station_guid . '").change(function() {';
-        $content .= 'var js_array_current_icon_element_' . $this->station_guid . ' = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-datas-module-' . $this->station_guid . '").val()][2][$(this).val()][2];';
-        $content .= '$("#current-icon-datas-element-' . $this->station_guid . '").html("");';
+        $content .= '$("#current-icon-measurements-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_icon_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$("#current-icon-measurements-measurement-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-icon-measurements-measurement-' . $this->station_guid . '").change(function() {';
+        $content .= 'var js_array_current_icon_element_' . $this->station_guid . ' = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-measurements-module-' . $this->station_guid . '").val()][2][$(this).val()][2];';
+        $content .= '$("#current-icon-measurements-element-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_icon_element_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#current-icon-datas-element-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_icon_element_' . $this->station_guid . '[i][0]+"</option>");});';
-        $content .= '$("#current-icon-datas-element-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#current-icon-datas-element-' . $this->station_guid . '").change(function() {';
-        $content .= 'var js_array_current_icon_format_' . $this->station_guid . ' = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-datas-module-' . $this->station_guid . '").val()][2][$("#current-icon-datas-measurement-' . $this->station_guid . '").val()][2][$(this).val()][2];';
-        $content .= '$("#current-icon-datas-format-' . $this->station_guid . '").html("");';
+        $content .= '$("#current-icon-measurements-element-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_icon_element_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$("#current-icon-measurements-element-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-icon-measurements-element-' . $this->station_guid . '").change(function() {';
+        $content .= 'var js_array_current_icon_format_' . $this->station_guid . ' = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-measurements-module-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-measurement-' . $this->station_guid . '").val()][2][$(this).val()][2];';
+        $content .= '$("#current-icon-measurements-format-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_icon_format_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#current-icon-datas-format-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_icon_format_' . $this->station_guid . '[i][0]+"</option>");});';
-        $content .= '$("#current-icon-datas-format-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#current-icon-datas-format-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#current-icon-datas-data-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#current-icon-datas-data-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#current-icon-datas-animation-' . $this->station_guid . '").prop("disabled", ($("#current-icon-datas-data-' . $this->station_guid . '").val()=="inline"));';
-        $content .= '$("#current-icon-datas-speed-' . $this->station_guid . '").prop("disabled", ($("#current-icon-datas-data-' . $this->station_guid . '").val()=="inline"));';
-        $content .= '$("#current-icon-datas-color-' . $this->station_guid . '").prop("disabled", ($("#current-icon-datas-data-' . $this->station_guid . '").val()=="inline"));';
-        $content .= '$("#current-icon-datas-animation-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#current-icon-datas-animation-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#current-icon-datas-speed-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#current-icon-datas-speed-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#current-icon-datas-color-' . $this->station_guid . '").change();});';
-        $content .= '$("#current-icon-datas-color-' . $this->station_guid . '" ).change(function() {';
-        $content .= 'var output = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-datas-module-' . $this->station_guid . '").val()][2][$("#current-icon-datas-measurement-' . $this->station_guid . '").val()][2][$("#current-icon-datas-element-' . $this->station_guid . '").val()][2][$("#current-icon-datas-format-' . $this->station_guid . '").val()][2];';
+        $content .= '$("#current-icon-measurements-format-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_icon_format_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$("#current-icon-measurements-format-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-icon-measurements-format-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#current-icon-measurements-data-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-icon-measurements-data-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#current-icon-measurements-animation-' . $this->station_guid . '").prop("disabled", ($("#current-icon-measurements-data-' . $this->station_guid . '").val()=="inline"));';
+        $content .= '$("#current-icon-measurements-speed-' . $this->station_guid . '").prop("disabled", ($("#current-icon-measurements-data-' . $this->station_guid . '").val()=="inline"));';
+        $content .= '$("#current-icon-measurements-color-' . $this->station_guid . '").prop("disabled", ($("#current-icon-measurements-data-' . $this->station_guid . '").val()=="inline"));';
+        $content .= '$("#current-icon-measurements-animation-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-icon-measurements-animation-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#current-icon-measurements-speed-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-icon-measurements-speed-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#current-icon-measurements-color-' . $this->station_guid . '").change();});';
+        $content .= '$("#current-icon-measurements-color-' . $this->station_guid . '" ).change(function() {';
+        $content .= 'var output = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-measurements-module-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-measurement-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-element-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-format-' . $this->station_guid . '").val()][2];';
         $content .= 'var sc_sc = "live-weather-station-icon";';
-        $content .= 'if ($("#current-icon-datas-data-' . $this->station_guid . '").val() == "ajax_refresh") {sc_sc = "live-weather-station-liveicon";}';
+        $content .= 'if ($("#current-icon-measurements-data-' . $this->station_guid . '").val() == "ajax_refresh") {sc_sc = "live-weather-station-liveicon";}';
         $content .= 'var sc_device = "' . $this->station_id . '";';
-        $content .= 'var sc_animation = $("#current-icon-datas-animation-' . $this->station_guid . '").val();';
-        $content .= 'var sc_speed = $("#current-icon-datas-speed-' . $this->station_guid . '").val();';
+        $content .= 'var sc_animation = $("#current-icon-measurements-animation-' . $this->station_guid . '").val();';
+        $content .= 'var sc_speed = $("#current-icon-measurements-speed-' . $this->station_guid . '").val();';
         $content .= 'var sc_color = "#000000";';
-        $content .= 'if ($("#current-icon-datas-color-' . $this->station_guid . '").val()!= "") {';
-        $content .= '  sc_color = $("#current-icon-datas-color-' . $this->station_guid . '").val();}';
-        $content .= 'var sc_module = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-datas-module-' . $this->station_guid . '").val()][1];';
-        $content .= 'var sc_measurement = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-datas-module-' . $this->station_guid . '").val()][2][$("#current-icon-datas-measurement-' . $this->station_guid . '").val()][1];';
-        $content .= 'var sc_element = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-datas-module-' . $this->station_guid . '").val()][2][$("#current-icon-datas-measurement-' . $this->station_guid . '").val()][2][$("#current-icon-datas-element-' . $this->station_guid . '").val()][1];';
-        $content .= 'var sc_format = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-datas-module-' . $this->station_guid . '").val()][2][$("#current-icon-datas-measurement-' . $this->station_guid . '").val()][2][$("#current-icon-datas-element-' . $this->station_guid . '").val()][2][$("#current-icon-datas-format-' . $this->station_guid . '").val()][1];';
+        $content .= 'if ($("#current-icon-measurements-color-' . $this->station_guid . '").val()!= "") {';
+        $content .= '  sc_color = $("#current-icon-measurements-color-' . $this->station_guid . '").val();}';
+        $content .= 'var sc_module = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-measurements-module-' . $this->station_guid . '").val()][1];';
+        $content .= 'var sc_measurement = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-measurements-module-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-measurement-' . $this->station_guid . '").val()][1];';
+        $content .= 'var sc_element = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-measurements-module-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-measurement-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-element-' . $this->station_guid . '").val()][1];';
+        $content .= 'var sc_format = js_array_current_icon_' . $this->station_guid . '[$("#current-icon-measurements-module-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-measurement-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-element-' . $this->station_guid . '").val()][2][$("#current-icon-measurements-format-' . $this->station_guid . '").val()][1];';
         $content .= 'var shortcode = "["+sc_sc+" device_id=\'"+sc_device+"\' module_id=\'"+sc_module+"\' measure_type=\'"+sc_measurement+"\' element=\'"+sc_element+"\' format=\'"+sc_format+"\' fx=\'"+sc_animation+"\' color=\'"+sc_color+"\' speed=\'"+sc_speed+"\']";';
-        $content .= '$("#current-icon-datas-output-' . $this->station_guid . '").html(output);';
-        $content .= '$("#current-icon-datas-shortcode-' . $this->station_guid . '").html(shortcode);});';
+        $content .= '$("#current-icon-measurements-output-' . $this->station_guid . '").html(output);';
+        $content .= '$("#current-icon-measurements-shortcode-' . $this->station_guid . '").html(shortcode);});';
 
-        $content .= '$("#current-icon-datas-color-' . $this->station_guid . '").parent().parent().parent().find("button").click(function() {';
-        $content .= '$("#current-icon-datas-color-' . $this->station_guid . '").change();});';
+        $content .= '$("#current-icon-measurements-color-' . $this->station_guid . '").parent().parent().parent().find("button").click(function() {';
+        $content .= '$("#current-icon-measurements-color-' . $this->station_guid . '").change();});';
 
-        $content .= '$("#current-icon-datas-module-' . $this->station_guid . '" ).change();';
+        $content .= '$("#current-icon-measurements-module-' . $this->station_guid . '" ).change();';
         return $this->get_script_box($content);
     }
 
@@ -199,7 +199,7 @@ class Icon extends \WeatherStation\Engine\Module\Maintainer {
      * @since 3.8.0
      */
     protected function get_preview() {
-        $id = 'current-icon-datas-output-'. $this->station_guid;
+        $id = 'current-icon-measurements-output-'. $this->station_guid;
         $content = '<div style="width:100%;padding:20px;" id="' . $id . '"></div>';
         $footer = __('This control will inherit from size and color when inserted in a post or a page.', 'live-weather-station');
         return $this->get_box('lws-preview-id', $this->preview_title, $content, $footer);

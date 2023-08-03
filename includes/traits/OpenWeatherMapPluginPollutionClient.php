@@ -22,7 +22,7 @@ trait PollutionClient {
     private $api_url = 'http://api.openweathermap.org/pollution/v1';
     private $indexes = ['o3', 'co'];//, 'so2', 'no2'];
     protected $facility = 'Pollution Collector';
-    protected $owm_datas;
+    protected $owm_measurements;
 
     /**
      * Get the distance between two points.
@@ -42,9 +42,9 @@ trait PollutionClient {
 
 
     /**
-     * Get pollution datas.
+     * Get pollution measurements.
      *
-     * @param   array   $data       Collected Netatmo datas.
+     * @param   array   $data       Collected Netatmo measurements.
      * @param   array   $stations   Optional. Test specifically these stations.
      * @return  string  Error string if any.
      * @since    2.5.0
@@ -80,7 +80,7 @@ trait PollutionClient {
      * @throws  \Exception
      * @since    2.7.0
      */
-    private function get_owm_datas_array($json_pollution, $station, $device_id, $index, $lat, $long) {
+    private function get_owm_measurements_array($json_pollution, $station, $device_id, $index, $lat, $long) {
         $pollution = json_decode($json_pollution['body'], true);
         if (!is_array($pollution)) {
             throw new \Exception('JSON / '.(string)$json_pollution['body']);
@@ -151,18 +151,18 @@ trait PollutionClient {
         return $result;
     }
     /**
-     * Get pollution's datas.
+     * Get pollution's measurements.
      *
-     * @return array OWM collected datas.
+     * @return array OWM collected measurements.
      * @since 2.7.0
      */
-    public function get_datas() {
+    public function get_measurements() {
         if (get_option('live_weather_station_owm_apikey') == '') {
-            $this->owm_datas = array ();
+            $this->owm_measurements = array ();
             return array ();
         }
         $this->synchronize_owm();
-        $this->owm_datas = array ();
+        $this->owm_measurements = array ();
         $stations = $this->get_located_operational_stations_list();
         foreach ($stations as $key => $station) {
             $st = array ();
@@ -181,7 +181,7 @@ trait PollutionClient {
                 if (Quota::verify($this->service_name, 'GET')) {
                     foreach ($this->indexes as $index) {
                         if (array_key_exists('loc_longitude', $station) && array_key_exists('loc_latitude', $station)) {
-                            $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index, 2), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
+                            $values = $this->get_owm_measurements_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index, 2), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
                         }
                         else {
                             Logger::warning($this->facility, $this->service_name, $st['device_id'], $st['device_name'], null, null, 135, 'Can\'t get pollution records for a station without coordinates.');
@@ -189,11 +189,11 @@ trait PollutionClient {
                         }
                         if (empty($values)) {
                             Quota::verify($this->service_name, 'GET');
-                            $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index, 1), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
+                            $values = $this->get_owm_measurements_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index, 1), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
                         }
                         if (empty($values)) {
                             Quota::verify($this->service_name, 'GET');
-                            $values = $this->get_owm_datas_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
+                            $values = $this->get_owm_measurements_array($this->get_pollution_data($st, $station['loc_latitude'], $station['loc_longitude'], $index), $station, $key, $index, $station['loc_latitude'], $station['loc_longitude']);
                         }
                         if (!empty($values)) {
                             foreach ($values as $k => $v) {
@@ -214,7 +214,7 @@ trait PollutionClient {
                     $st['place'] = $place;
                     if (!empty($st['dashboard_data'])) {
                         $st['dashboard_data']['time_utc'] = time();
-                        $this->owm_datas[] = $st;
+                        $this->owm_measurements[] = $st;
                         Logger::notice($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], 0, 'Data retrieved.');
                     } else {
                         Logger::notice($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], 0, 'Pollution data are empty or irrelevant.');
@@ -222,7 +222,7 @@ trait PollutionClient {
                 }
                 else {
                     Logger::warning($this->facility, $this->service_name, $st['device_id'], $st['device_name'], null, null, 0, 'Quota manager has forbidden to retrieve data.');
-                    $this->owm_datas = array ();
+                    $this->owm_measurements = array ();
                     return array ();
                 }
             }
@@ -241,10 +241,10 @@ trait PollutionClient {
                 }
             }
         }
-        if (!empty($this->owm_datas)) {
-            $this->store_owm_datas($this->owm_datas);
+        if (!empty($this->owm_measurements)) {
+            $this->store_owm_measurements($this->owm_measurements);
         }
-        return $this->owm_datas;
+        return $this->owm_measurements;
     }
 
     /**
@@ -256,7 +256,7 @@ trait PollutionClient {
     protected function __run($system){
         $cron_id = Watchdog::init_chrono(Watchdog::$owm_update_pollution_schedule_name);
         try {
-            $this->get_datas();
+            $this->get_measurements();
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting pollution data.');
         }
         catch (\Exception $ex) {

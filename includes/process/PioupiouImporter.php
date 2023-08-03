@@ -205,7 +205,7 @@ class PioupiouImporter extends Process {
         $this->bp_service = 'Pioupiou';
 
         global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_name, module_id, module_type, module_name FROM " . $table_name . " WHERE device_id = '" . $this->params['init']['station_id'] . "'";
         $rows = $wpdb->get_results($sql, ARRAY_A);
         $this->params['todo_ext'] = array();

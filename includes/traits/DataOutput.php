@@ -4866,7 +4866,7 @@ trait Output {
             $result .= '    var ' . $spinner . ' = new Spinner(opts).spin(target);' . PHP_EOL;
             $result .= '    var observer' . $uniq . ' = null;' . PHP_EOL;
             $args = array();
-            $args[] = 'action:"lws_query_graph_datas"';
+            $args[] = 'action:"lws_query_graph_measurements"';
             foreach ($this->graph_allowed_parameter as $param) {
                 if (array_key_exists($param, $_attributes)) {
                     $args[] = $param . ':"' . $_attributes[$param] . '"';
@@ -5395,7 +5395,7 @@ trait Output {
             $result .= '    var ' . $spinner . ' = new Spinner(opts).spin(target);' . PHP_EOL;
             $result .= '    var observer' . $uniq . ' = null;' . PHP_EOL;
             $args = array();
-            $args[] = 'action:"lws_query_ltgraph_datas"';
+            $args[] = 'action:"lws_query_ltgraph_measurements"';
             foreach ($this->ltgraph_allowed_parameter as $param) {
                 if (array_key_exists($param, $_attributes)) {
                     $args[] = $param . ':"' . $_attributes[$param] . '"';
@@ -5811,7 +5811,7 @@ trait Output {
             $result .= '    var ' . $spinner . ' = new Spinner(opts).spin(target);' . PHP_EOL;
             $result .= '    var observer' . $uniq . ' = null;' . PHP_EOL;
             $args = array();
-            $args[] = 'action:"lws_query_radial_datas"';
+            $args[] = 'action:"lws_query_radial_measurements"';
             foreach ($this->radial_allowed_parameter as $param) {
                 if (array_key_exists($param, $_attributes)) {
                     $args[] = $param . ':"' . $_attributes[$param] . '"';
@@ -7477,25 +7477,25 @@ trait Output {
         $measure_type = $attributes['measure_type'];
         $computed = !(bool)get_option('live_weather_station_measure_only') ;
         if ((strtolower($module_id) == 'outdoor') || (strtolower($measure_type) == 'aggregated' && OWM_Base_Collector::is_owm_current_module($module_id))) {
-            $raw_datas = $this->get_outdoor_datas($device_id, true);
+            $raw_measurements = $this->get_outdoor_measurements($device_id, true);
             $measure_type = 'outdoor';
         }
         elseif (strtolower($measure_type) == 'aggregated' && OWM_Base_Collector::is_owm_pollution_module($module_id)) {
-            $raw_datas = $this->get_pollution_datas($device_id, false);
+            $raw_measurements = $this->get_pollution_measurements($device_id, false);
             $measure_type = 'pollution';
         }
         elseif (strtolower($module_id) == 'aggregated') {
-            $raw_datas = $this->get_all_datas($device_id, true);
+            $raw_measurements = $this->get_all_measurements($device_id, true);
         }
         elseif (strtolower($module_id) == 'psychrometric') {
-            $raw_datas = $this->get_computed_datas($device_id, true);
+            $raw_measurements = $this->get_computed_measurements($device_id, true);
             $measure_type = 'psychrometric';
         }
         else {
-            $raw_datas = $this->get_module_datas($module_id, (OWM_Base_Collector::is_owm_pollution_module($module_id) ? false : true));
+            $raw_measurements = $this->get_module_measurements($module_id, (OWM_Base_Collector::is_owm_pollution_module($module_id) ? false : true));
         }
         $response = array();
-        if (array_key_exists('condition', $raw_datas)) {
+        if (array_key_exists('condition', $raw_measurements)) {
             $measure['min'] = 0;
             $measure['max'] = 0;
             $measure['value'] = 0;
@@ -7504,8 +7504,8 @@ trait Output {
             $measure['sub_unit'] = '';
             $measure['show_sub_unit'] = false;
             $measure['show_min_max'] = false;
-            $measure['title'] = __( 'Error code ' , 'live-weather-station').$raw_datas['condition']['value'];
-            if ($raw_datas['condition']['value'] == 3 || $raw_datas['condition']['value'] == 4) {
+            $measure['title'] = __( 'Error code ' , 'live-weather-station').$raw_measurements['condition']['value'];
+            if ($raw_measurements['condition']['value'] == 3 || $raw_measurements['condition']['value'] == 4) {
                 $save_locale = setlocale(LC_ALL,'');
                 setlocale(LC_ALL, lws_get_display_locale());
                 $measure['title'] = lws_iconv( __('No data', 'live-weather-station'));
@@ -7519,8 +7519,8 @@ trait Output {
             $response[] = $measure;
         }
         else {
-            $datas = $this->format_lcd_datas($raw_datas, $measure_type, $computed);
-            if ($datas['condition']['value'] != 0) {
+            $measurements = $this->format_lcd_measurements($raw_measurements, $measure_type, $computed);
+            if ($measurements['condition']['value'] != 0) {
                 $measure['min'] = 0;
                 $measure['max'] = 0;
                 $measure['value'] = 0;
@@ -7529,8 +7529,8 @@ trait Output {
                 $measure['sub_unit'] = '';
                 $measure['show_sub_unit'] = false;
                 $measure['show_min_max'] = false;
-                $measure['title'] = __( 'Error code ' , 'live-weather-station').$datas['condition']['value'];
-                if ($datas['condition']['value'] == 3 || $datas['condition']['value'] == 4) {
+                $measure['title'] = __( 'Error code ' , 'live-weather-station').$measurements['condition']['value'];
+                if ($measurements['condition']['value'] == 3 || $measurements['condition']['value'] == 4) {
                     $save_locale = setlocale(LC_ALL,'');
                     setlocale(LC_ALL, lws_get_display_locale());
                     $measure['title'] = lws_iconv( __('No data', 'live-weather-station'));
@@ -7544,7 +7544,7 @@ trait Output {
                 $response[] = $measure;
             }
             else {
-                $response = $datas['datas'];
+                $response = $measurements['measurements'];
             }
         }
         Cache::set_frontend($fingerprint, $response);
@@ -7585,7 +7585,7 @@ trait Output {
         if ($result) {
             return $result;
         }
-        $_result = $this->get_line_datas($_attributes, false, true);
+        $_result = $this->get_line_measurements($_attributes, false, true);
         $result = array();
         $val = array();
         if (count($_result) > 0) {
@@ -7606,7 +7606,7 @@ trait Output {
                 $result['meaningtype'] = $this->get_measurement_type($_attributes['measure_type'], true, '', true);
                 $result['unit'] = $this->output_unit($_attributes['measure_type'])['unit'];
                 $_attributes['measure_type'] = 'sos';
-                $_result = $this->get_line_datas($_attributes, false, true);
+                $_result = $this->get_line_measurements($_attributes, false, true);
                 if (count($_result) > 0) {
                     $master = $_result[0];
                     $result['station'] = $master['device_name'];
@@ -7957,7 +7957,7 @@ trait Output {
 
         $values = $this->justgage_value($attributes, true);
 
-        // DATAS
+        // measurements
         $result['value'] = $values['value'];
         if ($result['donut']) {
             $result['min'] = 0;
@@ -8027,7 +8027,7 @@ trait Output {
         $result .= '    var g'.$uniq.' = new JustGage('.$values.');'.PHP_EOL;
         $result .= '  setInterval(function() {'.PHP_EOL;
         $result .= '    var http = new XMLHttpRequest();'.PHP_EOL;
-        $result .= '    var params = "action=lws_query_justgage_datas";'.PHP_EOL;
+        $result .= '    var params = "action=lws_query_justgage_measurements";'.PHP_EOL;
         $result .= '    params = params+"&device_id='.$sc_device.'";'.PHP_EOL;
         $result .= '    params = params+"&module_id='.$sc_module.'";'.PHP_EOL;
         $result .= '    params = params+"&measure_type='.$sc_measurement.'";'.PHP_EOL;
@@ -8072,7 +8072,7 @@ trait Output {
         $value_aux = -9999;
         $alarm = false;
         $measure_type = $_attributes['measure_type'];
-        $_result = $this->get_line_datas($_attributes, false, true);
+        $_result = $this->get_line_measurements($_attributes, false, true);
         $val = array();
         if (count($_result) > 0) {
             foreach ($_result as $line) {
@@ -8084,7 +8084,7 @@ trait Output {
         if (empty($val)) {
             $result['type'] = $this->get_measurement_type($_attributes['measure_type']);
             $result['unit'] = $this->output_unit($_attributes['measure_type'])['unit'];
-            $_result = $this->get_line_datas($_attributes, false, true);
+            $_result = $this->get_line_measurements($_attributes, false, true);
             if (!empty($_result)) {
                 $master = $_result[0];
                 $module_type = $master['module_type'];
@@ -8645,7 +8645,7 @@ trait Output {
         }
         $result .= '        setInterval(function() {'.PHP_EOL;
         $result .= '          var http = new XMLHttpRequest();'.PHP_EOL;
-        $result .= '          var params = "action=lws_query_steelmeter_datas";'.PHP_EOL;
+        $result .= '          var params = "action=lws_query_steelmeter_measurements";'.PHP_EOL;
         $result .= '          params = params+"&device_id='.$sc_device.'";'.PHP_EOL;
         $result .= '          params = params+"&module_id='.$sc_module.'";'.PHP_EOL;
         $result .= '          params = params+"&measure_type='.$sc_measurement.'";'.PHP_EOL;
@@ -8740,7 +8740,7 @@ trait Output {
                         $_result['result'][$_attributes['measure_type']] = $url;
                         break;
                     default:
-                        $_result = $this->get_specific_datas($_attributes);
+                        $_result = $this->get_specific_measurements($_attributes);
                 }
         }
         $err = __('Malformed shortcode. Please verify it!', 'live-weather-station') ;
@@ -8753,7 +8753,7 @@ trait Output {
             $_att['module_id'] = $_attributes['device_id'];
             $_att['measure_type'] = 'loc_timezone';
             $_att['element'] = 'measure_value';
-            $tzone = $this->get_specific_datas($_att);
+            $tzone = $this->get_specific_measurements($_att);
             if (array_key_exists('result', $tzone)) {
                 if (array_key_exists($_att['measure_type'], $tzone['result'])) {
                     $tz = $tzone['result'][$_att['measure_type']];
@@ -11944,7 +11944,7 @@ trait Output {
      * @param string $id The device or module id.
      * @param string $type Optional. The type of widget.
      * @param boolean $obsolescence_filtering Optional. True if data must be filtered.
-     * @return array An array containing the formatted datas, ready to be read by widgets.
+     * @return array An array containing the formatted measurements, ready to be read by widgets.
      * @since 3.1.0
      */
     protected function get_widget_data($id, $type='outdoor', $obsolescence_filtering=false) {
@@ -11956,32 +11956,32 @@ trait Output {
         $result = array();
         switch ($type) {
             case 'ephemeris' :
-                $datas = $this->get_ephemeris_datas($id);
+                $measurements = $this->get_ephemeris_measurements($id);
                 break;
             case 'indoor':
-                $datas = $this->get_indoor_datas($id, $obsolescence_filtering);
+                $measurements = $this->get_indoor_measurements($id, $obsolescence_filtering);
                 break;
             case 'thunderstorm':
-                $datas = $this->get_thunderstorm_datas($id, $obsolescence_filtering);
+                $measurements = $this->get_thunderstorm_measurements($id, $obsolescence_filtering);
                 break;
             case 'solar':
-                $datas = $this->get_solar_datas($id, $obsolescence_filtering);
+                $measurements = $this->get_solar_measurements($id, $obsolescence_filtering);
                 break;
             default:
-                $datas = $this->get_outdoor_datas($id, $obsolescence_filtering);
+                $measurements = $this->get_outdoor_measurements($id, $obsolescence_filtering);
         }
         $err = 0 ;
         $ts = 0;
         $msg = __('Successful operation', 'live-weather-station');
-        if (count($datas)==0) {
+        if (count($measurements)==0) {
             $err = 3 ;
-            $msg = __('Database contains inconsistent datas', 'live-weather-station');
+            $msg = __('Database contains inconsistent measurements', 'live-weather-station');
         }
         else {
-            $result['name'] = $datas[0]['device_name'];
+            $result['name'] = $measurements[0]['device_name'];
             $key = '';
             $sub = array();
-            foreach ($datas as $data) {
+            foreach ($measurements as $data) {
                 if ($data['module_id'] != $key) {
                     if (!empty($sub)) {
                         $result['modules'][$key] = $sub;
@@ -11991,7 +11991,7 @@ trait Output {
                     $sub['name'] = DeviceManager::get_module_name($data['device_id'], $data['module_id']);
                     $sub['type'] = $data['module_type'];
                     $sub['id'] = $data['module_id'];
-                    $sub['datas'] = array();
+                    $sub['measurements'] = array();
                 }
                 $ssub = array();
                 $ssub['raw_value'] = $data['measure_value'];
@@ -12000,7 +12000,7 @@ trait Output {
                 $sub_ts = strtotime ($data['measure_timestamp']);
                 $ssub['timestamp'] = $sub_ts;
                 if ($sub_ts>$ts) {$ts=$sub_ts;}
-                $sub['datas'][$data['measure_type']] = $ssub;
+                $sub['measurements'][$data['measure_type']] = $ssub;
             }
             if (!empty($sub)) {
                 $result['modules'][$key] = $sub;
@@ -12109,15 +12109,15 @@ trait Output {
     }
 
     /**
-     * Format the selected datas for lcd usage.
+     * Format the selected measurements for lcd usage.
      *
-     * @param array $datas An array containing the selected datas.
+     * @param array $measurements An array containing the selected measurements.
      * @param string $measure_type The measure type(s) to include.
      * @param boolean  $computed Includes computed measures too.
-     * @return array An array containing the formatted datas, ready to be displayed by lcd controls.
+     * @return array An array containing the formatted measurements, ready to be displayed by lcd controls.
      * @since 1.0.0
      */
-    protected function format_lcd_datas($datas, $measure_type, $computed=false) {
+    protected function format_lcd_measurements($measurements, $measure_type, $computed=false) {
         $save_locale = setlocale(LC_ALL,'');
         setlocale(LC_ALL, lws_get_display_locale());
         $result = array();
@@ -12144,12 +12144,12 @@ trait Output {
         $has_wind_ref = false;
         $temperature_test = 0;
         $msg = __('Successful operation', 'live-weather-station');
-        if (count($datas)==0) {
+        if (count($measurements)==0) {
             $err = 3 ;
-            $msg = __('Database contains inconsistent datas', 'live-weather-station');
+            $msg = __('Database contains inconsistent measurements', 'live-weather-station');
         }
         else {
-            foreach ($datas as $data) {
+            foreach ($measurements as $data) {
                 $mtype = str_replace(array('_min', '_max', '_trend'), '',  str_replace(array('_day_min', '_day_max', '_day_trend'), '',  $data['measure_type']));
                 if (in_array($mtype, $this->min_max_trend)) {
                     if (strpos($data['measure_type'], '_day_max')) {
@@ -12203,7 +12203,7 @@ trait Output {
             elseif (array_key_exists('temperature', $values)) {
                 $temperature_test = $values['temperature'];
             }
-            foreach ($datas as $data) {
+            foreach ($measurements as $data) {
                 $unit = $this->output_unit($data['measure_type'], $data['module_type']);
                 $measure = array ();
                 $measure['min'] = 0;
@@ -12489,32 +12489,32 @@ trait Output {
             $msg = __('All data have been filtered: nothing to show', 'live-weather-station');
         }
         $result['condition'] = array('value' => $err, 'message' =>$msg);
-        $result['datas'] = $response;
+        $result['measurements'] = $response;
         setlocale(LC_ALL, $save_locale);
         return $result;
     }
 
     /**
-     * Format the selected datas for stickertags usage.
+     * Format the selected measurements for stickertags usage.
      *
-     * @param array $datas An array containing the selected datas.
-     * @return array The formatted datas, ready to be outputted as stickertags.txt file.
+     * @param array $measurements An array containing the selected measurements.
+     * @return array The formatted measurements, ready to be outputted as stickertags.txt file.
      * @since 3.0.0
      *
      */
-    protected function format_stickertags_data($datas) {
+    protected function format_stickertags_data($measurements) {
         $tz = get_option('timezone_string');
         $ts = time();
         $tr = 0;
         $hr = 0;
         $dr = 0;
         $values = array('', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '', '');
-        if (count($datas) == 0) {
+        if (count($measurements) == 0) {
             $values[0] = $this->get_time_from_utc($ts, $tz, 'H:i');
             $values[1] = $this->get_date_from_utc($ts, $tz, 'd/m/Y');
         }
         else {
-            foreach ($datas as $data) {
+            foreach ($measurements as $data) {
                 switch ($data['measure_type']) {
                     case 'last_seen':
                         if ($data['module_type'] == 'NAMain') {
@@ -12537,7 +12537,7 @@ trait Output {
             }
             $values[0] = $this->get_time_from_utc($ts, $tz, 'H:i');
             $values[1] = $this->get_date_from_utc($ts, $tz, 'd/m/Y');
-            foreach ($datas as $data) {
+            foreach ($measurements as $data) {
                 switch ($data['measure_type']) {
                     case 'temperature':
                         if (strtolower($data['module_type']) == 'namodule1') {
@@ -12622,14 +12622,14 @@ trait Output {
     }
 
     /**
-     * Format the selected datas for YoWindow usage.
+     * Format the selected measurements for YoWindow usage.
      *
-     * @param array $datas An array containing the selected datas.
-     * @return string The formatted datas, ready to be outputted as YoWindow.xml file.
+     * @param array $measurements An array containing the selected measurements.
+     * @return string The formatted measurements, ready to be outputted as YoWindow.xml file.
      * @since 3.3.0
      *
      */
-    protected function format_yowindow_data($datas) {
+    protected function format_yowindow_data($measurements) {
         $tr = 0;
         $hr = 0;
         $dr = 0;
@@ -12649,8 +12649,8 @@ trait Output {
         $rain_day_aggregated = null;
         $strike = false;
         $ts = time();
-        if (count($datas) > 0) {
-            foreach ($datas as $data) {
+        if (count($measurements) > 0) {
+            foreach ($measurements as $data) {
                 switch ($data['measure_type']) {
                     case 'last_seen':
                         if ($data['module_type'] == 'NAMain') {
@@ -12668,7 +12668,7 @@ trait Output {
                         break;
                 }
             }
-            foreach ($datas as $data) {
+            foreach ($measurements as $data) {
                 switch ($data['measure_type']) {
                     case 'temperature':
                         if (strtolower($data['module_type']) == 'namodule1') {
@@ -13171,17 +13171,17 @@ trait Output {
     }
 
     /**
-     * Get all formatted datas for a single station.
+     * Get all formatted measurements for a single station.
      *
      * @param integer $guid The device GUID.
      * @param boolean $obsolescence_filtering Don't return obsolete data.
      * @param boolean $full Optional. Get all data (not just only "writable").
-     * @return array An array containing all the formatted datas.
+     * @return array An array containing all the formatted measurements.
      * @since 3.0.0
      */
-    protected function get_all_formatted_datas($guid, $obsolescence_filtering=false, $full=false) {
+    protected function get_all_formatted_measurements($guid, $obsolescence_filtering=false, $full=false) {
         $station = $this->get_station_information_by_guid($guid);
-        $raw_data = $this->get_all_datas($station['station_id'], $obsolescence_filtering);
+        $raw_data = $this->get_all_measurements($station['station_id'], $obsolescence_filtering);
         $result = array();
         $result['station'] = $station;
         $result['module'] = array();

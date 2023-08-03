@@ -24,7 +24,7 @@ trait BaseClient {
     public $last_owm_error;
 
     /**
-     * Get station's datas.
+     * Get station's measurements.
      *
      * @param string $key The API key of the account.
      * @param string $plan The plan of the account.
@@ -139,13 +139,13 @@ trait BaseClient {
     }
 
     /**
-     * Store station's datas.
+     * Store station's measurements.
      *
-     * @param   array   $datas   OWM collected datas
+     * @param   array   $measurements   OWM collected measurements
      * @since    2.7.0
      */
-    private function store_owm_datas($datas) {
-        foreach ($datas as $data) {
+    private function store_owm_measurements($measurements) {
+        foreach ($measurements as $data) {
             $this->get_dashboard(9999, $data['device_id'], $data['device_name'], $data['_id'], $data['module_name'],
                 $data['type'], $data['data_type'], $data['dashboard_data'], $data['place']);
         }
