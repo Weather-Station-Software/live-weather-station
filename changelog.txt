@@ -466,8 +466,8 @@
 * Improvement: popup hint for bar & lines chart now displays dates with a consistent format.
 * Improvement: new colorization method for bar & line chart to improve readability.
 * Improvement: all scripts and stylesheets (including own plugin assets) can now be loaded from external CDN (settings in *system* tab).
-* Improvement: streamlined color management for graph with a single time serie.
-* Improvement: consistency in color inversion for graphs with more than one time serie.
+* Improvement: streamlined color management for graph with a single time series.
+* Improvement: consistency in color inversion for graphs with more than one time series.
 * Improvement: new actions labels in stations list view for better understanding.
 * Improvement: automatic value scale for noise level is now a "0-based - top" scale.
 * Improvement: Weather Station now supports stations without coordinates.

@@ -145,7 +145,7 @@ class Frontend {
         for ($i = 1; $i <= 8; $i++) {
             if (array_key_exists('device_id_'.$i, $_POST)) {
                 $attributes['device_id_'.$i] = wp_kses($_POST['device_id_'.$i], array());
-                foreach ($this->graph_allowed_serie as $param) {
+                foreach ($this->graph_allowed_series as $param) {
                     if (array_key_exists($param.'_'.$i, $_POST)) {
                         $attributes[$param.'_'.$i] = wp_kses($_POST[$param.'_'.$i], array());
                     }
@@ -172,7 +172,7 @@ class Frontend {
             }
         }
         for ($i = 1; $i <= 8; $i++) {
-            foreach ($this->ltgraph_allowed_serie as $param) {
+            foreach ($this->ltgraph_allowed_series as $param) {
                 if (array_key_exists($param.'_'.$i, $_POST)) {
                     $attributes[$param.'_'.$i] = wp_kses($_POST[$param.'_'.$i], array());
                 }
@@ -219,7 +219,7 @@ class Frontend {
         for ($i = 1; $i <= 8; $i++) {
             if (array_key_exists('device_id_'.$i, $_POST)) {
                 $attributes['device_id_'.$i] = wp_kses($_POST['device_id_'.$i], array());
-                foreach ($this->graph_allowed_serie as $param) {
+                foreach ($this->graph_allowed_series as $param) {
                     if (array_key_exists($param.'_'.$i, $_POST)) {
                         $attributes[$param.'_'.$i] = wp_kses($_POST[$param.'_'.$i], array());
                     }
@@ -242,7 +242,7 @@ class Frontend {
             }
         }
         for ($i = 1; $i <= 8; $i++) {
-            foreach ($this->ltgraph_allowed_serie as $param) {
+            foreach ($this->ltgraph_allowed_series as $param) {
                 if (array_key_exists($param.'_'.$i, $_POST)) {
                     $attributes[$param.'_'.$i] = wp_kses($_POST[$param.'_'.$i], array());
                 }
