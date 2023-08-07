@@ -408,66 +408,66 @@ class Outdoor extends Base {
         $timestamp = '';
         $tz = '';
         $location = '';
-        $datas = array();
+        $measurements = array();
         $current = array();
         if (array_key_exists('modules', $modules)) {
             foreach ($modules['modules'] as $module) {
                 switch ($module['type']) {
                     case 'NAMain':
-                        if (array_key_exists('pressure_sl', $module['datas'])){
+                        if (array_key_exists('pressure_sl', $module['measurements'])){
                             $NAMain = true;
-                            $datas['pressure_sl'] = array();
-                            $datas['pressure_sl']['value'] = $module['datas']['pressure_sl']['value'];
-                            $datas['pressure_sl']['unit'] = $module['datas']['pressure_sl']['unit']['unit'];
-                            $datas['pressure_sl']['icon'] = $this->output_iconic_value($module['datas']['pressure_sl']['raw_value'], 'pressure_sl', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['pressure_sl'] = array();
+                            $measurements['pressure_sl']['value'] = $module['measurements']['pressure_sl']['value'];
+                            $measurements['pressure_sl']['unit'] = $module['measurements']['pressure_sl']['unit']['unit'];
+                            $measurements['pressure_sl']['icon'] = $this->output_iconic_value($module['measurements']['pressure_sl']['raw_value'], 'pressure_sl', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_pressure = false ;
                         }
-                        if (array_key_exists('loc_latitude', $module['datas']) && array_key_exists('loc_longitude', $module['datas']) && array_key_exists('loc_altitude', $module['datas'])) {
-                            $location = $this->output_coordinate($module['datas']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
-                                $this->output_coordinate($module['datas']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
-                                $this->output_value($module['datas']['loc_altitude']['value'], 'loc_altitude', true) . ')';
+                        if (array_key_exists('loc_latitude', $module['measurements']) && array_key_exists('loc_longitude', $module['measurements']) && array_key_exists('loc_altitude', $module['measurements'])) {
+                            $location = $this->output_coordinate($module['measurements']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
+                                $this->output_coordinate($module['measurements']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
+                                $this->output_value($module['measurements']['loc_altitude']['value'], 'loc_altitude', true) . ')';
                         }
-                        if (array_key_exists('loc_timezone', $module['datas'])) {
-                            $tz = $module['datas']['loc_timezone']['value'];
+                        if (array_key_exists('loc_timezone', $module['measurements'])) {
+                            $tz = $module['measurements']['loc_timezone']['value'];
                         }
                         break;
                     case 'NAEphemer':
-                        if (array_key_exists('sunrise', $module['datas']) && array_key_exists('sunset', $module['datas'])) {
-                            $sunrise = $module['datas']['sunrise']['raw_value'];
-                            $sunset = $module['datas']['sunset']['raw_value'];
+                        if (array_key_exists('sunrise', $module['measurements']) && array_key_exists('sunset', $module['measurements'])) {
+                            $sunrise = $module['measurements']['sunrise']['raw_value'];
+                            $sunset = $module['measurements']['sunset']['raw_value'];
                         }
-                        if (array_key_exists('sunrise_a', $module['datas']) && array_key_exists('sunset_a', $module['datas'])) {
-                            $sunrise_a = $module['datas']['sunrise_a']['raw_value'];
-                            $sunset_a = $module['datas']['sunset_a']['raw_value'];
+                        if (array_key_exists('sunrise_a', $module['measurements']) && array_key_exists('sunset_a', $module['measurements'])) {
+                            $sunrise_a = $module['measurements']['sunrise_a']['raw_value'];
+                            $sunset_a = $module['measurements']['sunset_a']['raw_value'];
                         }
                         break;
                     case 'NAModule1': // Outdoor module
-                        if (array_key_exists('humidity', $module['datas'])) {
+                        if (array_key_exists('humidity', $module['measurements'])) {
                             $NAModule1 = true;
-                            $datas['humidity'] = array();
-                            $datas['humidity']['value'] = $module['datas']['humidity']['value'];
-                            $datas['humidity']['unit'] = $module['datas']['humidity']['unit']['unit'];
-                            $datas['humidity']['icon'] = $this->output_iconic_value($module['datas']['humidity']['raw_value'], 'humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['humidity'] = array();
+                            $measurements['humidity']['value'] = $module['measurements']['humidity']['value'];
+                            $measurements['humidity']['unit'] = $module['measurements']['humidity']['unit']['unit'];
+                            $measurements['humidity']['icon'] = $this->output_iconic_value($module['measurements']['humidity']['raw_value'], 'humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_humidity = false;
                         }
-                        if (array_key_exists('temperature', $module['datas'])) {
+                        if (array_key_exists('temperature', $module['measurements'])) {
                             $NAModule1 = true;
-                            $datas['temperature'] = array();
-                            $temp = $module['datas']['temperature']['raw_value'];
-                            $datas['temperature']['value'] = $module['datas']['temperature']['value'];
-                            $datas['temperature']['unit'] = $module['datas']['temperature']['unit']['unit'];
-                            $datas['temperature']['icon'] = $this->output_iconic_value($module['datas']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            if (array_key_exists('temperature_max', $module['datas']) && array_key_exists('temperature_min', $module['datas'])) {
-                                $datas['temperature_max'] = array();
-                                $datas['temperature_max']['value'] = $module['datas']['temperature_max']['value'];
-                                $datas['temperature_max']['unit'] = $module['datas']['temperature_max']['unit']['unit'];
-                                $datas['temperature_min'] = array();
-                                $datas['temperature_min']['value'] = $module['datas']['temperature_min']['value'];
-                                $datas['temperature_min']['unit'] = $module['datas']['temperature_min']['unit']['unit'];
+                            $measurements['temperature'] = array();
+                            $temp = $module['measurements']['temperature']['raw_value'];
+                            $measurements['temperature']['value'] = $module['measurements']['temperature']['value'];
+                            $measurements['temperature']['unit'] = $module['measurements']['temperature']['unit']['unit'];
+                            $measurements['temperature']['icon'] = $this->output_iconic_value($module['measurements']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            if (array_key_exists('temperature_max', $module['measurements']) && array_key_exists('temperature_min', $module['measurements'])) {
+                                $measurements['temperature_max'] = array();
+                                $measurements['temperature_max']['value'] = $module['measurements']['temperature_max']['value'];
+                                $measurements['temperature_max']['unit'] = $module['measurements']['temperature_max']['unit']['unit'];
+                                $measurements['temperature_min'] = array();
+                                $measurements['temperature_min']['value'] = $module['measurements']['temperature_min']['value'];
+                                $measurements['temperature_min']['unit'] = $module['measurements']['temperature_min']['unit']['unit'];
                                 $temp_multipart = true;
                             }
                         }
@@ -477,44 +477,44 @@ class Outdoor extends Base {
                         break;
                     case 'NAModule3': // Rain gauge
                         //$wug = ID::is_fake_modulex_id($module['id'], 3);
-                        if (array_key_exists('rain', $module['datas'])) {
+                        if (array_key_exists('rain', $module['measurements'])) {
                             $NAModule3 = true;
-                            $datas['rain'] = array();
-                            $datas['rain']['value'] = $module['datas']['rain']['value'];
-                            $datas['rain']['unit'] = $module['datas']['rain']['unit']['unit'];
-                            $datas['rain']['icon'] = $this->output_iconic_value($module['datas']['rain']['raw_value'], 'rain', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            if (array_key_exists('rain_day_aggregated', $module['datas'])) {
-                                $datas['rain_day_aggregated'] = array();
-                                $datas['rain_day_aggregated']['value'] = $module['datas']['rain_day_aggregated']['value'];
-                                $datas['rain_day_aggregated']['unit'] = $module['datas']['rain_day_aggregated']['unit']['unit'];
+                            $measurements['rain'] = array();
+                            $measurements['rain']['value'] = $module['measurements']['rain']['value'];
+                            $measurements['rain']['unit'] = $module['measurements']['rain']['unit']['unit'];
+                            $measurements['rain']['icon'] = $this->output_iconic_value($module['measurements']['rain']['raw_value'], 'rain', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            if (array_key_exists('rain_day_aggregated', $module['measurements'])) {
+                                $measurements['rain_day_aggregated'] = array();
+                                $measurements['rain_day_aggregated']['value'] = $module['measurements']['rain_day_aggregated']['value'];
+                                $measurements['rain_day_aggregated']['unit'] = $module['measurements']['rain_day_aggregated']['unit']['unit'];
                                 $rain_multipart = true;
                             }
                         }
-                        elseif (array_key_exists('rain_day_aggregated', $module['datas'])) {
+                        elseif (array_key_exists('rain_day_aggregated', $module['measurements'])) {
                             $NAModule3 = true;
-                            $datas['rain'] = array();
-                            $datas['rain']['value'] = $module['datas']['rain_day_aggregated']['value'];
-                            $datas['rain']['unit'] = $module['datas']['rain_day_aggregated']['unit']['unit'];
-                            $datas['rain']['icon'] = $this->output_iconic_value($module['datas']['rain_day_aggregated']['raw_value'], 'rain_day_aggregated', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['rain'] = array();
+                            $measurements['rain']['value'] = $module['measurements']['rain_day_aggregated']['value'];
+                            $measurements['rain']['unit'] = $module['measurements']['rain_day_aggregated']['unit']['unit'];
+                            $measurements['rain']['icon'] = $this->output_iconic_value($module['measurements']['rain_day_aggregated']['raw_value'], 'rain_day_aggregated', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_rain = false;
                         }
                         break;
                     case 'NAModule2': // Wind gauge
-                        if (array_key_exists('windangle', $module['datas']) && array_key_exists('windstrength', $module['datas'])) {
+                        if (array_key_exists('windangle', $module['measurements']) && array_key_exists('windstrength', $module['measurements'])) {
                             $NAModule2 = true;
-                            $datas['windangle'] = array();
-                            $datas['windangle']['value'] = $module['datas']['windangle']['value'];
-                            $datas['windangle']['from'] = $this->get_angle_full_text($module['datas']['windangle']['value']);
-                            $datas['windangle']['icon'] = $this->output_iconic_value($module['datas']['windangle']['raw_value'], 'windangle', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            $datas['windstrength'] = array();
-                            $datas['windstrength']['value'] = $module['datas']['windstrength']['value'];
-                            $datas['windstrength']['unit'] = $module['datas']['windstrength']['unit']['unit'];
-                            if (array_key_exists('windstrength_day_max', $module['datas'])) {
-                                $datas['windstrength_max'] = array();
-                                $datas['windstrength_max']['value'] = $module['datas']['windstrength_day_max']['value'];
-                                $datas['windstrength_max']['unit'] = $module['datas']['windstrength_day_max']['unit']['unit'];
+                            $measurements['windangle'] = array();
+                            $measurements['windangle']['value'] = $module['measurements']['windangle']['value'];
+                            $measurements['windangle']['from'] = $this->get_angle_full_text($module['measurements']['windangle']['value']);
+                            $measurements['windangle']['icon'] = $this->output_iconic_value($module['measurements']['windangle']['raw_value'], 'windangle', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['windstrength'] = array();
+                            $measurements['windstrength']['value'] = $module['measurements']['windstrength']['value'];
+                            $measurements['windstrength']['unit'] = $module['measurements']['windstrength']['unit']['unit'];
+                            if (array_key_exists('windstrength_day_max', $module['measurements'])) {
+                                $measurements['windstrength_max'] = array();
+                                $measurements['windstrength_max']['value'] = $module['measurements']['windstrength_day_max']['value'];
+                                $measurements['windstrength_max']['unit'] = $module['measurements']['windstrength_day_max']['unit']['unit'];
                                 $wind_multipart = true;
                             }
                         }
@@ -523,87 +523,87 @@ class Outdoor extends Base {
                         }
                         break;
                     case 'NAModule5': // Solar
-                        if (array_key_exists('uv_index', $module['datas'])) {
+                        if (array_key_exists('uv_index', $module['measurements'])) {
                             $NAModule5 = true;
-                            $datas['uv_index'] = array();
-                            $datas['uv_index']['value'] = $module['datas']['uv_index']['value'];
-                            $datas['uv_index']['unit'] = __('UV', 'live-weather-station');
-                            $datas['uv_index']['icon'] = $this->output_iconic_value($module['datas']['uv_index']['raw_value'], 'uv_index', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['uv_index'] = array();
+                            $measurements['uv_index']['value'] = $module['measurements']['uv_index']['value'];
+                            $measurements['uv_index']['unit'] = __('UV', 'live-weather-station');
+                            $measurements['uv_index']['icon'] = $this->output_iconic_value($module['measurements']['uv_index']['raw_value'], 'uv_index', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_uv = false;
                         }
                         break;
                     case 'NAModule7': // Thunderstorm
-                        if (array_key_exists('strike_count', $module['datas'])) {
+                        if (array_key_exists('strike_count', $module['measurements'])) {
                             $NAModule7 = true;
-                            $datas['strike'] = array();
-                            $datas['strike']['value'] = $module['datas']['strike_count']['value'];
-                            $datas['strike']['unit'] = $module['datas']['strike_count']['unit']['unit'];
-                            $datas['strike']['icon'] = $this->output_iconic_value($module['datas']['strike_count']['raw_value'], 'strike_count', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['strike'] = array();
+                            $measurements['strike']['value'] = $module['measurements']['strike_count']['value'];
+                            $measurements['strike']['unit'] = $module['measurements']['strike_count']['unit']['unit'];
+                            $measurements['strike']['icon'] = $this->output_iconic_value($module['measurements']['strike_count']['raw_value'], 'strike_count', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
-                        elseif (array_key_exists('strike_instant', $module['datas'])) {
+                        elseif (array_key_exists('strike_instant', $module['measurements'])) {
                             $NAModule7 = true;
-                            $datas['strike'] = array();
-                            $datas['strike']['value'] = $module['datas']['strike_instant']['value'];
-                            $datas['strike']['unit'] = $module['datas']['strike_instant']['unit']['unit'];
-                            $datas['strike']['icon'] = $this->output_iconic_value($module['datas']['strike']['raw_value'], 'strike', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['strike'] = array();
+                            $measurements['strike']['value'] = $module['measurements']['strike_instant']['value'];
+                            $measurements['strike']['unit'] = $module['measurements']['strike_instant']['unit']['unit'];
+                            $measurements['strike']['icon'] = $this->output_iconic_value($module['measurements']['strike']['raw_value'], 'strike', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_strike = false;
                         }
-                        if (array_key_exists('strike_bearing', $module['datas'])) {
-                            $bearing = $this->get_angle_text($module['datas']['strike_bearing']['raw_value']) . ', ';
+                        if (array_key_exists('strike_bearing', $module['measurements'])) {
+                            $bearing = $this->get_angle_text($module['measurements']['strike_bearing']['raw_value']) . ', ';
                         }
                         else {
                             $bearing = '';
                         }
-                        if (array_key_exists('strike_distance', $module['datas'])) {
-                            $datas['strike_distance'] = array();
-                            $datas['strike_distance']['value'] = $bearing . $module['datas']['strike_distance']['value'];
-                            $datas['strike_distance']['unit'] = $module['datas']['strike_distance']['unit']['unit'];
-                            $datas['strike_distance']['icon'] = $this->output_iconic_value($module['datas']['strike_distance']['raw_value'], 'strike_distance', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            if (time() - $module['datas']['strike_distance']['timestamp'] < 3 * HOUR_IN_SECONDS) {
-                                $datas['strike_distance']['ts'] = self::get_time_from_utc($module['datas']['strike_distance']['timestamp'], $tz);
+                        if (array_key_exists('strike_distance', $module['measurements'])) {
+                            $measurements['strike_distance'] = array();
+                            $measurements['strike_distance']['value'] = $bearing . $module['measurements']['strike_distance']['value'];
+                            $measurements['strike_distance']['unit'] = $module['measurements']['strike_distance']['unit']['unit'];
+                            $measurements['strike_distance']['icon'] = $this->output_iconic_value($module['measurements']['strike_distance']['raw_value'], 'strike_distance', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            if (time() - $module['measurements']['strike_distance']['timestamp'] < 3 * HOUR_IN_SECONDS) {
+                                $measurements['strike_distance']['ts'] = self::get_time_from_utc($module['measurements']['strike_distance']['timestamp'], $tz);
                             }
                             else {
-                                $datas['strike_distance']['ts'] = '';
+                                $measurements['strike_distance']['ts'] = '';
                             }
                         }
                         else {
-                            $datas['strike_distance'] = array();
-                            $datas['strike_distance']['value'] = '';
-                            $datas['strike_distance']['unit'] = '';
-                            $datas['strike_distance']['ts'] = '';
-                            $datas['strike_distance']['icon'] = $this->output_iconic_value(0, 'strike_distance', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['strike_distance'] = array();
+                            $measurements['strike_distance']['value'] = '';
+                            $measurements['strike_distance']['unit'] = '';
+                            $measurements['strike_distance']['ts'] = '';
+                            $measurements['strike_distance']['icon'] = $this->output_iconic_value(0, 'strike_distance', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         break;
                     case 'NACurrent': // Current weather -> OpenWeatherMap
                         $NACurrent = true;
-                        if (array_key_exists('is_day', $module['datas'])) {
-                            $datas['day']['value'] = ($module['datas']['is_day']['value'] == 1 ? 'day' : 'night');
+                        if (array_key_exists('is_day', $module['measurements'])) {
+                            $measurements['day']['value'] = ($module['measurements']['is_day']['value'] == 1 ? 'day' : 'night');
                         } else {
-                            $datas['day']['value'] = '';
+                            $measurements['day']['value'] = '';
                         }
-                        if (array_key_exists('weather', $module['datas'])) {
-                            $datas['weather']['value'] = $module['datas']['weather']['value'];
-                            $datas['weather']['icon'] = $this->output_iconic_value($datas['day']['value'] . '-' . $datas['weather']['value'], 'weather', null, true, 'inherit', 'lws-widget-big-wiicon-' . $id);
+                        if (array_key_exists('weather', $module['measurements'])) {
+                            $measurements['weather']['value'] = $module['measurements']['weather']['value'];
+                            $measurements['weather']['icon'] = $this->output_iconic_value($measurements['day']['value'] . '-' . $measurements['weather']['value'], 'weather', null, true, 'inherit', 'lws-widget-big-wiicon-' . $id);
                         }
                         else {
                             $show_current = false;
                         }
-                        if (array_key_exists('cloudiness', $module['datas'])) {
-                            $datas['cloudcover']['value'] = $module['datas']['cloudiness']['value'];
-                            $datas['cloudcover']['unit'] = $module['datas']['cloudiness']['unit']['unit'];
-                            $datas['cloudcover']['icon'] = $this->output_iconic_value($module['datas']['cloudiness']['raw_value'], 'cloudiness', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('cloudiness', $module['measurements'])) {
+                            $measurements['cloudcover']['value'] = $module['measurements']['cloudiness']['value'];
+                            $measurements['cloudcover']['unit'] = $module['measurements']['cloudiness']['unit']['unit'];
+                            $measurements['cloudcover']['icon'] = $this->output_iconic_value($module['measurements']['cloudiness']['raw_value'], 'cloudiness', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_cloud_cover = false;
                         }
-                        if (array_key_exists('snow', $module['datas'])) {
-                            $datas['snow']['value'] = $module['datas']['snow']['value'];
-                            $datas['snow']['unit'] = $module['datas']['snow']['unit']['unit'];
-                            $datas['snow']['icon'] = $this->output_iconic_value($module['datas']['snow']['raw_value'], 'snow', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('snow', $module['measurements'])) {
+                            $measurements['snow']['value'] = $module['measurements']['snow']['value'];
+                            $measurements['snow']['unit'] = $module['measurements']['snow']['unit']['unit'];
+                            $measurements['snow']['icon'] = $this->output_iconic_value($module['measurements']['snow']['raw_value'], 'snow', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_snow = false;
@@ -613,18 +613,18 @@ class Outdoor extends Base {
                     case 'NAComputed': // Computed values
                         $NAComputed = true;
                         // Dew point & frost point
-                        if (array_key_exists('temperature_ref', $module['datas']) &&
-                            array_key_exists('dew_point', $module['datas']) &&
-                            array_key_exists('frost_point', $module['datas'])) {
-                            $temp_ref = $module['datas']['temperature_ref']['raw_value'];
-                            $datas['dew'] = array();
-                            $datas['dew']['value'] = $module['datas']['dew_point']['value'];
-                            $datas['dew']['unit'] = $module['datas']['dew_point']['unit']['unit'];
-                            $datas['frost'] = array();
-                            $datas['frost']['value'] = $module['datas']['frost_point']['value'];
-                            $datas['frost']['unit'] = $module['datas']['frost_point']['unit']['unit'];
-                            $datas['dew']['icon'] = $this->output_iconic_value($module['datas']['dew_point']['raw_value'], 'dew_point', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            $datas['frost']['icon'] = $this->output_iconic_value($module['datas']['frost_point']['raw_value'], 'frost_point', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('temperature_ref', $module['measurements']) &&
+                            array_key_exists('dew_point', $module['measurements']) &&
+                            array_key_exists('frost_point', $module['measurements'])) {
+                            $temp_ref = $module['measurements']['temperature_ref']['raw_value'];
+                            $measurements['dew'] = array();
+                            $measurements['dew']['value'] = $module['measurements']['dew_point']['value'];
+                            $measurements['dew']['unit'] = $module['measurements']['dew_point']['unit']['unit'];
+                            $measurements['frost'] = array();
+                            $measurements['frost']['value'] = $module['measurements']['frost_point']['value'];
+                            $measurements['frost']['unit'] = $module['measurements']['frost_point']['unit']['unit'];
+                            $measurements['dew']['icon'] = $this->output_iconic_value($module['measurements']['dew_point']['raw_value'], 'dew_point', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['frost']['icon'] = $this->output_iconic_value($module['measurements']['frost_point']['raw_value'], 'frost_point', null, true, 'inherit', 'lws-widget-icon-' . $id);
                             $show_dew = $show_dew && $this->is_valid_dew_point($temp_ref);
                             $show_frost = $show_frost && $this->is_valid_frost_point($temp_ref);
                         } else {
@@ -632,29 +632,29 @@ class Outdoor extends Base {
                             $show_frost = false;
                         }
                         // Heat index, humidex, Summer Simmer & Steadman
-                        if (array_key_exists('temperature_ref', $module['datas']) &&
-                            array_key_exists('humidity_ref', $module['datas']) &&
-                            array_key_exists('dew_point', $module['datas']) &&
-                            array_key_exists('heat_index', $module['datas']) &&
-                            array_key_exists('summer_simmer', $module['datas']) &&
-                            array_key_exists('steadman', $module['datas']) &&
-                            array_key_exists('humidex', $module['datas'])
+                        if (array_key_exists('temperature_ref', $module['measurements']) &&
+                            array_key_exists('humidity_ref', $module['measurements']) &&
+                            array_key_exists('dew_point', $module['measurements']) &&
+                            array_key_exists('heat_index', $module['measurements']) &&
+                            array_key_exists('summer_simmer', $module['measurements']) &&
+                            array_key_exists('steadman', $module['measurements']) &&
+                            array_key_exists('humidex', $module['measurements'])
                         ) {
-                            $temp_ref = $module['datas']['temperature_ref']['raw_value'];
-                            $hum_ref = $module['datas']['humidity_ref']['raw_value'];
-                            $dew_ref = $module['datas']['dew_point']['raw_value'];
-                            $datas['heat'] = array();
-                            $datas['heat']['value'] = $module['datas']['heat_index']['value'];
-                            $datas['humidex'] = array();
-                            $datas['humidex']['value'] = $module['datas']['humidex']['value'];
-                            $datas['summer_simmer'] = array();
-                            $datas['summer_simmer']['value'] = $module['datas']['summer_simmer']['value'];
-                            $datas['steadman'] = array();
-                            $datas['steadman']['value'] = $module['datas']['steadman']['value'];
-                            $datas['heat']['icon'] = $this->output_iconic_value($module['datas']['heat_index']['raw_value'], 'heat_index', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            $datas['humidex']['icon'] = $this->output_iconic_value($module['datas']['humidex']['raw_value'], 'humidex', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            $datas['summer_simmer']['icon'] = $this->output_iconic_value($module['datas']['summer_simmer']['raw_value'], 'summer_simmer', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            $datas['steadman']['icon'] = $this->output_iconic_value($module['datas']['steadman']['raw_value'], 'steadman', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $temp_ref = $module['measurements']['temperature_ref']['raw_value'];
+                            $hum_ref = $module['measurements']['humidity_ref']['raw_value'];
+                            $dew_ref = $module['measurements']['dew_point']['raw_value'];
+                            $measurements['heat'] = array();
+                            $measurements['heat']['value'] = $module['measurements']['heat_index']['value'];
+                            $measurements['humidex'] = array();
+                            $measurements['humidex']['value'] = $module['measurements']['humidex']['value'];
+                            $measurements['summer_simmer'] = array();
+                            $measurements['summer_simmer']['value'] = $module['measurements']['summer_simmer']['value'];
+                            $measurements['steadman'] = array();
+                            $measurements['steadman']['value'] = $module['measurements']['steadman']['value'];
+                            $measurements['heat']['icon'] = $this->output_iconic_value($module['measurements']['heat_index']['raw_value'], 'heat_index', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['humidex']['icon'] = $this->output_iconic_value($module['measurements']['humidex']['raw_value'], 'humidex', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['summer_simmer']['icon'] = $this->output_iconic_value($module['measurements']['summer_simmer']['raw_value'], 'summer_simmer', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['steadman']['icon'] = $this->output_iconic_value($module['measurements']['steadman']['raw_value'], 'steadman', null, true, 'inherit', 'lws-widget-icon-' . $id);
                             $show_heat = $show_heat && $this->is_valid_heat_index($temp_ref, $hum_ref, $dew_ref);
                             $show_humidex = $show_humidex && $this->is_valid_humidex($temp_ref, $hum_ref, $dew_ref);
                             $show_steadman = $show_steadman && $this->is_valid_steadman($temp_ref, $hum_ref);
@@ -666,23 +666,23 @@ class Outdoor extends Base {
                             $show_summer_simmer = false;
                         }
                         // Wind chill
-                        if (array_key_exists('temperature_ref', $module['datas']) &&
-                            array_key_exists('wind_chill', $module['datas'])
+                        if (array_key_exists('temperature_ref', $module['measurements']) &&
+                            array_key_exists('wind_chill', $module['measurements'])
                         ) {
-                            $temp_ref = $module['datas']['temperature_ref']['raw_value'];
-                            $datas['windchill'] = array();
-                            $datas['windchill']['value'] = $module['datas']['wind_chill']['value'];
-                            $datas['windchill']['icon'] = $this->output_iconic_value($module['datas']['wind_chill']['raw_value'], 'wind_chill', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            $show_windchill = $show_windchill && $this->is_valid_wind_chill($temp_ref, $datas['windchill']['value']);
+                            $temp_ref = $module['measurements']['temperature_ref']['raw_value'];
+                            $measurements['windchill'] = array();
+                            $measurements['windchill']['value'] = $module['measurements']['wind_chill']['value'];
+                            $measurements['windchill']['icon'] = $this->output_iconic_value($module['measurements']['wind_chill']['raw_value'], 'wind_chill', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $show_windchill = $show_windchill && $this->is_valid_wind_chill($temp_ref, $measurements['windchill']['value']);
                         } else {
                             $show_windchill = false;
                         }
                         // Cloud ceiling
-                        if (array_key_exists('cloud_ceiling', $module['datas'])) {
-                            $datas['cloudceiling'] = array();
-                            $datas['cloudceiling']['value'] = $module['datas']['cloud_ceiling']['value'];
-                            $datas['cloudceiling']['unit'] = $module['datas']['cloud_ceiling']['unit']['unit'];
-                            $datas['cloudceiling']['icon'] = $this->output_iconic_value($module['datas']['cloud_ceiling']['raw_value'], 'cloud_ceiling', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('cloud_ceiling', $module['measurements'])) {
+                            $measurements['cloudceiling'] = array();
+                            $measurements['cloudceiling']['value'] = $module['measurements']['cloud_ceiling']['value'];
+                            $measurements['cloudceiling']['unit'] = $module['measurements']['cloud_ceiling']['unit']['unit'];
+                            $measurements['cloudceiling']['icon'] = $this->output_iconic_value($module['measurements']['cloud_ceiling']['raw_value'], 'cloud_ceiling', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         } else {
                             $show_cloud_ceiling = false;
                         }
@@ -694,61 +694,61 @@ class Outdoor extends Base {
         $has_current = (count($current) > 0);
         if (!$NAMain && $has_current) {
             $NAMain = true;
-            if (array_key_exists('pressure', $current['datas'])) {
-                $datas['pressure_sl'] = array();
-                $datas['pressure_sl']['value'] = $current['datas']['pressure_sl']['value'];
-                $datas['pressure_sl']['unit'] = $current['datas']['pressure_sl']['unit']['unit'];
-                $datas['pressure_sl']['icon'] = $this->output_iconic_value($current['datas']['pressure_sl']['raw_value'], 'pressure_sl', null, true, 'inherit', 'lws-widget-icon-' . $id);
+            if (array_key_exists('pressure', $current['measurements'])) {
+                $measurements['pressure_sl'] = array();
+                $measurements['pressure_sl']['value'] = $current['measurements']['pressure_sl']['value'];
+                $measurements['pressure_sl']['unit'] = $current['measurements']['pressure_sl']['unit']['unit'];
+                $measurements['pressure_sl']['icon'] = $this->output_iconic_value($current['measurements']['pressure_sl']['raw_value'], 'pressure_sl', null, true, 'inherit', 'lws-widget-icon-' . $id);
             } else {
                 $show_pressure = false;
             }
-            if (array_key_exists('loc_latitude', $current['datas']) && array_key_exists('loc_longitude', $current['datas']) && array_key_exists('loc_altitude', $current['datas'])) {
-                $location = $this->output_coordinate($current['datas']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
-                    $this->output_coordinate($current['datas']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
-                    $this->output_value($current['datas']['loc_altitude']['value'], 'loc_altitude', true) . ')';
+            if (array_key_exists('loc_latitude', $current['measurements']) && array_key_exists('loc_longitude', $current['measurements']) && array_key_exists('loc_altitude', $current['measurements'])) {
+                $location = $this->output_coordinate($current['measurements']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
+                    $this->output_coordinate($current['measurements']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
+                    $this->output_value($current['measurements']['loc_altitude']['value'], 'loc_altitude', true) . ')';
             }
         }
         if (!$NAModule1 && $has_current) {
             $NAModule1 = true;
-            if (array_key_exists('humidity', $current['datas'])) {
-                $datas['humidity'] = array();
-                $datas['humidity']['value'] = $current['datas']['humidity']['value'];
-                $datas['humidity']['unit'] = $current['datas']['humidity']['unit']['unit'];
-                $datas['humidity']['icon'] = $this->output_iconic_value($current['datas']['humidity']['raw_value'], 'humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
+            if (array_key_exists('humidity', $current['measurements'])) {
+                $measurements['humidity'] = array();
+                $measurements['humidity']['value'] = $current['measurements']['humidity']['value'];
+                $measurements['humidity']['unit'] = $current['measurements']['humidity']['unit']['unit'];
+                $measurements['humidity']['icon'] = $this->output_iconic_value($current['measurements']['humidity']['raw_value'], 'humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
             } else {
                 $show_humidity = false;
             }
-            if (array_key_exists('temperature', $current['datas'])) {
-                $datas['temperature'] = array();
-                $temp = $current['datas']['temperature']['raw_value'];
-                $datas['temperature']['value'] = $current['datas']['temperature']['value'];
-                $datas['temperature']['unit'] = $current['datas']['temperature']['unit']['unit'];
-                $datas['temperature']['icon'] = $this->output_iconic_value($current['datas']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
+            if (array_key_exists('temperature', $current['measurements'])) {
+                $measurements['temperature'] = array();
+                $temp = $current['measurements']['temperature']['raw_value'];
+                $measurements['temperature']['value'] = $current['measurements']['temperature']['value'];
+                $measurements['temperature']['unit'] = $current['measurements']['temperature']['unit']['unit'];
+                $measurements['temperature']['icon'] = $this->output_iconic_value($current['measurements']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
             } else {
                 $show_temperature = false;
             }
         }
         if (!$NAModule2 && $has_current) {
             $NAModule2 = true;
-            if (array_key_exists('windangle', $current['datas']) && array_key_exists('windstrength', $current['datas'])) {
-                $datas['windangle'] = array();
-                $datas['windangle']['value'] = $current['datas']['windangle']['value'];
-                $datas['windangle']['from'] = $this->get_angle_full_text($current['datas']['windangle']['value']);
-                $datas['windangle']['icon'] = $this->output_iconic_value($current['datas']['windangle']['raw_value'], 'windangle', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                $datas['windstrength'] = array();
-                $datas['windstrength']['value'] = $current['datas']['windstrength']['value'];
-                $datas['windstrength']['unit'] = $current['datas']['windstrength']['unit']['unit'];
+            if (array_key_exists('windangle', $current['measurements']) && array_key_exists('windstrength', $current['measurements'])) {
+                $measurements['windangle'] = array();
+                $measurements['windangle']['value'] = $current['measurements']['windangle']['value'];
+                $measurements['windangle']['from'] = $this->get_angle_full_text($current['measurements']['windangle']['value']);
+                $measurements['windangle']['icon'] = $this->output_iconic_value($current['measurements']['windangle']['raw_value'], 'windangle', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                $measurements['windstrength'] = array();
+                $measurements['windstrength']['value'] = $current['measurements']['windstrength']['value'];
+                $measurements['windstrength']['unit'] = $current['measurements']['windstrength']['unit']['unit'];
             } else {
                 $show_wind = false;
             }
         }
         if (!$NAModule3 && $has_current) {
             $NAModule3 = true;
-            if (array_key_exists('rain', $current['datas'])) {
-                $datas['rain'] = array();
-                $datas['rain']['value'] = $current['datas']['rain']['value'];
-                $datas['rain']['unit'] = $current['datas']['rain']['unit']['unit'];
-                $datas['rain']['icon'] = $this->output_iconic_value($current['datas']['rain']['raw_value'], 'rain', null, true, 'inherit', 'lws-widget-icon-' . $id);
+            if (array_key_exists('rain', $current['measurements'])) {
+                $measurements['rain'] = array();
+                $measurements['rain']['value'] = $current['measurements']['rain']['value'];
+                $measurements['rain']['unit'] = $current['measurements']['rain']['unit']['unit'];
+                $measurements['rain']['icon'] = $this->output_iconic_value($current['measurements']['rain']['raw_value'], 'rain', null, true, 'inherit', 'lws-widget-icon-' . $id);
             } else {
                 $show_rain = false;
             }
@@ -788,7 +788,7 @@ class Outdoor extends Base {
             $show_windchill = false ;
             $show_cloud_ceiling = false ;
         }
-        if (array_key_exists('temperature', $datas)) {
+        if (array_key_exists('temperature', $measurements)) {
             $show_snow = ($show_snow && $this->is_valid_snow($temp));
             $show_rain = ($show_rain && $this->is_valid_rain($temp));
         }
@@ -796,7 +796,7 @@ class Outdoor extends Base {
             //
         }
         if ($show_current) {
-            $show_current = ($datas['weather']['value'] != 0);
+            $show_current = ($measurements['weather']['value'] != 0);
         }
         if (get_option('live_weather_station_wind_semantics') == 0) {
             $windsemantic = 'towards';

@@ -30,7 +30,7 @@ trait Client {
      * @since 3.6.0
      */
     public function authentication($apikey) {
-        $this->get_datas(false, $apikey);
+        $this->get_measurements(false, $apikey);
         if ($this->last_ambient_error == '') {
             update_option('live_weather_station_ambient_key', $apikey);
             update_option('live_weather_station_ambient_connected', 1);
@@ -44,18 +44,18 @@ trait Client {
     }
 
     /**
-     * Get station's datas.
+     * Get station's measurements.
      *
      * @param boolean $store Optional. Store the data.
      * @param string|boolean $apikey Optional. New API key if needed.
      *
-     * @return array The ambient collected datas.
+     * @return array The ambient collected measurements.
      * @since 3.6.0
      */
-    public function get_datas($store=true, $apikey=false) {
+    public function get_measurements($store=true, $apikey=false) {
         $currentkey = get_option('live_weather_station_ambient_key');
         $this->last_ambient_error = '';
-        $this->ambient_datas = array();
+        $this->ambient_measurements = array();
         if ($currentkey != '' || $apikey) {
             if ($apikey) {
                 $currentkey = $apikey;
@@ -63,10 +63,10 @@ trait Client {
             $this->ambient_client = new AMBTApiClient($currentkey);
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
-                    $this->ambient_datas = $this->ambient_client->getData();
-                    $this->normalize_ambient_datas();
+                    $this->ambient_measurements = $this->ambient_client->getData();
+                    $this->normalize_ambient_measurements();
                     if ($store) {
-                        $this->store_ambient_datas($this->get_all_ambt_stations());
+                        $this->store_ambient_measurements($this->get_all_ambt_stations());
                     }
                     Logger::notice($this->facility, $this->service_name, null, null, null, null, 0, 'Data retrieved.');
                 }
@@ -89,7 +89,7 @@ trait Client {
                 return array();
             }
         }
-        return $this->ambient_datas;
+        return $this->ambient_measurements;
     }
 
     /**
@@ -102,9 +102,9 @@ trait Client {
     protected function __get_stations(){
         $result = array();
         try {
-            $this->get_datas(false);
-            $datas = $this->ambient_datas ;
-            foreach($datas as $station){
+            $this->get_measurements(false);
+            $measurements = $this->ambient_measurements ;
+            foreach($measurements as $station){
                 $result[] = array('device_id' => $station['device_id'], 'station_name' => $station['fixed_device_name'], 'installed' => false);
             }
             foreach ($this->get_all_ambt_stations() as $item) {
@@ -134,7 +134,7 @@ trait Client {
         $err = '';
         try {
             $err = 'collecting weather';
-            $this->get_datas();
+            $this->get_measurements();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
             $weather->compute(LWS_AMBT_SID);

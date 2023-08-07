@@ -142,7 +142,7 @@ class LineNdjsonImporter extends LineImporter {
             $this->params['init']['end_date'] = $end;
         }
 
-        $station = $this->get_station_informations_by_station_id($this->params['init']['station_id']);
+        $station = $this->get_station_information_by_station_id($this->params['init']['station_id']);
         $this->params['init']['station_name'] = $station['station_name'];
         $this->params['init']['station_type'] = $station['station_type'];
 

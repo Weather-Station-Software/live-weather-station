@@ -322,69 +322,69 @@ class Thunderstorm extends Base {
         $timestamp = '';
         $tz = '';
         $location = '';
-        $datas = array();
+        $measurements = array();
         $current = array();
         if (array_key_exists('modules', $modules)) {
             foreach ($modules['modules'] as $module) {
                 switch ($module['type']) {
                     case 'NAMain':
-                        if (array_key_exists('loc_latitude', $module['datas']) && array_key_exists('loc_longitude', $module['datas']) && array_key_exists('loc_altitude', $module['datas'])) {
-                            $location = $this->output_coordinate($module['datas']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
-                                $this->output_coordinate($module['datas']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
-                                $this->output_value($module['datas']['loc_altitude']['value'], 'loc_altitude', true) . ')';
+                        if (array_key_exists('loc_latitude', $module['measurements']) && array_key_exists('loc_longitude', $module['measurements']) && array_key_exists('loc_altitude', $module['measurements'])) {
+                            $location = $this->output_coordinate($module['measurements']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
+                                $this->output_coordinate($module['measurements']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
+                                $this->output_value($module['measurements']['loc_altitude']['value'], 'loc_altitude', true) . ')';
                         }
-                        if (array_key_exists('loc_timezone', $module['datas'])) {
-                            $tz = $module['datas']['loc_timezone']['value'];
+                        if (array_key_exists('loc_timezone', $module['measurements'])) {
+                            $tz = $module['measurements']['loc_timezone']['value'];
                         }
                         break;
                     case 'NAEphemer':
-                        if (array_key_exists('sunrise', $module['datas']) && array_key_exists('sunset', $module['datas'])) {
-                            $sunrise = $module['datas']['sunrise']['raw_value'];
-                            $sunset = $module['datas']['sunset']['raw_value'];
+                        if (array_key_exists('sunrise', $module['measurements']) && array_key_exists('sunset', $module['measurements'])) {
+                            $sunrise = $module['measurements']['sunrise']['raw_value'];
+                            $sunset = $module['measurements']['sunset']['raw_value'];
                         }
-                        if (array_key_exists('sunrise_a', $module['datas']) && array_key_exists('sunset_a', $module['datas'])) {
-                            $sunrise_a = $module['datas']['sunrise_a']['raw_value'];
-                            $sunset_a = $module['datas']['sunset_a']['raw_value'];
+                        if (array_key_exists('sunrise_a', $module['measurements']) && array_key_exists('sunset_a', $module['measurements'])) {
+                            $sunrise_a = $module['measurements']['sunrise_a']['raw_value'];
+                            $sunset_a = $module['measurements']['sunset_a']['raw_value'];
                         }
                         break;
                     case 'NAModule7': // Thunderstorm
-                        if (array_key_exists('strike_count', $module['datas'])) {
+                        if (array_key_exists('strike_count', $module['measurements'])) {
                             $NAModule7 = true;
-                            $datas['strikecount'] = array();
-                            $datas['strikecount']['value'] = $module['datas']['strike_count']['value'];
-                            $datas['strikecount']['unit'] = __('/ 3 hr', 'live-weather-station');
-                            $datas['strikecount']['icon'] = $this->output_iconic_value($module['datas']['strike_count']['raw_value'], 'strike_count', null, true, 'inherit', 'lws-widget-big-icon-' . $id);
-                            $datas['strikecount']['icon2'] = $this->output_iconic_value($module['datas']['strike_count']['raw_value'], 'strike_count', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['strikecount'] = array();
+                            $measurements['strikecount']['value'] = $module['measurements']['strike_count']['value'];
+                            $measurements['strikecount']['unit'] = __('/ 3 hr', 'live-weather-station');
+                            $measurements['strikecount']['icon'] = $this->output_iconic_value($module['measurements']['strike_count']['raw_value'], 'strike_count', null, true, 'inherit', 'lws-widget-big-icon-' . $id);
+                            $measurements['strikecount']['icon2'] = $this->output_iconic_value($module['measurements']['strike_count']['raw_value'], 'strike_count', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
-                        elseif (array_key_exists('strike_instant', $module['datas'])) {
+                        elseif (array_key_exists('strike_instant', $module['measurements'])) {
                             $NAModule7 = true;
-                            $datas['strikecount'] = array();
-                            $datas['strikecount']['value'] = $module['datas']['strike_instant']['value'];
-                            $datas['strikecount']['unit'] = __('now', 'live-weather-station');
-                            $datas['strikecount']['icon'] = $this->output_iconic_value($module['datas']['strike_instant']['raw_value'], 'strike_instant', null, true, 'inherit', 'lws-widget-big-icon-' . $id);
-                            $datas['strikecount']['icon2'] = $this->output_iconic_value($module['datas']['strike_instant']['raw_value'], 'strike_instant', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['strikecount'] = array();
+                            $measurements['strikecount']['value'] = $module['measurements']['strike_instant']['value'];
+                            $measurements['strikecount']['unit'] = __('now', 'live-weather-station');
+                            $measurements['strikecount']['icon'] = $this->output_iconic_value($module['measurements']['strike_instant']['raw_value'], 'strike_instant', null, true, 'inherit', 'lws-widget-big-icon-' . $id);
+                            $measurements['strikecount']['icon2'] = $this->output_iconic_value($module['measurements']['strike_instant']['raw_value'], 'strike_instant', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_strikecount = false;
                         }
 
-                        if (array_key_exists('strike_bearing', $module['datas'])) {
+                        if (array_key_exists('strike_bearing', $module['measurements'])) {
                             $NAModule7 = true;
-                            $datas['strikebearing'] = array();
-                            $datas['strikebearing']['value'] = $module['datas']['strike_count']['value'];
-                            $datas['strikebearing']['unit'] = $this->get_angle_text($module['datas']['strike_bearing']['raw_value']);
-                            $datas['strikebearing']['icon'] = $this->output_iconic_value($module['datas']['strike_bearing']['raw_value'], 'strike_bearing', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['strikebearing'] = array();
+                            $measurements['strikebearing']['value'] = $module['measurements']['strike_count']['value'];
+                            $measurements['strikebearing']['unit'] = $this->get_angle_text($module['measurements']['strike_bearing']['raw_value']);
+                            $measurements['strikebearing']['icon'] = $this->output_iconic_value($module['measurements']['strike_bearing']['raw_value'], 'strike_bearing', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_strikebearing = false;
                         }
-                        if (array_key_exists('strike_distance', $module['datas'])) {
-                            $datas['strikedistance'] = array();
-                            $datas['strikedistance']['value'] = $module['datas']['strike_distance']['value'];
-                            $datas['strikedistance']['unit'] = $module['datas']['strike_distance']['unit']['unit'];
-                            $datas['strikedistance']['ts1'] = self::get_date_from_utc($module['datas']['strike_distance']['timestamp'], $tz);
-                            $datas['strikedistance']['ts2'] = self::get_time_from_utc($module['datas']['strike_distance']['timestamp'], $tz);
-                            $datas['strikedistance']['icon'] = $this->output_iconic_value($module['datas']['strike_distance']['raw_value'], 'strike_distance', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('strike_distance', $module['measurements'])) {
+                            $measurements['strikedistance'] = array();
+                            $measurements['strikedistance']['value'] = $module['measurements']['strike_distance']['value'];
+                            $measurements['strikedistance']['unit'] = $module['measurements']['strike_distance']['unit']['unit'];
+                            $measurements['strikedistance']['ts1'] = self::get_date_from_utc($module['measurements']['strike_distance']['timestamp'], $tz);
+                            $measurements['strikedistance']['ts2'] = self::get_time_from_utc($module['measurements']['strike_distance']['timestamp'], $tz);
+                            $measurements['strikedistance']['icon'] = $this->output_iconic_value($module['measurements']['strike_distance']['raw_value'], 'strike_distance', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_strikedistance = false;

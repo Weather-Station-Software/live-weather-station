@@ -30,7 +30,7 @@ trait Client {
      * @since 3.6.0
      */
     public function authentication($apikey) {
-        $this->get_datas(false, $apikey);
+        $this->get_measurements(false, $apikey);
         if ($this->last_bloomsky_error == '') {
             update_option('live_weather_station_bloomsky_key', $apikey);
             update_option('live_weather_station_bloomsky_connected', 1);
@@ -44,18 +44,18 @@ trait Client {
     }
 
     /**
-     * Get station's datas.
+     * Get station's measurements.
      *
      * @param boolean $store Optional. Store the data.
      * @param string|boolean $apikey Optional. New API key if needed.
      *
-     * @return array The bloomsky collected datas.
+     * @return array The bloomsky collected measurements.
      * @since 3.6.0
      */
-    public function get_datas($store=true, $apikey=false) {
+    public function get_measurements($store=true, $apikey=false) {
         $currentkey = get_option('live_weather_station_bloomsky_key');
         $this->last_bloomsky_error = '';
-        $this->bloomsky_datas = array();
+        $this->bloomsky_measurements = array();
         if ($currentkey != '' || $apikey) {
             if ($apikey) {
                 $currentkey = $apikey;
@@ -65,10 +65,10 @@ trait Client {
             $this->bloomsky_client = new BSKYApiClient($header);
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
-                    $this->bloomsky_datas = $this->bloomsky_client->getData();
-                    $this->normalize_bloomsky_datas();
+                    $this->bloomsky_measurements = $this->bloomsky_client->getData();
+                    $this->normalize_bloomsky_measurements();
                     if ($store) {
-                        $this->store_bloomsky_datas($this->get_all_bsky_stations());
+                        $this->store_bloomsky_measurements($this->get_all_bsky_stations());
                     }
                     Logger::notice($this->facility, $this->service_name, null, null, null, null, 0, 'Data retrieved.');
                 }
@@ -91,7 +91,7 @@ trait Client {
                 return array();
             }
         }
-        return $this->bloomsky_datas;
+        return $this->bloomsky_measurements;
     }
 
     /**
@@ -105,9 +105,9 @@ trait Client {
     protected function __get_stations($store=false){
         $result = array();
         try {
-            $this->get_datas(false);
-            $datas = $this->bloomsky_datas ;
-            foreach($datas as $station){
+            $this->get_measurements(false);
+            $measurements = $this->bloomsky_measurements ;
+            foreach($measurements as $station){
                 $result[] = array('device_id' => $station['device_id'], 'station_name' => $station['device_name'], 'installed' => false);
             }
             if ($store) {
@@ -150,7 +150,7 @@ trait Client {
         $err = '';
         try {
             $err = 'collecting weather';
-            $this->get_datas();
+            $this->get_measurements();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
             $weather->compute(LWS_BSKY_SID);

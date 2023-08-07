@@ -466,8 +466,8 @@
 * Improvement: popup hint for bar & lines chart now displays dates with a consistent format.
 * Improvement: new colorization method for bar & line chart to improve readability.
 * Improvement: all scripts and stylesheets (including own plugin assets) can now be loaded from external CDN (settings in *system* tab).
-* Improvement: streamlined color management for graph with a single time serie.
-* Improvement: consistency in color inversion for graphs with more than one time serie.
+* Improvement: streamlined color management for graph with a single time series.
+* Improvement: consistency in color inversion for graphs with more than one time series.
 * Improvement: new actions labels in stations list view for better understanding.
 * Improvement: automatic value scale for noise level is now a "0-based - top" scale.
 * Improvement: Weather Station now supports stations without coordinates.
@@ -708,7 +708,7 @@
 * New: twilight for dawn and dusk (civil, nautical and astronomical) are computed and available in textual data.
 * New: ephemeris widget can now display standard, civil, nautical and astronomical daylight times.
 * New: support for the ***Healthy Home Coach*** from Netatmo.
-* New: a screen (reachable from 'versions' box) displays servers informations useful for local file-based stations.
+* New: a screen (reachable from 'versions' box) displays servers information useful for local file-based stations.
 * New: a dashboard widget displays statistics on cache efficiency.
 * Improvement: all widgets and controls can now be cached (settings in *system* tab).
 * Improvement: outdoor weather and ephemeris widgets can have background images for day, twilight and night.
@@ -993,7 +993,7 @@ After upgrading, please, review all your settings.
 * Improvement: pressure displayed in inHg have now reasonable accuracy with 2 decimals.
 * Improvement: the data collecting method for Netatmo & OpenWeatherMap is now "bullet-proof".
 * Improvement: an improved connection mode that should avoid unwanted disconnections (on Netatmo servers temporary errors).
-* Improvement: refresh cycle for live controls goes from 5 minutes to 2 minutes - datas are fresher than ever ;).
+* Improvement: refresh cycle for live controls goes from 5 minutes to 2 minutes - measurements are fresher than ever ;).
 * Improvement: the *About* box is now much more readable.
 * Bug fix: some typos in french translation.
 

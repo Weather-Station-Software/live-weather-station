@@ -13,9 +13,9 @@
             <?php if ( $show_current ):?>
                 <!-- CURRENT CONDITIONS -->
                 <div class="lws-widget-header lws-widget-header-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Current thunderstorm conditions', 'live-weather-station').'"' : ''); ?>>
-                    <?php echo $datas['strikecount']['icon']; ?>
-                    <?php if (array_key_exists('strikecount',$datas)):?>
-                        <?php echo $datas['strikecount']['value']; ?>
+                    <?php echo $measurements['strikecount']['icon']; ?>
+                    <?php if (array_key_exists('strikecount',$measurements)):?>
+                        <?php echo $measurements['strikecount']['value']; ?>
                     <?php endif;?>
                 </div>
                 <?php if (($show_title || $subtitle != 0) || $show_strikedistance || $show_strikebearing || $show_strikecount):?>
@@ -45,15 +45,15 @@
                 <!-- COUNT -->
                 <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Strike distance', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"><?php echo $datas['strikecount']['value']; ?></div>
+                        <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"><?php echo $measurements['strikecount']['value']; ?></div>
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"></div>
                     </div>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
-                        <?php echo $datas['strikecount']['icon2']; ?>
+                        <?php echo $measurements['strikecount']['icon2']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
-                            <div class="lws-widget-small-value-up lws-widget-small-value-up-<?php echo $id ?>"><?php echo $datas['strikecount']['unit']; ?></div>
+                            <div class="lws-widget-small-value-up lws-widget-small-value-up-<?php echo $id ?>"><?php echo $measurements['strikecount']['unit']; ?></div>
                             <div class="lws-widget-small-unit-up lws-widget-small-unit-up-<?php echo $id ?>"></div>
                         </div>
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
@@ -70,11 +70,11 @@
                 <!-- BEARING -->
                 <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Last strike bearing', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
-                        <?php echo $datas['strikebearing']['icon']; ?>
+                        <?php echo $measurements['strikebearing']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                            <div class="lws-widget-med-value lws-widget-med-value-<?php echo $id ?>"><?php echo $datas['strikebearing']['unit']; ?></div>
+                            <div class="lws-widget-med-value lws-widget-med-value-<?php echo $id ?>"><?php echo $measurements['strikebearing']['unit']; ?></div>
                             <div class="lws-widget-med-unit lws-widget-med-unit-<?php echo $id ?>"></div>
                         </div>
                     </div>
@@ -87,20 +87,20 @@
                 <!-- DISTANCE -->
                 <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Last strike distance', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"><?php echo $datas['strikedistance']['value']; ?></div>
-                        <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"><?php echo $datas['strikedistance']['unit']; ?></div>
+                        <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"><?php echo $measurements['strikedistance']['value']; ?></div>
+                        <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"><?php echo $measurements['strikedistance']['unit']; ?></div>
                     </div>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
-                        <?php echo $datas['strikedistance']['icon']; ?>
+                        <?php echo $measurements['strikedistance']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
                             <div class="lws-widget-small-value-up lws-widget-small-value-up-<?php echo $id ?>"></div>
-                            <div class="lws-widget-small-unit-up lws-widget-small-unit-up-<?php echo $id ?>"><?php echo $datas['strikedistance']['ts1']; ?></div>
+                            <div class="lws-widget-small-unit-up lws-widget-small-unit-up-<?php echo $id ?>"><?php echo $measurements['strikedistance']['ts1']; ?></div>
                         </div>
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
                             <div class="lws-widget-small-value-down lws-widget-small-value-down-<?php echo $id ?>"></div>
-                            <div class="lws-widget-small-unit-down lws-widget-small-unit-down-<?php echo $id ?>"><?php echo $datas['strikedistance']['ts2']; ?></div>
+                            <div class="lws-widget-small-unit-down lws-widget-small-unit-down-<?php echo $id ?>"><?php echo $measurements['strikedistance']['ts2']; ?></div>
                         </div>
                     </div>
                 </div>

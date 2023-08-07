@@ -28,7 +28,7 @@ class Stats
      */
     private function count_operational_stations() {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_id FROM ".$table_name ;
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -48,7 +48,7 @@ class Stats
      */
     private function count_operational_modules() {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT module_id FROM ".$table_name ;
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -69,7 +69,7 @@ class Stats
     private function count_operational_measures() {
         global $wpdb;
         $result = array();
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT COUNT(*) FROM ".$table_name . ";";
         try {
             $query = (array)$wpdb->get_results($sql);

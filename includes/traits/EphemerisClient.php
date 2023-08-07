@@ -21,7 +21,7 @@ trait Client {
 
     use Id_Manipulation, Datetime_Conversion, Dashboard_Manipulation;
 
-    protected $ephemeris_datas;
+    protected $ephemeris_measurements;
     protected $facility = 'Ephemeris Computer';
     protected $service_name = null;
 

@@ -5633,7 +5633,7 @@ msgstr ""
 #: includes/traits/DBQuery.php:672 includes/traits/DBQuery.php:698
 #: includes/traits/DBQuery.php:730 includes/traits/DataOutput.php:9020
 #: includes/traits/DataOutput.php:9187
-msgid "Database contains inconsistent datas"
+msgid "Database contains inconsistent measurements"
 msgstr ""
 
 #: includes/traits/DBQuery.php:2104

@@ -78,11 +78,11 @@ class Timelapse extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_datasource() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('yearly-timelapse-datas-period-type-'. $this->station_guid, __('Period type', 'live-weather-station'), $this->get_timelapse_period_type_js_array(), true, 'sliding-month');
-        $content .= $this->get_neutral_option_select('yearly-timelapse-datas-period-value-'. $this->station_guid, __('Period', 'live-weather-station'));
-        $content .= $this->get_assoc_option_select('yearly-timelapse-datas-module-1-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
-        $content .= $this->get_neutral_option_select('yearly-timelapse-datas-measurement-1-'. $this->station_guid, __('Measurement', 'live-weather-station'));
-        $content .= $this->get_neutral_option_select('yearly-timelapse-datas-set-1-'. $this->station_guid, __('Dataset', 'live-weather-station'), false, false);
+        $content .= $this->get_key_value_option_select('yearly-timelapse-measurements-period-type-'. $this->station_guid, __('Period type', 'live-weather-station'), $this->get_timelapse_period_type_js_array(), true, 'sliding-month');
+        $content .= $this->get_neutral_option_select('yearly-timelapse-measurements-period-value-'. $this->station_guid, __('Period', 'live-weather-station'));
+        $content .= $this->get_assoc_option_select('yearly-timelapse-measurements-module-1-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
+        $content .= $this->get_neutral_option_select('yearly-timelapse-measurements-measurement-1-'. $this->station_guid, __('Measurement', 'live-weather-station'));
+        $content .= $this->get_neutral_option_select('yearly-timelapse-measurements-set-1-'. $this->station_guid, __('Dataset', 'live-weather-station'), false, false);
         $content .= '</tbody></table>';
         return $this->get_box('lws-datasource-id', $this->datasource_title, $content);
     }
@@ -95,15 +95,15 @@ class Timelapse extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_parameters() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('yearly-timelapse-datas-template-'. $this->station_guid, __('Size', 'live-weather-station'), $this->get_size_js_array(true, true), true, 'large');
-        $content .= $this->get_key_value_option_select('yearly-timelapse-datas-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array(false), true, 'Blues', false, false);
-        $content .= $this->get_key_value_option_select('yearly-timelapse-datas-label-'. $this->station_guid, __('Appearance', 'live-weather-station'), $this->get_video_appearance_js_array(), true, 'full');
-        $content .= $this->get_key_value_option_select('yearly-timelapse-datas-guideline-'. $this->station_guid, __('Behavior', 'live-weather-station'), $this->get_video_behavior_js_array(), true, 'manual');
-        $content .= $this->get_key_value_option_select('yearly-timelapse-datas-height-'. $this->station_guid, __('Mode', 'live-weather-station'), $this->get_video_mode_js_array(), true, 'once');
-        $content .= $this->get_key_value_option_select('yearly-timelapse-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(true), true, 'auto', false, false);
-        $content .= $this->get_key_value_option_select('yearly-timelapse-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true), true, 'auto', false, false);
-        $content .= $this->get_key_value_option_select('yearly-timelapse-datas-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_interpolation_js_array(), true, 'none', false, false);
-        $content .= $this->get_key_value_option_select('yearly-timelapse-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline', false, false);
+        $content .= $this->get_key_value_option_select('yearly-timelapse-measurements-template-'. $this->station_guid, __('Size', 'live-weather-station'), $this->get_size_js_array(true, true), true, 'large');
+        $content .= $this->get_key_value_option_select('yearly-timelapse-measurements-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array(false), true, 'Blues', false, false);
+        $content .= $this->get_key_value_option_select('yearly-timelapse-measurements-label-'. $this->station_guid, __('Appearance', 'live-weather-station'), $this->get_video_appearance_js_array(), true, 'full');
+        $content .= $this->get_key_value_option_select('yearly-timelapse-measurements-guideline-'. $this->station_guid, __('Behavior', 'live-weather-station'), $this->get_video_behavior_js_array(), true, 'manual');
+        $content .= $this->get_key_value_option_select('yearly-timelapse-measurements-height-'. $this->station_guid, __('Mode', 'live-weather-station'), $this->get_video_mode_js_array(), true, 'once');
+        $content .= $this->get_key_value_option_select('yearly-timelapse-measurements-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(true), true, 'auto', false, false);
+        $content .= $this->get_key_value_option_select('yearly-timelapse-measurements-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true), true, 'auto', false, false);
+        $content .= $this->get_key_value_option_select('yearly-timelapse-measurements-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_interpolation_js_array(), true, 'none', false, false);
+        $content .= $this->get_key_value_option_select('yearly-timelapse-measurements-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline', false, false);
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }

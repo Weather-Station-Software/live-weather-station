@@ -96,7 +96,7 @@ class WindExpander extends Process {
         if (!(bool)get_option('live_weather_station_collect_history')) {
             return false;
         }
-        if (count($this->get_stations_informations()) === 0) {
+        if (count($this->get_stations_information()) === 0) {
             return false;
         }
         return true;
@@ -131,7 +131,7 @@ class WindExpander extends Process {
         $this->params['stations'] = array();
         $this->params['stations']['todo'] = array();
         $this->params['stations']['done'] = array();
-        foreach ($this->get_stations_informations() as $station) {
+        foreach ($this->get_stations_information() as $station) {
             $this->params['stations']['todo'][$station['station_id']] = $station['station_type'];
         }
     }

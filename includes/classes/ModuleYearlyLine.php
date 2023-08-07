@@ -66,15 +66,15 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_datasource() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('yearly-line-datas-period-type-'. $this->station_guid, __('Period type', 'live-weather-station'), $this->get_period_type_js_array(), true, 'sliding-month');
-        $content .= $this->get_neutral_option_select('yearly-line-datas-period-value-'. $this->station_guid, __('Period', 'live-weather-station'));
-        $content .= $this->get_assoc_option_select('yearly-line-datas-module-1-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
-        $content .= $this->get_neutral_option_select('yearly-line-datas-measurement-1-'. $this->station_guid, __('Measurement', 'live-weather-station'));
-        $content .= $this->get_neutral_option_select('yearly-line-datas-set-1-'. $this->station_guid, __('Dataset', 'live-weather-station'));
-        $content .= $this->get_key_value_option_select('yearly-line-datas-line-mode-1-'. $this->station_guid, __('Mode', 'live-weather-station'), $this->get_line_mode_js_array(), true, 'line');
-        $content .= $this->get_key_value_option_select('yearly-line-datas-dot-style-1-'. $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none');
-        $content .= $this->get_key_value_option_select('yearly-line-datas-line-style-1-'. $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid');
-        $content .= $this->get_key_value_option_select('yearly-line-datas-line-size-1-'. $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular');
+        $content .= $this->get_key_value_option_select('yearly-line-measurements-period-type-'. $this->station_guid, __('Period type', 'live-weather-station'), $this->get_period_type_js_array(), true, 'sliding-month');
+        $content .= $this->get_neutral_option_select('yearly-line-measurements-period-value-'. $this->station_guid, __('Period', 'live-weather-station'));
+        $content .= $this->get_assoc_option_select('yearly-line-measurements-module-1-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
+        $content .= $this->get_neutral_option_select('yearly-line-measurements-measurement-1-'. $this->station_guid, __('Measurement', 'live-weather-station'));
+        $content .= $this->get_neutral_option_select('yearly-line-measurements-set-1-'. $this->station_guid, __('Dataset', 'live-weather-station'));
+        $content .= $this->get_key_value_option_select('yearly-line-measurements-line-mode-1-'. $this->station_guid, __('Mode', 'live-weather-station'), $this->get_line_mode_js_array(), true, 'line');
+        $content .= $this->get_key_value_option_select('yearly-line-measurements-dot-style-1-'. $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none');
+        $content .= $this->get_key_value_option_select('yearly-line-measurements-line-style-1-'. $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid');
+        $content .= $this->get_key_value_option_select('yearly-line-measurements-line-size-1-'. $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular');
         $content .= '</tbody></table>';
         return $this->get_box('lws-datasource-id', $this->datasource_title, $content);
     }
@@ -87,15 +87,15 @@ class Line extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_parameters() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('yearly-line-datas-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
-        $content .= $this->get_key_value_option_select('yearly-line-datas-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array(true, true, true, true, false));
-        $content .= $this->get_key_value_option_select('yearly-line-datas-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_label_js_array(), true, 'simple');
-        $content .= $this->get_key_value_option_select('yearly-line-datas-guideline-'. $this->station_guid, __('Hint', 'live-weather-station'), $this->get_guideline_js_array(), true, 'standard');
-        $content .= $this->get_key_value_option_select('yearly-line-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
-        $content .= $this->get_key_value_option_select('yearly-line-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(true), true, 'auto');
-        $content .= $this->get_key_value_option_select('yearly-line-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true), true, 'auto');
-        $content .= $this->get_key_value_option_select('yearly-line-datas-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_interpolation_js_array(), true, 'none');
-        $content .= $this->get_key_value_option_select('yearly-line-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
+        $content .= $this->get_key_value_option_select('yearly-line-measurements-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
+        $content .= $this->get_key_value_option_select('yearly-line-measurements-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array(true, true, true, true, false));
+        $content .= $this->get_key_value_option_select('yearly-line-measurements-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_label_js_array(), true, 'simple');
+        $content .= $this->get_key_value_option_select('yearly-line-measurements-guideline-'. $this->station_guid, __('Hint', 'live-weather-station'), $this->get_guideline_js_array(), true, 'standard');
+        $content .= $this->get_key_value_option_select('yearly-line-measurements-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
+        $content .= $this->get_key_value_option_select('yearly-line-measurements-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(true), true, 'auto');
+        $content .= $this->get_key_value_option_select('yearly-line-measurements-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true), true, 'auto');
+        $content .= $this->get_key_value_option_select('yearly-line-measurements-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_interpolation_js_array(), true, 'none');
+        $content .= $this->get_key_value_option_select('yearly-line-measurements-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }

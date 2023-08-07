@@ -26,7 +26,7 @@ trait BaseClient {
     public $last_bloomsky_error = '';
 
     protected $bloomsky_client = null;
-    protected $bloomsky_datas = array();
+    protected $bloomsky_measurements = array();
 
 
     protected $facility = 'Weather Collector';
@@ -35,14 +35,14 @@ trait BaseClient {
 
 
     /**
-     * Store station's datas.
+     * Store station's measurements.
      *
      * @param array $stations The station list.
      * @since 3.6.0
      */
-    private function store_bloomsky_datas($stations) {
-        $datas = $this->bloomsky_datas ;
-        foreach($datas as &$device){
+    private function store_bloomsky_measurements($stations) {
+        $measurements = $this->bloomsky_measurements ;
+        foreach($measurements as &$device){
             if (!array_key_exists('device_id', $device)) {
                 continue;
             }
@@ -118,7 +118,7 @@ trait BaseClient {
                 $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                 Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
 
-                $s = $this->get_station_informations_by_station_id($device['device_id']);
+                $s = $this->get_station_information_by_station_id($device['device_id']);
                 if (array_key_exists('device_name', $device)) {
                     $s['station_name'] = $device['device_name'];
                 }
@@ -153,14 +153,14 @@ trait BaseClient {
     }
 
     /**
-     * Corrects station's datas.
+     * Corrects station's measurements.
      *
      * @since 3.6.0
      */
-    private function normalize_bloomsky_datas() {
+    private function normalize_bloomsky_measurements() {
         $result = array();
-        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($this->bloomsky_datas, true));
-        foreach($this->bloomsky_datas as $station) {
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($this->bloomsky_measurements, true));
+        foreach($this->bloomsky_measurements as $station) {
             if (is_array($station)) {
                 $temperature = 15.0;
                 $altitude = 0;
@@ -174,7 +174,7 @@ trait BaseClient {
                 }
                 if (array_key_exists('DeviceID', $station)) {
                     $dat['device_id'] = self::compute_unique_bsky_id($station['DeviceID']);
-                    $st = $this->get_station_informations_by_station_id($dat['device_id']);
+                    $st = $this->get_station_information_by_station_id($dat['device_id']);
                     if (array_key_exists('loc_altitude', $st)) {
                         $altitude = $st['loc_altitude'];
                     }
@@ -319,6 +319,6 @@ trait BaseClient {
                 }
             }
         }
-        $this->bloomsky_datas = $result;
+        $this->bloomsky_measurements = $result;
     }
 }

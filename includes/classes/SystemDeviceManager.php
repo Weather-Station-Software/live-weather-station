@@ -40,7 +40,7 @@ class Manager
         $result = true;
         try {
             global $wpdb;
-            $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+            $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
             $sql = "SELECT device_id, module_id, module_name, module_type FROM `" . $table_name . "` WHERE module_id in (SELECT DISTINCT module_id FROM `" . $table_name . "`) GROUP BY device_id, module_id;" ;
             $devices = $wpdb->get_results($sql, ARRAY_A);
             foreach ($devices as $device) {
@@ -110,7 +110,7 @@ class Manager
         }
         if ($result === 'unknown') {
             global $wpdb;
-            $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+            $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
             $sql = "SELECT DISTINCT module_type, module_name FROM " . $table_name . " WHERE device_id='" . $device_id . "' AND module_id='" . $module_id . "';";
             $query = $wpdb->get_results($sql, ARRAY_A);
             if (count($query) > 0) {
@@ -256,7 +256,7 @@ class Manager
             $cron_id = Watchdog::init_chrono(Watchdog::$history_build_name);
             $hb = new HistoryBuilder(LWS_PLUGIN_NAME, LWS_VERSION);
             foreach ($this->stations as $device_id) {
-                $hb->build_for($this->get_station_informations_by_station_id($device_id));
+                $hb->build_for($this->get_station_information_by_station_id($device_id));
             }
             Cache::flush_full(false);
             Watchdog::stop_chrono($cron_id);
@@ -365,7 +365,7 @@ class Manager
         $result = array();
         $rows = array();
         global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT module_id, measure_value FROM " . $table_name . " WHERE `device_id`='" . $device_id . "' AND `module_type`='" . $module . "' AND `measure_type`='last_seen';";
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -409,7 +409,7 @@ class Manager
      */
     private function delete_duplicate_data($device_id, $old) {
         global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "DELETE FROM " . $table_name . " WHERE `device_id`='" . $device_id . "' AND `module_id`='" . $old . "';";
         return $wpdb->query($sql);
     }

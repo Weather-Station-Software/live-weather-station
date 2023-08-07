@@ -19,7 +19,7 @@ trait Conversion {
     /**
      * Get period values array.
      *
-     * @param array $station The station informations.
+     * @param array $station The station information.
      * @param string $oldest_date Oldest record for the station.
      * @param boolean $rolling Optional. The array must contains rolling periods.
      * @param boolean $noned Optional. The array must contains the "none" period.

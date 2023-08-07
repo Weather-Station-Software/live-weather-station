@@ -24,7 +24,7 @@ trait HCClient {
     //////////////////////////////////////////////////////////////////////////////////////////////////////
     // these API keys are property of NetAtmo licensed to Pierre Lannoy, you CAN'T use them for your apps.
     // If you are thinking to develop something, get your API Keys here: https://dev.netatmo.com
-    private $client_id = '58b353afe8ede160268b8900';
+    private $client_id = '58b353safe8edge160268b8900';
     private $client_secret = 'zgl1vdqZc9wvf78x2YgiWj74su92lV7ff';
     //////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -67,14 +67,14 @@ trait HCClient {
     }
 
     /**
-     * Get station's datas.
+     * Get station's measurements.
      *
      * @param boolean $store Optional. Store the data.
      *
-     * @return array The netatmo collected datas.
+     * @return array The netatmo collected measurements.
      * @since 3.0
      */
-    public function get_datas($store=true) {
+    public function get_measurements($store=true) {
         $refresh_token = get_option('live_weather_station_netatmohc_refresh_token');
         $access_token = get_option('live_weather_station_netatmohc_access_token');
         $this->last_netatmo_error = '';
@@ -91,10 +91,10 @@ trait HCClient {
             }
             try {
                 if (Quota::verify($this->service_name, 'GET')) {
-                    $this->netatmo_datas = $this->netatmo_client->getHCData();
-                    $this->normalize_netatmo_datas(LWS_NETATMOHC_SID);
+                    $this->netatmo_measurements = $this->netatmo_client->getHCData();
+                    $this->normalize_netatmo_measurements(LWS_NETATMOHC_SID);
                     if ($store) {
-                        $this->store_netatmo_datas($this->get_all_netatmo_hc_stations(), true);
+                        $this->store_netatmo_measurements($this->get_all_netatmo_hc_stations(), true);
                     }
                     update_option('live_weather_station_netatmohc_refresh_token', $this->netatmo_client->getRefreshToken());
                     update_option('live_weather_station_netatmohc_access_token', $this->netatmo_client->getAccessToken()['access_token']);
@@ -143,7 +143,7 @@ trait HCClient {
                 return array();
             }
         }
-        return $this->netatmo_datas;
+        return $this->netatmo_measurements;
     }
 
     /**
@@ -157,9 +157,9 @@ trait HCClient {
     protected function __get_stations($store=false){
         $result = array();
         try {
-            $this->get_datas(false);
-            $datas = $this->netatmo_datas ;
-            foreach($datas['devices'] as $device){
+            $this->get_measurements(false);
+            $measurements = $this->netatmo_measurements ;
+            foreach($measurements['devices'] as $device){
                 $result[] = array('device_id' => $device['_id'], 'station_name' => $device['station_name'], 'installed' => false);
             }
             if ($store) {
@@ -202,7 +202,7 @@ trait HCClient {
         $err = '';
         try {
             $err = 'collecting weather';
-            $this->get_datas();
+            $this->get_measurements();
             $err = 'computing weather';
             $weather = new Weather_Index_Computer();
             $weather->compute(LWS_NETATMOHC_SID);

@@ -327,72 +327,72 @@ class Solar extends Base {
         $timestamp = '';
         $tz = '';
         $location = '';
-        $datas = array();
+        $measurements = array();
         $current = array();
         if (array_key_exists('modules', $modules)) {
             foreach ($modules['modules'] as $module) {
                 switch ($module['type']) {
                     case 'NAMain':
-                        if (array_key_exists('loc_latitude', $module['datas']) && array_key_exists('loc_longitude', $module['datas']) && array_key_exists('loc_altitude', $module['datas'])) {
-                            $location = $this->output_coordinate($module['datas']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
-                                $this->output_coordinate($module['datas']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
-                                $this->output_value($module['datas']['loc_altitude']['value'], 'loc_altitude', true) . ')';
+                        if (array_key_exists('loc_latitude', $module['measurements']) && array_key_exists('loc_longitude', $module['measurements']) && array_key_exists('loc_altitude', $module['measurements'])) {
+                            $location = $this->output_coordinate($module['measurements']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
+                                $this->output_coordinate($module['measurements']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
+                                $this->output_value($module['measurements']['loc_altitude']['value'], 'loc_altitude', true) . ')';
                         }
-                        if (array_key_exists('loc_timezone', $module['datas'])) {
-                            $tz = $module['datas']['loc_timezone']['value'];
+                        if (array_key_exists('loc_timezone', $module['measurements'])) {
+                            $tz = $module['measurements']['loc_timezone']['value'];
                         }
                         break;
                     case 'NAEphemer':
-                        if (array_key_exists('sunrise', $module['datas']) && array_key_exists('sunset', $module['datas'])) {
-                            $sunrise = $module['datas']['sunrise']['raw_value'];
-                            $sunset = $module['datas']['sunset']['raw_value'];
+                        if (array_key_exists('sunrise', $module['measurements']) && array_key_exists('sunset', $module['measurements'])) {
+                            $sunrise = $module['measurements']['sunrise']['raw_value'];
+                            $sunset = $module['measurements']['sunset']['raw_value'];
                         }
-                        if (array_key_exists('sunrise_a', $module['datas']) && array_key_exists('sunset_a', $module['datas'])) {
-                            $sunrise_a = $module['datas']['sunrise_a']['raw_value'];
-                            $sunset_a = $module['datas']['sunset_a']['raw_value'];
+                        if (array_key_exists('sunrise_a', $module['measurements']) && array_key_exists('sunset_a', $module['measurements'])) {
+                            $sunrise_a = $module['measurements']['sunrise_a']['raw_value'];
+                            $sunset_a = $module['measurements']['sunset_a']['raw_value'];
                         }
                         break;
 
                     case 'NAModule5': // Solar
-                        if (array_key_exists('uv_index', $module['datas'])) {
+                        if (array_key_exists('uv_index', $module['measurements'])) {
                             $NAModule5 = true;
-                            $datas['uv_index'] = array();
-                            $datas['uv_index']['value'] = $module['datas']['uv_index']['value'];
-                            $datas['uv_index']['unit'] = __('UV', 'live-weather-station');
-                            $datas['uv_index']['icon'] = $this->output_iconic_value($module['datas']['uv_index']['raw_value'], 'uv_index', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['uv_index'] = array();
+                            $measurements['uv_index']['value'] = $module['measurements']['uv_index']['value'];
+                            $measurements['uv_index']['unit'] = __('UV', 'live-weather-station');
+                            $measurements['uv_index']['icon'] = $this->output_iconic_value($module['measurements']['uv_index']['raw_value'], 'uv_index', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_uv = false;
                         }
-                        if (array_key_exists('irradiance', $module['datas'])) {
+                        if (array_key_exists('irradiance', $module['measurements'])) {
                             $NAModule5 = true;
-                            $datas['irradiance'] = array();
-                            $datas['irradiance']['value'] = $module['datas']['irradiance']['value'];
-                            $datas['irradiance']['unit'] = $module['datas']['irradiance']['unit']['unit'];
-                            $datas['irradiance']['icon'] = $this->output_iconic_value($module['datas']['irradiance']['raw_value'], 'irradiance', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['irradiance'] = array();
+                            $measurements['irradiance']['value'] = $module['measurements']['irradiance']['value'];
+                            $measurements['irradiance']['unit'] = $module['measurements']['irradiance']['unit']['unit'];
+                            $measurements['irradiance']['icon'] = $this->output_iconic_value($module['measurements']['irradiance']['raw_value'], 'irradiance', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_irradiance = false;
                         }
-                        if (array_key_exists('sunshine', $module['datas'])) {
+                        if (array_key_exists('sunshine', $module['measurements'])) {
                             $NAModule5 = true;
-                            $v = self::get_age_array_from_seconds($module['datas']['sunshine']['value']);
-                            $datas['sunshine'] = array();
-                            $datas['sunshine']['hvalue'] = $v[0];
-                            $datas['sunshine']['hunit'] = __('h', 'live-weather-station');
-                            $datas['sunshine']['mvalue'] = $v[1];
-                            $datas['sunshine']['munit'] = __('min.', 'live-weather-station');
-                            $datas['sunshine']['icon'] = $this->output_iconic_value($module['datas']['sunshine']['raw_value'], 'sunshine', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $v = self::get_age_array_from_seconds($module['measurements']['sunshine']['value']);
+                            $measurements['sunshine'] = array();
+                            $measurements['sunshine']['hvalue'] = $v[0];
+                            $measurements['sunshine']['hunit'] = __('h', 'live-weather-station');
+                            $measurements['sunshine']['mvalue'] = $v[1];
+                            $measurements['sunshine']['munit'] = __('min.', 'live-weather-station');
+                            $measurements['sunshine']['icon'] = $this->output_iconic_value($module['measurements']['sunshine']['raw_value'], 'sunshine', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_sunshine = false;
                         }
-                        if (array_key_exists('illuminance', $module['datas'])) {
+                        if (array_key_exists('illuminance', $module['measurements'])) {
                             $NAModule5 = true;
-                            $datas['illuminance'] = array();
-                            $datas['illuminance']['value'] = $module['datas']['illuminance']['value'];
-                            $datas['illuminance']['unit'] = $module['datas']['illuminance']['unit']['unit'];
-                            $datas['illuminance']['icon'] = $this->output_iconic_value($module['datas']['illuminance']['raw_value'], 'illuminance', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            $measurements['illuminance'] = array();
+                            $measurements['illuminance']['value'] = $module['measurements']['illuminance']['value'];
+                            $measurements['illuminance']['unit'] = $module['measurements']['illuminance']['unit']['unit'];
+                            $measurements['illuminance']['icon'] = $this->output_iconic_value($module['measurements']['illuminance']['raw_value'], 'illuminance', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_illuminance = false;
@@ -400,14 +400,14 @@ class Solar extends Base {
                         break;
                     case 'NACurrent': // Current weather -> OpenWeatherMap
                         $NACurrent = true;
-                        if (array_key_exists('is_day', $module['datas'])) {
-                            $datas['day']['value'] = ($module['datas']['is_day']['value'] == 1 ? 'day' : 'night');
+                        if (array_key_exists('is_day', $module['measurements'])) {
+                            $measurements['day']['value'] = ($module['measurements']['is_day']['value'] == 1 ? 'day' : 'night');
                         } else {
-                            $datas['day']['value'] = '';
+                            $measurements['day']['value'] = '';
                         }
-                        if (array_key_exists('weather', $module['datas'])) {
-                            $datas['weather']['value'] = $module['datas']['weather']['value'];
-                            $datas['weather']['icon'] = $this->output_iconic_value($datas['day']['value'] . '-' . $datas['weather']['value'], 'weather', null, true, 'inherit', 'lws-widget-big-wiicon-' . $id);
+                        if (array_key_exists('weather', $module['measurements'])) {
+                            $measurements['weather']['value'] = $module['measurements']['weather']['value'];
+                            $measurements['weather']['icon'] = $this->output_iconic_value($measurements['day']['value'] . '-' . $measurements['weather']['value'], 'weather', null, true, 'inherit', 'lws-widget-big-wiicon-' . $id);
                         }
                         else {
                             $show_current = false;
@@ -421,10 +421,10 @@ class Solar extends Base {
         $has_current = (count($current) > 0);
         if (!$NAMain && $has_current) {
             $NAMain = true;
-            if (array_key_exists('loc_latitude', $current['datas']) && array_key_exists('loc_longitude', $current['datas']) && array_key_exists('loc_altitude', $current['datas'])) {
-                $location = $this->output_coordinate($current['datas']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
-                    $this->output_coordinate($current['datas']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
-                    $this->output_value($current['datas']['loc_altitude']['value'], 'loc_altitude', true) . ')';
+            if (array_key_exists('loc_latitude', $current['measurements']) && array_key_exists('loc_longitude', $current['measurements']) && array_key_exists('loc_altitude', $current['measurements'])) {
+                $location = $this->output_coordinate($current['measurements']['loc_latitude']['value'], 'loc_latitude', 6) . ' / ' .
+                    $this->output_coordinate($current['measurements']['loc_longitude']['value'], 'loc_longitude', 6) . ' (' .
+                    $this->output_value($current['measurements']['loc_altitude']['value'], 'loc_altitude', true) . ')';
             }
         }
         if (!$NAMain) {
@@ -437,7 +437,7 @@ class Solar extends Base {
             $show_current = false ;
         }
         if ($show_current) {
-            $show_current = ($datas['weather']['value'] != 0);
+            $show_current = ($measurements['weather']['value'] != 0);
         }
         if ($isnight = $this->is_it_night($sunrise_a, $sunset_a)) {
             $dawndusk = 0;

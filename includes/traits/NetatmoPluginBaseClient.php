@@ -25,7 +25,7 @@ trait BaseClient {
     public $last_netatmo_error = '';
     public $last_netatmo_warning = '';
     protected $netatmo_client;
-    protected $netatmo_datas;
+    protected $netatmo_measurements;
 
 
     protected $facility = 'Weather Collector';
@@ -34,15 +34,15 @@ trait BaseClient {
 
 
     /**
-     * Store station's datas.
+     * Store station's measurements.
      *
      * @param array $stations The station list.
      * @param boolean $is_hc Optional. True if it's a healthy home coach.
      * @since 3.1.0
      */
-    private function store_netatmo_datas($stations, $is_hc=false) {
-        $datas = $this->netatmo_datas ;
-        foreach($datas['devices'] as &$device){
+    private function store_netatmo_measurements($stations, $is_hc=false) {
+        $measurements = $this->netatmo_measurements ;
+        foreach($measurements['devices'] as &$device){
             $store = false;
             foreach ($stations as $station) {
                 if ($station['station_id'] == $device['_id']) {
@@ -80,48 +80,48 @@ trait BaseClient {
      *
      * @since 3.7.0
      */
-    private function normalize_netatmo_historical_datas($types) {
-        $datas = $this->netatmo_datas ;
-        unset($datas['time_server']);
+    private function normalize_netatmo_historical_measurements($types) {
+        $measurements = $this->netatmo_measurements ;
+        unset($measurements['time_server']);
         $result = array();
-        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($datas, true));
-        if (count($datas) > 0) {
-            $result['start'] = array_keys($datas)[0];
-            foreach ($datas as $ts => $data) {
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($measurements, true));
+        if (count($measurements) > 0) {
+            $result['start'] = array_keys($measurements)[0];
+            foreach ($measurements as $ts => $data) {
                 foreach ($data as $k => $d) {
                     $result[strtolower($types[$k])][$ts] = $d;
                 }
             }
             $result['end'] = $ts;
         }
-        $this->netatmo_datas = $result;
+        $this->netatmo_measurements = $result;
     }
 
     /**
-     * Corrects station's datas.
+     * Corrects station's measurements.
      *
      * @param integer $station_type The station type.
      *
      * @since 2.3.0
      */
-    private function normalize_netatmo_datas($station_type) {
-        $datas = $this->netatmo_datas ;
-        $d = $datas;
+    private function normalize_netatmo_measurements($station_type) {
+        $measurements = $this->netatmo_measurements ;
+        $d = $measurements;
         Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($d, true));
         unset($d['devices']);
         Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($d, true));
-        $datas['timeshift'] = 0;
-        if (array_key_exists('time_server', $datas)) {
-            $datas['timeshift'] = time() - $datas['time_server'];
-            if (abs($datas['timeshift']) > get_option('live_weather_station_time_shift_threshold')) {
-                Logger::warning('API / SDK', $this->service_name, null, null, null, null, 0, 'Server time shift: ' . $datas['timeshift'] . 's.');
+        $measurements['timeshift'] = 0;
+        if (array_key_exists('time_server', $measurements)) {
+            $measurements['timeshift'] = time() - $measurements['time_server'];
+            if (abs($measurements['timeshift']) > get_option('live_weather_station_time_shift_threshold')) {
+                Logger::warning('API / SDK', $this->service_name, null, null, null, null, 0, 'Server time shift: ' . $measurements['timeshift'] . 's.');
             }
             else {
-                Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, 'Server time shift: ' . $datas['timeshift'] . 's.');
+                Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, 'Server time shift: ' . $measurements['timeshift'] . 's.');
             }
 
         }
-        foreach($datas['devices'] as &$device){
+        foreach($measurements['devices'] as &$device){
             if (isset($device) && is_array($device)) {
                 if (!isset($device['station_name'])) {
                     $device['station_name'] = '?';
@@ -198,6 +198,6 @@ trait BaseClient {
             }
 
         }
-        $this->netatmo_datas = $datas;
+        $this->netatmo_measurements = $measurements;
     }
 }
