@@ -158,7 +158,7 @@ class Handling {
         $this->get_args();
         if ($this->station_guid != 0) {
             $this->edit_station();
-            $this->station_information = $this->get_station_informations_by_guid($this->station_guid);
+            $this->station_information = $this->get_station_information_by_guid($this->station_guid);
             $this->station_name = $this->station_information['station_name'];
             $this->station_id = $this->station_information['station_id'];
             $this->station_type = $this->station_information['station_type'];
@@ -266,7 +266,7 @@ class Handling {
                         $pws = false;
                         $wow = false;
                         if (($guid != 0) && ($guid == $this->station_guid)) {
-                            $station = $this->get_station_informations_by_guid($guid);
+                            $station = $this->get_station_information_by_guid($guid);
                             $update = true;
                             if (array_key_exists('submit-publish', $_POST)) {
                                 foreach ($this->publishing_proto as $proto) {
@@ -456,7 +456,7 @@ class Handling {
 
                             if ($connect) {
                                 $this->update_stations_table($station);
-                                $datas = array();
+                                $measurements = array();
                                 $save = true;
                                 $service_name = null;
                                 $result = 'unknown reason...';
@@ -734,7 +734,7 @@ class Handling {
      */
     public function add_metaboxes() {
         if ($this->station_guid != 0) {
-            $data = $this->get_all_formatted_datas($this->station_guid);
+            $data = $this->get_all_formatted_measurements($this->station_guid);
             $station = $data['station'];
             $gid = strtolower(str_replace(':', '', $station['station_id']));
             // Left column

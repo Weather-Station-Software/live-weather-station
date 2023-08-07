@@ -67,15 +67,15 @@ class AStream extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_datasource() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('daily-astream-datas-dimension-' . $this->station_guid, __('Dimension', 'live-weather-station'), $this->get_comparable_dimensions_js_array(), true, 'angle', true, false);
+        $content .= $this->get_key_value_option_select('daily-astream-measurements-dimension-' . $this->station_guid, __('Dimension', 'live-weather-station'), $this->get_comparable_dimensions_js_array(), true, 'angle', true, false);
         $a_group = array();
         for ($i=1; $i<=$this->series_number; $i++) {
-            $group = $this->get_assoc_option_select('daily-astream-datas-module-' . $i . '-' . $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
-            $group .= $this->get_neutral_option_select('daily-astream-datas-measurement-' . $i . '-' . $this->station_guid, __('Measurement', 'live-weather-station'));
-            $group .= $this->get_key_value_option_select('daily-astream-datas-line-mode-' . $i . '-' . $this->station_guid, __('Allotment', 'live-weather-station'), $this->get_allotment_js_array(), true, 'single', $i != 1);
-            $group .= $this->get_key_value_option_select('daily-astream-datas-dot-style-' . $i . '-' . $this->station_guid, __('Resolution', 'live-weather-station'), $this->get_stream_resolution_js_array(), true, 'res-10', $i != 1);
-            $group .= $this->get_key_value_option_select('daily-astream-datas-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid', true, false);
-            $group .= $this->get_key_value_option_select('daily-astream-datas-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular', true, false);
+            $group = $this->get_assoc_option_select('daily-astream-measurements-module-' . $i . '-' . $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
+            $group .= $this->get_neutral_option_select('daily-astream-measurements-measurement-' . $i . '-' . $this->station_guid, __('Measurement', 'live-weather-station'));
+            $group .= $this->get_key_value_option_select('daily-astream-measurements-line-mode-' . $i . '-' . $this->station_guid, __('Allotment', 'live-weather-station'), $this->get_allotment_js_array(), true, 'single', $i != 1);
+            $group .= $this->get_key_value_option_select('daily-astream-measurements-dot-style-' . $i . '-' . $this->station_guid, __('Resolution', 'live-weather-station'), $this->get_stream_resolution_js_array(), true, 'res-10', $i != 1);
+            $group .= $this->get_key_value_option_select('daily-astream-measurements-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid', true, false);
+            $group .= $this->get_key_value_option_select('daily-astream-measurements-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular', true, false);
             if ($i == 1) {
                 $a_group[] = array('content' => $group, 'name' => sprintf(__('Angle', 'live-weather-station'), $i));
             }
@@ -84,7 +84,7 @@ class AStream extends \WeatherStation\Engine\Module\Maintainer {
             }
 
         }
-        $content .= $this->get_group('daily-astream-datas-measure-group-', $a_group);
+        $content .= $this->get_group('daily-astream-measurements-measure-group-', $a_group);
         $content .= $this->get_placeholder_option_select();
         $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
@@ -99,15 +99,15 @@ class AStream extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_parameters() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('daily-astream-datas-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
-        $content .= $this->get_key_value_option_select('daily-astream-datas-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array(true));
-        $content .= $this->get_key_value_option_select('daily-astream-datas-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_multi_2_label_js_array(), true, 'simple');
-        $content .= $this->get_key_value_option_select('daily-astream-datas-guideline-'. $this->station_guid, __('Control', 'live-weather-station'), $this->get_sareas_group_js_array(), true, 'stacked', true, false);
-        $content .= $this->get_key_value_option_select('daily-astream-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
-        $content .= $this->get_key_value_option_select('daily-astream-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(false), true, 'auto');
-        $content .= $this->get_key_value_option_select('daily-astream-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(), true, 'auto', true, false);
-        $content .= $this->get_key_value_option_select('daily-astream-datas-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_interpolation_js_array(), true, 'linear');
-        $content .= $this->get_key_value_option_select('daily-astream-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
+        $content .= $this->get_key_value_option_select('daily-astream-measurements-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
+        $content .= $this->get_key_value_option_select('daily-astream-measurements-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array(true));
+        $content .= $this->get_key_value_option_select('daily-astream-measurements-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_multi_2_label_js_array(), true, 'simple');
+        $content .= $this->get_key_value_option_select('daily-astream-measurements-guideline-'. $this->station_guid, __('Control', 'live-weather-station'), $this->get_sareas_group_js_array(), true, 'stacked', true, false);
+        $content .= $this->get_key_value_option_select('daily-astream-measurements-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
+        $content .= $this->get_key_value_option_select('daily-astream-measurements-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(false), true, 'auto');
+        $content .= $this->get_key_value_option_select('daily-astream-measurements-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(), true, 'auto', true, false);
+        $content .= $this->get_key_value_option_select('daily-astream-measurements-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_interpolation_js_array(), true, 'linear');
+        $content .= $this->get_key_value_option_select('daily-astream-measurements-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }
@@ -120,7 +120,7 @@ class AStream extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_script() {
         $content = $this->get_standard_script();
-        $content .= '$("#daily-astream-datas-dimension-' . $this->station_guid . '").change();';
+        $content .= '$("#daily-astream-measurements-dimension-' . $this->station_guid . '").change();';
         return $this->get_script_box($content);
     }
 

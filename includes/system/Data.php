@@ -72,7 +72,7 @@ class Data {
         $n = 20;
         $this->ws_tables[self::live_weather_station_stations_table()] = array('name' => __('Stations details', 'live-weather-station'), 'item' => _n('station', 'stations', $n, 'live-weather-station'));
         $this->ws_tables[self::live_weather_station_module_detail_table()] = array('name' => __('Modules details', 'live-weather-station'), 'item' => _n('module', 'modules', $n, 'live-weather-station'));
-        $this->ws_tables[self::live_weather_station_datas_table()] = array('name' => __('Current records', 'live-weather-station'), 'item' => _n('record', 'records', $n, 'live-weather-station'));
+        $this->ws_tables[self::live_weather_station_measurements_table()] = array('name' => __('Current records', 'live-weather-station'), 'item' => _n('record', 'records', $n, 'live-weather-station'));
         $this->ws_tables[self::live_weather_station_media_table()] = array('name' => __('Medias', 'live-weather-station'), 'item' => _n('media', 'medias', $n, 'live-weather-station'));
         $this->ws_tables[self::live_weather_station_log_table()] = array('name' => __('Events log', 'live-weather-station'), 'item' => _n('event', 'events', $n, 'live-weather-station'));
         $this->ws_tables[self::live_weather_station_histo_daily_table()] = array('name' => __('Daily data', 'live-weather-station'), 'item' => _n('record', 'records', $n, 'live-weather-station'));
@@ -122,7 +122,7 @@ class Data {
      */
     private function delete_orphaned_stations() {
         global $wpdb;
-        $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_datas_table() . " WHERE device_id=''";
+        $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_measurements_table() . " WHERE device_id=''";
         $wpdb->query($sql);
     }
 
@@ -133,7 +133,7 @@ class Data {
      */
     private function delete_orphaned_modules() {
         global $wpdb;
-        $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_datas_table() . " WHERE module_id=''";
+        $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_measurements_table() . " WHERE module_id=''";
         $wpdb->query($sql);
     }
 

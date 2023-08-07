@@ -77,8 +77,8 @@ class Snapshot extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_datasource() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_assoc_option_select('current-snapshot-datas-module-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
-        $content .= $this->get_neutral_option_select('current-snapshot-datas-measurement-'. $this->station_guid, __('Measurement', 'live-weather-station'));
+        $content .= $this->get_assoc_option_select('current-snapshot-measurements-module-'. $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
+        $content .= $this->get_neutral_option_select('current-snapshot-measurements-measurement-'. $this->station_guid, __('Measurement', 'live-weather-station'));
         $content .= $this->get_placeholder_option_select();
         $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';
@@ -93,10 +93,10 @@ class Snapshot extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_parameters() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('current-snapshot-datas-size-'. $this->station_guid,__('Size', 'live-weather-station'), $this->get_size_js_array(true, true), true, 'large');
-        $content .= $this->get_key_value_option_select('current-snapshot-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(true, false), true, 'inline');
-        $content .= $this->get_key_value_option_select('current-snapshot-datas-animation-'. $this->station_guid, __('Animation type', 'live-weather-station'), $this->get_picture_animation_js_array(), true, 'none');
-        $content .= $this->get_key_value_option_select('current-snapshot-datas-speed-'. $this->station_guid, __('Animation speed', 'live-weather-station'), $this->get_lcd_speed_js_array(), true, '2000');
+        $content .= $this->get_key_value_option_select('current-snapshot-measurements-size-'. $this->station_guid,__('Size', 'live-weather-station'), $this->get_size_js_array(true, true), true, 'large');
+        $content .= $this->get_key_value_option_select('current-snapshot-measurements-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(true, false), true, 'inline');
+        $content .= $this->get_key_value_option_select('current-snapshot-measurements-animation-'. $this->station_guid, __('Animation type', 'live-weather-station'), $this->get_picture_animation_js_array(), true, 'none');
+        $content .= $this->get_key_value_option_select('current-snapshot-measurements-speed-'. $this->station_guid, __('Animation speed', 'live-weather-station'), $this->get_lcd_speed_js_array(), true, '2000');
         $content .= '</tbody></table>';
         return $this->get_box('lws-parameter-id', $this->parameter_title, $content);
     }
@@ -109,42 +109,42 @@ class Snapshot extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_script() {
         $content = '';
-        $content .= '$("#current-snapshot-datas-module-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#current-snapshot-measurements-module-' . $this->station_guid . '").change(function() {';
         $content .= 'var js_array_current_snapshot_measurement_' . $this->station_guid . ' = js_array_current_snapshot_' . $this->station_guid . '[$(this).val()][2];';
-        $content .= '$("#current-snapshot-datas-measurement-' . $this->station_guid . '").html("");';
+        $content .= '$("#current-snapshot-measurements-measurement-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_snapshot_measurement_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#current-snapshot-datas-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_snapshot_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
-        $content .= '$("#current-snapshot-datas-measurement-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#current-snapshot-datas-measurement-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#current-snapshot-datas-size-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#current-snapshot-datas-size-' . $this->station_guid . '").change(function() {';
-        $content .= 'if ($("#current-snapshot-datas-size-' . $this->station_guid . '").val()=="scalable") {';
+        $content .= '$("#current-snapshot-measurements-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_snapshot_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$("#current-snapshot-measurements-measurement-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-snapshot-measurements-measurement-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#current-snapshot-measurements-size-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-snapshot-measurements-size-' . $this->station_guid . '").change(function() {';
+        $content .= 'if ($("#current-snapshot-measurements-size-' . $this->station_guid . '").val()=="scalable") {';
         $content .= '$("#current-snapshot-info-' . $this->station_guid . '").show();}';
         $content .= 'else {';
         $content .= '$("#current-snapshot-info-' . $this->station_guid . '").hide();}';
-        $content .= '$("#current-snapshot-datas-data-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#current-snapshot-datas-data-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#current-snapshot-datas-animation-' . $this->station_guid . '").prop("disabled", ($("#current-snapshot-datas-data-' . $this->station_guid . '").val()=="inline"));';
-        $content .= '$("#current-snapshot-datas-speed-' . $this->station_guid . '").prop("disabled", ($("#current-snapshot-datas-data-' . $this->station_guid . '").val()=="inline"));';
-        $content .= '$("#current-snapshot-datas-animation-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#current-snapshot-datas-animation-' . $this->station_guid . '").change(function() {';
-        $content .= '$("#current-snapshot-datas-speed-' . $this->station_guid . '" ).change();});';
-        $content .= '$("#current-snapshot-datas-speed-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#current-snapshot-measurements-data-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-snapshot-measurements-data-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#current-snapshot-measurements-animation-' . $this->station_guid . '").prop("disabled", ($("#current-snapshot-measurements-data-' . $this->station_guid . '").val()=="inline"));';
+        $content .= '$("#current-snapshot-measurements-speed-' . $this->station_guid . '").prop("disabled", ($("#current-snapshot-measurements-data-' . $this->station_guid . '").val()=="inline"));';
+        $content .= '$("#current-snapshot-measurements-animation-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-snapshot-measurements-animation-' . $this->station_guid . '").change(function() {';
+        $content .= '$("#current-snapshot-measurements-speed-' . $this->station_guid . '" ).change();});';
+        $content .= '$("#current-snapshot-measurements-speed-' . $this->station_guid . '").change(function() {';
         $content .= 'var sc_sc = "live-weather-station-snapshot";';
-        $content .= 'if ($("#current-snapshot-datas-data-' . $this->station_guid . '").val() == "ajax_refresh") {sc_sc = "live-weather-station-livesnapshot";}';
+        $content .= 'if ($("#current-snapshot-measurements-data-' . $this->station_guid . '").val() == "ajax_refresh") {sc_sc = "live-weather-station-livesnapshot";}';
         $content .= 'var sc_device = "' . $this->station_id . '";';
-        $content .= 'var sc_animation = $("#current-snapshot-datas-animation-' . $this->station_guid . '").val();';
-        $content .= 'var sc_speed = $("#current-snapshot-datas-speed-' . $this->station_guid . '").val();';
-        $content .= 'var sc_module = js_array_current_snapshot_' . $this->station_guid . '[$("#current-snapshot-datas-module-' . $this->station_guid . '").val()][1];';
-        $content .= 'var sc_measurement = js_array_current_snapshot_' . $this->station_guid . '[$("#current-snapshot-datas-module-' . $this->station_guid . '").val()][2][$("#current-snapshot-datas-measurement-' . $this->station_guid . '").val()][1];';
-        $content .= 'var sc_size = $("#current-snapshot-datas-size-' . $this->station_guid . '").val();';
+        $content .= 'var sc_animation = $("#current-snapshot-measurements-animation-' . $this->station_guid . '").val();';
+        $content .= 'var sc_speed = $("#current-snapshot-measurements-speed-' . $this->station_guid . '").val();';
+        $content .= 'var sc_module = js_array_current_snapshot_' . $this->station_guid . '[$("#current-snapshot-measurements-module-' . $this->station_guid . '").val()][1];';
+        $content .= 'var sc_measurement = js_array_current_snapshot_' . $this->station_guid . '[$("#current-snapshot-measurements-module-' . $this->station_guid . '").val()][2][$("#current-snapshot-measurements-measurement-' . $this->station_guid . '").val()][1];';
+        $content .= 'var sc_size = $("#current-snapshot-measurements-size-' . $this->station_guid . '").val();';
         $content .= 'var shortcode = "["+sc_sc+" device_id=\'"+sc_device+"\' module_id=\'"+sc_module+"\' measure_type=\'"+sc_measurement+"\' size=\'"+sc_size+"\' fx=\'"+sc_animation+"\' speed=\'"+sc_speed+"\']";';
         $content .= 'var shortcode_init = "[live-weather-station-snapshot device_id=\'"+sc_device+"\' module_id=\'"+sc_module+"\' measure_type=\'"+sc_measurement+"\' size=\'"+sc_size+"\' fx=\'"+sc_animation+"\' speed=\'"+sc_speed+"\']";';
         $content .= '$(".lws-preview-id-spinner").addClass("spinner");';
         $content .= '$(".lws-preview-id-spinner").addClass("is-active");';
         $content .= '$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:shortcode_init}).done(function(data) {$("#lws-graph-preview").html(data);$(".lws-preview-id-spinner").removeClass("spinner");$(".lws-preview-id-spinner").removeClass("is-active");});';
-        $content .= '$("#current-snapshot-datas-shortcode-' . $this->station_guid . '").html(shortcode);});';
-        $content .= '$("#current-snapshot-datas-module-' . $this->station_guid . '" ).change();';
+        $content .= '$("#current-snapshot-measurements-shortcode-' . $this->station_guid . '").html(shortcode);});';
+        $content .= '$("#current-snapshot-measurements-module-' . $this->station_guid . '" ).change();';
         return $this->get_script_box($content);
     }
 

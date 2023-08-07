@@ -189,7 +189,7 @@ class Maps extends Base {
         $hidden = $this->get_hidden_columns();
         $sortable = $this->get_sortable_columns();
         $this->_column_headers = array($columns, $hidden, $sortable);
-        $this->stations = $this->get_stations_informations();
+        $this->stations = $this->get_stations_information();
         $data = $this->get_all_maps();
         usort($data, array($this, 'usort_reorder'));
         $current_page = $this->get_pagenum();

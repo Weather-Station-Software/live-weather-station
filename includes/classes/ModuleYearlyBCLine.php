@@ -15,7 +15,7 @@ class BCLine extends \WeatherStation\Engine\Module\Maintainer {
     /**
      * Initialize the class and set its properties.
      *
-     * @param array $station_information An array containing the station informations.
+     * @param array $station_information An array containing the station information.
      * @since 3.4.0
      */
     public function __construct($station_information) {
@@ -67,17 +67,17 @@ class BCLine extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_datasource() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('yearly-bcline-datas-period-type-'. $this->station_guid, __('Period type', 'live-weather-station'), $this->get_period_type_js_array(), true, 'sliding-month');
-        $content .= $this->get_neutral_option_select('yearly-bcline-datas-period-value-'. $this->station_guid, __('Period', 'live-weather-station'));
+        $content .= $this->get_key_value_option_select('yearly-bcline-measurements-period-type-'. $this->station_guid, __('Period type', 'live-weather-station'), $this->get_period_type_js_array(), true, 'sliding-month');
+        $content .= $this->get_neutral_option_select('yearly-bcline-measurements-period-value-'. $this->station_guid, __('Period', 'live-weather-station'));
         $a_group = array();
         for ($i=1; $i<=$this->series_number; $i++) {
-            $group = $this->get_assoc_option_select('yearly-bcline-datas-module-' . $i . '-' . $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
-            $group .= $this->get_neutral_option_select('yearly-bcline-datas-measurement-' . $i . '-' . $this->station_guid, __('Measurement', 'live-weather-station'));
-            $group .= $this->get_neutral_option_select('yearly-bcline-datas-set-'. $i . '-' . $this->station_guid, __('Dataset', 'live-weather-station'));
-            $group .= $this->get_key_value_option_select('yearly-bcline-datas-line-mode-' . $i . '-' . $this->station_guid, __('Mode', 'live-weather-station'), $this->get_line_mode_js_array(), true, 'line', ($i == 1));
-            $group .= $this->get_key_value_option_select('yearly-bcline-datas-dot-style-' . $i . '-' . $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none', ($i == 1));
-            $group .= $this->get_key_value_option_select('yearly-bcline-datas-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid', ($i == 1));
-            $group .= $this->get_key_value_option_select('yearly-bcline-datas-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular', ($i == 1));
+            $group = $this->get_assoc_option_select('yearly-bcline-measurements-module-' . $i . '-' . $this->station_guid, __('Module', 'live-weather-station'), $this->data, 0);
+            $group .= $this->get_neutral_option_select('yearly-bcline-measurements-measurement-' . $i . '-' . $this->station_guid, __('Measurement', 'live-weather-station'));
+            $group .= $this->get_neutral_option_select('yearly-bcline-measurements-set-'. $i . '-' . $this->station_guid, __('Dataset', 'live-weather-station'));
+            $group .= $this->get_key_value_option_select('yearly-bcline-measurements-line-mode-' . $i . '-' . $this->station_guid, __('Mode', 'live-weather-station'), $this->get_line_mode_js_array(), true, 'line', ($i == 1));
+            $group .= $this->get_key_value_option_select('yearly-bcline-measurements-dot-style-' . $i . '-' . $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none', ($i == 1));
+            $group .= $this->get_key_value_option_select('yearly-bcline-measurements-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid', ($i == 1));
+            $group .= $this->get_key_value_option_select('yearly-bcline-measurements-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular', ($i == 1));
             if ($i == 1) {
                 $a_group[] = array('content' => $group, 'name' => __('Bar', 'live-weather-station'));
             }
@@ -86,7 +86,7 @@ class BCLine extends \WeatherStation\Engine\Module\Maintainer {
             }
 
         }
-        $content .= $this->get_group('yearly-bcline-datas-measure-group-', $a_group);
+        $content .= $this->get_group('yearly-bcline-measurements-measure-group-', $a_group);
         $content .= '</tbody></table>';
         return $this->get_box('lws-datasource-id', $this->datasource_title, $content);
     }
@@ -99,15 +99,15 @@ class BCLine extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_parameters() {
         $content = '<table cellspacing="0" style="display:inline-block;"><tbody>';
-        $content .= $this->get_key_value_option_select('yearly-bcline-datas-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
-        $content .= $this->get_key_value_option_select('yearly-bcline-datas-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array(true));
-        $content .= $this->get_key_value_option_select('yearly-bcline-datas-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_multi_2_label_js_array(), true, 'simple');
-        $content .= $this->get_key_value_option_select('yearly-bcline-datas-guideline-'. $this->station_guid, __('Hint', 'live-weather-station'), $this->get_guideline_js_array(), true, 'standard', false, false);
-        $content .= $this->get_key_value_option_select('yearly-bcline-datas-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
-        $content .= $this->get_key_value_option_select('yearly-bcline-datas-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(true), true, 'auto');
-        $content .= $this->get_key_value_option_select('yearly-bcline-datas-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true), true, 'auto');
-        $content .= $this->get_key_value_option_select('yearly-bcline-datas-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_interpolation_js_array(), true, 'none');
-        $content .= $this->get_key_value_option_select('yearly-bcline-datas-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
+        $content .= $this->get_key_value_option_select('yearly-bcline-measurements-template-'. $this->station_guid, __('Template', 'live-weather-station'), $this->get_graph_template_js_array(), true, 'neutral');
+        $content .= $this->get_key_value_option_select('yearly-bcline-measurements-color-'. $this->station_guid, __('Color scheme', 'live-weather-station'), $this->get_colorbrewer_js_array(true));
+        $content .= $this->get_key_value_option_select('yearly-bcline-measurements-label-'. $this->station_guid, __('Label', 'live-weather-station'), $this->get_multi_2_label_js_array(), true, 'simple');
+        $content .= $this->get_key_value_option_select('yearly-bcline-measurements-guideline-'. $this->station_guid, __('Hint', 'live-weather-station'), $this->get_guideline_js_array(), true, 'standard', false, false);
+        $content .= $this->get_key_value_option_select('yearly-bcline-measurements-height-'. $this->station_guid, __('Height', 'live-weather-station'), $this->get_graph_size_js_array(), true, '300px');
+        $content .= $this->get_key_value_option_select('yearly-bcline-measurements-timescale-'. $this->station_guid, __('Time scale', 'live-weather-station'), $this->get_x_scale_js_array(true), true, 'auto');
+        $content .= $this->get_key_value_option_select('yearly-bcline-measurements-valuescale-'. $this->station_guid, __('Value scale', 'live-weather-station'), $this->get_y_scale_js_array(true), true, 'auto');
+        $content .= $this->get_key_value_option_select('yearly-bcline-measurements-interpolation-'. $this->station_guid, __('Interpolation', 'live-weather-station'), $this->get_interpolation_js_array(), true, 'none');
+        $content .= $this->get_key_value_option_select('yearly-bcline-measurements-data-'. $this->station_guid, __('Data', 'live-weather-station'), $this->get_graph_data_js_array(), true, 'inline');
         $content .= $this->get_placeholder_option_select();
         $content .= $this->get_placeholder_option_select();
         $content .= '</tbody></table>';

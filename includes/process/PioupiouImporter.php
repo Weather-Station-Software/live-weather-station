@@ -180,7 +180,7 @@ class PioupiouImporter extends Process {
      */
     protected function init_core(){
 
-        $station = $this->get_station_informations_by_station_id($this->params['init']['station_id']);
+        $station = $this->get_station_information_by_station_id($this->params['init']['station_id']);
         $this->params['init']['station_name'] = $station['station_name'];
         $this->params['init']['service_id'] = $station['service_id'];
         $this->params['init']['loc_timezone'] = $station['loc_timezone'];
@@ -205,7 +205,7 @@ class PioupiouImporter extends Process {
         $this->bp_service = 'Pioupiou';
 
         global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_name, module_id, module_type, module_name FROM " . $table_name . " WHERE device_id = '" . $this->params['init']['station_id'] . "'";
         $rows = $wpdb->get_results($sql, ARRAY_A);
         $this->params['todo_ext'] = array();

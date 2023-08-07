@@ -382,22 +382,22 @@ class Performance {
                 }
                 $sum30[$field]['name'] = self::get_pool_name($field);
             }
-            foreach ($values as $ts=>$serie) {
+            foreach ($values as $ts=>$series) {
                 foreach ($fields as $field) {
-                    if (!array_key_exists($field, $serie['pools'])) {
-                        $serie['pools'][$field]['count'] = 0;
-                        $serie['pools'][$field]['time'] = 0;
+                    if (!array_key_exists($field, $series['pools'])) {
+                        $series['pools'][$field]['count'] = 0;
+                        $series['pools'][$field]['time'] = 0;
                     }
-                    if ($serie['pools'][$field]['count'] > 0) {
-                        $avr = round($serie['pools'][$field]['time']/$serie['pools'][$field]['count'], 0);
+                    if ($series['pools'][$field]['count'] > 0) {
+                        $avr = round($series['pools'][$field]['time']/$series['pools'][$field]['count'], 0);
                     }
                     else {
                         $avr = 0;
                     }
-                    $jsonable['by_pool'][$field . '_count'][] = array($ts, $serie['pools'][$field]['count']);
+                    $jsonable['by_pool'][$field . '_count'][] = array($ts, $series['pools'][$field]['count']);
                     $jsonable['by_pool'][$field . '_time'][] = array($ts, $avr);
                 }
-                foreach ($serie['crons'] as $key=>$cron) {
+                foreach ($series['crons'] as $key=>$cron) {
                     if ($cron['count'] > 0) {
                         $avr = round($cron['time']/$cron['count'], 0);
                     }
@@ -650,15 +650,15 @@ class Performance {
         $data = array();
         $data_r = array();
         foreach ($values as $key=>$field) {
-            foreach ($field as $level => $serie) {
-                foreach ($serie as $element => $cpt) {
+            foreach ($field as $level => $series) {
+                foreach ($series as $element => $cpt) {
                     $pre_jsonable[$key][$level][$element] = $cpt;
                 }
             }
         }
         foreach ($pre_jsonable as $key=>$field) {
-            foreach ($field as $level=>$serie) {
-                foreach ($serie as $element => $cpt) {
+            foreach ($field as $level=>$series) {
+                foreach ($series as $element => $cpt) {
                     $jsonable[$key][$level][] = array('x' => '$' . $element . '$', 'y' => $pre_jsonable[$key][$level][$element]);
                 }
             }

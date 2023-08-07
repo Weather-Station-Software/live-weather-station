@@ -46,15 +46,15 @@
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"></div>
                     </div>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
-                        <?php echo $datas['sun']['icon']; ?>
+                        <?php echo $measurements['sun']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
-                            <div class="lws-widget-small-value-up lws-widget-small-value-up-<?php echo $id ?>"><?php echo $datas['sunrise']['value']; ?></div>
+                            <div class="lws-widget-small-value-up lws-widget-small-value-up-<?php echo $id ?>"><?php echo $measurements['sunrise']['value']; ?></div>
                             <div class="lws-widget-small-unit-up lws-widget-small-unit-up-<?php echo $id ?>"></div>
                         </div>
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
-                            <div class="lws-widget-small-value-down lws-widget-small-value-down-<?php echo $id ?>"><?php echo $datas['sunset']['value']; ?></div>
+                            <div class="lws-widget-small-value-down lws-widget-small-value-down-<?php echo $id ?>"><?php echo $measurements['sunset']['value']; ?></div>
                             <div class="lws-widget-small-unit-down lws-widget-small-unit-down-<?php echo $id ?>"></div>
                         </div>
                     </div>
@@ -65,21 +65,21 @@
             <?php endif;?>
             <?php if ($show_moon && $show_moonphase):?>
                 <!-- MOONRISE / MOONSET -->
-                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.__('Moon', 'live-weather-station').': '.$datas['moon_phase']['name'].'"' : ''); ?>>
+                <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.__('Moon', 'live-weather-station').': '.$measurements['moon_phase']['name'].'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"></div>
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"></div>
                     </div>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
-                        <?php echo $datas['moon_phase']['icon']; ?>
+                        <?php echo $measurements['moon_phase']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
-                            <div class="lws-widget-small-value-up lws-widget-small-value-up-<?php echo $id ?>"><?php echo $datas['moonrise']['value']; ?></div>
+                            <div class="lws-widget-small-value-up lws-widget-small-value-up-<?php echo $id ?>"><?php echo $measurements['moonrise']['value']; ?></div>
                             <div class="lws-widget-small-unit-up lws-widget-small-unit-up-<?php echo $id ?>"></div>
                         </div>
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
-                            <div class="lws-widget-small-value-down lws-widget-small-value-down-<?php echo $id ?>"><?php echo $datas['moonset']['value']; ?></div>
+                            <div class="lws-widget-small-value-down lws-widget-small-value-down-<?php echo $id ?>"><?php echo $measurements['moonset']['value']; ?></div>
                             <div class="lws-widget-small-unit-down lws-widget-small-unit-down-<?php echo $id ?>"></div>
                         </div>
                     </div>
@@ -95,11 +95,11 @@
                 <!-- SUNRISE -->
                 <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Sunrise', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
-                        <?php echo $datas['sunrise']['icon'] ?>
+                        <?php echo $measurements['sunrise']['icon'] ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                            <div class="lws-widget-med-value lws-widget-med-value-<?php echo $id ?>"><?php echo $datas['sunrise']['value']; ?></div>
+                            <div class="lws-widget-med-value lws-widget-med-value-<?php echo $id ?>"><?php echo $measurements['sunrise']['value']; ?></div>
                             <div class="lws-widget-med-unit lws-widget-med-unit-<?php echo $id ?>"></div>
                         </div>
                     </div>
@@ -108,11 +108,11 @@
                 <!-- SUNSET -->
                 <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Sunset', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
-                        <?php echo $datas['sunset']['icon'] ?>
+                        <?php echo $measurements['sunset']['icon'] ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                            <div class="lws-widget-med-value lws-widget-med-value-<?php echo $id ?>"><?php echo $datas['sunset']['value']; ?></div>
+                            <div class="lws-widget-med-value lws-widget-med-value-<?php echo $id ?>"><?php echo $measurements['sunset']['value']; ?></div>
                             <div class="lws-widget-med-unit lws-widget-med-unit-<?php echo $id ?>"></div>
                         </div>
                     </div>
@@ -129,16 +129,16 @@
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"></div>
                     </div>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
-                        <?php echo $datas['sun_distance']['icon'] ?>
+                        <?php echo $measurements['sun_distance']['icon'] ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
-                            <div class="lws-widget-small-value-up lws-widget-small-value-up-<?php echo $id ?>"><?php echo $datas['sun_distance']['value']; ?></div>
-                            <div class="lws-widget-small-unit-up lws-widget-small-unit-up-<?php echo $id ?>"><?php echo $datas['sun_distance']['unit']; ?></div>
+                            <div class="lws-widget-small-value-up lws-widget-small-value-up-<?php echo $id ?>"><?php echo $measurements['sun_distance']['value']; ?></div>
+                            <div class="lws-widget-small-unit-up lws-widget-small-unit-up-<?php echo $id ?>"><?php echo $measurements['sun_distance']['unit']; ?></div>
                         </div>
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
-                            <div class="lws-widget-small-value-down lws-widget-small-value-down-<?php echo $id ?>"><?php echo $datas['sun_diameter']['value']; ?></div>
-                            <div class="lws-widget-small-unit-down lws-widget-small-unit-down-<?php echo $id ?>"><?php echo $datas['sun_diameter']['unit']; ?></div>
+                            <div class="lws-widget-small-value-down lws-widget-small-value-down-<?php echo $id ?>"><?php echo $measurements['sun_diameter']['value']; ?></div>
+                            <div class="lws-widget-small-unit-down lws-widget-small-unit-down-<?php echo $id ?>"><?php echo $measurements['sun_diameter']['unit']; ?></div>
                         </div>
                     </div>
                 </div>
@@ -150,19 +150,19 @@
                 <!-- MOON DETAILS -->
                 <div class="lws-widget-row lws-widget-row-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Moon illumination, phase & age', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                        <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"><?php echo $datas['moon_illumination']['value']; ?></div>
-                        <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"><?php echo $datas['moon_illumination']['unit']; ?></div>
+                        <div class="lws-widget-big-value lws-widget-big-value-<?php echo $id ?>"><?php echo $measurements['moon_illumination']['value']; ?></div>
+                        <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"><?php echo $measurements['moon_illumination']['unit']; ?></div>
                     </div>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
-                        <?php echo $datas['moon_phase']['icon']; ?>
+                        <?php echo $measurements['moon_phase']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
-                            <div class="lws-widget-small-value-up lws-widget-small-value-up-<?php echo $id ?>"><?php echo $datas['moon_phase']['name']; ?></div>
+                            <div class="lws-widget-small-value-up lws-widget-small-value-up-<?php echo $id ?>"><?php echo $measurements['moon_phase']['name']; ?></div>
                             <div class="lws-widget-small-unit-up lws-widget-small-unit-up-<?php echo $id ?>"></div>
                         </div>
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
-                            <div class="lws-widget-small-value-down lws-widget-small-value-down-<?php echo $id ?>"><?php echo $datas['moon_age']['value']; ?></div>
+                            <div class="lws-widget-small-value-down lws-widget-small-value-down-<?php echo $id ?>"><?php echo $measurements['moon_age']['value']; ?></div>
                             <div class="lws-widget-small-unit-down lws-widget-small-unit-down-<?php echo $id ?>"></div>
                         </div>
                     </div>
@@ -175,11 +175,11 @@
                 <!-- MOONSET -->
                 <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Moonset', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
-                        <?php echo $datas['moonset']['icon'] ?>
+                        <?php echo $measurements['moonset']['icon'] ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                            <div class="lws-widget-med-value lws-widget-med-value-<?php echo $id ?>"><?php echo $datas['moonset']['value']; ?></div>
+                            <div class="lws-widget-med-value lws-widget-med-value-<?php echo $id ?>"><?php echo $measurements['moonset']['value']; ?></div>
                             <div class="lws-widget-med-unit lws-widget-med-unit-<?php echo $id ?>"></div>
                         </div>
                     </div>
@@ -188,11 +188,11 @@
                 <!-- MOONRISE -->
                 <div class="lws-widget-row lws-widget-row-single-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Moonrise', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
-                        <?php echo $datas['moonrise']['icon'] ?>
+                        <?php echo $measurements['moonrise']['icon'] ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
-                            <div class="lws-widget-med-value lws-widget-med-value-<?php echo $id ?>"><?php echo $datas['moonrise']['value']; ?></div>
+                            <div class="lws-widget-med-value lws-widget-med-value-<?php echo $id ?>"><?php echo $measurements['moonrise']['value']; ?></div>
                             <div class="lws-widget-med-unit lws-widget-med-unit-<?php echo $id ?>"></div>
                         </div>
                     </div>
@@ -209,16 +209,16 @@
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo $id ?>"></div>
                     </div>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo $id ?>">
-                        <?php echo $datas['moon_phase']['icon']; ?>
+                        <?php echo $measurements['moon_phase']['icon']; ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo $id ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
-                            <div class="lws-widget-small-value-up lws-widget-small-value-up-<?php echo $id ?>"><?php echo $datas['moon_distance']['value']; ?></div>
-                            <div class="lws-widget-small-unit-up lws-widget-small-unit-up-<?php echo $id ?>"><?php echo $datas['moon_distance']['unit']; ?></div>
+                            <div class="lws-widget-small-value-up lws-widget-small-value-up-<?php echo $id ?>"><?php echo $measurements['moon_distance']['value']; ?></div>
+                            <div class="lws-widget-small-unit-up lws-widget-small-unit-up-<?php echo $id ?>"><?php echo $measurements['moon_distance']['unit']; ?></div>
                         </div>
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo $id ?>">
-                            <div class="lws-widget-small-value-down lws-widget-small-value-down-<?php echo $id ?>"><?php echo $datas['moon_diameter']['value']; ?></div>
-                            <div class="lws-widget-small-unit-down lws-widget-small-unit-down-<?php echo $id ?>"><?php echo $datas['moon_diameter']['unit']; ?></div>
+                            <div class="lws-widget-small-value-down lws-widget-small-value-down-<?php echo $id ?>"><?php echo $measurements['moon_diameter']['value']; ?></div>
+                            <div class="lws-widget-small-unit-down lws-widget-small-unit-down-<?php echo $id ?>"><?php echo $measurements['moon_diameter']['unit']; ?></div>
                         </div>
                     </div>
                 </div>

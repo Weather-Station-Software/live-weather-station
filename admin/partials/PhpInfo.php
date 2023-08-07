@@ -22,7 +22,7 @@ try {
 
 if ($tables == '' || !$okinfo) {
     $okinfo = false;
-    Logger::warning('Core',null,null,null,null,null,null,'Your server configuration does not allow to query PHP informations.');
+    Logger::warning('Core',null,null,null,null,null,null,'Your server configuration does not allow to query PHP information.');
 }
 
 ?>

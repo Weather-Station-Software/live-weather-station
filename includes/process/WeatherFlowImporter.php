@@ -197,7 +197,7 @@ class WeatherFlowImporter extends Process {
         $this->params['init']['end_date'] -= 86400;
 
         $this->bp_service = 'WeatherFlow';
-        $station = $this->get_station_informations_by_station_id($this->params['init']['station_id']);
+        $station = $this->get_station_information_by_station_id($this->params['init']['station_id']);
         $this->params['init']['station_name'] = $station['station_name'];
         $this->params['init']['service_id'] = $station['service_id'];
         $this->params['init']['loc_timezone'] = $station['loc_timezone'];
@@ -210,7 +210,7 @@ class WeatherFlowImporter extends Process {
 
 
         global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_name, module_id, module_type, module_name FROM " . $table_name . " WHERE device_id = '" . $this->params['init']['station_id'] . "'";
         $rows = $wpdb->get_results($sql, ARRAY_A);
 
@@ -229,9 +229,9 @@ class WeatherFlowImporter extends Process {
                 $row['module_type'] === 'NAModule4') {
                 $this->get_oldest_measure($this->params['init']['station_id'], $row['module_id'], $row['module_type']);
                 $old = $this->params['init']['start_date'];
-                if (count($this->netatmo_datas) > 0) {
-                    if (array_key_exists('start', $this->netatmo_datas)) {
-                        $old = 86400 * (int)floor(($this->netatmo_datas['start'] + 86400) / 86400);
+                if (count($this->netatmo_measurements) > 0) {
+                    if (array_key_exists('start', $this->netatmo_measurements)) {
+                        $old = 86400 * (int)floor(($this->netatmo_measurements['start'] + 86400) / 86400);
                     }
                 }
                 $old_dates[] = $old;
@@ -272,7 +272,7 @@ class WeatherFlowImporter extends Process {
         $cpt = 0;
         $cpt_type = 'temperature';
         $result = array();
-        foreach ($this->netatmo_datas as $type => $set) {
+        foreach ($this->netatmo_measurements as $type => $set) {
             if (in_array($type, $this->available_types['NAMain'])) {
                 if (count($set) > $cpt) {
                     $cpt = count($set);
@@ -280,31 +280,31 @@ class WeatherFlowImporter extends Process {
                 }
             }
         }
-        if (array_key_exists($cpt_type, $this->netatmo_datas)) {
-            foreach ($this->netatmo_datas[$cpt_type] as $ts => $dummy) {
+        if (array_key_exists($cpt_type, $this->netatmo_measurements)) {
+            foreach ($this->netatmo_measurements[$cpt_type] as $ts => $dummy) {
                 $ref_h = null;
                 $ref_t = null;
                 $ref_n = null;
                 $ref_c = null;
-                if (array_key_exists($ts, $this->netatmo_datas['co2'])) {
-                    $result['co2'][$ts] = $this->netatmo_datas['co2'][$ts];
-                    $ref_c = $this->netatmo_datas['co2'][$ts];
+                if (array_key_exists($ts, $this->netatmo_measurements['co2'])) {
+                    $result['co2'][$ts] = $this->netatmo_measurements['co2'][$ts];
+                    $ref_c = $this->netatmo_measurements['co2'][$ts];
                 }
-                if (array_key_exists($ts, $this->netatmo_datas['humidity'])) {
-                    $result['humidity'][$ts] = $this->netatmo_datas['humidity'][$ts];
-                    $ref_h = $this->netatmo_datas['humidity'][$ts];
+                if (array_key_exists($ts, $this->netatmo_measurements['humidity'])) {
+                    $result['humidity'][$ts] = $this->netatmo_measurements['humidity'][$ts];
+                    $ref_h = $this->netatmo_measurements['humidity'][$ts];
                 }
-                if (array_key_exists($ts, $this->netatmo_datas['noise'])) {
-                    $result['noise'][$ts] = $this->netatmo_datas['noise'][$ts];
-                    $ref_n = $this->netatmo_datas['noise'][$ts];
+                if (array_key_exists($ts, $this->netatmo_measurements['noise'])) {
+                    $result['noise'][$ts] = $this->netatmo_measurements['noise'][$ts];
+                    $ref_n = $this->netatmo_measurements['noise'][$ts];
                 }
-                if (array_key_exists($ts, $this->netatmo_datas['pressure'])) {
-                    $result['pressure_sl'][$ts] = $this->netatmo_datas['pressure'][$ts];
-                    $result['pressure'][$ts] = $this->convert_from_mslp_to_baro($this->netatmo_datas['pressure'][$ts], $this->params['init']['loc_altitude']);
+                if (array_key_exists($ts, $this->netatmo_measurements['pressure'])) {
+                    $result['pressure_sl'][$ts] = $this->netatmo_measurements['pressure'][$ts];
+                    $result['pressure'][$ts] = $this->convert_from_mslp_to_baro($this->netatmo_measurements['pressure'][$ts], $this->params['init']['loc_altitude']);
                 }
-                if (array_key_exists($ts, $this->netatmo_datas['temperature'])) {
-                    $result['temperature'][$ts] = $this->netatmo_datas['temperature'][$ts];
-                    $ref_t = $this->netatmo_datas['temperature'][$ts];
+                if (array_key_exists($ts, $this->netatmo_measurements['temperature'])) {
+                    $result['temperature'][$ts] = $this->netatmo_measurements['temperature'][$ts];
+                    $ref_t = $this->netatmo_measurements['temperature'][$ts];
                 }
                 $h = $this->compute_health_index($ref_t, $ref_h, $ref_c, $ref_n);
                 if (array_key_exists('health_idx', $h)) {
@@ -312,7 +312,7 @@ class WeatherFlowImporter extends Process {
                 }
             }
         }
-        unset($this->netatmo_datas);
+        unset($this->netatmo_measurements);
         return $result;
     }
 
@@ -326,7 +326,7 @@ class WeatherFlowImporter extends Process {
         $cpt = 0;
         $cpt_type = 'temperature';
         $result = array();
-        foreach ($this->netatmo_datas as $type => $set) {
+        foreach ($this->netatmo_measurements as $type => $set) {
             if (in_array($type, $this->available_types['NAModule1'])) {
                 if (count($set) > $cpt) {
                     $cpt = count($set);
@@ -334,17 +334,17 @@ class WeatherFlowImporter extends Process {
                 }
             }
         }
-        if (array_key_exists($cpt_type, $this->netatmo_datas)) {
-            foreach ($this->netatmo_datas[$cpt_type] as $ts => $dummy) {
-                if (array_key_exists($ts, $this->netatmo_datas['humidity'])) {
-                    $result['humidity'][$ts] = $this->netatmo_datas['humidity'][$ts];
+        if (array_key_exists($cpt_type, $this->netatmo_measurements)) {
+            foreach ($this->netatmo_measurements[$cpt_type] as $ts => $dummy) {
+                if (array_key_exists($ts, $this->netatmo_measurements['humidity'])) {
+                    $result['humidity'][$ts] = $this->netatmo_measurements['humidity'][$ts];
                 }
-                if (array_key_exists($ts, $this->netatmo_datas['temperature'])) {
-                    $result['temperature'][$ts] = $this->netatmo_datas['temperature'][$ts];
+                if (array_key_exists($ts, $this->netatmo_measurements['temperature'])) {
+                    $result['temperature'][$ts] = $this->netatmo_measurements['temperature'][$ts];
                 }
             }
         }
-        unset($this->netatmo_datas);
+        unset($this->netatmo_measurements);
         return $result;
     }
 
@@ -358,7 +358,7 @@ class WeatherFlowImporter extends Process {
         $cpt = 0;
         $cpt_type = 'windangle';
         $result = array();
-        foreach ($this->netatmo_datas as $type => $set) {
+        foreach ($this->netatmo_measurements as $type => $set) {
             if (in_array($type, $this->available_types['NAModule2'])) {
                 if (count($set) > $cpt) {
                     $cpt = count($set);
@@ -366,25 +366,25 @@ class WeatherFlowImporter extends Process {
                 }
             }
         }
-        if (array_key_exists($cpt_type, $this->netatmo_datas)) {
-            foreach ($this->netatmo_datas[$cpt_type] as $ts => $dummy) {
-                if (array_key_exists($ts, $this->netatmo_datas['windangle'])) {
-                    $result['windangle'][$ts] = $this->netatmo_datas['windangle'][$ts];
-                    $result['winddirection'][$ts] = (int)floor(($this->netatmo_datas['windangle'][$ts] + 180) % 360);
+        if (array_key_exists($cpt_type, $this->netatmo_measurements)) {
+            foreach ($this->netatmo_measurements[$cpt_type] as $ts => $dummy) {
+                if (array_key_exists($ts, $this->netatmo_measurements['windangle'])) {
+                    $result['windangle'][$ts] = $this->netatmo_measurements['windangle'][$ts];
+                    $result['winddirection'][$ts] = (int)floor(($this->netatmo_measurements['windangle'][$ts] + 180) % 360);
                 }
-                if (array_key_exists($ts, $this->netatmo_datas['windstrength'])) {
-                    $result['windstrength'][$ts] = $this->netatmo_datas['windstrength'][$ts];
+                if (array_key_exists($ts, $this->netatmo_measurements['windstrength'])) {
+                    $result['windstrength'][$ts] = $this->netatmo_measurements['windstrength'][$ts];
                 }
-                if (array_key_exists($ts, $this->netatmo_datas['gustangle'])) {
-                    $result['gustangle'][$ts] = $this->netatmo_datas['gustangle'][$ts];
-                    $result['gustdirection'][$ts] = (int)floor(($this->netatmo_datas['gustangle'][$ts] + 180) % 360);
+                if (array_key_exists($ts, $this->netatmo_measurements['gustangle'])) {
+                    $result['gustangle'][$ts] = $this->netatmo_measurements['gustangle'][$ts];
+                    $result['gustdirection'][$ts] = (int)floor(($this->netatmo_measurements['gustangle'][$ts] + 180) % 360);
                 }
-                if (array_key_exists($ts, $this->netatmo_datas['guststrength'])) {
-                    $result['guststrength'][$ts] = $this->netatmo_datas['guststrength'][$ts];
+                if (array_key_exists($ts, $this->netatmo_measurements['guststrength'])) {
+                    $result['guststrength'][$ts] = $this->netatmo_measurements['guststrength'][$ts];
                 }
             }
         }
-        unset($this->netatmo_datas);
+        unset($this->netatmo_measurements);
         return $result;
     }
 
@@ -398,7 +398,7 @@ class WeatherFlowImporter extends Process {
         $cpt = 0;
         $cpt_type = 'sum_rain';
         $result = array();
-        foreach ($this->netatmo_datas as $type => $set) {
+        foreach ($this->netatmo_measurements as $type => $set) {
             if (in_array($type, $this->available_types['NAModule3'])) {
                 if (count($set) > $cpt) {
                     $cpt = count($set);
@@ -406,14 +406,14 @@ class WeatherFlowImporter extends Process {
                 }
             }
         }
-        if (array_key_exists($cpt_type, $this->netatmo_datas)) {
-            foreach ($this->netatmo_datas[$cpt_type] as $ts => $dummy) {
-                if (array_key_exists($ts, $this->netatmo_datas['sum_rain'])) {
-                    $result['sum_rain'][$ts] = $this->netatmo_datas['sum_rain'][$ts];
+        if (array_key_exists($cpt_type, $this->netatmo_measurements)) {
+            foreach ($this->netatmo_measurements[$cpt_type] as $ts => $dummy) {
+                if (array_key_exists($ts, $this->netatmo_measurements['sum_rain'])) {
+                    $result['sum_rain'][$ts] = $this->netatmo_measurements['sum_rain'][$ts];
                 }
             }
         }
-        unset($this->netatmo_datas);
+        unset($this->netatmo_measurements);
         return $result;
     }
 
@@ -428,7 +428,7 @@ class WeatherFlowImporter extends Process {
         $cpt = 0;
         $cpt_type = 'temperature';
         $result = array();
-        foreach ($this->netatmo_datas as $type => $set) {
+        foreach ($this->netatmo_measurements as $type => $set) {
             if (in_array($type, $this->available_types['NAModule4'])) {
                 if (count($set) > $cpt) {
                     $cpt = count($set);
@@ -436,23 +436,23 @@ class WeatherFlowImporter extends Process {
                 }
             }
         }
-        if (array_key_exists($cpt_type, $this->netatmo_datas)) {
-            foreach ($this->netatmo_datas[$cpt_type] as $ts => $dummy) {
+        if (array_key_exists($cpt_type, $this->netatmo_measurements)) {
+            foreach ($this->netatmo_measurements[$cpt_type] as $ts => $dummy) {
                 $ref_h = null;
                 $ref_t = null;
                 $ref_n = null;
                 $ref_c = null;
-                if (array_key_exists($ts, $this->netatmo_datas['co2'])) {
-                    $result['co2'][$ts] = $this->netatmo_datas['co2'][$ts];
-                    $ref_c = $this->netatmo_datas['co2'][$ts];
+                if (array_key_exists($ts, $this->netatmo_measurements['co2'])) {
+                    $result['co2'][$ts] = $this->netatmo_measurements['co2'][$ts];
+                    $ref_c = $this->netatmo_measurements['co2'][$ts];
                 }
-                if (array_key_exists($ts, $this->netatmo_datas['humidity'])) {
-                    $result['humidity'][$ts] = $this->netatmo_datas['humidity'][$ts];
-                    $ref_h = $this->netatmo_datas['humidity'][$ts];
+                if (array_key_exists($ts, $this->netatmo_measurements['humidity'])) {
+                    $result['humidity'][$ts] = $this->netatmo_measurements['humidity'][$ts];
+                    $ref_h = $this->netatmo_measurements['humidity'][$ts];
                 }
-                if (array_key_exists($ts, $this->netatmo_datas['temperature'])) {
-                    $result['temperature'][$ts] = $this->netatmo_datas['temperature'][$ts];
-                    $ref_t = $this->netatmo_datas['temperature'][$ts];
+                if (array_key_exists($ts, $this->netatmo_measurements['temperature'])) {
+                    $result['temperature'][$ts] = $this->netatmo_measurements['temperature'][$ts];
+                    $ref_t = $this->netatmo_measurements['temperature'][$ts];
                 }
                 $h = $this->compute_health_index($ref_t, $ref_h, $ref_c, $ref_n);
                 if (array_key_exists('health_idx', $h)) {
@@ -460,7 +460,7 @@ class WeatherFlowImporter extends Process {
                 }
             }
         }
-        unset($this->netatmo_datas);
+        unset($this->netatmo_measurements);
         return $result;
     }
 
@@ -542,7 +542,7 @@ class WeatherFlowImporter extends Process {
                 }
             }
         }
-        unset($this->netatmo_datas);
+        unset($this->netatmo_measurements);
         return $result;
     }
 
