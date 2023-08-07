@@ -25,7 +25,7 @@ trait BaseClient {
     public $last_wug_error;
 
     /**
-     * Get station's datas.
+     * Get station's measurements.
      *
      * @param string $key The API key of the account.
      * @param string $plan The plan of the account.
@@ -92,7 +92,7 @@ trait BaseClient {
         if (count($stations) > 0) {
             foreach ($stations as $station) {
                 $device_id = self::get_unique_wug_id($station['guid']);
-                $s = $this->get_station_informations_by_guid($station['guid']);
+                $s = $this->get_station_information_by_guid($station['guid']);
                 $s['station_id'] = $device_id;
                 $this->update_stations_table($s);
                 $list[] = $device_id;

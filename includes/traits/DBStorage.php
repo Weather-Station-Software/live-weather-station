@@ -39,8 +39,8 @@ trait Storage {
      *
      * @since 1.0.0
      */
-    public static function live_weather_station_datas_table() {
-        return 'live_weather_station_datas';
+    public static function live_weather_station_measurements_table() {
+        return 'live_weather_station_measurements';
     }
 
     /**
@@ -56,7 +56,7 @@ trait Storage {
      * @since 3.3.2
      */
     public static function live_weather_station_histo_daily_table() {
-        return 'live_weather_station_datas_day';
+        return 'live_weather_station_measurements_day';
     }
 
     /**
@@ -64,7 +64,7 @@ trait Storage {
      * @since 3.3.2
      */
     public static function live_weather_station_histo_yearly_table() {
-        return 'live_weather_station_datas_year';
+        return 'live_weather_station_measurements_year';
     }
 
     /**
@@ -242,10 +242,10 @@ trait Storage {
      *
      * @since    2.7.0
      */
-    private static function create_live_weather_station_datas_table() {
+    private static function create_live_weather_station_measurements_table() {
         global $wpdb;
         $charset_collate = $wpdb->get_charset_collate();
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "CREATE TABLE IF NOT EXISTS ".$table_name;
         $sql .= " (device_id varchar(17) NOT NULL,";
 		$sql .= " device_name varchar(60) DEFAULT '<unnamed>' NOT NULL,";
@@ -643,7 +643,7 @@ trait Storage {
      * @since 1.0.0
      */
     protected static function create_tables() {
-        self::create_live_weather_station_datas_table();
+        self::create_live_weather_station_measurements_table();
         self::create_live_weather_station_histo_daily_table();
         self::create_live_weather_station_histo_yearly_table();
         self::create_live_weather_station_stations_table();
@@ -853,7 +853,7 @@ trait Storage {
      */
     protected static function truncate_data_table() {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = 'TRUNCATE TABLE '.$table_name;
         $wpdb->query($sql);
     }
@@ -867,7 +867,7 @@ trait Storage {
      */
     protected static function drop_tables($drop_log = true) {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
         $table_name = $wpdb->prefix.self::live_weather_station_stations_table();
@@ -1294,10 +1294,10 @@ trait Storage {
      *
      * @param array $attributes An array representing the query.
      * @param string $after The DateTime breakdown.
-     * @return array An array containing all the datas.
+     * @return array An array containing all the measurements.
      * @since 3.7.5
      */
-    protected function get_datas_rows_after($attributes, $after) {
+    protected function get_measurements_rows_after($attributes, $after) {
         if (array_key_exists('measure_timestamp', $attributes)) {
             unset($attributes['measure_timestamp']);
         }
@@ -1309,7 +1309,7 @@ trait Storage {
             }
         }
         $where[] = '`measure_timestamp`>' .  "'" . $after . "'";
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "SELECT * FROM " . $table_name . " WHERE (" . implode(" AND ", $where) . ");";
         try {
             $result = (array)$wpdb->get_results($sql, ARRAY_A);
@@ -1351,7 +1351,7 @@ trait Storage {
             }
         }
         if (!$result && isset($station_id)) {
-            $station = $this->get_station_informations_by_station_id($station_id);
+            $station = $this->get_station_information_by_station_id($station_id);
             if (isset($station) && is_array($station)) {
                 if (array_key_exists('loc_timezone', $station)) {
                     $result = $station['loc_timezone'];
@@ -1511,7 +1511,7 @@ trait Storage {
             try {
                 $type = $value['measure_type'];
                 $v = $value['measure_value'];
-                $this->update_table(self::live_weather_station_datas_table(), $value);
+                $this->update_table(self::live_weather_station_measurements_table(), $value);
                 $this->update_historic($value);
                 if (in_array($value['measure_type'], $this->min_max_trend)) {
                     $comp = array('min', 'max', 'trend');
@@ -1528,13 +1528,13 @@ trait Storage {
                             }
                             if (!$trend) {
                                 $datetime = new \DateTime('today midnight', new \DateTimeZone($tz));
-                                $oldval = $this->get_datas_rows_after($value, date('Y-m-d H:i:s', $datetime->getTimestamp()));
+                                $oldval = $this->get_measurements_rows_after($value, date('Y-m-d H:i:s', $datetime->getTimestamp()));
                             }
                         }
                         unset ($value['measure_value']);
                         $value['measure_type'] = $type . '_' . $c;
                         $datetime = new \DateTime('today midnight', new \DateTimeZone($tz));
-                        $val = $this->get_datas_rows_after($value, date('Y-m-d H:i:s', $datetime->getTimestamp()));
+                        $val = $this->get_measurements_rows_after($value, date('Y-m-d H:i:s', $datetime->getTimestamp()));
                         if (count($val) > 0) {
                             switch ($i) {
                                 case 0:
@@ -1780,7 +1780,7 @@ trait Storage {
      * @since 3.0.0
      */
     protected function delete_operational_stations_table($value) {
-        $result = $this->delete_table(self::live_weather_station_datas_table(), 'device_id', $value, '\'');
+        $result = $this->delete_table(self::live_weather_station_measurements_table(), 'device_id', $value, '\'');
         $this->delete_table(self::live_weather_station_module_detail_table(), 'device_id', $value, '\'');
         $this->delete_table(self::live_weather_station_media_table(), 'device_id', $value, '\'');
         $this->delete_table(self::live_weather_station_histo_daily_table(), 'device_id', $value, '\'');
@@ -1798,7 +1798,7 @@ trait Storage {
      */
     protected function clean_owm_from_table($values) {
         global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "DELETE FROM ".$table_name." WHERE device_id like 'xx:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }
@@ -1812,7 +1812,7 @@ trait Storage {
      */
     protected function clean_owm_true_from_table($values) {
         global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "DELETE FROM ".$table_name." WHERE device_id like 'xy:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }
@@ -1826,7 +1826,7 @@ trait Storage {
      */
     protected function clean_wug_from_table($values) {
         global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "DELETE FROM ".$table_name." WHERE device_id like 'xz:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }
@@ -1840,7 +1840,7 @@ trait Storage {
      */
     protected function clean_wflw_from_table($values) {
         global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zy:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }
@@ -1854,7 +1854,7 @@ trait Storage {
      */
     protected function clean_piou_from_table($values) {
         global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zz:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }
@@ -1868,7 +1868,7 @@ trait Storage {
      */
     protected function clean_clientraw_from_table($values) {
         global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "DELETE FROM ".$table_name." WHERE device_id like 'yx:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }
@@ -1882,7 +1882,7 @@ trait Storage {
      */
     protected function clean_realtime_from_table($values) {
         global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "DELETE FROM ".$table_name." WHERE device_id like 'yy:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }
@@ -1896,7 +1896,7 @@ trait Storage {
      */
     protected function clean_stickertags_from_table($values) {
         global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zx:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
         return $wpdb->query($sql);
     }

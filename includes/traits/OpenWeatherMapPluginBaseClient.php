@@ -24,7 +24,7 @@ trait BaseClient {
     public $last_owm_error;
 
     /**
-     * Get station's datas.
+     * Get station's measurements.
      *
      * @param string $key The API key of the account.
      * @param string $plan The plan of the account.
@@ -79,7 +79,7 @@ trait BaseClient {
         if (count($stations) > 0) {
             foreach ($stations as $station) {
                 $device_id = self::get_unique_owm_id($station['guid']);
-                $s = $this->get_station_informations_by_guid($station['guid']);
+                $s = $this->get_station_information_by_guid($station['guid']);
                 $s['station_id'] = $device_id;
                 $s['last_refresh'] = date('Y-m-d H:i:s');
                 $this->update_stations_table($s);
@@ -128,7 +128,7 @@ trait BaseClient {
         if (count($stations) > 0) {
             foreach ($stations as $station) {
                 $device_id = self::get_unique_owm_true_id($station['guid']);
-                $s = $this->get_station_informations_by_guid($station['guid']);
+                $s = $this->get_station_information_by_guid($station['guid']);
                 $s['station_id'] = $device_id;
                 $s['last_refresh'] = date('Y-m-d H:i:s');
                 $this->update_stations_table($s);
@@ -139,13 +139,13 @@ trait BaseClient {
     }
 
     /**
-     * Store station's datas.
+     * Store station's measurements.
      *
-     * @param   array   $datas   OWM collected datas
+     * @param   array   $measurements   OWM collected measurements
      * @since    2.7.0
      */
-    private function store_owm_datas($datas) {
-        foreach ($datas as $data) {
+    private function store_owm_measurements($measurements) {
+        foreach ($measurements as $data) {
             $this->get_dashboard(9999, $data['device_id'], $data['device_name'], $data['_id'], $data['module_name'],
                 $data['type'], $data['data_type'], $data['dashboard_data'], $data['place']);
         }

@@ -324,7 +324,7 @@ class Indoor extends Base {
         $modules = $this->get_widget_data($instance['module'], 'indoor', true);
         $timestamp = '';
         $tz = '';
-        $datas = array();
+        $measurements = array();
         $factor = 111111;
         $factor_text = '';
         if (array_key_exists('modules', $modules)) {
@@ -333,93 +333,93 @@ class Indoor extends Base {
                     case 'NAMain':
                     case 'NAModule4':
                     case 'NAModule9':
-                        if (array_key_exists('loc_timezone', $module['datas'])) {
-                            $tz = $module['datas']['loc_timezone']['value'];
+                        if (array_key_exists('loc_timezone', $module['measurements'])) {
+                            $tz = $module['measurements']['loc_timezone']['value'];
                         }
-                        if (array_key_exists('health_idx', $module['datas'])) {
-                            $health_idx = $module['datas']['health_idx']['value'];
+                        if (array_key_exists('health_idx', $module['measurements'])) {
+                            $health_idx = $module['measurements']['health_idx']['value'];
                         }
                         else {
                             $show_current = false;
                         }
-                        if (array_key_exists('humidity', $module['datas'])) {
-                            $datas['humidity'] = array();
-                            $datas['humidity']['value'] = $module['datas']['humidity']['value'];
-                            $datas['humidity']['unit'] = $module['datas']['humidity']['unit']['unit'];
-                            $datas['humidity']['icon'] = $this->output_iconic_value($module['datas']['humidity']['raw_value'], 'humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('humidity', $module['measurements'])) {
+                            $measurements['humidity'] = array();
+                            $measurements['humidity']['value'] = $module['measurements']['humidity']['value'];
+                            $measurements['humidity']['unit'] = $module['measurements']['humidity']['unit']['unit'];
+                            $measurements['humidity']['icon'] = $this->output_iconic_value($module['measurements']['humidity']['raw_value'], 'humidity', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_humidity = false;
                         }
-                        if (array_key_exists('co2', $module['datas'])) {
-                            $datas['co2'] = array();
-                            $datas['co2']['value'] = $module['datas']['co2']['value'];
-                            $datas['co2']['unit'] = $module['datas']['co2']['unit']['unit'];
-                            $datas['co2']['icon'] = $this->output_iconic_value($module['datas']['co2']['raw_value'], 'co2', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('co2', $module['measurements'])) {
+                            $measurements['co2'] = array();
+                            $measurements['co2']['value'] = $module['measurements']['co2']['value'];
+                            $measurements['co2']['unit'] = $module['measurements']['co2']['unit']['unit'];
+                            $measurements['co2']['icon'] = $this->output_iconic_value($module['measurements']['co2']['raw_value'], 'co2', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_co2 = false;
                         }
-                        if (array_key_exists('noise', $module['datas'])) {
-                            $datas['noise'] = array();
-                            $datas['noise']['value'] = $module['datas']['noise']['value'];
-                            $datas['noise']['unit'] = $module['datas']['noise']['unit']['unit'];
-                            $datas['noise']['icon'] = $this->output_iconic_value($module['datas']['noise']['raw_value'], 'noise', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                        if (array_key_exists('noise', $module['measurements'])) {
+                            $measurements['noise'] = array();
+                            $measurements['noise']['value'] = $module['measurements']['noise']['value'];
+                            $measurements['noise']['unit'] = $module['measurements']['noise']['unit']['unit'];
+                            $measurements['noise']['icon'] = $this->output_iconic_value($module['measurements']['noise']['raw_value'], 'noise', null, true, 'inherit', 'lws-widget-icon-' . $id);
                         }
                         else {
                             $show_noise = false;
                         }
-                        if (array_key_exists('temperature', $module['datas'])) {
-                            $datas['temperature'] = array();
-                            $datas['temperature']['value'] = $module['datas']['temperature']['value'];
-                            $datas['temperature']['unit'] = $module['datas']['temperature']['unit']['unit'];
-                            $datas['temperature']['icon'] = $this->output_iconic_value($module['datas']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
-                            if (array_key_exists('temperature_max', $module['datas']) && array_key_exists('temperature_min', $module['datas'])) {
-                                $datas['temperature_max'] = array();
-                                $datas['temperature_max']['value'] = $module['datas']['temperature_max']['value'];
-                                $datas['temperature_max']['unit'] = $module['datas']['temperature_max']['unit']['unit'];
-                                $datas['temperature_min'] = array();
-                                $datas['temperature_min']['value'] = $module['datas']['temperature_min']['value'];
-                                $datas['temperature_min']['unit'] = $module['datas']['temperature_min']['unit']['unit'];
+                        if (array_key_exists('temperature', $module['measurements'])) {
+                            $measurements['temperature'] = array();
+                            $measurements['temperature']['value'] = $module['measurements']['temperature']['value'];
+                            $measurements['temperature']['unit'] = $module['measurements']['temperature']['unit']['unit'];
+                            $measurements['temperature']['icon'] = $this->output_iconic_value($module['measurements']['temperature']['raw_value'], 'temperature', null, true, 'inherit', 'lws-widget-icon-' . $id);
+                            if (array_key_exists('temperature_max', $module['measurements']) && array_key_exists('temperature_min', $module['measurements'])) {
+                                $measurements['temperature_max'] = array();
+                                $measurements['temperature_max']['value'] = $module['measurements']['temperature_max']['value'];
+                                $measurements['temperature_max']['unit'] = $module['measurements']['temperature_max']['unit']['unit'];
+                                $measurements['temperature_min'] = array();
+                                $measurements['temperature_min']['value'] = $module['measurements']['temperature_min']['value'];
+                                $measurements['temperature_min']['unit'] = $module['measurements']['temperature_min']['unit']['unit'];
                                 $temp_multipart = true;
                             }
                         }
                         else {
                             $show_temperature = false;
                         }
-                        if (array_key_exists('hi_temperature', $module['datas'])) {
-                            if ($module['datas']['hi_temperature']['value'] < $factor) {
-                                $factor = $module['datas']['hi_temperature']['value'];
+                        if (array_key_exists('hi_temperature', $module['measurements'])) {
+                            if ($module['measurements']['hi_temperature']['value'] < $factor) {
+                                $factor = $module['measurements']['hi_temperature']['value'];
                                 $factor_text = strtolower($this->get_measurement_type('temperature'));
                             }
                         }
-                        if (array_key_exists('hi_humidity', $module['datas'])) {
-                            if ($module['datas']['hi_humidity']['value'] < $factor) {
-                                $factor = $module['datas']['hi_humidity']['value'];
+                        if (array_key_exists('hi_humidity', $module['measurements'])) {
+                            if ($module['measurements']['hi_humidity']['value'] < $factor) {
+                                $factor = $module['measurements']['hi_humidity']['value'];
                                 $factor_text = strtolower($this->get_measurement_type('humidity'));
                             }
                         }
-                        if (array_key_exists('hi_noise', $module['datas'])) {
-                            if ($module['datas']['hi_noise']['value'] < $factor) {
-                                $factor = $module['datas']['hi_noise']['value'];
+                        if (array_key_exists('hi_noise', $module['measurements'])) {
+                            if ($module['measurements']['hi_noise']['value'] < $factor) {
+                                $factor = $module['measurements']['hi_noise']['value'];
                                 $factor_text = strtolower($this->get_measurement_type('noise'));
                             }
                         }
-                        if (array_key_exists('hi_dew', $module['datas'])) {
-                            if ($module['datas']['hi_dew']['value'] < $factor) {
-                                $factor = $module['datas']['hi_dew']['value'];
+                        if (array_key_exists('hi_dew', $module['measurements'])) {
+                            if ($module['measurements']['hi_dew']['value'] < $factor) {
+                                $factor = $module['measurements']['hi_dew']['value'];
                                 $factor_text = strtolower($this->get_measurement_type('dew_point'));
                             }
                         }
-                        if (array_key_exists('hi_humidex', $module['datas'])) {
-                            if ($module['datas']['hi_humidex']['value'] < $factor) {
-                                $factor = $module['datas']['hi_humidex']['value'];
+                        if (array_key_exists('hi_humidex', $module['measurements'])) {
+                            if ($module['measurements']['hi_humidex']['value'] < $factor) {
+                                $factor = $module['measurements']['hi_humidex']['value'];
                                 $factor_text = strtolower($this->get_measurement_type('humidex'));
                             }
                         }
-                        if (array_key_exists('hi_co2', $module['datas'])) {
-                            if ($module['datas']['hi_co2']['value'] < $factor) {
-                                $factor = $module['datas']['hi_co2']['value'];
+                        if (array_key_exists('hi_co2', $module['measurements'])) {
+                            if ($module['measurements']['hi_co2']['value'] < $factor) {
+                                $factor = $module['measurements']['hi_co2']['value'];
                                 $factor_text = $this->get_measurement_type('co2');
                             }
                         }
@@ -443,7 +443,7 @@ class Indoor extends Base {
                 $bg_url = 'background-image: url("' . $good_url . '");';
             }
         }
-        $datas['health_idx']['icon'] = $this->output_iconic_value($health_idx, 'health_idx', null, true, $this->get_health_idx_color($health_idx), 'lws-widget-big-icon-' . $id);
+        $measurements['health_idx']['icon'] = $this->output_iconic_value($health_idx, 'health_idx', null, true, $this->get_health_idx_color($health_idx), 'lws-widget-big-icon-' . $id);
         $status = __('Comfort: ', 'live-weather-station') . strtolower($this->get_health_index_text($health_idx));
         if (($factor_text != '') && ($health_idx < 40)) {
             $status .= ' (' . $factor_text . ')';

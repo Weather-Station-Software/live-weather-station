@@ -127,7 +127,7 @@ class IdentifierLowercaser extends Process {
      */
     protected function run_core(){
         self::fields_lower_case(array('station_id'), self::live_weather_station_stations_table());
-        self::fields_lower_case(array('device_id', 'module_id'), self::live_weather_station_datas_table());
+        self::fields_lower_case(array('device_id', 'module_id'), self::live_weather_station_measurements_table());
         self::fields_lower_case(array('device_id', 'module_id'), self::live_weather_station_histo_daily_table());
         self::fields_lower_case(array('device_id', 'module_id'), self::live_weather_station_histo_yearly_table());
         self::fields_lower_case(array('device_id', 'module_id'), self::live_weather_station_media_table());

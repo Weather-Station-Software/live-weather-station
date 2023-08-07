@@ -199,7 +199,7 @@ trait Query {
      */
     protected function get_operational_stations_list() {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name ;
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -234,7 +234,7 @@ trait Query {
             $main = "OR (module_type='NAMain' AND device_id IN (" . implode(',', $ids) . "))";
         }
         global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_id, device_name, module_id, module_name FROM " . $table_name . " WHERE (module_type='NAModule4') OR (module_type='NAModule9') " . $main . ";";
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -257,7 +257,7 @@ trait Query {
      */
     protected function get_operational_thunderstorm_stations_list() {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name . " WHERE module_type='NAModule7'";
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -281,7 +281,7 @@ trait Query {
      */
     protected function get_operational_solar_stations_list() {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name . " WHERE module_type='NAModule5'";
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -305,7 +305,7 @@ trait Query {
      */
     protected function get_operational_modules_list() {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT device_id, module_type FROM `" . $table_name . "` WHERE module_id in (SELECT DISTINCT module_id FROM `" . $table_name . "`) GROUP BY module_id;" ;
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -392,7 +392,7 @@ trait Query {
      */
     protected function get_located_operational_stations_list($station_type=false) {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name ;
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -447,7 +447,7 @@ trait Query {
      */
     private function get_reference_values($station_type=false) {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT device_id, device_name, module_type, measure_timestamp, measure_type, measure_value FROM ".$table_name." WHERE (module_type='NAMain' OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NACurrent') AND (measure_type='temperature' OR measure_type='humidity' OR measure_type='windstrength' OR measure_type='winddirection' OR measure_type='pressure' OR measure_type='pressure_trend' OR measure_type='pressure_sl' OR measure_type LIKE 'loc_%')" ;
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -522,7 +522,7 @@ trait Query {
             if ((bool)get_option('live_weather_station_build_history')) {
                 $ret = get_option('live_weather_station_retention_history');
                 if ($ret == 0 || $ret > 52) {
-                    $station = $this->get_station_informations_by_station_id($device_id);
+                    $station = $this->get_station_information_by_station_id($device_id);
                     if (array_key_exists('oldest_data', $station) && $station['oldest_data'] != '0000-00-00') {
                         $old = \DateTime::createFromFormat('Y-m-d', $station['oldest_data']);
                         if (time() - $old->getTimestamp() > 60 * 60 * 24 * 365) {
@@ -574,7 +574,7 @@ trait Query {
      */
     protected function get_operational_station_name($device_id) {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_name FROM ".$table_name. " WHERE device_id='".$device_id."'" ;
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -584,21 +584,21 @@ trait Query {
             return $result;
         }
         catch(\Exception $ex) {
-            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
+            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent measurements', 'live-weather-station')));
         }
     }
 
     /**
-     * Get all datas for a single module.
+     * Get all measurements for a single module.
      *
      * @param string $module_id The module ID.
      * @param boolean $obsolescence_filtering Don't return obsolete data.
-     * @return array An array containing all the datas.
+     * @return array An array containing all the measurements.
      * @since  1.0.0
      */
-    protected function get_module_datas($module_id, $obsolescence_filtering=false) {
+    protected function get_module_measurements($module_id, $obsolescence_filtering=false) {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT * FROM ".$table_name. " WHERE module_id='".$module_id."'" ;
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -610,23 +610,23 @@ trait Query {
             return ($obsolescence_filtering? $this->obsolescence_filtering($result) : $result);
         }
         catch(\Exception $ex) {
-            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
+            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent measurements', 'live-weather-station')));
         }
     }
 
     /**
-     * Get outdoor datas.
+     * Get outdoor measurements.
      *
      * @param   string      $device_id                  The device ID.
      * @param   boolean     $obsolescence_filtering     Don't return obsolete data.
      * @param   boolean     $strict_filtering           Don't return not necessary data.
-     * @return  array   An array containing the outdoor datas.
+     * @return  array   An array containing the outdoor measurements.
      * @since    1.0.0
      * @access   protected
      */
-    protected function get_outdoor_datas($device_id, $obsolescence_filtering=false, $strict_filtering=false) {
+    protected function get_outdoor_measurements($device_id, $obsolescence_filtering=false, $strict_filtering=false) {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAMain' OR module_type='NAEphemer' OR module_type='NAComputed' OR module_type='NAPollution' " . ($strict_filtering ? "" : "OR module_type='NACurrent' ") . "OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NAModule3' OR module_type='NAModule5' OR module_type='NAModule6' OR module_type='NAModule7') ORDER BY module_id ASC" ;
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -638,7 +638,7 @@ trait Query {
             return ($obsolescence_filtering ? $this->obsolescence_filtering($result) : $result);
         }
         catch(\Exception $ex) {
-            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
+            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent measurements', 'live-weather-station')));
         }
     }
 
@@ -650,9 +650,9 @@ trait Query {
      * @return array An array containing the outdoor data.
      * @since 3.3.0
      */
-    protected function get_thunderstorm_datas($device_id, $obsolescence_filtering=false) {
+    protected function get_thunderstorm_measurements($device_id, $obsolescence_filtering=false) {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAMain' OR module_type='NAEphemer' OR module_type='NAModule7') ORDER BY module_id ASC" ;
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -664,7 +664,7 @@ trait Query {
             return ($obsolescence_filtering ? $this->obsolescence_filtering($result) : $result);
         }
         catch(\Exception $ex) {
-            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
+            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent measurements', 'live-weather-station')));
         }
     }
 
@@ -676,9 +676,9 @@ trait Query {
      * @return array An array containing the outdoor data.
      * @since 3.3.0
      */
-    protected function get_solar_datas($device_id, $obsolescence_filtering=false) {
+    protected function get_solar_measurements($device_id, $obsolescence_filtering=false) {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAMain' OR module_type='NAEphemer' OR module_type='NACurrent' OR module_type='NAModule5') ORDER BY module_id ASC" ;
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -690,37 +690,37 @@ trait Query {
             return ($obsolescence_filtering ? $this->obsolescence_filtering($result) : $result);
         }
         catch(\Exception $ex) {
-            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
+            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent measurements', 'live-weather-station')));
         }
     }
 
     /**
-     * Get outdoor datas.
+     * Get outdoor measurements.
      *
      * @param string $_id The module ID.
      * @param boolean $obsolescence_filtering Don't return obsolete data.
-     * @return array An array containing the indoor datas.
+     * @return array An array containing the indoor measurements.
      * @since 3.1.0
      */
-    protected function get_indoor_datas($_id, $obsolescence_filtering=false) {
+    protected function get_indoor_measurements($_id, $obsolescence_filtering=false) {
         $a = explode ('-', $_id);
         $device_id = $a[0];
         $module_id = $a[1];
-        return $this->get_module_datas($module_id, $obsolescence_filtering);
+        return $this->get_module_measurements($module_id, $obsolescence_filtering);
     }
 
     /**
-     * Get pollution datas.
+     * Get pollution measurements.
      *
      * @param   string      $device_id                  The device ID.
      * @param   boolean     $obsolescence_filtering     Don't return obsolete data.
-     * @return  array   An array containing the pollution datas.
+     * @return  array   An array containing the pollution measurements.
      * @since    2.7.0
      * @access   protected
      */
-    protected function get_pollution_datas($device_id, $obsolescence_filtering=false) {
+    protected function get_pollution_measurements($device_id, $obsolescence_filtering=false) {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAPollution')" ;
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -732,21 +732,21 @@ trait Query {
             return ($obsolescence_filtering ? $this->obsolescence_filtering($result) : $result);
         }
         catch(\Exception $ex) {
-            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
+            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent measurements', 'live-weather-station')));
         }
     }
 
     /**
-     * Get computed datas.
+     * Get computed measurements.
      *
      * @param string $device_id The device ID.
      * @param boolean $obsolescence_filtering Don't return obsolete data.
-     * @return array An array containing the pollution datas.
+     * @return array An array containing the pollution measurements.
      * @since 3.3.0
      */
-    protected function get_computed_datas($device_id, $obsolescence_filtering=false) {
+    protected function get_computed_measurements($device_id, $obsolescence_filtering=false) {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAComputed')" ;
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -758,21 +758,21 @@ trait Query {
             return ($obsolescence_filtering ? $this->obsolescence_filtering($result) : $result);
         }
         catch(\Exception $ex) {
-            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
+            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent measurements', 'live-weather-station')));
         }
     }
 
     /**
-     * Get ephemeris datas.
+     * Get ephemeris measurements.
      *
      * @param   string  $device_id  The device ID.
-     * @return  array   An array containing the ephemeris datas.
+     * @return  array   An array containing the ephemeris measurements.
      * @since    1.0.0
      * @access   protected
      */
-    protected function get_ephemeris_datas($device_id) {
+    protected function get_ephemeris_measurements($device_id) {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAMain' OR module_type='NAEphemer') ORDER BY module_id ASC" ;
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -784,25 +784,25 @@ trait Query {
             return $result;
         }
         catch(\Exception $ex) {
-            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
+            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent measurements', 'live-weather-station')));
         }
     }
 
     /**
-     * Get all datas for a single station.
+     * Get all measurements for a single station.
      *
      * @param string $device_id The device ID.
      * @param boolean $obsolescence_filtering Don't return obsolete data.
-     * @return array An array containing all the datas.
+     * @return array An array containing all the measurements.
      * @since 1.0.0
      */
-    protected function get_all_datas($device_id, $obsolescence_filtering=false) {
+    protected function get_all_measurements($device_id, $obsolescence_filtering=false) {
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $order = " ORDER BY CASE module_type WHEN 'NAMain' THEN 1 WHEN 'NAModule1' THEN 2 WHEN 'NAModule2' THEN 3 WHEN 'NAModule3' THEN 4 WHEN 'NAModule5' THEN 5 WHEN 'NAModule7' THEN 6 WHEN 'NAModule6' THEN 7 WHEN 'NAComputed' THEN 8 WHEN 'NAModule4' THEN 9 WHEN 'NAEphemer' THEN 10 WHEN 'NACurrent' THEN 11 ELSE 12 END";
         $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $device_id . "'" . $order ;
         try {
-            $cache_id = 'get_all_datas_'.$device_id;
+            $cache_id = 'get_all_measurements_'.$device_id;
             $query = Cache::get_query($cache_id);
             if ($query === false) {
                 $query = (array)$wpdb->get_results($sql);
@@ -816,7 +816,7 @@ trait Query {
             return ($obsolescence_filtering ? $this->obsolescence_filtering($result) : $result);
         }
         catch(\Exception $ex) {
-            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent datas', 'live-weather-station')));
+            return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent measurements', 'live-weather-station')));
         }
     }
 
@@ -827,10 +827,10 @@ trait Query {
      * @return array An array containing all the data.
      * @since 3.0.0
      */
-    protected function get_all_datas_for_push($device_id) {
+    protected function get_all_measurements_for_push($device_id) {
         $saved_obsolescence = get_option('live_weather_station_obsolescence');
         update_option('live_weather_station_obsolescence', 99);
-        $data = $this->get_all_datas($device_id, true);
+        $data = $this->get_all_measurements($device_id, true);
         update_option('live_weather_station_obsolescence', $saved_obsolescence);
         $result = array();
         if (!array_key_exists('condition', $data)) {
@@ -900,10 +900,10 @@ trait Query {
      * @param array $attributes An array representing the query.
      * @param boolean $obsolescence_filtering Don't return obsolete data.
      * @param boolean $full_mode For ful aggregated rendering.
-     * @return array An array containing all the datas.
+     * @return array An array containing all the measurements.
      * @since 2.1.0
      */
-    protected function get_line_datas($attributes, $obsolescence_filtering=false, $full_mode=false) {
+    protected function get_line_measurements($attributes, $obsolescence_filtering=false, $full_mode=false) {
         global $wpdb;
         $sub_attributes = $this->get_sub_attributes($attributes, $full_mode);
         $measures = "";
@@ -914,7 +914,7 @@ trait Query {
                 $i++;
             }
         }
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $attributes['device_id'] . "' AND module_id='" . $attributes['module_id'] . "' AND (" . $measures . ")";
         try {
             $query = (array)$wpdb->get_results($sql);
@@ -935,11 +935,11 @@ trait Query {
      *
      * @param   array   $attributes  An array representing the query.
      * @param   boolean     $obsolescence_filtering     Don't return obsolete data.
-     * @return array An array containing all the datas.
+     * @return array An array containing all the measurements.
      * @since    1.0.0
      * @access   protected
      */
-    protected function get_specific_datas($attributes, $obsolescence_filtering=false) {
+    protected function get_specific_measurements($attributes, $obsolescence_filtering=false) {
         global $wpdb;
         $sub_attributes = $this->get_sub_attributes($attributes);
         $measures = "";
@@ -950,7 +950,7 @@ trait Query {
                 $i++;
             }
         }
-        $table_name = $wpdb->prefix . self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "SELECT " . $attributes['element'] . ", module_type" . ($attributes['element']!="measure_type"?", measure_type":"") . " FROM " . $table_name . " WHERE device_id='" . $attributes['device_id'] . "' AND module_id='" . $attributes['module_id'] . "' AND (" . $measures . ")";
         $result = array();
         try {
@@ -1090,7 +1090,7 @@ trait Query {
      * @since 3.7.0
      */
     public function update_oldest_data($station_id) {
-        $station = $this->get_station_informations_by_station_id($station_id);
+        $station = $this->get_station_information_by_station_id($station_id);
         if (is_array($station) && !empty($station)) {
             if ($date = $this->get_oldest_data($station)) {
                 $station['oldest_data'] = $date;
@@ -1100,13 +1100,13 @@ trait Query {
     }
 
     /**
-     * Get station informations.
+     * Get station information.
      *
      * @param string $station_id The station id.
-     * @return array An array containing the station informations.
+     * @return array An array containing the station information.
      * @since 2.3.0
      */
-    protected function get_station_informations_by_station_id($station_id) {
+    protected function get_station_information_by_station_id($station_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
         $sql = "SELECT * FROM " . $table_name . " WHERE station_id='" . $station_id."'";
@@ -1129,14 +1129,14 @@ trait Query {
     }
 
     /**
-     * Get extended station informations.
+     * Get extended station information.
      *
      * @param integer $station_id The station id.
-     * @return array An array containing the extended station informations.
+     * @return array An array containing the extended station information.
      * @since 3.4.0
      */
-    protected function get_extended_station_informations_by_station_id($station_id) {
-        $result = $this->get_station_informations_by_station_id($station_id);
+    protected function get_extended_station_information_by_station_id($station_id) {
+        $result = $this->get_station_information_by_station_id($station_id);
         if (count($result) !== 0) {
             $modules = DeviceManager::get_modules_details($station_id);
             $result['modules_names'] = array();
@@ -1273,7 +1273,7 @@ trait Query {
         $modules = $this->get_operational_modules_list();
         if (count($modules) > 0) {
             foreach ($modules as $key => $module) {
-                $station = $this->get_station_informations_by_station_id($key);
+                $station = $this->get_station_information_by_station_id($key);
                 if (count($station) > 0) {
                     $station['comp_bas'] = $module['comp_bas'];
                     $station['comp_ext'] = $module['comp_ext'];
@@ -1288,10 +1288,10 @@ trait Query {
     }
 
     /**
-     * Get station informations.
+     * Get station information.
      *
      * @param integer $guid The station guid.
-     * @return array An array containing the station informations.
+     * @return array An array containing the station information.
      * @since 3.0.0
      */
     protected static function get_station($guid) {
@@ -1471,13 +1471,13 @@ trait Query {
     }
 
     /**
-     * Get modules informations.
+     * Get modules information.
      *
      * @param string $device_id The station device id.
      * @return array An array containing the modules details.
      * @since  3.5.0
      */
-    protected static function get_modules_informations($device_id) {
+    protected static function get_modules_information($device_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_module_detail_table();
         $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $device_id."'";
@@ -1553,23 +1553,23 @@ trait Query {
     }
 
     /**
-     * Get station informations.
+     * Get station information.
      *
      * @param integer $guid The station guid.
-     * @return array An array containing the station informations.
+     * @return array An array containing the station information.
      * @since  3.0.0
      */
-    protected function get_station_informations_by_guid($guid) {
+    protected function get_station_information_by_guid($guid) {
         return self::get_station($guid);
     }
 
     /**
-     * Get stations informations.
+     * Get stations information.
      *
-     * @return array An array containing the stations informations.
+     * @return array An array containing the stations information.
      * @since 2.3.0
      */
-    protected function get_stations_informations() {
+    protected function get_stations_information() {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
         $sql = "SELECT * FROM " . $table_name ;
@@ -2476,7 +2476,7 @@ trait Query {
         $result = array();
         $result['00:00:00:00:00:00'] = 'N/A';
         global $wpdb;
-        $table_name = $wpdb->prefix.self::live_weather_station_datas_table();
+        $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name ;
         try {
             $query = (array)$wpdb->get_results($sql);
