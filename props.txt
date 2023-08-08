@@ -8,8 +8,8 @@ During our discussion, it was clear I had to do something. So I decided to jump 
 Pierre is truly inspirational, he maintained the Weather Station plugin without seeking any financial contribution since November 14, 2015.
 Our approaches are very similar: I'm doing it because I love open source and want to give something back to the community.
 
-For the context, Pierre and I knew each other. We're both French, so we met at French WordCamp events like the WordCamp Paris in April 2023 and online via the French WordPress community slack.
-This obviously helped speed things up. And we dealt the transfer on June the 23rd 2023 in a really effective video call!
+For context, Pierre and I knew each other. We're both French, so we met at French WordCamp events like WordCamp Paris in April 2023 and online via the French WordPress community slack.
+This helped speed things up. And we dealt with the transfer on June the 23rd 2023 in a really effective video call!
 
 I am dedicating my props to his tireless work over all these years. I wouldn't have been able to come up with the idea of this plugin. Now the responsibility for maintaining and enhancing it is mine. I’m honoured by his trust!
 
