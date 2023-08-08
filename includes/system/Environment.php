@@ -723,25 +723,15 @@ class Manager {
     }
 
     /**
-     * Is the WP update system enabled?
+     * Checks if the plugin's auto-update is enabled.
      *
      * @since 3.1.3
-     */
-    public static function is_updatable() {
-        $result = true;
-        if (defined('AUTOMATIC_UPDATER_DISABLED')) {
-            $result = !AUTOMATIC_UPDATER_DISABLED;
-        }
-        return $result;
-    }
-
-    /**
-     * Is the plugin auto-update enabled?
-     *
-     * @since 3.1.3
+     * @return bool Returns true if auto-update is enabled, false otherwise.
      */
     public static function is_autoupdatable() {
-        return (self::is_updatable() && get_option('live_weather_station_auto_update'));
+        $is_updatable = self::is_updatable();
+        $auto_update_option = get_option('live_weather_station_auto_update');
+        return ($is_updatable && $auto_update_option);
     }
 
     /**
