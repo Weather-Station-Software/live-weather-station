@@ -18,8 +18,8 @@ Whether you own a weather station or not, you can enjoy the power of Weather Sta
 You can find many demos and documentation on the [official website](https://weather.station.software/).
 
 = Simple and efficient =
-The use of Weather Station requires no knowledge in programming and does not requires writing code.
-Just set it, insert (in a page or an article) the provided shortcodes. And it works!
+The use of Weather Station requires no knowledge of programming and does not require writing code.
+Just set it and insert (in a page or an article) the provided shortcodes. And it works!
 
 = How does it work? =
 Once you have connected the plugin to your weather stations (via the dashboard of your WordPress site), the data you have access to is collected regularly and stored in the database of your WordPress site.
@@ -63,7 +63,7 @@ This plugin is free and provided without warranty of any kind. Use it at your ow
 - Actual maintainer (since v3.8.12): [Jason Rouet](https://profiles.wordpress.org/jaz_on/)
 
 = Donation =
-If you like this plugin or find it useful and want to thank me for the work done, please consider making a donation to [La Quadrature Du Net](https://www.laquadrature.net/en) which is an advocacy group defending the rights and freedoms of citizens on the Internet. By supporting them, you help the daily actions they perform to defend our fundamental freedoms!
+If you like this plugin or find it useful and want to thank me for the work done, please consider donating [La Quadrature Du Net](https://www.laquadrature.net/en) which is an advocacy group defending the rights and freedoms of citizens on the Internet. By supporting them, you help the daily actions they perform to defend our fundamental freedoms!
 
 
 == Installation ==
@@ -114,7 +114,7 @@ The Patchstack team will assist you with verification, CVE assignment, and notif
 Alternatively, you can also [contact me directly by email](mailto:weather@station.network).
 
 = Are there some paid services or limitations? =
-NO. Weather Station is a free software. That means, you (the users) have the freedom to run, copy, distribute, study, change and improve the software.
+NO. Weather Station is a free software. That means you (the users) have the freedom to run, copy, distribute, study, change and improve the software.
 Although it is not free of charge for its maintainer, I'd rather have your help to improve the plugin's code than receive money to pay for my coffee or beers. 🫶
 
 == Changelog ==
