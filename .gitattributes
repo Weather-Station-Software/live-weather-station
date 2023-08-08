@@ -5,13 +5,3 @@
 /.gitattributes export-ignore
 /.gitignore export-ignore
 /readme.md export-ignore
-
-# Ignore vscode files
-.vscode/*
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
-!.vscode/*.code-snippets
-.history/
-*.vsix
