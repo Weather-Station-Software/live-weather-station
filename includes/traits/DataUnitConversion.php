@@ -703,16 +703,19 @@ trait Conversion {
     }
 
     /**
-     * Get the wind angle expressed in its unique unit.
-     *
-     * @param mixed $value The value of the wind angle.
-     * @return string The wind angle expressed in its unique unit.
-     * @since 1.0.0
-     */
-    protected function get_wind_angle($value)
+    * Get the wind angle expressed in its unique unit.
+    *
+    * @param mixed $windAngle The value of the wind angle. (Assumed to be numeric)
+    * @return string The wind angle expressed in its unique unit.
+    * @since 1.0.0
+    */
+    protected function get_wind_angle($windAngle)
     {
-        $result = $value;
-        return sprintf('%d', round($result, 0));
+        if (is_numeric()) {
+            return sprintf('%d', round($windAngle, 0));
+        } else {
+            return 'Invalid input';
+        }
     }
 
     /**
