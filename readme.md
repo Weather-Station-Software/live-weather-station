@@ -1,4 +1,7 @@
 [![New WordPress.org release](https://github.com/Weather-Station-Software/live-weather-station/actions/workflows/deploy-new-release.yml/badge.svg)](https://github.com/Weather-Station-Software/live-weather-station/actions/workflows/deploy-new-release.yml)
+[![License: GPLv2](https://img.shields.io/badge/License-GPL_v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
+
+
 
 # Weather Station
 - Contributors: jaz_on
