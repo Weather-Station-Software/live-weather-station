@@ -1,8 +1,15 @@
+#3.8.14 / September 6th, 2023
+* Improvement: full support for WordPress 6.3.x
+* Rewrite get_wind_angle
+* Refactor is_autoupdatable and is_updated
+* Fix typos
+* Minor txt changes
+
 #3.8.13 / August 1st, 2023
 * Improvement: nonces implemented to several lws-setting to avoid potential Cross Site Request Forgery (CSRF) attack.
 
 #3.8.12 / June 26th, 2023
-* Improvement: full support for WordPress 6.2.
+* Improvement: full support for WordPress 6.2.x
 * New: Pierre Lannoy has handed over the management of the project to Jason Rouet, who becomes the new owner and maintainer of the Weather Station plugin.
 * [For further detail, here is the blog post about it.](https://weather.station.software/blog/lets-go-for-another-round/)
 
