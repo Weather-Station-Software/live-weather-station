@@ -3822,16 +3822,16 @@ class Admin {
                 array_key_exists('loc_longitude', $_POST)) {
                 $station['station_type'] = LWS_AMBT_SID;
                 if (array_key_exists('guid', $_POST)) {
-                    $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                    $station['guid'] = sanitize_text_field($_POST['guid']);
                 }
                 if (array_key_exists('id', $_POST)) {
-                    $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['id']));
+                    $station['station_id'] = sanitize_text_field($_POST['id']);
                 }
                 if (array_key_exists('station_name', $_POST)) {
-                    $station['station_name'] = stripslashes(htmlspecialchars_decode($_POST['station_name']));
+                    $station['station_name'] = sanitize_text_field($_POST['station_name']);
                 }
                 if (array_key_exists('loc_city', $_POST)) {
-                    $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+                    $station['loc_city'] = sanitize_text_field($_POST['loc_city']);
                 }
                 if (array_key_exists('loc_country_code', $_POST)) {
                     $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
@@ -3840,7 +3840,7 @@ class Admin {
                     $station['loc_timezone'] = sanitize_text_field($_POST['loc_tz']);
                 }
                 if (array_key_exists('loc_altitude', $_POST)) {
-                    $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
+                    $station['loc_altitude'] = (int)sanitize_text_field($_POST['loc_altitude']);
                 }
                 if (array_key_exists('loc_latitude', $_POST) &&
                     array_key_exists('loc_longitude', $_POST)) {
@@ -3951,25 +3951,25 @@ class Admin {
             array_key_exists('loc_altitude', $_POST)) {
             $station['station_type'] = LWS_LOC_SID;
             if (array_key_exists('guid', $_POST)) {
-                $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                $station['guid'] = sanitize_text_field($_POST['guid']);
             }
             if (array_key_exists('station_id', $_POST)) {
-                $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
+                $station['station_id'] = sanitize_text_field($_POST['station_id']);
             }
             if (array_key_exists('station_name', $_POST)) {
-                $station['station_name'] = stripslashes(htmlspecialchars_decode($_POST['station_name']));
+                $station['station_name'] = sanitize_text_field($_POST['station_name']);
             }
             if (array_key_exists('loc_city', $_POST)) {
-                $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+                $station['loc_city'] = sanitize_text_field($_POST['loc_city']);
             }
             if (array_key_exists('loc_country_code', $_POST)) {
-                $station['loc_country_code'] = $_POST['loc_country_code'];
+                $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
             }
             if (array_key_exists('loc_tz', $_POST)) {
-                $station['loc_timezone'] = $_POST['loc_tz'];
+                $station['loc_timezone'] = sanitize_text_field($_POST['loc_tz']);
             }
             if (array_key_exists('loc_altitude', $_POST)) {
-                $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
+                $station['loc_altitude'] = (int)sanitize_text_field($_POST['loc_altitude']);
             }
             if (array_key_exists('loc_latitude', $_POST) &&
                 array_key_exists('loc_longitude', $_POST)) {
