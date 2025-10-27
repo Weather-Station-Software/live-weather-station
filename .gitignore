@@ -1,1 +1,30 @@
 .DS_Store
+*.swp
+*.swo
+*~
+
+# IDEs & config files
+.cursor/
+.cursorlogs/
+.cursormodule/
+cursor-*
+*.cursor-temp.*
+.cursorrules
+.idea/
+.vscode/
+.devs/
+.docs/
+.tests/
+
+# Temporary files
+*.tmp
+*.log
+*.zip
+*.tar
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+*.tar.lzma
+*.tar.lzma.gz
+*.tar.lzma.bz2
+*.tar.lzma.xz

@@ -246,6 +246,11 @@ class Admin {
      * @since 3.3.0
      */
     public static function hide_lws_whatsnew_callback() {
+        // Check user capabilities
+        if (!current_user_can('manage_options')) {
+            wp_die(-1);
+        }
+        
         check_ajax_referer('lws-whatsnew-nonce', 'lwswhatsnewnonce');
         update_option('live_weather_station_show_update', 0);
         wp_die(1);
@@ -1088,6 +1093,13 @@ class Admin {
      * @since 3.0.0
      */
     private function save_options($section) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to save options.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to save options.');
+            return false;
+        }
+        
         $result = true;
         $this->reload = false;
         if ($section == 'styles') {
@@ -1095,20 +1107,20 @@ class Admin {
         }
         if ($section == 'display') {
             if (array_key_exists('submit', $_POST)) {
-                update_option('live_weather_station_unit_temperature', (integer)$_POST['lws_display_temperature_unit']);
-                update_option('live_weather_station_unit_pressure', (integer)$_POST['lws_display_pressure_unit']);
-                update_option('live_weather_station_unit_wind_strength', (integer)$_POST['lws_display_wind_strength_unit']);
-                update_option('live_weather_station_unit_gas', (integer)$_POST['lws_display_gas_unit']);
-                update_option('live_weather_station_unit_distance', (integer)$_POST['lws_display_distance_unit']);
-                update_option('live_weather_station_unit_psychrometry', (integer)$_POST['lws_display_density_other']);
-                update_option('live_weather_station_unit_altitude', (integer)$_POST['lws_display_altitude_unit']);
-                update_option('live_weather_station_unit_rain_snow', (integer)$_POST['lws_display_rain_snow_unit']);
+                update_option('live_weather_station_unit_temperature', (integer)sanitize_text_field($_POST['lws_display_temperature_unit']));
+                update_option('live_weather_station_unit_pressure', (integer)sanitize_text_field($_POST['lws_display_pressure_unit']));
+                update_option('live_weather_station_unit_wind_strength', (integer)sanitize_text_field($_POST['lws_display_wind_strength_unit']));
+                update_option('live_weather_station_unit_gas', (integer)sanitize_text_field($_POST['lws_display_gas_unit']));
+                update_option('live_weather_station_unit_distance', (integer)sanitize_text_field($_POST['lws_display_distance_unit']));
+                update_option('live_weather_station_unit_psychrometry', (integer)sanitize_text_field($_POST['lws_display_density_other']));
+                update_option('live_weather_station_unit_altitude', (integer)sanitize_text_field($_POST['lws_display_altitude_unit']));
+                update_option('live_weather_station_unit_rain_snow', (integer)sanitize_text_field($_POST['lws_display_rain_snow_unit']));
                 update_option('live_weather_station_measure_only', (!array_key_exists('lws_display_viewing_options', $_POST) ? 1 : 0));
-                update_option('live_weather_station_wind_semantics', (integer)$_POST['lws_display_windsemantics']);
+                update_option('live_weather_station_wind_semantics', (integer)sanitize_text_field($_POST['lws_display_windsemantics']));
                 //update_option('live_weather_station_angle_semantics', (integer)$_POST['lws_display_anglesemantics']);
-                update_option('live_weather_station_moon_icons', (integer)$_POST['lws_display_moonicons']);
+                update_option('live_weather_station_moon_icons', (integer)sanitize_text_field($_POST['lws_display_moonicons']));
                 update_option('live_weather_station_min_max_mode', (array_key_exists('lws_display_minmax', $_POST) ? 1 : 0));
-                update_option('live_weather_station_obsolescence', (integer)$_POST['lws_display_obsolescence']);
+                update_option('live_weather_station_obsolescence', (integer)sanitize_text_field($_POST['lws_display_obsolescence']));
                 update_option('live_weather_station_force_frontend_styling', (array_key_exists('lws_display_force_frontend_styling', $_POST) ? 1 : 0));
             }
             else {
@@ -1117,7 +1129,7 @@ class Admin {
         }
         if ($section == 'history') {
             if (array_key_exists('submit', $_POST)) {
-                $mode = (integer)$_POST['lws_history_collect'];
+                $mode = (integer)sanitize_text_field($_POST['lws_history_collect']);
                 if ($mode == 0) {
                     update_option('live_weather_station_collect_history', 0);
                     update_option('live_weather_station_build_history', 0);
@@ -1130,8 +1142,8 @@ class Admin {
                     update_option('live_weather_station_collect_history', 1);
                     update_option('live_weather_station_build_history', 1);
                 }
-                update_option('live_weather_station_full_history', (integer)$_POST['lws_history_full']);
-                update_option('live_weather_station_retention_history', (integer)$_POST['lws_history_retention']);
+                update_option('live_weather_station_full_history', (integer)sanitize_text_field($_POST['lws_history_full']));
+                update_option('live_weather_station_retention_history', (integer)sanitize_text_field($_POST['lws_history_retention']));
             }
             else {
                 $result = false;
@@ -1143,7 +1155,8 @@ class Admin {
                 foreach ($thresholds as $threshold) {
                     foreach (array('_min_value', '_max_value', '_min_alarm', '_max_alarm') as $type) {
                         if (array_key_exists('lws_thresholds_' . $threshold . $type, $_POST)) {
-                            update_option('live_weather_station_' . $threshold . $type, $this->convert_value($_POST['lws_thresholds_' . $threshold . $type], $threshold));
+                            $sanitized = sanitize_text_field($_POST['lws_thresholds_' . $threshold . $type]);
+                            update_option('live_weather_station_' . $threshold . $type, $this->convert_value($sanitized, $threshold));
                         }
                     }
                 }
@@ -1160,12 +1173,12 @@ class Admin {
             $cron = get_option('live_weather_station_cron_speed');
             $override = get_option('live_weather_station_overload_hc');
             if (array_key_exists('submit', $_POST)) {
-                update_option('live_weather_station_logger_level', (integer)$_POST['lws_system_log_level']);
-                update_option('live_weather_station_fa_mode', (integer)$_POST['lws_system_fa_mode']);
-                update_option('live_weather_station_logger_rotate', (integer)$_POST['lws_system_log_rotate']);
-                update_option('live_weather_station_logger_retention', (integer)$_POST['lws_system_log_retention']);
-                update_option('live_weather_station_file_retention', (integer)$_POST['lws_system_file_retention']);
-                update_option('live_weather_station_retention_notifications', (integer)$_POST['lws_system_notif_retention']);
+                update_option('live_weather_station_logger_level', (integer)sanitize_text_field($_POST['lws_system_log_level']));
+                update_option('live_weather_station_fa_mode', (integer)sanitize_text_field($_POST['lws_system_fa_mode']));
+                update_option('live_weather_station_logger_rotate', (integer)sanitize_text_field($_POST['lws_system_log_rotate']));
+                update_option('live_weather_station_logger_retention', (integer)sanitize_text_field($_POST['lws_system_log_retention']));
+                update_option('live_weather_station_file_retention', (integer)sanitize_text_field($_POST['lws_system_file_retention']));
+                update_option('live_weather_station_retention_notifications', (integer)sanitize_text_field($_POST['lws_system_notif_retention']));
                 update_option('live_weather_station_upload_allowed', (array_key_exists('lws_system_upload_allowed', $_POST) ? 1 : 0));
                 update_option('live_weather_station_mutation_observer', (array_key_exists('lws_system_mutation_observer', $_POST) ? 1 : 0));
                 update_option('live_weather_station_ajax_widget', (array_key_exists('lws_system_ajax_widget', $_POST) ? 1 : 0));
@@ -1184,21 +1197,21 @@ class Admin {
                 update_option('live_weather_station_auto_manage_netatmo', (array_key_exists('lws_system_auto_manage_netatmo', $_POST) ? 1 : 0));
                 update_option('live_weather_station_auto_manage_bloomsky', (array_key_exists('lws_system_auto_manage_bloomsky', $_POST) ? 1 : 0));
                 update_option('live_weather_station_auto_update', (array_key_exists('lws_system_auto_update', $_POST) ? 1 : 0));
-                update_option('live_weather_station_time_shift_threshold', (integer)$_POST['lws_system_time_shift_threshold']);
+                update_option('live_weather_station_time_shift_threshold', (integer)sanitize_text_field($_POST['lws_system_time_shift_threshold']));
                 update_option('live_weather_station_show_technical', (array_key_exists('lws_system_show_technical', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_analytics', (array_key_exists('lws_system_show_analytics', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_tasks', (array_key_exists('lws_system_show_tasks', $_POST) ? 1 : 0));
                 update_option('live_weather_station_plugin_stat', (array_key_exists('lws_system_plugin_stat', $_POST) ? 1 : 0));
                 update_option('live_weather_station_keep_tables', (array_key_exists('lws_system_keep_tables', $_POST) ? 1 : 0));
                 update_option('live_weather_station_overload_hc', (array_key_exists('lws_system_overload_hc', $_POST) ? 1 : 0));
-                update_option('live_weather_station_analytics_cutoff', (integer)$_POST['lws_system_analytics_cutoff']);
-                update_option('live_weather_station_quota_mode', (integer)$_POST['lws_system_quota']);
-                update_option('live_weather_station_cron_speed', (integer)$_POST['lws_system_cron_speed']);
-                update_option('live_weather_station_picture_retention', (integer)$_POST['lws_system_picture_retention']);
-                update_option('live_weather_station_video_retention', (integer)$_POST['lws_system_video_retention']);
-                update_option('live_weather_station_collection_http_timeout', (integer)$_POST['lws_collection_http_timeout']);
-                update_option('live_weather_station_sharing_http_timeout', (integer)$_POST['lws_sharing_http_timeout']);
-                update_option('live_weather_station_system_http_timeout', (integer)$_POST['lws_system_http_timeout']);
+                update_option('live_weather_station_analytics_cutoff', (integer)sanitize_text_field($_POST['lws_system_analytics_cutoff']));
+                update_option('live_weather_station_quota_mode', (integer)sanitize_text_field($_POST['lws_system_quota']));
+                update_option('live_weather_station_cron_speed', (integer)sanitize_text_field($_POST['lws_system_cron_speed']));
+                update_option('live_weather_station_picture_retention', (integer)sanitize_text_field($_POST['lws_system_picture_retention']));
+                update_option('live_weather_station_video_retention', (integer)sanitize_text_field($_POST['lws_system_video_retention']));
+                update_option('live_weather_station_collection_http_timeout', (integer)sanitize_text_field($_POST['lws_collection_http_timeout']));
+                update_option('live_weather_station_sharing_http_timeout', (integer)sanitize_text_field($_POST['lws_sharing_http_timeout']));
+                update_option('live_weather_station_system_http_timeout', (integer)sanitize_text_field($_POST['lws_system_http_timeout']));
                 if (!$save_auto && get_option('live_weather_station_auto_manage_netatmo')) {
                     $this->get_netatmo(true);
                     $this->get_netatmohc(true);
@@ -1234,6 +1247,13 @@ class Admin {
      * @since 3.0.0
      */
     private function reset_to_defaults($section) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset defaults.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset defaults.');
+            return false;
+        }
+        
         $result = true;
         if ($section == 'general') {
             $result = false;
@@ -1266,20 +1286,27 @@ class Admin {
      * @since 3.0.0
      */
     private function check_options() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to access this page.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to access settings page.');
+            return false;
+        }
+        
         if (empty($_POST)) {
             return false;
         }
         $result = false;
         $sec = false;
         if (array_key_exists('option_page', $_POST)) {
-            $section = $_POST['option_page'];
+            $section = sanitize_text_field($_POST['option_page']);
         }
         else {
             $section = 'unknown';
         }
         $action = '';
         if (array_key_exists('action', $_POST)) {
-            $action = $_POST['action'];
+            $action = sanitize_text_field($_POST['action']);
         }
         if (array_key_exists('reset', $_POST)) {
             $action = 'reset';
@@ -1341,7 +1368,16 @@ class Admin {
 
         }
         elseif ($section == 'services' && $action == 'manage-connection') {
-            $this->manage_connection();
+            // Verify nonce for manage-connection action
+            if ($sec) {
+                $this->manage_connection();
+            }
+            else {
+                $message = __('Unable to process connection request. Please try again.', 'live-weather-station');
+                add_settings_error('lws_nonce_error', 403, $message, 'error');
+                Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
+                Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely process service connection request.');
+            }
         }
         else {
             $message = __('%s has not been updated. Please try again.', 'live-weather-station');
@@ -2050,6 +2086,11 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_simplified() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            wp_die(__('You do not have sufficient permissions to switch mode.', 'live-weather-station'));
+        }
+        
         if( isset($_GET['lwssettingsswitchsimplifiednonce']) && wp_verify_nonce( $_GET['lwssettingsswitchsimplifiednonce'], 'lwssettingsswitchsimplifiednonce') ) {
             update_option('live_weather_station_advanced_mode', 0);
             add_settings_error('lws_nonce_success', 200, sprintf(__('%s now runs in simplified mode.', 'live-weather-station'), LWS_PLUGIN_NAME), 'updated');
@@ -2065,6 +2106,11 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_extended() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            wp_die(__('You do not have sufficient permissions to switch mode.', 'live-weather-station'));
+        }
+        
         if( isset($_GET['lwssettingsswitchextendednonce']) && wp_verify_nonce( $_GET['lwssettingsswitchextendednonce'], 'lwssettingsswitchextendednonce') ) {
             update_option('live_weather_station_advanced_mode', 1);
             add_settings_error('lws_nonce_success', 200, sprintf(__('%s now runs in extended mode.', 'live-weather-station'), LWS_PLUGIN_NAME), 'updated');
@@ -2080,6 +2126,11 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_metric() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            wp_die(__('You do not have sufficient permissions to switch mode.', 'live-weather-station'));
+        }
+        
         if( isset($_GET['lwssettingsswitchmetricnonce']) && wp_verify_nonce( $_GET['lwssettingsswitchmetricnonce'], 'lwssettingsswitchmetricnonce') ) {
             self::switch_to_metric();
             add_settings_error('lws_nonce_success', 200, sprintf(__('%s now displays its data in the metric system.', 'live-weather-station'), LWS_PLUGIN_NAME), 'updated');
@@ -2095,6 +2146,11 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_imperial() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            wp_die(__('You do not have sufficient permissions to switch mode.', 'live-weather-station'));
+        }
+        
         if( isset($_GET['lwssettingsswitchimperialnonce']) && wp_verify_nonce( $_GET['lwssettingsswitchimperialnonce'], 'lwssettingsswitchimperialnonce' ) ) {
             self::switch_to_imperial();
             add_settings_error('lws_nonce_success', 200, sprintf(__('%s now displays its data in the imperial system.', 'live-weather-station'), LWS_PLUGIN_NAME), 'updated');
@@ -2110,6 +2166,11 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_full_translation() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            wp_die(__('You do not have sufficient permissions to switch translation mode.', 'live-weather-station'));
+        }
+        
         if( isset($_GET['lwssettingsswitchfulltranslationnonce']) && wp_verify_nonce( $_GET['lwssettingsswitchfulltranslationnonce'], 'lwssettingsswitchfulltranslationnonce' ) ) {
             update_option('live_weather_station_partial_translation', 0);
             $i18n = new Intl();
@@ -2127,6 +2188,11 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_partial_translation() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            wp_die(__('You do not have sufficient permissions to switch translation mode.', 'live-weather-station'));
+        }
+        
         if( isset($_GET['lwssettingsswitchpartialtranslationnonce']) && wp_verify_nonce( $_GET['lwssettingsswitchpartialtranslationnonce'], 'lwssettingsswitchpartialtranslationnonce' ) ) {
             update_option('live_weather_station_partial_translation', 1);
             $i18n = new Intl();
@@ -2144,6 +2210,25 @@ class Admin {
      * @since 3.0.0
      */
     private function reset_dashboard_meta() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset dashboard.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset dashboard.');
+            return;
+        }
+        
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-dashboard')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to reset dashboard. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a dashboard reset request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reset dashboard.');
+            return;
+        }
+        
         $this->clean_usermeta('lws-dashboard');
         update_user_meta(get_current_user_id(), 'show_lws_welcome_panel', true);
         add_settings_error('lws_nonce_success', 200, __('Dashboard view has been reset to defaults.', 'live-weather-station'), 'updated');
@@ -2156,6 +2241,25 @@ class Admin {
      * @since 3.0.0
      */
     private function reset_analytics_meta() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset analytics.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset analytics.');
+            return;
+        }
+        
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-analytics')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to reset analytics. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in an analytics reset request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reset analytics.');
+            return;
+        }
+        
         $this->clean_usermeta('lws-analytics');
         add_settings_error('lws_nonce_success', 200, __('Analytics view has been reset to defaults.', 'live-weather-station'), 'updated');
         Logger::info($this->service, null, null, null, null, null, 0, 'Analytics view has been reset to defaults.');
@@ -2167,6 +2271,25 @@ class Admin {
      * @since 3.0.0
      */
     private function reset_services_meta() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset services.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset services.');
+            return;
+        }
+        
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-services')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to reset services. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a services reset request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reset services.');
+            return;
+        }
+        
         $this->clean_usermeta('lws-settings');
         add_settings_error('lws_nonce_success', 200, __('Services view has been reset to defaults.', 'live-weather-station'), 'updated');
         Logger::info($this->service, null, null, null, null, null, 0, 'Services view have been reset to defaults.');
@@ -2178,6 +2301,25 @@ class Admin {
      * @since 3.0.0
      */
     private function reset_stations_meta() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset stations.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset stations.');
+            return;
+        }
+        
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-stations')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to reset stations. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a stations reset request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reset stations.');
+            return;
+        }
+        
         $this->clean_usermeta('lws-station');
         add_settings_error('lws_nonce_success', 200, __('Stations views have been reset to defaults.', 'live-weather-station'), 'updated');
         Logger::info($this->service, null, null, null, null, null, 0, 'Stations views have been reset to defaults.');
@@ -2190,6 +2332,28 @@ class Admin {
      * @since 3.0.0
      */
     private function purge_data($auto=false) {
+        if (!$auto) {
+            // Check user capabilities
+            if (!current_user_can($this->get_manage_options_cap())) {
+                add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to purge data.', 'live-weather-station'), 'error');
+                Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to purge data.');
+                return;
+            }
+            
+            // Verify nonce for purge-data action
+            $nonce_verified = false;
+            if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'purge-data')) {
+                $nonce_verified = true;
+            }
+            
+            if (!$nonce_verified) {
+                add_settings_error('lws_nonce_error', 403, __('Unable to purge data. Security token is missing or invalid.', 'live-weather-station'), 'error');
+                Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a data purge request.');
+                Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely purge data.');
+                return;
+            }
+        }
+        
         self::truncate_data_table();
         if (!$auto) {
             add_settings_error('lws_nonce_success', 200, __('All stations data have been purged.', 'live-weather-station'), 'updated');
@@ -2207,6 +2371,28 @@ class Admin {
      * @since 3.0.0
      */
     private function sync_data($auto=false) {
+        if (!$auto) {
+            // Check user capabilities
+            if (!current_user_can($this->get_manage_options_cap())) {
+                add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to sync data.', 'live-weather-station'), 'error');
+                Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to sync data.');
+                return;
+            }
+            
+            // Verify nonce for sync-data action
+            $nonce_verified = false;
+            if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'sync-data')) {
+                $nonce_verified = true;
+            }
+            
+            if (!$nonce_verified) {
+                add_settings_error('lws_nonce_error', 403, __('Unable to sync data. Security token is missing or invalid.', 'live-weather-station'), 'error');
+                Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a data sync request.');
+                Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely sync data.');
+                return;
+            }
+        }
+        
         $this->purge_data($auto);
         $this->get_all();
         if (!$auto) {
@@ -2224,6 +2410,25 @@ class Admin {
      * @since 3.2.0
      */
     private function reset_cache() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset cache.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset cache.');
+            return;
+        }
+        
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-cache')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to reset cache. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a cache reset request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reset cache.');
+            return;
+        }
+        
         Cache::reset();
         add_settings_error('lws_nonce_success', 200, sprintf(__('%s has been reset.', 'live-weather-station'), __('Cache', 'live-weather-station')), 'updated');
     }
@@ -2234,6 +2439,25 @@ class Admin {
      * @since 3.2.0
      */
     private function reset_log() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset log.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset log.');
+            return;
+        }
+        
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-log')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to reset log. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a log reset request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reset log.');
+            return;
+        }
+        
         Cache::flush_backend(false);
         Logger::reset();
         add_settings_error('lws_nonce_success', 200, sprintf(__('%s has been reset.', 'live-weather-station'), __('Events log', 'live-weather-station')), 'updated');
@@ -2245,6 +2469,25 @@ class Admin {
      * @since 3.8.0
      */
     private function export_configuration() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to export configuration.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to export configuration.');
+            return;
+        }
+        
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'export-configuration')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to export configuration. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a configuration export request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely export configuration.');
+            return;
+        }
+        
         ProcessManager::register('ConfigurationExporter');
         $message = __('Configuration export has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');
         add_settings_error('lws_nonce_success', 200, $message, 'updated');
@@ -2259,6 +2502,28 @@ class Admin {
      * @since 3.2.0
      */
     private function cron_reschedule($exec=false) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reschedule cron tasks.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reschedule cron.');
+            return;
+        }
+        
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce'])) {
+            $nonce_action = $exec ? 'cron-force' : 'cron-reschedule';
+            if (wp_verify_nonce($_GET['_wpnonce'], $nonce_action)) {
+                $nonce_verified = true;
+            }
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('This action is not allowed. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a cron reschedule request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reschedule cron.');
+            return;
+        }
+        
         $done = false;
         $hook = '';
         $op = 'reschedule';
@@ -2266,7 +2531,7 @@ class Admin {
             $op = 'reschedule & execute';
         }
         if (array_key_exists('hook', $_GET)) {
-            $hook = $_GET['hook'];
+            $hook = sanitize_text_field($_GET['hook']);
         }
         $name = self::get_cron_name($hook);
         if (self::is_legitimate_cron($hook)) {
@@ -2299,6 +2564,25 @@ class Admin {
      * @since 3.2.0
      */
     private function relaunch_watchdog() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to relaunch watchdog.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to relaunch watchdog.');
+            return;
+        }
+        
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'relaunch-watchdog')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to relaunch watchdog. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a watchdog relaunch request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely relaunch watchdog.');
+            return;
+        }
+        
         Watchdog::restart();
         add_settings_error('lws_nonce_success', 200, __('The watchdog was successfully restarted.', 'live-weather-station').'<br/>'.__('Please wait a few minutes for all the tasks to be rescheduled.', 'live-weather-station'), 'updated');
     }
@@ -2310,6 +2594,25 @@ class Admin {
      * @since 3.6.0
      */
     private function reset_palette($id) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset palette.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset palette.');
+            return;
+        }
+        
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-cschemes')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to reset palette. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a palette reset request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reset palette.');
+            return;
+        }
+        
         self::init_cschemes_options($id);
         add_settings_error('lws_nonce_success', 200, __('Custom palette has been reset to defaults.', 'live-weather-station'), 'updated');
         Logger::info($this->service, null, null, null, null, null, 0, 'Custom palette has been reset to defaults.');
@@ -2321,6 +2624,13 @@ class Admin {
      * @since 3.6.0
      */
     private function save_palette() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to save palette.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to save palette.');
+            return;
+        }
+        
         $sec = false;
         if (array_key_exists('_wpnonce', $_POST)) {
             $sec = wp_verify_nonce($_POST['_wpnonce'], 'edit-palette');
@@ -2328,16 +2638,16 @@ class Admin {
         if ($sec) {
             $id = '';
             if (array_key_exists('id', $_POST)) {
-                $id = $_POST['id'];
+                $id = sanitize_text_field($_POST['id']);
             }
             $name = '';
             if (array_key_exists('palette_name', $_POST)) {
-                $name = wp_kses($_POST['palette_name'], array());
+                $name = sanitize_text_field($_POST['palette_name']);
             }
             $colors = self::get_cschemes_palette($id);
             for ($i=0 ; $i<8 ; $i++) {
                 if (array_key_exists('color_'.$i, $_POST)) {
-                    $c = str_replace('#', '', $_POST['color_'.$i]);
+                    $c = str_replace('#', '', sanitize_text_field($_POST['color_'.$i]));
                     if ($c !== '') {
                         $colors[$i] = $c;
                     }
@@ -2360,9 +2670,16 @@ class Admin {
      * @since 3.0.0
      */
     private function manage_connection() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to manage connections.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to manage connections.');
+            return;
+        }
+        
         $service = '';
         if (array_key_exists('service', $_POST)) {
-            $service = $_POST['service'];
+            $service = sanitize_text_field($_POST['service']);
         }
         $action = '';
         if (array_key_exists('connect', $_POST)) {
@@ -2376,23 +2693,23 @@ class Admin {
         }
         $login = '';
         if (array_key_exists('login', $_POST)) {
-            $login = $_POST['login'];
+            $login = sanitize_email($_POST['login']);  // Could be email for some services
         }
         $apikey = '';
         if (array_key_exists('apikey', $_POST)) {
-            $apikey = $_POST['apikey'];
+            $apikey = sanitize_text_field($_POST['apikey']);
         }
         $password = '';
         if (array_key_exists('password', $_POST)) {
-            $password = $_POST['password'];
+            $password = sanitize_text_field($_POST['password']);
         }
         $key = '';
         if (array_key_exists('key', $_POST)) {
-            $key = $_POST['key'];
+            $key = sanitize_text_field($_POST['key']);
         }
         $plan = '';
         if (array_key_exists('plan', $_POST)) {
-            $plan = $_POST['plan'];
+            $plan = sanitize_text_field($_POST['plan']);
         }
         $result = false;
         $sec = false;
@@ -2642,6 +2959,8 @@ class Admin {
      * @since 3.0.0
      */
     protected function subscribe_email($email) {
+        // Email subscription doesn't need capability check (public action)
+        
         if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'subscribe')) {
             $subscribed = new Subscription($email);
             if ($subscribed->is_done()) {
@@ -2670,6 +2989,13 @@ class Admin {
      * @since 3.0.0
      */
     protected function delete_station($guid=null) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to delete stations.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to delete station.');
+            return;
+        }
+        
         if (isset($guid) && $guid) {
             $station = $this->get_station_information_by_guid($guid);
             $service = $this->get_service_name($station['station_type']);
@@ -2712,6 +3038,13 @@ class Admin {
      * @since 3.8.0
      */
     protected function import_configuration($uuid=null) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to import configuration.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to import configuration.');
+            return;
+        }
+        
         if (isset($uuid) && $uuid) {
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'import-configuration')) {
                 $error = false;
@@ -2773,6 +3106,13 @@ class Admin {
      * @since 3.8.0
      */
     protected function add_file() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to add files.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add file.');
+            return;
+        }
+        
         if ((bool)get_option('live_weather_station_upload_allowed')) {
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-file')) {
                 $success = false;
@@ -2812,6 +3152,13 @@ class Admin {
      * @since 3.7.0
      */
     protected function delete_map($mid=null) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to delete maps.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to delete map.');
+            return;
+        }
+        
         if (isset($mid) && $mid) {
             $map = $this->get_map_detail($mid);
             $service = $this->get_service_name(100 + $map['type']);
@@ -3366,6 +3713,13 @@ class Admin {
      * @since 3.0.0
      */
     protected function add_netatmo($device_id=null, $is_hc=false) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to add stations.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add Netatmo station.');
+            return;
+        }
+        
         if ($device_id) {
             if ($is_hc) {
                 $n = new Netatmo_HCInitiator(LWS_PLUGIN_ID, LWS_VERSION);
@@ -3427,6 +3781,13 @@ class Admin {
      * @since 3.0.0
      */
     protected function add_bloomsky($device_id=null) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to add stations.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add BloomSky station.');
+            return;
+        }
+        
         if ($device_id) {
             $n = new Bloomsky_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
             $nonce = 'add-bloomsky';
@@ -3476,6 +3837,13 @@ class Admin {
      * @since 3.0.0
      */
     protected function add_ambient($device_id=null) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to add stations.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add Ambient station.');
+            return;
+        }
+        
         $station = array();
         $update = true;
         if ($device_id) {
@@ -3490,31 +3858,31 @@ class Admin {
                 array_key_exists('loc_longitude', $_POST)) {
                 $station['station_type'] = LWS_AMBT_SID;
                 if (array_key_exists('guid', $_POST)) {
-                    $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                    $station['guid'] = sanitize_text_field($_POST['guid']);
                 }
                 if (array_key_exists('id', $_POST)) {
-                    $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['id']));
+                    $station['station_id'] = sanitize_text_field($_POST['id']);
                 }
                 if (array_key_exists('station_name', $_POST)) {
-                    $station['station_name'] = stripslashes(htmlspecialchars_decode($_POST['station_name']));
+                    $station['station_name'] = sanitize_text_field($_POST['station_name']);
                 }
                 if (array_key_exists('loc_city', $_POST)) {
-                    $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+                    $station['loc_city'] = sanitize_text_field($_POST['loc_city']);
                 }
                 if (array_key_exists('loc_country_code', $_POST)) {
-                    $station['loc_country_code'] = $_POST['loc_country_code'];
+                    $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
                 }
                 if (array_key_exists('loc_tz', $_POST)) {
-                    $station['loc_timezone'] = $_POST['loc_tz'];
+                    $station['loc_timezone'] = sanitize_text_field($_POST['loc_tz']);
                 }
                 if (array_key_exists('loc_altitude', $_POST)) {
-                    $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
+                    $station['loc_altitude'] = (int)sanitize_text_field($_POST['loc_altitude']);
                 }
                 if (array_key_exists('loc_latitude', $_POST) &&
                     array_key_exists('loc_longitude', $_POST)) {
                     if (is_numeric($_POST['loc_latitude']) && is_numeric($_POST['loc_longitude'])) {
-                        $station['loc_latitude'] = (float)$_POST['loc_latitude'];
-                        $station['loc_longitude'] = (float)$_POST['loc_longitude'];
+                        $station['loc_latitude'] = (float)sanitize_text_field($_POST['loc_latitude']);
+                        $station['loc_longitude'] = (float)sanitize_text_field($_POST['loc_longitude']);
                         if ($station['loc_latitude'] < -90 || $station['loc_latitude'] > 90) {
                             $station['loc_latitude'] = 0;
                         }
@@ -3601,6 +3969,13 @@ class Admin {
      * @since 3.0.0
      */
     public function add_loc() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to add stations.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add located station.');
+            return;
+        }
+        
         $station = array();
         $error = 0;
         if (array_key_exists('guid', $_POST) &&
@@ -3612,31 +3987,31 @@ class Admin {
             array_key_exists('loc_altitude', $_POST)) {
             $station['station_type'] = LWS_LOC_SID;
             if (array_key_exists('guid', $_POST)) {
-                $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                $station['guid'] = sanitize_text_field($_POST['guid']);
             }
             if (array_key_exists('station_id', $_POST)) {
-                $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
+                $station['station_id'] = sanitize_text_field($_POST['station_id']);
             }
             if (array_key_exists('station_name', $_POST)) {
-                $station['station_name'] = stripslashes(htmlspecialchars_decode($_POST['station_name']));
+                $station['station_name'] = sanitize_text_field($_POST['station_name']);
             }
             if (array_key_exists('loc_city', $_POST)) {
-                $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+                $station['loc_city'] = sanitize_text_field($_POST['loc_city']);
             }
             if (array_key_exists('loc_country_code', $_POST)) {
-                $station['loc_country_code'] = $_POST['loc_country_code'];
+                $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
             }
             if (array_key_exists('loc_tz', $_POST)) {
-                $station['loc_timezone'] = $_POST['loc_tz'];
+                $station['loc_timezone'] = sanitize_text_field($_POST['loc_tz']);
             }
             if (array_key_exists('loc_altitude', $_POST)) {
-                $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
+                $station['loc_altitude'] = (int)sanitize_text_field($_POST['loc_altitude']);
             }
             if (array_key_exists('loc_latitude', $_POST) &&
                 array_key_exists('loc_longitude', $_POST)) {
                 if (is_numeric($_POST['loc_latitude']) && is_numeric($_POST['loc_longitude'])) {
-                    $station['loc_latitude'] = (float)$_POST['loc_latitude'];
-                    $station['loc_longitude'] = (float)$_POST['loc_longitude'];
+                    $station['loc_latitude'] = (float)sanitize_text_field($_POST['loc_latitude']);
+                    $station['loc_longitude'] = (float)sanitize_text_field($_POST['loc_longitude']);
                     if ($station['loc_latitude'] < -90 || $station['loc_latitude'] > 90) {
                         $error = 2;
                     }
@@ -3645,8 +4020,8 @@ class Admin {
                     }
                 }
                 else {
-                    $station['loc_latitude'] = $_POST['loc_latitude'];
-                    $station['loc_longitude'] = $_POST['loc_longitude'];
+                    $station['loc_latitude'] = sanitize_text_field($_POST['loc_latitude']);
+                    $station['loc_longitude'] = sanitize_text_field($_POST['loc_longitude']);
                     $error = 2;
                 }
             }
@@ -3753,6 +4128,13 @@ class Admin {
      * @since 3.0.0
      */
     public function add_raw() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            $station = array('error' => 403, 'message' => __('You do not have sufficient permissions to add stations.', 'live-weather-station'));
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add Clientraw station.');
+            return $station;
+        }
+        
         $station = array();
         $error = 0;
         $message = '';
@@ -3768,34 +4150,34 @@ class Admin {
             array_key_exists('loc_altitude', $_POST)) {
             $station['station_type'] = LWS_RAW_SID;
             if (array_key_exists('guid', $_POST)) {
-                $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                $station['guid'] = sanitize_text_field($_POST['guid']);
             }
             if (array_key_exists('station_id', $_POST)) {
-                $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
+                $station['station_id'] = sanitize_text_field($_POST['station_id']);
             }
             if (array_key_exists('station_name', $_POST)) {
-                $station['station_name'] = stripslashes(htmlspecialchars_decode($_POST['station_name']));
+                $station['station_name'] = sanitize_text_field($_POST['station_name']);
             }
             if (array_key_exists('loc_city', $_POST)) {
-                $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+                $station['loc_city'] = sanitize_text_field($_POST['loc_city']);
             }
             if (array_key_exists('loc_country_code', $_POST)) {
-                $station['loc_country_code'] = $_POST['loc_country_code'];
+                $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
             }
             if (array_key_exists('loc_tz', $_POST)) {
-                $station['loc_timezone'] = $_POST['loc_tz'];
+                $station['loc_timezone'] = sanitize_text_field($_POST['loc_tz']);
             }
             if (array_key_exists('connection_type', $_POST)) {
-                $station['connection_type'] = $_POST['connection_type'];
+                $station['connection_type'] = sanitize_text_field($_POST['connection_type']);
             }
             if (array_key_exists('service_id', $_POST)) {
-                $station['service_id'] = $_POST['service_id'];
+                $station['service_id'] = sanitize_text_field($_POST['service_id']);
             }
             if (array_key_exists('loc_altitude', $_POST)) {
-                $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
+                $station['loc_altitude'] = (int)sanitize_text_field($_POST['loc_altitude']);
             }
             $station['service_id'] = str_replace(array('http://', 'https://', 'ftp://'), '', $station['service_id']);
-            $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
+            $station['station_model'] = sanitize_text_field($_POST['station_model']);
             $collector = new ClientrawCollector();
             if ($message = $collector->test($station['connection_type'], $station['service_id'])) {
                 $error = 1;
@@ -3884,6 +4266,13 @@ class Admin {
      * @since 3.5.0
      */
     public function add_piou() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            $station = array('error' => 403, 'message' => __('You do not have sufficient permissions to add stations.', 'live-weather-station'));
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add Pioupiou station.');
+            return $station;
+        }
+        
         $station = array();
         $error = 0;
         $message = '';
@@ -3897,27 +4286,27 @@ class Admin {
             array_key_exists('loc_altitude', $_POST)) {
             $station['station_type'] = LWS_PIOU_SID;
             if (array_key_exists('guid', $_POST)) {
-                $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                $station['guid'] = sanitize_text_field($_POST['guid']);
             }
             if (array_key_exists('station_id', $_POST)) {
-                $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
+                $station['station_id'] = sanitize_text_field($_POST['station_id']);
             }
             if (array_key_exists('loc_city', $_POST)) {
-                $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+                $station['loc_city'] = sanitize_text_field($_POST['loc_city']);
             }
             if (array_key_exists('loc_country_code', $_POST)) {
-                $station['loc_country_code'] = $_POST['loc_country_code'];
+                $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
             }
             if (array_key_exists('loc_tz', $_POST)) {
-                $station['loc_timezone'] = $_POST['loc_tz'];
+                $station['loc_timezone'] = sanitize_text_field($_POST['loc_tz']);
             }
             if (array_key_exists('service_id', $_POST)) {
-                $station['service_id'] = $_POST['service_id'];
+                $station['service_id'] = sanitize_text_field($_POST['service_id']);
             }
             if (array_key_exists('loc_altitude', $_POST)) {
-                $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
+                $station['loc_altitude'] = (int)sanitize_text_field($_POST['loc_altitude']);
             }
-            $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
+            $station['station_model'] = sanitize_text_field($_POST['station_model']);
             $collector = new PioupiouCollector();
             if ($message = $collector->test_station($station['service_id'])) {
                 $error = 1;
@@ -4006,6 +4395,13 @@ class Admin {
      * @since 3.0.0
      */
     public function add_real() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            $station = array('error' => 403, 'message' => __('You do not have sufficient permissions to add stations.', 'live-weather-station'));
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add Realtime station.');
+            return $station;
+        }
+        
         $station = array();
         $error = 0;
         $message = '';
@@ -4023,40 +4419,40 @@ class Admin {
             array_key_exists('loc_altitude', $_POST)) {
             $station['station_type'] = LWS_REAL_SID;
             if (array_key_exists('guid', $_POST)) {
-                $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                $station['guid'] = sanitize_text_field($_POST['guid']);
             }
             if (array_key_exists('station_id', $_POST)) {
-                $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
+                $station['station_id'] = sanitize_text_field($_POST['station_id']);
             }
             if (array_key_exists('station_name', $_POST)) {
-                $station['station_name'] = stripslashes(htmlspecialchars_decode($_POST['station_name']));
+                $station['station_name'] = sanitize_text_field($_POST['station_name']);
             }
             if (array_key_exists('loc_city', $_POST)) {
-                $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+                $station['loc_city'] = sanitize_text_field($_POST['loc_city']);
             }
             if (array_key_exists('loc_country_code', $_POST)) {
-                $station['loc_country_code'] = $_POST['loc_country_code'];
+                $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
             }
             if (array_key_exists('loc_tz', $_POST)) {
-                $station['loc_timezone'] = $_POST['loc_tz'];
+                $station['loc_timezone'] = sanitize_text_field($_POST['loc_tz']);
             }
             if (array_key_exists('connection_type', $_POST)) {
-                $station['connection_type'] = $_POST['connection_type'];
+                $station['connection_type'] = sanitize_text_field($_POST['connection_type']);
             }
             if (array_key_exists('service_id', $_POST)) {
-                $station['service_id'] = $_POST['service_id'];
+                $station['service_id'] = sanitize_text_field($_POST['service_id']);
             }
             if (array_key_exists('loc_altitude', $_POST)) {
-                $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
+                $station['loc_altitude'] = (int)sanitize_text_field($_POST['loc_altitude']);
             }
             if (array_key_exists('loc_latitude', $_POST)) {
-                $station['loc_latitude'] = sprintf("%.7F", (float)stripslashes(htmlspecialchars_decode($_POST['loc_latitude'])));
+                $station['loc_latitude'] = sprintf("%.7F", (float)sanitize_text_field($_POST['loc_latitude']));
             }
             if (array_key_exists('loc_longitude', $_POST)) {
-                $station['loc_longitude'] = sprintf("%.7F", (float)stripslashes(htmlspecialchars_decode($_POST['loc_longitude'])));
+                $station['loc_longitude'] = sprintf("%.7F", (float)sanitize_text_field($_POST['loc_longitude']));
             }
             $station['service_id'] = str_replace(array('http://', 'https://', 'ftp://'), '', $station['service_id']);
-            $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
+            $station['station_model'] = sanitize_text_field($_POST['station_model']);
             $collector = new RealtimeCollector();
             if ($message = $collector->test($station['connection_type'], $station['service_id'])) {
                 $error = 1;
@@ -4145,6 +4541,13 @@ class Admin {
      * @since 3.3.0
      */
     public function add_txt() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            $station = array('error' => 403, 'message' => __('You do not have sufficient permissions to add stations.', 'live-weather-station'));
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add Stickertags station.');
+            return $station;
+        }
+        
         $station = array();
         $error = 0;
         $message = '';
@@ -4162,40 +4565,40 @@ class Admin {
             array_key_exists('loc_altitude', $_POST)) {
             $station['station_type'] = LWS_TXT_SID;
             if (array_key_exists('guid', $_POST)) {
-                $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                $station['guid'] = sanitize_text_field($_POST['guid']);
             }
             if (array_key_exists('station_id', $_POST)) {
-                $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
+                $station['station_id'] = sanitize_text_field($_POST['station_id']);
             }
             if (array_key_exists('station_name', $_POST)) {
-                $station['station_name'] = stripslashes(htmlspecialchars_decode($_POST['station_name']));
+                $station['station_name'] = sanitize_text_field($_POST['station_name']);
             }
             if (array_key_exists('loc_city', $_POST)) {
-                $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+                $station['loc_city'] = sanitize_text_field($_POST['loc_city']);
             }
             if (array_key_exists('loc_country_code', $_POST)) {
-                $station['loc_country_code'] = $_POST['loc_country_code'];
+                $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
             }
             if (array_key_exists('loc_tz', $_POST)) {
-                $station['loc_timezone'] = $_POST['loc_tz'];
+                $station['loc_timezone'] = sanitize_text_field($_POST['loc_tz']);
             }
             if (array_key_exists('connection_type', $_POST)) {
-                $station['connection_type'] = $_POST['connection_type'];
+                $station['connection_type'] = sanitize_text_field($_POST['connection_type']);
             }
             if (array_key_exists('service_id', $_POST)) {
-                $station['service_id'] = $_POST['service_id'];
+                $station['service_id'] = sanitize_text_field($_POST['service_id']);
             }
             if (array_key_exists('loc_altitude', $_POST)) {
-                $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
+                $station['loc_altitude'] = (int)sanitize_text_field($_POST['loc_altitude']);
             }
             if (array_key_exists('loc_latitude', $_POST)) {
-                $station['loc_latitude'] = sprintf("%.7F", (float)stripslashes(htmlspecialchars_decode($_POST['loc_latitude'])));
+                $station['loc_latitude'] = sprintf("%.7F", (float)sanitize_text_field($_POST['loc_latitude']));
             }
             if (array_key_exists('loc_longitude', $_POST)) {
-                $station['loc_longitude'] = sprintf("%.7F", (float)stripslashes(htmlspecialchars_decode($_POST['loc_longitude'])));
+                $station['loc_longitude'] = sprintf("%.7F", (float)sanitize_text_field($_POST['loc_longitude']));
             }
             $station['service_id'] = str_replace(array('http://', 'https://', 'ftp://'), '', $station['service_id']);
-            $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
+            $station['station_model'] = sanitize_text_field($_POST['station_model']);
             $collector = new StickertagsCollector();
             if ($message = $collector->test($station['connection_type'], $station['service_id'])) {
                 $error = 1;
@@ -4284,6 +4687,13 @@ class Admin {
      * @since 3.0.0
      */
     public function add_wug() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to add stations.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add Weather Underground station.');
+            return;
+        }
+        
         $station = array();
         $station_id = null;
         $service_id = null;
@@ -4392,6 +4802,13 @@ class Admin {
      * @since 3.0.0
      */
     public function add_wflw() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            $station = array('error' => 403, 'message' => __('You do not have sufficient permissions to add stations.', 'live-weather-station'));
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add WeatherFlow station.');
+            return $station;
+        }
+        
         $station = array();
         $error = 0;
         $message = '';
@@ -4402,19 +4819,19 @@ class Admin {
             array_key_exists('service_id', $_POST)) {
             $station['station_type'] = LWS_WFLW_SID;
             if (array_key_exists('guid', $_POST)) {
-                $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                $station['guid'] = sanitize_text_field($_POST['guid']);
             }
             if (array_key_exists('station_id', $_POST)) {
-                $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
+                $station['station_id'] = sanitize_text_field($_POST['station_id']);
             }
             if (array_key_exists('loc_city', $_POST)) {
-                $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+                $station['loc_city'] = sanitize_text_field($_POST['loc_city']);
             }
             if (array_key_exists('loc_country_code', $_POST)) {
-                $station['loc_country_code'] = $_POST['loc_country_code'];
+                $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
             }
             if (array_key_exists('service_id', $_POST)) {
-                $station['service_id'] = $_POST['service_id'];
+                $station['service_id'] = sanitize_text_field($_POST['service_id']);
             }
             $station['station_model'] = 'WeatherFlow - Smart Weather Station';
             $collector = new WeatherFlowCollector();
@@ -4513,6 +4930,13 @@ class Admin {
      * @since 3.8.0
      */
     public function add_wlink() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            $station = array('error' => 403, 'message' => __('You do not have sufficient permissions to add stations.', 'live-weather-station'));
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add WeatherLink station.');
+            return $station;
+        }
+        
         $station = array();
         $error = 0;
         $message = '';
@@ -4523,10 +4947,10 @@ class Admin {
             array_key_exists('service_ownerpass', $_POST) &&
             array_key_exists('loc_country_code', $_POST)) {
             $station['station_type'] = LWS_WLINK_SID;
-            $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
-            $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
-            $station['loc_country_code'] = $_POST['loc_country_code'];
-            $station['service_id'] = $_POST['service_did'] . LWS_SERVICE_SEPARATOR . $_POST['service_apitoken'] . LWS_SERVICE_SEPARATOR . $_POST['service_ownerpass'];
+            $station['guid'] = sanitize_text_field($_POST['guid']);
+            $station['station_id'] = sanitize_text_field($_POST['station_id']);
+            $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
+            $station['service_id'] = sanitize_text_field($_POST['service_did']) . LWS_SERVICE_SEPARATOR . sanitize_text_field($_POST['service_apitoken']) . LWS_SERVICE_SEPARATOR . sanitize_text_field($_POST['service_ownerpass']);
             $collector = new WeatherLinkCollector();
             if ($message = $collector->test_station($station['service_id'])) {
                 $error = 1;

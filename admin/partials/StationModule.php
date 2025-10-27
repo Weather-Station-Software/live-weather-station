@@ -16,17 +16,17 @@ $station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, 
 <?php if ($static_display) { ?>
     <div class="activity-block" style="padding-bottom: 0px;padding-top: 0px;">
         <div style="margin-bottom: 10px;">
-            <span style="width:50%;float: left;cursor: default;"><?php echo $module_icn; ?>&nbsp;<?php echo $module['module_type_name']; ?></span>
-            <span style="width:25%;float: left;cursor: default;"><?php echo $module['battery_icn']; ?>&nbsp;<?php echo $module['battery_txt']; ?></span>
-            <span style="width:25%;cursor: default;"><?php echo $module['signal_icn']; ?>&nbsp;<?php echo $module['signal_txt']; ?></span>
+            <span style="width:50%;float: left;cursor: default;"><?php echo wp_kses_post($module_icn); ?>&nbsp;<?php echo esc_html($module['module_type_name']); ?></span>
+            <span style="width:25%;float: left;cursor: default;"><?php echo wp_kses_post($module['battery_icn']); ?>&nbsp;<?php echo esc_html($module['battery_txt']); ?></span>
+            <span style="width:25%;cursor: default;"><?php echo wp_kses_post($module['signal_icn']); ?>&nbsp;<?php echo esc_html($module['signal_txt']); ?></span>
         </div>
         <div style="margin-bottom: 10px;">
-            <span style="width:100%;"><?php echo $station_name_icn; ?>&nbsp;<?php echo $module['self_name']; ?></span>
-            <span style="color:silver"> (<?php echo $module['self_visibility']; ?>)</span>
+            <span style="width:100%;"><?php echo wp_kses_post($station_name_icn); ?>&nbsp;<?php echo esc_html($module['self_name']); ?></span>
+            <span style="color:silver"> (<?php echo esc_html($module['self_visibility']); ?>)</span>
         </div>
         <?php if (array_key_exists('last_refresh', $module)) { ?>
             <div style="margin-bottom: 10px;">
-                <span style="width:100%;cursor: default;"><?php echo $refresh_icn; ?>&nbsp;<?php echo $module['last_refresh_txt']; ?></span><span style="color:silver"> (<?php echo $module['last_refresh_diff_txt']; ?>)</span>
+                <span style="width:100%;cursor: default;"><?php echo wp_kses_post($refresh_icn); ?>&nbsp;<?php echo esc_html($module['last_refresh_txt']); ?></span><span style="color:silver"> (<?php echo esc_html($module['last_refresh_diff_txt']); ?>)</span>
             </div>
         <?php } ?>
     </div>

@@ -117,6 +117,9 @@ abstract class Base extends \WP_Widget {
      * @since 3.8.0
      */
     public static function lws_widget_callback() {
+        // Check nonce for widget AJAX calls
+        check_ajax_referer('lws_widget_nonce', 'nonce');
+        
         $widget = new static;
         $args = array();
         if (array_key_exists('before_widget', $_POST)) {
@@ -144,10 +147,10 @@ abstract class Base extends \WP_Widget {
             $args['after_title'] = '';
         }
         $instance = array();
-        $excluded = array('action', 'before_widget', 'after_widget', 'before_title', 'after_title');
+        $excluded = array('action', 'before_widget', 'after_widget', 'before_title', 'after_title', 'nonce');
         foreach ($_POST as $key => $val) {
             if (!in_array($key, $excluded)) {
-                $instance[$key] = $val;
+                $instance[$key] = sanitize_text_field($val);
             }
         }
         exit ($widget->widget_content($args, $instance));

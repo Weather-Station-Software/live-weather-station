@@ -59,8 +59,8 @@ This plugin is free and provided without warranty of any kind. Use it at your ow
 - If you want to help us translate "Weather Station" into your language, [you can do so on WordPress Translate.](https://translate.wordpress.org/projects/wp-plugins/live-weather-station/)
 
 = Credits =
-- Original author: [Pierre Lannoy](https://profiles.wordpress.org/pierrelannoy/) (see props.txt for more details)
 - Actual maintainer (since v3.8.12): [Jason Rouet](https://profiles.wordpress.org/jaz_on/)
+- Original author: [Pierre Lannoy](https://profiles.wordpress.org/pierrelannoy/) (see props.txt for more details)
 
 = Donation =
 If you like this plugin or find it useful and want to thank me for the work done, please consider donating [La Quadrature Du Net](https://www.laquadrature.net/en) which is an advocacy group defending the rights and freedoms of citizens on the Internet. By supporting them, you help the daily actions they perform to defend our fundamental freedoms!
