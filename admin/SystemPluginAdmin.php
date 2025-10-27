@@ -1341,7 +1341,16 @@ class Admin {
 
         }
         elseif ($section == 'services' && $action == 'manage-connection') {
-            $this->manage_connection();
+            // Verify nonce for manage-connection action
+            if ($sec) {
+                $this->manage_connection();
+            }
+            else {
+                $message = __('Unable to process connection request. Please try again.', 'live-weather-station');
+                add_settings_error('lws_nonce_error', 403, $message, 'error');
+                Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
+                Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely process service connection request.');
+            }
         }
         else {
             $message = __('%s has not been updated. Please try again.', 'live-weather-station');
