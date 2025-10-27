@@ -10,8 +10,8 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
 
 ?>
 
-<form name="<?php echo $service; ?>-share-form" id="<?php echo $service; ?>-share-form" action="<?php echo esc_url(lws_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
-    <input type="hidden" name="guid" value="<?php echo $station['guid']; ?>" />
+<form name="<?php echo esc_attr($service); ?>-share-form" id="<?php echo esc_attr($service); ?>-share-form" action="<?php echo esc_url(lws_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
+    <input type="hidden" name="guid" value="<?php echo esc_attr($station['guid']); ?>" />
     <?php wp_nonce_field('edit-station', '_wpnonce', false ); ?>
     <div class="inside" style="padding: 11px;">
         <?php if (!$connected) { ?>
