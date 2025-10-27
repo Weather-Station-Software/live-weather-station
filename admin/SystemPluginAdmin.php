@@ -2602,16 +2602,16 @@ class Admin {
         if ($sec) {
             $id = '';
             if (array_key_exists('id', $_POST)) {
-                $id = $_POST['id'];
+                $id = sanitize_text_field($_POST['id']);
             }
             $name = '';
             if (array_key_exists('palette_name', $_POST)) {
-                $name = wp_kses($_POST['palette_name'], array());
+                $name = sanitize_text_field($_POST['palette_name']);
             }
             $colors = self::get_cschemes_palette($id);
             for ($i=0 ; $i<8 ; $i++) {
                 if (array_key_exists('color_'.$i, $_POST)) {
-                    $c = str_replace('#', '', $_POST['color_'.$i]);
+                    $c = str_replace('#', '', sanitize_text_field($_POST['color_'.$i]));
                     if ($c !== '') {
                         $colors[$i] = $c;
                     }
