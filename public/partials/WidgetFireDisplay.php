@@ -6,13 +6,13 @@
  * @since 3.1.0
  */
 ?>
-<div class="lws-widget-container lws-widget-container-<?php echo $id ?>">
-    <div class="lws-widget-outer-fire lws-widget-outer-fire-<?php echo $id ?>">
-        <div class="lws-widget-fire lws-widget-fire-<?php echo $id ?> noTypo">
+<div class="lws-widget-container lws-widget-container-<?php echo esc_attr($id) ?>">
+    <div class="lws-widget-outer-fire lws-widget-outer-fire-<?php echo esc_attr($id) ?>">
+        <div class="lws-widget-fire lws-widget-fire-<?php echo esc_attr($id) ?> noTypo">
             <?php if ( $show_current ):?>
                 <!-- CURRENT CONDITIONS -->
-                <div class="lws-widget-header lws-widget-header-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Current fire weather risk', 'live-weather-station').'"' : ''); ?>>
-                    <?php echo $measurements['header_cbi']['icon']; ?>
+                <div class="lws-widget-header lws-widget-header-<?php echo esc_attr($id) ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Current fire weather risk', 'live-weather-station').'"' : ''); ?>>
+                    <?php echo wp_kses_post($measurements['header_cbi']['icon']); ?>
                 </div>
                 <?php if (($show_title || $subtitle != 0) || $show_rain || $show_wind || $show_cbi || $show_humidity || $show_temperature):?>
                     <div class="lws-widget-bevel lws-widget-bevel-<?php echo $id ?>"></div>

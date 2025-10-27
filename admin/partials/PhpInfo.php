@@ -34,9 +34,9 @@ if ($tables == '' || !$okinfo) {
             <h3 class="hndle"><span><?php esc_html_e('PHP configuration', 'live-weather-station' );?></span></h3>
             <div class="inside">
                 <div class='phpinfodisplay'>
-                    <style type='text/css'><?php echo $phpinfo; ?></style>
-                    <style type='text/css'><?php echo $phpinfo; ?></style>
-                    <?php echo $tables; ?>
+                    <style type='text/css'><?php echo wp_kses($phpinfo, array('style' => array())); ?></style>
+                    <style type='text/css'><?php echo wp_kses($phpinfo, array('style' => array())); ?></style>
+                    <?php echo wp_kses_post($tables); ?>
                 </div>
             </div>
         </div>

@@ -7,9 +7,9 @@
  */
 
 ?>
-<div class="lws-widget-container lws-widget-container-<?php echo $id ?>">
-    <div class="lws-widget-outer-thunderstorm lws-widget-outer-thunderstorm-<?php echo $id ?>">
-        <div class="lws-widget-thunderstorm lws-widget-thunderstorm-<?php echo $id ?> noTypo">
+<div class="lws-widget-container lws-widget-container-<?php echo esc_attr($id) ?>">
+    <div class="lws-widget-outer-thunderstorm lws-widget-outer-thunderstorm-<?php echo esc_attr($id) ?>">
+        <div class="lws-widget-thunderstorm lws-widget-thunderstorm-<?php echo esc_attr($id) ?> noTypo">
             <?php if ( $show_current ):?>
                 <!-- CURRENT CONDITIONS -->
                 <div class="lws-widget-header lws-widget-header-<?php echo $id ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Current thunderstorm conditions', 'live-weather-station').'"' : ''); ?>>

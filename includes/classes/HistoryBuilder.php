@@ -564,7 +564,7 @@ class Builder
         }
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "SELECT " . implode(', ', $selects). " FROM ".$table_name." WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "' AND `module_id`='" . $module_id . "' AND `measure_type`='" . $measure_type . "';";
+        $sql = $wpdb->prepare("SELECT " . implode(', ', $selects). " FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s AND `module_id`=%s AND `measure_type`=%s", $min, $max, $device_id, $module_id, $measure_type);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
