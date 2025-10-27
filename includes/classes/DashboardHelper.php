@@ -176,7 +176,7 @@ class Handling {
         }
         
         check_ajax_referer('lws-welcome-panel-nonce', 'lwswelcomepanelnonce');
-        update_user_meta(get_current_user_id(), 'show_lws_welcome_panel', empty($_POST['visible'] ) ? 0 : 1);
+        update_user_meta(get_current_user_id(), 'show_lws_welcome_panel', empty(sanitize_text_field($_POST['visible'])) ? 0 : 1);
         wp_die(1);
     }
 
