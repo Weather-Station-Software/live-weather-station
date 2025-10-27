@@ -4145,34 +4145,34 @@ class Admin {
             array_key_exists('loc_altitude', $_POST)) {
             $station['station_type'] = LWS_RAW_SID;
             if (array_key_exists('guid', $_POST)) {
-                $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                $station['guid'] = sanitize_text_field($_POST['guid']);
             }
             if (array_key_exists('station_id', $_POST)) {
-                $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
+                $station['station_id'] = sanitize_text_field($_POST['station_id']);
             }
             if (array_key_exists('station_name', $_POST)) {
-                $station['station_name'] = stripslashes(htmlspecialchars_decode($_POST['station_name']));
+                $station['station_name'] = sanitize_text_field($_POST['station_name']);
             }
             if (array_key_exists('loc_city', $_POST)) {
-                $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+                $station['loc_city'] = sanitize_text_field($_POST['loc_city']);
             }
             if (array_key_exists('loc_country_code', $_POST)) {
-                $station['loc_country_code'] = $_POST['loc_country_code'];
+                $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
             }
             if (array_key_exists('loc_tz', $_POST)) {
-                $station['loc_timezone'] = $_POST['loc_tz'];
+                $station['loc_timezone'] = sanitize_text_field($_POST['loc_tz']);
             }
             if (array_key_exists('connection_type', $_POST)) {
-                $station['connection_type'] = $_POST['connection_type'];
+                $station['connection_type'] = sanitize_text_field($_POST['connection_type']);
             }
             if (array_key_exists('service_id', $_POST)) {
-                $station['service_id'] = $_POST['service_id'];
+                $station['service_id'] = sanitize_text_field($_POST['service_id']);
             }
             if (array_key_exists('loc_altitude', $_POST)) {
-                $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
+                $station['loc_altitude'] = (int)sanitize_text_field($_POST['loc_altitude']);
             }
             $station['service_id'] = str_replace(array('http://', 'https://', 'ftp://'), '', $station['service_id']);
-            $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
+            $station['station_model'] = sanitize_text_field($_POST['station_model']);
             $collector = new ClientrawCollector();
             if ($message = $collector->test($station['connection_type'], $station['service_id'])) {
                 $error = 1;
@@ -4281,27 +4281,27 @@ class Admin {
             array_key_exists('loc_altitude', $_POST)) {
             $station['station_type'] = LWS_PIOU_SID;
             if (array_key_exists('guid', $_POST)) {
-                $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                $station['guid'] = sanitize_text_field($_POST['guid']);
             }
             if (array_key_exists('station_id', $_POST)) {
-                $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
+                $station['station_id'] = sanitize_text_field($_POST['station_id']);
             }
             if (array_key_exists('loc_city', $_POST)) {
-                $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+                $station['loc_city'] = sanitize_text_field($_POST['loc_city']);
             }
             if (array_key_exists('loc_country_code', $_POST)) {
-                $station['loc_country_code'] = $_POST['loc_country_code'];
+                $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
             }
             if (array_key_exists('loc_tz', $_POST)) {
-                $station['loc_timezone'] = $_POST['loc_tz'];
+                $station['loc_timezone'] = sanitize_text_field($_POST['loc_tz']);
             }
             if (array_key_exists('service_id', $_POST)) {
-                $station['service_id'] = $_POST['service_id'];
+                $station['service_id'] = sanitize_text_field($_POST['service_id']);
             }
             if (array_key_exists('loc_altitude', $_POST)) {
-                $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
+                $station['loc_altitude'] = (int)sanitize_text_field($_POST['loc_altitude']);
             }
-            $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
+            $station['station_model'] = sanitize_text_field($_POST['station_model']);
             $collector = new PioupiouCollector();
             if ($message = $collector->test_station($station['service_id'])) {
                 $error = 1;
@@ -4414,40 +4414,40 @@ class Admin {
             array_key_exists('loc_altitude', $_POST)) {
             $station['station_type'] = LWS_REAL_SID;
             if (array_key_exists('guid', $_POST)) {
-                $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                $station['guid'] = sanitize_text_field($_POST['guid']);
             }
             if (array_key_exists('station_id', $_POST)) {
-                $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
+                $station['station_id'] = sanitize_text_field($_POST['station_id']);
             }
             if (array_key_exists('station_name', $_POST)) {
-                $station['station_name'] = stripslashes(htmlspecialchars_decode($_POST['station_name']));
+                $station['station_name'] = sanitize_text_field($_POST['station_name']);
             }
             if (array_key_exists('loc_city', $_POST)) {
-                $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+                $station['loc_city'] = sanitize_text_field($_POST['loc_city']);
             }
             if (array_key_exists('loc_country_code', $_POST)) {
-                $station['loc_country_code'] = $_POST['loc_country_code'];
+                $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
             }
             if (array_key_exists('loc_tz', $_POST)) {
-                $station['loc_timezone'] = $_POST['loc_tz'];
+                $station['loc_timezone'] = sanitize_text_field($_POST['loc_tz']);
             }
             if (array_key_exists('connection_type', $_POST)) {
-                $station['connection_type'] = $_POST['connection_type'];
+                $station['connection_type'] = sanitize_text_field($_POST['connection_type']);
             }
             if (array_key_exists('service_id', $_POST)) {
-                $station['service_id'] = $_POST['service_id'];
+                $station['service_id'] = sanitize_text_field($_POST['service_id']);
             }
             if (array_key_exists('loc_altitude', $_POST)) {
-                $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
+                $station['loc_altitude'] = (int)sanitize_text_field($_POST['loc_altitude']);
             }
             if (array_key_exists('loc_latitude', $_POST)) {
-                $station['loc_latitude'] = sprintf("%.7F", (float)stripslashes(htmlspecialchars_decode($_POST['loc_latitude'])));
+                $station['loc_latitude'] = sprintf("%.7F", (float)sanitize_text_field($_POST['loc_latitude']));
             }
             if (array_key_exists('loc_longitude', $_POST)) {
-                $station['loc_longitude'] = sprintf("%.7F", (float)stripslashes(htmlspecialchars_decode($_POST['loc_longitude'])));
+                $station['loc_longitude'] = sprintf("%.7F", (float)sanitize_text_field($_POST['loc_longitude']));
             }
             $station['service_id'] = str_replace(array('http://', 'https://', 'ftp://'), '', $station['service_id']);
-            $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
+            $station['station_model'] = sanitize_text_field($_POST['station_model']);
             $collector = new RealtimeCollector();
             if ($message = $collector->test($station['connection_type'], $station['service_id'])) {
                 $error = 1;
@@ -4560,40 +4560,40 @@ class Admin {
             array_key_exists('loc_altitude', $_POST)) {
             $station['station_type'] = LWS_TXT_SID;
             if (array_key_exists('guid', $_POST)) {
-                $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                $station['guid'] = sanitize_text_field($_POST['guid']);
             }
             if (array_key_exists('station_id', $_POST)) {
-                $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
+                $station['station_id'] = sanitize_text_field($_POST['station_id']);
             }
             if (array_key_exists('station_name', $_POST)) {
-                $station['station_name'] = stripslashes(htmlspecialchars_decode($_POST['station_name']));
+                $station['station_name'] = sanitize_text_field($_POST['station_name']);
             }
             if (array_key_exists('loc_city', $_POST)) {
-                $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+                $station['loc_city'] = sanitize_text_field($_POST['loc_city']);
             }
             if (array_key_exists('loc_country_code', $_POST)) {
-                $station['loc_country_code'] = $_POST['loc_country_code'];
+                $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
             }
             if (array_key_exists('loc_tz', $_POST)) {
-                $station['loc_timezone'] = $_POST['loc_tz'];
+                $station['loc_timezone'] = sanitize_text_field($_POST['loc_tz']);
             }
             if (array_key_exists('connection_type', $_POST)) {
-                $station['connection_type'] = $_POST['connection_type'];
+                $station['connection_type'] = sanitize_text_field($_POST['connection_type']);
             }
             if (array_key_exists('service_id', $_POST)) {
-                $station['service_id'] = $_POST['service_id'];
+                $station['service_id'] = sanitize_text_field($_POST['service_id']);
             }
             if (array_key_exists('loc_altitude', $_POST)) {
-                $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
+                $station['loc_altitude'] = (int)sanitize_text_field($_POST['loc_altitude']);
             }
             if (array_key_exists('loc_latitude', $_POST)) {
-                $station['loc_latitude'] = sprintf("%.7F", (float)stripslashes(htmlspecialchars_decode($_POST['loc_latitude'])));
+                $station['loc_latitude'] = sprintf("%.7F", (float)sanitize_text_field($_POST['loc_latitude']));
             }
             if (array_key_exists('loc_longitude', $_POST)) {
-                $station['loc_longitude'] = sprintf("%.7F", (float)stripslashes(htmlspecialchars_decode($_POST['loc_longitude'])));
+                $station['loc_longitude'] = sprintf("%.7F", (float)sanitize_text_field($_POST['loc_longitude']));
             }
             $station['service_id'] = str_replace(array('http://', 'https://', 'ftp://'), '', $station['service_id']);
-            $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
+            $station['station_model'] = sanitize_text_field($_POST['station_model']);
             $collector = new StickertagsCollector();
             if ($message = $collector->test($station['connection_type'], $station['service_id'])) {
                 $error = 1;
@@ -4814,19 +4814,19 @@ class Admin {
             array_key_exists('service_id', $_POST)) {
             $station['station_type'] = LWS_WFLW_SID;
             if (array_key_exists('guid', $_POST)) {
-                $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                $station['guid'] = sanitize_text_field($_POST['guid']);
             }
             if (array_key_exists('station_id', $_POST)) {
-                $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
+                $station['station_id'] = sanitize_text_field($_POST['station_id']);
             }
             if (array_key_exists('loc_city', $_POST)) {
-                $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
+                $station['loc_city'] = sanitize_text_field($_POST['loc_city']);
             }
             if (array_key_exists('loc_country_code', $_POST)) {
-                $station['loc_country_code'] = $_POST['loc_country_code'];
+                $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
             }
             if (array_key_exists('service_id', $_POST)) {
-                $station['service_id'] = $_POST['service_id'];
+                $station['service_id'] = sanitize_text_field($_POST['service_id']);
             }
             $station['station_model'] = 'WeatherFlow - Smart Weather Station';
             $collector = new WeatherFlowCollector();
@@ -4942,10 +4942,10 @@ class Admin {
             array_key_exists('service_ownerpass', $_POST) &&
             array_key_exists('loc_country_code', $_POST)) {
             $station['station_type'] = LWS_WLINK_SID;
-            $station['guid'] = stripslashes(htmlspecialchars_decode($_POST['guid']));
-            $station['station_id'] = stripslashes(htmlspecialchars_decode($_POST['station_id']));
-            $station['loc_country_code'] = $_POST['loc_country_code'];
-            $station['service_id'] = $_POST['service_did'] . LWS_SERVICE_SEPARATOR . $_POST['service_apitoken'] . LWS_SERVICE_SEPARATOR . $_POST['service_ownerpass'];
+            $station['guid'] = sanitize_text_field($_POST['guid']);
+            $station['station_id'] = sanitize_text_field($_POST['station_id']);
+            $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
+            $station['service_id'] = sanitize_text_field($_POST['service_did']) . LWS_SERVICE_SEPARATOR . sanitize_text_field($_POST['service_apitoken']) . LWS_SERVICE_SEPARATOR . sanitize_text_field($_POST['service_ownerpass']);
             $collector = new WeatherLinkCollector();
             if ($message = $collector->test_station($station['service_id'])) {
                 $error = 1;
