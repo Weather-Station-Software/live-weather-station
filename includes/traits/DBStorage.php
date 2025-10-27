@@ -1642,7 +1642,7 @@ trait Storage {
         $result = 0;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
         if (!array_key_exists('guid', $value) && array_key_exists('station_id', $value)) {
-            $sql = "SELECT * FROM " . $table_name . " WHERE station_id='" . $value['station_id']."'";
+            $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE station_id=%s", $value['station_id']);
             try {
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
