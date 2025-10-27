@@ -4682,6 +4682,13 @@ class Admin {
      * @since 3.0.0
      */
     public function add_wug() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to add stations.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add Weather Underground station.');
+            return;
+        }
+        
         $station = array();
         $station_id = null;
         $service_id = null;
