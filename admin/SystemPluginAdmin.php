@@ -2153,6 +2153,18 @@ class Admin {
      * @since 3.0.0
      */
     private function reset_dashboard_meta() {
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-dashboard')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to reset dashboard. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a dashboard reset request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reset dashboard.');
+            return;
+        }
+        
         $this->clean_usermeta('lws-dashboard');
         update_user_meta(get_current_user_id(), 'show_lws_welcome_panel', true);
         add_settings_error('lws_nonce_success', 200, __('Dashboard view has been reset to defaults.', 'live-weather-station'), 'updated');
@@ -2165,6 +2177,18 @@ class Admin {
      * @since 3.0.0
      */
     private function reset_analytics_meta() {
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-analytics')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to reset analytics. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in an analytics reset request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reset analytics.');
+            return;
+        }
+        
         $this->clean_usermeta('lws-analytics');
         add_settings_error('lws_nonce_success', 200, __('Analytics view has been reset to defaults.', 'live-weather-station'), 'updated');
         Logger::info($this->service, null, null, null, null, null, 0, 'Analytics view has been reset to defaults.');
@@ -2176,6 +2200,18 @@ class Admin {
      * @since 3.0.0
      */
     private function reset_services_meta() {
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-services')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to reset services. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a services reset request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reset services.');
+            return;
+        }
+        
         $this->clean_usermeta('lws-settings');
         add_settings_error('lws_nonce_success', 200, __('Services view has been reset to defaults.', 'live-weather-station'), 'updated');
         Logger::info($this->service, null, null, null, null, null, 0, 'Services view have been reset to defaults.');
@@ -2187,6 +2223,18 @@ class Admin {
      * @since 3.0.0
      */
     private function reset_stations_meta() {
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-stations')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to reset stations. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a stations reset request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reset stations.');
+            return;
+        }
+        
         $this->clean_usermeta('lws-station');
         add_settings_error('lws_nonce_success', 200, __('Stations views have been reset to defaults.', 'live-weather-station'), 'updated');
         Logger::info($this->service, null, null, null, null, null, 0, 'Stations views have been reset to defaults.');
@@ -2199,6 +2247,21 @@ class Admin {
      * @since 3.0.0
      */
     private function purge_data($auto=false) {
+        if (!$auto) {
+            // Verify nonce for purge-data action
+            $nonce_verified = false;
+            if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'purge-data')) {
+                $nonce_verified = true;
+            }
+            
+            if (!$nonce_verified) {
+                add_settings_error('lws_nonce_error', 403, __('Unable to purge data. Security token is missing or invalid.', 'live-weather-station'), 'error');
+                Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a data purge request.');
+                Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely purge data.');
+                return;
+            }
+        }
+        
         self::truncate_data_table();
         if (!$auto) {
             add_settings_error('lws_nonce_success', 200, __('All stations data have been purged.', 'live-weather-station'), 'updated');
@@ -2216,6 +2279,21 @@ class Admin {
      * @since 3.0.0
      */
     private function sync_data($auto=false) {
+        if (!$auto) {
+            // Verify nonce for sync-data action
+            $nonce_verified = false;
+            if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'sync-data')) {
+                $nonce_verified = true;
+            }
+            
+            if (!$nonce_verified) {
+                add_settings_error('lws_nonce_error', 403, __('Unable to sync data. Security token is missing or invalid.', 'live-weather-station'), 'error');
+                Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a data sync request.');
+                Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely sync data.');
+                return;
+            }
+        }
+        
         $this->purge_data($auto);
         $this->get_all();
         if (!$auto) {
@@ -2233,6 +2311,18 @@ class Admin {
      * @since 3.2.0
      */
     private function reset_cache() {
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-cache')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to reset cache. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a cache reset request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reset cache.');
+            return;
+        }
+        
         Cache::reset();
         add_settings_error('lws_nonce_success', 200, sprintf(__('%s has been reset.', 'live-weather-station'), __('Cache', 'live-weather-station')), 'updated');
     }
@@ -2243,6 +2333,18 @@ class Admin {
      * @since 3.2.0
      */
     private function reset_log() {
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-log')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to reset log. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a log reset request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reset log.');
+            return;
+        }
+        
         Cache::flush_backend(false);
         Logger::reset();
         add_settings_error('lws_nonce_success', 200, sprintf(__('%s has been reset.', 'live-weather-station'), __('Events log', 'live-weather-station')), 'updated');
@@ -2254,6 +2356,18 @@ class Admin {
      * @since 3.8.0
      */
     private function export_configuration() {
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'export-configuration')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to export configuration. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a configuration export request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely export configuration.');
+            return;
+        }
+        
         ProcessManager::register('ConfigurationExporter');
         $message = __('Configuration export has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');
         add_settings_error('lws_nonce_success', 200, $message, 'updated');
@@ -2268,6 +2382,21 @@ class Admin {
      * @since 3.2.0
      */
     private function cron_reschedule($exec=false) {
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce'])) {
+            $nonce_action = $exec ? 'cron-force' : 'cron-reschedule';
+            if (wp_verify_nonce($_GET['_wpnonce'], $nonce_action)) {
+                $nonce_verified = true;
+            }
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('This action is not allowed. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a cron reschedule request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reschedule cron.');
+            return;
+        }
+        
         $done = false;
         $hook = '';
         $op = 'reschedule';
@@ -2308,6 +2437,18 @@ class Admin {
      * @since 3.2.0
      */
     private function relaunch_watchdog() {
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'relaunch-watchdog')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to relaunch watchdog. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a watchdog relaunch request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely relaunch watchdog.');
+            return;
+        }
+        
         Watchdog::restart();
         add_settings_error('lws_nonce_success', 200, __('The watchdog was successfully restarted.', 'live-weather-station').'<br/>'.__('Please wait a few minutes for all the tasks to be rescheduled.', 'live-weather-station'), 'updated');
     }
@@ -2319,6 +2460,18 @@ class Admin {
      * @since 3.6.0
      */
     private function reset_palette($id) {
+        $nonce_verified = false;
+        if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-cschemes')) {
+            $nonce_verified = true;
+        }
+        
+        if (!$nonce_verified) {
+            add_settings_error('lws_nonce_error', 403, __('Unable to reset palette. Security token is missing or invalid.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a palette reset request.');
+            Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely reset palette.');
+            return;
+        }
+        
         self::init_cschemes_options($id);
         add_settings_error('lws_nonce_success', 200, __('Custom palette has been reset to defaults.', 'live-weather-station'), 'updated');
         Logger::info($this->service, null, null, null, null, null, 0, 'Custom palette has been reset to defaults.');
