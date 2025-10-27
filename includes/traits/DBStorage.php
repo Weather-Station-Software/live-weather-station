@@ -990,7 +990,7 @@ trait Storage {
         $row_size = 0;
         $table_size = 0;
         global $wpdb;
-        $sql = "SELECT * FROM information_schema.tables WHERE table_schema='" . $wpdb->dbname . "' and table_name='" . $wpdb->prefix . $table_name . "';";
+        $sql = $wpdb->prepare("SELECT * FROM information_schema.tables WHERE table_schema=%s and table_name=%s", $wpdb->dbname, $wpdb->prefix . $table_name);
         $line = $wpdb->get_results($sql, ARRAY_A);
         if (count($line) > 0) {
             if (array_key_exists('TABLE_ROWS', $line[0])) {
@@ -1042,9 +1042,9 @@ trait Storage {
         $value_insert = array();
         $value_update = array();
         foreach ($value as $k => $v) {
-            $field_insert[] = '`' . $k . '`';
-            $value_insert[] = "'" . $v . "'";
-            $value_update[] = '`' . $k . '`=' . "'" . $v . "'";
+            $field_insert[] = '`' . esc_sql($k) . '`';
+            $value_insert[] = "'" . esc_sql($v) . "'";
+            $value_update[] = '`' . esc_sql($k) . '`=' . "'" . esc_sql($v) . "'";
         }
         if (count($field_insert) > 0) {
             global $wpdb;
@@ -1067,8 +1067,8 @@ trait Storage {
         $field_insert = array();
         $value_insert = array();
         foreach ($value as $k => $v) {
-            $field_insert[] = '`' . $k . '`';
-            $value_insert[] = "'" . $v . "'";
+            $field_insert[] = '`' . esc_sql($k) . '`';
+            $value_insert[] = "'" . esc_sql($v) . "'";
         }
         if (count($field_insert) > 0) {
             global $wpdb;
@@ -1093,7 +1093,7 @@ trait Storage {
                 $id = (int)round($id);
                 global $wpdb;
                 $table_name = $wpdb->prefix . $table_name;
-                $sql = "DELETE FROM " . $table_name . " WHERE `id`='" . $id . "';";
+                $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE `id`=%d", $id);
                 return $wpdb->query($sql);
             }
             else {
@@ -1116,7 +1116,7 @@ trait Storage {
     protected static function get_newest_rows($table_name, $limit=30) {
         global $wpdb;
         $table_name = $wpdb->prefix . $table_name;
-        $sql = "SELECT * FROM " . $table_name . " ORDER BY `timestamp` DESC LIMIT ".$limit;
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " ORDER BY `timestamp` DESC LIMIT %d", $limit);
         return $wpdb->get_results($sql, ARRAY_A);
     }
 
@@ -1131,7 +1131,7 @@ trait Storage {
     protected static function get_oldest_rows($table_name, $limit=30) {
         global $wpdb;
         $table_name = $wpdb->prefix . $table_name;
-        $sql = "SELECT * FROM " . $table_name . " ORDER BY `timestamp` ASC LIMIT ".$limit;
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " ORDER BY `timestamp` ASC LIMIT %d", $limit);
         return $wpdb->get_results($sql, ARRAY_A);
     }
 
@@ -1146,7 +1146,7 @@ trait Storage {
      */
     private function modify_table($table_name, $field, $old_value, $new_value) {
         global $wpdb;
-        $sql = "UPDATE " . $wpdb->prefix.$table_name . " SET " . $field . "='" . $new_value . "' WHERE " . $field . "='" . $old_value."'";
+        $sql = $wpdb->prepare("UPDATE " . $wpdb->prefix.$table_name . " SET " . $field . "=%s WHERE " . $field . "=%s", $new_value, $old_value);
         $wpdb->query($sql);
     }
 
