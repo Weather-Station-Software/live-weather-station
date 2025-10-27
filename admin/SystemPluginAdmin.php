@@ -1088,6 +1088,13 @@ class Admin {
      * @since 3.0.0
      */
     private function save_options($section) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to save options.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to save options.');
+            return false;
+        }
+        
         $result = true;
         $this->reload = false;
         if ($section == 'styles') {
@@ -1234,6 +1241,13 @@ class Admin {
      * @since 3.0.0
      */
     private function reset_to_defaults($section) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset defaults.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset defaults.');
+            return false;
+        }
+        
         $result = true;
         if ($section == 'general') {
             $result = false;
@@ -1266,6 +1280,13 @@ class Admin {
      * @since 3.0.0
      */
     private function check_options() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to access this page.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to access settings page.');
+            return false;
+        }
+        
         if (empty($_POST)) {
             return false;
         }
@@ -2153,6 +2174,13 @@ class Admin {
      * @since 3.0.0
      */
     private function reset_dashboard_meta() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset dashboard.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset dashboard.');
+            return;
+        }
+        
         $nonce_verified = false;
         if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-dashboard')) {
             $nonce_verified = true;
@@ -2177,6 +2205,13 @@ class Admin {
      * @since 3.0.0
      */
     private function reset_analytics_meta() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset analytics.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset analytics.');
+            return;
+        }
+        
         $nonce_verified = false;
         if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-analytics')) {
             $nonce_verified = true;
@@ -2200,6 +2235,13 @@ class Admin {
      * @since 3.0.0
      */
     private function reset_services_meta() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset services.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset services.');
+            return;
+        }
+        
         $nonce_verified = false;
         if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-services')) {
             $nonce_verified = true;
@@ -2223,6 +2265,13 @@ class Admin {
      * @since 3.0.0
      */
     private function reset_stations_meta() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset stations.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset stations.');
+            return;
+        }
+        
         $nonce_verified = false;
         if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-stations')) {
             $nonce_verified = true;
@@ -2248,6 +2297,13 @@ class Admin {
      */
     private function purge_data($auto=false) {
         if (!$auto) {
+            // Check user capabilities
+            if (!current_user_can($this->get_manage_options_cap())) {
+                add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to purge data.', 'live-weather-station'), 'error');
+                Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to purge data.');
+                return;
+            }
+            
             // Verify nonce for purge-data action
             $nonce_verified = false;
             if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'purge-data')) {
@@ -2280,6 +2336,13 @@ class Admin {
      */
     private function sync_data($auto=false) {
         if (!$auto) {
+            // Check user capabilities
+            if (!current_user_can($this->get_manage_options_cap())) {
+                add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to sync data.', 'live-weather-station'), 'error');
+                Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to sync data.');
+                return;
+            }
+            
             // Verify nonce for sync-data action
             $nonce_verified = false;
             if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'sync-data')) {
@@ -2311,6 +2374,13 @@ class Admin {
      * @since 3.2.0
      */
     private function reset_cache() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset cache.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset cache.');
+            return;
+        }
+        
         $nonce_verified = false;
         if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-cache')) {
             $nonce_verified = true;
@@ -2333,6 +2403,13 @@ class Admin {
      * @since 3.2.0
      */
     private function reset_log() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset log.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset log.');
+            return;
+        }
+        
         $nonce_verified = false;
         if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-log')) {
             $nonce_verified = true;
@@ -2356,6 +2433,13 @@ class Admin {
      * @since 3.8.0
      */
     private function export_configuration() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to export configuration.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to export configuration.');
+            return;
+        }
+        
         $nonce_verified = false;
         if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'export-configuration')) {
             $nonce_verified = true;
@@ -2382,6 +2466,13 @@ class Admin {
      * @since 3.2.0
      */
     private function cron_reschedule($exec=false) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reschedule cron tasks.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reschedule cron.');
+            return;
+        }
+        
         $nonce_verified = false;
         if (isset($_GET['_wpnonce'])) {
             $nonce_action = $exec ? 'cron-force' : 'cron-reschedule';
@@ -2437,6 +2528,13 @@ class Admin {
      * @since 3.2.0
      */
     private function relaunch_watchdog() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to relaunch watchdog.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to relaunch watchdog.');
+            return;
+        }
+        
         $nonce_verified = false;
         if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'relaunch-watchdog')) {
             $nonce_verified = true;
@@ -2460,6 +2558,13 @@ class Admin {
      * @since 3.6.0
      */
     private function reset_palette($id) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to reset palette.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to reset palette.');
+            return;
+        }
+        
         $nonce_verified = false;
         if (isset($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'reset-cschemes')) {
             $nonce_verified = true;
@@ -2483,6 +2588,13 @@ class Admin {
      * @since 3.6.0
      */
     private function save_palette() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to save palette.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to save palette.');
+            return;
+        }
+        
         $sec = false;
         if (array_key_exists('_wpnonce', $_POST)) {
             $sec = wp_verify_nonce($_POST['_wpnonce'], 'edit-palette');
@@ -2522,6 +2634,13 @@ class Admin {
      * @since 3.0.0
      */
     private function manage_connection() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to manage connections.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to manage connections.');
+            return;
+        }
+        
         $service = '';
         if (array_key_exists('service', $_POST)) {
             $service = sanitize_text_field($_POST['service']);
@@ -2804,6 +2923,8 @@ class Admin {
      * @since 3.0.0
      */
     protected function subscribe_email($email) {
+        // Email subscription doesn't need capability check (public action)
+        
         if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'subscribe')) {
             $subscribed = new Subscription($email);
             if ($subscribed->is_done()) {
@@ -2832,6 +2953,13 @@ class Admin {
      * @since 3.0.0
      */
     protected function delete_station($guid=null) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to delete stations.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to delete station.');
+            return;
+        }
+        
         if (isset($guid) && $guid) {
             $station = $this->get_station_information_by_guid($guid);
             $service = $this->get_service_name($station['station_type']);
@@ -2874,6 +3002,13 @@ class Admin {
      * @since 3.8.0
      */
     protected function import_configuration($uuid=null) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to import configuration.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to import configuration.');
+            return;
+        }
+        
         if (isset($uuid) && $uuid) {
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'import-configuration')) {
                 $error = false;
@@ -2935,6 +3070,13 @@ class Admin {
      * @since 3.8.0
      */
     protected function add_file() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to add files.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add file.');
+            return;
+        }
+        
         if ((bool)get_option('live_weather_station_upload_allowed')) {
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-file')) {
                 $success = false;
@@ -2974,6 +3116,13 @@ class Admin {
      * @since 3.7.0
      */
     protected function delete_map($mid=null) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to delete maps.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to delete map.');
+            return;
+        }
+        
         if (isset($mid) && $mid) {
             $map = $this->get_map_detail($mid);
             $service = $this->get_service_name(100 + $map['type']);
@@ -3528,6 +3677,13 @@ class Admin {
      * @since 3.0.0
      */
     protected function add_netatmo($device_id=null, $is_hc=false) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to add stations.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add Netatmo station.');
+            return;
+        }
+        
         if ($device_id) {
             if ($is_hc) {
                 $n = new Netatmo_HCInitiator(LWS_PLUGIN_ID, LWS_VERSION);
@@ -3589,6 +3745,13 @@ class Admin {
      * @since 3.0.0
      */
     protected function add_bloomsky($device_id=null) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to add stations.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add BloomSky station.');
+            return;
+        }
+        
         if ($device_id) {
             $n = new Bloomsky_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
             $nonce = 'add-bloomsky';
@@ -3638,6 +3801,13 @@ class Admin {
      * @since 3.0.0
      */
     protected function add_ambient($device_id=null) {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to add stations.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add Ambient station.');
+            return;
+        }
+        
         $station = array();
         $update = true;
         if ($device_id) {
@@ -3763,6 +3933,13 @@ class Admin {
      * @since 3.0.0
      */
     public function add_loc() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to add stations.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add located station.');
+            return;
+        }
+        
         $station = array();
         $error = 0;
         if (array_key_exists('guid', $_POST) &&
