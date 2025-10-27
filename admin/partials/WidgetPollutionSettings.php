@@ -10,7 +10,7 @@
     <label for="<?php echo $this->get_field_id( 'station' ); ?>"><?php esc_html_e( 'Station to display' , 'live-weather-station'); ?></label>
     <select class="widefat" id="<?php echo $this->get_field_id( 'station' ); ?>" name="<?php echo $this->get_field_name( 'station' ); ?>">
         <?php foreach ($stations as $stat) { ?>
-            <option value="<?php echo $stat['device_id'] ?>"<?php if ($stat['device_id']==$station):?> selected="selected"<?php endif;?>><?php echo $stat['device_name'] ?></option>;
+            <option value="<?php echo esc_attr($stat['device_id']) ?>"<?php if ($stat['device_id']==$station):?> selected="selected"<?php endif;?>><?php echo esc_html($stat['device_name']) ?></option>;
         <?php } ?>
     </select>
 </p>
