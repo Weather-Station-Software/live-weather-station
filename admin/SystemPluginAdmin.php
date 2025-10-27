@@ -2161,6 +2161,11 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_full_translation() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            wp_die(__('You do not have sufficient permissions to switch translation mode.', 'live-weather-station'));
+        }
+        
         if( isset($_GET['lwssettingsswitchfulltranslationnonce']) && wp_verify_nonce( $_GET['lwssettingsswitchfulltranslationnonce'], 'lwssettingsswitchfulltranslationnonce' ) ) {
             update_option('live_weather_station_partial_translation', 0);
             $i18n = new Intl();
@@ -2178,6 +2183,11 @@ class Admin {
      * @since 3.0.0
      */
     private function switch_partial_translation() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            wp_die(__('You do not have sufficient permissions to switch translation mode.', 'live-weather-station'));
+        }
+        
         if( isset($_GET['lwssettingsswitchpartialtranslationnonce']) && wp_verify_nonce( $_GET['lwssettingsswitchpartialtranslationnonce'], 'lwssettingsswitchpartialtranslationnonce' ) ) {
             update_option('live_weather_station_partial_translation', 1);
             $i18n = new Intl();
