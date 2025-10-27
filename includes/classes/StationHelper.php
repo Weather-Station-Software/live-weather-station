@@ -338,19 +338,20 @@ class Handling {
                                 $m = array();
                                 $modules = array();
                                 foreach ($_POST as $key => $p) {
+                                    $key = sanitize_text_field($key);
                                     if (strpos($key, 'lws-name-') === 0) {
                                         $k = str_replace('lws-name-', '', $key);
                                         if (!array_key_exists($k, $m)) {
                                             $m[$k] = array();
                                         }
-                                        $m[$k]['screen_name'] = (string)stripslashes(htmlspecialchars_decode($p));
+                                        $m[$k]['screen_name'] = (string)stripslashes(htmlspecialchars_decode(sanitize_text_field($p)));
                                     }
                                     if (strpos($key, 'lws-hidden-') === 0) {
                                         $k = str_replace('lws-hidden-', '', $key);
                                         if (!array_key_exists($k, $m)) {
                                             $m[$k] = array();
                                         }
-                                        $m[$k]['hidden'] = (integer)stripslashes(htmlspecialchars_decode($p));
+                                        $m[$k]['hidden'] = (integer)stripslashes(htmlspecialchars_decode(sanitize_text_field($p)));
                                     }
                                 }
                                 if (count($m) > 0) {
