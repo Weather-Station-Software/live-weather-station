@@ -4123,6 +4123,13 @@ class Admin {
      * @since 3.0.0
      */
     public function add_raw() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            $station = array('error' => 403, 'message' => __('You do not have sufficient permissions to add stations.', 'live-weather-station'));
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add Clientraw station.');
+            return $station;
+        }
+        
         $station = array();
         $error = 0;
         $message = '';
@@ -4254,6 +4261,13 @@ class Admin {
      * @since 3.5.0
      */
     public function add_piou() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            $station = array('error' => 403, 'message' => __('You do not have sufficient permissions to add stations.', 'live-weather-station'));
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add Pioupiou station.');
+            return $station;
+        }
+        
         $station = array();
         $error = 0;
         $message = '';
@@ -4376,6 +4390,13 @@ class Admin {
      * @since 3.0.0
      */
     public function add_real() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            $station = array('error' => 403, 'message' => __('You do not have sufficient permissions to add stations.', 'live-weather-station'));
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add Realtime station.');
+            return $station;
+        }
+        
         $station = array();
         $error = 0;
         $message = '';
@@ -4515,6 +4536,13 @@ class Admin {
      * @since 3.3.0
      */
     public function add_txt() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            $station = array('error' => 403, 'message' => __('You do not have sufficient permissions to add stations.', 'live-weather-station'));
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add Stickertags station.');
+            return $station;
+        }
+        
         $station = array();
         $error = 0;
         $message = '';
@@ -4762,6 +4790,13 @@ class Admin {
      * @since 3.0.0
      */
     public function add_wflw() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            $station = array('error' => 403, 'message' => __('You do not have sufficient permissions to add stations.', 'live-weather-station'));
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add WeatherFlow station.');
+            return $station;
+        }
+        
         $station = array();
         $error = 0;
         $message = '';
@@ -4883,6 +4918,13 @@ class Admin {
      * @since 3.8.0
      */
     public function add_wlink() {
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            $station = array('error' => 403, 'message' => __('You do not have sufficient permissions to add stations.', 'live-weather-station'));
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to add WeatherLink station.');
+            return $station;
+        }
+        
         $station = array();
         $error = 0;
         $message = '';
