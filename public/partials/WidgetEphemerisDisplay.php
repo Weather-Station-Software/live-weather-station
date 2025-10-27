@@ -6,9 +6,9 @@
  * @since 2.0.0
  */
 ?>
-<div class="lws-widget-container lws-widget-container-<?php echo $id ?>">
-    <div class="lws-widget-outer-ephemeris lws-widget-outer-ephemeris-<?php echo $id ?>">
-        <div class="lws-widget-ephemeris lws-widget-ephemeris-<?php echo $id ?> noTypo">
+<div class="lws-widget-container lws-widget-container-<?php echo esc_attr($id) ?>">
+    <div class="lws-widget-outer-ephemeris lws-widget-outer-ephemeris-<?php echo esc_attr($id) ?>">
+        <div class="lws-widget-ephemeris lws-widget-ephemeris-<?php echo esc_attr($id) ?> noTypo">
         <?php if ($show_title || $subtitle != 0 || $mode != 0):?>
             <!-- STATION NAME -->
             <div class="lws-widget-row lws-widget-row-<?php echo $id ?>">

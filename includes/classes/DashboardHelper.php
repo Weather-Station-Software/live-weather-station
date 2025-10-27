@@ -170,8 +170,13 @@ class Handling {
      * @since 3.0.0
      */
     public static function update_lws_welcome_panel_callback() {
+        // Check user capabilities
+        if (!current_user_can('read')) {
+            wp_die(-1);
+        }
+        
         check_ajax_referer('lws-welcome-panel-nonce', 'lwswelcomepanelnonce');
-        update_user_meta(get_current_user_id(), 'show_lws_welcome_panel', empty($_POST['visible'] ) ? 0 : 1);
+        update_user_meta(get_current_user_id(), 'show_lws_welcome_panel', empty(sanitize_text_field($_POST['visible'])) ? 0 : 1);
         wp_die(1);
     }
 
@@ -181,6 +186,14 @@ class Handling {
      * @since 3.6.0
      */
     public static function delete_notification_callback() {
+        // Check user capabilities
+        if (!current_user_can('manage_options')) {
+            wp_die(-1);
+        }
+        
+        // Check nonce
+        check_ajax_referer('lws-delete-notification', 'nonce');
+        
         if (isset($_POST['id'])) {
             Notifier::delete(wp_kses_post($_POST['id']));
             wp_die(1);

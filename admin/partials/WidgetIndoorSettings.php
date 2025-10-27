@@ -15,7 +15,7 @@ use WeatherStation\System\Device\Manager as DeviceManager;
     <select class="widefat" id="<?php echo $this->get_field_id('module'); ?>" name="<?php echo $this->get_field_name('module'); ?>">
         <?php foreach ($modules as $mod) { ?>
             <?php if (DeviceManager::is_visible($mod['device_id'], $mod['module_id'])) { ?>
-                <option value="<?php echo $mod['module_id'] . '-' . $mod['module_id'] ?>"<?php if ($mod['module_id'] . '-' . $mod['module_id']==$module):?> selected="selected"<?php endif;?>><?php echo $mod['device_name'] . ' - ' .DeviceManager::get_module_name($mod['device_id'], $mod['module_id']); ?></option>;
+                <option value="<?php echo esc_attr($mod['module_id'] . '-' . $mod['module_id']) ?>"<?php if ($mod['module_id'] . '-' . $mod['module_id']==$module):?> selected="selected"<?php endif;?>><?php echo esc_html($mod['device_name'] . ' - ' .DeviceManager::get_module_name($mod['device_id'], $mod['module_id'])); ?></option>;
             <?php } ?>
         <?php } ?>
     </select>
