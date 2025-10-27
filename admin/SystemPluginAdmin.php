@@ -246,6 +246,11 @@ class Admin {
      * @since 3.3.0
      */
     public static function hide_lws_whatsnew_callback() {
+        // Check user capabilities
+        if (!current_user_can('manage_options')) {
+            wp_die(-1);
+        }
+        
         check_ajax_referer('lws-whatsnew-nonce', 'lwswhatsnewnonce');
         update_option('live_weather_station_show_update', 0);
         wp_die(1);
@@ -3876,8 +3881,8 @@ class Admin {
                 if (array_key_exists('loc_latitude', $_POST) &&
                     array_key_exists('loc_longitude', $_POST)) {
                     if (is_numeric($_POST['loc_latitude']) && is_numeric($_POST['loc_longitude'])) {
-                        $station['loc_latitude'] = (float)$_POST['loc_latitude'];
-                        $station['loc_longitude'] = (float)$_POST['loc_longitude'];
+                        $station['loc_latitude'] = (float)sanitize_text_field($_POST['loc_latitude']);
+                        $station['loc_longitude'] = (float)sanitize_text_field($_POST['loc_longitude']);
                         if ($station['loc_latitude'] < -90 || $station['loc_latitude'] > 90) {
                             $station['loc_latitude'] = 0;
                         }
@@ -4005,8 +4010,8 @@ class Admin {
             if (array_key_exists('loc_latitude', $_POST) &&
                 array_key_exists('loc_longitude', $_POST)) {
                 if (is_numeric($_POST['loc_latitude']) && is_numeric($_POST['loc_longitude'])) {
-                    $station['loc_latitude'] = (float)$_POST['loc_latitude'];
-                    $station['loc_longitude'] = (float)$_POST['loc_longitude'];
+                    $station['loc_latitude'] = (float)sanitize_text_field($_POST['loc_latitude']);
+                    $station['loc_longitude'] = (float)sanitize_text_field($_POST['loc_longitude']);
                     if ($station['loc_latitude'] < -90 || $station['loc_latitude'] > 90) {
                         $error = 2;
                     }
@@ -4015,8 +4020,8 @@ class Admin {
                     }
                 }
                 else {
-                    $station['loc_latitude'] = $_POST['loc_latitude'];
-                    $station['loc_longitude'] = $_POST['loc_longitude'];
+                    $station['loc_latitude'] = sanitize_text_field($_POST['loc_latitude']);
+                    $station['loc_longitude'] = sanitize_text_field($_POST['loc_longitude']);
                     $error = 2;
                 }
             }
