@@ -1272,14 +1272,14 @@ class Admin {
         $result = false;
         $sec = false;
         if (array_key_exists('option_page', $_POST)) {
-            $section = $_POST['option_page'];
+            $section = sanitize_text_field($_POST['option_page']);
         }
         else {
             $section = 'unknown';
         }
         $action = '';
         if (array_key_exists('action', $_POST)) {
-            $action = $_POST['action'];
+            $action = sanitize_text_field($_POST['action']);
         }
         if (array_key_exists('reset', $_POST)) {
             $action = 'reset';
@@ -2404,7 +2404,7 @@ class Admin {
             $op = 'reschedule & execute';
         }
         if (array_key_exists('hook', $_GET)) {
-            $hook = $_GET['hook'];
+            $hook = sanitize_text_field($_GET['hook']);
         }
         $name = self::get_cron_name($hook);
         if (self::is_legitimate_cron($hook)) {
@@ -2524,7 +2524,7 @@ class Admin {
     private function manage_connection() {
         $service = '';
         if (array_key_exists('service', $_POST)) {
-            $service = $_POST['service'];
+            $service = sanitize_text_field($_POST['service']);
         }
         $action = '';
         if (array_key_exists('connect', $_POST)) {
@@ -2538,23 +2538,23 @@ class Admin {
         }
         $login = '';
         if (array_key_exists('login', $_POST)) {
-            $login = $_POST['login'];
+            $login = sanitize_email($_POST['login']);  // Could be email for some services
         }
         $apikey = '';
         if (array_key_exists('apikey', $_POST)) {
-            $apikey = $_POST['apikey'];
+            $apikey = sanitize_text_field($_POST['apikey']);
         }
         $password = '';
         if (array_key_exists('password', $_POST)) {
-            $password = $_POST['password'];
+            $password = sanitize_text_field($_POST['password']);
         }
         $key = '';
         if (array_key_exists('key', $_POST)) {
-            $key = $_POST['key'];
+            $key = sanitize_text_field($_POST['key']);
         }
         $plan = '';
         if (array_key_exists('plan', $_POST)) {
-            $plan = $_POST['plan'];
+            $plan = sanitize_text_field($_POST['plan']);
         }
         $result = false;
         $sec = false;
@@ -3664,10 +3664,10 @@ class Admin {
                     $station['loc_city'] = stripslashes(htmlspecialchars_decode($_POST['loc_city']));
                 }
                 if (array_key_exists('loc_country_code', $_POST)) {
-                    $station['loc_country_code'] = $_POST['loc_country_code'];
+                    $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
                 }
                 if (array_key_exists('loc_tz', $_POST)) {
-                    $station['loc_timezone'] = $_POST['loc_tz'];
+                    $station['loc_timezone'] = sanitize_text_field($_POST['loc_tz']);
                 }
                 if (array_key_exists('loc_altitude', $_POST)) {
                     $station['loc_altitude'] = (int)stripslashes(htmlspecialchars_decode($_POST['loc_altitude']));
