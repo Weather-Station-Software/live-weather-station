@@ -17,6 +17,7 @@ spl_autoload_register(
  */
     function($class)
 {
+	$file = null; // This ensures the variable is defined (added by Robert Frischke 12/07/2025 to resolve undefined variable error)
     switch ($class) {
         case 'WeatherStation\Data\Arrays\Generator': $file = LWS_INCLUDES_DIR.'traits/DataArraysGenerator.php'; break;
         case 'WeatherStation\Data\Dashboard\Handling': $file = LWS_INCLUDES_DIR.'traits/DataDashboardHandling.php'; break;
