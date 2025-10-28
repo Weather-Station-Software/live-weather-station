@@ -7,7 +7,7 @@ Requires PHP: 7.1
 Stable tag: 3.8.14
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Donate link: https://support.laquadrature.net/
+Donate link: https://ko-fi.com/jasonrouet
 
 Display on your WordPress site, in many elegant ways, the meteorological data collected by public or personal weather stations.
 
@@ -62,8 +62,15 @@ This plugin is free and provided without warranty of any kind. Use it at your ow
 - Actual maintainer (since v3.8.12): [Jason Rouet](https://profiles.wordpress.org/jaz_on/)
 - Original author: [Pierre Lannoy](https://profiles.wordpress.org/pierrelannoy/) (see props.txt for more details)
 
-= Donation =
-If you like this plugin or find it useful and want to thank me for the work done, please consider donating [La Quadrature Du Net](https://www.laquadrature.net/en) which is an advocacy group defending the rights and freedoms of citizens on the Internet. By supporting them, you help the daily actions they perform to defend our fundamental freedoms!
+= Support the Development =
+Weather Station is completely free and open source, but your support helps maintain and improve it!
+
+Your sponsorship enables regular development, security updates, and hiring external contributors for specialized tasks.
+
+- GitHub Sponsors: https://github.com/sponsors/jaz_on
+- Ko-fi: https://ko-fi.com/jasonrouet
+
+You can also help by reporting bugs, translating, or sharing the plugin with others.
 
 
 == Installation ==
