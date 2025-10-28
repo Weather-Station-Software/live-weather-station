@@ -12,7 +12,7 @@
 - Stable tag: 3.8.14
 - License: GPLv2 or later
 - License URI: http://www.gnu.org/licenses/gpl-2.0.html
-- Donate link: https://support.laquadrature.net/
+- Donate link: https://ko-fi.com/jasonrouet
 
 Display on your WordPress site, in many elegant ways, the meteorological data collected by public or personal weather stations.
 
