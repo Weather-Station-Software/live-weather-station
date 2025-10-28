@@ -67,8 +67,27 @@ This plugin is free and provided without warranty of any kind. Use it at your ow
 - Actual maintainer (since v3.8.12): [Jason Rouet](https://profiles.wordpress.org/jaz_on/)
 - Original author: [Pierre Lannoy](https://profiles.wordpress.org/pierrelannoy/) (see props.txt for more details)
 
-## Donation
-If you like this plugin or find it useful and want to thank me for the work done, please consider making a donation to [La Quadrature Du Net](https://www.laquadrature.net/en) which is an advocacy group defending the rights and freedoms of citizens on the Internet. By supporting them, you help the daily actions they perform to defend our fundamental freedoms!
+## Support the Development
+
+Weather Station is **completely free and open source**. However, maintaining and improving this plugin requires significant time and resources.
+
+### How Your Support Helps
+Your sponsorship enables me to:
+- Dedicate time regularly on plugin improvements and new features
+- Maintain security updates and WordPress compatibility
+- (Optionally) Hire external contributors for specialized tasks
+- Improve documentation and user support
+- Test with various weather station models
+
+### Ways to Support
+- **[GitHub Sponsors](https://github.com/sponsors/jaz_on)** - Recurring monthly support
+- **[Ko-fi](https://ko-fi.com/jasonrouet)** - One-time donations
+
+### You can also contribute to the project in other valuable ways:
+- [Reporting bugs](https://github.com/Weather-Station-Software/live-weather-station/issues)
+- [Translating the plugin](https://translate.wordpress.org/projects/wp-plugins/live-weather-station/)
+- Leaving a review on WordPress.org
+- Sharing the plugin with others
 
 
 ## Installation
