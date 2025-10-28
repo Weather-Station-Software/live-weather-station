@@ -6,6 +6,8 @@ Thank you to all the amazing people and organizations who support Weather Statio
 
 If your company, or the organization you work for, uses the Weather Station plugin, consider sponsoring its development. Corporate sponsorship helps ensure the plugin's long-term maintenance and development of new features that benefit the entire community.
 
+Corporate and individual sponsorship also helps purchase or upgrade weather station hardware for comprehensive testing, since the maintainer does not own test devices for every brand/model.
+
 Any questions? Contact: bonjour@jasonrouet.com
 
 ---

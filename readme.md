@@ -73,11 +73,12 @@ Weather Station is **completely free and open source**. However, maintaining and
 
 ### How Your Support Helps
 Your sponsorship enables me to:
-- Dedicate time regularly on plugin improvements and new features
 - Maintain security updates and WordPress compatibility
-- (Optionally) Hire external contributors for specialized tasks
+- Purchase or upgrade weather station hardware for testing (the maintainer does not own devices for every brand/model)
+- Test across a wide range of weather station models and services
+- Deliver new features and continuous improvements
 - Improve documentation and user support
-- Test with various weather station models
+- (Optionally) Hire external contributors for specialized tasks
 
 ### Ways to Support
 - **[GitHub Sponsors](https://github.com/sponsors/jaz_on)** - Recurring monthly support
