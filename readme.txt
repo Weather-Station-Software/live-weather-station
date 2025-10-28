@@ -65,7 +65,13 @@ This plugin is free and provided without warranty of any kind. Use it at your ow
 = Support the Development =
 Weather Station is completely free and open source, but your support helps maintain and improve it!
 
-Your sponsorship enables regular development, security updates, and hiring external contributors for specialized tasks.
+Your sponsorship enables:
+- Security updates and WordPress compatibility
+- Purchase or upgrade of weather station hardware for testing (the maintainer does not own devices for every brand/model)
+- Testing across a wide range of station models and services
+- New features and continuous improvements
+- Better documentation and user support
+- Optional external contributors for specialized tasks
 
 - GitHub Sponsors: https://github.com/sponsors/jaz_on
 - Ko-fi: https://ko-fi.com/jasonrouet
