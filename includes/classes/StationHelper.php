@@ -252,6 +252,10 @@ class Handling {
      * @since 3.0.0
      */
     public function edit_station() {
+        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to edit a station.');
+            return;
+        }
         if ($this->arg_service == 'station' && $this->arg_tab == 'view' && $this->arg_action == 'manage') {
             $station = array();
             if (array_key_exists('_wpnonce', $_POST)) {
