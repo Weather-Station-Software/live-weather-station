@@ -11,7 +11,7 @@ if (!($mid = filter_input(INPUT_GET, 'mid'))) {
 }
 if (isset($mid) && $mid) {
     $map = $this->get_map_detail($mid);
-    $params = unserialize($map['params']);
+    $params = unserialize($map['params'], array('allowed_classes' => false));
     $map_name = $map['name'];
     $map_location = $this->output_coordinate($params['common']['loc_latitude'], 'loc_latitude', 5, true);
     $map_location .= ' ⁛ ' . $this->output_coordinate($params['common']['loc_longitude'], 'loc_longitude', 5, true);

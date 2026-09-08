@@ -1251,7 +1251,7 @@ trait Query {
     protected function get_map_detail($id) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_maps_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE id='" . $id . "';";
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE id=%d;", intval($id));
         try {
             $result = $wpdb->get_results($sql, ARRAY_A);
             if (count($result) > 0) {
@@ -2586,7 +2586,7 @@ trait Query {
     protected function get_log_detail($log_entry) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE id=" . $log_entry ;
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE id=%d", intval($log_entry));
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
