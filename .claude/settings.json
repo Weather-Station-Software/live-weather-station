@@ -1,0 +1,32 @@
+{
+  "skillOverrides": {
+    "impeccable": "off"
+  },
+  "enabledPlugins": {},
+  "permissions": {
+    "deny": [
+      "Edit(vendor/**)",
+      "Edit(node_modules/**)",
+      "Edit(wp-config*.php)",
+      "Edit(dist/**)",
+      "Edit(build/**)"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/session-banner.sh" }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          { "type": "command", "command": ".claude/hooks/lint-edited.sh" }
+        ]
+      }
+    ]
+  }
+}
