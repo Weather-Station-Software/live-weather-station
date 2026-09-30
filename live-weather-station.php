@@ -21,6 +21,8 @@ use WeatherStation\System\Plugin\Uninstaller;
  * License:         GPLv2 or later
  * License URI:     http://www.gnu.org/licenses/gpl-2.0.txt
  * Version:         3.9.0
+ * GitHub Plugin URI: https://github.com/Weather-Station-Software/live-weather-station
+ * Primary Branch:   main
  */
 
 // If this file is called directly, abort.
