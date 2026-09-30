@@ -22,6 +22,7 @@
 * Bug fix: deleting an unknown map shows a clear message instead of PHP warnings.
 * Bug fix: PHP 8.1 to 8.4 deprecation notices and warnings are fixed (static trait access, null arguments, explicit casts).
 * Bug fix: the rain import, the LCD refresh action and the delete-station message work as expected, and JavaScript guards prevent errors on maps and radar charts.
+* Improvement: removed the unused code of three disabled features (OpenWeatherMap station client, Weather Underground collection client, Pollution widget); no user-visible change, existing stations of these types are kept and flagged as no longer available.
 
 #3.8.14 / September 6th, 2023
 * Improvement: full support for WordPress 6.3.x

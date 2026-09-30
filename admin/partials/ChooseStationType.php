@@ -44,28 +44,6 @@ else {
     $loc_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
 
-if (get_option('live_weather_station_owm_apikey') != '') {
-    $owm_s = ucfirst(__('a personal weather station published on OpenWeatherMap.', 'live-weather-station'));
-    $owm_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'OpenWeatherMap', $dashboard);
-    $owm_t = '_self';
-}
-else {
-    $owm_s = __('To add a station of this type, you need to set an OpenWeatherMap API key. To set it, click on this logo to be redirected to the services settings.', 'live-weather-station');
-    $owm_l = lws_get_admin_page_url('lws-settings', null, 'services');
-    $owm_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
-}
-
-if (get_option('live_weather_station_wug_apikey') != '') {
-    $wug_s = ucfirst(__('a personal weather station published on Weather Underground.', 'live-weather-station'));
-    $wug_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'WeatherUnderground', $dashboard);
-    $wug_t = '_self';
-}
-else {
-    $wug_s = __('To add a station of this type, you need to set a Weather Underground API key. To set it, click on this logo to be redirected to the services settings.', 'live-weather-station');
-    $wug_l = lws_get_admin_page_url('lws-settings', null, 'services');
-    $wug_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
-}
-
 $real_s = ucfirst(__('a station exporting its data via a <em>realtime.txt</em> file (Cumulus, etc.).', 'live-weather-station'));
 $real_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'realtime', $dashboard);
 $real_t = '_self';
@@ -136,13 +114,7 @@ $wlink_t = '_self';
                 <div style="flex:auto;padding:14px;"><img id="pioupiou" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_piou_color_logo()));?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="weatherlink" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_weatherlink_color_logo()));?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="loc" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_loc_color_logo()));?>" /></div>
-                <?php if (LWS_OWM_READY) { ?>
-                    <div style="flex:auto;padding:14px;"><img id="owm" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_owm_color_logo()));?>" /></div>
-                <?php } ?>
                 <div style="flex:auto;padding:14px;"><img id="ambient" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_ambient_color_logo()));?>" /></div>
-                <?php if (LWS_WU_ACTIVE) { ?>
-                    <div style="flex:auto;padding:14px;"><img id="wug" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_wug_color_logo()));?>" /></div>
-                <?php } ?>
                 <div style="flex:auto;padding:14px;"><img id="real" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_real_color_logo()));?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="raw" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_raw_color_logo()));?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="txt" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_txt_color_logo()));?>" /></div>
@@ -199,18 +171,6 @@ $wlink_t = '_self';
             });
             $("#loc").click(function() {
                 window.open(<?php echo Guard::js($loc_l); ?>, <?php echo Guard::js($loc_t); ?>);
-            });
-            $("#owm").mouseover(function() {
-                $("#tip-text").html(<?php echo Guard::js($owm_s); ?>);
-            });
-            $("#owm").click(function() {
-                window.open(<?php echo Guard::js($owm_l); ?>, <?php echo Guard::js($owm_t); ?>);
-            });
-            $("#wug").mouseover(function() {
-                $("#tip-text").html(<?php echo Guard::js($wug_s); ?>);
-            });
-            $("#wug").click(function() {
-                window.open(<?php echo Guard::js($wug_l); ?>, <?php echo Guard::js($wug_t); ?>);
             });
             $("#real").mouseover(function() {
                 $("#tip-text").html(<?php echo Guard::js($real_s); ?>);

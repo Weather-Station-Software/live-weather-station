@@ -119,27 +119,6 @@ trait BaseClient {
     }
 
     /**
-     * Synchronize main table with station table.
-     *
-     * @since 3.0.0
-     */
-    protected function synchronize_owm_true_station() {
-        $list = array();
-        $stations = $this->get_all_owm_id_stations();
-        if (count($stations) > 0) {
-            foreach ($stations as $station) {
-                $device_id = self::get_unique_owm_true_id($station['guid']);
-                $s = $this->get_station_information_by_guid($station['guid']);
-                $s['station_id'] = $device_id;
-                $s['last_refresh'] = date('Y-m-d H:i:s');
-                $this->update_stations_table($s);
-                $list[] = $device_id;
-            }
-            $this->clean_owm_true_from_table($list);
-        }
-    }
-
-    /**
      * Store station's measurements.
      *
      * @param   array   $measurements   OWM collected measurements

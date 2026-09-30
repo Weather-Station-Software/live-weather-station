@@ -80,33 +80,6 @@ trait Handling {
     }
 
     /**
-     * Generate a unique id for a OWM true station.
-     *
-     * @param integer $guid The numeric id of the station
-     * @return string The unique id of the station.
-     *
-     * @since 3.0.0
-     */
-    public static function get_unique_owm_true_id($guid) {
-        $st = self::$owm_station_id.str_pad(dechex((int)$guid), 10, '0', STR_PAD_LEFT);
-        $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
-        return strtolower($result);
-    }
-
-    /**
-     * Generate a unique id for a WUG station.
-     *
-     * @param integer $guid The numeric guid of the station.
-     * @return string The unique id of the station.
-     * @since 3.0.0
-     */
-    public static function get_unique_wug_id($guid) {
-        $st = self::$wug_id.str_pad(dechex((int)$guid), 10, '0', STR_PAD_LEFT);
-        $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
-        return strtolower($result);
-    }
-
-    /**
      * Generate a unique id for a clientraw station.
      *
      * @param integer $guid The numeric guid of the station.
@@ -363,19 +336,6 @@ trait Handling {
      */
     public static function get_owm_current_virtual_id($device_id) {
         $result = self::$owm_current_id.substr($device_id, 2, 40);
-        return $result;
-    }
-
-    /**
-     * Get a "virtual" ID for NAPollution module type.
-     *
-     * @param string $device_id The device ID.
-     * @return string A virtual ID for a NAPollution module attached to the device.
-     *
-     * @since 2.7.0
-     */
-    public static function get_owm_pollution_virtual_id($device_id) {
-        $result = self::$owm_pollution_id.substr($device_id, 2, 40);
         return $result;
     }
 

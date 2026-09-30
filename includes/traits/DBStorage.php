@@ -843,6 +843,11 @@ trait Storage {
             }
 
         }
+
+        // REMOVED FEATURES (OpenWeatherMap station, Weather Underground collection, Pollution widget)
+        // Idempotent: the related crons are cleared by the watchdog (see $cron_old), the stations of these types are kept
+        // in place (viewable and removable) and only the settings of the removed widget are dropped.
+        delete_option('widget_Live_Weather_Station_Widget_Pollution');
     }
 
 
@@ -1920,42 +1925,6 @@ trait Storage {
             $values = array('');
         }
         $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id like %s AND device_id NOT IN ( " . Guard::placeholders($values, '%s') . " )", array_merge(array("xx:%"), $values));
-        return $wpdb->query($sql);
-    }
-
-    /**
-     * Delete some owm true stations.
-     *
-     * @param array $values The values NOT to delete from the table
-     * @return int|false The number of rows deleted, or false on error.
-     * @since 3.0.0
-     */
-    protected function clean_owm_true_from_table($values) {
-        global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $values = array_values((array)$values);
-        if (count($values) === 0) {
-            $values = array('');
-        }
-        $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id like %s AND device_id NOT IN ( " . Guard::placeholders($values, '%s') . " )", array_merge(array("xy:%"), $values));
-        return $wpdb->query($sql);
-    }
-
-    /**
-     * Delete some wug stations.
-     *
-     * @param array $values The values NOT to delete from the table
-     * @return int|false The number of rows deleted, or false on error.
-     * @since 3.0.0
-     */
-    protected function clean_wug_from_table($values) {
-        global $wpdb;
-        $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $values = array_values((array)$values);
-        if (count($values) === 0) {
-            $values = array('');
-        }
-        $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id like %s AND device_id NOT IN ( " . Guard::placeholders($values, '%s') . " )", array_merge(array("xz:%"), $values));
         return $wpdb->query($sql);
     }
 
