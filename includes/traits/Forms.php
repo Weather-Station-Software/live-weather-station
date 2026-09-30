@@ -207,7 +207,9 @@ trait Handling {
             $step = pow(10, 0 - $decimal);
         }
         else {
-            $step = pow(10, floor(log10($max_boundary - $min_boundary)) - 2);
+            // The step is relative to the range of the boundaries (0.01 if the range is empty or not valid).
+            $range = (float)$max_boundary - (float)$min_boundary;
+            $step = ($range > 0 ? pow(10, floor(log10($range)) - 2) : 0.01);
         }
         if ($step > 1) {
             $min_value = $step * round($this->output_value(get_option('live_weather_station_' . $type . '_min_value'), $type)/$step);

@@ -22,6 +22,31 @@ class Logger {
     private $Live_Weather_Station;
     private $version;
 
+    // Per-request flood protection: maximum number of rows a single request can write, and the last written event.
+    // Filterable with 'lws_log_max_rows'; much higher for CLI/cron/background contexts.
+    private static $max_rows_per_request = 500;
+    private static $max_rows_long_running = 50000;
+    private static $rows_written = 0;
+    private static $last_event = '';
+    private static $suppressed = 0;
+    private static $suppressed_level = 'debug';
+    private static $marker_written = false;
+
+    /**
+     * Get the maximum number of rows for this request.
+     *
+     * @return int The cap.
+     * @since 3.9.0
+     */
+    private static function max_rows() {
+        $long = (defined('WP_CLI') && WP_CLI) || (defined('DOING_CRON') && DOING_CRON) || (function_exists('wp_doing_cron') && wp_doing_cron()) || PHP_SAPI === 'cli';
+        $max = $long ? self::$max_rows_long_running : self::$max_rows_per_request;
+        if (function_exists('apply_filters')) {
+            $max = (int)apply_filters('lws_log_max_rows', $max, $long);
+        }
+        return $max;
+    }
+
 
     /**
      * Initialize the class and set its properties.
@@ -108,7 +133,32 @@ class Logger {
      * @since    2.8.0
      */
     private static function _log($level = 'unknown', $system = null, $service = null, $device_id = null, $device_name = null, $module_id = null, $module_name = null, $code = null, $message = null, $version = LWS_VERSION) {
+        if (!is_string($level) || !array_key_exists($level, self::$severity)) {
+            $level = 'unknown';
+        }
         if (get_option('live_weather_station_logger_level', 6) >= self::$severity[$level]) {
+            // Do not let one request (e.g. an anonymous one triggering an error path in a loop) flood the log table.
+            $event = $level . '|' . $system . '|' . $service . '|' . $device_id . '|' . $module_id . '|' . $code . '|' . (is_scalar($message) ? substr((string)$message, 0, 14999) : '');
+            $important = (self::$severity[$level] <= self::$severity['error']);
+            // Consecutive identical events are collapsed, but never the important ones.
+            if (!$important && $event === self::$last_event) {
+                return;
+            }
+            // Flood cap: important rows (error and above) are never suppressed.
+            if (!$important && self::$rows_written >= self::max_rows()) {
+                self::$suppressed++;
+                if (self::$severity[$level] < self::$severity[self::$suppressed_level]) {
+                    self::$suppressed_level = $level;
+                }
+                if (!self::$marker_written) {
+                    self::$marker_written = true;
+                    // Register the final summary row once; it is written with the highest suppressed severity.
+                    register_shutdown_function(array(__CLASS__, 'flush_suppressed'));
+                }
+                return;
+            }
+            self::$last_event = $event;
+            self::$rows_written++;
             $values = array();
             $values['level'] = $level;
             $values['timestamp'] = date('Y-m-d H:i:s');
@@ -136,8 +186,28 @@ class Logger {
                 $values['code'] = $code;
             }
             if (!is_null($message)) {
-                $values['message'] = substr((string)$message, 0, 14999);
+                $values['message'] = substr(is_scalar($message) ? (string)$message : '', 0, 14999);
             }
+            self::insert_table(self::live_weather_station_log_table(), $values);
+        }
+    }
+
+    /**
+     * Write the single marker row summarizing suppressed messages (called on shutdown).
+     *
+     * @since 3.9.0
+     */
+    public static function flush_suppressed() {
+        if (self::$suppressed > 0) {
+            $n = self::$suppressed;
+            self::$suppressed = 0;
+            $values = array();
+            $values['level'] = self::$suppressed_level;
+            $values['timestamp'] = date('Y-m-d H:i:s');
+            $values['plugin'] = LWS_PLUGIN_NAME;
+            $values['version'] = substr(LWS_VERSION, 0, 11);
+            $values['system'] = 'Logger';
+            $values['message'] = $n . ' further messages suppressed in this request';
             self::insert_table(self::live_weather_station_log_table(), $values);
         }
     }
@@ -337,7 +407,7 @@ class Logger {
             case 'info':
                 $result = 'fa-info-circle';
                 break;
-            case 'debug';
+            case 'debug':
                 $result = 'fa-info';
                 break;
             default:
@@ -376,7 +446,7 @@ class Logger {
             case 'info':
                 $result = '#86B4D5';
                 break;
-            case 'debug';
+            case 'debug':
                 $result = '#B8D0D0';
                 break;
             default:
@@ -416,7 +486,7 @@ class Logger {
             case 'info':
                 $result = __('Information', 'live-weather-station');
                 break;
-            case 'debug';
+            case 'debug':
                 $result = __('Debug information', 'live-weather-station');
                 break;
             default:
@@ -456,7 +526,7 @@ class Logger {
             case 'info':
                 $result = 0.01;
                 break;
-            case 'debug';
+            case 'debug':
                 $result = 0;
                 break;
             default:
@@ -496,7 +566,7 @@ class Logger {
             case 6:
                 $result = __('Information', 'live-weather-station');
                 break;
-            case 7;
+            case 7:
                 $result = __('Debug information', 'live-weather-station');
                 break;
             default:

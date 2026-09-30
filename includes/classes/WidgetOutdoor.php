@@ -183,7 +183,7 @@ class Outdoor extends Base {
      * @param string $attachment Optional. CSS for background-attachment.
      * @since 1.0.0
      */
-    public function css($instance, $uid, $flat_design, $dawndusk=100, $background='', $attachment) {
+    public function css($instance, $uid, $flat_design, $dawndusk, $background, $attachment) {
         lws_font_awesome();
         try
         {

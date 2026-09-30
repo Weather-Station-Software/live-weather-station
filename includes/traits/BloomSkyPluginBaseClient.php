@@ -305,7 +305,7 @@ trait BaseClient {
                 }
                 if (array_key_exists('place', $dat)) {
                     if (array_key_exists('UTC', $station) && array_key_exists('country', $dat['place'])) {
-                        $dat['place']['timezone'] = $this->get_probable_timezone($dat['place']['country'], (integer)$station['UTC']);
+                        $dat['place']['timezone'] = $this->get_probable_timezone($dat['place']['country'], (int)$station['UTC']);
                     }
                     else {
                         $dat['place']['timezone'] = 'UTC';

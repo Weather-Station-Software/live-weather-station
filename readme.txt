@@ -6,7 +6,7 @@ Tested up to: 6.3.1
 Requires PHP: 7.1
 Stable tag: 3.9.0
 License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 Donate link: https://buymeacoffee.com/jasonrouet
 
 Display on your WordPress site, in many elegant ways, the meteorological data collected by public or personal weather stations.
@@ -44,8 +44,8 @@ Weather Station supports:
 
 If you want, Weather Station can send outdoor data to the following services:
 
-* [Met Office](http://wow.metoffice.gov.uk/) weather observations website
-* [PWS Weather](http://www.pwsweather.com/)
+* [Met Office](https://wow.metoffice.gov.uk/) weather observations website
+* [PWS Weather](https://www.pwsweather.com/)
 
 = Instructions =
 You can find a more in-depth description and instructions to configure [in the handbook](https://weather.station.software/handbook/).

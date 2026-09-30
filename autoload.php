@@ -236,20 +236,22 @@ spl_autoload_register(
         case 'WeatherStation\Utilities\Settings': $file = LWS_INCLUDES_DIR.'classes/SettingsHelper.php'; break;
         default: $file = null;
     }
-    if (!$file) {
-        if (strpos($class, '\SDK\Netatmo\\') > 0) {
-            $file = LWS_INCLUDES_DIR.'libraries/netatmo/autoload.php';
-        }
+    // The vendor sub-autoloaders only handle their own namespace prefix, so only hand them class names starting with it.
+    if (!$file && strncmp($class, 'WeatherStation\\SDK\\Netatmo\\', 27) === 0) {
+        $file = LWS_INCLUDES_DIR.'libraries/netatmo/autoload.php';
     }
-    if (!$file) {
-        if (strpos($class, '\Process\\') > 0) {
-            $file = LWS_INCLUDES_DIR.'process/autoload.php';
-        }
+    if (!$file && strncmp($class, 'WeatherStation\\Process\\', 23) === 0) {
+        $file = LWS_INCLUDES_DIR.'process/autoload.php';
     }
-    if (file_exists($file)) {
+    if ($file !== null && file_exists($file)) {
         require_once $file;
     }
     elseif (strpos($class, 'eatherStation') > 0) {
-        Logger::emergency('Core', null, null, null, null, null, 1, 'Unable to load ' . $class . ' class from ' . $file);
+        // Log each unresolved class name only once per request (and never more than a few entries) to avoid flooding the log.
+        static $reported = array();
+        if (!isset($reported[$class]) && count($reported) < 5) {
+            $reported[$class] = true;
+            Logger::emergency('Core', null, null, null, null, null, 1, 'Unable to load ' . substr($class, 0, 200) . ' class from ' . ($file === null ? '(no mapped file)' : $file));
+        }
     }
 });

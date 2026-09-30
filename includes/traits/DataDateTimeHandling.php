@@ -92,6 +92,28 @@ trait Handling {
     }
 
     /**
+     * Verify that coordinates and timezone (stored station data) can be used to compute sunrise and sunset.
+     *
+     * @param mixed $lat The latitude of the station.
+     * @param mixed $lon The longitude of the station.
+     * @param mixed $tz The timezone of the station.
+     * @return boolean True if they are valid.
+     * @since 3.9.0
+     */
+    protected function is_valid_sun_location($lat, $lon, $tz) {
+        if (!is_numeric($lat) || !is_numeric($lon) || abs($lat) > 90 || abs($lon) > 180) {
+            return false;
+        }
+        try {
+            new \DateTimeZone((string)$tz);
+        }
+        catch (\Exception $ex) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
      * Get the night / day status of the station.
      *
      * @param float $lat The latitude of the station.
@@ -101,6 +123,9 @@ trait Handling {
      * @since 3.8.0
      */
     protected function check_day($lat, $lon, $tz) {
+        if (!$this->is_valid_sun_location($lat, $lon, $tz)) {
+            return true;
+        }
         $time_rise = time()-36000;
         $time_set = time()-36000;
         $datetime = new \DateTime();
@@ -143,6 +168,9 @@ trait Handling {
      * @since 3.8.0
      */
     protected function check_mixday($lat, $lon, $tz) {
+        if (!$this->is_valid_sun_location($lat, $lon, $tz)) {
+            return false;
+        }
         $time_rise = time()-36000;
         $time_set = time()-36000;
         $datetime = new \DateTime();

@@ -83,12 +83,15 @@ trait PollutionClient {
      * @since    2.7.0
      */
     private function get_owm_measurements_array($json_pollution, $station, $device_id, $index, $lat, $long) {
+        if (!is_array($json_pollution) || !isset($json_pollution['body']) || !is_string($json_pollution['body'])) {
+            throw new \Exception('JSON / no response');
+        }
         $pollution = json_decode($json_pollution['body'], true);
         if (!is_array($pollution)) {
             throw new \Exception('JSON / '.lws_clean_text((string)$json_pollution['body'], 200));
         }
         Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($pollution, true));
-        $response = $json_pollution['response'];
+        $response = isset($json_pollution['response']) ? $json_pollution['response'] : null;
         if (!is_array($response)) {
             throw new \Exception('JSON / '.'unexpected response');
         }
@@ -106,11 +109,16 @@ trait PollutionClient {
         $result = array() ;
         if (!empty($pollution)) {
             $result = array();
-            $result['TS_'.$index] = strtotime($pollution['time']);
+            // Vendor data: the timestamp must be a parsable string (the current time otherwise).
+            $ts = (isset($pollution['time']) && is_string($pollution['time'])) ? strtotime($pollution['time']) : false;
+            if ($ts === false) {
+                $ts = time();
+            }
+            $result['TS_'.$index] = $ts;
             switch ($index) {
                 case 'o3' :
                     $result[$index] = 0;
-                    if (array_key_exists('data', $pollution)) {
+                    if (array_key_exists('data', $pollution) && is_numeric($pollution['data'])) {
                         $result[$index] = round($pollution['data']);
                     }
                     break;
@@ -121,7 +129,7 @@ trait PollutionClient {
                         $result[$index] = 0;
                         if (is_array($pollution['data'])) {
                             foreach ($pollution['data'] as $pol) {
-                                if ($pol['pressure'] == 1000) {
+                                if (is_array($pol) && isset($pol['pressure']) && isset($pol['value']) && is_numeric($pol['pressure']) && is_numeric($pol['value']) && $pol['pressure'] == 1000) {
                                     $result[$index] = $pol['value'] * 1000000;
                                     break;
                                 }
@@ -143,9 +151,9 @@ trait PollutionClient {
                     }
                     break;*/
             }
-            if (array_key_exists('location', $pollution) && is_array($pollution['location']) && isset($pollution['location']['latitude']) && isset($pollution['location']['longitude'])) {
+            if (array_key_exists('location', $pollution) && is_array($pollution['location']) && is_numeric($pollution['location']['latitude'] ?? null) && is_numeric($pollution['location']['longitude'] ?? null)) {
                 $result[$index.'_distance'] = round($this->distanceGeoPoints($lat, $long, $pollution['location']['latitude'], $pollution['location']['longitude']));
-                $result['TS_'.$index.'_distance'] = strtotime($pollution['time']);
+                $result['TS_'.$index.'_distance'] = $ts;
             } else {
                 $result[$index.'_distance'] = -1;
             }

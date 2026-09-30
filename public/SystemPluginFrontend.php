@@ -154,7 +154,8 @@ class Frontend {
             }
         }
         $result = $this->graph_query($this->graph_prepare($attributes), true);
-        exit ($this->lws_result_values($result));
+        echo $this->lws_result_values($result);
+        exit;
     }
 
     /**
@@ -178,7 +179,8 @@ class Frontend {
             }
         }
         $result = $this->graph_query($this->ltgraph_prepare($attributes), true);
-        exit ($this->lws_result_values($result));
+        echo $this->lws_result_values($result);
+        exit;
     }
 
     /**
@@ -195,7 +197,8 @@ class Frontend {
             }
         }
         $result = $this->graph_query($this->radial_prepare($attributes), true);
-        exit ($this->lws_result_values($result));
+        echo $this->lws_result_values($result);
+        exit;
     }
 
     /**
@@ -221,7 +224,8 @@ class Frontend {
                 }
             }
         }
-        exit ($this->graph_shortcodes($attributes));
+        echo $this->graph_shortcodes($attributes);
+        exit;
     }
 
     /**
@@ -244,7 +248,8 @@ class Frontend {
                 }
             }
         }
-        exit ($this->ltgraph_shortcodes($attributes));
+        echo $this->ltgraph_shortcodes($attributes);
+        exit;
     }
 
     /**
@@ -260,7 +265,8 @@ class Frontend {
                 $attributes[$param] = $this->lws_post_value($param);
             }
         }
-        exit ($this->lttextual_shortcodes($attributes));
+        echo $this->lttextual_shortcodes($attributes);
+        exit;
     }
 
     /**
@@ -276,7 +282,8 @@ class Frontend {
                 $attributes[$param] = $this->lws_post_value($param);
             }
         }
-        exit ($this->radial_shortcodes($attributes));
+        echo $this->radial_shortcodes($attributes);
+        exit;
     }
 
     /**
@@ -425,7 +432,8 @@ class Frontend {
             $allowed = in_array($tag_match[1], $this->allowed_shortcodes, true);
         }
         if ($allowed) {
-            exit(do_shortcode($shortcode));
+            echo do_shortcode($shortcode);
+            exit;
         }
         else {
             exit('<p>' . esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station') . '</p>');

@@ -250,7 +250,7 @@ trait StationClient {
             if (array_key_exists('relative_humidity', $observation)) {
                 $updates['measure_type'] = 'humidity';
                 $updates['measure_value'] = $observation['relative_humidity'];
-                $updates['measure_value'] = (integer)str_replace('%', '', $updates['measure_value']);
+                $updates['measure_value'] = (int)str_replace('%', '', $updates['measure_value']);
                 $this->update_data_table($updates, $timezone);
             }
             Logger::debug($this->facility, $this->service_name, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');

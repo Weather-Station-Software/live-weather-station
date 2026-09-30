@@ -644,9 +644,11 @@ abstract class Maintainer {
         $result .= 'new Clipboard(".' . $this->module_id . '-cpy-' . $this->station_guid . '");';
         // wrapping control
         $result .= '$(window).resize(function() {';
+        $result .= '    var containers = $(".item-boxes-container");';
+        $result .= '    if (containers.length === 0) {return;}';
         $result .= '    var wrapped = true;';
-        $result .= '    var left = $(".item-boxes-container").position().left;';
-        $result .= '    $(".item-boxes-container").each(function() {if ($(this).position().left != left) {wrapped = false;}});';
+        $result .= '    var left = containers.first().position().left;';
+        $result .= '    containers.each(function() {if ($(this).position().left != left) {wrapped = false;}});';
         if ($this->preview_min_height){
             $result .= '    if (wrapped) {$("#lws-preview-id").css("min-height", 0)}';
             $result .= '    if (!wrapped) {$("#lws-preview-id").css("min-height", $("#lws-parameter-id").height());}';

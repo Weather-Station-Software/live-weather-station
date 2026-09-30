@@ -2,7 +2,7 @@
 
 namespace WeatherStation\UI\ListTable;
 
-use WeatherStation\System\Options\Handling as Options;
+use WeatherStation\System\Plugin\Core as Options;
 
 /**
  * Color schemes list table for Weather Station plugin.

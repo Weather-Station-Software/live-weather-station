@@ -12,10 +12,10 @@
     <div class="markdown">
         <style type="text/css">
             .markdown ul {
-                list-style-type: disc; !important;
+                list-style-type: disc !important;
                 padding-left: 40px !important;
             }
         </style>
-        <?php echo do_shortcode('[live-weather-station-changelog]'); ?>
+        <?php echo wp_kses_post(do_shortcode('[live-weather-station-changelog]')); ?>
     </div>
 </div>

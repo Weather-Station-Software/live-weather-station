@@ -8,13 +8,14 @@
 
 use WeatherStation\System\I18N\Handling as Intl;
 
+$rss = null;
 try {
     $rss = fetch_feed($url);
 } catch (\Exception $ex) {
-    //$rss = null;
+    $rss = null;
 }
 $maxitems = 0;
-if (!is_wp_error($rss)) {
+if (isset($rss) && !is_wp_error($rss)) {
     setlocale(LC_ALL, lws_get_display_locale());
     $maxitems = $rss->get_item_quantity(4);
     if (isset($maxitems)) {

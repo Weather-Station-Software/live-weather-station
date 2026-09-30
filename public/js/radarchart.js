@@ -755,7 +755,7 @@ function RadarChart() {
         return chart;
     }
 
-    chart.margins = function(value) {
+    chart.margins = function(values) {
         if (!arguments.length) return options.margins;
         var vKeys = Object.keys(values);
         var mKeys = Object.keys(options.margins);

@@ -38,13 +38,14 @@ trait Query {
      * Filter data regarding its timestamp.
      *
      * @param array $data The data to filter.
+     * @param integer|null $level Optional. The obsolescence level to apply (the plugin option if null).
      * @return array An array containing the filtered data.
      * @since 2.0.0
      */
-    private function obsolescence_filtering($data) {
+    private function obsolescence_filtering($data, $level=null) {
         $time = 0;
         $time_owm = 0;
-        switch (get_option('live_weather_station_obsolescence')) {
+        switch ($level === null ? get_option('live_weather_station_obsolescence') : $level) {
             case 1 :
                 $time = 30 * 60;
                 $time_owm = floor(2 * 60 * 60);
@@ -522,7 +523,7 @@ trait Query {
                     $station = $this->get_station_information_by_station_id($device_id);
                     if (array_key_exists('oldest_data', $station) && $station['oldest_data'] != '0000-00-00') {
                         $old = \DateTime::createFromFormat('Y-m-d', $station['oldest_data']);
-                        if (time() - $old->getTimestamp() > 60 * 60 * 24 * 365) {
+                        if ($old !== false && time() - $old->getTimestamp() > 60 * 60 * 24 * 365) {
                             $table_name = $wpdb->prefix.self::live_weather_station_histo_yearly_table();
                             $sql = $wpdb->prepare("SELECT module_type, MAX(measure_value) as max_pressure, MIN(measure_value) as min_pressure FROM " . $table_name . " WHERE device_id=%s AND (module_type='NAMain' OR module_type='NACurrent') AND measure_type='pressure_sl' AND measure_set='avg' GROUP BY module_type", $device_id);
                             $cache_id = 'get_min_max_pressure_'.$device_id;
@@ -550,8 +551,10 @@ trait Query {
                                 $value['max'] = $max;
                                 Cache::set_query($cache_id, $value, 172800); // cache it for 48 hours
                             }
-                            $ref_min = $value['min'];
-                            $ref_max = $value['max'];
+                            if (is_array($value) && array_key_exists('min', $value) && array_key_exists('max', $value)) {
+                                $ref_min = $value['min'];
+                                $ref_max = $value['max'];
+                            }
                         }
                     }
                 }
@@ -576,6 +579,9 @@ trait Query {
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
+            if (!isset($query_a[0])) {
+                return '';
+            }
             $query_t = (array)$query_a[0];
             $result = $query_t['device_name'];
             return $result;
@@ -700,7 +706,10 @@ trait Query {
      * @since 3.1.0
      */
     protected function get_indoor_measurements($_id, $obsolescence_filtering=false) {
-        $a = explode ('-', $_id);
+        $a = explode ('-', (string)$_id);
+        if (count($a) < 2) {
+            return array();
+        }
         $device_id = $a[0];
         $module_id = $a[1];
         return $this->get_module_measurements($module_id, $obsolescence_filtering);
@@ -790,10 +799,11 @@ trait Query {
      *
      * @param string $device_id The device ID.
      * @param boolean $obsolescence_filtering Don't return obsolete data.
+     * @param integer|null $obsolescence_level Optional. The obsolescence level to apply (the plugin option if null).
      * @return array An array containing all the measurements.
      * @since 1.0.0
      */
-    protected function get_all_measurements($device_id, $obsolescence_filtering=false) {
+    protected function get_all_measurements($device_id, $obsolescence_filtering=false, $obsolescence_level=null) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $order = " ORDER BY CASE module_type WHEN 'NAMain' THEN 1 WHEN 'NAModule1' THEN 2 WHEN 'NAModule2' THEN 3 WHEN 'NAModule3' THEN 4 WHEN 'NAModule5' THEN 5 WHEN 'NAModule7' THEN 6 WHEN 'NAModule6' THEN 7 WHEN 'NAComputed' THEN 8 WHEN 'NAModule4' THEN 9 WHEN 'NAEphemer' THEN 10 WHEN 'NACurrent' THEN 11 ELSE 12 END";
@@ -810,7 +820,7 @@ trait Query {
             foreach ($query_a as $val) {
                 $result[] = (array)$val;
             }
-            return ($obsolescence_filtering ? $this->obsolescence_filtering($result) : $result);
+            return ($obsolescence_filtering ? $this->obsolescence_filtering($result, $obsolescence_level) : $result);
         }
         catch(\Exception $ex) {
             return array('condition' => array('value' => 2, 'message' => __('Database contains inconsistent measurements', 'live-weather-station')));
@@ -825,10 +835,8 @@ trait Query {
      * @since 3.0.0
      */
     protected function get_all_measurements_for_push($device_id) {
-        $saved_obsolescence = get_option('live_weather_station_obsolescence');
-        update_option('live_weather_station_obsolescence', 99);
-        $data = $this->get_all_measurements($device_id, true);
-        update_option('live_weather_station_obsolescence', $saved_obsolescence);
+        // Level 99: data to push are filtered with their own obsolescence, without touching the global option.
+        $data = $this->get_all_measurements($device_id, true, 99);
         $result = array();
         if (!array_key_exists('condition', $data)) {
             foreach ($data as $line) {
@@ -1588,6 +1596,9 @@ trait Query {
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
+            if (!isset($query_a[0])) {
+                return '';
+            }
             $query_t = (array)$query_a[0];
             $result = $query_t['station_name'];
             return $result;
@@ -1695,7 +1706,7 @@ trait Query {
             $ccs = '';
             $cc = explode ('_', lws_get_display_locale());
             if (count($cc) > 1) {
-                $ccs = strtoupper($cc[1][0].$cc[1][1]);
+                $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
@@ -1721,7 +1732,7 @@ trait Query {
                 foreach ($query_a as $val) {
                     $result[] = (array)$val;
                 }
-                return $result[0];
+                return isset($result[0]) ? $result[0] : array();
             } catch (\Exception $ex) {
                 return array();
             }
@@ -1740,7 +1751,7 @@ trait Query {
             $ccs = '';
             $cc = explode ('_', lws_get_display_locale());
             if (count($cc) > 1) {
-                $ccs = strtoupper($cc[1][0].$cc[1][1]);
+                $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
@@ -1768,7 +1779,7 @@ trait Query {
                 foreach ($query_a as $val) {
                     $result[] = (array)$val;
                 }
-                return $result[0];
+                return isset($result[0]) ? $result[0] : array();
             } catch (\Exception $ex) {
                 return array();
             }
@@ -1787,7 +1798,7 @@ trait Query {
             $ccs = '';
             $cc = explode ('_', lws_get_display_locale());
             if (count($cc) > 1) {
-                $ccs = strtoupper($cc[1][0].$cc[1][1]);
+                $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
@@ -1814,7 +1825,7 @@ trait Query {
                 foreach ($query_a as $val) {
                     $result[] = (array)$val;
                 }
-                return $result[0];
+                return isset($result[0]) ? $result[0] : array();
             } catch (\Exception $ex) {
                 return array();
             }
@@ -1833,7 +1844,7 @@ trait Query {
             $ccs = '';
             $cc = explode ('_', lws_get_display_locale());
             if (count($cc) > 1) {
-                $ccs = strtoupper($cc[1][0].$cc[1][1]);
+                $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
@@ -1861,7 +1872,7 @@ trait Query {
                 foreach ($query_a as $val) {
                     $result[] = (array)$val;
                 }
-                return $result[0];
+                return isset($result[0]) ? $result[0] : array();
             } catch (\Exception $ex) {
                 return array();
             }
@@ -1880,7 +1891,7 @@ trait Query {
             $ccs = '';
             $cc = explode ('_', lws_get_display_locale());
             if (count($cc) > 1) {
-                $ccs = strtoupper($cc[1][0].$cc[1][1]);
+                $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
@@ -1907,7 +1918,7 @@ trait Query {
                 foreach ($query_a as $val) {
                     $result[] = (array)$val;
                 }
-                return $result[0];
+                return isset($result[0]) ? $result[0] : array();
             } catch (\Exception $ex) {
                 return array();
             }
@@ -1926,7 +1937,7 @@ trait Query {
             $ccs = '';
             $cc = explode ('_', lws_get_display_locale());
             if (count($cc) > 1) {
-                $ccs = strtoupper($cc[1][0].$cc[1][1]);
+                $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
@@ -1953,7 +1964,7 @@ trait Query {
                 foreach ($query_a as $val) {
                     $result[] = (array)$val;
                 }
-                return $result[0];
+                return isset($result[0]) ? $result[0] : array();
             } catch (\Exception $ex) {
                 return array();
             }
@@ -1972,7 +1983,7 @@ trait Query {
             $ccs = '';
             $cc = explode ('_', lws_get_display_locale());
             if (count($cc) > 1) {
-                $ccs = strtoupper($cc[1][0].$cc[1][1]);
+                $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
@@ -2000,7 +2011,7 @@ trait Query {
                 foreach ($query_a as $val) {
                     $result[] = (array)$val;
                 }
-                return $result[0];
+                return isset($result[0]) ? $result[0] : array();
             } catch (\Exception $ex) {
                 return array();
             }
@@ -2019,7 +2030,7 @@ trait Query {
             $ccs = '';
             $cc = explode ('_', lws_get_display_locale());
             if (count($cc) > 1) {
-                $ccs = strtoupper($cc[1][0].$cc[1][1]);
+                $ccs = strtoupper(substr($cc[1], 0, 2));
             }
             $nothing = array();
             $nothing['guid'] = 0;
@@ -2047,7 +2058,7 @@ trait Query {
                 foreach ($query_a as $val) {
                     $result[] = (array)$val;
                 }
-                return $result[0];
+                return isset($result[0]) ? $result[0] : array();
             } catch (\Exception $ex) {
                 return array();
             }
@@ -2083,7 +2094,7 @@ trait Query {
                 foreach ($query_a as $val) {
                     $result[] = (array)$val;
                 }
-                return $result[0];
+                return isset($result[0]) ? $result[0] : array();
             } catch (\Exception $ex) {
                 return array();
             }
@@ -2450,7 +2461,7 @@ trait Query {
                         }
                     }
                     if (count($l) > 0) {
-                        $w[] = $column . ' IN (' . $wpdb->prepare(Guard::placeholders($l, '%s'), $l) . ')';
+                        $w[] = '`' . $column . '` IN (' . $wpdb->prepare(Guard::placeholders($l, '%s'), $l) . ')';
                     }
                     else {
                         $w[] = '1=0';
@@ -2570,8 +2581,8 @@ trait Query {
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
-            $query_t = (array)$query_a[0];
-            $result = $query_t['COUNT(*)'];
+            $query_t = isset($query_a[0]) ? (array)$query_a[0] : array();
+            $result = isset($query_t['COUNT(*)']) ? $query_t['COUNT(*)'] : 0;
             return $result;
         }
         catch(\Exception $ex) {
@@ -2645,7 +2656,7 @@ trait Query {
         $result = array();
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
-        $sql = "SELECT DISTINCT system FROM ".$table_name . " ORDER BY system ASC";
+        $sql = "SELECT DISTINCT `system` FROM ".$table_name . " ORDER BY `system` ASC";
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;

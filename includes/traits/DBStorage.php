@@ -920,9 +920,12 @@ trait Storage {
         $table_name = $wpdb->prefix.self::live_weather_station_notifications_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
-        $table_name = $wpdb->prefix.self::create_live_weather_station_maps_table();
-        $sql = 'DROP TABLE IF EXISTS '.$table_name;
-        $wpdb->query($sql);
+        if ($drop_log) {
+            // The maps are user content: dropped on uninstall only (not when an old version is fully reinstalled).
+            $table_name = $wpdb->prefix.self::live_weather_station_maps_table();
+            $sql = 'DROP TABLE IF EXISTS '.$table_name;
+            $wpdb->query($sql);
+        }
     }
 
     /**
@@ -1706,13 +1709,18 @@ trait Storage {
             }
         }
         else {
-            try {
-                Logger::warning('Data Manager', null, $value['device_id'], $value['device_name'], $value['module_id'], $value['module_name'], 500, 'Inconsistent data to insert in data table: ' . substr(print_r($value, true), 0, 1000));
+            // A rejected value is logged at most once per quarter of an hour for a given measurement (no log flooding).
+            $throttle = 'lws_rejected_' . md5((isset($value['device_id']) ? (string)$value['device_id'] : '') . '|' . (isset($value['module_id']) ? (string)$value['module_id'] : '') . '|' . (isset($value['measure_type']) ? (string)$value['measure_type'] : ''));
+            if (get_transient($throttle) === false) {
+                set_transient($throttle, 1, 900);
+                $detail = 'Inconsistent data to insert in data table: ' . substr(print_r($value, true), 0, 500);
+                try {
+                    Logger::warning('Data Manager', null, isset($value['device_id']) ? $value['device_id'] : null, isset($value['device_name']) ? $value['device_name'] : null, isset($value['module_id']) ? $value['module_id'] : null, isset($value['module_name']) ? $value['module_name'] : null, 500, $detail);
+                }
+                catch (\Exception $ex) {
+                    Logger::warning('Data Manager', null, null, null, null, null, 500, $detail);
+                }
             }
-            catch (\Exception $ex) {
-                Logger::warning('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . substr(print_r($value, true), 0, 1000));
-            }
-
         }
     }
 
@@ -1763,7 +1771,7 @@ trait Storage {
             Cache::flush_query();
         }
         else {
-            Logger::error('Data Manager', null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to get guid for this record: ' . print_r($value, true));
+            Logger::error('Data Manager', null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to get guid for this record: ' . substr(print_r($value, true), 0, 1000));
         }
         return $result;
     }

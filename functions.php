@@ -581,7 +581,7 @@ function lws_sanitize_width_height_field($s, $u=array('px')) {
             break;
         default:
             $i = (int)$s;
-            if ($i != 0 && $i < 2000) {
+            if ($i > 0 && $i < 2000) {
                 $t = trim(strtolower(substr($s, strpos($s, (string)$i) + strlen((string)$i))));
                 if (!in_array($t, $u)) {
                     $t = 'px';

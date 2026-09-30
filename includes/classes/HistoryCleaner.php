@@ -83,15 +83,15 @@ class Cleaner
      */
     private function delete_old_medias() {
         $result = false;
-        if (get_option('live_weather_station_picture_retention') !== 0) {
-            $max = date('Y-m-d H:i:s', self::get_local_n_days_ago_midnight(1 + get_option('live_weather_station_picture_retention')));
+        if ((int)get_option('live_weather_station_picture_retention') > 0) {
+            $max = date('Y-m-d H:i:s', self::get_local_n_days_ago_midnight(1 + (int)get_option('live_weather_station_picture_retention')));
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_media_table();
             $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE `timestamp`<=%s AND `module_type`='NAModuleP';", $max);
             $result = $result || $wpdb->query($sql);
         }
-        if (get_option('live_weather_station_video_retention') !== 0) {
-            $max = date('Y-m-d H:i:s', self::get_local_n_days_ago_midnight(1 + get_option('live_weather_station_video_retention')));
+        if ((int)get_option('live_weather_station_video_retention') > 0) {
+            $max = date('Y-m-d H:i:s', self::get_local_n_days_ago_midnight(1 + (int)get_option('live_weather_station_video_retention')));
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_media_table();
             $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE `timestamp`<=%s AND `module_type`='NAModuleV';", $max);

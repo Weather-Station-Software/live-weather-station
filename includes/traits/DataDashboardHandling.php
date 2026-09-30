@@ -49,7 +49,9 @@ trait Handling {
         $temperature_ref = null;
         $humidity_ref = null;
         $timezone = $this->get_timezone(null, $place, null, $device_id);
-        foreach($types as $type) {
+        // $type keeps its last value after the loop (used below): it must exist even when there is no type.
+        $type = '';
+        foreach((array)$types as $type) {
             if (isset($measurements) && is_array($measurements) && array_key_exists($type, $measurements)) {
                 $updates = array();
                 $updates['device_id'] = $device_id;
@@ -103,6 +105,9 @@ trait Handling {
         $updates['measure_value'] = date('Y-m-d H:i:s');
         $this->update_data_table($updates, $timezone);
         if ($last_seen) {
+            if (!is_array($measurements)) {
+                $measurements = array();
+            }
             if (array_key_exists('TS_'.$type, $measurements)) {
                 $updates['measure_value'] = date('Y-m-d H:i:s', $measurements['TS_'.$type]);
             }
@@ -283,7 +288,7 @@ trait Handling {
             $this->update_data_table($updates, $timezone);
         }
         if ($module_type === 'NAModuleP') {
-            if (array_key_exists('time_pct', $measurements) && array_key_exists('url_pct', $measurements)){
+            if (array_key_exists('time_pct', $measurements) && array_key_exists('url_pct', $measurements) && is_numeric($measurements['time_pct']) && is_string($measurements['url_pct'])){
                 $updates = array();
                 $updates['device_id'] = $device_id;
                 $updates['device_name'] = $device_name;
@@ -319,7 +324,11 @@ trait Handling {
                     if ($station_type === LWS_BSKY_SID) {
                         if (count($measurements['video_' . $item_type]) > 0) {
                             $video = end($measurements['video_' . $item_type]);
-                            $timestamp = str_replace('_C', '', str_replace('.mp4', '', substr($video, ($item_type === 'imperial' ? -14 : -16)))) . ' 12:00:00';
+                            // The timestamp is derived from the file name (vendor data): it must be a date, or the video is ignored.
+                            $timestamp = str_replace('_C', '', str_replace('.mp4', '', substr((string)$video, ($item_type === 'imperial' ? -14 : -16)))) . ' 12:00:00';
+                            if (!is_string($video) || preg_match('/^\d{4}-\d{2}-\d{2} 12:00:00$/', $timestamp) !== 1) {
+                                continue;
+                            }
                             $mode = ($item_type === 'imperial' ? __('Daily timelapse with imperial subtitles', 'live-weather-station') : __('Daily timelapse with metric subtitles', 'live-weather-station'));
                             $updates['measure_timestamp'] = $timestamp;
                             $updates['measure_value'] = substr($mode, 0, 50);
