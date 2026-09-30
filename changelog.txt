@@ -10,7 +10,7 @@
 * Bug fix: the plugin header now carries the real version number.
 * Bug fix: wind direction is no longer a fatal error on PHP 8 (the value was not passed to is_numeric()).
 * Bug fix: the automatic update filter no longer raises a notice when WordPress passes an item without slug.
-* Improvement: on a multisite, a network activation now creates the tables and options of every site, and of each site created afterwards.
+* Improvement: on a multisite, a network activation now creates the tables and options of every site, and of each site created afterwards. A network deactivation stops the scheduler of every site, uninstalling the plugin cleans every site and deleting a site removes its tables.
 * Security: shortcode periods and graph queries are validated and bounded, and the event logger caps its output per request.
 * Improvement: the history retention setting accepts 0 for unlimited retention.
 * Improvement: the events log keeps every error and marks visibly when messages were skipped during a request.

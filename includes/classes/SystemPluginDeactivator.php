@@ -3,6 +3,7 @@
 namespace WeatherStation\System\Plugin;
 
 use WeatherStation\System\Schedules\Watchdog;
+use WeatherStation\System\Environment\Manager as Env;
 use WeatherStation\System\Options\Handling as Options;
 use WeatherStation\DB\Storage as Storage;
 use WeatherStation\System\Cache\Cache;
@@ -24,12 +25,24 @@ class Deactivator {
 	/**
 	 * Deactivates the plugin.
 	 *
-	 * Flush caches and stop scheduler.
+	 * Flush caches and stop scheduler, for the current site or, on a network deactivation, for every site.
 	 *
+	 * @param boolean $network_wide Optional. True if the plugin is deactivated for the whole network.
 	 * @since 1.0.0
 	 */
-	public static function deactivate() {
-	    Cache::flush_full(false);
+	public static function deactivate($network_wide=false) {
+		Env::run_on_sites(function() { self::deactivate_site(); }, $network_wide ? 'all' : null);
+	}
+
+	/**
+	 * Flush caches and stop scheduler of the current site.
+	 *
+	 * @since 3.9.0
+	 * @access private
+	 * @static
+	 */
+	private static function deactivate_site() {
+		Cache::flush_full(false);
 		Watchdog::stop();
 	}
 

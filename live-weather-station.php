@@ -22,6 +22,8 @@ use WeatherStation\System\Plugin\Uninstaller;
  * License URI:     http://www.gnu.org/licenses/gpl-2.0.txt
  * Requires PHP:    7.1
  * Version:         3.9.0
+ * GitHub Plugin URI: https://github.com/Weather-Station-Software/live-weather-station
+ * Primary Branch:   main
  */
 
 // If this file is called directly, abort.
@@ -57,8 +59,8 @@ function initialize_site_Live_Weather_Station($site) {
  *
  * @since 1.0.0
  */
-function deactivate_Live_Weather_Station() {
-    Deactivator::deactivate();
+function deactivate_Live_Weather_Station($network_wide = false) {
+    Deactivator::deactivate($network_wide);
 }
 
 /**
@@ -73,6 +75,7 @@ function uninstall_Live_Weather_Station() {
 
 register_activation_hook( __FILE__, 'activate_Live_Weather_Station' );
 add_action( function_exists('wp_initialize_site') ? 'wp_initialize_site' : 'wpmu_new_blog', 'initialize_site_Live_Weather_Station', 900 );
+add_filter( 'wpmu_drop_tables', array( 'WeatherStation\\System\\Plugin\\Uninstaller', 'site_tables' ), 10, 2 );
 register_deactivation_hook( __FILE__, 'deactivate_Live_Weather_Station' );
 register_uninstall_hook(__FILE__, 'uninstall_Live_Weather_Station');
 run_Live_Weather_Station();

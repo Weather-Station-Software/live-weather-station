@@ -834,6 +834,31 @@ class Manager {
     }
 
     /**
+     * Run a callback on the current site or, on a multisite, on other sites.
+     *
+     * @param callable $callback The callback to run (no argument).
+     * @param string|int|null $sites Optional. Null for the current site, 'all' for every site of the network, a site id for this site.
+     *                               Outside a multisite, the callback always runs on the current (only) site.
+     * @since 3.9.0
+     */
+    public static function run_on_sites($callback, $sites=null) {
+        if ($sites === null || !is_multisite()) {
+            call_user_func($callback);
+            return;
+        }
+        $ids = ($sites === 'all') ? get_sites(array('fields' => 'ids', 'number' => 0)) : array((int)$sites);
+        foreach ($ids as $id) {
+            switch_to_blog($id);
+            try {
+                call_user_func($callback);
+            }
+            finally {
+                restore_current_blog();
+            }
+        }
+    }
+
+    /**
      * Choose if the plugin must be auto-updated or not.
      * Concerned hook: auto_update_plugin
      *
