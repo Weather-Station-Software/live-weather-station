@@ -28,21 +28,37 @@ trait PublicClient {
 
     protected $facility = 'Weather Collector';
     public $detected_station_name = '';
-    private static $dev_key = '42f82f28-44c8-4866-921d-315f53c7bd39';
+
+    /**
+     * Split the service_id of a station: since 3.9.0 it is "station id{LWS_SERVICE_SEPARATOR}personal access token".
+     * A station saved before has only the station id, so no token.
+     *
+     * @param string $service_id The service_id of the station.
+     * @return array An array (station id, token).
+     * @since 3.9.0
+     */
+    public static function split_wflw_service_id($service_id) {
+        $parts = explode(LWS_SERVICE_SEPARATOR, (string)$service_id, 2);
+        return array($parts[0], (count($parts) > 1 ? $parts[1] : ''));
+    }
 
     /**
      * Verify if a station is accessible.
      *
      * @param string $id The station ID.
+     * @param string $token The personal access token of the station owner.
      * @return string The error message, empty string otherwise.
      * @since 3.3.0
      */
-    public function test_station($id) {
+    public function test_station($id, $token='') {
         $result = 'unknown station ID';
+        if ($token === '') {
+            return 'a personal access token is required';
+        }
         try {
             $wflw = new WFLWApiClient();
             Quota::verify(self::$service, 'GET');
-            $raw_data = $wflw->getRawPublicStationData($id, self::$dev_key);
+            $raw_data = $wflw->getRawPublicStationData($id, $token);
             $weather = json_decode($raw_data, true);
             if (is_array($weather)) {
                 if (array_key_exists('status', $weather)) {
@@ -82,16 +98,20 @@ trait PublicClient {
      * Get the devices attached to a station.
      *
      * @param string $id The station ID.
+     * @param string $token The personal access token of the station owner.
      * @return array The devices.
      * @since 3.7.0
      */
-    public function get_devices($id) {
+    public function get_devices($id, $token='') {
         $result = array();
+        if ($token === '') {
+            return $result;
+        }
         try {
             $wflw = new WFLWApiClient();
             $this->devices = array();
             Quota::verify(self::$service, 'GET');
-            $raw_data = $wflw->getRawPublicStationMeta($id, self::$dev_key);
+            $raw_data = $wflw->getRawPublicStationMeta($id, $token);
             $data = json_decode($raw_data, true);
             if (is_array($data)) {
                 if (array_key_exists('status', $data)) {
@@ -526,10 +546,15 @@ trait PublicClient {
         foreach ($stations as $st => $station) {
             $device_id = $station['station_id'];
             $device_name = $station['station_name'];
+            $credentials = self::split_wflw_service_id($station['service_id']);
+            if ($credentials[1] === '') {
+                Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 401, 'No personal access token for this station: WeatherFlow no longer allows reading the stations of other people, edit the station to add the token of its owner.');
+                continue;
+            }
             try {
                 $wflw = new WFLWApiClient();
                 if (Quota::verify($this->service_name, 'GET')) {
-                    $raw_data = $wflw->getRawPublicStationData($station['service_id'], self::$dev_key);
+                    $raw_data = $wflw->getRawPublicStationData($credentials[0], $credentials[1]);
                     $this->format_and_store($raw_data, $station);
                     Logger::notice($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Data retrieved.');
                 }

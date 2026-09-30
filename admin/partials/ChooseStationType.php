@@ -56,7 +56,7 @@ $txt_s = ucfirst(__('a station exporting its data via a stickertags file (Weathe
 $txt_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'stickertags', $dashboard);
 $txt_t = '_self';
 
-$wflw_s = ucfirst(__('a public WeatherFlow station.', 'live-weather-station'));
+$wflw_s = ucfirst(__('your own WeatherFlow station (personal access token).', 'live-weather-station'));
 $wflw_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'weatherflow', $dashboard);
 $wflw_t = '_self';
 
@@ -65,16 +65,7 @@ $piou_l = lws_get_admin_page_url('lws-stations', 'form', 'add-edit', 'pioupiou',
 $piou_t = '_self';
 
 
-if (get_option('live_weather_station_bloomsky_connected')) {
-    $bloomsky_s = ucfirst(__('a Bloomsky station to which you have access to.', 'live-weather-station'));
-    $bloomsky_l = lws_get_admin_page_url('lws-stations', 'form', 'add', 'Bloomsky', $dashboard);
-    $bloomsky_t = '_self';
-}
-else {
-    $bloomsky_s = sprintf(__('To add a station of this type, you need to connect %s to your Bloomsky account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LWS_PLUGIN_NAME);
-    $bloomsky_l = lws_get_admin_page_url('lws-settings', null, 'services');
-    $bloomsky_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
-}
+// BloomSky stopped its service in 2022: it is no longer offered when adding a station.
 
 if (get_option('live_weather_station_ambient_connected')) {
     $ambient_s = ucfirst(__('a personal weather station published on Ambient Weather Network.', 'live-weather-station'));
@@ -110,7 +101,6 @@ $wlink_t = '_self';
                 <div style="flex:auto;padding:14px;"><img id="netatmo" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_netatmo_color_logo()));?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="netatmohc" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_netatmo_hc_color_logo()));?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="weatherflow" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_weatherflow_color_logo()));?>" /></div>
-                <div style="flex:auto;padding:14px;"><img id="bloomsky" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_bloomsky_color_logo()));?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="pioupiou" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_piou_color_logo()));?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="weatherlink" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_weatherlink_color_logo()));?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="loc" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_loc_color_logo()));?>" /></div>
@@ -153,12 +143,6 @@ $wlink_t = '_self';
             });
             $("#pioupiou").click(function() {
                 window.open(<?php echo Guard::js($piou_l); ?>, <?php echo Guard::js($piou_t); ?>);
-            });
-            $("#bloomsky").mouseover(function() {
-                $("#tip-text").html(<?php echo Guard::js($bloomsky_s); ?>);
-            });
-            $("#bloomsky").click(function() {
-                window.open(<?php echo Guard::js($bloomsky_l); ?>, <?php echo Guard::js($bloomsky_t); ?>);
             });
             $("#ambient").mouseover(function() {
                 $("#tip-text").html(<?php echo Guard::js($ambient_s); ?>);

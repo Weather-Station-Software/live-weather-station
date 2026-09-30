@@ -199,7 +199,8 @@ class WeatherFlowImporter extends Process {
         $this->bp_service = 'WeatherFlow';
         $station = $this->get_station_information_by_station_id($this->params['init']['station_id']);
         $this->params['init']['station_name'] = $station['station_name'];
-        $this->params['init']['service_id'] = $station['service_id'];
+        $credentials = self::split_wflw_service_id($station['service_id']);
+        $this->params['init']['service_id'] = $credentials[0]; // the token must not be stored in the process parameters
         $this->params['init']['loc_timezone'] = $station['loc_timezone'];
         $this->params['init']['loc_altitude'] = $station['loc_altitude'];
         $old_dates = array();

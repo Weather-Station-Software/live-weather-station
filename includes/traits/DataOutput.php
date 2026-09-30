@@ -13761,7 +13761,7 @@ trait Output {
             $result[] = '<a href="' . esc_url('http://www.pwsweather.com/obs/' . rawurlencode($data['pws_user']) . '.html') . '"' . $t . '>PWS Weather</a>';
         }
         if ($data['wow_sync']) {
-            $result[] = '<a href="' . esc_url('http://wow.metoffice.gov.uk/weather/view?siteID=' . rawurlencode($data['wow_user'])) . '"' . $t . '>WOW Met Office</a>';
+            $result[] = '<a href="' . esc_url('https://wow.meteo.be/') . '"' . $t . '>WOW-BE</a>';
         }
         if ($data['wug_sync']) {
             $result[] = '<a href="' . esc_url('https://www.wunderground.com/personal-weather-station/dashboard?ID=' . rawurlencode($data['wug_user'])) . '"' . $t . '>Weather Underground</a>';

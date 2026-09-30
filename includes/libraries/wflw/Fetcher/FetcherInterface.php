@@ -15,10 +15,11 @@ interface FetcherInterface
      * Fetch contents from the specified url.
      *
      * @param string $url The url to be fetched.
+     * @param array $headers Optional. Additional HTTP headers.
      *
      * @return string The fetched content.
      *
      * @api
      */
-    public function fetch($url);
+    public function fetch($url, $headers = array());
 }

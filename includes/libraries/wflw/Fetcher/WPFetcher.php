@@ -12,11 +12,12 @@ namespace WeatherStation\SDK\WeatherFlow\Fetcher;
 class WPFetcher implements FetcherInterface
 {
 
-    public function fetch($url)
+    public function fetch($url, $headers = array())
     {
         $args = array(
             'user-agent' => LWS_PLUGIN_AGENT,
             'timeout' => ((int)get_option('live_weather_station_collection_http_timeout') > 0 ? max(5, min(120, (int)get_option('live_weather_station_collection_http_timeout'))) : 10),
+            'headers' => (array)$headers,
             'blocking'    => true,
             'redirection' => 3,
             'limit_response_size' => 2097152,

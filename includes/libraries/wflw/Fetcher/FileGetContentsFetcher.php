@@ -94,7 +94,7 @@ class FileGetContentsFetcher implements FetcherInterface
     /**
      * {@inheritdoc}
      */
-    public function fetch($url){
+    public function fetch($url, $headers = array()){
         $kind = self::validate($url);
         if ($kind === 'http') {
             // The stations are often on a LAN, so private addresses must stay reachable: wp_safe_remote_get() is

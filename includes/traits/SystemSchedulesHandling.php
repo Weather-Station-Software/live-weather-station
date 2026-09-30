@@ -440,7 +440,7 @@ trait Handling {
                 return __('Stickertags - Weather station', 'live-weather-station');
                 break;
             case 'lws_wow_current_push':
-                return __('Met Office - Outdoor data', 'live-weather-station');
+                return __('WOW-BE - Outdoor data', 'live-weather-station');
                 break;
             case 'lws_owm_current_push':
                 return __('OpenWeatherMap - Outdoor data', 'live-weather-station');

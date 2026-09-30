@@ -101,45 +101,53 @@ class WFLWApiClient
      * Get the string returned by WeatherFlow for a specific public station.
      *
      * @param string $id The station id to get weather information for.
-     * @param string $key The API key.
+     * @param string $key The personal access token of the station owner (sent in a header, never in the URL).
      *
      * @return bool|string Returns false on failure and the fetched data on success.
      * @since 3.3.0
      */
     public function getRawPublicStationData($id, $key) {
         $command = 'observations/station/' . rawurlencode((string)$id);
-        $url = $this->buildUrl($command, array('api_key='.rawurlencode((string)$key)));
-        return $this->cacheOrFetchResult($url);
+        return $this->cacheOrFetchResult($this->buildUrl($command), $this->authHeaders($key));
     }
 
     /**
      * Get the string returned by WeatherFlow for a specific public station.
      *
      * @param string $id The station id to get weather information for.
-     * @param string $key The API key.
+     * @param string $key The personal access token of the station owner (sent in a header, never in the URL).
      *
      * @return bool|string Returns false on failure and the fetched data on success.
      * @since 3.3.0
      */
     public function getRawPublicStationMeta($id, $key) {
         $command = 'stations/' . rawurlencode((string)$id);
-        $url = $this->buildUrl($command, array('api_key='.rawurlencode((string)$key)));
-        return $this->cacheOrFetchResult($url);
+        return $this->cacheOrFetchResult($this->buildUrl($command), $this->authHeaders($key));
     }
 
     /**
      * Get the string returned by WeatherFlow for a specific private station.
      *
      * @param string $id The station id to get weather information for.
-     * @param string $key The API key.
+     * @param string $key The personal access token of the station owner (sent in a header, never in the URL).
      *
      * @return bool|string Returns false on failure and the fetched data in the format you specified on success.
      * @since 3.3.0
      */
     public function getRawPrivateStationData($id, $key) {
         $command = 'observations/station/' . rawurlencode((string)$id);
-        $url = $this->buildUrl($command, array('token='.rawurlencode((string)$key)));
-        return $this->cacheOrFetchResult($url);
+        return $this->cacheOrFetchResult($this->buildUrl($command), $this->authHeaders($key));
+    }
+
+    /**
+     * Build the authorization header: the token is never put in the URL (it would end in logs).
+     *
+     * @param string $key The personal access token.
+     * @return array The headers.
+     * @since 3.9.0
+     */
+    private function authHeaders($key) {
+        return array('Authorization' => 'Bearer ' . (string)$key);
     }
 
     /**
@@ -148,17 +156,17 @@ class WFLWApiClient
      * @param string $url The url to fetch.
      * @return bool|string Returns false on failure and the fetched data in the format you specified on success.
      */
-    private function cacheOrFetchResult($url) {
+    private function cacheOrFetchResult($url, $headers = array()) {
         if ($this->cacheClass !== false) {
             $cache = $this->cacheClass;
             $cache->setSeconds($this->seconds);
             if ($cache->isCached($url)) {
                 return $cache->getCached($url);
             }
-            $result = $this->fetcher->fetch($url);
+            $result = $this->fetcher->fetch($url, $headers);
             $cache->setCached($url, $result);
         } else {
-            $result = $this->fetcher->fetch($url);
+            $result = $this->fetcher->fetch($url, $headers);
         }
         return $result;
     }

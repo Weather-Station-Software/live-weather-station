@@ -27,7 +27,17 @@ trait Client {
 
 
     /**
-     * Connects to the Netatmo account.
+     * Is the BloomSky collection enabled? Always false by default: the service stopped in 2022.
+     *
+     * @return boolean True if the collection must run.
+     * @since 3.9.0
+     */
+    protected static function bloomsky_enabled() {
+        return (bool)apply_filters('lws_bloomsky_enabled', false);
+    }
+
+    /**
+     * Connects to the BloomSky account.
      *
      * @since 3.6.0
      */
@@ -56,9 +66,14 @@ trait Client {
      * @since 3.6.0
      */
     public function get_measurements($store=true, $apikey=false) {
-        $currentkey = get_option('live_weather_station_bloomsky_key');
         $this->last_bloomsky_error = '';
         $this->bloomsky_measurements = array();
+        if (!self::bloomsky_enabled()) {
+            // The service stopped in 2022: no request is sent, the stored data are kept.
+            $this->last_bloomsky_error = __('The BloomSky service stopped in 2022.', 'live-weather-station');
+            return array();
+        }
+        $currentkey = get_option('live_weather_station_bloomsky_key');
         if ($currentkey != '' || $apikey) {
             if ($apikey) {
                 $currentkey = $apikey;
@@ -149,6 +164,10 @@ trait Client {
      * @since 3.6.0
      */
     protected function __run($system){
+        if (!self::bloomsky_enabled()) {
+            Logger::info($system, $this->service_name, null, null, null, null, 0, 'BloomSky service stopped in 2022: nothing to collect.');
+            return;
+        }
         $cron_id = Watchdog::init_chrono(Watchdog::$bsky_update_station_schedule_name);
         $err = '';
         try {

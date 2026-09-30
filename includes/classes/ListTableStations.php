@@ -100,9 +100,9 @@ class Stations extends Base {
                 }
                 break;
             case LWS_BSKY_SID :
-                if (!(bool)get_option('live_weather_station_auto_manage_bloomsky')) {
-                    $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.esc_html__('Remove', 'live-weather-station').'</a>', rawurlencode($item['guid']));
-                }
+                // BloomSky stopped its service in 2022: the stored data are kept, the station can only be viewed or removed.
+                $notice = '<br /><span style="color:#b32d2e">&nbsp;' . esc_html__('Service no longer available', 'live-weather-station') . '</span>';
+                $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.esc_html__('Remove', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 break;
             case LWS_LOC_SID :
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=Location&id=%s">'.esc_html__('Modify', 'live-weather-station').'</a>', rawurlencode($item['guid']));
@@ -127,6 +127,10 @@ class Stations extends Base {
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.esc_html__('Remove', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 break;
             case LWS_WFLW_SID :
+                $wflw_parts = explode(LWS_SERVICE_SEPARATOR, (string)$item['service_id'], 2);
+                if (count($wflw_parts) < 2 || $wflw_parts[1] === '') {
+                    $notice = '<br /><span style="color:#b32d2e">&nbsp;' . esc_html__('Personal access token required', 'live-weather-station') . '</span>';
+                }
                 $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=weatherflow&id=%s">'.esc_html__('Modify', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.esc_html__('Remove', 'live-weather-station').'</a>', rawurlencode($item['guid']));
                 break;
