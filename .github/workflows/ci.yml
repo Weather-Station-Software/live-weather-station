@@ -1,0 +1,69 @@
+name: CI
+
+# Syntax lint on every supported PHP version, and PHPCompatibility checks.
+# See .claude/rules/php-support.md for the support policy.
+
+on:
+  push:
+    branches: [main, 'release/**']
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: php -l (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        # 7.1 is the `Requires PHP` floor, 8.2 to 8.5 are the tested versions.
+        php: ['7.1', '8.2', '8.3', '8.4', '8.5']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+      - name: Lint every PHP file
+        run: |
+          # Deprecations are reported by `php -l` on 8.x (for example implicit nullable parameters on 8.4): they must fail too.
+          find . -name '*.php' -not -path './.git/*' -not -path './.claude/*' -print0 \
+            | xargs -0 -n1 -P4 php -d error_reporting=-1 -d display_errors=1 -l \
+            | { grep -v '^No syntax errors detected' || true; } | tee lint.log
+          test ! -s lint.log
+
+  compat:
+    name: PHPCompatibility ${{ matrix.range }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        # The upper bound is the newest tested PHP: a bare `8.2-` also reports PHP 8.6 changes (trim() default characters).
+        range: ['7.1-8.5', '8.2-8.5']
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: '8.3'
+          coverage: none
+          tools: composer
+      - name: Install PHP_CodeSniffer and PHPCompatibility (outside the repository)
+        run: |
+          mkdir "$RUNNER_TEMP/phpcs"
+          cd "$RUNNER_TEMP/phpcs"
+          echo "{}" > composer.json
+          composer config allow-plugins.dealerdirect/phpcodesniffer-composer-installer true
+          # The 10.0 development branch knows PHP 8.x; pinned to a commit for reproducible runs.
+          composer require --dev --no-interaction --no-progress \
+            dealerdirect/phpcodesniffer-composer-installer:^1.0 \
+            "phpcompatibility/php-compatibility:dev-develop#4b1ac835da9b71a6ac3bc70ff903638187f33674"
+      - name: Check PHP ${{ matrix.range }}
+        run: '"$RUNNER_TEMP/phpcs/vendor/bin/phpcs" --standard=.github/phpcompat.xml --runtime-set testVersion ${{ matrix.range }} -s --report=full .'

@@ -273,7 +273,7 @@ trait Client {
             if (true) {
                 //if (isset($this->netatmo_measurements)) {
                 $measurements = $this->netatmo_measurements ;
-                foreach($measurements['devices'] as $device){
+                foreach((is_array($measurements) && isset($measurements['devices']) && is_array($measurements['devices']) ? $measurements['devices'] : array()) as $device){
                     $result[] = array('device_id' => $device['_id'], 'station_name' => lws_clean_text($device['station_name'], 60), 'installed' => false);
                 }
                 if ($store) {

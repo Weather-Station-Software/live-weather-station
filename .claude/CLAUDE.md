@@ -12,7 +12,10 @@ widgets, shortcodes, and blocks. Published on wordpress.org
 
 ## Stack
 
-- WordPress 4.9+, PHP 7.1+.
+- WordPress 4.9+, PHP 7.1+ (the `Requires PHP` floor, so first-party syntax stays PHP 7.1
+  compatible). PHP 8.2 to 8.5 are supported and tested by CI (`php -l` on 7.1 and 8.2-8.5,
+  PHPCompatibility); the supported floor becomes 8.3 in 2027. Policy in
+  `.claude/rules/php-support.md`.
 - No JS/CSS build step — assets under `admin/{css,js}` and `public/{css,js,font}`
   are committed directly, not compiled.
 - No Composer, no `package.json`, no configured linter (phpcs/phpstan) or test
@@ -67,7 +70,8 @@ assuming `main` is the most advanced code.
 ## Pointers
 
 - **Always loaded**: `.claude/rules/security.md`, `.claude/rules/a11y.md`,
-  `.claude/rules/changelog.md`, `.claude/rules/version-bump.md` — blocking.
+  `.claude/rules/changelog.md`, `.claude/rules/version-bump.md`,
+  `.claude/rules/php-support.md` — blocking.
 - **Architecture**: `.claude/ARCHITECTURE.md`.
 - **Skills** (on demand, add as needed): none yet — list them here as
   they're created, don't duplicate their content in this file.

@@ -58,7 +58,7 @@ class Handling {
      * @since 3.7.0
      */
     public function __construct($Live_Weather_Station, $version, $maps) {
-        $page = filter_input(INPUT_GET, 'page');
+        $page = (string)filter_input(INPUT_GET, 'page');
         if (strpos($page, 'lws-') === false) {
             return;
         }

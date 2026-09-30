@@ -150,7 +150,7 @@ class Handling {
      * @since 3.0.0
      */
     public function __construct($Live_Weather_Station, $version, $station) {
-        $page = filter_input(INPUT_GET, 'page');
+        $page = (string)filter_input(INPUT_GET, 'page');
         if (strpos($page, 'lws-') === false) {
             return;
         }
@@ -266,7 +266,7 @@ class Handling {
             if (array_key_exists('_wpnonce', $_POST)) {
                 if (wp_verify_nonce($_POST['_wpnonce'], 'edit-station')) {
                     if (array_key_exists('guid', $_POST)) {
-                        $guid = stripslashes(htmlspecialchars_decode($_POST['guid']));
+                        $guid = stripslashes(htmlspecialchars_decode($_POST['guid'], ENT_COMPAT | ENT_HTML401));
                         $save = false;
                         $reset = false;
                         $connect = false;
@@ -318,8 +318,8 @@ class Handling {
                             }
                             if (array_key_exists('wow-share', $_POST)) {
                                 if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
-                                    $station['wow_user'] = stripslashes(htmlspecialchars_decode($_POST['user']));
-                                    $station['wow_password'] = stripslashes(htmlspecialchars_decode($_POST['password']));
+                                    $station['wow_user'] = stripslashes(htmlspecialchars_decode($_POST['user'], ENT_COMPAT | ENT_HTML401));
+                                    $station['wow_password'] = stripslashes(htmlspecialchars_decode($_POST['password'], ENT_COMPAT | ENT_HTML401));
                                     $station['wow_sync'] = 1;
                                     $wow = true;
                                     $connect = true;
@@ -327,8 +327,8 @@ class Handling {
                             }
                             if (array_key_exists('pws-share', $_POST)) {
                                 if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
-                                    $station['pws_user'] = stripslashes(htmlspecialchars_decode($_POST['user']));
-                                    $station['pws_password'] = stripslashes(htmlspecialchars_decode($_POST['password']));
+                                    $station['pws_user'] = stripslashes(htmlspecialchars_decode($_POST['user'], ENT_COMPAT | ENT_HTML401));
+                                    $station['pws_password'] = stripslashes(htmlspecialchars_decode($_POST['password'], ENT_COMPAT | ENT_HTML401));
                                     $station['pws_sync'] = 1;
                                     $pws = true;
                                     $connect = true;
@@ -336,8 +336,8 @@ class Handling {
                             }
                             if (array_key_exists('wug-share', $_POST)) {
                                 if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
-                                    $station['wug_user'] = stripslashes(htmlspecialchars_decode($_POST['user']));
-                                    $station['wug_password'] = stripslashes(htmlspecialchars_decode($_POST['password']));
+                                    $station['wug_user'] = stripslashes(htmlspecialchars_decode($_POST['user'], ENT_COMPAT | ENT_HTML401));
+                                    $station['wug_password'] = stripslashes(htmlspecialchars_decode($_POST['password'], ENT_COMPAT | ENT_HTML401));
                                     $station['wug_sync'] = 1;
                                     $wug = true;
                                     $connect = true;
@@ -353,14 +353,14 @@ class Handling {
                                         if (!array_key_exists($k, $m)) {
                                             $m[$k] = array();
                                         }
-                                        $m[$k]['screen_name'] = (string)stripslashes(htmlspecialchars_decode(sanitize_text_field($p)));
+                                        $m[$k]['screen_name'] = (string)stripslashes(htmlspecialchars_decode(sanitize_text_field($p), ENT_COMPAT | ENT_HTML401));
                                     }
                                     if (strpos($key, 'lws-hidden-') === 0) {
                                         $k = str_replace('lws-hidden-', '', $key);
                                         if (!array_key_exists($k, $m)) {
                                             $m[$k] = array();
                                         }
-                                        $m[$k]['hidden'] = (int)stripslashes(htmlspecialchars_decode(sanitize_text_field($p)));
+                                        $m[$k]['hidden'] = (int)stripslashes(htmlspecialchars_decode(sanitize_text_field($p), ENT_COMPAT | ENT_HTML401));
                                     }
                                 }
                                 if (count($m) > 0) {

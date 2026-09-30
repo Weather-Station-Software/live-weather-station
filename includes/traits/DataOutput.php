@@ -519,8 +519,8 @@ trait Output {
             $result = array();
             $valuescale = $attributes['valuescale'];
             if ($type != 'radial') {
-                $timescale = $attributes['timescale'];
-                $self_color = $attributes['color'] == 'self';
+                $timescale = (isset($attributes['timescale']) ? $attributes['timescale'] : null);
+                $self_color = (isset($attributes['color']) && $attributes['color'] == 'self');
                 if ($self_color) {
                     $prop = $this->graph_template($attributes['template']);
                 }
@@ -3682,9 +3682,9 @@ trait Output {
             }
             if ($fixed_timescale && $timescale != 'none') {
                 $body .= '    var h00Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
-                $body .= '    var h01Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['01'] . ');' . PHP_EOL;
-                $body .= '    var h02Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['02'] . ');' . PHP_EOL;
-                $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
+                $body .= '    var h01Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['01'] ?? 0) . ');' . PHP_EOL;
+                $body .= '    var h02Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['02'] ?? 0) . ');' . PHP_EOL;
+                $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['03'] ?? 0) . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
             //-//$body .= '      var chart'.$uniq.' = null;' . PHP_EOL;
@@ -3847,9 +3847,9 @@ trait Output {
                 }
                 if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
                     $body .= '    var h00Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
-                    $body .= '    var h01Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['01'] . ');' . PHP_EOL;
-                    $body .= '    var h02Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['02'] . ');' . PHP_EOL;
-                    $body .= '    var h03Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
+                    $body .= '    var h01Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['01'] ?? 0) . ');' . PHP_EOL;
+                    $body .= '    var h02Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['02'] ?? 0) . ');' . PHP_EOL;
+                    $body .= '    var h03Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['03'] ?? 0) . ');' . PHP_EOL;
                     $body .= '    var h04Tick' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
                 }
             }
@@ -4234,9 +4234,9 @@ trait Output {
             }
             if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
                 $body .= '    var h00Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
-                $body .= '    var h01Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['01'] . ');' . PHP_EOL;
-                $body .= '    var h02Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['02'] . ');' . PHP_EOL;
-                $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
+                $body .= '    var h01Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['01'] ?? 0) . ');' . PHP_EOL;
+                $body .= '    var h02Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['02'] ?? 0) . ');' . PHP_EOL;
+                $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['03'] ?? 0) . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
             if ($color != 'self' && !$custom) {
@@ -4441,9 +4441,9 @@ trait Output {
             }
             if ($fixed_timescale && $timescale != 'none' && $mode == 'yearly') {
                 $body .= '    var h00Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
-                $body .= '    var h01Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['01'] . ');' . PHP_EOL;
-                $body .= '    var h02Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['02'] . ');' . PHP_EOL;
-                $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
+                $body .= '    var h01Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['01'] ?? 0) . ');' . PHP_EOL;
+                $body .= '    var h02Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['02'] ?? 0) . ');' . PHP_EOL;
+                $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['03'] ?? 0) . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
             if ($color != 'self' && !$custom) {
@@ -4641,9 +4641,9 @@ trait Output {
             }
             if ($fixed_timescale && $timescale != 'none') {
                 $body .= '    var h00Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
-                $body .= '    var h01Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['01'] . ');' . PHP_EOL;
-                $body .= '    var h02Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['02'] . ');' . PHP_EOL;
-                $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
+                $body .= '    var h01Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['01'] ?? 0) . ');' . PHP_EOL;
+                $body .= '    var h02Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['02'] ?? 0) . ');' . PHP_EOL;
+                $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['03'] ?? 0) . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
             if ($color != 'self' && !$custom) {
@@ -4748,7 +4748,7 @@ trait Output {
         }
 
         if ($type == 'calendarhm') {
-            $step = (int)$interpolation;
+            $step = max(2, (int)$interpolation); // PHP 8: a non numeric interpolation gave a division by zero
             $col = new ColorsManipulation($prop['fg_color']);
             $amplitude = ($domain['max'] - $domain['min']) / $step;
             $legend = array();
@@ -4901,10 +4901,10 @@ trait Output {
                 $body .= '          displayLegend: false,' . PHP_EOL;
             }
             if ($dimension1 == 'duration') {
-                $body .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(__('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>')) . '", filled: "' . self::js_str(sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s</strong>', '{date}', esc_html($values['extras'][0]['measurement_type'] . ' - ' . $values['extras'][0]['set_name']), '{count}')) . '"},' . PHP_EOL;
+                $body .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(__('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>')) . '", filled: "' . self::js_str(sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s</strong>', '{date}', esc_html($values['extras'][0]['measurement_type'] . ' - ' . ($values['extras'][0]['set_name'] ?? '')), '{count}')) . '"},' . PHP_EOL;
             }
             else {
-                $body .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(__('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>')) . '", filled: "' . self::js_str(sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s %s</strong>', '{date}', esc_html($values['extras'][0]['measurement_type'] . ' - ' . $values['extras'][0]['set_name']), '{count}', esc_html($values['legend']['unit']['unit']))) . '"},' . PHP_EOL;
+                $body .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(__('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>')) . '", filled: "' . self::js_str(sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s %s</strong>', '{date}', esc_html($values['extras'][0]['measurement_type'] . ' - ' . ($values['extras'][0]['set_name'] ?? '')), '{count}', esc_html($values['legend']['unit']['unit']))) . '"},' . PHP_EOL;
             }
             $body .= '          i18nDomainDateFormat: {' . $i18n . '},' . PHP_EOL;
             $body .= '          legendTitleFormat: {lower: "",inner: "",upper: ""}' . PHP_EOL;
@@ -5492,9 +5492,9 @@ trait Output {
             $body .= '    var maxDomain' . $uniq . ' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             if ($fixed_timescale && $timescale != 'none') {
                 $body .= '    var h00Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['min'] . ');' . PHP_EOL;
-                $body .= '    var h01Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['01'] . ');' . PHP_EOL;
-                $body .= '    var h02Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['02'] . ');' . PHP_EOL;
-                $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['03'] . ');' . PHP_EOL;
+                $body .= '    var h01Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['01'] ?? 0) . ');' . PHP_EOL;
+                $body .= '    var h02Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['02'] ?? 0) . ');' . PHP_EOL;
+                $body .= '    var h03Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . ($values['xdomain']['03'] ?? 0) . ');' . PHP_EOL;
                 $body .= '    var h04Tick'.$uniq.' = new Date(x' . $uniq . ' + ' . $values['xdomain']['max'] . ');' . PHP_EOL;
             }
             if ($color != 'self' && !$custom) {
@@ -8181,7 +8181,7 @@ trait Output {
                 }
             }
         }
-        $result['shadowOpacity'] = (in_array('flat', $design) ? 0 : $result['gaugeWidthScale']/2.5);
+        $result['shadowOpacity'] = (in_array('flat', $design) ? 0 : (isset($result['gaugeWidthScale']) ? $result['gaugeWidthScale'] : 0)/2.5);
         $result['counter'] = 0;
 
         // COLORS
@@ -8243,7 +8243,7 @@ trait Output {
         if (in_array('solidblack', $color)) {
             $result['levelColors'] = ['#000000'];
         }
-        $pointerOptions['color'] = $result['valueFontColor'] ;
+        $pointerOptions['color'] = (isset($result['valueFontColor']) ? $result['valueFontColor'] : null);
         if (in_array('lgt', $color)) {
             $pointerOptions['color'] = '#333333' ;
         }
@@ -8929,7 +8929,7 @@ trait Output {
         $params = '{' . implode(',', $params) . '}';
         $value = $this->steelmeter_value($_attributes, true);
         foreach (array('value', 'value_aux', 'value_min', 'value_max') as $_key) {
-            $value[$_key] = (is_numeric($value[$_key]) ? $value[$_key] + 0 : 0);
+            $value[$_key] = ((isset($value[$_key]) && is_numeric($value[$_key])) ? $value[$_key] + 0 : 0);
         }
 
         switch ($_attributes['size']) {

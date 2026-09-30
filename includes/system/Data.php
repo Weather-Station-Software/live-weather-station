@@ -34,7 +34,6 @@ class Data {
     public function __construct($Live_Weather_Station, $version) {
         $this->Live_Weather_Station = $Live_Weather_Station;
         $this->version = $version;
-        $this->ws_tables_construct();
     }
 
     /**
@@ -44,6 +43,7 @@ class Data {
      */
     public function get_table_name($table){
         $result = __('Unknown table', 'live-weather-station');
+        $this->ws_tables_lazy();
         if (array_key_exists($table, $this->ws_tables)) {
             $result = $this->ws_tables[$table]['name'];
         }
@@ -57,10 +57,22 @@ class Data {
      */
     public function get_table_item($table){
         $result = _n('item', 'items', 20, 'live-weather-station');
+        $this->ws_tables_lazy();
         if (array_key_exists($table, $this->ws_tables)) {
             $result = $this->ws_tables[$table]['item'];
         }
         return $result;
+    }
+
+    /**
+     * Build the tables definitions on first use (translations must not be loaded before the init action).
+     *
+     * @since 3.9.0
+     */
+    private function ws_tables_lazy(){
+        if (empty($this->ws_tables)) {
+            $this->ws_tables_construct();
+        }
     }
 
     /**
