@@ -66,7 +66,7 @@ abstract class BaseHandling {
             $this->map_information = $map;
             $this->map_id = $map['id'];
             $this->map_name = $map['name'];
-            $this->map_params = unserialize($map['params']);
+            $this->map_params = unserialize($map['params'], array('allowed_classes' => false));
             if (!array_key_exists('page', $this->map_params['marker'])) {
                 $this->map_params['marker']['page'] = 'none';
             }
@@ -152,7 +152,7 @@ abstract class BaseHandling {
                 $params['common']['all'] = $_POST['common-station-selector'] == 'all';
             }
         }
-        if (array_key_exists('stations-selector', $_POST)) {
+        if (array_key_exists('stations-selector', $_POST) && is_array($_POST['stations-selector'])) {
             try {
                 $tab = array();
                 foreach ($_POST['stations-selector'] as $sid) {

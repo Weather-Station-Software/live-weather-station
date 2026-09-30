@@ -136,6 +136,7 @@ class Frontend {
 	 * @since 3.4.0
 	 */
 	public function lws_graph_data_callback() {
+        $this->lws_rate_limit('lws_graph_data_callback');
         $attributes = array();
         foreach ($this->graph_allowed_parameter as $param) {
             if (array_key_exists($param, $_POST)) {
@@ -153,10 +154,7 @@ class Frontend {
             }
         }
         $result = $this->graph_query($this->graph_prepare($attributes), true);
-        if (!$result) {
-            $result = '[]';
-        }
-        exit ($result['values']);
+        exit ($this->lws_result_values($result));
     }
 
     /**
@@ -165,6 +163,7 @@ class Frontend {
      * @since 3.8.0
      */
     public function lws_ltgraph_data_callback() {
+        $this->lws_rate_limit('lws_ltgraph_data_callback');
         $attributes = array();
         foreach ($this->ltgraph_allowed_parameter as $param) {
             if (array_key_exists($param, $_POST)) {
@@ -179,10 +178,7 @@ class Frontend {
             }
         }
         $result = $this->graph_query($this->ltgraph_prepare($attributes), true);
-        if (!$result) {
-            $result = '[]';
-        }
-        exit ($result['values']);
+        exit ($this->lws_result_values($result));
     }
 
     /**
@@ -191,6 +187,7 @@ class Frontend {
      * @since 3.8.0
      */
     public function lws_radial_data_callback() {
+        $this->lws_rate_limit('lws_radial_data_callback');
         $attributes = array();
         foreach ($this->radial_allowed_parameter as $param) {
             if (array_key_exists($param, $_POST)) {
@@ -198,10 +195,7 @@ class Frontend {
             }
         }
         $result = $this->graph_query($this->radial_prepare($attributes), true);
-        if (!$result) {
-            $result = '[]';
-        }
-        exit ($result['values']);
+        exit ($this->lws_result_values($result));
     }
 
     /**
@@ -210,6 +204,7 @@ class Frontend {
      * @since 3.4.0
      */
     public function lws_graph_code_callback() {
+        $this->lws_rate_limit('lws_graph_code_callback');
         $attributes = array();
         foreach ($this->graph_allowed_parameter as $param) {
             if (array_key_exists($param, $_POST)) {
@@ -235,6 +230,7 @@ class Frontend {
      * @since 3.8.0
      */
     public function lws_ltgraph_code_callback() {
+        $this->lws_rate_limit('lws_ltgraph_code_callback');
         $attributes = array();
         foreach ($this->ltgraph_allowed_parameter as $param) {
             if (array_key_exists($param, $_POST)) {
@@ -257,6 +253,7 @@ class Frontend {
      * @since 3.8.0
      */
     public function lws_lttextual_code_callback() {
+        $this->lws_rate_limit('lws_lttextual_code_callback');
         $attributes = array();
         foreach ($this->lttextual_allowed_parameter as $param) {
             if (array_key_exists($param, $_POST)) {
@@ -272,6 +269,7 @@ class Frontend {
      * @since 3.8.0
      */
     public function lws_radial_code_callback() {
+        $this->lws_rate_limit('lws_radial_code_callback');
         $attributes = array();
         foreach ($this->radial_allowed_parameter as $param) {
             if (array_key_exists($param, $_POST)) {
@@ -287,6 +285,7 @@ class Frontend {
      * @since 1.0.0
      */
     public function lws_query_lcd_measurements_callback() {
+        $this->lws_rate_limit('lws_query_lcd_measurements_callback');
         $_attributes = array();
         $_attributes['device_id'] = $this->lws_post_value('device_id');
         $_attributes['module_id'] = $this->lws_post_value('module_id');
@@ -301,6 +300,7 @@ class Frontend {
      * @since 2.1.0
      */
     public function lws_query_justgage_config_callback() {
+        $this->lws_rate_limit('lws_query_justgage_config_callback');
         $_attributes = array();
         $_attributes['id'] = $this->lws_post_value('id');
         $_attributes['device_id'] = $this->lws_post_value('device_id');
@@ -326,6 +326,7 @@ class Frontend {
      * @since 2.1.0
      */
     public function lws_query_justgage_measurements_callback() {
+        $this->lws_rate_limit('lws_query_justgage_measurements_callback');
         $_attributes = array();
         $_attributes['device_id'] = $this->lws_post_value('device_id');
         $_attributes['module_id'] = $this->lws_post_value('module_id');
@@ -340,6 +341,7 @@ class Frontend {
      * @since 2.2.0
      */
     public function lws_query_steelmeter_config_callback() {
+        $this->lws_rate_limit('lws_query_steelmeter_config_callback');
         $_attributes = array();
         $_attributes['device_id'] = $this->lws_post_value('device_id');
         $_attributes['module_id'] = $this->lws_post_value('module_id');
@@ -371,6 +373,7 @@ class Frontend {
      * @since 2.2.0
      */
     public function lws_query_steelmeter_measurements_callback() {
+        $this->lws_rate_limit('lws_query_steelmeter_measurements_callback');
         $_attributes = array();
         $_attributes['device_id'] = $this->lws_post_value('device_id');
         $_attributes['module_id'] = $this->lws_post_value('module_id');
@@ -382,9 +385,16 @@ class Frontend {
     /**
      * Callback method for testing clientraw.txt validity.
      *
+     * Registered only for logged-in users (wp_ajax_lws_clientraw_test, no nopriv) and restricted to administrators: it
+     * performs an outbound connection / file access on a user-supplied resource.
+     *
      * @since 3.0.0
      */
     public function lws_clientraw_test_callback() {
+        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+            wp_send_json(array('result' => __('You are not allowed to do this.', 'live-weather-station')), 403);
+        }
+        check_ajax_referer('lws_clientraw_test', 'nonce');
         $_attributes = array();
         $_attributes['connection_type'] = $this->lws_post_value('connection_type');
         $_attributes['resource'] = $this->lws_post_value('resource');
@@ -403,6 +413,7 @@ class Frontend {
      * @since 3.6.0
      */
     public function lws_shortcode_callback() {
+        $this->lws_rate_limit('lws_shortcode_callback');
         $shortcode = $this->lws_post_value('sc');
         // Magic quotes add backslashes before quotes: remove them so the shortcode parser works. Values are never trusted by the SQL layer.
         $shortcode = wp_unslash($shortcode);
@@ -430,9 +441,38 @@ class Frontend {
      */
     private function lws_post_value($key) {
         if (isset($_POST[$key]) && is_scalar($_POST[$key])) {
-            return wp_kses($_POST[$key], array());
+            $value = wp_kses($_POST[$key], array());
+            // Anonymous visitors must not bypass the cache: only administrators may force a fresh computation.
+            if ($key === 'cache' && $value === 'no_cache' && !current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+                return 'cache';
+            }
+            return $value;
         }
         return '';
+    }
+
+    /**
+     * Get the 'values' part of a graph query result as a JSON string, whatever the result is.
+     *
+     * @param mixed $result The result of graph_query().
+     * @return string A JSON string (an empty series if the result is unusable).
+     * @since 3.8.15
+     */
+    private function lws_result_values($result) {
+        if (is_array($result) && isset($result['values']) && is_scalar($result['values']) && (string)$result['values'] !== '') {
+            return (string)$result['values'];
+        }
+        return '[]';
+    }
+
+    /**
+     * Rate limit wrapper (see lws_public_rate_limit() in functions.php).
+     *
+     * @param string $action The endpoint identifier.
+     * @since 3.8.15
+     */
+    private function lws_rate_limit($action) {
+        lws_public_rate_limit($action);
     }
 
     public static function lws_widget_callback() {

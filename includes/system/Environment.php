@@ -34,23 +34,26 @@ class Manager {
     }
 
     /**
-     * Check if the server config allows shell_exec().
+     * Read /proc/cpuinfo (no shell involved).
+     *
+     * @return string|false The content or false if not readable.
+     * @since 3.1.0
+     */
+    private static function read_cpuinfo() {
+        if (!@is_readable('/proc/cpuinfo')) {
+            return false;
+        }
+        $return = @file_get_contents('/proc/cpuinfo', false, null, 0, 1048576);
+        return (empty($return) ? false : $return);
+    }
+
+    /**
+     * Check if the CPU information is available.
      *
      * @since 3.1.0
      */
     private static function isShellEnabled() {
-        if (function_exists('shell_exec') && !in_array('shell_exec', array_map('trim', explode(', ', ini_get('disable_functions')))) && strtolower(ini_get('safe_mode')) != 1 ) {
-            $return = shell_exec('cat /proc/cpuinfo');
-            if (!empty($return)) {
-                return true;
-            }
-            else {
-                return false;
-            }
-        }
-        else {
-            return false;
-        }
+        return (self::read_cpuinfo() !== false);
     }
 
     /**
@@ -175,6 +178,28 @@ class Manager {
     }
 
     /**
+     * Get all the values of a /proc/cpuinfo key.
+     *
+     * @param string $key The key.
+     * @return array The values, as strings.
+     * @since 3.8.9
+     */
+    private static function cpuinfo_values($key) {
+        $result = array();
+        $content = self::read_cpuinfo();
+        if ($content === false) {
+            return $result;
+        }
+        foreach (preg_split('/\R/', $content) as $line) {
+            $parts = explode(':', $line, 2);
+            if (count($parts) === 2 && trim($parts[0]) === $key) {
+                $result[] = trim($parts[1]);
+            }
+        }
+        return $result;
+    }
+
+    /**
      * Get CPU count of the server.
      *
      * @since 3.1.0
@@ -182,16 +207,12 @@ class Manager {
     public static function server_cpu() {
         $cpu_count = get_transient('lws_cpu_count');
         if ($cpu_count === false) {
-            if (self::isShellEnabled()) {
-                $cpu_count = shell_exec('cat /proc/cpuinfo |grep "physical id" | sort | uniq | wc -l');
-                set_transient ('lws_cpu_count', $cpu_count, HOUR_IN_SECONDS);
-            } else {
-                return false;
-            }
+            $cpu_count = self::cpu_topology()['cpu'];
+            set_transient('lws_cpu_count', $cpu_count, HOUR_IN_SECONDS);
         }
         return $cpu_count;
     }
-    
+
     /**
      * Get core count of the server.
      *
@@ -200,14 +221,56 @@ class Manager {
     public static function server_core() {
         $core_count = get_transient('lws_core_count');
         if ($core_count === false) {
-            if (self::isShellEnabled()) {
-                $core_count = shell_exec("echo \"$((`cat /proc/cpuinfo | grep cores | grep -o '[0-9]' | uniq` * `cat /proc/cpuinfo |grep 'physical id' | sort | uniq | wc -l`))\"");
-                set_transient ('lws_core_count', $core_count, HOUR_IN_SECONDS);
-            } else {
-                return false;
-            }
+            $core_count = self::cpu_topology()['core'];
+            set_transient('lws_core_count', $core_count, HOUR_IN_SECONDS);
         }
         return $core_count;
+    }
+
+    /**
+     * Compute the CPU (socket) and core counts from /proc/cpuinfo. ARM and VMs have no 'physical id' / 'cpu cores'
+     * lines: fall back to the number of 'processor' lines, and to 'unknown' if nothing can be read.
+     *
+     * @return array array('cpu' => string, 'core' => string), never empty.
+     * @since 3.8.9
+     */
+    public static function cpu_topology($content = null) {
+        $result = array('cpu' => 'unknown', 'core' => 'unknown');
+        if ($content === null) {
+            $processors = count(self::cpuinfo_values('processor'));
+            $physical = array_unique(self::cpuinfo_values('physical id'));
+            $cores = self::cpuinfo_values('cpu cores');
+        }
+        else {
+            $processors = 0;
+            $physical = $cores = array();
+            foreach (preg_split('/\R/', (string)$content) as $line) {
+                $parts = explode(':', $line, 2);
+                if (count($parts) === 2) {
+                    $k = trim($parts[0]);
+                    if ($k === 'processor') {
+                        $processors++;
+                    }
+                    elseif ($k === 'physical id') {
+                        $physical[] = trim($parts[1]);
+                    }
+                    elseif ($k === 'cpu cores') {
+                        $cores[] = trim($parts[1]);
+                    }
+                }
+            }
+            $physical = array_unique($physical);
+        }
+        if ($processors > 0 || count($physical) > 0) {
+            $sockets = max(1, count($physical));
+            $per_socket = (count($cores) > 0 ? (int)reset($cores) : 0);
+            $total = ($per_socket > 0 ? $per_socket * $sockets : $processors);
+            $result['cpu'] = (string)$sockets;
+            if ($total > 0) {
+                $result['core'] = (string)$total;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -216,18 +279,30 @@ class Manager {
      * @since 3.1.0
      */
     public static function server_full_information() {
+        // ip-api.com free tier is plain http only: the public IP of the site would travel in clear and the answer
+        // could be forged. So the lookup is opt-in (option 'live_weather_station_hoster_lookup' or the
+        // 'lws_hoster_lookup_enabled' filter), off by default.
+        if (!apply_filters('lws_hoster_lookup_enabled', (bool)get_option('live_weather_station_hoster_lookup', 0))) {
+            return false;
+        }
         if ($result = get_transient('lws_server_location')) {
             return $result;
         }
         try {
             Quota::verify('ip-API', 'GET');
-            $query = 'http://ip-api.com/json/'.self::server_ip();
+            $ip = filter_var(self::server_ip(), FILTER_VALIDATE_IP);
+            if ($ip === false) {
+                return false;
+            }
+            $query = 'http://ip-api.com/json/' . rawurlencode($ip);
             $args = array();
             $args['user-agent'] = LWS_PLUGIN_AGENT;
-            $args['timeout'] = get_option('live_weather_station_system_http_timeout');
+            $args['timeout'] = max(1, min(60, (int)get_option('live_weather_station_system_http_timeout')));
+            $args['redirection'] = 0;
+            $args['limit_response_size'] = 65536;
             $content = wp_remote_get($query, $args);
             if (is_wp_error($content)) {
-                Logger::error('API / SDK','ip-API',null,null,null,null,$content->get_error_code(),$content->get_error_message() );
+                Logger::error('API / SDK','ip-API',null,null,null,null,$content->get_error_code(),substr(sanitize_text_field($content->get_error_message()), 0, 500));
                 return false;
             }
             $error = false;
@@ -244,7 +319,7 @@ class Manager {
                 if ($code != '200') {
                     $error = true;
                     if (array_key_exists('message', $response)) {
-                        $message = $response['message'];
+                        $message = substr(sanitize_text_field((string)$response['message']), 0, 200);
                     }
                 }
             }
@@ -259,10 +334,20 @@ class Manager {
                 Logger::error('API / SDK','ip-API',null,null,null,null,null,'The server sent an empty response.');
                 return false;
             }
-            $result = json_decode($content['body'], true);
+            $decoded = json_decode($content['body'], true);
+            if (!is_array($decoded)) {
+                return false;
+            }
+            // Untrusted (plain http) answer: keep only the fields we use, as plain text.
+            $result = array();
+            foreach (array('org', 'city', 'country', 'status', 'message') as $field) {
+                if (isset($decoded[$field]) && is_scalar($decoded[$field])) {
+                    $result[$field] = substr(sanitize_text_field((string)$decoded[$field]), 0, 100);
+                }
+            }
         }
-        catch (Exception $e) {
-            Logger::error('API / SDK','ip-API',null,null,null,null,$e->getCode(),$e->getMessage() );
+        catch (\Throwable $e) {
+            Logger::error('API / SDK','ip-API',null,null,null,null,$e->getCode(),substr(sanitize_text_field($e->getMessage()), 0, 500));
             return false;
         }
         set_transient('lws_server_location', $result, HOUR_IN_SECONDS);
@@ -1079,7 +1164,8 @@ class Manager {
      */
     public static function is_opcache_installed() {
         if (function_exists('opcache_get_status') && version_compare(PHP_VERSION, '5.6.0') >= 0) {
-            return opcache_get_status()['opcache_enabled'];
+            $status = @opcache_get_status(false);
+            return (is_array($status) && !empty($status['opcache_enabled']));
 
         }
         else return false;
@@ -1242,7 +1328,7 @@ class Manager {
             $result = bbl_get_current_content_lang_code();
         }
         if (self::is_weglot_installed()) {
-            $result = Weglot::Instance()->getCurrentLang();
+            $result = \Weglot::Instance()->getCurrentLang();
         }
         return strtolower($result);
     }

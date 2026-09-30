@@ -46,7 +46,18 @@ abstract class Base extends \WP_Widget {
      */
     public function widget($args, $instance) {
         $this->enqueue_styles();
-        if ((bool)get_option('live_weather_station_ajax_widget', 1) && !is_admin()) {
+        // The AJAX mode needs a stored widget instance to refer to (the server never trusts client-supplied settings).
+        // Widgets rendered without a real sidebar slot (Legacy Widget block, Customizer preview: number = -1 or
+        // unsaved) have no stored instance and are rendered inline. Never coerce with absint(): -1 would become 1.
+        $number = (isset($this->number) && is_numeric($this->number) && (int)$this->number > 0) ? (int)$this->number : 0;
+        if ($number > 0) {
+            $stored = get_option('widget_' . $this->id_base);
+            if (!is_array($stored) || !isset($stored[$number]) || !is_array($stored[$number]) ||
+                self::sanitize_instance($stored[$number]) != self::sanitize_instance((array)$instance)) {
+                $number = 0;
+            }
+        }
+        if ($number > 0 && (bool)get_option('live_weather_station_ajax_widget', 1) && !is_admin()) {
             wp_enqueue_script('jquery');
             $cache_id = md5(serialize(array_merge($args, $instance)));
             $result = Cache::get_widget($cache_id);
@@ -71,7 +82,7 @@ abstract class Base extends \WP_Widget {
                 $jsInitId = md5(random_bytes(18));
                 $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '    $.post( ' . Guard::js(LWS_AJAX_URL) . ', {action: ' . Guard::js('lws_w_' . $widget) . ', ' . $this->outputvar($args, $instance) . '}).done(function(data) {$("#' . $uniq . '").html(data);})';
+                $result .= '    $.post( ' . Guard::js(LWS_AJAX_URL) . ', {action: ' . Guard::js('lws_w_' . $widget) . ', wnum: ' . $number . '}).done(function(data) {$("#' . $uniq . '").html(data);})';
                 $result .= '  });' . PHP_EOL;
                 $result .= lws_print_end_script($jsInitId);
                 $result .= $after;
@@ -210,48 +221,25 @@ abstract class Base extends \WP_Widget {
     /**
      * Get the widget content via ajax.
      *
+     * Design note: the widget markup is cached and served to every visitor, so no per-user nonce can be baked in it
+     * (this is why the former 'lws_widget_nonce' check, which was verified but never created, always failed).
+     * Instead, this public endpoint does not trust anything coming from the client: it only receives the number of
+     * the widget instance and loads the settings saved by the administrator in the widget option. It is read-only and
+     * rate-limited.
+     *
      * @since 3.8.0
      */
     public static function lws_widget_callback() {
-        // Check nonce for widget AJAX calls
-        check_ajax_referer('lws_widget_nonce', 'nonce');
-        
+        lws_public_rate_limit('lws_widget_' . static::class);
         $widget = new static;
-        $args = array();
-        if (array_key_exists('before_widget', $_POST)) {
-            $args['before_widget'] = wp_kses($_POST['before_widget'], array());
+        $number = (isset($_POST['wnum']) && is_scalar($_POST['wnum'])) ? absint($_POST['wnum']) : 0;
+        $options = get_option('widget_' . $widget->id_base);
+        if ($number < 1 || !is_array($options) || !isset($options[$number]) || !is_array($options[$number])) {
+            status_header(404);
+            exit ('');
         }
-        else {
-            $args['before_widget'] = '';
-        }
-        if (array_key_exists('after_widget', $_POST)) {
-            $args['after_widget'] = wp_kses($_POST['after_widget'], array());
-        }
-        else {
-            $args['after_widget'] = '';
-        }
-        if (array_key_exists('before_title', $_POST)) {
-            $args['before_title'] = wp_kses($_POST['before_title'], array());
-        }
-        else {
-            $args['before_title'] = '';
-        }
-        if (array_key_exists('after_title', $_POST)) {
-            $args['after_title'] = wp_kses($_POST['after_title'], array());
-        }
-        else {
-            $args['after_title'] = '';
-        }
-        $instance = array();
-        $excluded = array('action', 'before_widget', 'after_widget', 'before_title', 'after_title', 'nonce');
-        foreach ($_POST as $key => $val) {
-            if (!in_array($key, $excluded)) {
-                $instance[$key] = $val;
-            }
-        }
-        $instance = self::sanitize_instance($instance);
+        $args = array('before_widget' => '', 'after_widget' => '', 'before_title' => '', 'after_title' => '');
+        $instance = self::sanitize_instance($options[$number]);
         exit ($widget->widget_content($args, $instance));
     }
 }
-
-

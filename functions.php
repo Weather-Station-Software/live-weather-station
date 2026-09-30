@@ -721,10 +721,17 @@ function lws_meta_cache($name, $value, $expiration=0) {
                 }
             }
             if (is_dir($cache_dir) && wp_is_writable($cache_dir)) {
+                // Deny direct web access to the cache directory
+                if (!file_exists($cache_dir . 'index.php')) {
+                    @file_put_contents($cache_dir . 'index.php', "<?php\n// Silence is golden.\n");
+                }
+                if (!file_exists($cache_dir . '.htaccess')) {
+                    @file_put_contents($cache_dir . '.htaccess', "<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\nOrder deny,allow\nDeny from all\n</IfModule>\n");
+                }
                 $blog_id = get_current_blog_id();
                 $cache_file = $cache_dir . sanitize_file_name($blog_id . '_' . $name);
                 try {
-                    file_put_contents($cache_file, serialize($value));
+                    file_put_contents($cache_file, serialize($value), LOCK_EX);
                 }
                 catch (\Exception $ex) {
                     return false;
@@ -741,6 +748,25 @@ function lws_meta_cache($name, $value, $expiration=0) {
     else {
         return set_transient($name, $value, $expiration);
     }
+}
+
+/**
+ * Does a value contain an object (recursively)?
+ *
+ * @since 3.8.0
+ */
+function lws_value_has_object($value) {
+    if (is_object($value)) {
+        return true;
+    }
+    if (is_array($value)) {
+        foreach ($value as $item) {
+            if (lws_value_has_object($item)) {
+                return true;
+            }
+        }
+    }
+    return false;
 }
 
 /**
@@ -765,7 +791,14 @@ function lws_meta_uncache($name, $expiration=0) {
                         return false;
                     }
                     else {
-                        return unserialize(file_get_contents($cache_file));
+                        // Decision: the experimental file cache (LWS_FILE_CACHE, off by default) is expected to hold arrays/scalars only.
+                        // Objects are never instantiated when reading (security): a cached object is treated as a cache miss.
+                        $value = unserialize((string)file_get_contents($cache_file), array('allowed_classes' => false));
+                        if (lws_value_has_object($value)) {
+                            @unlink($cache_file);
+                            return false;
+                        }
+                        return $value;
                     }
                 }
                 catch (\Exception $ex) {
@@ -839,4 +872,61 @@ function lws_meta_flcache($pref, $expiration=0) {
         }
     }
     return $result;
+}
+
+/**
+ * Cheap per-IP rate limit for public AJAX endpoints. Sends an HTTP 429 JSON response and stops when exceeded.
+ *
+ * Defaults: 120 requests per 60 seconds, per client IP and per endpoint. A page with many live controls makes
+ * roughly 20-30 calls per endpoint, so this is comfortable for one visitor.
+ * Exempt: logged-in users able to manage options or edit posts (administrators, editors, authors, contributors).
+ *
+ * IMPORTANT for sites behind a reverse proxy / CDN / load balancer: REMOTE_ADDR is then the proxy address, so all
+ * visitors share the same counter. Supply the real client IP with the 'lws_public_rate_limit_ip' filter
+ * (e.g. return $_SERVER['HTTP_CF_CONNECTING_IP'] when you trust that header), or raise/disable the limit.
+ *
+ * Filters:
+ * - 'lws_public_rate_limit' (int $limit, string $action): max requests per window; 0 disables the limit.
+ * - 'lws_public_rate_window' (int $seconds, string $action): window length, default 60.
+ * - 'lws_public_rate_limit_ip' (string $ip, string $action): client IP used as the key; default REMOTE_ADDR
+ *   (forwarded headers are never trusted by default since they can be forged).
+ *
+ * Storage: object cache (atomic increment) when a persistent one is in use; otherwise a transient which is only
+ * written every few hits (coarse steps), so the options table is not hit on every request.
+ *
+ * @param string $action The endpoint identifier.
+ * @since 3.8.15
+ */
+function lws_public_rate_limit($action) {
+    if (current_user_can(apply_filters('lws_manage_options_capability', 'manage_options')) || current_user_can('edit_posts')) {
+        return;
+    }
+    $limit = (int)apply_filters('lws_public_rate_limit', 120, $action);
+    if ($limit <= 0) {
+        return;
+    }
+    $window = max(1, (int)apply_filters('lws_public_rate_window', 60, $action));
+    $ip = isset($_SERVER['REMOTE_ADDR']) ? (string)$_SERVER['REMOTE_ADDR'] : '';
+    $ip = (string)apply_filters('lws_public_rate_limit_ip', $ip, $action);
+    $key = 'lws_rl_' . md5($ip . '|' . $action . '|' . (int)floor(time() / $window));
+    if (function_exists('wp_using_ext_object_cache') && wp_using_ext_object_cache()) {
+        wp_cache_add($key, 0, 'lws_rl', $window * 2);
+        $count = wp_cache_incr($key, 1, 'lws_rl');
+        $count = ($count === false) ? 1 : (int)$count;
+    }
+    else {
+        // Transient fallback: probabilistic coarse counter. One read per hit, and a write (of count + $step) on
+        // average every $step hits, so the options table is not written on every request. Precision ~ +/- $step.
+        $step = max(1, (int)floor($limit / 10));
+        $count = (int)get_transient($key);
+        if ($count === 0 || mt_rand(1, $step) === 1) {
+            set_transient($key, $count + ($count === 0 ? 1 : $step), $window * 2);
+        }
+    }
+    if ($count > $limit) {
+        status_header(429);
+        header('Retry-After: ' . $window);
+        header('Content-Type: application/json; charset=' . get_option('blog_charset'));
+        exit (wp_json_encode(array('error' => 'too_many_requests')));
+    }
 }

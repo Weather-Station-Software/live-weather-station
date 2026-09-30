@@ -69,7 +69,7 @@ trait PublicClient {
                 $result = 'internal WeatherFlow error';
             }
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
             $result = 'unable to contact WeatherFlow servers';
         }
@@ -125,7 +125,7 @@ trait PublicClient {
                 }
             }
         }
-        catch(\Exception $ex) {
+        catch (\Throwable $ex) {
             $result = array();
         }
         return $result;
@@ -161,7 +161,7 @@ trait PublicClient {
         else {
             throw new \Exception('JSON / '.lws_clean_text($json_weather, 200));
         }
-        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($weather, true));
+        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
         if (!empty($weather) && array_key_exists('obs', $weather) && is_array($weather['obs'])) {
             if (array_key_exists('timezone', $weather)) {
                 $timezone = lws_clean_text($weather['timezone'], 64);
@@ -535,7 +535,7 @@ trait PublicClient {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');
                 }
             }
-            catch(\Exception $ex)
+            catch (\Throwable $ex)
             {
                 if (strpos($ex->getMessage(), 'JSON /') > -1) {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'WeatherFlow servers has returned empty response. Retry will be done shortly.');
@@ -568,8 +568,8 @@ trait PublicClient {
             $ephemeris->compute(LWS_WFLW_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
-            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
         }
         $this->synchronize_modules_count();
         Watchdog::stop_chrono($cron_id);

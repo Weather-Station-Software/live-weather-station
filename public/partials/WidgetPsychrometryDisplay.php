@@ -1,4 +1,7 @@
 <?php
+if (!defined('ABSPATH')) {
+    exit;
+}
 /**
  * @package Public\Partials
  * @author Jason Rouet <https://www.jasonrouet.com/>.

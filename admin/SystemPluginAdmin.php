@@ -1298,14 +1298,13 @@ class Admin {
         }
         $result = false;
         $sec = false;
-        if (array_key_exists('option_page', $_POST)) {
-            $section = sanitize_text_field($_POST['option_page']);
-        }
-        else {
-            $section = 'unknown';
+        // Only whitelisted sections are accepted: the section is also used in logs and messages.
+        $section = 'unknown';
+        if (array_key_exists('option_page', $_POST) && is_string($_POST['option_page']) && in_array($_POST['option_page'], $this->settings, true)) {
+            $section = $_POST['option_page'];
         }
         $action = '';
-        if (array_key_exists('action', $_POST)) {
+        if (array_key_exists('action', $_POST) && is_string($_POST['action'])) {
             $action = sanitize_text_field($_POST['action']);
         }
         if (array_key_exists('reset', $_POST)) {
@@ -1314,11 +1313,14 @@ class Admin {
         if (array_key_exists('update', $_POST)) {
             $action = 'update';
         }
-        if (array_key_exists('_wpnonce', $_POST)) {
-            foreach ($this->settings as $s) {
-                $sec = wp_verify_nonce($_POST['_wpnonce'], $s . '-options');
-                if ($sec) { break;}
-            }
+        // Service connection requests carry their own (per service) nonce, verified in manage_connection().
+        if ($section == 'services' && $action == 'manage-connection') {
+            $this->manage_connection();
+            return false;
+        }
+        // The nonce must be the one of the posted section, not the one of any section.
+        if ($section != 'unknown' && array_key_exists('_wpnonce', $_POST) && is_string($_POST['_wpnonce'])) {
+            $sec = wp_verify_nonce($_POST['_wpnonce'], $section . '-options');
         }
         switch ($section) {
             case 'general' : $settings_string = __('General settings', 'live-weather-station'); break;
@@ -1367,18 +1369,6 @@ class Admin {
             }
 
         }
-        elseif ($section == 'services' && $action == 'manage-connection') {
-            // Verify nonce for manage-connection action
-            if ($sec) {
-                $this->manage_connection();
-            }
-            else {
-                $message = __('Unable to process connection request. Please try again.', 'live-weather-station');
-                add_settings_error('lws_nonce_error', 403, $message, 'error');
-                Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
-                Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely process service connection request.');
-            }
-        }
         else {
             $message = __('%s has not been updated. Please try again.', 'live-weather-station');
             $message = sprintf($message, '<em>' . ucfirst($settings_string) . '</em>');
@@ -1396,6 +1386,24 @@ class Admin {
      */
     private function get_manage_options_cap() {
         return apply_filters('lws_manage_options_capability', 'manage_options');
+    }
+
+    /**
+     * Suggest a text for the site privacy policy (Settings > Privacy).
+     * The plugin stores no personal data tied to a WordPress user, so no exporter/eraser is needed.
+     *
+     * @since 3.9.0
+     */
+    public function add_privacy_policy_content() {
+        if (!function_exists('wp_add_privacy_policy_content')) {
+            return;
+        }
+        $content = '<h2>' . esc_html__('Weather data and external services', 'live-weather-station') . '</h2>';
+        $content .= '<p>' . esc_html__('Weather Station does not collect, store or share personal data about visitors of your site, and does not store personal data tied to WordPress user accounts.', 'live-weather-station') . '</p>';
+        $content .= '<p>' . esc_html__('The plugin stores in your database the station settings you enter (names, locations and coordinates of stations, and the credentials needed to query or feed the weather services you connect) as well as the collected measurements. Station credentials are only used server-side and are never displayed on the public pages.', 'live-weather-station') . '</p>';
+        $content .= '<p>' . esc_html__('Depending on the stations you configure, your server sends requests (and, for the publishing features, station measurements) to third-party services such as Netatmo, WeatherFlow, WeatherLink, Ambient Weather, BloomSky, Pioupiou, Weather Underground, OpenWeatherMap or PWS/WOW-type services. Your server address is visible to these services. Your server may also query ip-api.com to guess its own geographical position when you ask for it.', 'live-weather-station') . '</p>';
+        $content .= '<p>' . esc_html__('Maps displayed on your pages load tiles and scripts from the tile provider you select (OpenStreetMap, Thunderforest, Mapbox, MapTiler, Navionics, Windy, OpenWeatherMap...). The browser of your visitors therefore sends its IP address and user agent to this provider. Please refer to their privacy policies.', 'live-weather-station') . '</p>';
+        wp_add_privacy_policy_content(LWS_PLUGIN_NAME, wp_kses_post(wpautop($content, false)));
     }
 
     /**
@@ -2402,7 +2410,8 @@ class Admin {
             }
         }
         
-        $this->purge_data($auto);
+        // Capability and nonce of the sync action are already verified: purge without re-verifying another nonce.
+        $this->purge_data(true);
         $this->get_all();
         if (!$auto) {
             add_settings_error('lws_nonce_success', 200, __('All stations have been resynchronized.', 'live-weather-station'), 'updated');
@@ -2497,10 +2506,12 @@ class Admin {
             return;
         }
         
-        ProcessManager::register('ConfigurationExporter');
+        // Credentials are excluded from the export unless explicitly requested (same nonce, no other way to get them).
+        $include_credentials = (isset($_GET['include-credentials']) && $_GET['include-credentials'] === '1');
+        ProcessManager::register('ConfigurationExporter', array('include_credentials' => $include_credentials));
         $message = __('Configuration export has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');
         add_settings_error('lws_nonce_success', 200, $message, 'updated');
-        Logger::notice('Export Manager', null, null, null, null, null, null, 'Configuration export launched.');
+        Logger::notice('Export Manager', null, null, null, null, null, null, 'Configuration export launched' . ($include_credentials ? ' (with credentials).' : '.'));
     }
 
     /**
@@ -2722,11 +2733,9 @@ class Admin {
         }
         $result = false;
         $sec = false;
-        if (array_key_exists('_wpnonce', $_POST)) {
-            foreach ($this->services as $s) {
-                $sec = wp_verify_nonce($_POST['_wpnonce'], $s);
-                if ($sec) { break;}
-            }
+        // The nonce must be the one of the requested service, not the one of any service.
+        if (in_array($service, $this->services, true) && array_key_exists('_wpnonce', $_POST) && is_string($_POST['_wpnonce'])) {
+            $sec = wp_verify_nonce($_POST['_wpnonce'], $service);
         }
         if ($sec) {
             if ($action == 'connect') {
@@ -2975,7 +2984,7 @@ class Admin {
             return;
         }
 
-        if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'subscribe')) {
+        if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'subscribe') && is_email($email)) {
             $subscribed = new Subscription($email);
             if ($subscribed->is_done()) {
                 $message = __('An email has been sent to %s to confirm subscription to %s news.', 'live-weather-station');
@@ -3013,7 +3022,7 @@ class Admin {
         if (isset($guid) && $guid) {
             $station = $this->get_station_information_by_guid($guid);
             $service = $this->get_service_name($station['station_type']);
-            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'delete-station')) {
+            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'delete-station-' . (int)$guid)) {
                 if ($res = $this->delete_stations_table(array($guid))) {
                     $res = $this->delete_operational_stations_table(array($station['station_id']));
                     Cache::flush_query();
@@ -3064,29 +3073,36 @@ class Admin {
                 $error = false;
                 if (array_key_exists('do-import-configuration', $_POST)) {
                     $configuration = FS::get_configuration($uuid);
-                    if (array_key_exists('configuration-settings', $_POST)) {
-                        if (array_key_exists('settings', $configuration)) {
-                            self::set_all_options($configuration['settings']);
-                        }
-                        else {
-                            $error = true;
-                        }
+                    if (!is_array($configuration)) {
+                        $error = true;
                     }
-                    if (array_key_exists('configuration-maps', $_POST)) {
-                        if (array_key_exists('maps', $configuration)) {
-                            self::set_maps_table($configuration['maps']);
-                        }
-                        else {
+                    else {
+                        // Validate everything which is requested before replacing anything.
+                        $do_settings = array_key_exists('configuration-settings', $_POST);
+                        $do_maps = array_key_exists('configuration-maps', $_POST);
+                        $do_stations = array_key_exists('configuration-stations', $_POST);
+                        if ($do_settings && !(array_key_exists('settings', $configuration) && is_array($configuration['settings']))) {
                             $error = true;
                         }
-                    }
-                    if (array_key_exists('configuration-stations', $_POST)) {
-                        if (array_key_exists('stations', $configuration) && array_key_exists('modules', $configuration)) {
-                            self::set_stations_table($configuration['stations']);
-                            self::set_modules_table($configuration['modules']);
-                        }
-                        else {
+                        if ($do_maps && !(array_key_exists('maps', $configuration) && self::validate_table_rows(self::live_weather_station_maps_table(), $configuration['maps']))) {
                             $error = true;
+                        }
+                        if ($do_stations && !(array_key_exists('stations', $configuration) && array_key_exists('modules', $configuration) &&
+                            self::validate_table_rows(self::live_weather_station_stations_table(), $configuration['stations']) &&
+                            self::validate_table_rows(self::live_weather_station_module_detail_table(), $configuration['modules']))) {
+                            $error = true;
+                        }
+                        if (!$error) {
+                            if ($do_settings) {
+                                self::set_all_options($configuration['settings']);
+                            }
+                            if ($do_maps) {
+                                $error = !self::set_maps_table($configuration['maps']) || $error;
+                            }
+                            if ($do_stations) {
+                                $error = !self::set_stations_table($configuration['stations']) || $error;
+                                $error = !self::set_modules_table($configuration['modules']) || $error;
+                            }
                         }
                     }
                 }
@@ -3176,7 +3192,7 @@ class Admin {
         if (isset($mid) && $mid) {
             $map = $this->get_map_detail($mid);
             $service = $this->get_service_name(100 + $map['type']);
-            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'delete-map')) {
+            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'delete-map-' . (int)$mid)) {
                 $res = $this->delete_maps_table(array($mid));
                 if ($res) {
                     $message = __('The map %s has been correctly removed.', 'live-weather-station');
@@ -5046,7 +5062,22 @@ class Admin {
             $station['guid'] = sanitize_text_field($_POST['guid']);
             $station['station_id'] = sanitize_text_field($_POST['station_id']);
             $station['loc_country_code'] = sanitize_text_field($_POST['loc_country_code']);
-            $station['service_id'] = sanitize_text_field($_POST['service_did']) . LWS_SERVICE_SEPARATOR . sanitize_text_field($_POST['service_apitoken']) . LWS_SERVICE_SEPARATOR . sanitize_text_field($_POST['service_ownerpass']);
+            $wl_token = sanitize_text_field($_POST['service_apitoken']);
+            $wl_pass = sanitize_text_field($_POST['service_ownerpass']);
+            if (($wl_token === '' || $wl_pass === '') && $station['guid'] != 0) {
+                // Secrets are never re-displayed: an empty field means "keep the stored value".
+                $stored = $this->get_station_information_by_guid($station['guid']);
+                $stored_parts = (is_array($stored) && array_key_exists('service_id', $stored)) ? explode(LWS_SERVICE_SEPARATOR, (string)$stored['service_id']) : array();
+                if (count($stored_parts) === 3) {
+                    if ($wl_token === '') {
+                        $wl_token = $stored_parts[1];
+                    }
+                    if ($wl_pass === '') {
+                        $wl_pass = $stored_parts[2];
+                    }
+                }
+            }
+            $station['service_id'] = sanitize_text_field($_POST['service_did']) . LWS_SERVICE_SEPARATOR . $wl_token . LWS_SERVICE_SEPARATOR . $wl_pass;
             $collector = new WeatherLinkCollector();
             if ($message = $collector->test_station($station['service_id'])) {
                 $error = 1;

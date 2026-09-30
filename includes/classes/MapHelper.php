@@ -62,6 +62,10 @@ class Handling {
         if (strpos($page, 'lws-') === false) {
             return;
         }
+        // This object is built for every admin user: nothing must be read or done without the capability.
+        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+            return;
+        }
         $this->Live_Weather_Station = $Live_Weather_Station;
         $this->version = $version;
         $this->get_args();
@@ -100,7 +104,15 @@ class Handling {
                 break;
         }
 
-        if ($this->map_id === 0 && $this->arg_action === 'form' && $this->arg_tab === 'add-edit' && $this->map_type != 0) {
+        // A map is created only with a valid nonce (bound to the map service) and never on a plain navigation.
+        $creation_nonce = '';
+        if (isset($_POST['_wpnonce']) && is_string($_POST['_wpnonce'])) {
+            $creation_nonce = $_POST['_wpnonce'];
+        }
+        elseif (isset($_GET['_wpnonce']) && is_string($_GET['_wpnonce'])) {
+            $creation_nonce = $_GET['_wpnonce'];
+        }
+        if ($this->map_id === 0 && $this->arg_action === 'form' && $this->arg_tab === 'add-edit' && $this->map_type != 0 && isset($this->aux_handler) && wp_verify_nonce($creation_nonce, 'lws-new-map-' . $this->arg_service)) {
             $barycenter = self::get_all_stations_barycenter();
             $this->init_common['loc_latitude'] = $barycenter['latitude'];
             $this->init_common['loc_longitude'] = $barycenter['longitude'];
@@ -112,7 +124,7 @@ class Handling {
             if (count($this->map_information) > 0) {
                 $this->map_name = $this->map_information['name'];
                 $this->map_type = $this->map_information['type'];
-                $this->map_params = unserialize($this->map_information['params']);
+                $this->map_params = unserialize($this->map_information['params'], array('allowed_classes' => false));
                 if (isset($this->aux_handler)) {
                     $this->aux_handler->set_map($this->map_information, '400px');
                 }
@@ -139,17 +151,17 @@ class Handling {
         }
         $this->map_id = absint($mid);
         if (!($tab = filter_input(INPUT_POST, 'tab'))) {
-            $this->arg_tab = filter_input(INPUT_GET, 'tab');
+            $tab = filter_input(INPUT_GET, 'tab');
         }
         if (!($action = filter_input(INPUT_POST, 'action'))) {
-            $this->arg_action = filter_input(INPUT_GET, 'action');
+            $action = filter_input(INPUT_GET, 'action');
         }
         if (!($service = filter_input(INPUT_POST, 'service'))) {
-            $this->arg_service = filter_input(INPUT_GET, 'service');
+            $service = filter_input(INPUT_GET, 'service');
         }
-        $this->arg_tab = strtolower($this->arg_tab);
-        $this->arg_action = strtolower($this->arg_action);
-        $this->arg_service = strtolower($this->arg_service);
+        $this->arg_tab = strtolower((string)$tab);
+        $this->arg_action = strtolower((string)$action);
+        $this->arg_service = strtolower((string)$service);
     }
 
     /**
@@ -158,6 +170,9 @@ class Handling {
      * @since 3.7.0
      */
     public function edit_map() {
+       if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+           return;
+       }
        if ($this->arg_service != 'map' && $this->arg_tab == 'add-edit' && $this->arg_action == 'form') {
             if (array_key_exists('lws-map-' . $this->map_id . '-nonce', $_POST)) {
                 if (wp_verify_nonce($_POST['lws-map-' . $this->map_id . '-nonce'], 'lws-map-' . $this->map_id)) {

@@ -39,7 +39,7 @@ class NAApiErrorType extends NAClientException
         {
             if (is_array($this->result))
             {
-                $s = print_r($this->result, true);
+                $s = substr(preg_replace('/(\[(?:access_token|refresh_token|client_secret|password|token|apikey|api_key|appid)\]\s*=>\s*)[^\n]*/i', '$1[redacted]', print_r($this->result, true)), 0, 4000);
                 if (isset($this->result['error']['code']) && isset($this->result['error']['message'])) {
                     $c = $this->result['error']['code'];
                     $m = $this->result['error']['message'];

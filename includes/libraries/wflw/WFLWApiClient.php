@@ -107,8 +107,8 @@ class WFLWApiClient
      * @since 3.3.0
      */
     public function getRawPublicStationData($id, $key) {
-        $command = 'observations/station/' . $id;
-        $url = $this->buildUrl($command, array('api_key='.$key));
+        $command = 'observations/station/' . rawurlencode((string)$id);
+        $url = $this->buildUrl($command, array('api_key='.rawurlencode((string)$key)));
         return $this->cacheOrFetchResult($url);
     }
 
@@ -122,8 +122,8 @@ class WFLWApiClient
      * @since 3.3.0
      */
     public function getRawPublicStationMeta($id, $key) {
-        $command = 'stations/' . $id;
-        $url = $this->buildUrl($command, array('api_key='.$key));
+        $command = 'stations/' . rawurlencode((string)$id);
+        $url = $this->buildUrl($command, array('api_key='.rawurlencode((string)$key)));
         return $this->cacheOrFetchResult($url);
     }
 
@@ -137,8 +137,8 @@ class WFLWApiClient
      * @since 3.3.0
      */
     public function getRawPrivateStationData($id, $key) {
-        $command = 'observations/station/' . $id;
-        $url = $this->buildUrl($command, array('token='.$key));
+        $command = 'observations/station/' . rawurlencode((string)$id);
+        $url = $this->buildUrl($command, array('token='.rawurlencode((string)$key)));
         return $this->cacheOrFetchResult($url);
     }
 

@@ -33,7 +33,7 @@ class ColorSchemes extends Base {
 
     protected function column_name($item){
         $actions['edit'] = sprintf('<a href="?page=lws-settings&action=form&tab=edit&service=palette&id=%s">'.esc_html__('Modify', 'live-weather-station').'</a>', rawurlencode($item['id']));
-        $actions['reset'] = sprintf('<a href="?page=lws-settings&action=reset-cschemes&tab=styles&id=%s">'.esc_html__('Reset', 'live-weather-station').'</a>', rawurlencode($item['id']));
+        $actions['reset'] = sprintf('<a href="%s">'.esc_html__('Reset', 'live-weather-station').'</a>', esc_url(wp_nonce_url('?page=lws-settings&action=reset-cschemes&tab=styles&id=' . rawurlencode($item['id']), 'reset-cschemes')));
         return '<i style="color:#999" class="' . LWS_FAS . ' fa-lg fa-fw fa-palette"></i>&nbsp;' . esc_html($item['name']) . $this->row_actions($actions);
     }
 

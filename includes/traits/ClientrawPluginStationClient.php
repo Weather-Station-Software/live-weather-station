@@ -49,7 +49,7 @@ trait StationClient {
                 $locat_ts = gmmktime((int)$weather[29], (int)$weather[30], (int)$weather[31], (int)$weather[36], (int)$weather[35], (int)$weather[141]);
                 $timestamp = date('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $timezone));
             }
-            catch (\Exception $e) {
+            catch (\Throwable $e) {
                 throw new \Exception('Bad file format.');
             }
         }
@@ -117,7 +117,7 @@ trait StationClient {
             $this->update_table(self::live_weather_station_stations_table(), $station);
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -161,7 +161,7 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -201,7 +201,7 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -239,7 +239,7 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -282,7 +282,7 @@ trait StationClient {
             }
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -322,7 +322,7 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -371,7 +371,7 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -429,7 +429,7 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
         }
 
@@ -488,7 +488,7 @@ trait StationClient {
                     }
                     Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
                 }
-                catch (\Exception $e) {
+                catch (\Throwable $e) {
                     Logger::warning($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 5, 'Bad measurement format encountered.');
                 }
             }
@@ -506,7 +506,7 @@ trait StationClient {
         $weather = false;
         try {
             $weather = explode(' ', $raw_data);
-            Logger::debug($this->facility, $this->service, null, null, null, null, null, print_r($weather, true));
+            Logger::debug($this->facility, $this->service, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
             if (count($weather) < 167) {
                 Logger::warning($this->facility, $this->service, null, null, null, null, null, '');
                 return false;
@@ -517,7 +517,7 @@ trait StationClient {
                 }
             }
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
             return false;
         }
@@ -566,9 +566,9 @@ trait StationClient {
             $result = $collector->getRawStationData($resource);
             Logger::notice($this->facility, $this->service, $device_id, $device_name, null, null, 0, 'Data retrieved.');
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
-            $msg = $ex->getMessage();
+            $msg = substr(sanitize_text_field($ex->getMessage()), 0, 200);
             if ($msg == '') {
                 $msg = 'Unknown error';
             }
@@ -611,7 +611,7 @@ trait StationClient {
                 $raw_data = $this->get_data($station['connection_type'], $station['service_id'], $station['station_id'], $station['station_name']);
                 $this->format_and_store($raw_data, $station);
             }
-            catch (\Exception $ex) {
+            catch (\Throwable $ex) {
                 Logger::error($this->facility, $this->service, $station['station_id'], $station['station_name'], null, null, $ex->getCode(), 'Error while collecting weather from Clientraw file data: ' . $ex->getMessage());
                 continue;
             }
@@ -638,7 +638,7 @@ trait StationClient {
             $ephemeris->compute(LWS_RAW_SID);
             Logger::info($system, $this->service, null, null, null, null, 0, 'Job done: collecting from clientraw file and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
+        catch (\Throwable $ex) {
             Logger::critical($system, $this->service, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
         }
         $this->synchronize_modules_count();

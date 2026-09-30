@@ -65,7 +65,7 @@ trait StationClient {
                     $result = 'internal Weather Underground error';
                 }
             }
-            catch(\Exception $ex)
+            catch (\Throwable $ex)
             {
                 $result = 'unable to contact Weather Underground servers';
             }
@@ -98,7 +98,7 @@ trait StationClient {
             if (array_key_exists('features', $weather['response'])) {
                 if (array_key_exists('conditions', $weather['response']['features'])) {
                     if ($weather['response']['features']['conditions'] != 1) {
-                        throw new \Exception(lws_clean_text($weather['response']['error']['description'], 200));
+                        throw new \Exception('Weather Underground unknown exception');
                     }
                 }
                 else {
@@ -129,7 +129,7 @@ trait StationClient {
                     }
                 }
             }
-            Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($observation, true));
+            Logger::debug($this->facility, $this->service_name, null, null, null, null, null, substr(print_r($observation, true), 0, 4000));
             if (array_key_exists('observation_epoch', $observation)) {
                 try {
                     $timestamp = date('Y-m-d H:i:s', $observation['observation_epoch']);
@@ -401,7 +401,7 @@ trait StationClient {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');
                 }
             }
-            catch(\Exception $ex)
+            catch (\Throwable $ex)
             {
                 if (strpos($ex->getMessage(), 'this key does not exist') !== false) {
                     Logger::critical('Authentication', $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your Weather Underground API key.');
@@ -438,7 +438,7 @@ trait StationClient {
             $ephemeris->compute(LWS_WUG_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
+        catch (\Throwable $ex) {
             Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
         }
         $this->synchronize_modules_count();

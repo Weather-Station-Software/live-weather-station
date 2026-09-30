@@ -71,11 +71,11 @@ else {
             </tr>
             <tr class="form-field form-required">
                 <th scope="row"><label for="service_apitoken"><?php esc_html_e('API Token', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
-                <td><input required name="service_apitoken" aria-required="true" type="text" id="service_apitoken" value="<?php echo esc_attr($id['service_apitoken']) ?>" maxlength="20" style="width:25em;" /></td>
+                <td><input <?php echo ($station['guid'] == 0 ? 'required aria-required="true"' : ''); ?> name="service_apitoken" type="password" autocomplete="new-password" id="service_apitoken" value="" placeholder="<?php echo esc_attr($station['guid'] == 0 ? '' : __('Unchanged', 'live-weather-station')); ?>" maxlength="20" style="width:25em;" /></td>
             </tr>
             <tr class="form-field form-required">
                 <th scope="row"><label for="service_ownerpass"><?php esc_html_e('Password', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
-                <td><input required name="service_ownerpass" aria-required="true" type="text" id="service_ownerpass" value="<?php echo esc_attr($id['service_ownerpass']) ?>" maxlength="20" style="width:25em;" /></td>
+                <td><input <?php echo ($station['guid'] == 0 ? 'required aria-required="true"' : ''); ?> name="service_ownerpass" type="password" autocomplete="new-password" id="service_ownerpass" value="" placeholder="<?php echo esc_attr($station['guid'] == 0 ? '' : __('Unchanged', 'live-weather-station')); ?>" maxlength="20" style="width:25em;" /></td>
             </tr>
 
         </table>

@@ -22,6 +22,10 @@ class Manager {
     private static $service = 'Storage Manager';
     private static $file_name_separator = '_';
     private static $allowed_extension = array('ndjson' => 'text/plain', 'json' => 'text/plain');
+    // Every extension created by the exporters (json, ndjson, csv, dsv, tsv, txt, wsconf.json) can be listed, viewed,
+    // downloaded and purged. Only json/ndjson can be uploaded ($allowed_extension).
+    private static $managed_extension = array('ndjson' => 'text/plain', 'json' => 'application/json', 'csv' => 'text/csv', 'dsv' => 'text/plain', 'tsv' => 'text/plain', 'txt' => 'text/plain');
+    private static $max_upload_size = 52428800; // 50 MB
 
     /**
      * Initialize the class and set its properties.
@@ -45,6 +49,23 @@ class Manager {
         $upload_dir = wp_upload_dir();
         self::$dir = $upload_dir['basedir'] . '/' . LWS_PLUGIN_SLUG . '/';
         self::$url = $upload_dir['baseurl'] . '/' . LWS_PLUGIN_SLUG . '/';
+        if (!has_action('admin_post_lws_download_file', array(__CLASS__, 'download_file'))) {
+            add_action('admin_post_lws_download_file', array(__CLASS__, 'download_file'));
+        }
+    }
+
+    /**
+     * Protect the storage root against direct web access (index.php and deny rules).
+     *
+     * @since 3.8.0
+     */
+    private static function protect_dir() {
+        if (!file_exists(self::$dir . 'index.php')) {
+            @file_put_contents(self::$dir . 'index.php', "<?php\n// Silence is golden.\n");
+        }
+        if (!file_exists(self::$dir . '.htaccess')) {
+            @file_put_contents(self::$dir . '.htaccess', "<IfModule mod_authz_core.c>\nRequire all denied\n</IfModule>\n<IfModule !mod_authz_core.c>\nOrder deny,allow\nDeny from all\n</IfModule>\n");
+        }
     }
 
     /**
@@ -53,6 +74,22 @@ class Manager {
      * @return string The allowed extensions. Comma separated list.
      * @since 3.8.0
      */
+    public static function get_managed_extensions() {
+        return array_keys(self::$managed_extension);
+    }
+
+    /**
+     * Is this file name one of the files managed (created/purged/served) by the plugin?
+     *
+     * @param string $file A file name (no path).
+     * @return string The lowercase extension if managed, empty string otherwise.
+     * @since 3.8.0
+     */
+    public static function managed_extension($file) {
+        $ext = strtolower((string)pathinfo((string)$file, PATHINFO_EXTENSION));
+        return array_key_exists($ext, self::$managed_extension) ? $ext : '';
+    }
+
     public static function get_allowed_extension() {
         $tab = array();
         foreach (self::$allowed_extension as $key => $val) {
@@ -70,7 +107,7 @@ class Manager {
     private static function check_for_write() {
         if (!file_exists(self::$dir)) {
             try {
-                mkdir(self::$dir, 0755);
+                mkdir(self::$dir, 0755, true);
             }
             catch (\Exception $ex) {
                 Logger::alert(self::$service,null, null, null, null, null, $ex->getCode(), 'Unable to create persistent storage root: ' . $ex->getMessage());
@@ -86,18 +123,21 @@ class Manager {
                 return false;
             }
         }
-        return is_writable(self::$dir);
+        if (is_writable(self::$dir)) {
+            self::protect_dir();
+            return true;
+        }
+        return false;
     }
 
     /**
-     * Get a pseudo uid.
+     * Get a random uid (unguessable).
      *
-     * @return string The pseudo uid.
+     * @return string The random uid.
      * @since 3.7.0
      */
     private static function uid() {
-        $fingerprint = uniqid('', true);
-        return substr ($fingerprint, strlen($fingerprint)-10, 80);
+        return bin2hex(random_bytes(16));
     }
 
     /**
@@ -112,7 +152,58 @@ class Manager {
      * @since 3.7.0
      */
     public static function get_full_file_url($station_name, $start, $end, $uid, $ext) {
-        return self::$url . self::get_file_name($station_name, $start, $end, $uid, $ext);
+        return self::get_download_url(self::get_file_name($station_name, $start, $end, $uid, $ext));
+    }
+
+    /**
+     * Get the url to download a file. The storage root is not directly accessible from the web:
+     * files are served by a handler which checks the capability and a nonce bound to the file.
+     *
+     * @param string $file The name of the file (w/o path).
+     * @param boolean $inline Optional. View the file in the browser instead of downloading it.
+     * @return string The url.
+     * @since 3.8.0
+     */
+    public static function get_download_url($file, $inline=false) {
+        $file = basename($file);
+        $args = array('action' => 'lws_download_file', 'file' => rawurlencode($file), '_wpnonce' => wp_create_nonce('lws-download-' . $file));
+        if ($inline) {
+            $args['inline'] = 1;
+        }
+        return add_query_arg($args, admin_url('admin-post.php'));
+    }
+
+    /**
+     * Serve a file of the storage root (admin-post handler).
+     * Checks the capability and the nonce bound to the file before anything else.
+     *
+     * @since 3.8.0
+     */
+    public static function download_file() {
+        // The nonce is bound to the raw name given in the listing: verify it on the raw requested name.
+        $file = isset($_GET['file']) ? rawurldecode(wp_unslash((string)$_GET['file'])) : '';
+        if ($file !== basename(str_replace('\\', '/', $file)) || preg_match('/[\x00-\x1f\x7f\/\\\\]/', $file) === 1 || strlen($file) > 255) {
+            $file = '';
+        }
+        $nonce = isset($_GET['_wpnonce']) ? (string)$_GET['_wpnonce'] : '';
+        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options')) || $file === '' || !wp_verify_nonce($nonce, 'lws-download-' . $file)) {
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized or forged attempt to download a file.');
+            wp_die(esc_html__('You do not have sufficient permissions to download this file.', 'live-weather-station'), '', array('response' => 403));
+        }
+        $ext = self::managed_extension($file);
+        $path = self::$dir . $file;
+        $real = realpath($path);
+        $root = realpath(self::$dir);
+        if ($ext === '' || $real === false || $root === false || dirname($real) !== $root || !is_file($real)) {
+            wp_die(esc_html__('File not found.', 'live-weather-station'), '', array('response' => 404));
+        }
+        nocache_headers();
+        header('X-Content-Type-Options: nosniff');
+        header('Content-Type: ' . self::$managed_extension[$ext] . '; charset=utf-8');
+        header('Content-Disposition: ' . (isset($_GET['inline']) ? 'inline' : 'attachment') . '; filename="' . str_replace(array('"', "\r", "\n"), '', $file) . '"');
+        header('Content-Length: ' . filesize($real));
+        readfile($real);
+        exit;
     }
 
     /**
@@ -154,15 +245,20 @@ class Manager {
      * @since 3.7.0
      */
     public static function construct_full_file_name($file) {
-        $file = trim($file);
-        $file = str_replace('/../', '', $file);
-        $file = str_replace('../', '', $file);
-        $file = str_replace('/..', '', $file);
-        $file = str_replace('/./', '', $file);
-        $file = str_replace('./', '', $file);
-        $file = str_replace('/.', '', $file);
-        $file = str_replace('/', '', $file);
-        return self::$dir . $file;
+        $file = basename(wp_normalize_path(trim((string)$file)));
+        if ($file === '' || $file === '.' || $file === '..') {
+            return self::$dir;
+        }
+        $full = self::$dir . $file;
+        $real = realpath($full);
+        if ($real !== false) {
+            // Must stay inside the storage root (no symlink outside).
+            $root = realpath(self::$dir);
+            if ($root === false || dirname($real) !== $root) {
+                return self::$dir;
+            }
+        }
+        return $full;
     }
 
     /**
@@ -212,7 +308,11 @@ class Manager {
         $filename = self::file_for_write($station_name, $start, $end, $uid, $ext);
         if ($filename !== false) {
             try {
-                return false !== file_put_contents(self::$dir . $filename, '');
+                $created = (false !== file_put_contents(self::$dir . $filename, ''));
+                if ($created) {
+                    @chmod(self::$dir . $filename, 0600);
+                }
+                return $created;
             }
             catch (\Exception $ex) {
                 Logger::critical(self::$service,null, null, null, null, null, $ex->getCode(), 'Unable to create a file in persistent storage root: ' . $ex->getMessage());
@@ -268,7 +368,7 @@ class Manager {
         $result = array();
         if (self::check_for_write()) {
             foreach (array_diff(scandir(self::$dir), array('..', '.')) as $item) {
-                if (!is_dir(self::$dir . $item)) {
+                if (!is_dir(self::$dir . $item) && $item !== 'index.php' && $item !== '.htaccess') {
                     $result[] = $item;
                 }
             }
@@ -301,7 +401,7 @@ class Manager {
                 }
                 if (count($d) === 2) {
                     $UUIDv4 = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
-                    if (preg_match($UUIDv4, $d[0]) !== false) {
+                    if (preg_match($UUIDv4, $d[0]) === 1) {
                         $station = sanitize_text_field(ucwords(str_replace('-', ' ', $e[0])));
                         $uuid = sanitize_text_field($d[0]);
                         $from = sanitize_text_field($e[1]);
@@ -343,7 +443,7 @@ class Manager {
                 $f['progress'] = '100';
                 $f['std_size'] = size_format($f['size'], $decimal);
                 $f['date'] = $time;
-                $f['url'] = self::get_full_file_url($station, $from, $to, $uuid, $ext);
+                $f['url'] = self::get_download_url($file);
                 $result[] = $f;
             }
         }
@@ -360,7 +460,8 @@ class Manager {
         if ((int)get_option('live_weather_station_file_retention', 7) > 0) {
             $time = time() - (86400 * get_option('live_weather_station_file_retention', 7));
             foreach (self::extended_list_dir(false) as $file) {
-                if ($file['date'] < $time) {
+                // Only delete files managed by the plugin.
+                if ($file['date'] < $time && self::managed_extension($file['file']) !== '') {
                     try {
                         wp_delete_file(self::$dir . $file['file']);
                         $count += 1;
@@ -456,17 +557,12 @@ class Manager {
     public static function check_configuration($uuid) {
         $result = false;
         $content = self::get_configuration($uuid);
-        if ($content) {
-            try {
-                $result = array();
-                foreach (array('settings', 'stations', 'modules', 'maps') as $item) {
-                    if (array_key_exists($item, $content)) {
-                        $result[$item] = count($content[$item]);
-                    }
+        if (is_array($content)) {
+            $result = array();
+            foreach (array('settings', 'stations', 'modules', 'maps') as $item) {
+                if (array_key_exists($item, $content) && is_array($content[$item])) {
+                    $result[$item] = count($content[$item]);
                 }
-            }
-            catch (\Exception $ex) {
-                $result = false;
             }
         }
         return $result;
@@ -481,13 +577,19 @@ class Manager {
      */
     public static function get_configuration($uuid) {
         $file = self::find_valid($uuid, array('wsconf.json'));
-        try {
-            $result = json_decode(file_get_contents(self::get_root_name() . '/' . $file['file']), true);
+        if (!is_array($file) || !array_key_exists('file', $file)) {
+            return false;
         }
-        catch (\Exception $ex) {
-            $result = false;
+        $path = self::construct_full_file_name($file['file']);
+        if (!is_file($path) || filesize($path) > self::$max_upload_size) {
+            return false;
         }
-        return $result;
+        $content = file_get_contents($path);
+        if ($content === false) {
+            return false;
+        }
+        $result = json_decode($content, true);
+        return is_array($result) ? $result : false;
     }
 
     /**
@@ -510,10 +612,12 @@ class Manager {
      * @since 3.8.0
      */
     public static function change_upload_mimes($mimes) {
+        // Restrict (not merge) to the file types managed by the plugin.
+        $result = array();
         foreach (self::$allowed_extension as $key => $val) {
-            $mimes[$key] = $val;
+            $result[$key] = $val;
         }
-        return $mimes;
+        return $result;
     }
 
     /**
@@ -550,22 +654,84 @@ class Manager {
             require_once(ABSPATH . 'wp-admin/includes/file.php');
         }
         $result = array('done' => false, 'error' => __('Unknown error', 'live-weather-station'));
+        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+            $result['error'] = __('You do not have sufficient permissions to add files.', 'live-weather-station');
+            return $result;
+        }
         if(!empty($_FILES['file-to-upload'])) {
-            //add_filter('wp_check_filetype_and_ext', array(get_called_class(), 'recheck_filetype_and_ext'));
+            if (!isset($_FILES['file-to-upload']['size']) || (int)$_FILES['file-to-upload']['size'] > self::$max_upload_size || (int)$_FILES['file-to-upload']['size'] <= 0) {
+                $result['error'] = __('invalid file size', 'live-weather-station');
+                Logger::error(self::$service, null, null, null, null, null, 99, 'Unable to add this file: invalid file size.');
+                return $result;
+            }
+            if (!self::check_for_write()) {
+                return $result;
+            }
             add_filter('upload_mimes', array(get_called_class(), 'change_upload_mimes'));
             add_filter('upload_dir', array(get_called_class(), 'change_upload_dir'));
             $file = wp_handle_upload($_FILES['file-to-upload'], array('test_form' => false));
-            if ($file && !isset($file['error'])) {
-                $result['done'] = true;
+            if (is_array($file) && !isset($file['error'])) {
+                if (isset($file['file']) && self::check_uploaded_content($file['file'])) {
+                    $result['done'] = true;
+                }
+                else {
+                    if (isset($file['file'])) {
+                        wp_delete_file($file['file']);
+                    }
+                    $result['error'] = __('invalid file content', 'live-weather-station');
+                    Logger::error(self::$service, null, null, null, null, null, 99, 'Unable to add this file: invalid JSON/NDJSON content.');
+                }
             } else {
-                $result['error'] = lws_lcfirst($file['error']);
-                Logger::error(self::$service, null, null, null, null, null, 99, 'Unable to add this file: ' . $file['error']);
+                $error = (is_array($file) && isset($file['error'])) ? (string)$file['error'] : 'unknown error';
+                $result['error'] = lws_lcfirst($error);
+                Logger::error(self::$service, null, null, null, null, null, 99, 'Unable to add this file: ' . $error);
             }
             remove_filter('upload_dir', array(get_called_class(), 'change_upload_dir'));
             remove_filter('upload_mimes', array(get_called_class(), 'change_upload_mimes'));
-            //remove_filter('wp_check_filetype_and_ext', array(get_called_class(), 'recheck_filetype_and_ext'));
         }
         return $result;
+    }
+
+    /**
+     * Check the content of an uploaded file: valid JSON (.json) or valid ND-JSON (.ndjson).
+     *
+     * @param string $path The full path of the file.
+     * @return boolean True if the content is valid.
+     * @since 3.8.0
+     */
+    private static function check_uploaded_content($path) {
+        $real = realpath($path);
+        $root = realpath(self::$dir);
+        if ($real === false || $root === false || dirname($real) !== $root || !is_file($real) || filesize($real) > self::$max_upload_size) {
+            return false;
+        }
+        $ext = strtolower((string)pathinfo($real, PATHINFO_EXTENSION));
+        if ($ext === 'json') {
+            $content = json_decode((string)file_get_contents($real), true);
+            return is_array($content);
+        }
+        if ($ext === 'ndjson') {
+            $handle = fopen($real, 'r');
+            if ($handle === false) {
+                return false;
+            }
+            $count = 0;
+            $valid = true;
+            while (($line = fgets($handle)) !== false) {
+                $line = trim($line);
+                if ($line === '') {
+                    continue;
+                }
+                if (!is_array(json_decode($line, true))) {
+                    $valid = false;
+                    break;
+                }
+                $count++;
+            }
+            fclose($handle);
+            return $valid && $count > 0;
+        }
+        return false;
     }
 
 }

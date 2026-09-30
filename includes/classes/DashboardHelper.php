@@ -108,7 +108,8 @@ class Handling {
         $result = '<fieldset class="metabox-prefs">';
         $result .= '<legend>' . __('Boxes', 'live-weather-station') . '</legend>';
         $result .= $this->meta_box_prefs('lws-dashboard');
-        if (isset($_GET['welcome'])) {
+        // The welcome panel state can be changed by GET only with a valid nonce and capability.
+        if (isset($_GET['welcome']) && current_user_can(apply_filters('lws_manage_options_capability', 'manage_options')) && isset($_GET['_wpnonce']) && is_string($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'lws-welcome-toggle')) {
             $welcome_checked = (empty($_GET['welcome']) ? 0 : 1);
             update_user_meta(get_current_user_id(), 'show_lws_welcome_panel', $welcome_checked);
         }
@@ -171,12 +172,13 @@ class Handling {
      */
     public static function update_lws_welcome_panel_callback() {
         // Check user capabilities
-        if (!current_user_can('read')) {
+        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
             wp_die(-1);
         }
         
         check_ajax_referer('lws-welcome-panel-nonce', 'lwswelcomepanelnonce');
-        update_user_meta(get_current_user_id(), 'show_lws_welcome_panel', empty(sanitize_text_field($_POST['visible'])) ? 0 : 1);
+        $visible = (isset($_POST['visible']) && is_scalar($_POST['visible'])) ? sanitize_text_field(wp_unslash((string)$_POST['visible'])) : '';
+        update_user_meta(get_current_user_id(), 'show_lws_welcome_panel', empty($visible) ? 0 : 1);
         wp_die(1);
     }
 
@@ -194,8 +196,9 @@ class Handling {
         // Check nonce
         check_ajax_referer('lws-delete-notification', 'nonce');
         
-        if (isset($_POST['id'])) {
-            Notifier::delete(wp_kses_post($_POST['id']));
+        $id = (isset($_POST['id']) && is_scalar($_POST['id'])) ? absint($_POST['id']) : 0;
+        if ($id > 0) {
+            Notifier::delete($id);
             wp_die(1);
         }
         wp_die(0);

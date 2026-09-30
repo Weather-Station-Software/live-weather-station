@@ -148,7 +148,7 @@ class Quota {
                 if ($full_strict > $quota) {
                     $remaining = $quota - $actual_strict;
                     $projected = $full_strict - $actual_strict;
-                    $admitted = 100 * $remaining / $projected;
+                    $admitted = ($projected > 0 ? 100 * $remaining / $projected : 0);
                     $s = 'diff='.$diff.' / ';
                     $s .= 'ratio='.$ratio.' / ';
                     $s .= 'actual_strict='.$actual_strict.' / ';

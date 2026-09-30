@@ -2745,69 +2745,219 @@ trait Query {
     }
 
     /**
+     * Credential columns of the stations table.
+     *
+     * @return array The names of the columns containing credentials.
+     * @since 3.8.0
+     */
+    private static function stations_credential_columns() {
+        return array('owm_user', 'owm_password', 'pws_user', 'pws_password', 'wow_user', 'wow_password', 'wet_user', 'wet_password', 'wug_user', 'wug_password');
+    }
+
+    /**
+     * Remove the credentials embedded in a station service_id: WeatherLink stores "id|token|password" (LWS_SERVICE_SEPARATOR),
+     * file based stations may store "scheme://user:password@host/path".
+     *
+     * @param mixed $service_id The service_id of a station.
+     * @return string The service_id without any credential.
+     * @since 3.8.0
+     */
+    public static function strip_service_credentials($service_id) {
+        $service_id = (string)$service_id;
+        if (strpos($service_id, LWS_SERVICE_SEPARATOR) !== false) {
+            $parts = explode(LWS_SERVICE_SEPARATOR, $service_id);
+            for ($i = 1; $i < count($parts); $i++) {
+                $parts[$i] = '';
+            }
+            return implode(LWS_SERVICE_SEPARATOR, $parts);
+        }
+        $stripped = preg_replace('#^([a-z][a-z0-9+.\-]*://)[^/\s]*@#i', '$1', $service_id);
+        return is_string($stripped) ? $stripped : $service_id;
+    }
+
+    /**
      * Get stations table of the plugin - for backup purpose.
      *
+     * @param boolean $include_credentials Optional. Include the credentials of the stations in the result.
      * @return array An array containing all rows of the stations table.
      * @since 3.8.0
      */
-    public static function get_stations_table() {
+    public static function get_stations_table($include_credentials=false) {
         $result = self::get_table(self::live_weather_station_stations_table());
-        Logger::notice('Core', null, null, null, null, null, 600, 'Stations table successfully exported.');
+        if (!$include_credentials && is_array($result)) {
+            foreach ($result as &$row) {
+                foreach (self::stations_credential_columns() as $column) {
+                    unset($row[$column]);
+                }
+                if (array_key_exists('service_id', $row)) {
+                    $row['service_id'] = self::strip_service_credentials($row['service_id']);
+                }
+            }
+            unset($row);
+        }
+        Logger::notice('Core', null, null, null, null, null, 600, 'Stations table successfully exported' . ($include_credentials ? ' (with credentials).' : '.'));
         return $result;
     }
 
     /**
+     * Does an (unserialized) value contain an object, i.e. a __PHP_Incomplete_Class?
+     *
+     * @param mixed $value The value to check.
+     * @return boolean True if an object is found.
+     * @since 3.8.0
+     */
+    private static function contains_incomplete_object($value) {
+        if (is_object($value)) {
+            return true;
+        }
+        if (is_array($value)) {
+            foreach ($value as $item) {
+                if (self::contains_incomplete_object($item)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Validate the whole structure of rows imported in a table of the plugin. Nothing is written.
+     *
+     * @param string $table The table name - without prefix.
+     * @param mixed $rows The rows to validate.
+     * @return boolean True if all rows are acceptable, false otherwise.
+     * @since 3.8.0
+     */
+    public static function validate_table_rows($table, $rows) {
+        if (!is_array($rows)) {
+            return false;
+        }
+        $columns = self::get_table_columns($table);
+        if (!is_array($columns)) {
+            return false;
+        }
+        foreach ($rows as $row) {
+            if (!is_array($row) || count($row) === 0) {
+                return false;
+            }
+            foreach ($row as $key => $value) {
+                if (self::resolve_column($key, $columns) === null) {
+                    return false;
+                }
+                if (!is_scalar($value) && $value !== null) {
+                    return false;
+                }
+            }
+            if ($table === self::live_weather_station_maps_table() && isset($row['params']) && $row['params'] !== '') {
+                // Map parameters are PHP serialized data: only plain arrays (no object) are acceptable.
+                $params = (is_string($row['params']) ? @unserialize($row['params'], array('allowed_classes' => false)) : false);
+                if (!is_array($params) || self::contains_incomplete_object($params)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    /**
      * Set maps table of the plugin - for restore purpose.
+     * The whole structure is validated before the current table is replaced.
      *
      * @@param array $rows An array containing all rows of the maps table.
+     * @return boolean True if the table has been replaced, false otherwise.
      * @since 3.8.0
      */
     public static function set_maps_table($rows) {
         global $wpdb;
+        if (!self::validate_table_rows(self::live_weather_station_maps_table(), $rows)) {
+            Logger::error('Core', null, null, null, null, null, 601, 'Maps table not imported: invalid data.');
+            return false;
+        }
         $table_name = $wpdb->prefix . self::live_weather_station_maps_table();
-        $sql = 'TRUNCATE TABLE '.$table_name;
+        $sql = 'TRUNCATE TABLE `' . $table_name . '`';
         $wpdb->query($sql);
         foreach ($rows as $row) {
             self::insert_update_table(self::live_weather_station_maps_table(), $row);
         }
         Logger::notice('Core', null, null, null, null, null, 601, 'Maps table successfully imported.');
+        return true;
     }
 
     /**
      * Set modules table of the plugin - for restore purpose.
+     * The whole structure is validated before the current table is replaced.
      *
      * @@param array $rows An array containing all rows of the modules table.
+     * @return boolean True if the table has been replaced, false otherwise.
      * @since 3.8.0
      */
     public static function set_modules_table($rows) {
         global $wpdb;
+        if (!self::validate_table_rows(self::live_weather_station_module_detail_table(), $rows)) {
+            Logger::error('Core', null, null, null, null, null, 601, 'Modules table not imported: invalid data.');
+            return false;
+        }
         $table_name = $wpdb->prefix . self::live_weather_station_module_detail_table();
-        $sql = 'TRUNCATE TABLE '.$table_name;
+        $sql = 'TRUNCATE TABLE `' . $table_name . '`';
         $wpdb->query($sql);
         foreach ($rows as $row) {
             self::insert_update_table(self::live_weather_station_module_detail_table(), $row);
         }
         Logger::notice('Core', null, null, null, null, null, 601, 'Modules table successfully imported.');
+        return true;
     }
 
     /**
      * Set stations table of the plugin - for restore purpose.
+     * The whole structure is validated before the current table is replaced. Credentials which are missing
+     * (or empty) in the imported rows are kept from the current stations having the same station_id.
      *
      * @@param array $rows An array containing all rows of the stations table.
+     * @return boolean True if the table has been replaced, false otherwise.
      * @since 3.8.0
      */
     public static function set_stations_table($rows) {
         global $wpdb;
+        if (!self::validate_table_rows(self::live_weather_station_stations_table(), $rows)) {
+            Logger::error('Core', null, null, null, null, null, 601, 'Stations table not imported: invalid data.');
+            return false;
+        }
+        $credentials = array();
+        $service_ids = array();
+        foreach (self::get_table(self::live_weather_station_stations_table()) as $current) {
+            if (isset($current['station_id'])) {
+                $credentials[$current['station_id']] = array_intersect_key($current, array_flip(self::stations_credential_columns()));
+                $service_ids[$current['station_id']] = isset($current['service_id']) ? (string)$current['service_id'] : '';
+            }
+        }
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-        $sql = 'TRUNCATE TABLE '.$table_name;
+        $sql = 'TRUNCATE TABLE `' . $table_name . '`';
         $wpdb->query($sql);
-        foreach ($rows as &$row) {
+        foreach ($rows as $row) {
             unset($row['last_refresh']);
             unset($row['last_seen']);
             unset($row['oldest_data']);
+            if (isset($row['station_id']) && array_key_exists($row['station_id'], $credentials)) {
+                foreach ($credentials[$row['station_id']] as $column => $value) {
+                    if (!isset($row[$column]) || $row[$column] === '') {
+                        $row[$column] = $value;
+                    }
+                }
+            }
+            if (isset($row['service_id'])) {
+                $imported = (string)$row['service_id'];
+                if (isset($row['station_id']) && array_key_exists($row['station_id'], $service_ids) && $service_ids[$row['station_id']] !== '' && self::strip_service_credentials($imported) === $imported && self::strip_service_credentials($service_ids[$row['station_id']]) === $imported) {
+                    // Blanked credentials never overwrite the existing ones.
+                    $row['service_id'] = $service_ids[$row['station_id']];
+                }
+                elseif (self::strip_service_credentials($imported) === $imported && strpos($imported, LWS_SERVICE_SEPARATOR) !== false) {
+                    Logger::warning('Core', null, isset($row['station_id']) ? $row['station_id'] : null, isset($row['station_name']) ? $row['station_name'] : null, null, null, 601, 'Station imported without its credentials: it must be reconnected.');
+                }
+            }
             self::insert_update_table(self::live_weather_station_stations_table(), $row);
         }
         Logger::notice('Core', null, null, null, null, null, 601, 'Stations table successfully imported.');
+        return true;
     }
 
 }
