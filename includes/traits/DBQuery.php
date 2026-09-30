@@ -6,6 +6,7 @@ use WeatherStation\DB\Storage;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\System\Cache\Cache;
 use WeatherStation\System\Device\Manager as DeviceManager;
+use WeatherStation\System\SQL\Guard;
 
 /**
  * Query management.
@@ -225,15 +226,15 @@ trait Query {
         $ids = array();
         $main = '';
         foreach ($this->get_all_id_by_type(0) as $id) {
-            $ids[] = '\'' . $id['station_id'] . '\'';
+            $ids[] = $id['station_id'];
         }
         foreach ($this->get_all_id_by_type(6) as $id) {
-            $ids[] = '\'' . $id['station_id'] . '\'';
-        }
-        if (count($ids) > 0) {
-            $main = "OR (module_type='NAMain' AND device_id IN (" . implode(',', $ids) . "))";
+            $ids[] = $id['station_id'];
         }
         global $wpdb;
+        if (count($ids) > 0) {
+            $main = $wpdb->prepare("OR (module_type='NAMain' AND device_id IN (" . Guard::placeholders($ids, '%s') . "))", $ids);
+        }
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_id, device_name, module_id, module_name FROM " . $table_name . " WHERE (module_type='NAModule4') OR (module_type='NAModule9') " . $main . ";";
         try {
@@ -406,17 +407,13 @@ trait Query {
         catch(\Exception $ex) {
             $result = array() ;
         }
-        $count = count ($result);
         $rq = '';
+        $rq_ids = array();
         foreach ($result as $res) {
-            $count = $count - 1;
-            $rq = $rq . "device_id='".$res['device_id']."'" ;
-            if ($count > 0) {
-                $rq = $rq . ' OR ';
-            }
+            $rq_ids[] = $res['device_id'];
         }
-        if ($rq != '') {
-            $rq = " AND (".$rq.")" ;
+        if (count($rq_ids) > 0) {
+            $rq = $wpdb->prepare(" AND (device_id IN (" . Guard::placeholders($rq_ids, '%s') . "))", $rq_ids);
         }
         $sql = "SELECT device_id, device_name, measure_type, measure_value FROM ".$table_name." WHERE (module_type='NAMain') AND (measure_type LIKE 'loc_%')".$rq ;
         try {
@@ -747,7 +744,7 @@ trait Query {
     protected function get_computed_measurements($device_id, $obsolescence_filtering=false) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
-        $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAComputed')" ;
+        $sql = $wpdb->prepare("SELECT * FROM ".$table_name. " WHERE device_id=%s AND (module_type='NAComputed')", $device_id);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -773,7 +770,7 @@ trait Query {
     protected function get_ephemeris_measurements($device_id) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
-        $sql = "SELECT * FROM ".$table_name. " WHERE device_id='".$device_id."' AND (module_type='NAMain' OR module_type='NAEphemer') ORDER BY module_id ASC" ;
+        $sql = $wpdb->prepare("SELECT * FROM ".$table_name. " WHERE device_id=%s AND (module_type='NAMain' OR module_type='NAEphemer') ORDER BY module_id ASC", $device_id);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -800,7 +797,7 @@ trait Query {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $order = " ORDER BY CASE module_type WHEN 'NAMain' THEN 1 WHEN 'NAModule1' THEN 2 WHEN 'NAModule2' THEN 3 WHEN 'NAModule3' THEN 4 WHEN 'NAModule5' THEN 5 WHEN 'NAModule7' THEN 6 WHEN 'NAModule6' THEN 7 WHEN 'NAComputed' THEN 8 WHEN 'NAModule4' THEN 9 WHEN 'NAEphemer' THEN 10 WHEN 'NACurrent' THEN 11 ELSE 12 END";
-        $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $device_id . "'" . $order ;
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE device_id=%s" . $order, $device_id);
         try {
             $cache_id = 'get_all_measurements_'.$device_id;
             $query = Cache::get_query($cache_id);
@@ -906,16 +903,9 @@ trait Query {
     protected function get_line_measurements($attributes, $obsolescence_filtering=false, $full_mode=false) {
         global $wpdb;
         $sub_attributes = $this->get_sub_attributes($attributes, $full_mode);
-        $measures = "";
-        if (count($sub_attributes)>0) {
-            $i = 0;
-            foreach ($sub_attributes as $att) {
-                $measures = $measures . ($i!=0?" OR ":"")."measure_type='" . $att . "'";
-                $i++;
-            }
-        }
+        $sub_attributes = array_values($sub_attributes);
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $attributes['device_id'] . "' AND module_id='" . $attributes['module_id'] . "' AND (" . $measures . ")";
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE device_id=%s AND module_id=%s AND (measure_type IN (" . Guard::placeholders($sub_attributes, '%s') . "))", array_merge(array($attributes['device_id'], $attributes['module_id']), $sub_attributes));
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -942,17 +932,14 @@ trait Query {
     protected function get_specific_measurements($attributes, $obsolescence_filtering=false) {
         global $wpdb;
         $sub_attributes = $this->get_sub_attributes($attributes);
-        $measures = "";
-        if (count($sub_attributes)>0) {
-            $i = 0;
-            foreach ($sub_attributes as $att) {
-                $measures = $measures . ($i!=0?" OR ":"")."measure_type='" . $att . "'";
-                $i++;
-            }
-        }
+        $sub_attributes = array_values($sub_attributes);
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $sql = $wpdb->prepare("SELECT " . $attributes['element'] . ", module_type" . ($attributes['element']!="measure_type"?", measure_type":"") . " FROM " . $table_name . " WHERE device_id=%s AND module_id=%s AND (" . $measures . ")", $attributes['device_id'], $attributes['module_id']);
+        $element = Guard::ident($attributes['element'], array('device_id', 'device_name', 'module_id', 'module_type', 'module_name', 'measure_timestamp', 'measure_type', 'measure_value'));
         $result = array();
+        if ($element === null) {
+            return $result;
+        }
+        $sql = $wpdb->prepare("SELECT " . $element . ", module_type" . ($element!="measure_type"?", measure_type":"") . " FROM " . $table_name . " WHERE device_id=%s AND module_id=%s AND (measure_type IN (" . Guard::placeholders($sub_attributes, '%s') . "))", array_merge(array($attributes['device_id'], $attributes['module_id']), $sub_attributes));
         try {
             $query = (array)$wpdb->get_results($sql);
             $i = 0;
@@ -1018,7 +1005,7 @@ trait Query {
     private function _get_oldest_data($station) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
-        $sql = "SELECT DISTINCT(`timestamp`) FROM ".$table_name. " WHERE device_id='".$station['station_id']."' ORDER BY `timestamp` ASC LIMIT 3" ;
+        $sql = $wpdb->prepare("SELECT DISTINCT(`timestamp`) FROM ".$table_name. " WHERE device_id=%s ORDER BY `timestamp` ASC LIMIT 3", $station['station_id']);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -1043,7 +1030,7 @@ trait Query {
     private function _get_youngest_data($station) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
-        $sql = "SELECT DISTINCT(`timestamp`) FROM ".$table_name. " WHERE device_id='".$station['station_id']."' ORDER BY `timestamp` DESC LIMIT 3" ;
+        $sql = $wpdb->prepare("SELECT DISTINCT(`timestamp`) FROM ".$table_name. " WHERE device_id=%s ORDER BY `timestamp` DESC LIMIT 3", $station['station_id']);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -1069,7 +1056,7 @@ trait Query {
         global $wpdb;
         $result = 0;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
-        $sql = "SELECT COUNT(*) as val FROM " . $table_name . " WHERE measure_type='" . $type . "'" ;
+        $sql = $wpdb->prepare("SELECT COUNT(*) as val FROM " . $table_name . " WHERE measure_type=%s", $type);
         $count = $wpdb->get_results($sql, ARRAY_A);
         if ($count) {
             if (is_array($count)) {
@@ -1109,7 +1096,7 @@ trait Query {
     protected function get_station_information_by_station_id($station_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE station_id='" . $station_id."'";
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE station_id=%s", $station_id);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -1161,7 +1148,7 @@ trait Query {
     protected function get_station_guid_by_station_id($station_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-        $sql = "SELECT guid FROM " . $table_name . " WHERE station_id='" . $station_id."'";
+        $sql = $wpdb->prepare("SELECT guid FROM " . $table_name . " WHERE station_id=%s", $station_id);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -1336,7 +1323,8 @@ trait Query {
             $cache_id = 'stations_barycenter';
         }
         else {
-            $sql = "SELECT AVG(loc_latitude) as latitude, AVG(loc_longitude) as longitude FROM " . $table_name . " WHERE guid IN (" . implode(',', $guids).");";
+            $sql = "SELECT AVG(loc_latitude) as latitude, AVG(loc_longitude) as longitude FROM " . $table_name . " WHERE guid IN (" . Guard::placeholders($guids, '%d') . ");";
+            $sql = $wpdb->prepare($sql, array_map('intval', array_values($guids)));
             $cache_id = 'stations_barycenter_' . implode('', $guids);
         }
         try {
@@ -1370,7 +1358,7 @@ trait Query {
     protected static function get_picture($device_id, $rank=1) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_media_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $device_id."' AND module_type='NAModuleP' ORDER BY `timestamp` DESC LIMIT " . (string)($rank-1) . ",1";
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE device_id=%s AND module_type='NAModuleP' ORDER BY `timestamp` DESC LIMIT %d,1", $device_id, max(0, (int)($rank-1)));
         try {
             $query = $wpdb->get_results($sql, ARRAY_A);
             if (is_array($query) && !empty($query)) {
@@ -1396,7 +1384,7 @@ trait Query {
     protected static function get_video($device_id, $type='none', $rank=1) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_media_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $device_id."' AND item_type='" . $type."' AND module_type='NAModuleV' ORDER BY `timestamp` DESC LIMIT " . (string)($rank-1) . ",1";
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE device_id=%s AND item_type=%s AND module_type='NAModuleV' ORDER BY `timestamp` DESC LIMIT %d,1", $device_id, $type, max(0, (int)($rank-1)));
         try {
             $cache_id = 'get_video_'.$type . '_' . $device_id;
             $query = Cache::get_query($cache_id);
@@ -1427,7 +1415,7 @@ trait Query {
     protected static function get_video_by_date($device_id, $date, $type='none') {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_media_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $device_id."' AND item_type='" . $type."' AND `timestamp`='" . $date."' AND module_type='NAModuleV'";
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE device_id=%s AND item_type=%s AND `timestamp`=%s AND module_type='NAModuleV'", $device_id, $type, $date);
         try {
             $cache_id = 'get_video_by_date_'.$type . '_' . $device_id;
             $query = Cache::get_query($cache_id);
@@ -1456,7 +1444,7 @@ trait Query {
     protected static function get_video_dates($device_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_media_table();
-        $sql = "SELECT DISTINCT `timestamp` FROM " . $table_name . " WHERE device_id='" . $device_id."' AND module_type='NAModuleV' ORDER BY `timestamp` DESC";
+        $sql = $wpdb->prepare("SELECT DISTINCT `timestamp` FROM " . $table_name . " WHERE device_id=%s AND module_type='NAModuleV' ORDER BY `timestamp` DESC", $device_id);
         try {
             $query = $wpdb->get_results($sql, ARRAY_A);
             if (is_array($query) && !empty($query)) {
@@ -1480,7 +1468,7 @@ trait Query {
     protected static function get_modules_information($device_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_module_detail_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE device_id='" . $device_id."'";
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE device_id=%s", $device_id);
         try {
             $cache_id = 'get_modules'.$device_id;
             $query = Cache::get_query($cache_id);
@@ -1513,14 +1501,14 @@ trait Query {
      */
     protected static function get_ready_background_processes($only_paused=false) {
         if ($only_paused) {
-            $states = array('\'pause\'');
+            $states = array('pause');
         }
         else {
-            $states = array('\'init\'', '\'pause\'', '\'schedule\'');
+            $states = array('init', 'pause', 'schedule');
         }
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_background_process_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE state IN (" . implode(',', $states).") ORDER BY priority ASC";
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE state IN (" . Guard::placeholders($states, '%s') . ") ORDER BY priority ASC", $states);
         return $wpdb->get_results($sql, ARRAY_A);
     }
 
@@ -1531,10 +1519,10 @@ trait Query {
      * @since 3.7.0
      */
     protected static function get_active_background_processes() {
-        $states = array('\'init\'', '\'pause\'', '\'schedule\'', '\'running\'');
+        $states = array('init', 'pause', 'schedule', 'running');
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_background_process_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE state IN (" . implode(',', $states).") ORDER BY priority ASC";
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE state IN (" . Guard::placeholders($states, '%s') . ") ORDER BY priority ASC", $states);
         return $wpdb->get_results($sql, ARRAY_A);
     }
 
@@ -1642,13 +1630,13 @@ trait Query {
      * @since 3.0.0
      */
     protected function get_stations_list($offset = null, $rowcount = null) {
+        global $wpdb;
         $limit = '';
         $id = '';
         if (!is_null($offset) && !is_null($rowcount)) {
-            $limit = 'LIMIT ' . $offset . ',' . $rowcount;
+            $limit = $wpdb->prepare('LIMIT %d,%d', $offset, $rowcount);
             $id = $offset . '_' . $rowcount;
         }
-        global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_stations_table();
         $sql = "SELECT * FROM " . $table_name . " ORDER BY guid DESC " . $limit;
         try {
@@ -1684,7 +1672,8 @@ trait Query {
             $sql = "SELECT * FROM " . $table_name . " ORDER BY station_name ASC;";
         }
         else {
-            $sql = "SELECT * FROM " . $table_name . " WHERE guid IN (" . implode(',', $guids).") ORDER BY station_name ASC;";
+            $sql = "SELECT * FROM " . $table_name . " WHERE guid IN (" . Guard::placeholders($guids, '%d') . ") ORDER BY station_name ASC;";
+            $sql = $wpdb->prepare($sql, array_map('intval', array_values($guids)));
         }
         try {
             return $wpdb->get_results($sql, ARRAY_A);
@@ -2112,7 +2101,8 @@ trait Query {
         if (count($guids) > 0) {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-            $sql = "SELECT * FROM " . $table_name . " WHERE guid IN (".implode(',', $guids).')';
+            $sql = "SELECT * FROM " . $table_name . " WHERE guid IN (" . Guard::placeholders($guids, '%d') . ")";
+            $sql = $wpdb->prepare($sql, array_map('intval', array_values($guids)));
             try {
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
@@ -2140,7 +2130,7 @@ trait Query {
     protected function get_all_id_by_type($type) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-        $sql = "SELECT station_id FROM " . $table_name . " WHERE station_type=" . $type;
+        $sql = $wpdb->prepare("SELECT station_id FROM " . $table_name . " WHERE station_type=%d", $type);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -2164,7 +2154,7 @@ trait Query {
     protected function get_all_stations_by_type($type) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE station_type=" . $type;
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE station_type=%d", $type);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -2440,21 +2430,34 @@ trait Query {
      * @since 3.0.0
      */
     private function get_log_where_clause($filters = array()) {
+        global $wpdb;
         $result = '';
         if (count($filters) > 0) {
             $w = array();
+            $columns = array('id', 'timestamp', 'level', 'plugin', 'version', 'system', 'service', 'device_id', 'device_name', 'module_id', 'module_name', 'code', 'message');
             foreach ($filters as $key => $filter) {
-                if ($key == 'level') {
+                $column = Guard::ident($key, $columns);
+                if ($column === null) {
+                    // Unknown filter: matches nothing
+                    $w[] = '1=0';
+                }
+                elseif ($column == 'level') {
                     $l = array();
+                    $max = (is_string($filter) && array_key_exists($filter, Logger::$severity)) ? Logger::$severity[$filter] : null;
                     foreach (Logger::$severity as $sev => $severity) {
-                        if ($severity <= Logger::$severity[$filter]) {
-                            $l[] = "'".$sev."'";
+                        if ($max !== null && $severity <= $max) {
+                            $l[] = $sev;
                         }
                     }
-                    $w[] = $key . ' IN (' . implode(',', $l) . ')';
+                    if (count($l) > 0) {
+                        $w[] = $column . ' IN (' . $wpdb->prepare(Guard::placeholders($l, '%s'), $l) . ')';
+                    }
+                    else {
+                        $w[] = '1=0';
+                    }
                 }
                 else {
-                    $w[] = $key . '="' . $filter . '"';
+                    $w[] = $wpdb->prepare('`' . $column . '`=%s', $filter);
                 }
             }
             $result = 'WHERE (' . implode(' AND ', $w) . ')';
@@ -2524,15 +2527,15 @@ trait Query {
      * @since 3.0.0
      */
     protected function get_log_list($filters = array(), $offset = null, $rowcount = null) {
+        global $wpdb;
         $limit = '';
         if (!is_null($offset) && !is_null($rowcount)) {
-            $limit = 'LIMIT ' . $offset . ',' . $rowcount;
+            $limit = $wpdb->prepare('LIMIT %d,%d', $offset, $rowcount);
         }
         if (array_key_exists('station', $filters)) {
             $filters['device_id'] = $filters['station'];
             unset($filters['station']);
         }
-        global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
         $sql = "SELECT * FROM " . $table_name . " " . $this->get_log_where_clause($filters) . " ORDER BY id DESC " . $limit;
         try {

@@ -130,7 +130,9 @@ abstract class Framework {
                         $s = substr($s, 0, strpos($s, '_'.$fulltype));
                     }
                     if ($s != '') {
-                        $this->subformat = strtolower($s);
+                        if (preg_match('/^[A-Za-z0-9_-]{1,40}$/', $s)) {
+                            $this->subformat = strtolower($s);
+                        }
                     }
                     break;
                 }

@@ -480,7 +480,7 @@ class Builder
         $max = date('Y-m-d H:i:s', self::get_local_today_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "SELECT COUNT(*) FROM ".$table_name." WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "';";
+        $sql = $wpdb->prepare("SELECT COUNT(*) FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s;", $min, $max, $device_id);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -506,7 +506,7 @@ class Builder
         $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "SELECT DISTINCT `module_id`, `module_type`, `measure_type` FROM ".$table_name." WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "';";
+        $sql = $wpdb->prepare("SELECT DISTINCT `module_id`, `module_type`, `measure_type` FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s;", $min, $max, $device_id);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -611,7 +611,7 @@ class Builder
         }
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "SELECT " . $select . " FROM ".$table_name." WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "' AND `module_id`='" . $module_id . "' AND `measure_type`='" . $measure_type . "' GROUP BY `measure_value` ORDER BY v_fqc " . $order ." LIMIT 1;";
+        $sql = $wpdb->prepare("SELECT " . $select . " FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s AND `module_id`=%s AND `measure_type`=%s GROUP BY `measure_value` ORDER BY v_fqc " . $order ." LIMIT 1;", $min, $max, $device_id, $module_id, $measure_type);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -652,7 +652,7 @@ class Builder
         $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "SELECT MAX(`measure_value`) as v_max FROM ".$table_name." WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "' AND `module_id`='" . $module_id . "' AND `measure_type`='" . $measure_type . "';";
+        $sql = $wpdb->prepare("SELECT MAX(`measure_value`) as v_max FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s AND `module_id`=%s AND `measure_type`=%s;", $min, $max, $device_id, $module_id, $measure_type);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -691,7 +691,7 @@ class Builder
         $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "SELECT `measure_value` as v_val FROM ".$table_name." WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "' AND `module_id`='" . $module_id . "' AND `measure_type`='" . $measure_type . "' ORDER BY v_val ASC;";
+        $sql = $wpdb->prepare("SELECT `measure_value` as v_val FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s AND `module_id`=%s AND `measure_type`=%s ORDER BY v_val ASC;", $min, $max, $device_id, $module_id, $measure_type);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -744,7 +744,7 @@ class Builder
         $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "DELETE FROM ".$table_name." WHERE `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "' AND `module_id`='" . $module_id . "' AND `measure_type`='" . $measure_type . "';";
+        $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE `timestamp`<=%s AND `device_id`=%s AND `module_id`=%s AND `measure_type`=%s;", $max, $device_id, $module_id, $measure_type);
         return $wpdb->query($sql);
     }
 
@@ -760,7 +760,7 @@ class Builder
         $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "DELETE FROM ".$table_name." WHERE `timestamp`<='" . $max . "' AND `device_id`='" . $device_id . "';";
+        $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE `timestamp`<=%s AND `device_id`=%s;", $max, $device_id);
         return $wpdb->query($sql);
     }
 
