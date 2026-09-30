@@ -240,6 +240,7 @@ abstract class Base extends \WP_Widget {
         }
         $args = array('before_widget' => '', 'after_widget' => '', 'before_title' => '', 'after_title' => '');
         $instance = self::sanitize_instance($options[$number]);
-        exit ($widget->widget_content($args, $instance));
+        echo $widget->widget_content($args, $instance);
+        exit;
     }
 }

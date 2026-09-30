@@ -3192,6 +3192,11 @@ class Admin {
         
         if (isset($mid) && $mid) {
             $map = $this->get_map_detail($mid);
+            if (!is_array($map) || !array_key_exists('type', $map) || !array_key_exists('name', $map)) {
+                add_settings_error('lws_nonce_error', 404, esc_html__('This map does not exist.', 'live-weather-station'), 'error');
+                Logger::error('Security', null, null, null, null, null, null, 'An attempt was made to remove an inexistent map.');
+                return;
+            }
             $service = $this->get_service_name(100 + $map['type']);
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'delete-map-' . (int)$mid)) {
                 $res = $this->delete_maps_table(array($mid));

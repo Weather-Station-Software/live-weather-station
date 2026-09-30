@@ -623,25 +623,36 @@ class Manager {
     }
 
     /**
-     * Change the allowed mime types.
+     * Accept .json and .ndjson files whatever the mime type reported by libmagic (text/plain, application/json,
+     * application/x-ndjson...). Only hooked during the plugin's own upload; the content is checked afterwards.
      *
-     * @return array The allowed mime types.
+     * @param array $data The file data (ext, type, proper_filename).
+     * @param string $file The full path of the file.
+     * @param string $filename The name of the file.
+     * @param array $mimes The allowed mime types.
+     * @param string|false $real_mime Optional. The real mime type detected by WordPress.
+     * @return array The file data.
      * @since 3.8.0
      */
-    public static function recheck_filetype_and_ext($data=null, $file=null, $filename=null, $mimes=null) {
-        $ext = isset($data['ext'])?$data['ext']:'';
-        if (strlen($ext) < 1) {
-            $exploded = explode('.', $filename);
-            $ext = strtolower(end($exploded));
+    public static function recheck_filetype_and_ext($data=null, $file=null, $filename=null, $mimes=null, $real_mime=false) {
+        if (!is_array($data)) {
+            return $data;
         }
-        if ($ext === 'json') {
-            $values['ext'] = 'json';
-            $values['type'] = 'application/json';
+        if (!empty($data['ext']) && !empty($data['type'])) {
+            return $data;
         }
-        if ($ext === 'ndjson') {
-            $values['ext'] = 'ndjson';
-            $values['type'] = 'application/json';
+        $exploded = explode('.', (string)$filename);
+        $ext = strtolower(end($exploded));
+        if (!array_key_exists($ext, self::$allowed_extension)) {
+            return $data;
         }
+        $accepted = array('text/plain', 'application/json', 'application/x-ndjson', 'application/ndjson', 'application/jsonl', 'application/x-jsonlines', 'text/json', 'application/octet-stream');
+        if (is_string($real_mime) && $real_mime !== '' && !in_array(strtolower($real_mime), $accepted, true)) {
+            return $data;
+        }
+        $data['ext'] = $ext;
+        $data['type'] = self::$allowed_extension[$ext];
+        $data['proper_filename'] = false;
         return $data;
     }
 
@@ -670,6 +681,7 @@ class Manager {
                 return $result;
             }
             add_filter('upload_mimes', array(get_called_class(), 'change_upload_mimes'));
+            add_filter('wp_check_filetype_and_ext', array(get_called_class(), 'recheck_filetype_and_ext'), 10, 5);
             add_filter('upload_dir', array(get_called_class(), 'change_upload_dir'));
             $file = wp_handle_upload($_FILES['file-to-upload'], array('test_form' => false));
             if (is_array($file) && !isset($file['error'])) {
@@ -690,6 +702,7 @@ class Manager {
             }
             remove_filter('upload_dir', array(get_called_class(), 'change_upload_dir'));
             remove_filter('upload_mimes', array(get_called_class(), 'change_upload_mimes'));
+            remove_filter('wp_check_filetype_and_ext', array(get_called_class(), 'recheck_filetype_and_ext'), 10);
         }
         return $result;
     }

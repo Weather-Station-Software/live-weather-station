@@ -2461,7 +2461,7 @@ trait Query {
                         }
                     }
                     if (count($l) > 0) {
-                        $w[] = $column . ' IN (' . $wpdb->prepare(Guard::placeholders($l, '%s'), $l) . ')';
+                        $w[] = '`' . $column . '` IN (' . $wpdb->prepare(Guard::placeholders($l, '%s'), $l) . ')';
                     }
                     else {
                         $w[] = '1=0';
@@ -2656,7 +2656,7 @@ trait Query {
         $result = array();
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
-        $sql = "SELECT DISTINCT system FROM ".$table_name . " ORDER BY system ASC";
+        $sql = "SELECT DISTINCT `system` FROM ".$table_name . " ORDER BY `system` ASC";
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;

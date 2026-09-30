@@ -19,7 +19,7 @@ use WeatherStation\Data\History\Builder as History;
 use WeatherStation\System\Environment\Manager as EnvManager;
 use WeatherStation\Utilities\ColorBrewer;
 use WeatherStation\System\Device\Manager as DeviceManager;
-use WeatherStation\System\Options\Handling as Options;
+use WeatherStation\System\Plugin\Core as Options;
 use WeatherStation\UI\Map\WindyHandling;
 use WeatherStation\UI\Map\ThunderforestHandling;
 use WeatherStation\UI\Map\StamenHandling;
@@ -453,7 +453,7 @@ trait Output {
     }
 
     /**
-     * Verify that a period parameter is usable: none, a sliding period (rdays-30, month-1...) or a range of dates
+     * Verify that a period parameter is usable: none, a number, a sliding period (rdays-30, month-1...) or a range of dates
      * (Y-m-d:Y-m-d) that is a valid calendar span of at most 150 years.
      *
      * @param mixed $value The period parameter.
@@ -465,10 +465,11 @@ trait Output {
             return false;
         }
         $value = (string)$value;
-        if ($value === '' || $value === 'none' || $value === '0') {
+        if ($value === '' || $value === 'none' || $value === 'all') {
             return true;
         }
-        if (preg_match('/^[a-z]+-\d{1,4}$/', $value)) {
+        // Bare (possibly signed) number, e.g. '1' or '-1', or a sliding period such as rdays-30, month-0, mseason-2.
+        if (preg_match('/^-?\d{1,4}$/', $value) || preg_match('/^[a-z_]+-\d{1,4}$/', $value)) {
             return true;
         }
         if (preg_match('/^(\d{4})-(\d{2})-(\d{2}):(\d{4})-(\d{2})-(\d{2})$/', $value, $m)) {
@@ -1517,7 +1518,7 @@ trait Output {
                                 if ($mode == 'yearly') {
                                     $set = " AND `measure_set`=" . self::sql_literal($arg['set']) . "";
                                 }
-                                if ($mode == 'yearly' && strtolower($arg['set']) == 'mid') {
+                                if ($mode == 'yearly' && strtolower((string)$arg['set']) == 'mid') {
                                     $set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
                                     $val = 'AVG(`measure_value`) as computed_value';
                                 }
@@ -2051,7 +2052,7 @@ trait Output {
                                         }
                                     }
                                 }
-                                if (($mode == 'yearly' || $mode == 'climat') && strtolower($arg['set']) == 'amp') {
+                                if (($mode == 'yearly' || $mode == 'climat') && strtolower((string)$arg['set']) == 'amp') {
                                     $set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
                                     $val = 'ABS(MAX(`measure_value`)-MIN(`measure_value`)) as computed_value';
                                     if ($mode == 'climat' && $type == 'calendarhm') {
@@ -2064,7 +2065,7 @@ trait Output {
                                         }
                                     }
                                 }
-                                if (($mode == 'yearly' || $mode == 'climat') && strtolower($arg['set']) == 'mid') {
+                                if (($mode == 'yearly' || $mode == 'climat') && strtolower((string)$arg['set']) == 'mid') {
                                     $set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
                                     $val = 'AVG(`measure_value`) as computed_value';
                                     if ($mode == 'climat' && $type == 'calendarhm') {
@@ -2142,7 +2143,7 @@ trait Output {
                                             }
                                         }
                                         if ($mode == 'climat' && $type == 'calendarhm') {
-                                            if (strtolower($arg['set']) == 'amp') {
+                                            if (strtolower((string)$arg['set']) == 'amp') {
                                                 if (array_key_exists(substr($a['timestamp'], 5, 5), $aux)) {
                                                     $a['measure_value'] = $this->rebase_value($a['measure_value'] - $aux[substr($a['timestamp'], 5, 5)], $arg['measurement']);
                                                 }
@@ -2160,7 +2161,7 @@ trait Output {
                                             }
                                         }
                                         else {
-                                            if (array_key_exists('set', $arg) && strtolower($arg['set']) == 'amp') {
+                                            if (array_key_exists('set', $arg) && strtolower((string)$arg['set']) == 'amp') {
                                                 $a['measure_value'] = $this->rebase_value($a['measure_value'], $arg['measurement']);
                                             }
                                             else {

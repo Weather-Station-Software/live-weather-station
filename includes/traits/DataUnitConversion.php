@@ -1745,6 +1745,14 @@ trait Conversion {
                 $result = $this->get_reverse_illuminance($value);
                 break;
             case 'strike_distance':
+                if ($force_ref != 9999) {
+                    $ref = $force_ref;
+                }
+                else {
+                    $ref = get_option('live_weather_station_unit_distance');
+                }
+                $result = $this->get_reverse_distance_from_meters($value, $ref);
+                break;
             case 'visibility':
             if ($force_ref != 9999) {
                 $ref = $force_ref;

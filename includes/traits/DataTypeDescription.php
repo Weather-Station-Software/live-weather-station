@@ -1089,8 +1089,8 @@ trait Description {
         if ($plural) {
             $n = 2;
         }
-        if (strpos($operation, '|') == 0) {
-            switch (strtolower($operation)) {
+        if (strpos((string)$operation, '|') == 0) {
+            switch (strtolower((string)$operation)) {
                 case 'min' : $result = _n('minimum value','minimum values', $n, 'live-weather-station'); break;
                 case 'max' : $result = _n('maximum value', 'maximum values', $n, 'live-weather-station'); break;
                 case 'avg' : $result = _n('average value', 'average values', $n, 'live-weather-station'); break;

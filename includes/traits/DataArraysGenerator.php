@@ -8,7 +8,7 @@ use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector
 use WeatherStation\Data\History\Builder as History;
 use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Environment\Manager as EnvManager;
-use WeatherStation\System\Options\Handling as Options;
+use WeatherStation\System\Plugin\Core as Options;
 use WeatherStation\Data\DateTime\Handling as TimeHandling;
 
 /**

@@ -2,7 +2,7 @@
 
 namespace WeatherStation\Process;
 use WeatherStation\DB\Query as DB;
-use WeatherStation\System\Options\Handling as Options;
+use WeatherStation\System\Plugin\Core as Options;
 use WeatherStation\System\Storage\Manager as FS;
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\DateTime\Handling as DateTimeHandling;

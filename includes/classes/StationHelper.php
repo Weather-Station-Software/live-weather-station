@@ -246,9 +246,9 @@ class Handling {
         if (!($service = filter_input(INPUT_POST, 'service'))) {
             $this->arg_service = filter_input(INPUT_GET, 'service');
         }
-        $this->arg_tab = Guard::token(strtolower($this->arg_tab), '');
-        $this->arg_action = Guard::token(strtolower($this->arg_action), '');
-        $this->arg_service = Guard::token(strtolower($this->arg_service), '');
+        $this->arg_tab = Guard::token(strtolower((string)$this->arg_tab), '');
+        $this->arg_action = Guard::token(strtolower((string)$this->arg_action), '');
+        $this->arg_service = Guard::token(strtolower((string)$this->arg_service), '');
     }
 
     /**
