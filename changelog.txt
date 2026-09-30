@@ -1,3 +1,7 @@
+#3.9.0 / xx September 2026
+* Improvement: the changes of 3.8.14, which was never deployed on wordpress.org, are now released.
+* Bug fix: the plugin header now carries the real version number.
+
 #3.8.14 / September 6th, 2023
 * Improvement: full support for WordPress 6.3.x
 * Rewrite get_wind_angle

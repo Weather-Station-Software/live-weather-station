@@ -20,7 +20,7 @@ use WeatherStation\System\Plugin\Uninstaller;
  * Domain Path:     /languages
  * License:         GPLv2 or later
  * License URI:     http://www.gnu.org/licenses/gpl-2.0.txt
- * Version:         43
+ * Version:         3.9.0
  */
 
 // If this file is called directly, abort.
