@@ -97,7 +97,7 @@ class Handling {
                 break;
             case 'navionics':
                 $this->map_type = 7;
-                $this->aux_handler = new NavionicsHandling();
+                $this->aux_handler = new StamenHandling(); // Retired Navionics maps are handled with the Stamen map (OpenStreetMap fallback).
                 break;
             default:
                 $this->map_type = 0;

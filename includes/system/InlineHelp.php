@@ -299,7 +299,10 @@ class InlineHelp {
             $result = sprintf($message, '<a href="https://www.youtube.com/watch?v=UtgZKVslBsU"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -49) {
-            $result = sprintf($message, '<a href="https://www.navionics.com/web-api/download"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://client.stadiamaps.com/signup/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+        }
+        if ($number == -51) {
+            $result = sprintf($message, '<a href="https://client.stadiamaps.com/dashboard/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -50) {
             $result = '<a href="https://redmeteo.cl/"' . $target . '>David Aguilera-Riquelme</a>'. Intl::get_language_markup(array('es'));
@@ -699,13 +702,15 @@ class InlineHelp {
             'title'    => 'MapTiler',
             'id'       => 'lws-contextual-station-settings-maptiler',
             'content'  => '<p>' . $s1 . '</p><ol><li>' . $s2 . '</li><li>' . $s3 . '</li><li>' . $s4 . '</li></ol>');
-        $s1 = self::get(-49, __('To obtain an API key from Navionics please, fill %s on the Navionics website.', 'live-weather-station'), __('this form', 'live-weather-station'));
-        $s2 = __('Then, copy and paste the API key (from the received mail) in the corresponding fields of the "Navionics" box.', 'live-weather-station');
-        $s3 = __('Note: your request is handled by a Navionics employee, be patient it may take a few hours or days to receive your API key.');
+        $s1 = __('To obtain an API key from Stadia Maps please, follow these steps:', 'live-weather-station' );
+        $s2 = self::get(-49, __('%s on the Stadia Maps website.', 'live-weather-station'), __('Create an account', 'live-weather-station'));
+        $s3 = self::get(-51, __('After registration, log in to %s and create a property to get your API key.', 'live-weather-station'), __('your Stadia Maps dashboard', 'live-weather-station'));
+        $s4 = __('Then, copy and paste your API key in the single field of the "Stadia Maps (Stamen)" box and click on the "connect" button.', 'live-weather-station');
+        $s5 = __('Note: the former Stamen tile servers are closed. Stamen maps are now served by Stadia Maps, which requires an API key. Without a key (or with a style that no longer exists), the maps are displayed with OpenStreetMap.', 'live-weather-station');
         $tabs[] = array(
-            'title'    => 'Navionics',
-            'id'       => 'lws-contextual-station-settings-navionics',
-            'content'  => '<p>' . $s1 . ' ' . $s2 . '</p><p>' . $s3 .'</p>');
+            'title'    => 'Stadia Maps',
+            'id'       => 'lws-contextual-station-settings-stadia',
+            'content'  => '<p>' . $s1 . '</p><ol><li>' . $s2 . '</li><li>' . $s3 . '</li><li>' . $s4 . '</li></ol><p>' . $s5 .'</p>');
         $s1 = __('To obtain an API key from OpenWeatherMap please, follow these steps:', 'live-weather-station' );
         $s2 = self::get(-23, __('%s on the OpenWeatherMap website.', 'live-weather-station'), __('Create an account', 'live-weather-station'));
         $s3 = self::get(-24, __('After registration, log in to %s.', 'live-weather-station'), __('create and get your API key', 'live-weather-station'));
@@ -727,10 +732,11 @@ class InlineHelp {
         $s2 = self::get(-36, __('%s on the Windy.com website.', 'live-weather-station'), __('Create an account', 'live-weather-station'));
         $s3 = self::get(-37, __('After registration, log in and %s.', 'live-weather-station'), __('get your API key', 'live-weather-station'));
         $s4 = __('Then, copy and paste your API key in the corresponding fields of the "Windy" box, set your plan and click on the "connect" button.', 'live-weather-station');
+        $s5 = __('Important: a Windy Professional key is required for a site in production. The free "Testing" version of the Windy API is for development only and is not allowed in production.', 'live-weather-station');
         $tabs[] = array(
             'title'    => 'Windy',
             'id'       => 'lws-contextual-station-settings-windy',
-            'content'  => '<p>' . $s1 . '</p><ol><li>' . $s2 . '</li><li>' . $s3 . '</li><li>' . $s4 . '</li></ol>');
+            'content'  => '<p>' . $s1 . '</p><ol><li>' . $s2 . '</li><li>' . $s3 . '</li><li>' . $s4 . '</li></ol><p>' . $s5 . '</p>');
 
         foreach($tabs as $tab) {
             $screen->add_help_tab($tab);

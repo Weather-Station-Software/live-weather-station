@@ -91,7 +91,7 @@ trait Handling {
     private static $live_weather_station_mapbox_apikey = '';
     private static $live_weather_station_mapbox_plan = 0;
     private static $live_weather_station_maptiler_apikey = '';
-    private static $live_weather_station_navionics_apikey = '';
+    private static $live_weather_station_stadia_apikey = '';
     private static $live_weather_station_maptiler_plan = 0;
     private static $live_weather_station_unit_temperature = 0;  
     private static $live_weather_station_unit_pressure = 0;     
@@ -168,7 +168,7 @@ trait Handling {
         'live_weather_station_thunderforest_apikey' => 'secret', 'live_weather_station_thunderforest_plan' => 'int',
         'live_weather_station_mapbox_apikey' => 'secret', 'live_weather_station_mapbox_plan' => 'int',
         'live_weather_station_maptiler_apikey' => 'secret', 'live_weather_station_maptiler_plan' => 'int',
-        'live_weather_station_navionics_apikey' => 'secret',
+        'live_weather_station_stadia_apikey' => 'secret',
         'live_weather_station_unit_temperature' => 'int', 'live_weather_station_unit_pressure' => 'int', 'live_weather_station_unit_wind_strength' => 'int',
         'live_weather_station_unit_altitude' => 'int', 'live_weather_station_unit_distance' => 'int', 'live_weather_station_unit_psychrometry' => 'int',
         'live_weather_station_unit_rain_snow' => 'int', 'live_weather_station_unit_gas' => 'int', 'live_weather_station_unit_co' => 'int',
@@ -803,7 +803,8 @@ trait Handling {
         delete_option('live_weather_station_mapbox_plan');
         delete_option('live_weather_station_maptiler_apikey');
         delete_option('live_weather_station_maptiler_plan');
-        delete_option('live_weather_station_navionics_apikey');
+        delete_option('live_weather_station_stadia_apikey');
+        delete_option('live_weather_station_navionics_apikey'); // Retired in 3.9.0, still removed on uninstall.
         delete_option('live_weather_station_unit_temperature');
         delete_option('live_weather_station_unit_pressure');
         delete_option('live_weather_station_unit_wind_strength');
@@ -980,12 +981,12 @@ trait Handling {
     }
 
     /**
-     * Init the Navionics options of the plugin.
+     * Init the Stadia Maps options of the plugin.
      *
-     * @since 3.8.0
+     * @since 3.9.0
      */
-    protected static function init_navionics_options() {
-        update_option('live_weather_station_navionics_apikey', self::$live_weather_station_navionics_apikey);
+    protected static function init_stadia_options() {
+        update_option('live_weather_station_stadia_apikey', self::$live_weather_station_stadia_apikey);
     }
 
     /**
@@ -1111,7 +1112,7 @@ trait Handling {
         self::init_thunderforest_options();
         self::init_mapbox_options();
         self::init_maptiler_options();
-        self::init_navionics_options();
+        self::init_stadia_options();
         self::init_bloomsky_options();
         self::init_ambient_options();
         self::init_system_options();
@@ -1340,7 +1341,7 @@ trait Handling {
         self::verify_option_integer('live_weather_station_mapbox_plan', self::$live_weather_station_mapbox_plan);
         self::verify_option_string('live_weather_station_maptiler_apikey', self::$live_weather_station_maptiler_apikey);
         self::verify_option_integer('live_weather_station_maptiler_plan', self::$live_weather_station_maptiler_plan);
-        self::verify_option_string('live_weather_station_navionics_apikey', self::$live_weather_station_navionics_apikey);
+        self::verify_option_string('live_weather_station_stadia_apikey', self::$live_weather_station_stadia_apikey);
         self::verify_option_integer('live_weather_station_unit_temperature', self::$live_weather_station_unit_temperature);
         self::verify_option_integer('live_weather_station_unit_pressure', self::$live_weather_station_unit_pressure);
         self::verify_option_integer('live_weather_station_unit_wind_strength', self::$live_weather_station_unit_wind_strength);

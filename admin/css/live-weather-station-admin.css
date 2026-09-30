@@ -132,7 +132,7 @@ select.option-at-100 {
     padding: 0;
 }
 
-#lws-connect-navionics .inside {
+#lws-connect-stadia .inside {
     margin: 0;
     padding: 0;
 }
@@ -214,7 +214,7 @@ select.option-at-100 {
     transform: rotate(315deg);
 }
 
-#span-sync, #netatmo-span-sync, #netatmohc-span-sync, #owm-span-sync, #wug-span-sync, #windy-span-sync, #navionics-span-sync, #thunderforest-span-sync, #mapbox-span-sync, #maptiler-span-sync, #bloomsky-span-sync, #ambient-span-sync {
+#span-sync, #netatmo-span-sync, #netatmohc-span-sync, #owm-span-sync, #wug-span-sync, #windy-span-sync, #stadia-span-sync, #thunderforest-span-sync, #mapbox-span-sync, #maptiler-span-sync, #bloomsky-span-sync, #ambient-span-sync {
     color: #666;
 }
 

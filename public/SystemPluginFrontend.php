@@ -55,7 +55,6 @@ class Frontend {
         lws_register_style('lws-nvd3', LWS_PUBLIC_URL, 'css/nv.d3.min.css', array(), false);
         lws_register_style('lws-cal-heatmap', LWS_PUBLIC_URL, 'css/cal-heatmap.min.css');
         lws_register_style('lws-leaflet', LWS_PUBLIC_URL, 'css/leaflet.min.css');
-        wp_register_style('lws-navionics', 'https://webapiv2.navionics.com/dist/webapi/webapi.min.css');
     }
 
 	/**
@@ -125,8 +124,7 @@ class Frontend {
         lws_register_script('lws-fa-solid', LWS_PUBLIC_URL , 'js/fa-solid.min.js', array('lws-fa-loader'));
         lws_register_script('lws-leaflet', LWS_PUBLIC_URL, 'js/leaflet-140.min.js');
         lws_register_script('lws-stamen-boot', LWS_PUBLIC_URL, 'js/stamen.min.js');
-        wp_register_script('lws-windy-boot', 'https://api4.windy.com/assets/libBoot.js');
-        wp_register_script('lws-navionics', 'https://webapiv2.navionics.com/dist/webapi/webapi.min.no-dep.js');
+        wp_register_script('lws-windy-boot', 'https://api.windy.com/assets/map-forecast/libBoot.js');
 
     }
 

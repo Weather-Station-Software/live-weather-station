@@ -26,7 +26,6 @@ use WeatherStation\UI\Map\StamenHandling;
 use WeatherStation\UI\Map\OpenweathermapHandling;
 use WeatherStation\UI\Map\MapboxHandling;
 use WeatherStation\UI\Map\MaptilerHandling;
-use WeatherStation\UI\Map\NavionicsHandling;
 use WeatherStation\System\Output\Guard;
 
 
@@ -130,7 +129,8 @@ trait Output {
                         return $mapping_service->output();
                         break;
                     case 7 :
-                        $mapping_service = new NavionicsHandling($map, $_attributes['size']);
+                        // Navionics maps (retired in 3.9.0) are displayed with the OpenStreetMap fallback of the Stamen handler.
+                        $mapping_service = new StamenHandling($map, $_attributes['size']);
                         return $mapping_service->output();
                         break;
                     default:

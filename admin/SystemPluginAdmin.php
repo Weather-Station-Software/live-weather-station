@@ -78,7 +78,7 @@ class Admin {
 	private $reload = false;
 
     private $settings = array('general', 'services', 'display', 'thresholds', 'history', 'system', 'styles');
-    private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground', 'Bloomsky', 'Ambient', 'Windy', 'Stamen', 'Thunderforest', 'Mapbox', 'Maptiler', 'Navionics');
+    private $services = array('Netatmo', 'NetatmoHC', 'OpenWeatherMap', 'WeatherUnderground', 'Bloomsky', 'Ambient', 'Windy', 'Stamen', 'Stadia', 'Thunderforest', 'Mapbox', 'Maptiler');
     private $service = 'Backend';
 
     private $_station = null;
@@ -119,7 +119,6 @@ class Admin {
         lws_register_style('lws-nvd3', LWS_PUBLIC_URL, 'css/nv.d3.min.css', array(), false);
         lws_register_style('lws-cal-heatmap', LWS_PUBLIC_URL, 'css/cal-heatmap.min.css');
         lws_register_style('lws-leaflet', LWS_PUBLIC_URL, 'css/leaflet.min.css');
-        wp_register_style('lws-navionics', 'https://webapiv2.navionics.com/dist/webapi/webapi.min.css');
     }
 
     /**
@@ -186,8 +185,7 @@ class Admin {
         lws_register_script('lws-fa-solid', LWS_PUBLIC_URL , 'js/fa-solid.min.js', array('lws-fa-loader'));
         lws_register_script('lws-leaflet', LWS_PUBLIC_URL, 'js/leaflet-140.min.js');
         lws_register_script('lws-stamen-boot', LWS_PUBLIC_URL, 'js/stamen.min.js');
-        wp_register_script('lws-windy-boot', 'https://api4.windy.com/assets/libBoot.js');
-        wp_register_script('lws-navionics', 'https://webapiv2.navionics.com/dist/webapi/webapi.min.no-dep.js');
+        wp_register_script('lws-windy-boot', 'https://api.windy.com/assets/map-forecast/libBoot.js');
     }
 
     /**
@@ -1398,7 +1396,7 @@ class Admin {
         $content .= '<p>' . esc_html__('Weather Station does not collect, store or share personal data about visitors of your site, and does not store personal data tied to WordPress user accounts.', 'live-weather-station') . '</p>';
         $content .= '<p>' . esc_html__('The plugin stores in your database the station settings you enter (names, locations and coordinates of stations, and the credentials needed to query or feed the weather services you connect) as well as the collected measurements. Station credentials are only used server-side and are never displayed on the public pages.', 'live-weather-station') . '</p>';
         $content .= '<p>' . esc_html__('Depending on the stations you configure, your server sends requests (and, for the publishing features, station measurements) to third-party services such as Netatmo, WeatherFlow, WeatherLink, Ambient Weather, BloomSky, Pioupiou, Weather Underground, OpenWeatherMap or PWS/WOW-type services. Your server address is visible to these services. Your server may also query ip-api.com to guess its own geographical position when you ask for it.', 'live-weather-station') . '</p>';
-        $content .= '<p>' . esc_html__('Maps displayed on your pages load tiles and scripts from the tile provider you select (OpenStreetMap, Thunderforest, Mapbox, MapTiler, Navionics, Windy, OpenWeatherMap...). The browser of your visitors therefore sends its IP address and user agent to this provider. Please refer to their privacy policies.', 'live-weather-station') . '</p>';
+        $content .= '<p>' . esc_html__('Maps displayed on your pages load tiles and scripts from the tile provider you select (OpenStreetMap, Thunderforest, Mapbox, MapTiler, Stadia Maps, Windy, OpenWeatherMap...). The browser of your visitors therefore sends its IP address and user agent to this provider. Please refer to their privacy policies.', 'live-weather-station') . '</p>';
         wp_add_privacy_policy_content(LWS_PLUGIN_NAME, wp_kses_post(wpautop($content, false)));
     }
 
@@ -2841,12 +2839,12 @@ class Admin {
                         $s = $this->connect_maptiler($key, $plan);
                     }
                 }
-                if ($service == 'Navionics') {
+                if ($service == 'Stadia') {
                     if ($key == '') {
                         $s = __('the API key can not be empty', 'live-weather-station');
                     }
                     else {
-                        $s = $this->connect_navionics($key);
+                        $s = $this->connect_stadia($key);
                     }
                 }
                 if ($s == '') {
@@ -2897,8 +2895,8 @@ class Admin {
                     $this->disconnect_maptiler();
                     $result = true;
                 }
-                if ($service == 'Navionics') {
-                    $this->disconnect_navionics();
+                if ($service == 'Stadia') {
+                    $this->disconnect_stadia();
                     $result = true;
                 }
                 if ($service == 'Bloomsky') {
@@ -2955,8 +2953,8 @@ class Admin {
                     $this->disconnect_maptiler();
                     $result = true;
                 }
-                if ($service == 'Navionics') {
-                    $this->disconnect_navionics();
+                if ($service == 'Stadia') {
+                    $this->disconnect_stadia();
                     $result = true;
                 }
                 if ($service == 'Bloomsky') {
@@ -3649,16 +3647,16 @@ class Admin {
     }
 
     /**
-     * Connect to a Navionics account.
+     * Connect to a Stadia account.
      *
      * @param string $key The API key of the account.
      * @return string The error string if an error occurred, empty string if none.
      *
-     * @since 3.8.0
+     * @since 3.9.0
      */
-    protected function connect_navionics($key) {
-        update_option('live_weather_station_navionics_apikey', $key);
-        Logger::notice('Authentication', 'Navionics', null, null, null, null, null, 'API key correctly set.');
+    protected function connect_stadia($key) {
+        update_option('live_weather_station_stadia_apikey', $key);
+        Logger::notice('Authentication', 'Stadia', null, null, null, null, null, 'API key correctly set.');
         return '';
     }
 
@@ -3717,13 +3715,13 @@ class Admin {
     }
 
     /**
-     * Disconnect from a Navionics API key.
+     * Disconnect from a Stadia API key.
      *
-     * @since 3.8.0
+     * @since 3.9.0
      */
-    protected function disconnect_navionics() {
-        self::init_navionics_options();
-        Logger::notice('Authentication', 'Navionics', null, null, null, null, null, 'Correctly disconnected from service.');
+    protected function disconnect_stadia() {
+        self::init_stadia_options();
+        Logger::notice('Authentication', 'Stadia', null, null, null, null, null, 'Correctly disconnected from service.');
     }
 
     /**

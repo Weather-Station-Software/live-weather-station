@@ -3393,7 +3393,6 @@ trait Generator {
         $result = array();
         $result[] = array('terrain',  __('Terrain', 'live-weather-station'));
         $result[] = array('terrain-background',  __('Terrain (background)', 'live-weather-station'));
-        $result[] = array('terrain-classic',  __('Terrain (classical)', 'live-weather-station'));
         $result[] = array('toner',  __('Toner', 'live-weather-station'));
         $result[] = array('toner-background',  __('Toner (background)', 'live-weather-station'));
         $result[] = array('toner-lite',  __('Toner (lite)', 'live-weather-station'));
@@ -3487,36 +3486,6 @@ trait Generator {
         $result[] = array('vane:nir',  __('Vegetation: NIR', 'live-weather-station'));
         $result[] = array('vane:ndvi',  __('Vegetation: NDVI', 'live-weather-station'));
         $result[] = array('vane:ndwi',  __('Vegetation: NDWI', 'live-weather-station'));
-        return $result;
-    }
-
-    /**
-     * Get map overlay array for Navionics.
-     *
-     * @return array An array containing map overlay for OpenWeatherMap ready to convert to a JS array.
-     * @since 3.8.0
-     */
-    protected function get_navionicsmap_overlay_js_array() {
-        $result = array();
-        $result[] = array('JNC.NAVIONICS_CHARTS.NAUTICAL',  __('Nautical map', 'live-weather-station'));
-        $result[] = array('JNC.NAVIONICS_CHARTS.SONARCHART',  __('Sonar map', 'live-weather-station'));
-        $result[] = array('JNC.NAVIONICS_CHARTS.SKI',  __('Ski map', 'live-weather-station'));
-        return $result;
-    }
-
-    /**
-     * Get map safety depth array for Navionics.
-     *
-     * @return array An array containing map safety depth for OpenWeatherMap ready to convert to a JS array.
-     * @since 3.8.0
-     */
-    protected function get_navionicsmap_depth_js_array() {
-        $result = array();
-        $result[] = array('JNC.SAFETY_DEPTH_LEVEL.LEVEL0',  __('20 meters, 60 feet, 10 fathoms', 'live-weather-station'));
-        $result[] = array('JNC.SAFETY_DEPTH_LEVEL.LEVEL1',  __('10 meters, 30 feet, 5 fathoms', 'live-weather-station'));
-        $result[] = array('JNC.SAFETY_DEPTH_LEVEL.LEVEL2',  __('5 meters, 18 feet, 2 fathoms', 'live-weather-station'));
-        $result[] = array('JNC.SAFETY_DEPTH_LEVEL.LEVEL3',  __('2 meters, 6 feet, 1 fathom', 'live-weather-station'));
-        $result[] = array('JNC.SAFETY_DEPTH_LEVEL.LEVEL4',  __('None', 'live-weather-station'));
         return $result;
     }
 
