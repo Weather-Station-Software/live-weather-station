@@ -1317,6 +1317,37 @@ trait Query {
     }
 
     /**
+     * Resolve a station identifier coming from a request to the guid of an existing station.
+     *
+     * Accepts a numeric guid or a "station_id" (MAC address like identifier containing a colon). Anything else
+     * (empty, zero, negative, array, free text) or a station that does not exist gives 0.
+     *
+     * @param mixed $id The raw identifier.
+     * @return integer The guid of the existing station, 0 if there is no such station.
+     * @since 3.9.0
+     */
+    protected static function get_existing_station_guid($id) {
+        global $wpdb;
+        if (!is_scalar($id)) {
+            return 0;
+        }
+        $id = trim((string)$id);
+        if ($id === '') {
+            return 0;
+        }
+        if (strpos($id, ':') > 0) {
+            $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            $guid = $wpdb->get_var($wpdb->prepare("SELECT guid FROM " . $table_name . " WHERE station_id=%s", $id));
+            return ($guid === null ? 0 : (int)$guid);
+        }
+        if (!ctype_digit($id) || (int)$id <= 0) {
+            return 0;
+        }
+        $station = self::get_station((int)$id);
+        return (is_array($station) && !empty($station) ? (int)$id : 0);
+    }
+
+    /**
      * Get the barycenter of all the stations coordinates.
      *
      * @param array $guids Optional. The guids to take into account.

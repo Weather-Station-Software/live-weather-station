@@ -845,7 +845,7 @@ trait Storage {
         }
 
         // REMOVED FEATURES (OpenWeatherMap station, Weather Underground collection, Pollution widget)
-        // Idempotent: the related crons are cleared by the watchdog (see $cron_old), the stations of these types are kept
+        // Idempotent: the related crons are cleared on upgrade and on deactivation (see $cron_old), the stations of these types are kept
         // in place (viewable and removable) and only the settings of the removed widget are dropped.
         delete_option('widget_Live_Weather_Station_Widget_Pollution');
     }

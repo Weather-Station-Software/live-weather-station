@@ -1,6 +1,7 @@
 #3.9.0 / xx September 2026
 * Improvement: PHP 8.2 to 8.5 are supported and checked by the continuous integration (syntax check and compatibility scan); the minimum required version is unchanged.
 * Improvement: sunrise and sunset are computed without the PHP functions deprecated since PHP 8.1, with exactly the same times.
+* Bug fix: an unknown station id in an admin URL now shows a clear message with a link back to the stations list instead of hundreds of PHP warnings.
 * Bug fix: PHP 8.2 to 8.5 deprecations are fixed (implicit nullable parameters, float to int conversions, `(integer)` cast) and translations are no longer loaded before WordPress is ready.
 * Bug fix: shortcodes and screens no longer raise PHP warnings on missing values (steel meter, gauge, calendar heat map, Netatmo form).
 * Security: SQL queries are now prepared and identifiers validated; the standalone generator validates its input.
@@ -23,6 +24,7 @@
 * Bug fix: PHP 8.1 to 8.4 deprecation notices and warnings are fixed (static trait access, null arguments, explicit casts).
 * Bug fix: the rain import, the LCD refresh action and the delete-station message work as expected, and JavaScript guards prevent errors on maps and radar charts.
 * Improvement: removed the unused code of three disabled features (OpenWeatherMap station client, Weather Underground collection client, Pollution widget); no user-visible change, existing stations of these types are kept and flagged as no longer available.
+* Bug fix: the standalone pages (generator, clientraw, realtime) no longer raise a deprecation notice on recent WordPress and PHP versions.
 
 #3.8.14 / September 6th, 2023
 * Improvement: full support for WordPress 6.3.x

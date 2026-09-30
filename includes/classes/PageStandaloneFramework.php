@@ -75,7 +75,7 @@ abstract class Framework {
      * @since 3.0.0
      */
     protected function load($available) {
-        $args = preg_replace('/no_cache=([A-F0-9])+/', '', add_query_arg(null, null));
+        $args = preg_replace('/no_cache=([A-F0-9])+/', '', add_query_arg(array()));
         if (strpos($args, '?') == strlen($args)-1) {
             $args = substr($args, 0, strlen($args)-1);
         }
