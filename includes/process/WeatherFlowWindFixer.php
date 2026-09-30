@@ -166,7 +166,7 @@ class WeatherFlowWindFixer extends Process {
      */
     private function fix_table($station_id, $table_name) {
         global $wpdb;
-        $sql = "UPDATE " . $wpdb->prefix . $table_name . " SET measure_value=measure_value * 3.6 WHERE device_id='" . $station_id . "' AND module_type ='NAModule2' AND (measure_type='windstrength' OR measure_type='guststrength')";
+        $sql = $wpdb->prepare("UPDATE " . $wpdb->prefix . $table_name . " SET measure_value=measure_value * 3.6 WHERE device_id=%s AND module_type ='NAModule2' AND (measure_type='windstrength' OR measure_type='guststrength')", $station_id);
         $wpdb->query($sql);
     }
 

@@ -43,7 +43,7 @@ trait StationClient {
         if (!$weather) {
             throw new \Exception('Bad file format.');
         }
-        Logger::debug($this->facility, $this->service, null, null, null, null, null, print_r($weather, true));
+        Logger::debug($this->facility, $this->service, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
         $ttime = strtolower($weather[0]);
         foreach (array('am', 'a') as $ampm) {
             if (strpos($ttime, $ampm) !== false) {
@@ -54,7 +54,7 @@ trait StationClient {
             if (strpos($ttime, $ampm) !== false) {
                 $ttime = str_replace($ampm, '', $ttime);
                 $hm = explode(':', $ttime);
-                $ttime = (string)($hm[0] + 12) . ':' . $hm[1];
+                $ttime = (string)((int)$hm[0] + 12) . ':' . (isset($hm[1]) ? $hm[1] : '00');
             }
         }
         $weather[0] = str_replace(' ', '0', $ttime);
@@ -178,9 +178,9 @@ trait StationClient {
             $updates['measure_value'] = $temperature_ref;
             $this->update_data_table($updates, $timezone);
         }
-        if (isset($weather[5])) {
+        if (isset($weather[5]) && is_numeric($weather[5])) {
             $updates['measure_type'] = 'humidity';
-            $humidity_ref = $weather[5];
+            $humidity_ref = lws_clean_number($weather[5]);
             $updates['measure_value'] = $humidity_ref;
             $this->update_data_table($updates, $timezone);
         }
@@ -275,7 +275,7 @@ trait StationClient {
                 return false;
             }
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
             return false;
         }
@@ -294,7 +294,7 @@ trait StationClient {
         $result = '';
         $raw_data = $this->get_data($connection_type, $resource);
         if (strpos($raw_data, 'Err #') !== false) {
-            $result = $raw_data;
+            $result = lws_clean_text($raw_data, 200);
         }
         else {
             $weather = $this->explode_data($raw_data);
@@ -321,9 +321,9 @@ trait StationClient {
             $result = $collector->getRawStationData($resource);
             Logger::notice($this->facility, $this->service, $device_id, $device_name, null, null, 0, 'Data retrieved.');
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
-            $msg = $ex->getMessage();
+            $msg = substr(sanitize_text_field($ex->getMessage()), 0, 200);
             if ($msg == '') {
                 $msg = 'Unknown error';
             }
@@ -366,7 +366,7 @@ trait StationClient {
                 $raw_data = $this->get_data($station['connection_type'], $station['service_id'], $station['station_id'], $station['station_name']);
                 $this->format_and_store($raw_data, $station);
             }
-            catch (\Exception $ex) {
+            catch (\Throwable $ex) {
                 Logger::error($this->facility, $this->service, $station['station_id'], $station['station_name'], null, null, $ex->getCode(), 'Error while collecting weather from Stickertags file data: ' . $ex->getMessage());
                 continue;
             }
@@ -393,7 +393,7 @@ trait StationClient {
             $ephemeris->compute(LWS_TXT_SID);
             Logger::info($system, $this->service, null, null, null, null, 0, 'Job done: collecting from Realtime file and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
+        catch (\Throwable $ex) {
             Logger::critical($system, $this->service, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
         }
         $this->synchronize_modules_count();

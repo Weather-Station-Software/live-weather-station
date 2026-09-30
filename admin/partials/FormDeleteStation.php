@@ -20,8 +20,8 @@ $histo_icn = $this->output_iconic_value(0, 'historical', false, false, '#999');
         <input name="service" type="hidden" value="station" />
         <input name="tab" type="hidden" value="delete" />
         <input name="action" type="hidden" value="do" />
-        <input name="id" type="hidden" value="<?php echo $station['guid']; ?>" />
-        <?php wp_nonce_field('delete-station'); ?>
+        <input name="id" type="hidden" value="<?php echo esc_attr($station['guid']); ?>" />
+        <?php wp_nonce_field('delete-station-' . (int)$station['guid']); ?>
         <div id="dashboard-widgets" class="metabox-holder" style="width: 100%;clear: both;">
             <div id="postbox-container-1" class="postbox-container">
                 <div id="normal-sortables" class="meta-box-sortables" style="margin:0px">

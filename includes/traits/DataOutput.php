@@ -27,6 +27,7 @@ use WeatherStation\UI\Map\OpenweathermapHandling;
 use WeatherStation\UI\Map\MapboxHandling;
 use WeatherStation\UI\Map\MaptilerHandling;
 use WeatherStation\UI\Map\NavionicsHandling;
+use WeatherStation\System\Output\Guard;
 
 
 /**
@@ -98,6 +99,7 @@ trait Output {
      */
     public function maps_shortcodes($attributes) {
         $_attributes = shortcode_atts( array('id' => 0, 'size' => 'auto'), $attributes );
+        $_attributes['size'] = ($_attributes['size'] === 'auto' ? 'auto' : Guard::css_size($_attributes['size'], 'auto'));
         $mid = $_attributes['id'];
         if ($mid !== 0) {
             $map = $this->get_map_detail($mid);
@@ -132,12 +134,12 @@ trait Output {
                         return $mapping_service->output();
                         break;
                     default:
-                        return __('This map has been removed.', 'live-weather-station');
+                        return esc_html__('This map has been removed.', 'live-weather-station');
                         break;
                 }
             }
             else {
-                return __('This map does not exist.', 'live-weather-station');
+                return esc_html__('This map does not exist.', 'live-weather-station');
             }
         }
         return '';
@@ -153,7 +155,7 @@ trait Output {
     public function admin_changelog_shortcodes($attributes) {
         $_attributes = shortcode_atts( array('style' => 'markdown', 'title' => 'h3', 'list' => 'bullet'), $attributes );
         $style = $_attributes['style'];
-        $title = $_attributes['title'];
+        $title = Guard::enum($_attributes['title'], array('h1', 'h2', 'h3', 'h4', 'h5', 'h6'), 'h3');
         $list = $_attributes['list'];
 
         $changelog = LWS_PLUGIN_DIR . 'changelog.txt';
@@ -164,11 +166,11 @@ trait Output {
                 $result = $Markdown->text($s);
             }
             catch (\Exception $e) {
-                $result = __('Sorry, unable to find or read changelog file.', 'live-weather-station');
+                $result = esc_html__('Sorry, unable to find or read changelog file.', 'live-weather-station');
             }
         }
         else {
-            $result = __('Sorry, unable to find or read changelog file.', 'live-weather-station');
+            $result = esc_html__('Sorry, unable to find or read changelog file.', 'live-weather-station');
         }
 
 
@@ -221,13 +223,13 @@ trait Output {
         }
         if ($raw) {
             foreach ($values as $value) {
-                $inf[] = '"' . $value['timestamp'] . '":'.$value['measure_value'];
+                $inf[] = Guard::js((string)$value['timestamp']) . ':' . (is_numeric($value['measure_value']) ? $value['measure_value'] : 'null');
             }
         }
         else {
             if (isset($info)) {
                 foreach ($info as $key=>$field) {
-                    $inf[] = '"' . $key . '":"' . $field . '"';
+                    $inf[] = Guard::js((string)$key) . ':' . Guard::js(is_scalar($field) ? (string)$field : '');
                 }
             }
             if ($multi) {
@@ -258,7 +260,86 @@ trait Output {
             $result = substr($result, 1);
             $result = substr_replace($result, "", -1);
         }
-        return $result;
+        // The result is inlined in <script> blocks: neutralize markup characters (valid only inside JSON strings).
+        return self::json_inline($result);
+    }
+
+    /**
+     * Validate the attributes (shortcode attributes or AJAX parameters) that select the behaviour of a graph.
+     *
+     * @param array $attributes The raw attributes.
+     * @return array The attributes, the existing behavioural ones being validated.
+     * @since 3.8.15
+     */
+    private function graph_sanitize_attributes($attributes) {
+        if (!is_array($attributes)) {
+            return array();
+        }
+        $tokens = array('cache' => 'cache', 'mode' => '', 'type' => '', 'template' => 'neutral', 'periodtype' => 'none', 'periodvalue' => 'none',
+            'period' => 'none', 'timescale' => 'none', 'valuescale' => 'none', 'values' => 'temperature-rain-threshold',
+            'device_id' => 'none', 'module_id' => 'none', 'measurement' => 'none');
+        foreach ($tokens as $key => $default) {
+            if (array_key_exists($key, $attributes)) {
+                if (in_array($key, array('device_id', 'module_id', 'measurement'), true) && $attributes[$key] === '') {
+                    $attributes[$key] = '';
+                }
+                elseif ($key == 'measurement') {
+                    $attributes[$key] = Guard::composite($attributes[$key], $default);
+                }
+                else {
+                    $attributes[$key] = Guard::token($attributes[$key], $default);
+                }
+            }
+        }
+        if (array_key_exists('color', $attributes)) {
+            $attributes['color'] = (is_scalar($attributes['color']) && preg_match('/^[A-Za-z0-9_]{1,40}$/', (string)$attributes['color'])) ? (string)$attributes['color'] : 'self';
+        }
+        return $attributes;
+    }
+
+    /**
+     * Get the content of a JS string literal (i.e. without the surrounding quotes), to be used inside an existing JS string.
+     *
+     * @param mixed $value The value.
+     * @return string The escaped content.
+     * @since 3.8.15
+     */
+    private static function js_str($value) {
+        return substr(Guard::js((string)$value), 1, -1);
+    }
+
+    /**
+     * Get the content of a JS string literal for a text that will be displayed as HTML by the script.
+     *
+     * @param mixed $value The value.
+     * @return string The escaped content.
+     * @since 3.8.15
+     */
+    private static function js_html($value) {
+        return self::js_str(esc_html((string)$value));
+    }
+
+    /**
+     * Neutralize markup characters in a JSON text that will be inlined in a <script> block.
+     *
+     * @param string $json The JSON text.
+     * @return string The JSON text, safe to inline.
+     * @since 3.8.15
+     */
+    private static function json_inline($json) {
+        return str_replace(array('<', '>', '&'), array('\u003C', '\u003E', '\u0026'), (string)$json);
+    }
+
+    /**
+     * Get a custom palette color as a JS literal.
+     *
+     * @param mixed $color The color, as stored in the options (hexadecimal, without #).
+     * @return string The JS literal.
+     * @since 3.8.15
+     */
+    private static function js_palette_color($color) {
+        $color = ltrim((string)(is_scalar($color) ? $color : ''), '#');
+        return '"#' . (preg_match('/^[0-9A-Fa-f]{3,8}$/', $color) ? $color : '000000') . '"';
     }
 
     /**
@@ -271,6 +352,23 @@ trait Output {
      */
     protected function rebase_value ($value, $type) {
         return $this->output_value($value, $type) - $this->output_value('0', $type);
+    }
+
+    /**
+     * Get a value as a quoted and escaped SQL string literal, to be concatenated in a query.
+     *
+     * @param mixed $value The value to quote.
+     * @return string The quoted literal, escaped by $wpdb->prepare().
+     * @since 3.8.15
+     */
+    private static function sql_literal($value) {
+        global $wpdb;
+        if (!is_scalar($value)) {
+            $value = '';
+        }
+        // Braces are used as template tokens ({WHERE}, {SELECT}...) replaced later in some queries: never let a value forge one.
+        $value = str_replace(array('{', '}'), '', (string)$value);
+        return $wpdb->prepare('%s', $value);
     }
 
     /**
@@ -576,7 +674,7 @@ trait Output {
                             $val0 = '`measure_value`';
                             $set0 = '';
                             if ($mode == 'yearly') {
-                                $set0 = " AND `measure_set`='" . $args[1]['set'] . "'";
+                                $set0 = " AND `measure_set`=" . self::sql_literal($args[1]['set']) . "";
                             }
                             if ($mode == 'yearly' && strtolower($args[1]['set']) == 'amp') {
                                 $set0 = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
@@ -586,12 +684,12 @@ trait Output {
                                 $set0 = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
                                 $val0 = 'AVG(`measure_value`) as computed_value';
                             }
-                            $sql_angle = "SELECT `timestamp`, `module_type`, " . $val0 . " FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "'" . $set0 . " ORDER BY `timestamp` ASC;";
+                            $sql_angle = "SELECT `timestamp`, `module_type`, " . $val0 . " FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . "" . $set0 . " ORDER BY `timestamp` ASC;";
                             if ($mode == 'yearly') {
-                                $sql_value = "SELECT `timestamp`, `module_type`, `measure_set`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND (`measure_set`='max' OR `measure_set`='avg' OR `measure_set`='min') ORDER BY `timestamp` ASC;";
+                                $sql_value = "SELECT `timestamp`, `module_type`, `measure_set`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND (`measure_set`='max' OR `measure_set`='avg' OR `measure_set`='min') ORDER BY `timestamp` ASC;";
                             }
                             else {
-                                $sql_value = "SELECT `timestamp`, `module_type`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "'  ORDER BY `timestamp` ASC;";
+                                $sql_value = "SELECT `timestamp`, `module_type`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . "  ORDER BY `timestamp` ASC;";
                             }
                             try {
                                 $angles = $wpdb->get_results($sql_angle, ARRAY_A);
@@ -764,7 +862,7 @@ trait Output {
                                     $rmin = -1;
                                 }
                                 for ($i = 0; $i < $sects; $i++) {
-                                    $ranges[$i] = '"' . $this->get_angle_text($i * $angle_val) . '":[' . (float)$rmin . ',' . (float)$rmax . ']';
+                                    $ranges[$i] = Guard::js($this->get_angle_text($i * $angle_val)) . ':[' . (float)$rmin . ',' . (float)$rmax . ']';
                                 }
                                 $range= implode(',', $ranges);
                                 $modulename = DeviceManager::get_module_name($args[2]['device_id'], $args[2]['module_id']);
@@ -893,8 +991,8 @@ trait Output {
                             $set0 = '';
                             $set1 = '';
                             if ($mode == 'yearly') {
-                                $set0 = " AND `measure_set`='" . $args[1]['set'] . "'";
-                                $set1 = " AND `measure_set`='" . $args[2]['set'] . "'";
+                                $set0 = " AND `measure_set`=" . self::sql_literal($args[1]['set']) . "";
+                                $set1 = " AND `measure_set`=" . self::sql_literal($args[2]['set']) . "";
                             }
                             if ($mode == 'yearly' && strtolower($args[1]['set']) == 'amp') {
                                 $set0 = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
@@ -912,8 +1010,8 @@ trait Output {
                                 $set1 = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
                                 $val1 = 'AVG(`measure_value`) as computed_value';
                             }
-                            $sql_angle = "SELECT `timestamp`, `module_type`, " . $val0 . " FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "'" . $set0 . " ORDER BY `timestamp` ASC;";
-                            $sql_value = "SELECT `timestamp`, `module_type`, " . $val1 . " FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "'" . $set1 . " ORDER BY `timestamp` ASC;";
+                            $sql_angle = "SELECT `timestamp`, `module_type`, " . $val0 . " FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . "" . $set0 . " ORDER BY `timestamp` ASC;";
+                            $sql_value = "SELECT `timestamp`, `module_type`, " . $val1 . " FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . "" . $set1 . " ORDER BY `timestamp` ASC;";
                             try {
                                 $angles = $wpdb->get_results($sql_angle, ARRAY_A);
                                 $values = $wpdb->get_results($sql_value, ARRAY_A);
@@ -1322,13 +1420,13 @@ trait Output {
                                 $val = '`measure_value`';
                                 $set = '';
                                 if ($mode == 'yearly') {
-                                    $set = " AND `measure_set`='" . $arg['set'] . "'";
+                                    $set = " AND `measure_set`=" . self::sql_literal($arg['set']) . "";
                                 }
                                 if ($mode == 'yearly' && strtolower($arg['set']) == 'mid') {
                                     $set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY `timestamp`";
                                     $val = 'AVG(`measure_value`) as computed_value';
                                 }
-                                $sql_angle = "SELECT `timestamp`, `module_type`, " . $val . " FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $set . " ORDER BY `timestamp` ASC;";
+                                $sql_angle = "SELECT `timestamp`, `module_type`, " . $val . " FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . "" . $set . " ORDER BY `timestamp` ASC;";
                                 $angles = $wpdb->get_results($sql_angle, ARRAY_A);
                                 if (count($angles) > 0) {
                                     $module_type = $angles[0]['module_type'];
@@ -1457,7 +1555,7 @@ trait Output {
                         $measure_type = $arg['measurement'];
                         if ($type == 'cstick') {
                             $select = " AND (`measure_set`='min' OR `measure_set`='max' OR `measure_set`='avg' OR `measure_set`='med')";
-                            $sql = "SELECT `timestamp`, `module_type`, `measure_type`, `measure_set`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $select . " ORDER BY `timestamp` ASC;";
+                            $sql = "SELECT `timestamp`, `module_type`, `measure_type`, `measure_set`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . "" . $select . " ORDER BY `timestamp` ASC;";
                             $rows = $wpdb->get_results($sql, ARRAY_A);
                         }
                         elseif ($type == 'ccstick') {
@@ -1465,7 +1563,7 @@ trait Output {
                             $order = 'MONTH(`timestamp`), DAY(`timestamp`)';
                             if ($is_month) {
                                 $tm = substr($min, 5, 2);
-                                $where = 'MONTH(`timestamp`)=' . $tm . ' AND ';
+                                $where = 'MONTH(`timestamp`)=' . (int)$tm . ' AND ';
                                 $order = 'DAY(`timestamp`)';
                             }
                             if ($is_mseason) {
@@ -1484,7 +1582,7 @@ trait Output {
                                 $order .= ' END, DAY(`timestamp`)';
                             }
                             $select = " AND (`measure_set`='min' OR `measure_set`='max' OR `measure_set`='avg' OR `measure_set`='med')";
-                            $sql = "SELECT `timestamp`, MONTH(`timestamp`) as t_month, DAY(`timestamp`) as t_day, `module_type`, `measure_type`, `measure_set`, `measure_value`, AVG(`measure_value`) as v_avg FROM " . $table_name . " WHERE " . $where . "`timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $select . " GROUP BY t_month, t_day, measure_set ORDER BY " . $order . " ASC;";
+                            $sql = "SELECT `timestamp`, MONTH(`timestamp`) as t_month, DAY(`timestamp`) as t_day, `module_type`, `measure_type`, `measure_set`, `measure_value`, AVG(`measure_value`) as v_avg FROM " . $table_name . " WHERE " . $where . "`timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . "" . $select . " GROUP BY t_month, t_day, measure_set ORDER BY " . $order . " ASC;";
                             $rows = $wpdb->get_results($sql, ARRAY_A);
                         }
                         $values = array();
@@ -1686,7 +1784,7 @@ trait Output {
                             else {
                                 $s = "`measure_set`='agg'";
                             }
-                            $s = "(`device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND " . $s . ")";
+                            $s = "(`device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND " . $s . ")";
                             if ($select == "") {
                                 $select = "(" . $s ;
                             }
@@ -1698,16 +1796,15 @@ trait Output {
                         $yearmin = substr($min, 0, 4);
                         $yearmax = substr($max, 0, 4);
                         if ($aggregated) {
-                            $sql = "SELECT `timestamp`, YEAR(`timestamp`) as t_year, MONTH(`timestamp`) as t_month, DAY(`timestamp`) as t_day, `module_type`, `measure_type`, `measure_set`, `measure_value`, AVG(`measure_value`) as avg_value FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND (" . $select . ") GROUP BY t_month, t_day, measure_type, measure_set ORDER BY `timestamp` ASC;";
+                            $sql = "SELECT `timestamp`, YEAR(`timestamp`) as t_year, MONTH(`timestamp`) as t_month, DAY(`timestamp`) as t_day, `module_type`, `measure_type`, `measure_set`, `measure_value`, AVG(`measure_value`) as avg_value FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND (" . $select . ") GROUP BY t_month, t_day, measure_type, measure_set ORDER BY `timestamp` ASC;";
                             $rows = $wpdb->get_results($sql, ARRAY_A);
                             $yearstr = $yearmin . '~' . $yearmax;
                         }
                         else {
-                            $sql = "SELECT `timestamp`, YEAR(`timestamp`) as t_year, MONTH(`timestamp`) as t_month, DAY(`timestamp`) as t_day, `module_type`, `measure_type`, `measure_set`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND (" . $select . ") GROUP BY t_year, t_month, t_day, measure_type, measure_set ORDER BY YEAR(`timestamp`), MONTH(`timestamp`), DAY(`timestamp`) ASC;";
+                            $sql = "SELECT `timestamp`, YEAR(`timestamp`) as t_year, MONTH(`timestamp`) as t_month, DAY(`timestamp`) as t_day, `module_type`, `measure_type`, `measure_set`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND (" . $select . ") GROUP BY t_year, t_month, t_day, measure_type, measure_set ORDER BY YEAR(`timestamp`), MONTH(`timestamp`), DAY(`timestamp`) ASC;";
                             $rows = $wpdb->get_results($sql, ARRAY_A);
                             $yearstr = $yearmin;
                         }
-                        $result['query'] = $sql;
                         $values = array();
                         for ($yy=$yearmin; $yy<=$yearmax; $yy++) {
                             for ($mm=1; $mm<=12; $mm++) {
@@ -1846,11 +1943,11 @@ trait Output {
                                 $val = '`measure_value`';
                                 $aux = array();
                                 if ($mode == 'yearly' || $mode == 'climat') {
-                                    $set = " AND `measure_set`='" . $arg['set'] . "'";
+                                    $set = " AND `measure_set`=" . self::sql_literal($arg['set']) . "";
                                     if ($mode == 'climat' && $type == 'calendarhm') {
-                                        $aux_set = " AND `measure_set`='" . $arg['set'] . "' GROUP BY MONTH(`timestamp`), DAY(`timestamp`)";
+                                        $aux_set = " AND `measure_set`=" . self::sql_literal($arg['set']) . " GROUP BY MONTH(`timestamp`), DAY(`timestamp`)";
                                         $aux_val = 'AVG(`measure_value`) as aux_val';
-                                        $aux_sql = "SELECT `timestamp`, " . $aux_val . " FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $aux_set . " ORDER BY `timestamp` ASC;";
+                                        $aux_sql = "SELECT `timestamp`, " . $aux_val . " FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . "" . $aux_set . " ORDER BY `timestamp` ASC;";
                                         $aux_query = $wpdb->get_results($aux_sql, ARRAY_A);
                                         foreach ($aux_query as $a) {
                                             $aux[substr($a['timestamp'], 5, 5)] = $a['aux_val'];
@@ -1863,7 +1960,7 @@ trait Output {
                                     if ($mode == 'climat' && $type == 'calendarhm') {
                                         $aux_set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY MONTH(`timestamp`), DAY(`timestamp`)";
                                         $aux_val = 'ABS(MAX(`measure_value`)-MIN(`measure_value`)) as aux_val';
-                                        $aux_sql = "SELECT `timestamp`, " . $aux_val . " FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $aux_set . " ORDER BY `timestamp` ASC;";
+                                        $aux_sql = "SELECT `timestamp`, " . $aux_val . " FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . "" . $aux_set . " ORDER BY `timestamp` ASC;";
                                         $aux_query = $wpdb->get_results($aux_sql, ARRAY_A);
                                         foreach ($aux_query as $a) {
                                             $aux[substr($a['timestamp'], 5, 5)] = $a['aux_val'];
@@ -1876,14 +1973,14 @@ trait Output {
                                     if ($mode == 'climat' && $type == 'calendarhm') {
                                         $aux_set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY MONTH(`timestamp`), DAY(`timestamp`)";
                                         $aux_val = 'MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as aux_val';
-                                        $aux_sql = "SELECT `timestamp`, " . $aux_val . " FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $aux_set . " ORDER BY `timestamp` ASC;";
+                                        $aux_sql = "SELECT `timestamp`, " . $aux_val . " FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . "" . $aux_set . " ORDER BY `timestamp` ASC;";
                                         $aux_query = $wpdb->get_results($aux_sql, ARRAY_A);
                                         foreach ($aux_query as $a) {
                                             $aux[substr($a['timestamp'], 5, 5)] = $a['aux_val'];
                                         }
                                     }
                                 }
-                                $sql = "SELECT `timestamp`, `module_type`, " . $val . " FROM " . $table_name . " WHERE `timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "'" . $set . " ORDER BY `timestamp` ASC;";
+                                $sql = "SELECT `timestamp`, `module_type`, " . $val . " FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . "" . $set . " ORDER BY `timestamp` ASC;";
                                 try {
                                     $query = (array)$wpdb->get_results($sql);
                                     $query_a = (array)$query;
@@ -2231,67 +2328,67 @@ trait Output {
                                 $mod = $arg['module_id'];
                             }
                         }
-                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $dev . "' AND `module_id`='" . $mod . "' AND `measure_type`='temperature' AND `measure_set`='avg';";
+                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($dev) . " AND `module_id`=" . self::sql_literal($mod) . " AND `measure_type`='temperature' AND `measure_set`='avg';";
                         $query = $wpdb->get_results($sql, ARRAY_A);
                         $ymin = $this->output_value($query[0]['min_val'], 'temperature');
                         $ymax = $this->output_value($query[0]['max_val'], 'temperature');
                     }
                     elseif ($type == 'cstick' || $type == 'ccstick') {
                         $arg = array_values($args)[0];
-                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND (`measure_set`='min' OR `measure_set`='max');";
+                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND (`measure_set`='min' OR `measure_set`='max');";
                         $query = $wpdb->get_results($sql, ARRAY_A);
                         $ymin = $this->output_value($query[0]['min_val'], $arg['measurement']);
                         $ymax = $this->output_value($query[0]['max_val'], $arg['measurement']);
                     }
                     elseif ($type == 'doubleline' || $type == 'bcline') {
                         if ($args[1]['set'] == 'amp') {
-                            $sql = "SELECT MIN(T2.amplitude) as min_val, MAX(T2.amplitude) as max_val FROM(SELECT (MAX(`measure_value`)-MIN(`measure_value`)) as amplitude FROM (SELECT `timestamp`, `measure_value` FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND (`measure_set`='min' OR `measure_set`='max')) as T1 GROUP BY T1.timestamp) as T2";
+                            $sql = "SELECT MIN(T2.amplitude) as min_val, MAX(T2.amplitude) as max_val FROM(SELECT (MAX(`measure_value`)-MIN(`measure_value`)) as amplitude FROM (SELECT `timestamp`, `measure_value` FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . " AND (`measure_set`='min' OR `measure_set`='max')) as T1 GROUP BY T1.timestamp) as T2";
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][0]['ydomain']['min'] = $query[0]['min_val'];
                             $result['extras'][0]['ydomain']['max'] = $query[0]['max_val'];
                         }
                         elseif ($args[1]['set'] == 'mid') {
-                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND `measure_set`='min';";
+                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . " AND `measure_set`='min';";
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $tm = $query[0]['min_val'];
-                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND `measure_set`='max';";
+                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . " AND `measure_set`='max';";
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][0]['ydomain']['min'] = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $args[1]['measurement']);
-                            $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND `measure_set`='min';";
+                            $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . " AND `measure_set`='min';";
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $tm = $query[0]['min_val'];
-                            $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND `measure_set`='max';";
+                            $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . " AND `measure_set`='max';";
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][0]['ydomain']['max'] = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $args[1]['measurement']);
                         }
                         else {
-                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[1]['device_id'] . "' AND `module_id`='" . $args[1]['module_id'] . "' AND `measure_type`='" . $args[1]['measurement'] . "' AND `measure_set`='" . $args[1]['set'] . "';";
+                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . " AND `measure_set`=" . self::sql_literal($args[1]['set']) . ";";
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][0]['ydomain']['min'] = $this->output_value($query[0]['min_val'], $args[1]['measurement']);
                             $result['extras'][0]['ydomain']['max'] = $this->output_value($query[0]['max_val'], $args[1]['measurement']);
                         }
                         if ($args[2]['set'] == 'amp') {
-                            $sql = "SELECT MIN(T2.amplitude) as min_val, MAX(T2.amplitude) as max_val FROM(SELECT (MAX(`measure_value`)-MIN(`measure_value`)) as amplitude FROM (SELECT `timestamp`, `measure_value` FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND (`measure_set`='min' OR `measure_set`='max')) as T1 GROUP BY T1.timestamp) as T2";
+                            $sql = "SELECT MIN(T2.amplitude) as min_val, MAX(T2.amplitude) as max_val FROM(SELECT (MAX(`measure_value`)-MIN(`measure_value`)) as amplitude FROM (SELECT `timestamp`, `measure_value` FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND (`measure_set`='min' OR `measure_set`='max')) as T1 GROUP BY T1.timestamp) as T2";
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][1]['ydomain']['min'] = $query[0]['min_val'];
                             $result['extras'][1]['ydomain']['max'] = $query[0]['max_val'];
                         }
                         elseif ($args[2]['set'] == 'mid') {
-                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND `measure_set`='min';";
+                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND `measure_set`='min';";
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $tm = $query[1]['min_val'];
-                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND `measure_set`='max';";
+                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND `measure_set`='max';";
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][1]['ydomain']['min'] = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $args[2]['measurement']);
-                            $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND `measure_set`='min';";
+                            $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND `measure_set`='min';";
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $tm = $query[1]['min_val'];
-                            $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND `measure_set`='max';";
+                            $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND `measure_set`='max';";
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][1]['ydomain']['max'] = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $args[2]['measurement']);
                         }
                         else {
-                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $args[2]['device_id'] . "' AND `module_id`='" . $args[2]['module_id'] . "' AND `measure_type`='" . $args[2]['measurement'] . "' AND `measure_set`='" . $args[2]['set'] . "';";
+                            $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND `measure_set`=" . self::sql_literal($args[2]['set']) . ";";
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][1]['ydomain']['min'] = $this->output_value($query[0]['min_val'], $args[2]['measurement']);
                             $result['extras'][1]['ydomain']['max'] = $this->output_value($query[0]['max_val'], $args[2]['measurement']);
@@ -2302,27 +2399,27 @@ trait Output {
                             if (strpos($arg['module_id'], ':') == 2) {
                                 try {
                                     if ($arg['set'] == 'amp') {
-                                        $sql = "SELECT MIN(T2.amplitude) as min_val, MAX(T2.amplitude) as max_val FROM(SELECT (MAX(`measure_value`)-MIN(`measure_value`)) as amplitude FROM (SELECT `timestamp`, `measure_value` FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND (`measure_set`='min' OR `measure_set`='max')) as T1 GROUP BY T1.timestamp) as T2";
+                                        $sql = "SELECT MIN(T2.amplitude) as min_val, MAX(T2.amplitude) as max_val FROM(SELECT (MAX(`measure_value`)-MIN(`measure_value`)) as amplitude FROM (SELECT `timestamp`, `measure_value` FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND (`measure_set`='min' OR `measure_set`='max')) as T1 GROUP BY T1.timestamp) as T2";
                                         $query = $wpdb->get_results($sql, ARRAY_A);
                                         $min = $this->rebase_value($query[0]['min_val'], $arg['measurement']);
                                         $max = $this->rebase_value($query[0]['max_val'], $arg['measurement']);
                                     }
                                     elseif ($arg['set'] == 'mid') {
-                                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='min';";
+                                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND `measure_set`='min';";
                                         $query = $wpdb->get_results($sql, ARRAY_A);
                                         $tm = $query[0]['min_val'];
-                                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='max';";
+                                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND `measure_set`='max';";
                                         $query = $wpdb->get_results($sql, ARRAY_A);
                                         $min = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $arg['measurement']);
-                                        $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='min';";
+                                        $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND `measure_set`='min';";
                                         $query = $wpdb->get_results($sql, ARRAY_A);
                                         $tm = $query[0]['min_val'];
-                                        $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='max';";
+                                        $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND `measure_set`='max';";
                                         $query = $wpdb->get_results($sql, ARRAY_A);
                                         $max = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $arg['measurement']);
                                     }
                                     else {
-                                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`='" . $arg['device_id'] . "' AND `module_id`='" . $arg['module_id'] . "' AND `measure_type`='" . $arg['measurement'] . "' AND `measure_set`='" . $arg['set'] . "';";
+                                        $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND `measure_set`=" . self::sql_literal($arg['set']) . ";";
                                         $query = $wpdb->get_results($sql, ARRAY_A);
                                         $min = $this->output_value($query[0]['min_val'], $arg['measurement']);
                                         $max = $this->output_value($query[0]['max_val'], $arg['measurement']);
@@ -3018,17 +3115,22 @@ trait Output {
      * @since 3.4.0
      */
     public function graph_prepare($attributes){
+        $attributes = $this->graph_sanitize_attributes($attributes);
         $items = array();
         $noned = false;
         for ($i = 1; $i <= 8; $i++) {
             if (array_key_exists('device_id_'.$i, $attributes)) {
-                if ($attributes['measurement_'.$i] == 'none' || $attributes['measurement_'.$i] == 'none:none') {
+                if (array_key_exists('measurement_'.$i, $attributes)) {
+                    $attributes['measurement_'.$i] = Guard::composite($attributes['measurement_'.$i], 'none');
+                }
+                if (isset($attributes['measurement_'.$i]) && ($attributes['measurement_'.$i] == 'none' || $attributes['measurement_'.$i] == 'none:none')) {
                     $noned = true;
                     continue;
                 }
                 $item = array();
                 foreach ($this->graph_allowed_series as $param) {
                     if (array_key_exists($param.'_'.$i, $attributes)) {
+                        $attributes[$param.'_'.$i] = ($param == 'measurement' ? Guard::composite($attributes[$param.'_'.$i], 'none') : Guard::token($attributes[$param.'_'.$i], 'none'));
                         $item[$param] = $attributes[$param.'_'.$i];
                         if ($param == 'measurement') {
                             if (strpos ($attributes[$param.'_'.$i], ':') > 0) {
@@ -3124,6 +3226,20 @@ trait Output {
      */
     public function graph_shortcodes($attributes) {
         $_attributes = shortcode_atts( array('mode' => '', 'type' => '', 'template' => 'neutral', 'color' => 'Blues', 'label' => 'none', 'interpolation' => 'linear', 'guideline' => 'none', 'height' => '300px', 'timescale' => 'auto', 'valuescale' => 'auto', 'data' => 'inline', 'cache' => 'cache', 'periodtype' => 'none', 'periodvalue' => 'none'), $attributes );
+        $_attributes['mode'] = Guard::token($_attributes['mode'], '');
+        $_attributes['type'] = Guard::token($_attributes['type'], '');
+        $_attributes['template'] = Guard::token($_attributes['template'], 'neutral');
+        $_attributes['label'] = Guard::token($_attributes['label'], 'none');
+        $_attributes['interpolation'] = Guard::token($_attributes['interpolation'], 'linear');
+        $_attributes['guideline'] = Guard::token($_attributes['guideline'], 'none');
+        $_attributes['height'] = Guard::css_size($_attributes['height'], '300px');
+        $_attributes['timescale'] = Guard::token($_attributes['timescale'], 'auto');
+        $_attributes['valuescale'] = Guard::token($_attributes['valuescale'], 'auto');
+        $_attributes['data'] = Guard::token($_attributes['data'], 'inline');
+        $_attributes['cache'] = Guard::token($_attributes['cache'], 'cache');
+        $_attributes['periodtype'] = Guard::token($_attributes['periodtype'], 'none');
+        $_attributes['periodvalue'] = Guard::token($_attributes['periodvalue'], 'none');
+        $_attributes['color'] = (is_scalar($_attributes['color']) && preg_match('/^[A-Za-z0-9_]{1,40}$/', (string)$_attributes['color'])) ? (string)$_attributes['color'] : 'Blues';
         $mode = $_attributes['mode'];
         $type = $_attributes['type'];
         $color = $_attributes['color'];
@@ -3172,10 +3288,10 @@ trait Output {
         $full_cpt = $cpt;
         if ($cpt == 0) {
             if ($value_params['noned']) {
-                return __('No Data To Display', 'live-weather-station');
+                return esc_html__('No Data To Display', 'live-weather-station');
             }
             else {
-                return __('Malformed shortcode. Please verify it!', 'live-weather-station');
+                return esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station');
             }
         }
         if ($cpt < 3) {
@@ -3231,7 +3347,7 @@ trait Output {
         // Queries...
         $values = $this->graph_query($value_params, true);
         if (!$values) {
-            return __('Malformed shortcode. Please verify it!', 'live-weather-station');
+            return esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station');
         }
         $domain = $this->graph_domain($values, $valuescale);
         $time_format = $this->graph_format($values, $mode, $period_duration);
@@ -3336,7 +3452,7 @@ trait Output {
                     $col_array = Options::get_cschemes_palette($color);
                 }
                 foreach ($col_array as $c) {
-                    $legendColors[] = '"#' . $c . '"';
+                    $legendColors[] = self::js_palette_color($c);
                 }
             }
             $result .= '<style type="text/css">' . PHP_EOL;
@@ -3367,11 +3483,11 @@ trait Output {
                 $body .= '            widthMax: ' . $size . ',' . PHP_EOL;
                 $body .= '            height: ' . $size . ',' . PHP_EOL;
                 $body .= '            heightMax: ' . $size . ',' . PHP_EOL;
-                $body .= '            valFormat: "' . $values['extras'][0]['format'] . '",' . PHP_EOL;
-                $body .= '            valUnit: "' . $values['extras'][0]['unit'] . '",' . PHP_EOL;
+                $body .= '            valFormat: "' . self::js_str($values['extras'][0]['format']) . '",' . PHP_EOL;
+                $body .= '            valUnit: "' . self::js_str($values['extras'][0]['unit']) . '",' . PHP_EOL;
                 if ($type == 'valuerc') {
-                    $body .= '            correctAdd: ' . $values['extras'][0]['correctadd'] . ',' . PHP_EOL;
-                    $body .= '            correctMul: ' . $values['extras'][0]['correctmul'] . ',' . PHP_EOL;
+                    $body .= '            correctAdd: ' . (float)$values['extras'][0]['correctadd'] . ',' . PHP_EOL;
+                    $body .= '            correctMul: ' . (float)$values['extras'][0]['correctmul'] . ',' . PHP_EOL;
                 }
                 $body .= '            margins: {top: ' . $tmargin . ',right: 0,bottom: 0,left: 0},' . PHP_EOL;
                 $body .= '            circles: {levels: ' . $clevel . ',maxValue: 0,labelFactor: 1.25,opacity: 0.1,fill: "' . $linecolor . '",color: "' . $linecolor . '"},' . PHP_EOL;
@@ -3413,7 +3529,7 @@ trait Output {
                     if ($i++ > 2) {
                         break;
                     }
-                    $legendColors[] = '"#' . $c . '"';
+                    $legendColors[] = self::js_palette_color($c);
                 }
                 if ($inverted) {
                     $legendColors = array_reverse($legendColors);
@@ -3480,7 +3596,7 @@ trait Output {
             if ($fixed_valuescale) {
                 $body .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
             }
-            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
+            $body .= '               .noData("' . self::js_str(__('No Data To Display', 'live-weather-station')) .'")' . PHP_EOL;
             $body .= '               .useInteractiveGuideline(true);' . PHP_EOL;
             if ($fixed_timescale && $timescale != 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h01Tick'.$uniq.', h02Tick'.$uniq.', h03Tick'.$uniq.', h04Tick'.$uniq.']);' . PHP_EOL;
@@ -3498,19 +3614,19 @@ trait Output {
             else {
                 $body .= '      chart'.$uniq.'.yAxis.showMaxMin(false)';
             }
-            $body .= '.tickFormat(function(d) { return d + " ' . $values['legend']['unit']['unit'] . '"; });' . PHP_EOL;
+            $body .= '.tickFormat(function(d) { return d + " ' . self::js_str($values['legend']['unit']['unit']) . '"; });' . PHP_EOL;
             if (!is_null($values) && isset($values['extras']) && array_key_exists(0, $values['extras'])) {
-                $close = ucfirst($values['extras'][0]['close']);
-                $open = ucfirst($values['extras'][0]['open']);
+                $close = self::js_html(ucfirst($values['extras'][0]['close']));
+                $open = self::js_html(ucfirst($values['extras'][0]['open']));
             }
             else {
                 $close = '';
                 $open = '';
             }
-            $high = ucfirst($this->get_operation_name('max'));
-            $low = ucfirst($this->get_operation_name('min'));
+            $high = self::js_html(ucfirst($this->get_operation_name('max')));
+            $low = self::js_html(ucfirst($this->get_operation_name('min')));
             if ($type == 'cstick') {
-                $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . self::js_str($label_txt) . '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
                 $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.contentGenerator(function(d) {';
                 $body .= '      var c=d.series[0].data;' . PHP_EOL;
                 $body .= '      var e=c.open<c.close?' . $legendColors[2] . ':' . $legendColors[0] . ';' . PHP_EOL;
@@ -3532,10 +3648,10 @@ trait Output {
             }
             else {
                 if ($period_duration == 'year') {
-                    $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+                    $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . self::js_str($label_txt) . '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
                 }
                 else {
-                    $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("%B, %d")(new Date(d)) });' . PHP_EOL;
+                    $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . self::js_str($label_txt) . '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("%B, %d")(new Date(d)) });' . PHP_EOL;
                 }
                 $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.contentGenerator(function(d) {';
                 $body .= '      var c=d.series[0].data;' . PHP_EOL;
@@ -3565,7 +3681,7 @@ trait Output {
             wp_enqueue_script('lws-nvd3');
             wp_enqueue_script('lws-colorbrewer');
             wp_enqueue_script('lws-spin');
-            $cpt = str_replace('s', '', $items[1]['line_mode']);
+            $cpt = (int)str_replace('s', '', $items[1]['line_mode']);
             if (!is_null($values) && isset($values['extras']) && array_key_exists(0, $values['extras'])) {
                 $unit = $values['extras'][0]['unit']['unit'];
             }
@@ -3582,7 +3698,7 @@ trait Output {
                     $col_array = Options::get_cschemes_palette($color);
                 }
                 foreach ($col_array as $c) {
-                    $legendColors[] = '"#' . $c . '"';
+                    $legendColors[] = self::js_palette_color($c);
                 }
             }
             $result .= '<style type="text/css">' . PHP_EOL;
@@ -3655,11 +3771,11 @@ trait Output {
             $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
             $body .= '               .y(function(d) {return d[1]})' . PHP_EOL;
             $body .= '               .clipEdge(true)' . PHP_EOL;
-            $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
-            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
+            $body .= '               .interpolate("' . self::js_str($interpolation) . '")' . PHP_EOL;
+            $body .= '               .noData("' . self::js_str(__('No Data To Display', 'live-weather-station')) .'")' . PHP_EOL;
             $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
             $body .= '               .showControls(false);' . PHP_EOL;
-            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . self::js_str($label_txt) . '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
             if ($timescale == 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
             }
@@ -3714,7 +3830,7 @@ trait Output {
                     if ($i++ == $full_cpt) {
                         break;
                     }
-                    $legendColors[] = '"#' . $c . '"';
+                    $legendColors[] = self::js_palette_color($c);
                 }
             }
             $result .= '<style type="text/css">' . PHP_EOL;
@@ -3760,16 +3876,16 @@ trait Output {
             $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
             $body .= '               .y(function(d) {return d[1]})' . PHP_EOL;
             $body .= '               .clipEdge(true)' . PHP_EOL;
-            $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
+            $body .= '               .interpolate("' . self::js_str($interpolation) . '")' . PHP_EOL;
             $body .= '               .useInteractiveGuideline(true)' . PHP_EOL;
             if ($fixed_valuescale && $type_guideline == 'stacked') {
                 $body .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
             }
             //$body .= '               .showLegend(true)' . PHP_EOL;
-            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
+            $body .= '               .noData("' . self::js_str(__('No Data To Display', 'live-weather-station')) .'")' . PHP_EOL;
             $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
-            $body .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","grouped":"' . __('Grouped', 'live-weather-station') . '"}).showControls(false);' . PHP_EOL;
-            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            $body .= '               .controlLabels({"stacked":"' . self::js_str(__('Stacked', 'live-weather-station')) . '","grouped":"' . self::js_str(__('Grouped', 'live-weather-station')) . '"}).showControls(false);' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . self::js_str($label_txt) . '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
             if ($timescale == 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
             }
@@ -3795,12 +3911,12 @@ trait Output {
                 $body .= '      chart'.$uniq.'.style("expand");' . PHP_EOL;
             }
             $body .= '      chart'.$uniq.'.interactiveLayer.tooltip.gravity("s");' . PHP_EOL;
-            //$body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+            //$body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return d + " ' . self::js_str($unit) . '"; });' . PHP_EOL;
             if ($dimension1 === 'duration') {
-                $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . self::js_str(__('h', 'live-weather-station')) . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
             }
             else {
-                $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return d + " ' . self::js_str($unit) . '"; });' . PHP_EOL;
             }
             $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
             $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
@@ -3835,7 +3951,7 @@ trait Output {
                     if ($i++ == $full_cpt) {
                         break;
                     }
-                    $legendColors[] = '"#' . $c . '"';
+                    $legendColors[] = self::js_palette_color($c);
                 }
                 if ($inverted) {
                     $legendColors = array_reverse($legendColors);
@@ -3887,15 +4003,15 @@ trait Output {
                 $body .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
             }
             $body .= '               .showLegend(' . ($type == 'bars'?'true':'false') . ')' . PHP_EOL;
-            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
+            $body .= '               .noData("' . self::js_str(__('No Data To Display', 'live-weather-station')) .'")' . PHP_EOL;
             $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
             if ($type == 'bars') {
-                $body .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","grouped":"' . __('Grouped', 'live-weather-station') . '"}).showControls(' . ($type_guideline == 'free'?'true':'false') . ');' . PHP_EOL;
+                $body .= '               .controlLabels({"stacked":"' . self::js_str(__('Stacked', 'live-weather-station')) . '","grouped":"' . self::js_str(__('Grouped', 'live-weather-station')) . '"}).showControls(' . ($type_guideline == 'free'?'true':'false') . ');' . PHP_EOL;
             }
             else {
                 $body .= '               .controlLabels({}).showControls(false);' . PHP_EOL;
             }
-            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . self::js_str($label_txt) . '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
             if ($timescale == 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([]);' . PHP_EOL;
             }
@@ -3911,10 +4027,10 @@ trait Output {
             $body .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
             $body .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
             if ($dimension1 === 'duration') {
-                $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . self::js_str(__('h', 'live-weather-station')) . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
             }
             else {
-                $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.yAxis.tickFormat(function(d) { return d + " ' . self::js_str($unit) . '"; });' . PHP_EOL;
             }
             $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
             $body .= '      nv.utils.windowResize(chart'.$uniq.'.update);' . PHP_EOL;
@@ -3943,7 +4059,7 @@ trait Output {
                     if ($i++ == $full_cpt) {
                         break;
                     }
-                    $legendColors[] = '"#' . $c . '"';
+                    $legendColors[] = self::js_palette_color($c);
                 }
                 if ($inverted) {
                     $legendColors = array_reverse($legendColors);
@@ -4034,7 +4150,7 @@ trait Output {
             $body .= '       chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
             $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
             $body .= '               .y(function(d) {return d[1]})' . PHP_EOL;
-            $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
+            $body .= '               .interpolate("' . self::js_str($interpolation) . '")' . PHP_EOL;
             if ($focus) {
                 $body .= '               .focusEnable(true)' . PHP_EOL;
                 $body .= '               .focusShowAxisX(false)' . PHP_EOL;
@@ -4050,14 +4166,14 @@ trait Output {
                 $body .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
             }
             $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
-            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
+            $body .= '               .noData("' . self::js_str(__('No Data To Display', 'live-weather-station')) .'")' . PHP_EOL;
             if ($guideline) {
                 $body .= '               .useInteractiveGuideline(true);' . PHP_EOL;
             }
             else {
                 $body .= '               .useInteractiveGuideline(false);' . PHP_EOL;
             }
-            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . self::js_str($label_txt) . '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
             if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h04Tick'.$uniq.', h08Tick'.$uniq.', h12Tick'.$uniq.', h16Tick'.$uniq.', h20Tick'.$uniq.', h24Tick'.$uniq.']);' . PHP_EOL;
             }
@@ -4086,10 +4202,10 @@ trait Output {
                 $body .= '      chart'.$uniq.'.yAxis.showMaxMin(false)';
             }
             if ($dimension1 === 'duration') {
-                $body .= '.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+                $body .= '.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . self::js_str(__('h', 'live-weather-station')) . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
             }
             else {
-                $body .= '.tickFormat(function(d) { return d + " ' . $values['legend']['unit']['unit'] . '"; });' . PHP_EOL;
+                $body .= '.tickFormat(function(d) { return d + " ' . self::js_str($values['legend']['unit']['unit']) . '"; });' . PHP_EOL;
             }
             $body .= '      chart'.$uniq.'.yAxis.tickValues([' . implode(', ', $ticks).']);' . PHP_EOL;
             $body .= '      d3.select("#'.$uniq.' svg").datum(data'.$uniq.').transition().duration(500).call(chart'.$uniq.');' . PHP_EOL;
@@ -4135,7 +4251,7 @@ trait Output {
                     if ($i++ == $full_cpt) {
                         break;
                     }
-                    $legendColors[] = '"#' . $c . '"';
+                    $legendColors[] = self::js_palette_color($c);
                 }
                 if ($inverted) {
                     $legendColors = array_reverse($legendColors);
@@ -4249,10 +4365,10 @@ trait Output {
             }
             $body .= '      .yDomain1([' . $domain1['min'] . ',' . $domain1['max'].'])' . PHP_EOL;
             $body .= '      .yDomain2([' . $domain2['min'] . ',' . $domain2['max'].'])' . PHP_EOL;
-            $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
+            $body .= '               .interpolate("' . self::js_str($interpolation) . '")' . PHP_EOL;
             $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
-            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'");' . PHP_EOL;
-            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            $body .= '               .noData("' . self::js_str(__('No Data To Display', 'live-weather-station')) .'");' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . self::js_str($label_txt) . '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
             if ($fixed_timescale && $timescale != 'none' && $mode == 'daily') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h04Tick'.$uniq.', h08Tick'.$uniq.', h12Tick'.$uniq.', h16Tick'.$uniq.', h20Tick'.$uniq.', h24Tick'.$uniq.']);' . PHP_EOL;
             }
@@ -4270,40 +4386,40 @@ trait Output {
             $body .= '      var _value = "";' . PHP_EOL;
             $body .= '      if (d.series[0].color=="' . $refcolor . '"){' . PHP_EOL;
             $body .= '        _color = d.series[0].color;' . PHP_EOL;
-            $body .= '        _key = d.series[0].key;' . PHP_EOL;
+            $body .= '        _key = $("<div>").text(d.series[0].key).html();' . PHP_EOL;
             if ($dimension1 === 'duration') {
-                $body .= '        _value = Math.floor(d.series[0].value/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d.series[0].value%3600)/60).toString().padStart(2,"0");' . PHP_EOL;
+                $body .= '        _value = Math.floor(d.series[0].value/3600).toString() + "' . self::js_str(__('h', 'live-weather-station')) . '" + Math.floor((d.series[0].value%3600)/60).toString().padStart(2,"0");' . PHP_EOL;
             }
             else {
-                $body .= '        _value = d.series[0].value+" ' . $values['extras'][0]['unit']['unit'] . '";' . PHP_EOL;
+                $body .= '        _value = d.series[0].value+" ' . self::js_html($values['extras'][0]['unit']['unit']) . '";' . PHP_EOL;
             }
             $body .= '      }' . PHP_EOL;
             $body .= '      else{' . PHP_EOL;
             $body .= '        _color = d.series[0].color;' . PHP_EOL;
-            $body .= '        _key = d.series[0].key;' . PHP_EOL;
+            $body .= '        _key = $("<div>").text(d.series[0].key).html();' . PHP_EOL;
             if ($dimension2 === 'duration') {
-                $body .= '        _value = Math.floor(d.series[0].value/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d.series[0].value%3600)/60).toString().padStart(2,"0");' . PHP_EOL;
+                $body .= '        _value = Math.floor(d.series[0].value/3600).toString() + "' . self::js_str(__('h', 'live-weather-station')) . '" + Math.floor((d.series[0].value%3600)/60).toString().padStart(2,"0");' . PHP_EOL;
             }
             else {
-                $body .= '        _value = d.series[0].value+" ' . $unit . '";' . PHP_EOL;
+                $body .= '        _value = d.series[0].value+" ' . self::js_html($unit) . '";' . PHP_EOL;
             }
             $body .= '      }' . PHP_EOL;
             $body .= '      _date = d3.time.format("' . $specialtimeformat . '")(new Date(d.value));' . PHP_EOL;
             $body .= '      return sprintf(s, _date, _color, _key, _value)});' . PHP_EOL;
             $body .= '      chart'.$uniq.'.legendRightAxisHint("");' . PHP_EOL;
             if ($dimension1 === 'duration') {
-                $body .= '      chart'.$uniq.'.yAxis1.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.yAxis1.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . self::js_str(__('h', 'live-weather-station')) . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
             }
             else {
-                $body .= '      chart'.$uniq.'.yAxis1.tickFormat(function(d) { return d + " ' . $values['extras'][0]['unit']['unit'] . '"; });' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.yAxis1.tickFormat(function(d) { return d + " ' . self::js_str($values['extras'][0]['unit']['unit']) . '"; });' . PHP_EOL;
             }
             $body .= '      chart'.$uniq.'.yAxis1.showMaxMin(false);';
             $body .= '      chart'.$uniq.'.yAxis1.tickValues([' . implode(', ', $ticks1).']);' . PHP_EOL;
             if ($dimension2 === 'duration') {
-                $body .= '      chart'.$uniq.'.yAxis2.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.yAxis2.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . self::js_str(__('h', 'live-weather-station')) . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
             }
             else {
-                $body .= '      chart'.$uniq.'.yAxis2.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.yAxis2.tickFormat(function(d) { return d + " ' . self::js_str($unit) . '"; });' . PHP_EOL;
 
             }
             $body .= '      chart'.$uniq.'.yAxis2.tickPadding(-6);' . PHP_EOL;
@@ -4335,7 +4451,7 @@ trait Output {
                     if ($i++ == $full_cpt) {
                         break;
                     }
-                    $legendColors[] = '"#' . $c . '"';
+                    $legendColors[] = self::js_palette_color($c);
                 }
                 if ($inverted) {
                     $legendColors = array_reverse($legendColors);
@@ -4456,14 +4572,14 @@ trait Output {
             else {
                 $body .= '               .focusEnable(false)' . PHP_EOL;
             }
-            $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
+            $body .= '               .interpolate("' . self::js_str($interpolation) . '")' . PHP_EOL;
             if ($fixed_timescale) {
                 $body .= '               .xDomain([minDomain'.$uniq.', maxDomain'.$uniq.'])' . PHP_EOL;
             }
             $body .= '      .yDomain([' . $domain2['min'] . ',' . $domain2['max'].'])' . PHP_EOL;
             $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
-            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'");' . PHP_EOL;
-            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+            $body .= '               .noData("' . self::js_str(__('No Data To Display', 'live-weather-station')) .'");' . PHP_EOL;
+            $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . self::js_str($label_txt) . '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
             if ($fixed_timescale && $timescale != 'none') {
                 $body .= '      chart'.$uniq.'.xAxis.tickValues([h00Tick'.$uniq.', h01Tick'.$uniq.', h02Tick'.$uniq.', h03Tick'.$uniq.', h04Tick'.$uniq.']);' . PHP_EOL;
             }
@@ -4478,24 +4594,24 @@ trait Output {
             $body .= '      var _value = "";' . PHP_EOL;
             $body .= '      if (d.hasOwnProperty("element")){' . PHP_EOL;
             $body .= '        _color = d.series[0].color;' . PHP_EOL;
-            $body .= '        _key = d.series[0].key;' . PHP_EOL;
-            //$body .= '        _value = d.series[0].value+" ' . $unit . '";' . PHP_EOL;
+            $body .= '        _key = $("<div>").text(d.series[0].key).html();' . PHP_EOL;
+            //$body .= '        _value = d.series[0].value+" ' . self::js_html($unit) . '";' . PHP_EOL;
             if ($dimension2 === 'duration') {
-                $body .= '        _value = Math.floor(d.series[0].value/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d.series[0].value%3600)/60).toString().padStart(2,"0");' . PHP_EOL;
+                $body .= '        _value = Math.floor(d.series[0].value/3600).toString() + "' . self::js_str(__('h', 'live-weather-station')) . '" + Math.floor((d.series[0].value%3600)/60).toString().padStart(2,"0");' . PHP_EOL;
             }
             else {
-                $body .= '        _value = d.series[0].value+" ' . $unit . '";' . PHP_EOL;
+                $body .= '        _value = d.series[0].value+" ' . self::js_html($unit) . '";' . PHP_EOL;
             }
             $body .= '      }' . PHP_EOL;
             $body .= '      else{' . PHP_EOL;
             $body .= '        _color = d.color;' . PHP_EOL;
-            $body .= '        _key = "' . $values['extras'][0]['info_key'] . '";' . PHP_EOL;
+            $body .= '        _key = "' . self::js_html($values['extras'][0]['info_key']) . '";' . PHP_EOL;
 
             if ($dimension1 === 'duration') {
-                $body .= '        _value = Math.floor(d.series[0].value/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d.series[0].value%3600)/60).toString().padStart(2,"0");' . PHP_EOL;
+                $body .= '        _value = Math.floor(d.series[0].value/3600).toString() + "' . self::js_str(__('h', 'live-weather-station')) . '" + Math.floor((d.series[0].value%3600)/60).toString().padStart(2,"0");' . PHP_EOL;
             }
             else {
-                $body .= '        _value = d.series[0].value+" ' . $values['extras'][0]['unit']['unit'] . '";' . PHP_EOL;
+                $body .= '        _value = d.series[0].value+" ' . self::js_html($values['extras'][0]['unit']['unit']) . '";' . PHP_EOL;
             }
 
             $body .= '      }' . PHP_EOL;
@@ -4505,17 +4621,17 @@ trait Output {
                 $body .= '      chart' . $uniq . '.focusMargin({"top":20, "bottom":-10});' . PHP_EOL;
             }
             if ($dimension1 === 'duration') {
-                $body .= '      chart'.$uniq.'.y1Axis.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.y1Axis.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . self::js_str(__('h', 'live-weather-station')) . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
             }
             else {
-                $body .= '      chart'.$uniq.'.y1Axis.tickFormat(function(d) { return d + " ' . $values['extras'][0]['unit']['unit'] . '"; });' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.y1Axis.tickFormat(function(d) { return d + " ' . self::js_str($values['extras'][0]['unit']['unit']) . '"; });' . PHP_EOL;
             }
             $body .= '      chart'.$uniq.'.y1Axis.showMaxMin(false);';
             if ($dimension2 === 'duration') {
-                $body .= '      chart'.$uniq.'.y2Axis.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.y2Axis.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . self::js_str(__('h', 'live-weather-station')) . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
             }
             else {
-                $body .= '      chart'.$uniq.'.y2Axis.tickFormat(function(d) { return d + " ' . $unit . '"; });' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.y2Axis.tickFormat(function(d) { return d + " ' . self::js_str($unit) . '"; });' . PHP_EOL;
 
             }
             $body .= '      chart'.$uniq.'.y2Axis.tickPadding(-6);' . PHP_EOL;
@@ -4619,14 +4735,14 @@ trait Output {
                 $inner_height = ((integer)(str_replace('px', '', $height))+0);
             }
             if ($label_txt != '') {
-                $label_txt = '<div style="padding-top:' . $ptop . 'px;' . str_replace('fill', 'color', $prop['text']) . '"><text style="' . $prop['nv-axislabel'] . '">' . $label_txt . '</text></div>';
+                $label_txt = '<div style="padding-top:' . $ptop . 'px;' . str_replace('fill', 'color', $prop['text']) . '"><text style="' . $prop['nv-axislabel'] . '">' . esc_html($label_txt) . '</text></div>';
             }
             $months = $this->get_month_names();
             $month_M = array();
             $month_F = array();
             for ($i=1; $i<=12; $i++) {
-                $month_M[] = '"' . $months[$i]['M'] . '"';
-                $month_F[] = '"' . $months[$i]['F'] . '"';
+                $month_M[] = '"' . self::js_str($months[$i]['M']) . '"';
+                $month_F[] = '"' . self::js_str($months[$i]['F']) . '"';
             }
             $i18n = 'decimal: ".",thousands: ",",grouping: [3],currency: ["$", ""],dateTime: "%a %b %e %X %Y",date: "%m/%d/%Y",time: "%H:%M:%S",periods: ["AM", "PM"],days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],shortDays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],months: [' . implode(',', $month_F) . '],shortMonths: [' . implode(',', $month_M) . ']';
             wp_enqueue_style('lws-nvd3');
@@ -4664,7 +4780,7 @@ trait Output {
             $body .= '          considerMissingDataAsZero: false,' . PHP_EOL;
             if ($dimension1 == 'duration') {
                 $body .= '          isDuration: true,' . PHP_EOL;
-                $body .= '          symbolDuration: "' . __('h', 'live-weather-station') . '",' . PHP_EOL;
+                $body .= '          symbolDuration: "' . self::js_str(__('h', 'live-weather-station')) . '",' . PHP_EOL;
             }
             else {
                 $body .= '          isDuration: false,' . PHP_EOL;
@@ -4675,17 +4791,17 @@ trait Output {
             $body .= '          tooltip: true,' . PHP_EOL;
             if ($guideline) {
                 $body .= '          displayLegend: true,' . PHP_EOL;
-                $body .= '          legendHorizontalPosition: "' . $type_guideline . '",' . PHP_EOL;
+                $body .= '          legendHorizontalPosition: "' . self::js_str($type_guideline) . '",' . PHP_EOL;
                 $body .= '          legendCellPadding: 0,' . PHP_EOL;
             }
             else {
                 $body .= '          displayLegend: false,' . PHP_EOL;
             }
             if ($dimension1 == 'duration') {
-                $body .= '          subDomainTitleFormat: {empty: "' . sprintf(__('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>'). '", filled: "' . sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s</strong>', '{date}', $values['extras'][0]['measurement_type'] . ' - ' . $values['extras'][0]['set_name'], '{count}'). '"},' . PHP_EOL;
+                $body .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(__('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>')) . '", filled: "' . self::js_str(sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s</strong>', '{date}', esc_html($values['extras'][0]['measurement_type'] . ' - ' . $values['extras'][0]['set_name']), '{count}')) . '"},' . PHP_EOL;
             }
             else {
-                $body .= '          subDomainTitleFormat: {empty: "' . sprintf(__('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>'). '", filled: "' . sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s %s</strong>', '{date}', $values['extras'][0]['measurement_type'] . ' - ' . $values['extras'][0]['set_name'], '{count}', $values['legend']['unit']['unit']). '"},' . PHP_EOL;
+                $body .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(__('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>')) . '", filled: "' . self::js_str(sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s %s</strong>', '{date}', esc_html($values['extras'][0]['measurement_type'] . ' - ' . $values['extras'][0]['set_name']), '{count}', esc_html($values['legend']['unit']['unit']))) . '"},' . PHP_EOL;
             }
             $body .= '          i18nDomainDateFormat: {' . $i18n . '},' . PHP_EOL;
             $body .= '          legendTitleFormat: {lower: "",inner: "",upper: ""}' . PHP_EOL;
@@ -4708,6 +4824,7 @@ trait Output {
                     }
                 }
             }
+            $steps = (int)$steps;
             if ($valuescale == 'auto') {
                 $valuescale = 'adaptative';
             }
@@ -4769,7 +4886,7 @@ trait Output {
                 $col = new ColorsManipulation($prop['fg_color']);
                 $col_array = $col->makeSteppedGradient($steps-1, 50);
                 foreach ($col_array as $c) {
-                    $legendColors[] = '"#' . $c . '"';
+                    $legendColors[] = self::js_palette_color($c);
                 }
                 if ($inverted) {
                     $legendColors = array_reverse($legendColors);
@@ -4778,7 +4895,7 @@ trait Output {
             if ($custom) {
                 $col = Options::get_cschemes_palette($color);
                 for ($i=0 ; $i < $steps ; $i++) {
-                    $legendColors[] = '"#' . $col[$i] . '"';
+                    $legendColors[] = self::js_palette_color($col[$i]);
                 }
                 if ($inverted) {
                     $legendColors = array_reverse($legendColors);
@@ -4834,12 +4951,12 @@ trait Output {
 
         // FINAL RENDER
 
-        $result .= '<div class="lws-module-chart module-' . $mode . '-' . $type . '" id="' . $container . '">' . PHP_EOL;
+        $result .= '<div class="lws-module-chart module-' . esc_attr($mode) . '-' . esc_attr($type) . '" id="' . $container . '">' . PHP_EOL;
         if ($type == 'calendarhm') {
             $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:14px 14px 14px 14px;height: ' . $height . ';text-align: center;line-height: 1em;"><div id="' . $calendar . '" style="display: inline-block;"></div>' . $label_txt . '</div>' . PHP_EOL;
         }
         elseif ($type == 'distributionrc' || $type == 'valuerc' || $type == 'windrose') {
-            $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';width: ' . $height . ';display:inline-block;text-align:center;overflow: hidden;' . $atitlestyle . '"><div id="' . $svg . '"></div><div id="' . $titl . '">' . $label_txt . '</div></div>' . PHP_EOL;
+            $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';width: ' . $height . ';display:inline-block;text-align:center;overflow: hidden;' . $atitlestyle . '"><div id="' . $svg . '"></div><div id="' . $titl . '">' . esc_html($label_txt) . '</div></div>' . PHP_EOL;
         }
         else {
             $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';"><svg id="' . $svg . '" style="overflow:hidden;"></svg></div>' . PHP_EOL;
@@ -4869,14 +4986,14 @@ trait Output {
             $args[] = 'action:"lws_query_graph_measurements"';
             foreach ($this->graph_allowed_parameter as $param) {
                 if (array_key_exists($param, $_attributes)) {
-                    $args[] = $param . ':"' . $_attributes[$param] . '"';
+                    $args[] = $param . ':' . Guard::js($_attributes[$param]);
                 }
             }
             for ($i = 1; $i <= 8; $i++) {
                 if (array_key_exists('device_id_'.$i, $attributes)) {
                     foreach ($this->graph_allowed_series as $param) {
                         if (array_key_exists($param.'_'.$i, $attributes)) {
-                            $args[] = $param.'_'.$i . ':"' . $attributes[$param.'_'.$i] . '"';
+                            $args[] = $param.'_'.$i . ':' . Guard::js($attributes[$param.'_'.$i]);
                         }
                     }
                 }
@@ -4983,6 +5100,7 @@ trait Output {
      * @since 3.4.0
      */
     public function ltgraph_prepare($attributes){
+        $attributes = $this->graph_sanitize_attributes($attributes);
         $items = array();
         for ($i = 1; $i <= 8; $i++) {
             $item = array();
@@ -4991,7 +5109,7 @@ trait Output {
             $item['measurement'] = $attributes['measurement'];
             foreach ($this->ltgraph_allowed_series as $param) {
                 if (array_key_exists($param.'_'.$i, $attributes)) {
-                    $item[$param] = $attributes[$param.'_'.$i];
+                    $item[$param] = ($param == 'set' ? Guard::composite($attributes[$param.'_'.$i], 'none') : Guard::token($attributes[$param.'_'.$i], ($param == 'period' ? '' : 'none')));
                 }
             }
             if (array_key_exists('period', $item)) {
@@ -5080,6 +5198,23 @@ trait Output {
      */
     public function ltgraph_shortcodes($attributes) {
         $_attributes = shortcode_atts( array('mode' => '', 'type' => '', 'template' => 'neutral', 'device_id' => '', 'module_id' => '', 'measurement' => '', 'color' => 'Blues', 'label' => 'none', 'interpolation' => 'linear', 'guideline' => 'none', 'height' => '300px', 'timescale' => 'auto', 'valuescale' => 'auto', 'data' => 'inline', 'cache' => 'cache', 'periodtype' => 'none', 'periodvalue' => 'none'), $attributes );
+        $_attributes['mode'] = Guard::token($_attributes['mode'], '');
+        $_attributes['type'] = Guard::token($_attributes['type'], '');
+        $_attributes['template'] = Guard::token($_attributes['template'], 'neutral');
+        $_attributes['device_id'] = Guard::token($_attributes['device_id'], '');
+        $_attributes['module_id'] = Guard::token($_attributes['module_id'], '');
+        $_attributes['measurement'] = Guard::composite($_attributes['measurement'], '');
+        $_attributes['label'] = Guard::token($_attributes['label'], 'none');
+        $_attributes['interpolation'] = Guard::token($_attributes['interpolation'], 'linear');
+        $_attributes['guideline'] = Guard::token($_attributes['guideline'], 'none');
+        $_attributes['height'] = Guard::css_size($_attributes['height'], '300px');
+        $_attributes['timescale'] = Guard::token($_attributes['timescale'], 'auto');
+        $_attributes['valuescale'] = Guard::token($_attributes['valuescale'], 'auto');
+        $_attributes['data'] = Guard::token($_attributes['data'], 'inline');
+        $_attributes['cache'] = Guard::token($_attributes['cache'], 'cache');
+        $_attributes['periodtype'] = Guard::token($_attributes['periodtype'], 'none');
+        $_attributes['periodvalue'] = Guard::token($_attributes['periodvalue'], 'none');
+        $_attributes['color'] = (is_scalar($_attributes['color']) && preg_match('/^[A-Za-z0-9_]{1,40}$/', (string)$_attributes['color'])) ? (string)$_attributes['color'] : 'Blues';
         $mode = $_attributes['mode'];
         $type = $_attributes['type'];
         $color = $_attributes['color'];
@@ -5116,10 +5251,10 @@ trait Output {
         $full_cpt = $cpt;
         if ($cpt == 0) {
             if ($value_params['noned']) {
-                return __('No Data To Display', 'live-weather-station');
+                return esc_html__('No Data To Display', 'live-weather-station');
             }
             else {
-                return __('Malformed shortcode. Please verify it!', 'live-weather-station');
+                return esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station');
             }
         }
         if ($cpt < 3) {
@@ -5165,7 +5300,7 @@ trait Output {
         $values = $this->graph_query($value_params, true);
 
         if (!$values) {
-            return __('Malformed shortcode. Please verify it!', 'live-weather-station');
+            return esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station');
         }
         $domain = $this->graph_domain($values, $valuescale);
         $time_format = $this->graph_format($values, $mode, $period_duration);
@@ -5198,7 +5333,7 @@ trait Output {
                     if ($i++ == $full_cpt) {
                         break;
                     }
-                    $legendColors[] = '"#' . $c . '"';
+                    $legendColors[] = self::js_palette_color($c);
                 }
                 if ($inverted) {
                     $legendColors = array_reverse($legendColors);
@@ -5274,7 +5409,7 @@ trait Output {
             $body .= '       chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
             $body .= '               .x(function(d) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
             $body .= '               .y(function(d) {return d[1]})' . PHP_EOL;
-            $body .= '               .interpolate("' . $interpolation . '")' . PHP_EOL;
+            $body .= '               .interpolate("' . self::js_str($interpolation) . '")' . PHP_EOL;
             if ($focus) {
                 $body .= '               .focusEnable(true)' . PHP_EOL;
                 $body .= '               .focusShowAxisX(false)' . PHP_EOL;
@@ -5290,7 +5425,7 @@ trait Output {
                 $body .= '               .yDomain(['.$domain['min'].', '.$domain['max'].'])' . PHP_EOL;
             }
             $body .= '               .color(color' . $uniq . ')' . PHP_EOL;
-            $body .= '               .noData("' . __('No Data To Display', 'live-weather-station') .'")' . PHP_EOL;
+            $body .= '               .noData("' . self::js_str(__('No Data To Display', 'live-weather-station')) .'")' . PHP_EOL;
             if ($guideline) {
                 $body .= '               .useInteractiveGuideline(true);' . PHP_EOL;
             }
@@ -5298,14 +5433,14 @@ trait Output {
                 $body .= '               .useInteractiveGuideline(false);' . PHP_EOL;
             }
             if ($period_duration == 'year') {
-                $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
+                $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . self::js_str($label_txt) . '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("' . $time_format . '")(new Date(d)) });' . PHP_EOL;
             }
             else {
                 if ($sameperiod) {
-                    $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("%B, %d")(new Date(d)) });' . PHP_EOL;
+                    $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . self::js_str($label_txt) . '").showMaxMin(false).tickFormat(function(d) {return d3.time.format("%B, %d")(new Date(d)) });' . PHP_EOL;
                 }
                 else {
-                    $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . $label_txt. '").showMaxMin(false).tickFormat(function(d) {var num=1+(d-' . $values['xdomain']['min'] . '-x' . $uniq . ') / 86400000; return "' . __('day', 'live-weather-station') . ' "+num.toString() });' . PHP_EOL;
+                    $body .= '      chart'.$uniq.'.xAxis.axisLabel("' . self::js_str($label_txt) . '").showMaxMin(false).tickFormat(function(d) {var num=1+(d-' . $values['xdomain']['min'] . '-x' . $uniq . ') / 86400000; return "' . self::js_str(__('day', 'live-weather-station')) . ' "+num.toString() });' . PHP_EOL;
                 }
             }
             if ($fixed_timescale && $timescale != 'none') {
@@ -5327,17 +5462,17 @@ trait Output {
                 $body .= '      chart'.$uniq.'.yAxis.showMaxMin(false)';
             }
             if ($dimension === 'duration') {
-                $body .= '.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . __('h', 'live-weather-station') . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
+                $body .= '.tickFormat(function(d) { return Math.floor(d/3600).toString() + "' . self::js_str(__('h', 'live-weather-station')) . '" + Math.floor((d%3600)/60).toString().padStart(2,"0")  ;});' . PHP_EOL;
             }
             else {
-                $body .= '.tickFormat(function(d) { return d + " ' . $values['legend']['unit']['unit'] . '"; });' . PHP_EOL;
+                $body .= '.tickFormat(function(d) { return d + " ' . self::js_str($values['legend']['unit']['unit']) . '"; });' . PHP_EOL;
             }
             if ($guideline) {
                 $body .= '      chart' . $uniq . '.interactiveLayer.tooltip.contentGenerator(function(d) {';
                 $body .= '      var sth=\'<table><thead><tr><td colspan="3"><strong class="x-value">%s</strong></td></tr></thead><tbody>%s</tbody></table>\';' . PHP_EOL;
                 $body .= '      var str="";' . PHP_EOL;
                 $body .= '      d.series.forEach(function(elem){' . PHP_EOL;
-                $body .= '        str=str+sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">%s</td><td class="value">%s</td></tr>\', elem.color, elem.key, elem.value+" ' . $dimension['unit'] . '");' . PHP_EOL;
+                $body .= '        str=str+sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">%s</td><td class="value">%s</td></tr>\', elem.color, $("<div>").text(elem.key).html(), elem.value+" ' . self::js_html($dimension['unit']) . '");' . PHP_EOL;
                 $body .= '      })' . PHP_EOL;
                 if ($period_duration == 'year') {
                     $body .= '      var sdate=d3.time.format("%B, %d")(new Date(d.value));' . PHP_EOL;
@@ -5347,7 +5482,7 @@ trait Output {
                         $body .= '      var sdate=d3.time.format("%B, %d")(new Date(d.value));' . PHP_EOL;
                     }
                     else {
-                        $body .= '      var sdate="' . ucfirst(__('day', 'live-weather-station')) . ' "+d.index.toString();' . PHP_EOL;;
+                        $body .= '      var sdate="' . self::js_str(ucfirst(__('day', 'live-weather-station'))) . ' "+d.index.toString();' . PHP_EOL;;
                     }
                 }
                 $body .= '      return sprintf(sth, sdate, str)});' . PHP_EOL;
@@ -5356,7 +5491,7 @@ trait Output {
                 $body .= '      chart' . $uniq . '.tooltip.contentGenerator(function(d) {';
                 $body .= '      var sth=\'<table><thead><tr><td colspan="3"><strong class="x-value">%s</strong></td></tr></thead><tbody>%s</tbody></table>\';' . PHP_EOL;
                 $body .= '      var str="";' . PHP_EOL;
-                $body .= '      str=str+sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">%s</td><td class="value">%s</td></tr>\', d.series[0].color, d.series[0].set, d.series[0].value+" ' . $dimension['unit'] . '");' . PHP_EOL;
+                $body .= '      str=str+sprintf(\'<tr><td class="legend-color-guide"><div style="background-color: %s;"></div></td><td class="key">%s</td><td class="value">%s</td></tr>\', d.series[0].color, $("<div>").text(d.series[0].set).html(), d.series[0].value+" ' . self::js_html($dimension['unit']) . '");' . PHP_EOL;
                 $body .= '      var sdate=d3.time.format("%Y-%m-%d")(new Date(Number(d.value)+Number(d.series[0].shift)));' . PHP_EOL;
                 $body .= '      return sprintf(sth, sdate, str)});' . PHP_EOL;
             }
@@ -5371,7 +5506,7 @@ trait Output {
 
         // FINAL RENDER
 
-        $result .= '<div class="lws-module-chart module-' . $mode . '-' . $type . '" id="' . $container . '">' . PHP_EOL;
+        $result .= '<div class="lws-module-chart module-' . esc_attr($mode) . '-' . esc_attr($type) . '" id="' . $container . '">' . PHP_EOL;
         $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';"><svg id="' . $svg . '" style="overflow:hidden;"></svg></div>' . PHP_EOL;
         $result .= '</div>' . PHP_EOL;
         $jsInitId = md5(random_bytes(18));
@@ -5398,13 +5533,13 @@ trait Output {
             $args[] = 'action:"lws_query_ltgraph_measurements"';
             foreach ($this->ltgraph_allowed_parameter as $param) {
                 if (array_key_exists($param, $_attributes)) {
-                    $args[] = $param . ':"' . $_attributes[$param] . '"';
+                    $args[] = $param . ':' . Guard::js($_attributes[$param]);
                 }
             }
             for ($i = 1; $i <= 8; $i++) {
                 foreach ($this->ltgraph_allowed_series as $param) {
                     if (array_key_exists($param.'_'.$i, $attributes)) {
-                        $args[] = $param.'_'.$i . ':"' . $attributes[$param.'_'.$i] . '"';
+                        $args[] = $param.'_'.$i . ':' . Guard::js($attributes[$param.'_'.$i]);
                     }
                 }
             }
@@ -5491,11 +5626,12 @@ trait Output {
      * @since 3.8.0
      */
     public function radial_prepare($attributes){
+        $attributes = $this->graph_sanitize_attributes($attributes);
         $items = array();
         $noned = false;
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
-        $sql = "SELECT DISTINCT module_id, module_type FROM " . $table_name . " WHERE device_id = '" . $attributes['device_id'] . "'";
+        $sql = "SELECT DISTINCT module_id, module_type FROM " . $table_name . " WHERE device_id = " . self::sql_literal($attributes['device_id']) . "";
         $rows = $wpdb->get_results($sql, ARRAY_A);
         $temp = array();
         $rain = array();
@@ -5587,6 +5723,17 @@ trait Output {
     public function radial_shortcodes($attributes) {
         $result = '';
         $_attributes = shortcode_atts(array('mode' => '', 'type' => '', 'values' => 'temperature-rain-threshold', 'valuescale' => 'auto', 'template' => 'neutral', 'device_id' => '', 'height' => '300px', 'data' => 'inline', 'cache' => 'cache', 'periodtype' => 'none', 'period' => 'none'), $attributes);
+        $_attributes['mode'] = Guard::token($_attributes['mode'], '');
+        $_attributes['type'] = Guard::token($_attributes['type'], '');
+        $_attributes['values'] = Guard::token($_attributes['values'], 'temperature-rain-threshold');
+        $_attributes['valuescale'] = Guard::token($_attributes['valuescale'], 'auto');
+        $_attributes['template'] = Guard::token($_attributes['template'], 'neutral');
+        $_attributes['device_id'] = Guard::token($_attributes['device_id'], '');
+        $_attributes['height'] = Guard::css_size($_attributes['height'], '300px');
+        $_attributes['data'] = Guard::token($_attributes['data'], 'inline');
+        $_attributes['cache'] = Guard::token($_attributes['cache'], 'cache');
+        $_attributes['periodtype'] = Guard::token($_attributes['periodtype'], 'none');
+        $_attributes['period'] = Guard::token($_attributes['period'], 'none');
         $mode = $_attributes['mode'];
         $type = $_attributes['type'];
         $startdelay = random_int(100, 2000);
@@ -5605,10 +5752,10 @@ trait Output {
         $cpt = count($value_params['args']);
         if ($cpt == 0) {
             if ($value_params['noned']) {
-                return __('No Data To Display', 'live-weather-station');
+                return esc_html__('No Data To Display', 'live-weather-station');
             }
             else {
-                return __('Malformed shortcode. Please verify it!', 'live-weather-station');
+                return esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station');
             }
         }
 
@@ -5622,7 +5769,7 @@ trait Output {
         $values = $this->graph_query($value_params, true);
 
         if (!$values) {
-            return __('Malformed shortcode. Please verify it!', 'live-weather-station');
+            return esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station');
         }
 
         // Domain & unit...
@@ -5733,22 +5880,22 @@ trait Output {
         $body .= 'for(var j = 0; j<gridlinesNum; j++){gridlinesRange.push(j*(maxOfmaxTemp - minOfminTemp)/(gridlinesNum-1) + minOfminTemp );}' . PHP_EOL;
         $body .= 'var axes = barWrapper.selectAll(".gridCircles").data(gridlinesRange).enter().append("g");' . PHP_EOL;
         $body .= 'axes.append("circle").attr("class", "axisCircles").attr("r", function(d) { return barScale(d); });' . PHP_EOL;
-        $body .= 'axes.append("text").attr("class", "axisText").attr("y", function(d) { return barScale(d); }).attr("dy", "0.3em").text(function(d) { return d + "' . $temp_unit . '";});' . PHP_EOL;
+        $body .= 'axes.append("text").attr("class", "axisText").attr("y", function(d) { return barScale(d); }).attr("dy", "0.3em").text(function(d) { return d + "' . self::js_str($temp_unit) . '";});' . PHP_EOL;
 
         // -- LABELS
         $body .= 'var monthData = [' . PHP_EOL;
-        $body .= '	{month: "' . date_i18n($dformat, strtotime('2000-01-02')) . '", startDateID: 0, endDateID: 30},' . PHP_EOL;
-        $body .= '	{month: "' . date_i18n($dformat, strtotime('2000-02-02')) . '", startDateID: 31, endDateID: 58},' . PHP_EOL;
-        $body .= '	{month: "' . date_i18n($dformat, strtotime('2000-03-02')) . '", startDateID: 59, endDateID: 89},' . PHP_EOL;
-        $body .= '	{month: "' . date_i18n($dformat, strtotime('2000-04-02')) . '", startDateID: 90, endDateID: 119},' . PHP_EOL;
-        $body .= '	{month: "' . date_i18n($dformat, strtotime('2000-05-02')) . '", startDateID: 120, endDateID: 150},' . PHP_EOL;
-        $body .= '	{month: "' . date_i18n($dformat, strtotime('2000-06-02')) . '", startDateID: 151, endDateID: 180},' . PHP_EOL;
-        $body .= '	{month: "' . date_i18n($dformat, strtotime('2000-07-02')) . '", startDateID: 181, endDateID: 211},' . PHP_EOL;
-        $body .= '	{month: "' . date_i18n($dformat, strtotime('2000-08-02')) . '", startDateID: 212, endDateID: 242},' . PHP_EOL;
-        $body .= '	{month: "' . date_i18n($dformat, strtotime('2000-09-02')) . '", startDateID: 243, endDateID: 272},' . PHP_EOL;
-        $body .= '	{month: "' . date_i18n($dformat, strtotime('2000-10-02')) . '", startDateID: 273, endDateID: 303},' . PHP_EOL;
-        $body .= '	{month: "' . date_i18n($dformat, strtotime('2000-11-02')) . '", startDateID: 306, endDateID: 333},' . PHP_EOL;
-        $body .= '	{month: "' . date_i18n($dformat, strtotime('2000-12-02')) . '", startDateID: 334, endDateID: 364}];' . PHP_EOL;
+        $body .= '	{month: "' . self::js_str(date_i18n($dformat, strtotime('2000-01-02'))) . '", startDateID: 0, endDateID: 30},' . PHP_EOL;
+        $body .= '	{month: "' . self::js_str(date_i18n($dformat, strtotime('2000-02-02'))) . '", startDateID: 31, endDateID: 58},' . PHP_EOL;
+        $body .= '	{month: "' . self::js_str(date_i18n($dformat, strtotime('2000-03-02'))) . '", startDateID: 59, endDateID: 89},' . PHP_EOL;
+        $body .= '	{month: "' . self::js_str(date_i18n($dformat, strtotime('2000-04-02'))) . '", startDateID: 90, endDateID: 119},' . PHP_EOL;
+        $body .= '	{month: "' . self::js_str(date_i18n($dformat, strtotime('2000-05-02'))) . '", startDateID: 120, endDateID: 150},' . PHP_EOL;
+        $body .= '	{month: "' . self::js_str(date_i18n($dformat, strtotime('2000-06-02'))) . '", startDateID: 151, endDateID: 180},' . PHP_EOL;
+        $body .= '	{month: "' . self::js_str(date_i18n($dformat, strtotime('2000-07-02'))) . '", startDateID: 181, endDateID: 211},' . PHP_EOL;
+        $body .= '	{month: "' . self::js_str(date_i18n($dformat, strtotime('2000-08-02'))) . '", startDateID: 212, endDateID: 242},' . PHP_EOL;
+        $body .= '	{month: "' . self::js_str(date_i18n($dformat, strtotime('2000-09-02'))) . '", startDateID: 243, endDateID: 272},' . PHP_EOL;
+        $body .= '	{month: "' . self::js_str(date_i18n($dformat, strtotime('2000-10-02'))) . '", startDateID: 273, endDateID: 303},' . PHP_EOL;
+        $body .= '	{month: "' . self::js_str(date_i18n($dformat, strtotime('2000-11-02'))) . '", startDateID: 306, endDateID: 333},' . PHP_EOL;
+        $body .= '	{month: "' . self::js_str(date_i18n($dformat, strtotime('2000-12-02'))) . '", startDateID: 334, endDateID: 364}];' . PHP_EOL;
         $body .= 'var arc = d4.arc().innerRadius(outerRadius + 10).outerRadius(outerRadius + 30);' . PHP_EOL;
         $body .= 'var pie = d4.pie().value(function(d) { return d.endDateID - d.startDateID; }).padAngle(0.01).sort(null);' . PHP_EOL;
         $body .= 'chart'.$uniq.'.selectAll(".monthArc").data(pie(monthData)).enter().append("path").attr("class", "monthArc").attr("id", function(d,i) { return "monthArc_"+i; }).attr("d", arc);' . PHP_EOL;
@@ -5788,7 +5935,7 @@ trait Output {
         // END MAIN BODY
 
         // FINAL RENDER
-        $result .= '<div class="lws-module-chart module-' . $mode . '-' . $type . '" id="' . $container . '">' . PHP_EOL;
+        $result .= '<div class="lws-module-chart module-' . esc_attr($mode) . '-' . esc_attr($type) . '" id="' . $container . '">' . PHP_EOL;
         $result .= '<div id="' . $uniq . '" style="' . $prop['container'] . 'padding:8px 14px 8px 14px;height: ' . $height . ';width: ' . $height . ';display:inline-block;text-align:center;overflow: hidden;"><div id="' . $svg . '"></div></div>' . PHP_EOL;
         $result .= '</div>' . PHP_EOL;
         $jsInitId = md5(random_bytes(18));
@@ -5814,7 +5961,7 @@ trait Output {
             $args[] = 'action:"lws_query_radial_measurements"';
             foreach ($this->radial_allowed_parameter as $param) {
                 if (array_key_exists($param, $_attributes)) {
-                    $args[] = $param . ':"' . $_attributes[$param] . '"';
+                    $args[] = $param . ':' . Guard::js($_attributes[$param]);
                 }
             }
             $arg = '{' . implode (', ', $args) . '}';
@@ -5840,6 +5987,11 @@ trait Output {
      */
     public function lttextual_shortcodes($attributes) {
         $_attributes = shortcode_atts( array('mode' => 'climat', 'type' => 'textual', 'device_id' => '', 'module_id' => '', 'measurement' => '', 'set' => '', 'th1' => '', 'th2' => '', 'computed' => 'simple-avg', 'condition' => 'comp-eq', 'ref' => '0', 'periodtype' => 'none', 'period' => 'none', 'cache' => 'cache'), $attributes );
+        foreach (array('mode', 'type', 'device_id', 'module_id', 'measurement', 'computed', 'condition', 'periodtype', 'cache') as $key) {
+            $_attributes[$key] = Guard::token($_attributes[$key], '');
+        }
+        $_attributes['set'] = Guard::composite($_attributes['set'], '');
+        $_attributes['period'] = Guard::token($_attributes['period'], 'none');
         $fingerprint = md5(json_encode($_attributes));
         if ($_attributes['cache'] != 'no_cache') {
             $result = Cache::get_graph($fingerprint, 'climat');
@@ -5848,7 +6000,7 @@ trait Output {
             }
         }
         else {
-            $result =  __('Malformed shortcode. Please verify it!', 'live-weather-station');
+            $result =  esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station');
         }
         $device = $_attributes['device_id'];
         $module = $_attributes['module_id'];
@@ -5959,7 +6111,7 @@ trait Output {
             }
             if (strpos($periodtype, 'mseason') !== false) {
                 if (count($year1_period) == 0) {
-                    return __('Not enough data to perform this computation.', 'live-weather-station');
+                    return esc_html__('Not enough data to perform this computation.', 'live-weather-station');
                 }
                 else {
                     $num_period = count($year1_period);
@@ -5967,15 +6119,15 @@ trait Output {
             }
             else {
                 if (count($year_period) == 0) {
-                    return __('Not enough data to perform this computation.', 'live-weather-station');
+                    return esc_html__('Not enough data to perform this computation.', 'live-weather-station');
                 }
                 else {
                     $num_period = count($year_period);
                 }
             }
         }
-        $fixed_where = "`timestamp`>='" . $min . "' AND `timestamp`<='" . $max . "' AND";
-        $nested_where = "nested.`timestamp`>='" . $min . "' AND nested.`timestamp`<='" . $max . "' AND nested.`device_id`='" . $device . "' AND nested.`module_id`='" . $module . "' AND nested.`measure_type`='" . $measurement . "' AND ";
+        $fixed_where = "`timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND";
+        $nested_where = "nested.`timestamp`>=" . self::sql_literal($min) . " AND nested.`timestamp`<=" . self::sql_literal($max) . " AND nested.`device_id`=" . self::sql_literal($device) . " AND nested.`module_id`=" . self::sql_literal($module) . " AND nested.`measure_type`=" . self::sql_literal($measurement) . " AND ";
         $aggregated_where = "";
         if (strpos($periodtype, 'month') !== false) {
             $val = (int)substr($periodvalue, 5, 2);
@@ -5996,9 +6148,9 @@ trait Output {
 
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
-        $simple_fixed_sql = "SELECT {SELECT} FROM " . $table_name . " WHERE " . $fixed_where . " `device_id`='" . $device . "' AND `module_id`='" . $module . "' AND `measure_type`='" . $measurement . "' AND {WHERE} {GROUPBY} {ORDERBY};";
+        $simple_fixed_sql = "SELECT {SELECT} FROM " . $table_name . " WHERE " . $fixed_where . " `device_id`=" . self::sql_literal($device) . " AND `module_id`=" . self::sql_literal($module) . " AND `measure_type`=" . self::sql_literal($measurement) . " AND {WHERE} {GROUPBY} {ORDERBY};";
         $nested_fixed_sql = "SELECT {SELECT} FROM {FROM} WHERE {WHERE} {GROUPBY} {ORDERBY};";
-        $simple_aggregated_sql = "SELECT {SELECT} FROM " . $table_name . " WHERE " . $aggregated_where . " `device_id`='" . $device . "' AND `module_id`='" . $module . "' AND `measure_type`='" . $measurement . "' AND {WHERE} {GROUPBY} {ORDERBY};";
+        $simple_aggregated_sql = "SELECT {SELECT} FROM " . $table_name . " WHERE " . $aggregated_where . " `device_id`=" . self::sql_literal($device) . " AND `module_id`=" . self::sql_literal($module) . " AND `measure_type`=" . self::sql_literal($measurement) . " AND {WHERE} {GROUPBY} {ORDERBY};";
         $group = '';
         $order = '';
         $fgroup = '';
@@ -6060,7 +6212,7 @@ trait Output {
                     break;
                 case 'simple-avg':
                     $select = 'AVG(`measure_value`) as val';
-                    $where = "`measure_set`='" . $set . "'";
+                    $where = "`measure_set`=" . self::sql_literal($set) . "";
                     if ($set == 'amp' || $set == 'mid') {
                         $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
                         $where = "(`measure_set`='min' OR `measure_set`='max')";
@@ -6069,7 +6221,7 @@ trait Output {
                     break;
                 case 'simple-sum':
                     $select = 'SUM(`measure_value`) as val';
-                    $where = "`measure_set`='" . $set . "'";
+                    $where = "`measure_set`=" . self::sql_literal($set) . "";
                     if ($set == 'amp' || $set == 'mid') {
                         $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
                         $where = "(`measure_set`='min' OR `measure_set`='max')";
@@ -6078,7 +6230,7 @@ trait Output {
                     break;
                 case 'simple-min':
                     $select = 'MIN(`measure_value`) as val';
-                    $where = "`measure_set`='" . $set . "'";
+                    $where = "`measure_set`=" . self::sql_literal($set) . "";
                     if ($set == 'amp' || $set == 'mid') {
                         $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
                         $where = "(`measure_set`='min' OR `measure_set`='max')";
@@ -6127,7 +6279,7 @@ trait Output {
                     break;
                 case 'simple-max':
                     $select = 'MAX(`measure_value`) as val';
-                    $where = "`measure_set`='" . $set . "'";
+                    $where = "`measure_set`=" . self::sql_literal($set) . "";
                     if ($set == 'amp' || $set == 'mid') {
                         $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
                         $where = "(`measure_set`='min' OR `measure_set`='max')";
@@ -6176,9 +6328,9 @@ trait Output {
                     break;
                 case 'simple-dev':
                     $fselect = 'AVG(`measure_value`) as val';
-                    $fwhere = "`measure_set`='" . $set . "'";
+                    $fwhere = "`measure_set`=" . self::sql_literal($set) . "";
                     $aselect = 'AVG(`measure_value`) as val';
-                    $awhere = "`measure_set`='" . $set . "'";
+                    $awhere = "`measure_set`=" . self::sql_literal($set) . "";
                     if ($set == 'amp' || $set == 'mid') {
                         $fselect = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
                         $fwhere = "(`measure_set`='min' OR `measure_set`='max')";
@@ -6262,7 +6414,7 @@ trait Output {
                     break;
                 case 'date-min':
                     $select = '`timestamp` as ts, `measure_value` as val';
-                    $where = "`measure_set`='" . $set . "'";
+                    $where = "`measure_set`=" . self::sql_literal($set) . "";
                     $order = 'ORDER BY val ASC';
                     if ($set == 'amp' || $set == 'mid') {
                         $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
@@ -6313,7 +6465,7 @@ trait Output {
                     break;
                 case 'date-max':
                     $select = '`timestamp` as ts, `measure_value` as val';
-                    $where = "`measure_set`='" . $set . "'";
+                    $where = "`measure_set`=" . self::sql_literal($set) . "";
                     $order = 'ORDER BY val DESC';
                     if ($set == 'amp' || $set == 'mid') {
                         $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
@@ -6364,7 +6516,7 @@ trait Output {
                     break;
                 case 'count-day':
                     $select = 'COUNT(*) as val';
-                    $where = "`measure_set`='" . $set . "' AND ";
+                    $where = "`measure_set`=" . self::sql_literal($set) . " AND ";
                     if ($set == 'amp' || $set == 'mid') {
                         $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
                         $where = "(`measure_set`='min' OR `measure_set`='max')";
@@ -6372,11 +6524,11 @@ trait Output {
                         $order = '';
                     } else {
                         switch ($condition) {
-                            case 'comp-l': $where2 = "`measure_value`<" . $th1 ;break;
-                            case 'comp-eq': $where2 = "`measure_value`=" . $th1 ;break;
-                            case 'comp-g': $where2 = "`measure_value`>" . $th1 ;break;
-                            case 'comp-b': $where2 = "(`measure_value`>" . $th1 . " AND `measure_value`<" . $th2 . ")";break;
-                            case 'comp-nb': $where2 = "(`measure_value`<" . $th1 . " OR `measure_value`>" . $th2 . ")";break;
+                            case 'comp-l': $where2 = "`measure_value`<" . (float)$th1 ;break;
+                            case 'comp-eq': $where2 = "`measure_value`=" . (float)$th1 ;break;
+                            case 'comp-g': $where2 = "`measure_value`>" . (float)$th1 ;break;
+                            case 'comp-b': $where2 = "(`measure_value`>" . (float)$th1 . " AND `measure_value`<" . (float)$th2 . ")";break;
+                            case 'comp-nb': $where2 = "(`measure_value`<" . (float)$th1 . " OR `measure_value`>" . (float)$th2 . ")";break;
                         }
                     }
                     if ($set == 'hdd-da') {
@@ -6418,7 +6570,7 @@ trait Output {
                 case 'duration-day':
                 case 'duration-dates':
                     $select = '`timestamp` as val';
-                    $where = "`measure_set`='" . $set . "' AND ";
+                    $where = "`measure_set`=" . self::sql_literal($set) . " AND ";
                     $order = 'ORDER BY val ASC';
                     if ($set == 'amp' || $set == 'mid') {
                         $select = 'timestamp, (MAX(`measure_value`)-MIN(`measure_value`)) as amp, MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as mid';
@@ -6427,11 +6579,11 @@ trait Output {
                         $order = 'ORDER BY timestamp ASC';
                     } else {
                         switch ($condition) {
-                            case 'comp-l': $where2 = "`measure_value`<" . $th1 ;break;
-                            case 'comp-eq': $where2 = "`measure_value`=" . $th1 ;break;
-                            case 'comp-g': $where2 = "`measure_value`>" . $th1 ;break;
-                            case 'comp-b': $where2 = "(`measure_value`>" . $th1 . " AND `measure_value`<" . $th2 . ")";break;
-                            case 'comp-nb': $where2 = "(`measure_value`<" . $th1 . " OR `measure_value`>" . $th2 . ")";break;
+                            case 'comp-l': $where2 = "`measure_value`<" . (float)$th1 ;break;
+                            case 'comp-eq': $where2 = "`measure_value`=" . (float)$th1 ;break;
+                            case 'comp-g': $where2 = "`measure_value`>" . (float)$th1 ;break;
+                            case 'comp-b': $where2 = "(`measure_value`>" . (float)$th1 . " AND `measure_value`<" . (float)$th2 . ")";break;
+                            case 'comp-nb': $where2 = "(`measure_value`<" . (float)$th1 . " OR `measure_value`>" . (float)$th2 . ")";break;
                         }
                     }
                     if ($set == 'hdd-da') {
@@ -6704,7 +6856,7 @@ trait Output {
                             $result = sprintf(_n('%s day', '%s days', $period['length'], 'live-weather-station'), $period['length']);
                         }
                         else {
-                            $result = __('N/A', 'live-weather-station');
+                            $result = esc_html__('N/A', 'live-weather-station');
                         }
                     }
                     if ($computed == 'duration-dates') {
@@ -6718,7 +6870,7 @@ trait Output {
                             $result = sprintf(__('%s to %s', 'live-weather-station'), date_i18n(get_option('date_format'), $start->getTimestamp()), date_i18n(get_option('date_format'), $end->getTimestamp()));
                         }
                         else {
-                            $result = __('N/A', 'live-weather-station');
+                            $result = esc_html__('N/A', 'live-weather-station');
                         }
                     }
                     break;
@@ -6743,7 +6895,14 @@ trait Output {
      */
     public function admin_analytics_shortcodes($attributes) {
         $result = '';
+        // Internal statistics (quota, events, cron, database...) are for administrators only
+        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+            return '';
+        }
         $_attributes = shortcode_atts( array('item' => '', 'metric' => '', 'height' => ''), $attributes );
+        $_attributes['item'] = Guard::token($_attributes['item'], '');
+        $_attributes['metric'] = Guard::token($_attributes['metric'], '');
+        $_attributes['height'] = Guard::css_size($_attributes['height'], '');
         if ($_attributes['item'] == '') {
             return '';
         }
@@ -6763,13 +6922,13 @@ trait Output {
                 $jsInitId = md5(random_bytes(18));
                 $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '    var data'.$uniq.' =' . $perf['dat']['count'][$_attributes['metric']] . ';' . PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat']['count'][$_attributes['metric']]) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
                 $result .= '      var chart'.$uniq.' = nv.models.multiBarChart()' . PHP_EOL;
                 $result .= '               .reduceXTicks(false)' . PHP_EOL;
                 $result .= '               .color(d3.scale.category10().range())' . PHP_EOL;
                 $result .= '               .useInteractiveGuideline(true)' . PHP_EOL;
-                $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","grouped":"' . __('Grouped', 'live-weather-station') . '"});' . PHP_EOL;
+                $result .= '               .controlLabels({"stacked":"' . self::js_str(__('Stacked', 'live-weather-station')) . '","grouped":"' . self::js_str(__('Grouped', 'live-weather-station')) . '"});' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
                 $result .= '                 .showMaxMin(false)' . PHP_EOL;
                 $result .= '                 .rotateLabels(-30);' . PHP_EOL;
@@ -6815,7 +6974,7 @@ trait Output {
                         break;
                 }
                 if (count($services) == 0) {
-                    return '<h4 style="padding:20px;"><span>'. __('No data', 'live-weather-station' ) . '</span></h4>';
+                    return '<h4 style="padding:20px;"><span>'. esc_html__('No data', 'live-weather-station' ) . '</span></h4>';
                 }
                 $height = ($_attributes['height'] == '' ? '500px' : $_attributes['height']);
                 $result .= '<style type="text/css">.dashed-line {stroke-dasharray:5,5;}.hidden-line {display:none;}</style>' . PHP_EOL;
@@ -6824,7 +6983,8 @@ trait Output {
                     $s = str_replace(' ', '', strtolower($service));
                     $s = str_replace('.', '', $s);
                     $s = str_replace('-', '', $s);
-                    $result .= '<div id="selector-'.$s.'-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;">' . $service . '</div>' . PHP_EOL;
+                    $s = preg_replace('/[^a-z0-9_]/', '', $s);
+                    $result .= '<div id="selector-'.$s.'-'.$uniq.'" class="button" style="margin-right: 6px; margin-bottom:10px;">' . esc_html($service) . '</div>' . PHP_EOL;
                 }
                 $result .= '<div>' . PHP_EOL;
                 $result .= '<div id="' . $uniq . '" style="height: ' . $height . ';"><svg></svg></div>' . PHP_EOL;
@@ -6835,7 +6995,8 @@ trait Output {
                     $s = str_replace(' ', '', strtolower($service));
                     $s = str_replace('.', '', $s);
                     $s = str_replace('-', '', $s);
-                    $result .= '    var data_'.$s.'_'.$uniq.' =' . $perf['dat'][$_attributes['metric']][$service] . ';' . PHP_EOL;
+                    $s = preg_replace('/[^a-z0-9_]/', '', $s);
+                    $result .= '    var data_'.$s.'_'.$uniq.' =' . self::json_inline($perf['dat'][$_attributes['metric']][$service]) . ';' . PHP_EOL;
                 }
                 $result .= '      var chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
                 $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
@@ -6857,6 +7018,7 @@ trait Output {
                     $s = str_replace(' ', '', strtolower($service));
                     $s = str_replace('.', '', $s);
                     $s = str_replace('-', '', $s);
+                    $s = preg_replace('/[^a-z0-9_]/', '', $s);
                     $result .= '    $("#selector-'.$s.'-'.$uniq.'").click(function() {' . PHP_EOL;
                     $result .= '      $("#selectors-'.$uniq.' > div").removeClass("button-disabled");' . PHP_EOL;
                     $result .= '      $("#selector-'.$s.'-'.$uniq.'").addClass("button-disabled");' . PHP_EOL;
@@ -6866,6 +7028,7 @@ trait Output {
                 $s = str_replace(' ', '', strtolower($services[0]));
                 $s = str_replace('.', '', $s);
                 $s = str_replace('-', '', $s);
+                $s = preg_replace('/[^a-z0-9_]/', '', $s);
                 $result .= '    $("#selector-'.$s.'-'.$uniq.'").click();' . PHP_EOL;
                 $result .= '  });' . PHP_EOL;
                 $result .= lws_print_end_script($jsInitId);
@@ -6885,13 +7048,13 @@ trait Output {
                 $jsInitId = md5(random_bytes(18));
                 $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '    var data'.$uniq.' =' . $perf['dat'][$_attributes['metric']] . ';' . PHP_EOL;
-                //$result .= '    var xValues'.$uniq.' = ' . $perf['dat'][$_attributes['metric'].'_values'] . ';' . PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat'][$_attributes['metric']]) . ';' . PHP_EOL;
+                //$result .= '    var xValues'.$uniq.' = ' . self::json_inline($perf['dat'][$_attributes['metric'].'_values']) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
                 $result .= '      var chart'.$uniq.' = nv.models.multiBarChart()' . PHP_EOL;
                 $result .= '               .reduceXTicks(false)' . PHP_EOL;
                 $result .= '               .useInteractiveGuideline(true)' . PHP_EOL;
-                $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","grouped":"' . __('Grouped', 'live-weather-station') . '"});' . PHP_EOL;
+                $result .= '               .controlLabels({"stacked":"' . self::js_str(__('Stacked', 'live-weather-station')) . '","grouped":"' . self::js_str(__('Grouped', 'live-weather-station')) . '"});' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
                 $result .= '                 .showMaxMin(false)' . PHP_EOL;
                 //$result .= '                 .tickValues(xValues'.$uniq.')' . PHP_EOL;
@@ -6946,7 +7109,7 @@ trait Output {
                 $result .= '      var min_date= new Date(' . $min_date. ');' . PHP_EOL;
                 $result .= '      var start_date= new Date(' . $start_date . ');' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.init({' . PHP_EOL;
-                $result .= '          data: ' . $data . ',' . PHP_EOL;
+                $result .= '          data: ' . self::json_inline($data) . ',' . PHP_EOL;
                 $result .= '          itemSelector: "#'.$uniq.'",' . PHP_EOL;
                 $result .= '          previousSelector: "#previous-'.$uniq.'",' . PHP_EOL;
                 $result .= '          nextSelector: "#next-'.$uniq.'",' . PHP_EOL;
@@ -6963,16 +7126,16 @@ trait Output {
                 if ($_attributes['metric'] == 'density') {
                     $result .= '          considerMissingDataAsZero: false,' . PHP_EOL;
                     $result .= '          legendColors: ["#BBCCDD", "#122448"],' . PHP_EOL;
-                    $result .= '          subDomainTitleFormat: {empty: "' . sprintf(__('%s <br/>No event', 'live-weather-station'), '{date}'). '", filled: "' . sprintf('%s <br/>%s %s', '{date}', '{count}', '{name}'). '"},' . PHP_EOL;
-                    $result .= '          itemName: ["' . mb_strtolower(__('Event', 'live-weather-station')) . '", "' . mb_strtolower(__('Events', 'live-weather-station')) . '"],' . PHP_EOL;
-                    $result .= '          legendTitleFormat: {lower: "' . sprintf(__('Less than %s %s.', 'live-weather-station'), '{min}', '{name}'). '",inner: "' . sprintf(__('Between %s and %s %s.', 'live-weather-station'), '{down}', '{up}', '{name}'). '",upper: "' . sprintf(__('More than %s %s.', 'live-weather-station'), '{max}', '{name}'). '"}' . PHP_EOL;
+                    $result .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(__('%s <br/>No event', 'live-weather-station'), '{date}')) . '", filled: "' . sprintf('%s <br/>%s %s', '{date}', '{count}', '{name}'). '"},' . PHP_EOL;
+                    $result .= '          itemName: ["' . self::js_str(mb_strtolower(__('Event', 'live-weather-station'))) . '", "' . self::js_str(mb_strtolower(__('Events', 'live-weather-station'))) . '"],' . PHP_EOL;
+                    $result .= '          legendTitleFormat: {lower: "' . self::js_str(sprintf(__('Less than %s %s.', 'live-weather-station'), '{min}', '{name}')) . '",inner: "' . self::js_str(sprintf(__('Between %s and %s %s.', 'live-weather-station'), '{down}', '{up}', '{name}')) . '",upper: "' . self::js_str(sprintf(__('More than %s %s.', 'live-weather-station'), '{max}', '{name}')) . '"}' . PHP_EOL;
                 }
                 else {
                     $result .= '          considerMissingDataAsZero: true,' . PHP_EOL;
                     $result .= '          legendColors: ["#D2DE76", "#AD001D"],' . PHP_EOL;
-                    $result .= '          subDomainTitleFormat: {empty: "' . sprintf(__('%s <br/>No data', 'live-weather-station'), '{date}'). '", filled: "' . sprintf(__('%s <br/>%s at %s', 'live-weather-station'), '{date}', '{name}', '{count}'). '"},' . PHP_EOL;
-                    $result .= '          itemName: ["' . __('Criticality', 'live-weather-station') . '", "' . __('Criticality', 'live-weather-station') . '"],' . PHP_EOL;
-                    $result .= '          legendTitleFormat: {lower: "' . sprintf(__('%s lower than %s.', 'live-weather-station'), '{name}', '{min}'). '",inner: "' . sprintf(__('%s between %s and %s.', 'live-weather-station'), '{name}', '{down}', '{up}'). '",upper: "' . sprintf(__('%s greater than %s.', 'live-weather-station'), '{name}', '{max}'). '"}' . PHP_EOL;
+                    $result .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(__('%s <br/>No data', 'live-weather-station'), '{date}')) . '", filled: "' . self::js_str(sprintf(__('%s <br/>%s at %s', 'live-weather-station'), '{date}', '{name}', '{count}')) . '"},' . PHP_EOL;
+                    $result .= '          itemName: ["' . self::js_str(__('Criticality', 'live-weather-station')) . '", "' . self::js_str(__('Criticality', 'live-weather-station')) . '"],' . PHP_EOL;
+                    $result .= '          legendTitleFormat: {lower: "' . self::js_str(sprintf(__('%s lower than %s.', 'live-weather-station'), '{name}', '{min}')) . '",inner: "' . self::js_str(sprintf(__('%s between %s and %s.', 'live-weather-station'), '{name}', '{down}', '{up}')) . '",upper: "' . self::js_str(sprintf(__('%s greater than %s.', 'live-weather-station'), '{name}', '{max}')) . '"}' . PHP_EOL;
                 }
                 $result .= '      });' . PHP_EOL;
                 $result .= '  });' . PHP_EOL;
@@ -6991,13 +7154,13 @@ trait Output {
                 $jsInitId = md5(random_bytes(18));
                 $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '    var data'.$uniq.' =' . $perf['dat']['count_by_pool'] . ';' . PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat']['count_by_pool']) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
                 $result .= '      var chart'.$uniq.' = nv.models.stackedAreaChart()' . PHP_EOL;
                 $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
                 $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
                 $result .= '               .clipEdge(true)' . PHP_EOL;
-                $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","stream":"' . __('Stream', 'live-weather-station') . '","expanded":"' . __('Expanded', 'live-weather-station') . '"})' . PHP_EOL;
+                $result .= '               .controlLabels({"stacked":"' . self::js_str(__('Stacked', 'live-weather-station')) . '","stream":"' . self::js_str(__('Stream', 'live-weather-station')) . '","expanded":"' . self::js_str(__('Expanded', 'live-weather-station')) . '"})' . PHP_EOL;
                 $result .= '               .interpolate("cardinal")' . PHP_EOL;
                 $result .= '               .color(d3.scale.category10().range())' . PHP_EOL;
                 $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
@@ -7021,7 +7184,7 @@ trait Output {
                 $jsInitId = md5(random_bytes(18));
                 $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '    var data'.$uniq.' =' . $perf['dat']['time_by_pool'] . ';' . PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat']['time_by_pool']) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
                 $result .= '      var chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
                 $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
@@ -7057,7 +7220,7 @@ trait Output {
                 $jsInitId = md5(random_bytes(18));
                 $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '    var data'.$uniq.' =' . $perf['dat'][$_attributes['metric']] . ';' . PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat'][$_attributes['metric']]) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
                 $result .= '      var chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
                 $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
@@ -7092,13 +7255,13 @@ trait Output {
                 $jsInitId = md5(random_bytes(18));
                 $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '    var data'.$uniq.' =' . $perf['dat']['count'] . ';' . PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat']['count']) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
                 $result .= '      var chart'.$uniq.' = nv.models.stackedAreaChart()' . PHP_EOL;
                 $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
                 $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
                 $result .= '               .clipEdge(true)' . PHP_EOL;
-                $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","stream":"' . __('Stream', 'live-weather-station') . '","expanded":"' . __('Expanded', 'live-weather-station') . '"})' . PHP_EOL;
+                $result .= '               .controlLabels({"stacked":"' . self::js_str(__('Stacked', 'live-weather-station')) . '","stream":"' . self::js_str(__('Stream', 'live-weather-station')) . '","expanded":"' . self::js_str(__('Expanded', 'live-weather-station')) . '"})' . PHP_EOL;
                 $result .= '               .controlOptions(["Expanded","Stacked"])' . PHP_EOL;
                 $result .= '               .interpolate("cardinal")' . PHP_EOL;
                 $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
@@ -7122,12 +7285,12 @@ trait Output {
                 $jsInitId = md5(random_bytes(18));
                 $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '    var data'.$uniq.' =' . $perf['dat']['time'] . ';' . PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat']['time']) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
                 $result .= '      var chart'.$uniq.' = nv.models.multiBarChart()' . PHP_EOL;
                 $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
                 $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
-                $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","grouped":"' . __('Grouped', 'live-weather-station') . '"});' . PHP_EOL;
+                $result .= '               .controlLabels({"stacked":"' . self::js_str(__('Stacked', 'live-weather-station')) . '","grouped":"' . self::js_str(__('Grouped', 'live-weather-station')) . '"});' . PHP_EOL;
                 $result .= '      chart'.$uniq.'.xAxis' . PHP_EOL;
                 $result .= '                 .showMaxMin(false)' . PHP_EOL;
                 $result .= '                 .ticks(3)' . PHP_EOL;
@@ -7148,7 +7311,7 @@ trait Output {
                 $jsInitId = md5(random_bytes(18));
                 $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '    var data'.$uniq.' =' . $perf['dat']['efficiency'] . ';' . PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat']['efficiency']) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
                 $result .= '      var chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
                 $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
@@ -7176,7 +7339,7 @@ trait Output {
                 $jsInitId = md5(random_bytes(18));
                 $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '    var data'.$uniq.' =' . $perf['dat']['time_saving'] . ';' . PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat']['time_saving']) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
                 $result .= '      var chart'.$uniq.' = nv.models.lineChart()' . PHP_EOL;
                 $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
@@ -7212,13 +7375,13 @@ trait Output {
                 $jsInitId = md5(random_bytes(18));
                 $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '    var data'.$uniq.' =' . $perf['dat'][$_attributes['metric']] . ';' . PHP_EOL;
+                $result .= '    var data'.$uniq.' =' . self::json_inline($perf['dat'][$_attributes['metric']]) . ';' . PHP_EOL;
                 $result .= '    nv.addGraph(function() {' . PHP_EOL;
                 $result .= '      var chart'.$uniq.' = nv.models.stackedAreaChart()' . PHP_EOL;
                 $result .= '               .x(function(d) {return d[0]})' . PHP_EOL;
                 $result .= '               .y(function(d) {return d[1]})' . PHP_EOL;
                 $result .= '               .clipEdge(true)' . PHP_EOL;
-                $result .= '               .controlLabels({"stacked":"' . __('Stacked', 'live-weather-station') . '","stream":"' . __('Stream', 'live-weather-station') . '","expanded":"' . __('Expanded', 'live-weather-station') . '"})' . PHP_EOL;
+                $result .= '               .controlLabels({"stacked":"' . self::js_str(__('Stacked', 'live-weather-station')) . '","stream":"' . self::js_str(__('Stream', 'live-weather-station')) . '","expanded":"' . self::js_str(__('Expanded', 'live-weather-station')) . '"})' . PHP_EOL;
                 $result .= '               .interpolate("cardinal")' . PHP_EOL;
                 $result .= '               .color(d3.scale.category20().range())' . PHP_EOL;
                 $result .= '               .useInteractiveGuideline(true);' . PHP_EOL;
@@ -7253,6 +7416,9 @@ trait Output {
      */
     public function timelapse_shortcodes($attributes) {
         $_attributes = shortcode_atts( array('device_id_1' => '','module_id_1' => '','measurement_1' => '','periodtype' => '','periodvalue' => '','size' => '','autoplay' => '','mode' => '','controls' => ''), $attributes );
+        foreach (array('device_id_1', 'module_id_1', 'measurement_1', 'periodtype', 'periodvalue', 'size', 'autoplay', 'mode', 'controls') as $key) {
+            $_attributes[$key] = Guard::token($_attributes[$key], '');
+        }
         $fingerprint = uniqid('', true);
         $uniq = 'timelapse'.substr ($fingerprint, strlen($fingerprint)-6, 80);
         $date = '1971-08-21 12:00:00';
@@ -7261,14 +7427,14 @@ trait Output {
                 $d = explode('-', $_attributes['periodvalue']);
                 if (!empty($d) && count($d) === 2) {
                     $station = $this->get_station_information_by_station_id($_attributes['device_id_1']);
-                    $date = self::get_date_from_mysql_utc(date('Y-m-d', strtotime(sprintf('-%s days', $d[1]))), $station['loc_timezone'], 'Y-m-d') . ' 12:00:00';
+                    $date = self::get_date_from_mysql_utc(date('Y-m-d', strtotime(sprintf('-%s days', (int)$d[1]))), $station['loc_timezone'], 'Y-m-d') . ' 12:00:00';
                 }
                 break;
             case 'fixed-timelapse':
                 $date = str_replace('_', ' ', $_attributes['periodvalue']);
                 break;
             default:
-                return __('Malformed shortcode. Please verify it!', 'live-weather-station');
+                return esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station');
         }
         $vidurl = self::get_video_by_date($_attributes['device_id_1'], $date, str_replace('video_', '', $_attributes['measurement_1']));
         if (isset($vidurl) and !empty($vidurl)) {
@@ -7292,10 +7458,10 @@ trait Output {
             $attr .=  ($_attributes['autoplay'] === 'auto' ? ' autoplay' : '');
             $attr .=  ($_attributes['mode'] === 'loop' ? ' loop' : '');
             $attr .=  ($_attributes['controls'] === 'full' ? ' controls' : '');
-            $result  = '<video id="'.$uniq.'" class="lws-video lws-timelapse" ' . $attr . ' src="' . $vidurl . '"></video>'.PHP_EOL;
+            $result  = '<video id="'.$uniq.'" class="lws-video lws-timelapse" ' . $attr . ' src="' . esc_url($vidurl) . '"></video>'.PHP_EOL;
         }
         else {
-            $result = __('No timelapse for this date.', 'live-weather-station');
+            $result = esc_html__('No timelapse for this date.', 'live-weather-station');
         }
         return $result;
     }
@@ -7308,6 +7474,11 @@ trait Output {
      */
     public function snapshot_shortcodes($attributes) {
         $_attributes = shortcode_atts(array('device_id' => '','module_id' => '','measure_type' => '','size' => '','fx' => '','speed' => '','mode'=>'full','uid'=>'','debug'=>''), $attributes);
+        foreach (array('device_id', 'module_id', 'measure_type', 'size', 'fx', 'uid', 'debug') as $key) {
+            $_attributes[$key] = Guard::token($_attributes[$key], '');
+        }
+        $_attributes['speed'] = (string)Guard::int($_attributes['speed'], 0);
+        $_attributes['mode'] = Guard::enum($_attributes['mode'], array('full', 'url'), 'full');
         $fingerprint = uniqid('', true);
         $uniq = 'snapshot'.substr ($fingerprint, strlen($fingerprint)-6, 80);
         if ($_attributes['uid'] !== '') {
@@ -7349,16 +7520,16 @@ trait Output {
             else {
                 $style = 'width:80vw; height:80vw; max-width:640px; max-height:640px; display:inline-block;';
             }
-            $style = ' style="' . $style . 'background-image: url(\'' . $photourl . '\');' . $transition . ';background-size: contain;"';
+            $style = ' style="' . $style . 'background-image: url(\'' . esc_url($photourl) . '\');' . $transition . ';background-size: contain;"';
             if ($_attributes['mode'] === 'url') {
-                $result = $photourl;
+                $result = esc_url_raw($photourl);
             }
             else {
-                $result = '<div id="'.$uniq.'" ' . $style . ' class="lws-picture lws-snapshot"></div>'.PHP_EOL;
+                $result = '<div id="'.esc_attr($uniq).'" ' . $style . ' class="lws-picture lws-snapshot"></div>'.PHP_EOL;
             }
         }
         else {
-            $result =  __('Malformed shortcode. Please verify it!', 'live-weather-station');
+            $result =  esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station');
         }
         return $result;
     }
@@ -7375,6 +7546,12 @@ trait Output {
         $spinner = 'spinner'.substr ($fingerprint, strlen($fingerprint)-6, 80);
         $image = 'image'.substr ($fingerprint, strlen($fingerprint)-6, 80);
         $_attributes = shortcode_atts(array('device_id' => '','module_id' => '','measure_type' => '','size' => '','fx' => '','speed' => '', 'mode'=>'full','uid'=>$uniq), $attributes);
+        foreach (array('device_id', 'module_id', 'measure_type', 'size', 'fx', 'uid') as $key) {
+            $_attributes[$key] = Guard::token($_attributes[$key], ($key == 'uid' ? $uniq : ''));
+        }
+        $_attributes['speed'] = (string)Guard::int($_attributes['speed'], 0);
+        $_attributes['mode'] = Guard::enum($_attributes['mode'], array('full', 'url'), 'full');
+        $uniq = $_attributes['uid'];
         $time = 1000 * (120 + rand(-20, 20));
         $shortcode = '[live-weather-station-snapshot device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' size=\'' . $_attributes['size'] . '\' fx=\'' . $_attributes['fx'] . '\' speed=\'' . $_attributes['speed'] . '\' mode=\'url\']';
         $result = $this->snapshot_shortcodes($_attributes);
@@ -7394,7 +7571,7 @@ trait Output {
                 wp_enqueue_script('jquery-color');
                 $result .= '  var ' . $image .' = new Image();'.PHP_EOL;
                 $result .= '  ' . $image .'.onload = function() {$("#' . $uniq . '").css("background-image", "url(" + ' . $image .'.src + ")");}'.PHP_EOL;
-                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {' . $image .'.src = data;});}, '.$time.');})'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {' . $image .'.src = data;});}, '.(int)$time.');})'.PHP_EOL;
                 break;
             case 'spin':
                 wp_enqueue_script('jquery-color');
@@ -7404,13 +7581,13 @@ trait Output {
                 $result .= '  var opts = {lines: 15, length: 28, width: 8, radius: 42, scale: ' . $scale . ', corners: 1, color: "#ffffff", opacity: 0.2, rotate: 0, direction: 1, speed: 1, trail: 60, fps: 20, zIndex: 2e9, className: "c_' . $spinner .'", top: "50%", left: "50%", shadow: false, hwaccel: false, position: "relative"};' . PHP_EOL;
                 $result .= '  var target = document.getElementById("' . $uniq . '");' . PHP_EOL;
                 $result .= '  var ' . $spinner . ' = new Spinner(opts);' . PHP_EOL;
-                $result .= '  setInterval(function() {' . $spinner . '.spin(target); $.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {' . $image .'.src = data;});}, '.$time.');})'.PHP_EOL;
+                $result .= '  setInterval(function() {' . $spinner . '.spin(target); $.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {' . $image .'.src = data;});}, '.(int)$time.');})'.PHP_EOL;
                 break;
             default:
                 wp_enqueue_script('jquery-color');
                 $result .= '  var ' . $image .' = new Image();'.PHP_EOL;
                 $result .= '  ' . $image .'.onload = function() {$("#' . $uniq . '").css("background-image", "url(" + ' . $image .'.src + ")");}'.PHP_EOL;
-                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {' . $image .'.src = data;});}, '.$time.');})'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {' . $image .'.src = data;});}, '.(int)$time.');})'.PHP_EOL;
         }
         $result .= lws_print_end_script($jsInitId);
         return $result;
@@ -7424,6 +7601,9 @@ trait Output {
      */
     public function lcd_shortcodes($attributes) {
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','design' => '','size' => '','speed' => ''), $attributes );
+        foreach (array('device_id', 'module_id', 'measure_type', 'design', 'size', 'speed') as $_key) {
+            $_attributes[$_key] = \WeatherStation\System\Output\Guard::token($_attributes[$_key], '');
+        }
         $fingerprint = uniqid('', true);
         $uniq = 'lcd'.substr ($fingerprint, strlen($fingerprint)-6, 80);
         $name = $this->get_operational_station_name($_attributes['device_id']);
@@ -7435,7 +7615,7 @@ trait Output {
         if (is_array($name)) {
             return __(LWS_PLUGIN_NAME, 'live-weather-station').' - '.$name['condition']['message'];
         }
-        $name = substr($name, 0, 20);
+        $name = function_exists('mb_substr') ? mb_substr($name, 0, 20) : substr($name, 0, 20);
         wp_enqueue_style('lws-lcd');
         wp_enqueue_script('lws-lcd');
         $result  = '<div id="'.$uniq.'"></div>'.PHP_EOL;
@@ -7445,15 +7625,15 @@ trait Output {
         $result .= '    var c'.$uniq.' = new lws_lcd.LCDPanel({'.PHP_EOL;
         $result .= '                    id              : "id'.$uniq.'",'.PHP_EOL;
         $result .= '                    parentId        : "'.$uniq.'",'.PHP_EOL;
-        $result .= '                    upperCenterText : "'.$name.'",'.PHP_EOL;
-        $result .= '                    qDevice         : "'.$_attributes['device_id'].'",'.PHP_EOL;
-        $result .= '                    qModule         : "'.$_attributes['module_id'].'",'.PHP_EOL;
-        $result .= '                    qMeasure        : "'.$_attributes['measure_type'].'",'.PHP_EOL;
-        $result .= '                    qPostUrl        : "'.LWS_AJAX_URL.'",'.PHP_EOL;
-        $result .= '                    design          : "'.$_attributes['design'].'",'.PHP_EOL;
-        $result .= '                    size            : "'.$_attributes['size'].'",'.PHP_EOL;
+        $result .= '                    upperCenterText : '.\WeatherStation\System\Output\Guard::js($name).','.PHP_EOL;
+        $result .= '                    qDevice         : '.\WeatherStation\System\Output\Guard::js($_attributes['device_id']).','.PHP_EOL;
+        $result .= '                    qModule         : '.\WeatherStation\System\Output\Guard::js($_attributes['module_id']).','.PHP_EOL;
+        $result .= '                    qMeasure        : '.\WeatherStation\System\Output\Guard::js($_attributes['measure_type']).','.PHP_EOL;
+        $result .= '                    qPostUrl        : '.\WeatherStation\System\Output\Guard::js(LWS_AJAX_URL).','.PHP_EOL;
+        $result .= '                    design          : '.\WeatherStation\System\Output\Guard::js($_attributes['design']).','.PHP_EOL;
+        $result .= '                    size            : '.\WeatherStation\System\Output\Guard::js($_attributes['size']).','.PHP_EOL;
         $result .= '                    scalable        : '.(string)$scalable.','.PHP_EOL;
-        $result .= '                    cycleSpeed      : "'.$_attributes['speed'].'"'.PHP_EOL;
+        $result .= '                    cycleSpeed      : '.\WeatherStation\System\Output\Guard::js($_attributes['speed']).''.PHP_EOL;
         $result .= '    });'.PHP_EOL;
         $result .= '  });'.PHP_EOL;
         $result .= lws_print_end_script($jsInitId);
@@ -7937,6 +8117,9 @@ trait Output {
                 $forced = explode('-',$attributes['force']);
                 foreach ($forced as $f) {
                     $col = explode(':',$f);
+                    if (!isset($col[1]) || \WeatherStation\System\Output\Guard::color($col[1], '') === '') {
+                        continue;
+                    }
                     switch ($col[0]) {
                         case 'ptr':
                             $pointerOptions['color'] = $col[1] ;
@@ -7996,11 +8179,15 @@ trait Output {
         $uniq = 'jgg'.substr ($fingerprint, strlen($fingerprint)-6, 80);
         $time = 1000 * (120 + rand(-20, 20));
         $_attributes = shortcode_atts( array('id' => $uniq,'device_id' => '','module_id' => '','measure_type' => '','design' => '','color' => '','force' => '','pointer' => '','title' => '','subtitle' => '','unit' => '','size' => ''), $attributes );
+        foreach (array('id', 'device_id', 'module_id', 'measure_type', 'design', 'color', 'title', 'subtitle', 'unit', 'size') as $_key) {
+            $_attributes[$_key] = \WeatherStation\System\Output\Guard::token($_attributes[$_key], '');
+        }
+        $_attributes['pointer'] = \WeatherStation\System\Output\Guard::enum($_attributes['pointer'], array('', 'none', 'external', 'internal'), '');
         $sc_device = $_attributes['device_id'];
         $sc_module = $_attributes['module_id'];
         $sc_measurement = $_attributes['measure_type'];
-        $values = json_encode($this->justgage_attributes($_attributes));
-        switch ($attributes['size']) {
+        $values = \WeatherStation\System\Output\Guard::js($this->justgage_attributes($_attributes));
+        switch ($_attributes['size']) {
             case 'small':
                 $h = '100px';
                 $w = '100px';
@@ -8028,10 +8215,10 @@ trait Output {
         $result .= '  setInterval(function() {'.PHP_EOL;
         $result .= '    var http = new XMLHttpRequest();'.PHP_EOL;
         $result .= '    var params = "action=lws_query_justgage_measurements";'.PHP_EOL;
-        $result .= '    params = params+"&device_id='.$sc_device.'";'.PHP_EOL;
-        $result .= '    params = params+"&module_id='.$sc_module.'";'.PHP_EOL;
-        $result .= '    params = params+"&measure_type='.$sc_measurement.'";'.PHP_EOL;
-        $result .= '    http.open("POST", "'.LWS_AJAX_URL.'", true);'.PHP_EOL;
+        $result .= '    params = params+"&device_id="+encodeURIComponent('.\WeatherStation\System\Output\Guard::js($sc_device).');'.PHP_EOL;
+        $result .= '    params = params+"&module_id="+encodeURIComponent('.\WeatherStation\System\Output\Guard::js($sc_module).');'.PHP_EOL;
+        $result .= '    params = params+"&measure_type="+encodeURIComponent('.\WeatherStation\System\Output\Guard::js($sc_measurement).');'.PHP_EOL;
+        $result .= '    http.open("POST", '.\WeatherStation\System\Output\Guard::js(LWS_AJAX_URL).', true);'.PHP_EOL;
         $result .= '    http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");'.PHP_EOL;
         $result .= '    http.onreadystatechange = function () {'.PHP_EOL;
         $result .= '      if (http.readyState == 4 && http.status == 200) {'.PHP_EOL;
@@ -8211,7 +8398,7 @@ trait Output {
         $result['value'] = round($value, $precision);
         $result['value_min'] = $value_min;
         $result['value_max'] = $value_max;
-        $result['value_trend'] = $value_trend;
+        $result['value_trend'] = in_array($value_trend, array('up', 'down', 'steady'), true) ? $value_trend : 'steady';
         $result['value_aux'] = ($value_aux != -9999 ? $value_aux : $result['value'] );
         $result['alarm'] = $alarm;
         Cache::set_frontend($fingerprint, $result);
@@ -8227,7 +8414,27 @@ trait Output {
      */
     public function steelmeter_attributes($attributes) {
         $result = array();
+        // Every value below ends up as raw JS (steelseries constants): only strict identifiers are accepted.
+        $const = function($value, $default) {
+            $value = strtoupper((string)$value);
+            return (preg_match('/^[A-Z0-9_]{1,40}$/', $value) === 1 ? $value : $default);
+        };
+        $attributes['frame'] = $const($attributes['frame'] ?? '', 'METAL');
+        $attributes['background'] = $const($attributes['background'] ?? '', 'DARK_GRAY');
+        $attributes['orientation'] = $const($attributes['orientation'] ?? '', 'AUTO');
+        $attributes['main_pointer_type'] = $const($attributes['main_pointer_type'] ?? '', 'TYPE1');
+        $attributes['main_pointer_color'] = $const($attributes['main_pointer_color'] ?? '', 'RED');
+        $attributes['aux_pointer_type'] = $const($attributes['aux_pointer_type'] ?? '', 'TYPE1');
+        $attributes['aux_pointer_color'] = $const($attributes['aux_pointer_color'] ?? '', 'BLUE');
+        $attributes['lcd'] = $const($attributes['lcd'] ?? '', 'NONE');
+        $attributes['alarm'] = $const($attributes['alarm'] ?? '', 'NONE');
+        $attributes['trend'] = $const($attributes['trend'] ?? '', 'NONE');
+        $attributes['glass'] = $const($attributes['glass'] ?? '', 'TYPE1');
+        $knob = explode('-', (string)($attributes['knob'] ?? ''));
+        $attributes['knob'] = $const($knob[0], 'STANDARD_KNOB') . '-' . $const($knob[1] ?? '', 'BLACK');
         $values = $this->steelmeter_value($attributes, true);
+        $values['min'] = (is_numeric($values['min']) ? $values['min'] + 0 : 0);
+        $values['max'] = (is_numeric($values['max']) ? $values['max'] + 0 : 0);
         $result['minValue'] = $values['min'];
         $result['maxValue'] = $values['max'];
         $min = $values['min'];
@@ -8478,12 +8685,12 @@ trait Output {
             $result['valueColor'] = 'steelseries.ColorDef.WHITE';
         }
         $result['lcdDecimals'] = $values['decimals'];
-        $result['titleString'] = '"'.$values['type'].'"';
-        $result['unitString'] = '"• '.$values['unit'].' •"';
+        $result['titleString'] = \WeatherStation\System\Output\Guard::js($values['type']);
+        $result['unitString'] = \WeatherStation\System\Output\Guard::js('• '.$values['unit'].' •');
         $result['digitalFont'] = true;
         if (strpos($attributes['design'], 'digital') !== false ) {
             unset($result['titleString']);
-            $result['unitString'] = '"'.$values['type'].' • '.$values['unit'].'"';
+            $result['unitString'] = \WeatherStation\System\Output\Guard::js($values['type'].' • '.$values['unit']);
         }
         if (strpos($attributes['design'], 'meter-') !== false ) {
             unset($result['titleString']);
@@ -8492,11 +8699,11 @@ trait Output {
         if (strpos($attributes['design'], 'windcompass') !== false ) {
             unset($result['titleString']);
             unset($result['unitString']);
-            $result['lcdTitleStrings'] = '["'.__('Wind', 'live-weather-station').'", "'.__('Gust', 'live-weather-station').'"]';
+            $result['lcdTitleStrings'] = '['.\WeatherStation\System\Output\Guard::js(__('Wind', 'live-weather-station')).', '.\WeatherStation\System\Output\Guard::js(__('Gust', 'live-weather-station')).']';
         }
         if (strpos($attributes['design'], 'altimeter') !== false ) {
             unset($result['titleString']);
-            $result['unitString'] = '"'.$values['type'].'"';
+            $result['unitString'] = \WeatherStation\System\Output\Guard::js($values['type']);
         }
 
         if (strpos($attributes['design'], 'windcompass-vintage') !== false ) {
@@ -8539,18 +8746,31 @@ trait Output {
         $_attributes['index_style'] = strtoupper($_attributes['index_style']);
         $_attributes['index_color'] = strtoupper($_attributes['index_color']);
         $_attributes['glass'] = strtoupper($_attributes['glass']);
+        foreach (array('device_id', 'module_id', 'measure_type', 'design', 'minmax', 'index_style', 'index_color', 'size') as $_key) {
+            $_attributes[$_key] = \WeatherStation\System\Output\Guard::token($_attributes[$_key], '');
+        }
         $sc_device = $_attributes['device_id'];
         $sc_module = $_attributes['module_id'];
         $sc_measurement = $_attributes['measure_type'];
 
-        $params = json_encode($this->steelmeter_attributes($_attributes));
+        // Strings of the config are JS expressions built (and validated) by steelmeter_attributes(): emitted as is.
+        $params = array();
+        foreach ($this->steelmeter_attributes($_attributes) as $_key => $_val) {
+            if (is_bool($_val)) {
+                $_val = ($_val ? 'true' : 'false');
+            }
+            elseif (is_int($_val) || is_float($_val) || (is_string($_val) && is_numeric($_val))) {
+                $_val = json_encode($_val + 0);
+            }
+            $params[] = \WeatherStation\System\Output\Guard::js((string)$_key) . ':' . $_val;
+        }
+        $params = '{' . implode(',', $params) . '}';
         $value = $this->steelmeter_value($_attributes, true);
+        foreach (array('value', 'value_aux', 'value_min', 'value_max') as $_key) {
+            $value[$_key] = (is_numeric($value[$_key]) ? $value[$_key] + 0 : 0);
+        }
 
-        $params = str_replace('\"', '!', $params);
-        $params = str_replace('"', '', $params);
-        $params = str_replace('!', '"', $params);
-
-        switch ($attributes['size']) {
+        switch ($_attributes['size']) {
             case 'small':
                 $h = '150px';
                 $w = '150px';
@@ -8641,15 +8861,15 @@ trait Output {
             }
         }
         if ($trend) {
-            $result .= '        g'.$uniq.'.setTrend(steelseries.TrendState.'.strtoupper($value['value_trend']).');'.PHP_EOL;
+            $result .= '        g'.$uniq.'.setTrend(steelseries.TrendState.'.\WeatherStation\System\Output\Guard::enum(strtoupper($value['value_trend']), array('UP', 'DOWN', 'STEADY'), 'STEADY').');'.PHP_EOL;
         }
         $result .= '        setInterval(function() {'.PHP_EOL;
         $result .= '          var http = new XMLHttpRequest();'.PHP_EOL;
         $result .= '          var params = "action=lws_query_steelmeter_measurements";'.PHP_EOL;
-        $result .= '          params = params+"&device_id='.$sc_device.'";'.PHP_EOL;
-        $result .= '          params = params+"&module_id='.$sc_module.'";'.PHP_EOL;
-        $result .= '          params = params+"&measure_type='.$sc_measurement.'";'.PHP_EOL;
-        $result .= '          http.open("POST", "'.LWS_AJAX_URL.'", true);'.PHP_EOL;
+        $result .= '          params = params+"&device_id="+encodeURIComponent('.\WeatherStation\System\Output\Guard::js($sc_device).');'.PHP_EOL;
+        $result .= '          params = params+"&module_id="+encodeURIComponent('.\WeatherStation\System\Output\Guard::js($sc_module).');'.PHP_EOL;
+        $result .= '          params = params+"&measure_type="+encodeURIComponent('.\WeatherStation\System\Output\Guard::js($sc_measurement).');'.PHP_EOL;
+        $result .= '          http.open("POST", '.\WeatherStation\System\Output\Guard::js(LWS_AJAX_URL).', true);'.PHP_EOL;
         $result .= '          http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");'.PHP_EOL;
         $result .= '          http.onreadystatechange = function () {'.PHP_EOL;
         $result .= '            if (http.readyState == 4 && http.status == 200) {'.PHP_EOL;
@@ -8737,7 +8957,7 @@ trait Output {
                                 }
                                 break;
                         }
-                        $_result['result'][$_attributes['measure_type']] = $url;
+                        $_result['result'][$_attributes['measure_type']] = esc_url_raw($url);
                         break;
                     default:
                         $_result = $this->get_specific_measurements($_attributes);
@@ -9033,6 +9253,10 @@ trait Output {
             default:
                 $result = esc_html($result);
         }
+        // Values come from the DB / vendors: no markup allowed (entities like &nbsp; built by the plugin are kept).
+        if (is_string($result)) {
+            $result = wp_kses($result, array());
+        }
         Cache::set_frontend($fingerprint, $result);
         return $result;
     }
@@ -9046,31 +9270,36 @@ trait Output {
     public function livetextual_shortcodes($attributes) {
         wp_enqueue_script('jquery');
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => '', 'fx'=>'','color'=>'','speed'=>''), $attributes );
+        foreach (array('device_id', 'module_id', 'measure_type', 'element', 'format') as $_key) {
+            $_attributes[$_key] = \WeatherStation\System\Output\Guard::token($_attributes[$_key], '');
+        }
+        $_attributes['fx'] = \WeatherStation\System\Output\Guard::enum($_attributes['fx'], array('fade-to-initial', 'glow', 'blink'), '');
+        $_attributes['color'] = \WeatherStation\System\Output\Guard::color($_attributes['color'], '');
         $fingerprint = uniqid('', true);
         $uuid = substr ($fingerprint, strlen($fingerprint)-6, 80);
         $uniq = 'live-textual-' . $uuid;
         $time = 1000 * (120 + rand(-20, 20));
         $speed = (int)$_attributes['speed'] / 2;
         $shortcode = 'live-weather-station-textual device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' element=\'' . $_attributes['element'] . '\' format=\'' . $_attributes['format'] . '\'';
-        $result = '<span id="' . $uniq . '" class="lws-livetextual lws-measurement-type-' . str_replace('_', '-', $_attributes['measure_type']) . '">' . do_shortcode('[' . $shortcode . ']') . '</span>';
+        $result = '<span id="' . $uniq . '" class="lws-livetextual lws-measurement-type-' . esc_attr(str_replace('_', '-', $_attributes['measure_type'])) . '">' . do_shortcode('[' . $shortcode . ']') . '</span>';
         $jsInitId = md5(random_bytes(18));
         $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         switch ($_attributes['fx']) {
             case 'fade-to-initial':
                 wp_enqueue_script('jquery-color');
-                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: "' . $_attributes['color'] . '"}, 0 );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, 0 );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
                 break;
             case 'glow':
                 wp_enqueue_script('jquery-color');
-                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: "' . $_attributes['color'] . '"}, ' . $speed . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, ' . $speed . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
                 break;
             case 'blink':
                 wp_enqueue_script('jquery-color');
-                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");for (i=0; i<4; i++) { $("#' . $uniq . '").animate({color: "' . $_attributes['color'] . '"}, ' . $speed/4 . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed/4 . ' );}});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");for (i=0; i<4; i++) { $("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, ' . $speed/4 . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed/4 . ' );}});}, '.$time.');});'.PHP_EOL;
                 break;
             default:
-                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);});}, '.$time.');});'.PHP_EOL;
         }
         $result .= lws_print_end_script($jsInitId);
         return $result;
@@ -9121,31 +9350,36 @@ trait Output {
         wp_enqueue_style('lws-weather-icons-wind');
         lws_font_awesome();
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => '', 'fx'=>'','color'=>'','speed'=>''), $attributes );
+        foreach (array('device_id', 'module_id', 'measure_type', 'element', 'format') as $_key) {
+            $_attributes[$_key] = \WeatherStation\System\Output\Guard::token($_attributes[$_key], '');
+        }
+        $_attributes['fx'] = \WeatherStation\System\Output\Guard::enum($_attributes['fx'], array('fade-to-initial', 'glow', 'blink'), '');
+        $_attributes['color'] = \WeatherStation\System\Output\Guard::color($_attributes['color'], '');
         $fingerprint = uniqid('', true);
         $uuid = substr ($fingerprint, strlen($fingerprint)-6, 80);
         $uniq = 'live-icon-' . $uuid;
         $time = 1000 * (120 + rand(-20, 20));
         $speed = (int)$_attributes['speed'] / 2;
         $shortcode = 'live-weather-station-icon device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' element=\'' . $_attributes['element'] . '\' format=\'' . $_attributes['format'] . '\'';
-        $result = '<span id="' . $uniq . '" class="lws-liveicon-value lws-measurement-type-' . str_replace('_', '-', $_attributes['measure_type']) . '">' . do_shortcode('[' . $shortcode . ']') . '</span>';
+        $result = '<span id="' . $uniq . '" class="lws-liveicon-value lws-measurement-type-' . esc_attr(str_replace('_', '-', $_attributes['measure_type'])) . '">' . do_shortcode('[' . $shortcode . ']') . '</span>';
         $jsInitId = md5(random_bytes(18));
         $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
         $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
         switch ($_attributes['fx']) {
             case 'fade-to-initial':
                 wp_enqueue_script('jquery-color');
-                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: "' . $_attributes['color'] . '"}, 0 );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, 0 );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
                 break;
             case 'glow':
                 wp_enqueue_script('jquery-color');
-                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: "' . $_attributes['color'] . '"}, ' . $speed . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");$("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, ' . $speed . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed . ' );});}, '.$time.');});'.PHP_EOL;
                 break;
             case 'blink':
                 wp_enqueue_script('jquery-color');
-                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");for (i=0; i<4; i++) { $("#' . $uniq . '").animate({color: "' . $_attributes['color'] . '"}, ' . $speed/4 . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed/4 . ' );}});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);var old_color=$("#' . $uniq . '").css("color");for (i=0; i<4; i++) { $("#' . $uniq . '").animate({color: ' . \WeatherStation\System\Output\Guard::js($_attributes['color']) . '}, ' . $speed/4 . ' );$("#' . $uniq . '").animate({color: old_color}, ' . $speed/4 . ' );}});}, '.$time.');});'.PHP_EOL;
                 break;
             default:
-                $result .= '  setInterval(function() {$.post( "' . LWS_AJAX_URL . '", {action: "lws_shortcode", sc:"' . str_replace('\'', '\\\'', $shortcode) . '"}).done(function(data) {$("#' . $uniq . '").html(data);});}, '.$time.');});'.PHP_EOL;
+                $result .= '  setInterval(function() {$.post( ' . \WeatherStation\System\Output\Guard::js(LWS_AJAX_URL) . ', {action: "lws_shortcode", sc:' . \WeatherStation\System\Output\Guard::js($shortcode) . '}).done(function(data) {$("#' . $uniq . '").html(data);});}, '.$time.');});'.PHP_EOL;
         }
         $result .= lws_print_end_script($jsInitId);
         return $result;
@@ -9651,6 +9885,8 @@ trait Output {
      * @since 3.8.0
      */
     protected function output_zcast_iconic_value($value, $main_color, $extraclass, $is_day=null, $mix_day=null) {
+        $main_color = (preg_match('/^(#[0-9A-Fa-f]{3,8}|[A-Za-z-]{3,30}|rgba?\([0-9 ,.%]+\))?$/', (string)$main_color) === 1 ? (string)$main_color : 'inherit');
+        $extraclass = preg_replace('/[^A-Za-z0-9_ -]/', '', (string)$extraclass);
         $result = '<span class="lws-icon lws-stacked-icon ' . $extraclass . '" style="vertical-align: middle;padding: 0;margin: 0;">';
         $arrow = false;
         $icons = $this->get_zcast_icons($value);
@@ -9700,6 +9936,8 @@ trait Output {
      */
     protected function output_iconic_value($value, $type, $module_type='NAMain', $show_value=false, $main_color=null, $extraclass='', $is_day=null, $mix_day=null) {
         lws_font_awesome();
+        $main_color = (preg_match('/^(#[0-9A-Fa-f]{3,8}|[A-Za-z-]{3,30}|rgba?\([0-9 ,.%]+\))?$/', (string)$main_color) === 1 ? (string)$main_color : 'inherit');
+        $extraclass = preg_replace('/[^A-Za-z0-9_ -]/', '', (string)$extraclass);
         $type = strtolower($type);
         if (strpos($type, 'sunrise') === 0) {
             $type = 'sunrise';
@@ -9916,7 +10154,7 @@ trait Output {
                     }
                 }
                 if ($show_value) {
-                    $icon = 'wi-owm-' . $spec . $value;
+                    $icon = 'wi-owm-' . $spec . preg_replace('/[^A-Za-z0-9_-]/', '', (string)$value);
                     $class = 'wi ';
                     $size = ' ico-size-1';
                 }
@@ -10039,7 +10277,7 @@ trait Output {
                 $size = ' ico-size-2';
                 $align = 'unset';
                 if ($show_value) {
-                    $s = (get_option('live_weather_station_wind_semantics') == 0 ? 'towards' : 'from') . '-' . $value . '-deg';
+                    $s = (get_option('live_weather_station_wind_semantics') == 0 ? 'towards' : 'from') . '-' . preg_replace('/[^A-Za-z0-9_-]/', '', (string)$value) . '-deg';
                     $icon = 'wi-wind ' . $s ;
                 }
                 break;
@@ -10069,7 +10307,7 @@ trait Output {
                 $size = ' ico-size-2';
                 $align = '-10%';
                 if ($show_value) {
-                    $s = 'towards-' . $value . '-deg';
+                    $s = 'towards-' . preg_replace('/[^A-Za-z0-9_-]/', '', (string)$value) . '-deg';
                     $icon = 'wi-wind ' . $s ;
                 }
                 break;
@@ -10141,7 +10379,7 @@ trait Output {
             default:
                 $result = '<i %1$s class="' . LWS_FAR . ' ' . (LWS_FA5?'fa-file':'fa-file-o') . ' %2$s" aria-hidden="true"></i>';
         }
-        return sprintf($result, $style, $extra);
+        return sprintf($result, $style, esc_attr($extra));
     }
 
     /**
@@ -11911,7 +12149,7 @@ trait Output {
                 $p = self::get_picture($id);
                 if (is_array($p) && !empty($p)) {
                     if (array_key_exists('item_url', $p)) {
-                        $result = $p['item_url'];
+                        $result = esc_url_raw($p['item_url']);
                     }
                 }
             }
@@ -12794,7 +13032,7 @@ trait Output {
         if (isset($pressure)) {
             $s = '';
             if (isset($pressure_trend)) {
-                $s = ' trend="' . $pressure_trend . '"';
+                $s = ' trend="' . esc_attr($pressure_trend) . '"';
             }
             $values .= '   <pressure value="' . $pressure . '"' . $s . ' unit="hPa"/>' . PHP_EOL;
         }
@@ -13219,7 +13457,7 @@ trait Output {
                 }
                 if ($data['measure_type'] == 'firmware') {
                     $module['firmware'] = $data['measure_value'];
-                    $module['firmware_txt'] = __('rev.', 'live-weather-station') . ' ' . $data['measure_value'];
+                    $module['firmware_txt'] = __('rev.', 'live-weather-station') . ' ' . esc_html($data['measure_value']);
                 }
                 if ($data['measure_type'] == 'last_refresh') {
                     $module['last_refresh'] = $data['measure_value'];
@@ -13297,6 +13535,8 @@ trait Output {
                     if ($val['measure_type'] == 'weather' || $val['measure_type'] == 'zcast_live' || $val['measure_type'] == 'zcast_best') {
                         $val['measure_value_txt'] = ucfirst($val['measure_value_txt']);
                     }
+                    // Vendor value: no markup allowed (entities like &nbsp; built above are kept).
+                    $val['measure_value_txt'] = wp_kses($val['measure_value_txt'], array());
                     $module['measure'][] = $val;
                 }
             }
@@ -13326,15 +13566,15 @@ trait Output {
      */
     protected function get_sharing_details($data) {
         $result = array();
-        $t = ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank"' : '');
+        $t = ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" rel="noopener noreferrer"' : '');
         if ($data['pws_sync']) {
-            $result[] = '<a href="http://www.pwsweather.com/obs/' . $data['pws_user'] . '.html"' . $t . '>PWS Weather</a>';
+            $result[] = '<a href="' . esc_url('http://www.pwsweather.com/obs/' . rawurlencode($data['pws_user']) . '.html') . '"' . $t . '>PWS Weather</a>';
         }
         if ($data['wow_sync']) {
-            $result[] = '<a href="http://wow.metoffice.gov.uk/weather/view?siteID=' . $data['wow_user'] . '"' . $t . '>WOW Met Office</a>';
+            $result[] = '<a href="' . esc_url('http://wow.metoffice.gov.uk/weather/view?siteID=' . rawurlencode($data['wow_user'])) . '"' . $t . '>WOW Met Office</a>';
         }
         if ($data['wug_sync']) {
-            $result[] = '<a href="https://www.wunderground.com/personal-weather-station/dashboard?ID=' . $data['wug_user'] . '"' . $t . '>Weather Underground</a>';
+            $result[] = '<a href="' . esc_url('https://www.wunderground.com/personal-weather-station/dashboard?ID=' . rawurlencode($data['wug_user'])) . '"' . $t . '>Weather Underground</a>';
         }
         return $result;
     }
@@ -13348,14 +13588,14 @@ trait Output {
      */
     protected function get_publishing_details($data) {
         $result = array();
-        $target = ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank"' : '');
+        $target = ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" rel="noopener noreferrer"' : '');
         if ($data['txt_sync']) {
             $url = site_url('/get-weather/' . strtolower($data['station_id']) . '/stickertags/');
-            $result[] = '<a href="' . $url . '"' . $target . '>Stickertags</a>';
+            $result[] = '<a href="' . esc_url($url) . '"' . $target . '>Stickertags</a>';
         }
         if ($data['yow_sync']) {
             $url = site_url('/get-weather/' . strtolower($data['station_id']) . '/yowindow/');
-            $result[] = '<a href="' . $url . '"' . $target . '>YoWindow</a>';
+            $result[] = '<a href="' . esc_url($url) . '"' . $target . '>YoWindow</a>';
         }
         return $result;
     }
@@ -13503,18 +13743,20 @@ trait Output {
     public function admin_historical_capabilities_shortcodes($attributes) {
         $result = '';
         $_attributes = shortcode_atts( array('item' => 'daily', 'mode' => 'current', 'style' => 'icon', 'column' => 3, 'border_color' => '#2D7DD2', 'background_color' => 'rgba(45,125,210,0.1)', 'font_color' => '#FFFFFF'), $attributes );
-        $item = $_attributes['item'];
-        $column = $_attributes['column'];
-        $style = $_attributes['style'];
-        $bcol = $_attributes['border_color'];
-        $bgcol = $_attributes['background_color'];
-        $fcol = $_attributes['font_color'];
+        $item = \WeatherStation\System\Output\Guard::enum($_attributes['item'], array('daily', 'yearly'), '');
+        $column = max(1, \WeatherStation\System\Output\Guard::int($_attributes['column'], 3));
+        $style = \WeatherStation\System\Output\Guard::enum($_attributes['style'], array('icon', 'check'), 'icon');
+        // Colors end up in inline style attributes: only #hex, names and rgb()/rgba() are accepted.
+        $color_pattern = '/^(#[0-9A-Fa-f]{3,8}|[A-Za-z]{3,30}|rgba?\([0-9 ,.%]+\))$/';
+        $bcol = (preg_match($color_pattern, (string)$_attributes['border_color']) === 1 ? (string)$_attributes['border_color'] : '#2D7DD2');
+        $bgcol = (preg_match($color_pattern, (string)$_attributes['background_color']) === 1 ? (string)$_attributes['background_color'] : 'rgba(45,125,210,0.1)');
+        $fcol = (preg_match($color_pattern, (string)$_attributes['font_color']) === 1 ? (string)$_attributes['font_color'] : '#FFFFFF');
         if($_attributes['mode'] == 'current') {
             $type = (bool)get_option('live_weather_station_full_history') ? 'extended' : 'standard';
             $current = true;
         }
         else {
-            $type = strtolower($_attributes['mode']);
+            $type = \WeatherStation\System\Output\Guard::enum(strtolower($_attributes['mode']), array('standard', 'extended'), 'standard');
             $current = false;
         }
         $_measurements = $this->get_historical_measurements($current, $type, $style=='check' || ($item=='yearly' && $column==3));
@@ -13540,7 +13782,7 @@ trait Output {
                             $result .= '<span style="vertical-align:middle"><i style="color:#ed254e;"  class="'. LWS_FAS . ' fas fa-fw fa-times-circle" aria-hidden="true"></i>';
                         }
                     }
-                    $result .= '&nbsp;' . $measurements[$itr]['name'].'</span>';
+                    $result .= '&nbsp;' . esc_html($measurements[$itr]['name']).'</span>';
                     $result .= '</div>';
                     $itr += 1;
                     if (($itr % $column) == 0) {
@@ -13580,7 +13822,7 @@ trait Output {
                         if ($cap == '') {
                             $cap = '-';
                         }
-                        $result .= '&nbsp;' . $measurements[$itr]['name'] . ' / ' . $cap . '.</span>';
+                        $result .= '&nbsp;' . esc_html($measurements[$itr]['name']) . ' / ' . esc_html($cap) . '.</span>';
                         $result .= '</div>';
                         $itr += 1;
                         if (($itr % $column) == 0) {
@@ -13624,7 +13866,7 @@ trait Output {
                                 $result .= '<span style="vertical-align:middle"><i style="color:#ed254e;"  class="'. LWS_FAS . ' fa-fw fa-times-circle" aria-hidden="true"></i>';
                             }
                         }
-                        $result .= '&nbsp;' . $measurement['name']. '</span>';
+                        $result .= '&nbsp;' . esc_html($measurement['name']) . '</span>';
                         $result .= '</div>';
                         $result .= '<div class="lws-histo-cap-table-3c-row-item">';
                         $cap = '';
@@ -13637,7 +13879,7 @@ trait Output {
                         else {
                             $cap = ucfirst($cap) . '.';
                         }
-                        $result .= $cap . '</div>';
+                        $result .= esc_html($cap) . '</div>';
                         $result .= '<div class="lws-histo-cap-table-3c-row-item" style="border-left: 1px solid ' . $bcol . '; border-right: 1px solid ' . $bcol . ';">';
                         $cap = '';
                         if ($measurements[$itr]['aggregated']) {
@@ -13649,7 +13891,7 @@ trait Output {
                         else {
                             $cap = ucfirst($cap) . '.';
                         }
-                        $result .= $cap . '</div>';
+                        $result .= esc_html($cap) . '</div>';
                         $result .= '</div>';
                         $itr += 1;
                     }
@@ -13681,8 +13923,8 @@ trait Output {
         $_attributes = shortcode_atts( array('min' => 0, 'max' => 100, 'style' => 'multi-icon', 'column' => 2), $attributes );
         $min = (int)$_attributes['min'];
         $max = (int)$_attributes['max'];
-        $column = $_attributes['column'];
-        $style = $_attributes['style'];
+        $column = max(1, \WeatherStation\System\Output\Guard::int($_attributes['column'], 2));
+        $style = \WeatherStation\System\Output\Guard::enum($_attributes['style'], array('multi-icon', 'icon'), '');
         $langs = array_values(EnvManager::stat_translation_by_locale($min, $max));
         $cnt = count($langs);
         $itr = 0;
@@ -13692,19 +13934,19 @@ trait Output {
                 $result .= '<div class="lws-lang-cap-table-row">';
             }
             $result .= '<div class="lws-lang-cap-table-row-item">';
-            $link = 'https://translate.wordpress.org/locale/' . $langs[$itr]['locale_code'] . '/default/wp-plugins/live-weather-station';
+            $link = esc_url('https://translate.wordpress.org/locale/' . rawurlencode($langs[$itr]['locale_code']) . '/default/wp-plugins/live-weather-station');
             if ($style == 'multi-icon') {
                 $shadow = 'box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.18), 0 6px 20px 0 rgba(0, 0, 0, 0.15);';
-                $result .= '<a href="' . $link . '" style="' . $shadow . 'margin-right:16px; width:80px;" class="flag-icon ' . $langs[$itr]['svg-class'] . '"></a>';
-                $result .= '<span>' . $langs[$itr]['name'].'<br/>';
-                $result .= '<span style="color:#63748a">' . __('Translation:', 'live-weather-station') . ' ' . $langs[$itr]['translated'] . '%</span></span>';
+                $result .= '<a href="' . $link . '" style="' . $shadow . 'margin-right:16px; width:80px;" class="flag-icon ' . esc_attr($langs[$itr]['svg-class']) . '"></a>';
+                $result .= '<span>' . esc_html($langs[$itr]['name']).'<br/>';
+                $result .= '<span style="color:#63748a">' . __('Translation:', 'live-weather-station') . ' ' . esc_html($langs[$itr]['translated']) . '%</span></span>';
             }
             elseif ($style == 'icon') {
-                $result .= '<a href="' . $link . '" style="margin-right:10px;" class="flag-icon ' . $langs[$itr]['svg-class'] . '"></a>';
-                $result .= '<span>' . $langs[$itr]['name'].'</span>';
+                $result .= '<a href="' . $link . '" style="margin-right:10px;" class="flag-icon ' . esc_attr($langs[$itr]['svg-class']) . '"></a>';
+                $result .= '<span>' . esc_html($langs[$itr]['name']).'</span>';
             }
             else {
-                $result .= '<span style="vertical-align:middle">' . $langs[$itr]['name'].'</span>';
+                $result .= '<span style="vertical-align:middle">' . esc_html($langs[$itr]['name']).'</span>';
             }
             $result .= '</div>';
             $itr += 1;
@@ -13757,7 +13999,7 @@ trait Output {
             default:
                 $result = 0;
         }
-        return $result;
+        return (is_scalar($result) ? esc_html((string)$result) : 0);
     }
     /**
      * Get the cbi color.

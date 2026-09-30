@@ -29,8 +29,8 @@ if (isset($mid) && $mid) {
         <input name="service" type="hidden" value="map" />
         <input name="tab" type="hidden" value="delete" />
         <input name="action" type="hidden" value="do" />
-        <input name="mid" type="hidden" value="<?php echo $mid; ?>" />
-        <?php wp_nonce_field('delete-map'); ?>
+        <input name="mid" type="hidden" value="<?php echo esc_attr($mid); ?>" />
+        <?php wp_nonce_field('delete-map-' . (int)$mid); ?>
         <div id="dashboard-widgets" class="metabox-holder" style="width: 100%;clear: both;">
             <div id="postbox-container-1" class="postbox-container">
                 <div id="normal-sortables" class="meta-box-sortables" style="margin:0px">

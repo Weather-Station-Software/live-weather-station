@@ -86,7 +86,7 @@ class WLINKApiClient
      */
     private function buildUrl($command, $params = '') {
         $result = $this->mainnUrl;
-        $result = str_replace('{command}', $command, $result);
+        $result = str_replace('{command}', rawurlencode((string)$command), $result);
         $id = array();
         $exp = array();
         if ($params !== '') {
@@ -102,9 +102,9 @@ class WLINKApiClient
             $id['service_apitoken'] = $exp[1];
             $id['service_ownerpass'] = $exp[2];
         }
-        $result = str_replace('{service_did}', $id['service_did'], $result);
-        $result = str_replace('{service_apitoken}', $id['service_apitoken'], $result);
-        $result = str_replace('{service_ownerpass}', $id['service_ownerpass'], $result);
+        $result = str_replace('{service_did}', rawurlencode((string)$id['service_did']), $result);
+        $result = str_replace('{service_apitoken}', rawurlencode((string)$id['service_apitoken']), $result);
+        $result = str_replace('{service_ownerpass}', rawurlencode((string)$id['service_ownerpass']), $result);
         return $result;
     }
 

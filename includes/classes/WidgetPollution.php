@@ -2,6 +2,7 @@
 
 namespace WeatherStation\UI\Widget;
 
+use WeatherStation\System\Output\Guard;
 use WeatherStation\Data\Output;
 use WeatherStation\Utilities\ColorsManipulation as Color;
 use WeatherStation\Data\ID\Handling as ID;
@@ -125,9 +126,9 @@ class Pollution extends Base {
         $flat_design = (bool)$instance['flat_design'] ;
         $follow_quality = (bool)$instance['follow_quality'] ;
         $fixed_background = (bool)$instance['fixed_background'] ;
-        $good_url = $instance['good_url'];
-        $medium_url = $instance['medium_url'];
-        $bad_url = $instance['bad_url'];
+        $good_url = self::sanitize_url($instance['good_url']);
+        $medium_url = self::sanitize_url($instance['medium_url']);
+        $bad_url = self::sanitize_url($instance['bad_url']);
         $stations = $this->get_operational_stations_list();
         include(LWS_ADMIN_DIR.'partials/WidgetPollutionSettings.php');
     }
@@ -144,12 +145,12 @@ class Pollution extends Base {
         $instance = $this->_get_instance($old_instance);
         $new_instance = $this->_get_instance($new_instance);
         $instance['title'] = strip_tags($new_instance['title']);
-        $instance['subtitle'] = $new_instance['subtitle'];
-        $instance['station'] = $new_instance['station'];
-        $instance['bg_color'] = $new_instance['bg_color'];
-        $instance['bg_opacity'] = $new_instance['bg_opacity'];
-        $instance['width'] = $new_instance['width'];
-        $instance['txt_color'] = $new_instance['txt_color'];
+        $instance['subtitle'] = absint($new_instance['subtitle']);
+        $instance['station'] = Guard::token($new_instance['station'], 'N/A');
+        $instance['bg_color'] = self::sanitize_color($new_instance['bg_color'], '#444444');
+        $instance['bg_opacity'] = absint($new_instance['bg_opacity']);
+        $instance['width'] = absint($new_instance['width']);
+        $instance['txt_color'] = self::sanitize_color($new_instance['txt_color'], '#ffffff');
         $instance['show_tooltip'] = !empty($new_instance['show_tooltip']) ? 1 : 0;
         $instance['show_borders'] = !empty($new_instance['show_borders']) ? 1 : 0;
         $instance['hide_obsolete'] = !empty($new_instance['hide_obsolete']) ? 1 : 0;
@@ -163,9 +164,9 @@ class Pollution extends Base {
         $instance['flat_design'] = !empty($new_instance['flat_design']) ? 1 : 0;
         $instance['follow_quality'] = !empty($new_instance['follow_quality']) ? 1 : 0;
         $instance['fixed_background'] = !empty($new_instance['fixed_background']) ? 1 : 0;
-        $instance['good_url'] = $new_instance['good_url'];
-        $instance['medium_url'] = $new_instance['medium_url'];
-        $instance['bad_url'] = $new_instance['bad_url'];
+        $instance['good_url'] = self::sanitize_url($new_instance['good_url']);
+        $instance['medium_url'] = self::sanitize_url($new_instance['medium_url']);
+        $instance['bad_url'] = self::sanitize_url($new_instance['bad_url']);
         return $instance;
     }
 
@@ -184,20 +185,21 @@ class Pollution extends Base {
         lws_font_awesome();
         try
         {
-            $maxwidth = round ($instance['width']);
+            $maxwidth = is_numeric($instance['width']) ? (int)round($instance['width']) : 0;
 
         }
         catch(\Exception $ex)
         {
             $maxwidth = 0;
         }
-        $txt_color = $instance['txt_color'];
-        $bg_color = $instance['bg_color'];
+        $txt_color = self::sanitize_color($instance['txt_color'], '');
+        $bg_color = self::sanitize_color($instance['bg_color'], '');
         if (!$txt_color) {
             $txt_color = '#444444';
         }
         if (!$bg_color) {
             $txt_color = '#FFFFFF';
+            $bg_color = '#444444';
         }
         if ($flat_design) {
             $fact = 80;
@@ -213,7 +215,7 @@ class Pollution extends Base {
         else {
             $color = $c;
         }*/
-        $opacity = (11 - $instance['bg_opacity'])/11;
+        $opacity = (11 - absint($instance['bg_opacity']))/11;
         if ($opacity < 0.1) {
             $opacity = 0;
         }
@@ -308,9 +310,9 @@ class Pollution extends Base {
         if ($fixed_background) {
             $background_attachment = 'fixed';
         }
-        $good_url = $instance['good_url'];
-        $medium_url = $instance['medium_url'];
-        $bad_url = $instance['bad_url'];
+        $good_url = self::sanitize_url($instance['good_url']);
+        $medium_url = self::sanitize_url($instance['medium_url']);
+        $bad_url = self::sanitize_url($instance['bad_url']);
         $bg_url = '';
         $wind_multipart = false;
         $NAMain = false;

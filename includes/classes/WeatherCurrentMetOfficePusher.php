@@ -106,7 +106,7 @@ class Pusher extends Abstract_Pusher {
      * @since   2.5.0
      */
     protected function get_post_url() {
-        return 'http://wow.metoffice.gov.uk/automaticreading';
+        return 'https://wow.metoffice.gov.uk/automaticreading';
     }
 
     /**

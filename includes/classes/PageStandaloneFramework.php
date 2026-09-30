@@ -63,6 +63,9 @@ abstract class Framework {
                 $path = $this->back_path($path);
             }
         }
+        if (!file_exists($path . $file)) {
+            return false;
+        }
         return include($path . $file);
     }
 
@@ -84,14 +87,21 @@ abstract class Framework {
             foreach ($query->query_vars as $key => $val) {
                 switch ($key) {
                     case 'type':
-                        $this->type = $val;
+                        if (is_string($val) && preg_match('/^[A-Za-z0-9_]{1,40}$/', $val)) {
+                            $this->type = $val;
+                        }
                         break;
                     case 'subformat':
-                        $this->subformat = $val;
+                        if (is_string($val) && preg_match('/^[A-Za-z0-9_-]{1,40}$/', $val)) {
+                            $this->subformat = $val;
+                        }
                         break;
                     default:
-                        if (!is_array($val) && !empty($val)) {
-                            $this->params[$key] = $val;
+                        // Only declared fields are kept, and only if the whole value matches the expected format.
+                        if (is_string($val) && $val !== '' && in_array($key, $available['fields'], true)) {
+                            if (preg_match($available['variables'][$key], '/' . $val . '/', $matches) === 1 && sizeof($matches) > 1 && $matches[1] === $val) {
+                                $this->params[$key] = $val;
+                            }
                         }
                 }
             }
@@ -120,7 +130,9 @@ abstract class Framework {
                         $s = substr($s, 0, strpos($s, '_'.$fulltype));
                     }
                     if ($s != '') {
-                        $this->subformat = strtolower($s);
+                        if (preg_match('/^[A-Za-z0-9_-]{1,40}$/', $s)) {
+                            $this->subformat = strtolower($s);
+                        }
                     }
                     break;
                 }
@@ -197,6 +209,7 @@ abstract class Framework {
             $header = 'Content-type: text/plain; charset=utf-8';
         }
         header($header);
+        header('X-Content-Type-Options: nosniff');
         if ($code != 0) {
             $message = HTTP::get_http_status($code);
         }

@@ -34,6 +34,7 @@ trait BaseClient {
      * @since 3.0.0
      */
     public function authentication($key, $plan) {
+        $key = sanitize_text_field((string)$key);
         $this->last_wug_error = '';
         try {
             Quota::verify($this->service_name, 'GET');
@@ -41,12 +42,12 @@ trait BaseClient {
             $raw_data = $wug->getRawStationData('INORDPAS92', $key);
             $weather = json_decode($raw_data, true);
             if (!is_array($weather)) {
-                throw new \Exception('JSON / '.(string)$raw_data);
+                throw new \Exception('JSON / '.lws_clean_text($raw_data, 200));
             }
             if (array_key_exists('response', $weather)) {
                 if (array_key_exists('error', $weather['response'])) {
                     if (array_key_exists('description', $weather['response']['error'])) {
-                        throw new \Exception($weather['response']['error']['description']);
+                        throw new \Exception(lws_clean_text($weather['response']['error']['description'], 200));
                     }
                     else {
                         throw new \Exception('Weather Underground unknown exception');
@@ -55,7 +56,7 @@ trait BaseClient {
                 if (array_key_exists('features', $weather['response'])) {
                     if (array_key_exists('conditions', $weather['response']['features'])) {
                         if ($weather['response']['features']['conditions'] != 1) {
-                            throw new \Exception($weather['response']['error']['description']);
+                            throw new \Exception('Weather Underground unknown exception');
                         }
                     }
                     else {
@@ -67,7 +68,7 @@ trait BaseClient {
             update_option('live_weather_station_wug_plan', $plan);
             return true;
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
             if (strpos($ex->getMessage(), 'this key does not exist') !== false) {
                 $this->last_wug_error = __('Wrong Weather Underground API key.', 'live-weather-station');

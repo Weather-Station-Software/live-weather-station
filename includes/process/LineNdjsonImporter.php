@@ -72,7 +72,11 @@ class LineNdjsonImporter extends LineImporter {
                                 $module_type = $val['module_type'];
                                 $measure_type = $val['measure_type'];
                                 $module_id = null;
-                                if (in_array($val['module_id'], $args['white_list'])) {
+                                if (!is_string($module_type) || !is_string($measure_type) || !in_array($module_type, $args['module_types'], true)) {
+                                    // Unknown module type for this station.
+                                    return array();
+                                }
+                                if (isset($val['module_id']) && is_string($val['module_id']) && in_array($val['module_id'], $args['white_list'], true)) {
                                     $module_id = $val['module_id'];
                                 }
                                 elseif (is_array($args['module']) && count($args['module']) > 0 && array_key_exists($val['module_type'], $args['module'])) {
@@ -83,7 +87,7 @@ class LineNdjsonImporter extends LineImporter {
                                 }
                                 if (isset($module_id)) {
                                     for ($i=0; $i<count($this->set); $i++) {
-                                        if (array_key_exists($this->set[$i], $val)) {
+                                        if (array_key_exists($this->set[$i], $val) && (is_int($val[$this->set[$i]]) || is_float($val[$this->set[$i]]) || (is_string($val[$this->set[$i]]) && is_numeric($val[$this->set[$i]])))) {
                                             $v = array();
                                             $v['timestamp'] = $timestamp;
                                             $v['device_id'] = $device_id;
@@ -105,7 +109,7 @@ class LineNdjsonImporter extends LineImporter {
                             }
                         }
                         else {
-                            Logger::error('Import Manager', null, null, null, null, null, 100, 'Inconsistent date format in source file: ' . $timestamp);
+                            Logger::error('Import Manager', null, null, null, null, null, 100, 'Inconsistent date format in source file: ' . substr(sanitize_text_field(is_scalar($timestamp) ? (string)$timestamp : ''), 0, 40));
                             throw new \Exception('Inconsistent date format in source file.');
                         }
                     }
@@ -155,7 +159,7 @@ class LineNdjsonImporter extends LineImporter {
         $this->params['to'] = '';
         $file = FS::find_valid($this->params['init']['uuid'], array($this->extension));
         if (count($file) > 0) {
-            if (FS::construct_full_file_name(file_exists($file['file']))) {
+            if (file_exists(FS::construct_full_file_name($file['file']))) {
                 $this->params['file'] = $file['file'];
                 $this->params['todo'] = $file['lines'] - 1;
                 $this->params['error'] = false;

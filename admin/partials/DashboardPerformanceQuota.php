@@ -23,14 +23,14 @@ foreach ($val as $k => $v) {
     }
 }
 
-$link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), lws_get_admin_page_url('lws-analytics', null, 'quota_short'), __('detailed analytics', 'live-weather-station'));
+$link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), esc_url(lws_get_admin_page_url('lws-analytics', null, 'quota_short')), __('detailed analytics', 'live-weather-station'));
 
 ?>
 <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
     <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
         <ul>
             <?php foreach ($values as $value) { ?>
-                <li><i style="color:<?php echo $value['clr']; ?>" class="<?php echo LWS_FAS;?> fa-lg fa-fw fa-circle"></i>&nbsp;&nbsp;<?php echo $value['txt']; ?></li>
+                <li><i style="color:<?php echo esc_attr($value['clr']); ?>" class="<?php echo LWS_FAS;?> fa-lg fa-fw fa-circle"></i>&nbsp;&nbsp;<?php echo esc_html($value['txt']); ?></li>
             <?php } ?>
         </ul>
     </div>

@@ -8,16 +8,20 @@
 
 use WeatherStation\System\Logs\Logger;
 
-ob_start();
-@phpinfo();
-preg_match ('%<style type="text/css">(.*?)</style>.*?(<body>.*</body>)%s', ob_get_clean(), $matches);
-try {
-    $phpinfo = join("\n", array_map('lws_phpinfo_line', preg_split( '/\n/', $matches[1])));
-    $phpinfo = str_replace('width: 934px', 'width: 90%', $phpinfo);
-    $tables = $matches[2];
-    $okinfo = true;
-} catch (\Exception $ex) {
-    $okinfo = false;
+$okinfo = false;
+$phpinfo = '';
+$tables = '';
+// Administrators only, and without the environment/variables blocks (may contain secrets)
+if (current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+    ob_start();
+    @phpinfo(INFO_GENERAL | INFO_CONFIGURATION | INFO_MODULES);
+    $raw = ob_get_clean();
+    if (is_string($raw) && preg_match('%<style type="text/css">(.*?)</style>.*?(<body>.*</body>)%s', $raw, $matches)) {
+        $phpinfo = join("\n", array_map('lws_phpinfo_line', preg_split('/\n/', $matches[1])));
+        $phpinfo = str_replace('width: 934px', 'width: 90%', $phpinfo);
+        $tables = $matches[2];
+        $okinfo = true;
+    }
 }
 
 if ($tables == '' || !$okinfo) {

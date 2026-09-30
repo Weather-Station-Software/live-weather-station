@@ -5,6 +5,7 @@ namespace WeatherStation\UI\Map;
 use WeatherStation\Data\Output;
 use WeatherStation\System\Quota\Quota;
 use WeatherStation\Data\Arrays\Generator;
+use WeatherStation\System\Output\Guard;
 
 /**
  * This class builds elements of the map view for Windy maps.
@@ -160,30 +161,30 @@ class WindyHandling extends BaseHandling {
     protected function specific_script(){
         $result = '';
         $result .= "const options = {" . PHP_EOL;
-        $result .= "  key: '" . get_option('live_weather_station_windy_apikey') . "'," . PHP_EOL;
+        $result .= "  key: " . Guard::js(get_option('live_weather_station_windy_apikey')) . "," . PHP_EOL;
         $result .= "  verbose: false," . PHP_EOL;
-        $result .= "  lat: " . $this->map_params['common']['loc_latitude'] . "," . PHP_EOL;
-        $result .= "  lon: " . $this->map_params['common']['loc_longitude'] . "," . PHP_EOL;
-        $result .= "  zoom: " . $this->map_params['common']['loc_zoom'] . "," . PHP_EOL;
+        $result .= "  lat: " . (float)$this->map_params['common']['loc_latitude'] . "," . PHP_EOL;
+        $result .= "  lon: " . (float)$this->map_params['common']['loc_longitude'] . "," . PHP_EOL;
+        $result .= "  zoom: " . (int)$this->map_params['common']['loc_zoom'] . "," . PHP_EOL;
         $result .= "  hourFormat: '24h'," . PHP_EOL;
         $result .= "  latlon: true," . PHP_EOL;
 
-        $result .= "  overlay: '" . $this->map_params['specific']['options']['overlay'] . "'," . PHP_EOL;
+        $result .= "  overlay: " . Guard::js($this->map_params['specific']['options']['overlay']) . "," . PHP_EOL;
         if ($this->map_params['specific']['options']['isolines'] !== 'none') {
-            $result .= "  isolines: '" . $this->map_params['specific']['options']['isolines'] . "'," . PHP_EOL;
+            $result .= "  isolines: " . Guard::js($this->map_params['specific']['options']['isolines']) . "," . PHP_EOL;
         }
         $result .= "  particlesAnim: '" . ($this->map_params['specific']['options']['animation'] ? 'on' : 'off') . "'," . PHP_EOL;
         $result .= "  graticule: " . ($this->map_params['specific']['options']['graticule'] ? 'true' : 'false') . "," . PHP_EOL;
         $result .= "}" . PHP_EOL;
         $result .= "windyInit(options, windyAPI => {" . PHP_EOL;
         $result .= "  var {map, overlays, picker} = windyAPI" . PHP_EOL;
-        $result .= "  overlays.wind.setMetric('" . $this->get_wind_speed_unit(get_option('live_weather_station_unit_wind_strength')) ."')" . PHP_EOL;
-        $result .= "  overlays.temp.setMetric('" . $this->get_temperature_unit(get_option('live_weather_station_unit_temperature')) ."')" . PHP_EOL;
-        $result .= "  overlays.rain.setMetric('" . $this->get_rain_unit(get_option('live_weather_station_unit_rain_snow')) ."')" . PHP_EOL;
-        //$result .= "  overlays.snow.setMetric('" . $this->get_snow_unit(get_option('live_weather_station_unit_rain_snow')) ."')" . PHP_EOL;
-        $result .= "  overlays.waves.setMetric('" . $this->get_altitude_unit(get_option('live_weather_station_unit_altitude')) ."')" . PHP_EOL;
-        $result .= "  overlays.pressure.setMetric('" . $this->get_pressure_unit(get_option('live_weather_station_unit_pressure')) ."')" . PHP_EOL;
-        //$result .= "  overlays.altitude.setMetric('" . $this->get_altitude_unit(get_option('live_weather_station_unit_altitude')) ."')" . PHP_EOL;
+        $result .= "  overlays.wind.setMetric(" . Guard::js($this->get_wind_speed_unit(get_option('live_weather_station_unit_wind_strength'))) . ")" . PHP_EOL;
+        $result .= "  overlays.temp.setMetric(" . Guard::js($this->get_temperature_unit(get_option('live_weather_station_unit_temperature'))) . ")" . PHP_EOL;
+        $result .= "  overlays.rain.setMetric(" . Guard::js($this->get_rain_unit(get_option('live_weather_station_unit_rain_snow'))) . ")" . PHP_EOL;
+        //$result .= "  overlays.snow.setMetric(" . Guard::js($this->get_snow_unit(get_option('live_weather_station_unit_rain_snow'))) . ")" . PHP_EOL;
+        $result .= "  overlays.waves.setMetric(" . Guard::js($this->get_altitude_unit(get_option('live_weather_station_unit_altitude'))) . ")" . PHP_EOL;
+        $result .= "  overlays.pressure.setMetric(" . Guard::js($this->get_pressure_unit(get_option('live_weather_station_unit_pressure'))) . ")" . PHP_EOL;
+        //$result .= "  overlays.altitude.setMetric(" . Guard::js($this->get_altitude_unit(get_option('live_weather_station_unit_altitude'))) . ")" . PHP_EOL;
         if (!$this->map_params['specific']['controls']['zoom']) {
             $result .= "  map.scrollWheelZoom.disable()" . PHP_EOL;
         }

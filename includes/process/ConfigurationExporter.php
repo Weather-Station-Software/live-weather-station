@@ -125,7 +125,8 @@ class ConfigurationExporter extends Process {
             $result .= "\r\n" . sprintf(__('Check the events log to see what\'s going on: %s', 'live-weather-station'), lws_get_admin_page_url('lws-events')) . "\r\n";
         }
         else {
-            $fileurl = FS::get_full_file_url($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension);
+            // The file is not directly reachable from the web: download it from the files page.
+            $fileurl = lws_get_admin_page_url('lws-files');
             $result = sprintf(__('Configuration from "%s" has been successfully exported.', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
             $result .= sprintf(__('The file is now ready to download. It will be kept on your server for %s days.', 'live-weather-station'), get_option('live_weather_station_file_retention', '7')) . "\r\n";
             $result .= "\r\n" . $fileurl . "\r\n";
@@ -156,9 +157,11 @@ class ConfigurationExporter extends Process {
      * @since 3.8.0
      */
     protected function do_job() {
+        // Credentials (API keys, tokens, passwords) are only exported if explicitly requested.
+        $credentials = !empty($this->params['include_credentials']);
         $conf = array();
-        $conf['settings'] = Options::get_all_options();
-        $conf['stations'] = DB::get_stations_table();
+        $conf['settings'] = Options::get_all_options($credentials);
+        $conf['stations'] = DB::get_stations_table($credentials);
         $conf['modules'] = DB::get_modules_table();
         $conf['maps'] = DB::get_maps_table();
         FS::write_file($this->fullfilename, wp_json_encode($conf));

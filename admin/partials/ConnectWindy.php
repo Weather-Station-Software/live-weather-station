@@ -6,18 +6,21 @@
  * @since 3.7.0
  */
 
+use WeatherStation\System\Output\Guard;
+
 use WeatherStation\System\Help\InlineHelp;
 use WeatherStation\Utilities\Settings;
 
 $settings = new Settings();
 $windy_plan = $settings->get_windy_plan_array();
 
+$plan_name = '';
 foreach ($windy_plan as $plan) {
     if (get_option('live_weather_station_windy_plan')==$plan[0]) {
         $plan_name = $plan[1];
     }
 }
-$target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '');
+$target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '');
 $warning = __('All the maps associated to this service will no longer be displayed.', 'live-weather-station');
 
 ?>
@@ -45,7 +48,7 @@ $warning = __('All the maps associated to this service will no longer be display
                         <span class="select-option">
                             <select class="option-at-100" name="plan">
                                 <?php foreach ($windy_plan as $plan) { ?>
-                                    <option value="<?php echo $plan[0] ?>"<?php if (get_option('live_weather_station_windy_plan')==$plan[0]):?> selected="selected"<?php endif;?>><?php echo $plan[1] ?></option>;
+                                    <option value="<?php echo esc_attr($plan[0]) ?>"<?php if (get_option('live_weather_station_windy_plan')==$plan[0]):?> selected="selected"<?php endif;?>><?php echo esc_html($plan[1]) ?></option>;
                                 <?php } ?>
                             </select>
                         </span>
@@ -56,14 +59,14 @@ $warning = __('All the maps associated to this service will no longer be display
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('Status', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(lws_get_admin_page_url('lws-events', null, null, 'Windy')); ?>"<?php echo $target; ?>><?php echo lws_lcfirst(__('See events log', 'live-weather-station')); ?></a>)</span>
+                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(lws_get_admin_page_url('lws-events', null, null, 'Windy')); ?>"<?php echo $target; ?>><?php echo esc_html(lws_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
                     </td>
                 </tr>
                 <tr>
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('API plan', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php echo $plan_name ?> (<?php echo InlineHelp::get(-35, '%s', __('get details', 'live-weather-station'));?>)</span>
+                        <span><?php echo esc_html($plan_name) ?> (<?php echo InlineHelp::get(-35, '%s', __('get details', 'live-weather-station'));?>)</span>
                     </td>
                 </tr>
             <?php } ?>
@@ -87,7 +90,7 @@ $warning = __('All the maps associated to this service will no longer be display
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
                     <span id="windy-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="disconnect" id="windy-disconnect" class="button button-primary" onclick="lws_windy_confirmation = confirm('<?php echo $warning; ?>'); return lws_windy_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+                <input type="submit" name="disconnect" id="windy-disconnect" class="button button-primary" onclick="lws_windy_confirmation = confirm(<?php echo Guard::js($warning); ?>); return lws_windy_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>
             <div class="clear"></div>
         </div>

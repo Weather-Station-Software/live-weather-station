@@ -187,6 +187,8 @@ spl_autoload_register(
         case 'WeatherStation\System\Plugin\Uninstaller': $file = LWS_INCLUDES_DIR.'classes/SystemPluginUninstaller.php'; break;
         case 'WeatherStation\System\Plugin\Updater': $file = LWS_INCLUDES_DIR.'classes/SystemPluginUpdater.php'; break;
         case 'WeatherStation\System\Quota\Quota': $file = LWS_INCLUDES_DIR.'system/Quota.php'; break;
+        case 'WeatherStation\System\SQL\Guard': $file = LWS_INCLUDES_DIR.'system/SqlGuard.php'; break;
+        case 'WeatherStation\System\Output\Guard': $file = LWS_INCLUDES_DIR.'system/OutputGuard.php'; break;
         case 'WeatherStation\System\Schedules\Watchdog': $file = LWS_INCLUDES_DIR.'system/Watchdog.php'; break;
         case 'WeatherStation\System\Schedules\Handling': $file = LWS_INCLUDES_DIR.'traits/SystemSchedulesHandling.php'; break;
         case 'WeatherStation\System\Storage\Manager': $file = LWS_INCLUDES_DIR.'system/Storage.php'; break;

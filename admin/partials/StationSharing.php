@@ -6,6 +6,9 @@
  * @since 3.0.0
  */
 
+use WeatherStation\System\Output\Guard;
+
+$service = Guard::token($service, '');
 $warning = sprintf(__('%s will stop sending data from the station to this service.', 'live-weather-station'), LWS_PLUGIN_NAME);
 
 ?>
@@ -18,24 +21,24 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
             <table cellspacing="0" class="lws-settings">
                 <tbody>
                     <tr>
-                        <th class="lws-login" width="38%" align="left" scope="row"><?php echo $f1;?></th>
+                        <th class="lws-login" width="38%" align="left" scope="row"><?php echo esc_html($f1);?></th>
                         <td width="2%"/>
                         <td align="left">
-                            <span class="login"><input required id="user" name="user" type="text" size="40" value="<?php echo $user;?>" class="regular-text"></span>
+                            <span class="login"><input required id="user" name="user" type="text" size="40" value="<?php echo esc_attr($user);?>" class="regular-text"></span>
                         </td>
                     </tr>
                     <tr>
-                        <th class="lws-password" width="38%" align="left" scope="row"><?php echo $f2;?></th>
+                        <th class="lws-password" width="38%" align="left" scope="row"><?php echo esc_html($f2);?></th>
                         <td width="2%"/>
                         <td align="left">
-                            <span class="password"><input required id="password" name="password" type="text" size="40" value="<?php echo $password;?>" class="regular-text"></span>
+                            <span class="password"><input required id="password" name="password" type="password" size="40" value="" autocomplete="new-password" class="regular-text"></span>
                         </td>
                     </tr>
                 </tbody>
             </table>
         <?php } else {?>
             <div style="margin-bottom: 10px;">
-                <span><i style="color:#999" class="<?php echo LWS_FAS;?> fa-lg fa-fw fa-share-alt" aria-hidden="true"></i>&nbsp;<?php echo $shared; ?></span>
+                <span><i style="color:#999" class="<?php echo LWS_FAS;?> fa-lg fa-fw fa-share-alt" aria-hidden="true"></i>&nbsp;<?php echo wp_kses_post($shared); ?></span>
             </div>
         <?php } ?>
     </div>
@@ -43,9 +46,9 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
         <div id="major-publishing-actions">
             <div id="publishing-action">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="<?php echo $service; ?>-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Activating data sharing, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="<?php echo esc_attr($service); ?>-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Activating data sharing, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="<?php echo $service; ?>-share" id="<?php echo $service; ?>-share" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
+                <input type="submit" name="<?php echo esc_attr($service); ?>-share" id="<?php echo esc_attr($service); ?>-share" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
             </div>
             <div class="clear"></div>
         </div>
@@ -53,9 +56,9 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
         <div id="major-publishing-actions">
             <div id="publishing-action">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="<?php echo $service; ?>-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Deactivating data sharing, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="<?php echo esc_attr($service); ?>-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Deactivating data sharing, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="<?php echo $service; ?>-unshare" id="<?php echo $service; ?>-unshare" class="button button-primary" onclick="lws_<?php echo $service; ?>_confirmation = confirm('<?php echo $warning; ?>'); return lws_<?php echo $service; ?>_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+                <input type="submit" name="<?php echo esc_attr($service); ?>-unshare" id="<?php echo esc_attr($service); ?>-unshare" class="button button-primary" onclick="lws_<?php echo esc_attr($service); ?>_confirmation = confirm(<?php echo Guard::js($warning); ?>); return lws_<?php echo esc_attr($service); ?>_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>
             <div class="clear"></div>
         </div>

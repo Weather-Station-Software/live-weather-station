@@ -33,15 +33,20 @@ class WPFetcher implements FetcherInterface
     {
         $args = array(
             'user-agent' => LWS_PLUGIN_AGENT,
-            'timeout' => get_option('live_weather_station_collection_http_timeout'),
+            'timeout' => ((int)get_option('live_weather_station_collection_http_timeout') > 0 ? max(5, min(120, (int)get_option('live_weather_station_collection_http_timeout'))) : 10),
             'blocking'    => true,
+            'redirection' => 3,
+            'limit_response_size' => 2097152,
         );
         foreach ($this->wpHeader as $f=>$v) {
             $args['headers'][$f] = $v;
         }
         $response = wp_remote_get($url, $args);
+        if (is_wp_error($response)) {
+            throw new \Exception(substr(sanitize_text_field($response->get_error_message()), 0, 200), 999);
+        }
         if (wp_remote_retrieve_response_code($response) != 200) {
-            $message = (string)wp_remote_retrieve_body($response);
+            $message = substr(sanitize_text_field((string)wp_remote_retrieve_body($response)), 0, 200);
             if ($message === '') {
                 $message = 'Unknown error.';
             }

@@ -115,28 +115,28 @@ class Logger {
             $values['plugin'] = LWS_PLUGIN_NAME;
             $values['version'] = substr($version, 0, 11);
             if (!is_null($system)) {
-                $values['system'] = substr($system, 0, 49);
+                $values['system'] = substr(sanitize_text_field($system), 0, 49);
             }
             if (!is_null($service)) {
-                $values['service'] = substr($service, 0, 49);
+                $values['service'] = substr(sanitize_text_field($service), 0, 49);
             }
             if (!is_null($device_id)) {
                 $values['device_id'] = substr($device_id, 0, 17);
             }
             if (!is_null($device_name)) {
-                $values['device_name'] = substr($device_name, 0, 59);
+                $values['device_name'] = substr(sanitize_text_field($device_name), 0, 59);
             }
             if (!is_null($module_id)) {
                 $values['module_id'] = substr($module_id, 0, 17);
             }
             if (!is_null($module_name)) {
-                $values['module_name'] = substr($module_name, 0, 59);
+                $values['module_name'] = substr(sanitize_text_field($module_name), 0, 59);
             }
             if (!is_null($code)) {
                 $values['code'] = $code;
             }
             if (!is_null($message)) {
-                $values['message'] = substr($message, 0, 14999);
+                $values['message'] = substr((string)$message, 0, 14999);
             }
             self::insert_table(self::live_weather_station_log_table(), $values);
         }

@@ -38,12 +38,12 @@ trait StationClient {
     private function get_owm_measurements_array($json_weather, $station, $device_id) {
         $weather = json_decode($json_weather, true);
         if (!is_array($weather)) {
-            throw new \Exception('JSON / '.(string)$json_weather);
+            throw new \Exception('JSON / '.lws_clean_text($json_weather, 200));
         }
-        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($weather, true));
+        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
         if (array_key_exists('cod', $weather) && $weather['cod'] != 200) {
             if (array_key_exists('message', $weather)) {
-                throw new \Exception($weather['message']);
+                throw new \Exception(lws_clean_text($weather['message'], 200));
             }
             else {
                 throw new \Exception('OpenWeatherMap unknown exception');
@@ -172,7 +172,7 @@ trait StationClient {
                 $place['location'] = array($station['loc_longitude'], $station['loc_latitude']);
                 $values['place'] = $place;*/
             }
-            catch(\Exception $ex)
+            catch (\Throwable $ex)
             {
                 if (strpos($ex->getMessage(), 'Invalid API key') > -1) {
                     Logger::critical('Authentication', $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your OpenWeatherMap API key.');
@@ -215,7 +215,7 @@ trait StationClient {
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
             */
         }
-        catch (\Exception $ex) {
+        catch (\Throwable $ex) {
             Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
         }
         $this->synchronize_modules_count();

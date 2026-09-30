@@ -84,11 +84,14 @@ trait BaseClient {
         $measurements = $this->netatmo_measurements ;
         unset($measurements['time_server']);
         $result = array();
-        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($measurements, true));
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, substr(print_r($measurements, true), 0, 4000));
         if (count($measurements) > 0) {
             $result['start'] = array_keys($measurements)[0];
             foreach ($measurements as $ts => $data) {
                 foreach ($data as $k => $d) {
+                    if (!isset($types[$k])) {
+                        continue;
+                    }
                     $result[strtolower($types[$k])][$ts] = $d;
                 }
             }
@@ -107,9 +110,9 @@ trait BaseClient {
     private function normalize_netatmo_measurements($station_type) {
         $measurements = $this->netatmo_measurements ;
         $d = $measurements;
-        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($d, true));
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, substr(print_r($d, true), 0, 4000));
         unset($d['devices']);
-        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($d, true));
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, substr(print_r($d, true), 0, 4000));
         $measurements['timeshift'] = 0;
         if (array_key_exists('time_server', $measurements)) {
             $measurements['timeshift'] = time() - $measurements['time_server'];

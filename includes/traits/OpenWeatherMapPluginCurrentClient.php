@@ -62,12 +62,12 @@ trait CurrentClient {
     private function get_owm_measurements_array($json_weather, $station, $device_id) {
         $weather = json_decode($json_weather, true);
         if (!is_array($weather)) {
-            throw new \Exception('JSON / '.(string)$json_weather);
+            throw new \Exception('JSON / '.lws_clean_text($json_weather, 200));
         }
         Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($weather, true));
         if (array_key_exists('cod', $weather) && $weather['cod'] != 200) {
             if (array_key_exists('message', $weather)) {
-                throw new \Exception($weather['message']);
+                throw new \Exception(lws_clean_text($weather['message'], 200));
             }
             else {
                 throw new \Exception('OpenWeatherMap unknown exception');

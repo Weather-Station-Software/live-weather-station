@@ -2,6 +2,7 @@
 
 namespace WeatherStation\System\Cache;
 use WeatherStation\System\Logs\Logger;
+use WeatherStation\System\SQL\Guard;
 use WeatherStation\DB\Storage;
 use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\Environment\Manager as Env;
@@ -102,10 +103,10 @@ class Cache {
             global $wpdb;
             $result = 0;
             if ($expired) {
-                $delete = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_" . $pref . "%' AND option_value < ".time().";");
+                $delete = $wpdb->get_col($wpdb->prepare("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s AND option_value < %d;", $wpdb->esc_like('_transient_timeout_' . $pref) . '%', time()));
             }
             else {
-                $delete = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '_transient_timeout_" . $pref . "%';");
+                $delete = $wpdb->get_col($wpdb->prepare("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s;", $wpdb->esc_like('_transient_timeout_' . $pref) . '%'));
             }
             foreach($delete as $transient) {
                 $key = str_replace('_transient_timeout_', '', $transient);
@@ -753,14 +754,23 @@ class Cache {
         $err_bup = $wpdb->show_errors(false);
         $fields = array ('hit_count', 'hit_time', 'miss_count', 'miss_time');
         $field_insert = array('timestamp');
-        $value_insert = array("'".$now."'");
+        $value_insert = array('%s');
         $value_update = array();
+        $args_insert = array($now);
+        $args_update = array();
         foreach (self::$stats as $key => $values) {
             foreach ($fields as $field) {
                 if (self::$stats[$key][$field] >0) {
-                    $field_insert[] = $key.'_'.$field;
-                    $value_insert[] = self::$stats[$key][$field];
-                    $value_update[] = $key.'_'.$field . '=' . $key.'_'.$field . '+' . self::$stats[$key][$field];
+                    $column = Guard::ident($key.'_'.$field);
+                    if ($column === null) {
+                        continue;
+                    }
+                    $type = (substr($field, -5) === '_time') ? '%f' : '%d';
+                    $field_insert[] = $column;
+                    $value_insert[] = $type;
+                    $args_insert[] = self::$stats[$key][$field];
+                    $value_update[] = $column . '=' . $column . '+' . $type;
+                    $args_update[] = self::$stats[$key][$field];
                 }
             }
         }
@@ -769,7 +779,7 @@ class Cache {
             $sql .= "(" . implode(',', $field_insert) . ") ";
             $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
-            $wpdb->query($sql);
+            $wpdb->query($wpdb->prepare($sql, array_merge($args_insert, $args_update)));
         }
         $wpdb->show_errors($err_bup);
     }
@@ -783,7 +793,7 @@ class Cache {
         global $wpdb;
         $now = date('Y-m-d H:i:s', time() - MONTH_IN_SECONDS);
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_performance_cache_table() . " WHERE ";
-        $sql .= "timestamp<'" . $now . "';";
-        $wpdb->query($sql);
+        $sql .= "timestamp<%s;";
+        $wpdb->query($wpdb->prepare($sql, $now));
     }
 }

@@ -36,6 +36,15 @@ trait Handling {
      * @since 2.0.0
      */
     private function get_dashboard($station_type, $device_id, $device_name, $module_id, $module_name, $module_type, $types, $measurements, $place=null, $last_seen=false) {
+        $device_name = isset($device_name) ? lws_clean_text($device_name, 60) : $device_name;
+        $module_name = isset($module_name) ? lws_clean_text($module_name, 60) : $module_name;
+        if (isset($place) && is_array($place)) {
+            foreach (array('country', 'city', 'timezone') as $place_key) {
+                if (isset($place[$place_key])) {
+                    $place[$place_key] = lws_clean_text($place[$place_key], ($place_key == 'timezone' ? 64 : 60));
+                }
+            }
+        }
         $pressure_ref = null;
         $temperature_ref = null;
         $humidity_ref = null;
@@ -292,7 +301,7 @@ trait Handling {
                     $media['module_id'] = $module_id;
                     $media['module_type'] = $module_type;
                     $media['item_type'] = 'none';
-                    $media['item_url'] = str_replace('http://', 'https://', $measurements['url_pct']);
+                    $media['item_url'] = lws_clean_url(str_replace('http://', 'https://', $measurements['url_pct']));
                     self::insert_update_table(self::live_weather_station_media_table(), $media);
                 }
             }
@@ -321,7 +330,7 @@ trait Handling {
                             $media['module_id'] = $module_id;
                             $media['module_type'] = $module_type;
                             $media['item_type'] = $item_type;
-                            $media['item_url'] = str_replace('http://', 'https://', $video);
+                            $media['item_url'] = lws_clean_url(str_replace('http://', 'https://', $video));
                             self::insert_update_table(self::live_weather_station_media_table(), $media);
                         }
                     }
@@ -352,6 +361,15 @@ trait Handling {
      * @since   1.0.0
      */
     private function get_netatmo_dashboard($device_id, $device_name, $module_id, $module_name, $module_type, $types, $measurements, $place, $signal, $firmware, $lastseen, $battery=0, $firstsetup=null, $lastsetup=null, $lastupgrade=null, $is_hc=false) {
+        $device_name = isset($device_name) ? lws_clean_text($device_name, 60) : $device_name;
+        $module_name = isset($module_name) ? lws_clean_text($module_name, 60) : $module_name;
+        if (isset($place) && is_array($place)) {
+            foreach (array('country', 'city', 'timezone') as $place_key) {
+                if (isset($place[$place_key])) {
+                    $place[$place_key] = lws_clean_text($place[$place_key], ($place_key == 'timezone' ? 64 : 60));
+                }
+            }
+        }
         if ($module_type == 'NAModule2') { // Corrects types for the wind gauge module
             $types = array('WindAngle','WindStrength','GustAngle','GustStrength');
         }
@@ -627,7 +645,7 @@ trait Handling {
         $updates['module_name'] = $module_name;
         $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
         $updates['measure_type'] = 'firmware';
-        $updates['measure_value'] = $firmware ;
+        $updates['measure_value'] = (is_numeric($firmware) ? $firmware : lws_clean_text($firmware, 60));
         $this->update_data_table($updates, $timezone);
 
         // Additional measurements about temperature

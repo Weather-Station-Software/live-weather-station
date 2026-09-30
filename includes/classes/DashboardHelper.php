@@ -108,7 +108,8 @@ class Handling {
         $result = '<fieldset class="metabox-prefs">';
         $result .= '<legend>' . __('Boxes', 'live-weather-station') . '</legend>';
         $result .= $this->meta_box_prefs('lws-dashboard');
-        if (isset($_GET['welcome'])) {
+        // The welcome panel state can be changed by GET only with a valid nonce and capability.
+        if (isset($_GET['welcome']) && current_user_can(apply_filters('lws_manage_options_capability', 'manage_options')) && isset($_GET['_wpnonce']) && is_string($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'lws-welcome-toggle')) {
             $welcome_checked = (empty($_GET['welcome']) ? 0 : 1);
             update_user_meta(get_current_user_id(), 'show_lws_welcome_panel', $welcome_checked);
         }
@@ -155,9 +156,9 @@ class Handling {
                         continue;
                     }
                     $box_id = $box['id'];
-                    $result .= '<label for="' . $box_id . '-hide">';
-                    $result .= '<input class="hide-postbox-tog" name="' . $box_id . '-hide" type="checkbox" id="' . $box_id . '-hide" value="' . $box_id . '"' . (!in_array($box_id, $hidden) ? ' checked="checked"' : '') . ' />';
-                    $result .= $box['title'] . '</label>';
+                    $result .= '<label for="' . esc_attr($box_id) . '-hide">';
+                    $result .= '<input class="hide-postbox-tog" name="' . esc_attr($box_id) . '-hide" type="checkbox" id="' . esc_attr($box_id) . '-hide" value="' . esc_attr($box_id) . '"' . (!in_array($box_id, $hidden) ? ' checked="checked"' : '') . ' />';
+                    $result .= wp_kses_post($box['title']) . '</label>';
                 }
             }
         }
@@ -171,12 +172,13 @@ class Handling {
      */
     public static function update_lws_welcome_panel_callback() {
         // Check user capabilities
-        if (!current_user_can('read')) {
+        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
             wp_die(-1);
         }
         
         check_ajax_referer('lws-welcome-panel-nonce', 'lwswelcomepanelnonce');
-        update_user_meta(get_current_user_id(), 'show_lws_welcome_panel', empty(sanitize_text_field($_POST['visible'])) ? 0 : 1);
+        $visible = (isset($_POST['visible']) && is_scalar($_POST['visible'])) ? sanitize_text_field(wp_unslash((string)$_POST['visible'])) : '';
+        update_user_meta(get_current_user_id(), 'show_lws_welcome_panel', empty($visible) ? 0 : 1);
         wp_die(1);
     }
 
@@ -194,8 +196,9 @@ class Handling {
         // Check nonce
         check_ajax_referer('lws-delete-notification', 'nonce');
         
-        if (isset($_POST['id'])) {
-            Notifier::delete(wp_kses_post($_POST['id']));
+        $id = (isset($_POST['id']) && is_scalar($_POST['id'])) ? absint($_POST['id']) : 0;
+        if ($id > 0) {
+            Notifier::delete($id);
             wp_die(1);
         }
         wp_die(0);
@@ -208,7 +211,7 @@ class Handling {
      **/
     public function get() {
         echo '<div class="wrap">';
-        echo '<h1>' . sprintf(__('%s Dashboard', 'live-weather-station'), LWS_PLUGIN_NAME) . '</h1>';
+        echo '<h1>' . esc_html(sprintf(__('%s Dashboard', 'live-weather-station'), LWS_PLUGIN_NAME)) . '</h1>';
         settings_errors();
         echo '<form name="lws_dashboard" method="post">';
         $this->welcome_panel();
@@ -242,7 +245,7 @@ class Handling {
     public function add_metaboxes() {
         $count = Notifier::count();
         if ($count > 0) {
-            $bubble = ' <span class="lws-notification count-' . $count . '"><span class="plugin-count">' . number_format_i18n($count) . '</span></span>';
+            $bubble = ' <span class="lws-notification count-' . (int)$count . '"><span class="plugin-count">' . number_format_i18n($count) . '</span></span>';
         }
         else {
             $bubble = '';

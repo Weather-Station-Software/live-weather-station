@@ -49,7 +49,7 @@ trait StationClient {
                         if (array_key_exists('error', $weather['response'])) {
                             if (array_key_exists('type', $weather['response']['error'])) {
                                 if ($weather['response']['error']['type'] != '') {
-                                    $result = $weather['response']['error']['type'];
+                                    $result = lws_clean_text($weather['response']['error']['type'], 100);
                                 }
                             }
                         }
@@ -65,7 +65,7 @@ trait StationClient {
                     $result = 'internal Weather Underground error';
                 }
             }
-            catch(\Exception $ex)
+            catch (\Throwable $ex)
             {
                 $result = 'unable to contact Weather Underground servers';
             }
@@ -84,12 +84,12 @@ trait StationClient {
     private function format_and_store($json_weather, $station) {
         $weather = json_decode($json_weather, true);
         if (!is_array($weather)) {
-            throw new \Exception('JSON / '.(string)$json_weather);
+            throw new \Exception('JSON / '.lws_clean_text($json_weather, 200));
         }
         if (array_key_exists('response', $weather)) {
             if (array_key_exists('error', $weather['response'])) {
                 if (array_key_exists('description', $weather['response']['error'])) {
-                    throw new \Exception($weather['response']['error']['description']);
+                    throw new \Exception(lws_clean_text($weather['response']['error']['description'], 200));
                 }
                 else {
                     throw new \Exception('Weather Underground unknown exception');
@@ -98,7 +98,7 @@ trait StationClient {
             if (array_key_exists('features', $weather['response'])) {
                 if (array_key_exists('conditions', $weather['response']['features'])) {
                     if ($weather['response']['features']['conditions'] != 1) {
-                        throw new \Exception($weather['response']['error']['description']);
+                        throw new \Exception('Weather Underground unknown exception');
                     }
                 }
                 else {
@@ -109,7 +109,7 @@ trait StationClient {
         if (!empty($weather) && array_key_exists('current_observation', $weather)) {
             $observation = $weather['current_observation'];
             if (array_key_exists('local_tz_long', $observation)) {
-                $timezone = substr($observation['local_tz_long'], 0, 49);
+                $timezone = lws_clean_text($observation['local_tz_long'], 49);
             }
             else {
                 $timezone = $this->get_timezone($station, null, $station['guid'], $station['station_id']);
@@ -125,11 +125,11 @@ trait StationClient {
                 if (array_key_exists('observation_location', $observation)) {
                     $observation_location = $observation['observation_location'];
                     if (array_key_exists('full', $observation_location)) {
-                        $station['station_name'] = substr($observation_location['full'], 0, 59);
+                        $station['station_name'] = lws_clean_text($observation_location['full'], 59);
                     }
                 }
             }
-            Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($observation, true));
+            Logger::debug($this->facility, $this->service_name, null, null, null, null, null, substr(print_r($observation, true), 0, 4000));
             if (array_key_exists('observation_epoch', $observation)) {
                 try {
                     $timestamp = date('Y-m-d H:i:s', $observation['observation_epoch']);
@@ -158,37 +158,37 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             $updates['measure_timestamp'] = $timestamp;
             if (array_key_exists('city', $location)) {
-                $station['loc_city'] = substr($location['city'], 0, 59);
+                $station['loc_city'] = lws_clean_text($location['city'], 59);
                 $updates['measure_type'] = 'loc_city';
                 $updates['measure_value'] = $station['loc_city'];
                 $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('country_iso3166', $location)) {
-                $station['loc_country_code'] = substr($location['country_iso3166'], 0, 2);
+                $station['loc_country_code'] = lws_clean_text($location['country_iso3166'], 2);
                 $updates['measure_type'] = 'loc_country';
                 $updates['measure_value'] = $station['loc_country_code'];
                 $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('local_tz_long', $observation)) {
-                $station['loc_timezone'] = substr($observation['local_tz_long'], 0, 49);
+                $station['loc_timezone'] = lws_clean_text($observation['local_tz_long'], 49);
                 $updates['measure_type'] = 'loc_timezone';
                 $updates['measure_value'] = $station['loc_timezone'];
                 $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('latitude', $location)) {
-                $station['loc_latitude'] = $location['latitude'];
+                $station['loc_latitude'] = lws_clean_number($location['latitude']);
                 $updates['measure_type'] = 'loc_latitude';
                 $updates['measure_value'] = $station['loc_latitude'];
                 $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('longitude', $location)) {
-                $station['loc_longitude'] = $location['longitude'];
+                $station['loc_longitude'] = lws_clean_number($location['longitude']);
                 $updates['measure_type'] = 'loc_longitude';
                 $updates['measure_value'] = $station['loc_longitude'];
                 $this->update_data_table($updates, $timezone);
             }
             if (array_key_exists('elevation', $location)) {
-                $station['loc_altitude'] = $location['elevation'];
+                $station['loc_altitude'] = lws_clean_number($location['elevation']);
                 $updates['measure_type'] = 'loc_altitude';
                 $updates['measure_value'] = $station['loc_altitude'];
                 $this->update_data_table($updates, $timezone);
@@ -401,7 +401,7 @@ trait StationClient {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');
                 }
             }
-            catch(\Exception $ex)
+            catch (\Throwable $ex)
             {
                 if (strpos($ex->getMessage(), 'this key does not exist') !== false) {
                     Logger::critical('Authentication', $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Wrong credentials. Please, verify your Weather Underground API key.');
@@ -438,7 +438,7 @@ trait StationClient {
             $ephemeris->compute(LWS_WUG_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
+        catch (\Throwable $ex) {
             Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
         }
         $this->synchronize_modules_count();
