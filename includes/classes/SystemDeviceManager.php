@@ -111,7 +111,7 @@ class Manager
         if ($result === 'unknown') {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-            $sql = "SELECT DISTINCT module_type, module_name FROM " . $table_name . " WHERE device_id='" . $device_id . "' AND module_id='" . $module_id . "';";
+            $sql = $wpdb->prepare("SELECT DISTINCT module_type, module_name FROM " . $table_name . " WHERE device_id=%s AND module_id=%s;", $device_id, $module_id);
             $query = $wpdb->get_results($sql, ARRAY_A);
             if (count($query) > 0) {
                 $m = array();
@@ -146,7 +146,7 @@ class Manager
             try {
                 global $wpdb;
                 $table_name = $wpdb->prefix . self::live_weather_station_module_detail_table();
-                $sql = "SELECT * FROM `" . $table_name . "` WHERE device_id = '" . $device_id . "';";
+                $sql = $wpdb->prepare("SELECT * FROM `" . $table_name . "` WHERE device_id = %s;", $device_id);
                 $result = $wpdb->get_results($sql, ARRAY_A);
                 Cache::set_query($cache_id, $result);
             } catch (\Exception $ex) {
@@ -190,10 +190,7 @@ class Manager
         $result = true;
         try {
             foreach ($modules as $module) {
-                if (array_key_exists('screen_name', $module)) {
-                    $module['screen_name'] = esc_sql($module['screen_name']);
-                }
-                else {
+                if (!array_key_exists('screen_name', $module)) {
                     $module['screen_name'] = '';
                 }
                 self::insert_update_table(self::live_weather_station_module_detail_table(), $module);
@@ -219,7 +216,7 @@ class Manager
         try {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_module_detail_table();
-            $sql = "DELETE FROM ".$table_name." WHERE device_id='" . $device_id . "'";
+            $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id=%s", $device_id);
             $wpdb->query($sql);
             Cache::invalidate_query($cache_id);
             self::synchronize_modules();
@@ -320,7 +317,7 @@ class Manager
         $rows = array();
         global $wpdb;
         $table_name = $wpdb->prefix . $table;
-        $sql = "SELECT module_id, MAX(`timestamp`) as val FROM " . $table_name . " WHERE `device_id`='" . $device_id . "' AND `module_type`='" . $module . "' GROUP BY module_id;";
+        $sql = $wpdb->prepare("SELECT module_id, MAX(`timestamp`) as val FROM " . $table_name . " WHERE `device_id`=%s AND `module_type`=%s GROUP BY module_id;", $device_id, $module);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -366,7 +363,7 @@ class Manager
         $rows = array();
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $sql = "SELECT DISTINCT module_id, measure_value FROM " . $table_name . " WHERE `device_id`='" . $device_id . "' AND `module_type`='" . $module . "' AND `measure_type`='last_seen';";
+        $sql = $wpdb->prepare("SELECT DISTINCT module_id, measure_value FROM " . $table_name . " WHERE `device_id`=%s AND `module_type`=%s AND `measure_type`='last_seen';", $device_id, $module);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -410,7 +407,7 @@ class Manager
     private function delete_duplicate_data($device_id, $old) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $sql = "DELETE FROM " . $table_name . " WHERE `device_id`='" . $device_id . "' AND `module_id`='" . $old . "';";
+        $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE `device_id`=%s AND `module_id`=%s;", $device_id, $old);
         return $wpdb->query($sql);
     }
 
@@ -427,7 +424,7 @@ class Manager
     private function rename_duplicate_data($device_id, $new, $old, $table) {
         global $wpdb;
         $table_name = $wpdb->prefix . $table;
-        $sql = "UPDATE " . $table_name . " SET `module_id`='" . $new . "' WHERE `device_id`='" . $device_id . "' AND `module_id`='" . $old . "';";
+        $sql = $wpdb->prepare("UPDATE " . $table_name . " SET `module_id`=%s WHERE `device_id`=%s AND `module_id`=%s;", $new, $device_id, $old);
         return $wpdb->query($sql);
     }
 

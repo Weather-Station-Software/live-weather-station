@@ -3,6 +3,7 @@
 namespace WeatherStation\Process;
 use WeatherStation\DB\Query;
 use WeatherStation\System\Logs\Logger;
+use WeatherStation\System\SQL\Guard;
 
 /**
  * A process to expand wind measurements for existing stations.
@@ -168,7 +169,7 @@ class WindExpander extends Process {
      */
     private function add_source($station_id, $table_name, $fields, $switch) {
         global $wpdb;
-        $sql = "SELECT * FROM " . $wpdb->prefix . $table_name . " WHERE device_id='" . $station_id . "' AND measure_type IN (" . implode(',', $fields).")";
+        $sql = $wpdb->prepare("SELECT * FROM " . $wpdb->prefix . $table_name . " WHERE device_id=%s AND measure_type IN (" . Guard::placeholders($fields) . ")", array_merge(array($station_id), $fields));
         $query = $wpdb->get_results($sql, ARRAY_A);
         if (is_array($query) && !empty($query)) {
             foreach ($query as &$row) {
@@ -208,10 +209,10 @@ class WindExpander extends Process {
             $switch = true;
         }
         // DAILY DATA
-        $fields = array('\'windangle\'', '\'gustangle\'');
+        $fields = array('windangle', 'gustangle');
         $this->add_source($station_id, self::live_weather_station_histo_daily_table(), $fields, $switch);
         // HISTORICAL DATA
-        $fields = array('\'windangle\'', '\'gustangle\'');
+        $fields = array('windangle', 'gustangle');
         $this->add_source($station_id, self::live_weather_station_histo_yearly_table(), $fields, $switch);
     }
 

@@ -2,6 +2,7 @@
 
 namespace WeatherStation\System\Quota;
 use WeatherStation\System\Logs\Logger;
+use WeatherStation\System\SQL\Guard;
 use WeatherStation\DB\Storage;
 use WeatherStation\System\Cache\Cache;
 
@@ -67,9 +68,9 @@ class Quota {
             $cutoff['strict'] = date('Y-m-d',time()) . ' 00:00:00';
             foreach ($modes as $mode) {
                 $select = "service, " . implode(', ', $fields);
-                $where = "timestamp>='" . $cutoff[$mode] . "'";
+                $where = "timestamp>=%s";
                 $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ";
-                $sql .= $where . " GROUP BY service;";
+                $sql .= $wpdb->prepare($where, $cutoff[$mode]) . " GROUP BY service;";
                 try {
                     $query = (array)$wpdb->get_results($sql);
                     $query_a = (array)$query;
@@ -437,20 +438,26 @@ class Quota {
         $err_bup = $wpdb->show_errors(false);
         foreach (self::$stats as $key => $values) {
             $field_insert = array('timestamp', 'service');
-            $value_insert = array();
+            $value_insert = array('%s', '%s');
             $value_update = array();
-            $value_insert[] = "'".$now."'";
-            $value_insert[] = "'".$key."'";
+            $args_insert = array($now, $key);
+            $args_update = array();
             foreach ($values as $k => $v) {
-                $field_insert[] = '`'.$k.'`';
-                $value_insert[] = $v;
-                $value_update[] = '`'.$k.'`=`'.$k.'`+'.$v;
+                $column = Guard::ident($k);
+                if ($column === null) {
+                    continue;
+                }
+                $field_insert[] = '`'.$column.'`';
+                $value_insert[] = '%d';
+                $args_insert[] = $v;
+                $value_update[] = '`'.$column.'`=`'.$column.'`+%d';
+                $args_update[] = $v;
             }
             $sql = "INSERT INTO " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " ";
             $sql .= "(" . implode(',', $field_insert) . ") ";
             $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
-            $wpdb->query($sql);
+            $wpdb->query($wpdb->prepare($sql, array_merge($args_insert, $args_update)));
         }
         $wpdb->show_errors($err_bup);
     }
@@ -475,29 +482,32 @@ class Quota {
         for ($i=0; $i<3; $i++) {
             $time_min = date('Y-m-d', $time - $i * DAY_IN_SECONDS) . ' 00:00:00';
             $time_max = date('Y-m-d', $time - $i * DAY_IN_SECONDS) . ' 23:59:59';
-            $where = "timestamp>='" . $time_min . "' AND timestamp<='" . $time_max . "'";
+            $where = "timestamp>=%s AND timestamp<=%s";
             $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ";
-            $sql .= $where . " GROUP BY service;";
+            $sql .= $wpdb->prepare($where, $time_min, $time_max) . " GROUP BY service;";
             try {
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 foreach ($query_a as $val) {
                     $detail = (array)$val;
-                    $replace = array();
-                    $replace[] = "'" . $time_min . "'";
-                    $replace[] = "'" . $detail['service'] . "'";
+                    $replace = array('%s', '%s');
+                    $args = array($time_min, $detail['service']);
                     foreach ($verbs as $verb) {
-                        $replace[] = $detail['sum_'.$verb];
+                        $replace[] = '%d';
+                        $args[] = $detail['sum_'.$verb];
                         $rate = $detail['max_'.$verb] / 10;
                         if ($detail['max_'.$verb] % 10 > 0) {
                             $rate += 1;
                         }
-                        $replace[] = $rate;
-                        $replace[] = self::get_count_quota($detail['service'], $verb);
-                        $replace[] = self::get_rate_quota($detail['service'], $verb);
+                        $replace[] = '%f';
+                        $args[] = $rate;
+                        $replace[] = '%d';
+                        $args[] = self::get_count_quota($detail['service'], $verb);
+                        $replace[] = '%d';
+                        $args[] = self::get_rate_quota($detail['service'], $verb);
                     }
                     $req = "REPLACE INTO " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " VALUES (" . implode(',', $replace) . ");";
-                    $wpdb->query($req);
+                    $wpdb->query($wpdb->prepare($req, $args));
                 }
             } catch (\Exception $ex) {
                 //
@@ -515,11 +525,11 @@ class Quota {
         global $wpdb;
         $now = date('Y-m-d', time() - 4 * DAY_IN_SECONDS) . ' 00:00:00';
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ";
-        $sql .= "timestamp<'" . $now . "';";
-        $wpdb->query($sql);
+        $sql .= "timestamp<%s;";
+        $wpdb->query($wpdb->prepare($sql, $now));
         $now = date('Y-m-d', time() - YEAR_IN_SECONDS - DAY_IN_SECONDS) . ' 00:00:00';
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ";
-        $sql .= "timestamp<'" . $now . "';";
-        $wpdb->query($sql);
+        $sql .= "timestamp<%s;";
+        $wpdb->query($wpdb->prepare($sql, $now));
     }
 }

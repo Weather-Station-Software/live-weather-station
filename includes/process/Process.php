@@ -254,7 +254,7 @@ abstract class Process {
     private function _get() {
         global $wpdb;
         $table = $wpdb->prefix . self::live_weather_station_background_process_table();
-        $sql = "SELECT * FROM " . $table . " WHERE `uuid`='" . $this->meta_uuid() . "';";
+        $sql = $wpdb->prepare("SELECT * FROM " . $table . " WHERE `uuid`=%s;", $this->meta_uuid());
         return $wpdb->get_results($sql, ARRAY_A);
     }
 
@@ -398,7 +398,7 @@ abstract class Process {
             $this->class = $row[0]['class'];
             $this->state = $row[0]['state'];
             $this->timestamp = $row[0]['timestamp'];
-            $this->params = unserialize($row[0]['params']);
+            $this->params = unserialize($row[0]['params'], ['allowed_classes' => false]);
             $this->exectime = $row[0]['exec_time'];
             $this->pass = $row[0]['pass'];
             $this->progress = $row[0]['progress'];

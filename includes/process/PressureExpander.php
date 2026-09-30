@@ -3,6 +3,7 @@
 namespace WeatherStation\Process;
 use WeatherStation\DB\Query;
 use WeatherStation\System\Logs\Logger;
+use WeatherStation\System\SQL\Guard;
 use WeatherStation\Data\Unit\Conversion;
 
 /**
@@ -169,7 +170,7 @@ class PressureExpander extends Process {
      */
     private function process_histo_pressure($station_id, $table_name, $altitude, $switch) {
         global $wpdb;
-        $sql = "SELECT `timestamp`, avg(`measure_value`) as temperature FROM " . $wpdb->prefix . $table_name . " WHERE `device_id` = '" . $station_id . "' AND `measure_type` = 'temperature' AND `measure_set` = 'avg' AND (`module_type`='NAModule1' OR`module_type`='NACurrent') GROUP BY `timestamp` ORDER BY `timestamp` ASC";
+        $sql = $wpdb->prepare("SELECT `timestamp`, avg(`measure_value`) as temperature FROM " . $wpdb->prefix . $table_name . " WHERE `device_id` = %s AND `measure_type` = 'temperature' AND `measure_set` = 'avg' AND (`module_type`='NAModule1' OR`module_type`='NACurrent') GROUP BY `timestamp` ORDER BY `timestamp` ASC", $station_id);
         $query = $wpdb->get_results($sql, ARRAY_A);
         $temps = array();
         if (is_array($query) && !empty($query)) {
@@ -177,8 +178,8 @@ class PressureExpander extends Process {
                 $temps[$row['timestamp']] = $row['temperature'];
             }
         }
-        $fields = array('\'pressure\'', '\'air_density\'', '\'specific_enthalpy\'', '\'potential_temperature\'', '\'equivalent_potential_temperature\'' );
-        $sql = "SELECT * FROM " . $wpdb->prefix . $table_name . " WHERE device_id='" . $station_id . "' AND measure_type IN (" . implode(',', $fields).")";
+        $fields = array('pressure', 'air_density', 'specific_enthalpy', 'potential_temperature', 'equivalent_potential_temperature');
+        $sql = $wpdb->prepare("SELECT * FROM " . $wpdb->prefix . $table_name . " WHERE device_id=%s AND measure_type IN (" . Guard::placeholders($fields) . ")", array_merge(array($station_id), $fields));
         $query = $wpdb->get_results($sql, ARRAY_A);
         if (is_array($query) && !empty($query)) {
             foreach ($query as &$row) {
@@ -227,14 +228,14 @@ class PressureExpander extends Process {
      */
     private function process_daily_pressure($station_id, $table_name, $altitude, $switch) {
         global $wpdb;
-        $sql = "SELECT avg(`measure_value`) as temperature FROM " . $wpdb->prefix . $table_name . " WHERE `device_id` = '" . $station_id . "' AND `measure_type` = 'temperature' AND (`module_type`='NAModule1' OR`module_type`='NACurrent')";
+        $sql = $wpdb->prepare("SELECT avg(`measure_value`) as temperature FROM " . $wpdb->prefix . $table_name . " WHERE `device_id` = %s AND `measure_type` = 'temperature' AND (`module_type`='NAModule1' OR`module_type`='NACurrent')", $station_id);
         $query = $wpdb->get_results($sql, ARRAY_A);
         $temperature = 15.0;
         if (is_array($query) && !empty($query)) {
             $temperature = $query[0]['temperature'];
         }
-        $fields = array('\'pressure\'', '\'air_density\'', '\'specific_enthalpy\'', '\'potential_temperature\'', '\'equivalent_potential_temperature\'' );
-        $sql = "SELECT * FROM " . $wpdb->prefix . $table_name . " WHERE device_id='" . $station_id . "' AND measure_type IN (" . implode(',', $fields).")";
+        $fields = array('pressure', 'air_density', 'specific_enthalpy', 'potential_temperature', 'equivalent_potential_temperature');
+        $sql = $wpdb->prepare("SELECT * FROM " . $wpdb->prefix . $table_name . " WHERE device_id=%s AND measure_type IN (" . Guard::placeholders($fields) . ")", array_merge(array($station_id), $fields));
         $query = $wpdb->get_results($sql, ARRAY_A);
         if (is_array($query) && !empty($query)) {
             foreach ($query as &$row) {
