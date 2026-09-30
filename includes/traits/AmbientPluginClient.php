@@ -30,6 +30,7 @@ trait Client {
      * @since 3.6.0
      */
     public function authentication($apikey) {
+        $apikey = sanitize_text_field((string)$apikey);
         $this->get_measurements(false, $apikey);
         if ($this->last_ambient_error == '') {
             update_option('live_weather_station_ambient_key', $apikey);
@@ -75,7 +76,7 @@ trait Client {
                     return array ();
                 }
             }
-            catch (\Exception $ex) {
+            catch (\Throwable $ex) {
                 switch ($ex->getCode()) {
                     case 401:
                         $this->last_ambient_error = __('Wrong credentials. Please, verify your API key.', 'live-weather-station');
@@ -83,9 +84,9 @@ trait Client {
                         break;
                     default:
                         $this->last_ambient_warning = __('Temporary unable to contact Ambient servers. Retry will be done shortly.', 'live-weather-station');
-                        Logger::warning($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), $ex->getMessage());
+                        Logger::warning($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), substr(sanitize_text_field($ex->getMessage()), 0, 500));
                 }
-                Logger::critical($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), self::get_http_status($ex->getCode()) . ' => ' . $ex->getMessage());
+                Logger::critical($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), self::get_http_status($ex->getCode()) . ' => ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
                 return array();
             }
         }
@@ -116,8 +117,8 @@ trait Client {
             }
             Logger::info('Backend', $this->service_name, null, null, null, null, 0, 'Job done: detecting stations.');
         }
-        catch (\Exception $ex) {
-            Logger::critical('Backend', $this->service_name, null, null, null, null, $ex->getCode(), 'Error while detecting stations: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical('Backend', $this->service_name, null, null, null, null, $ex->getCode(), 'Error while detecting stations: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
             return array();
         }
         return $result;
@@ -143,8 +144,8 @@ trait Client {
             $ephemeris->compute(LWS_AMBT_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
-            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
         }
         $this->synchronize_modules_count();
         Watchdog::stop_chrono($cron_id);

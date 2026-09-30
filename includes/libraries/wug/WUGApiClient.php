@@ -25,7 +25,7 @@ class WUGApiClient
     /**
      * @var string $mainnUrl The api url to fetch data from.
      */
-    private $mainnUrl = "http://api.wunderground.com/api/{key}/{features}/{settings}/q/{query}.{format}";
+    private $mainnUrl = "https://api.wunderground.com/api/{key}/{features}/{settings}/q/{query}.{format}";
 
     
     /**
@@ -90,9 +90,10 @@ class WUGApiClient
      */
     private function buildUrl($key, $features, $settings, $query, $format = 'json') {
         $result = $this->mainnUrl;
-        $result = str_replace('{key}', $key, $result);
-        $result = str_replace('{features}', $features, $result);
-        $result = str_replace('{settings}', implode('/', $settings), $result);
+        $format = ($format === 'xml' ? 'xml' : 'json');
+        $result = str_replace('{key}', rawurlencode((string)$key), $result);
+        $result = str_replace('{features}', rawurlencode((string)$features), $result);
+        $result = str_replace('{settings}', str_replace('%3A', ':', implode('/', array_map('rawurlencode', $settings))), $result);
         $result = str_replace('{query}', $query, $result);
         $result = str_replace('{format}', $format, $result);
         return $result;
@@ -111,8 +112,8 @@ class WUGApiClient
      */
     public function getRawStationData($id, $key, $lang = 'en', $format = 'json') {
         $features = 'conditions';
-        $settings = array ('lang:' . strtoupper($lang), 'pws:1', 'bestfct:0');
-        $query = 'pws:' . $id;
+        $settings = array ('lang:' . strtoupper(preg_replace('/[^a-zA-Z\-]/', '', (string)$lang)), 'pws:1', 'bestfct:0');
+        $query = 'pws:' . rawurlencode((string)$id);
         $url = $this->buildUrl($key, $features, $settings, $query, $format);
         return $this->cacheOrFetchResult($url);
     }

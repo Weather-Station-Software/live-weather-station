@@ -94,17 +94,19 @@ class Tasks extends Base {
         $sort = '&orderby=' . $orderby . '&order=' . $order;
         $actions = array();
         if ($item['next'] != $this->ts_none) {
-            $actions['force'] = sprintf('<a href="?page=lws-scheduler&tab=tasks&action=cron-force&hook=%s' . $sort . '">' . esc_html__('Force execution now', 'live-weather-station') . '</a>', rawurlencode($item['hook']));
+            $actions['force'] = sprintf('<a href="%s">' . esc_html__('Force execution now', 'live-weather-station') . '</a>', esc_url(wp_nonce_url('?page=lws-scheduler&tab=tasks&action=cron-force&hook=' . rawurlencode($item['hook']) . $sort, 'cron-force')));
         }
         if ($item['next'] != $this->ts_none) {
-            if (wp_next_scheduled($item['hook']) < wp_get_schedules()[wp_get_schedule($item['hook'])]['interval'] + time()) {
-                $actions['reschedule'] = sprintf('<a href="?page=lws-scheduler&tab=tasks&action=cron-reschedule&hook=%s' . $sort . '">' . esc_html__('Reschedule', 'live-weather-station') . '</a>', rawurlencode($item['hook']));
+            $schedules = wp_get_schedules();
+            $schedule = wp_get_schedule($item['hook']);
+            if ($schedule !== false && isset($schedules[$schedule]['interval']) && wp_next_scheduled($item['hook']) < $schedules[$schedule]['interval'] + time()) {
+                $actions['reschedule'] = sprintf('<a href="%s">' . esc_html__('Reschedule', 'live-weather-station') . '</a>', esc_url(wp_nonce_url('?page=lws-scheduler&tab=tasks&action=cron-reschedule&hook=' . rawurlencode($item['hook']) . $sort, 'cron-reschedule')));
             }
         }
         $result = '-';
         if ($item['hook'] == self::$watchdog_name) {
             $actions = array();
-            $actions['relaunch'] = '<a href="?page=lws-scheduler&tab=tasks&action=relaunch-watchdog' . $sort . '">' . esc_html__('Restart', 'live-weather-station') . '</a>';
+            $actions['relaunch'] = '<a href="' . esc_url(wp_nonce_url('?page=lws-scheduler&tab=tasks&action=relaunch-watchdog' . $sort, 'relaunch-watchdog')) . '">' . esc_html__('Restart', 'live-weather-station') . '</a>';
         }
         if ($item['next'] != $this->ts_none) {
             $result = esc_html(ucfirst(sprintf( __('in %s', 'live-weather-station'), human_time_diff(time(), $item['next']))));

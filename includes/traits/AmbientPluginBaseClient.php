@@ -185,7 +185,7 @@ trait BaseClient {
      */
     private function normalize_ambient_measurements() {
         $result = array();
-        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, print_r($this->ambient_measurements, true));
+        Logger::debug('API / SDK', $this->service_name, null, null, null, null, 0, substr(print_r($this->ambient_measurements, true), 0, 4000));
         foreach($this->ambient_measurements as $station) {
             if (is_array($station)) {
                 $temperature = 15.0;

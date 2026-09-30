@@ -33,6 +33,7 @@ trait BaseClient {
      * @since 2.8.0
      */
     public function authentication($key, $plan) {
+        $key = sanitize_text_field((string)$key);
         $this->last_owm_error = '';
         try {
             Quota::verify($this->service_name, 'GET');
@@ -54,7 +55,7 @@ trait BaseClient {
             update_option('live_weather_station_owm_plan', $plan);
             return true;
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
             if (strpos($ex->getMessage(), 'Invalid API key') > -1) {
                 $this->last_owm_error = __('Wrong OpenWeatherMap API key.', 'live-weather-station');

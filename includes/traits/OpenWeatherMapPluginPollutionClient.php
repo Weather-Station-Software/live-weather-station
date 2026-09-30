@@ -19,7 +19,7 @@ trait PollutionClient {
 
     use BaseClient;
 
-    private $api_url = 'http://api.openweathermap.org/pollution/v1';
+    private $api_url = 'https://api.openweathermap.org/pollution/v1';
     private $indexes = ['o3', 'co'];//, 'so2', 'no2'];
     protected $facility = 'Pollution Collector';
     protected $owm_measurements;
@@ -51,21 +51,23 @@ trait PollutionClient {
      */
     private function get_pollution_data($st, $lat, $long, $index, $round=0) {
         try {
-            $url = $this->api_url . '/' . $index . '/' . round($lat, $round) . ',' . round($long, $round) . '/current.json?appid=' . get_option('live_weather_station_owm_apikey');
+            $url = $this->api_url . '/' . rawurlencode((string)$index) . '/' . round((float)$lat, $round) . ',' . round((float)$long, $round) . '/current.json?appid=' . rawurlencode((string)get_option('live_weather_station_owm_apikey'));
             // warning : don't verify quota here
             $args = array();
             $args['user-agent'] = LWS_PLUGIN_AGENT;
-            $args['timeout'] = get_option('live_weather_station_collection_http_timeout');
-            $content = wp_remote_get($url);
+            $args['timeout'] = max(1, min(60, (int)get_option('live_weather_station_collection_http_timeout')));
+            $args['redirection'] = 3;
+            $args['limit_response_size'] = 2097152;
+            $content = wp_remote_get($url, $args);
             if (is_wp_error($content)) {
                 throw new \Exception(lws_clean_text($content->get_error_message(), 200));
             }
-            Logger::debug($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], 999, 'Raw data: ' . print_r($content,true));
+            Logger::debug($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], 999, 'Raw data: ' . (is_array($content) && isset($content['body']) ? (string)$content['body'] : ''));
             return $content;
 
         }
         catch (\Exception $ex) {
-            Logger::warning($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], $ex->getCode(), $ex->getMessage());
+            Logger::warning($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], $ex->getCode(), substr(sanitize_text_field($ex->getMessage()), 0, 500));
         }
     }
 
@@ -83,12 +85,12 @@ trait PollutionClient {
     private function get_owm_measurements_array($json_pollution, $station, $device_id, $index, $lat, $long) {
         $pollution = json_decode($json_pollution['body'], true);
         if (!is_array($pollution)) {
-            throw new \Exception('JSON / '.(string)$json_pollution['body']);
+            throw new \Exception('JSON / '.lws_clean_text((string)$json_pollution['body'], 200));
         }
         Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($pollution, true));
         $response = $json_pollution['response'];
         if (!is_array($response)) {
-            throw new \Exception('JSON / '.(string)$json_pollution['response']);
+            throw new \Exception('JSON / '.'unexpected response');
         }
         if (array_key_exists('code', $response) && $response['code'] == 404) {
             return array();

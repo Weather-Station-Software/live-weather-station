@@ -42,7 +42,7 @@ trait StationClient {
         if ($weather === false) {
             throw new \Exception('Bad file format.');
         }
-        Logger::debug($this->facility, $this->service, null, null, null, null, null, print_r($weather, true));
+        Logger::debug($this->facility, $this->service, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
         $timezone = $station['loc_timezone'];
         $locat_ts = gmmktime($weather[1][0].$weather[1][1], $weather[1][3].$weather[1][4], $weather[1][6].$weather[1][7], $weather[0][3].$weather[0][4], $weather[0][0].$weather[0][1], '20'.$weather[0][strlen($weather[0])-2].$weather[0][strlen($weather[0])-1]);
         $timestamp = date('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $timezone));
@@ -374,7 +374,7 @@ trait StationClient {
                 }
             }
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
             return false;
         }
@@ -420,9 +420,9 @@ trait StationClient {
             $result = $collector->getRawStationData($resource);
             Logger::notice($this->facility, $this->service, $device_id, $device_name, null, null, 0, 'Data retrieved.');
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
-            $msg = $ex->getMessage();
+            $msg = substr(sanitize_text_field($ex->getMessage()), 0, 200);
             if ($msg == '') {
                 $msg = 'Unknown error';
             }
@@ -465,7 +465,7 @@ trait StationClient {
                 $raw_data = $this->get_data($station['connection_type'], $station['service_id'], $station['station_id'], $station['station_name']);
                 $this->format_and_store($raw_data, $station);
             }
-            catch (\Exception $ex) {
+            catch (\Throwable $ex) {
                 Logger::error($this->facility, $this->service, $station['station_id'], $station['station_name'], null, null, $ex->getCode(), 'Error while collecting weather from Realtime file data: ' . $ex->getMessage());
                 continue;
             }
@@ -492,7 +492,7 @@ trait StationClient {
             $ephemeris->compute(LWS_REAL_SID);
             Logger::info($system, $this->service, null, null, null, null, 0, 'Job done: collecting from Realtime file and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
+        catch (\Throwable $ex) {
             Logger::critical($system, $this->service, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
         }
         $this->synchronize_modules_count();

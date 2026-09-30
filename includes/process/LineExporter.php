@@ -109,7 +109,8 @@ abstract class LineExporter extends Process {
             $result .= "\r\n" . sprintf(__('Check the events log to see what\'s going on: %s', 'live-weather-station'), lws_get_admin_page_url('lws-events')) . "\r\n";
         }
         else {
-            $fileurl = FS::get_full_file_url($this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date'], $this->uuid, $this->extension);
+            // The file is not directly reachable from the web: download it from the files page.
+            $fileurl = lws_get_admin_page_url('lws-files');
             $result = sprintf(__('Historical data of "%s" has been correctly exported for the period from %s to %s.', 'live-weather-station'), $this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date']) . "\r\n";
             $result .= sprintf(__('The file is now ready to download. It will be kept on your server for %s days.', 'live-weather-station'), get_option('live_weather_station_file_retention', '7')) . "\r\n";
             $result .= "\r\n" . $fileurl . "\r\n";

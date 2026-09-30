@@ -1,4 +1,7 @@
 <?php
+if (!defined('ABSPATH')) {
+    exit;
+}
 // Every value printed in the <style> block below is validated here, whatever the caller did.
 $lws_css = function ($value) { return preg_replace('/[^A-Za-z0-9\s#,.:;(){}%_!-]/', '', (string)$value); };
 $lws_bg_url = (preg_match('/^background-image: url\("[^"\'()\\\\\s<>]*"\);$/', (string)$bg_url) ? (string)$bg_url : '');

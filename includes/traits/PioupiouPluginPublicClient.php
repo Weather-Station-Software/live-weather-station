@@ -64,7 +64,7 @@ trait PublicClient {
                 $result = 'internal Pioupiou error';
             }
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
             $result = 'unable to contact Pioupiou servers';
         }
@@ -104,7 +104,7 @@ trait PublicClient {
         else {
             throw new \Exception('JSON / '.lws_clean_text($json_weather, 200));
         }
-        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($weather, true));
+        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
         if (!empty($weather)) {
             $meta = null;
             $location = null;
@@ -331,7 +331,7 @@ trait PublicClient {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');
                 }
             }
-            catch(\Exception $ex)
+            catch (\Throwable $ex)
             {
                 if (strpos($ex->getMessage(), 'JSON /') > -1) {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'Pioupiou servers has returned empty response. Retry will be done shortly.');
@@ -364,8 +364,8 @@ trait PublicClient {
             $ephemeris->compute(LWS_PIOU_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
-            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
         }
         $this->synchronize_modules_count();
         Watchdog::stop_chrono($cron_id);

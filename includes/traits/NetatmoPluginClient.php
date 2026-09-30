@@ -60,7 +60,7 @@ trait Client {
             update_option('live_weather_station_netatmo_connected', 1);
 
         }
-        catch (\Exception $ex) {
+        catch (\Throwable $ex) {
             $this->last_netatmo_error = __('Wrong credentials. Please, verify your login and password.', 'live-weather-station');
             update_option('live_weather_station_netatmo_refresh_token', '');
             update_option('live_weather_station_netatmo_access_token', '');
@@ -132,7 +132,7 @@ trait Client {
                     return false;
                 }
             }
-            catch (\Exception $ex) {
+            catch (\Throwable $ex) {
                 switch ($ex->getCode()) {
                     case 2:
                     case 23:
@@ -153,7 +153,7 @@ trait Client {
                         $this->last_netatmo_warning = __('Temporary unable to contact Netatmo servers. Retry will be done shortly.', 'live-weather-station');
                         Logger::warning($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Temporary unable to contact Netatmo servers. Retry will be done shortly.');
                 }
-                Logger::critical($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), $ex->getMessage());
+                Logger::critical($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), substr(sanitize_text_field($ex->getMessage()), 0, 500));
                 return false;
             }
         }
@@ -230,7 +230,7 @@ trait Client {
                     return array ();
                 }
             }
-            catch (\Exception $ex) {
+            catch (\Throwable $ex) {
                 switch ($ex->getCode()) {
                     case 2:
                     case 23:
@@ -251,7 +251,7 @@ trait Client {
                         $this->last_netatmo_warning = __('Temporary unable to contact Netatmo servers. Retry will be done shortly.', 'live-weather-station');
                         Logger::warning($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), 'Temporary unable to contact Netatmo servers. Retry will be done shortly.');
                 }
-                Logger::critical($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), $ex->getMessage());
+                Logger::critical($this->facility, $this->service_name, null, null, null, null, $ex->getCode(), substr(sanitize_text_field($ex->getMessage()), 0, 500));
                 return array();
             }
         }
@@ -302,8 +302,8 @@ trait Client {
                 Logger::warning($this->facility, $this->service_name, null, null, null, null, 543, 'Empty response from Netatmo servers. Retry will be done shortly.');
             }
         }
-        catch (\Exception $ex) {
-            Logger::critical('Backend', $this->service_name, null, null, null, null, $ex->getCode(), 'Error while detecting stations: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical('Backend', $this->service_name, null, null, null, null, $ex->getCode(), 'Error while detecting stations: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
             return array();
         }
         return $result;
@@ -329,8 +329,8 @@ trait Client {
             $ephemeris->compute(LWS_NETATMO_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
-            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
         }
         $this->synchronize_modules_count();
         Watchdog::stop_chrono($cron_id);

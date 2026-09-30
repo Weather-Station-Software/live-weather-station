@@ -42,17 +42,37 @@ class Handling {
     public function __construct() {
         $this->locale = lws_get_display_locale();
         if ('en_US' === $this->locale) {
-            if (is_admin() || is_blog_admin()) {
-                update_option('live_weather_station_partial_translation', 0);
-            }
+            $this->reset_partial_translation();
         }
         else {
             $this->translation_details();
             if (!$this->is_translatable() && EnvManager::is_plugin_in_production_mode()) {
-                if (is_admin() || is_blog_admin()) {
-                    update_option('live_weather_station_partial_translation', 0);
-                }
+                $this->reset_partial_translation();
             }
+        }
+    }
+
+    /**
+     * Reset the partial translation flag, only for a real administrator.
+     * The capability can't be tested while the plugin is loading (user not yet available): it is deferred to init.
+     * is_admin() is also true for unauthenticated admin-ajax.php requests, hence the capability check.
+     *
+     * @since 3.8.15
+     */
+    private function reset_partial_translation() {
+        if (!(is_admin() || is_blog_admin())) {
+            return;
+        }
+        $reset = function() {
+            if (current_user_can('manage_options')) {
+                update_option('live_weather_station_partial_translation', 0);
+            }
+        };
+        if (did_action('init')) {
+            $reset();
+        }
+        else {
+            add_action('init', $reset);
         }
     }
 
@@ -85,7 +105,10 @@ class Handling {
         if (!$this->locale_path) {
             return false;
         }
-        return 'https://translate.wordpress.org/projects/wp-plugins/live-weather-station/' . $branch . '/' . $this->locale_path . '/default/export-translations?format=mo';
+        if (!in_array($branch, array('stable', 'dev'), true) || !preg_match('/^[A-Za-z0-9_-]{2,20}$/', (string)$this->locale_path)) {
+            return false;
+        }
+        return 'https://translate.wordpress.org/projects/wp-plugins/live-weather-station/' . $branch . '/' . rawurlencode($this->locale_path) . '/default/export-translations?format=mo';
     }
 
     /**
@@ -114,7 +137,8 @@ class Handling {
             $branch = 'dev';
         }
         $target = LWS_LANGUAGES_DIR . LWS_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-??_??.mo';
-        $result = array_map('unlink', glob($target));
+        $files = glob($target);
+        $result = array_map('unlink', (is_array($files) ? $files : array()));
         $ok = true;
         if (count($result) > 0) {
             foreach ($result as $r) {
@@ -146,14 +170,26 @@ class Handling {
                 Logger::error($this->service_name, null, null, null, null, null, 666, $this->locale_name . ' translation file can not be downloaded from WordPress.org.');
                 return false;
             }
-            $file = download_url($url);
+            // Only translate.wordpress.org, over https, is trusted as a source.
+            $parts = wp_parse_url($url);
+            if (!is_array($parts) || !isset($parts['scheme']) || $parts['scheme'] !== 'https' || !isset($parts['host']) || $parts['host'] !== 'translate.wordpress.org' || !preg_match('/^[a-z]{2,3}(_[A-Za-z0-9]+)*$/', (string)$this->locale)) {
+                Logger::error($this->service_name, null, null, null, null, null, 666, 'Translation file source rejected.');
+                return false;
+            }
+            $file = download_url($url, 30);
             $target .= LWS_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . $this->locale . '.mo';
             if (is_wp_error($file)) {
-                @unlink($file);
-                Logger::error($this->service_name, null, null, null, null, null, 300, 'Unable to download ' . $this->locale_name . ' translation file from WordPress.org. Error was: ' . $file->get_error_messages());
+                Logger::error($this->service_name, null, null, null, null, null, 300, 'Unable to download ' . $this->locale_name . ' translation file from WordPress.org. Error was: ' . substr(sanitize_text_field(implode(' / ', $file->get_error_messages())), 0, 300));
                 return false;
             }
             else {
+                // Cheap integrity check: size cap and gettext magic number.
+                $head = (@filesize($file) > 0 && @filesize($file) <= 5242880) ? @file_get_contents($file, false, null, 0, 4) : false;
+                if ($head !== "\x95\x04\x12\xde" && $head !== "\xde\x12\x04\x95") {
+                    Logger::error($this->service_name, null, null, null, null, null, 1, 'Downloaded ' . $this->locale_name . ' translation file is not a valid .mo file.');
+                    @unlink($file);
+                    return false;
+                }
                 if (!copy($file, $target)) {
                     Logger::error($this->service_name, null, null, null, null, null, 1, 'Unable to copy ' . $this->locale_name . ' translation file to /languages directory.');
                     @unlink($file);
@@ -265,14 +301,18 @@ class Handling {
             Quota::verify('WordPress.org', 'GET');
             $args = array();
             $args['user-agent'] = LWS_PLUGIN_AGENT;
-            $args['timeout'] = get_option('live_weather_station_system_http_timeout');
+            $args['timeout'] = max(1, min(60, (int)get_option('live_weather_station_system_http_timeout')));
+            $args['limit_response_size'] = 2097152;
             $resp = wp_remote_get($api_url, $args);
+            if (is_wp_error($resp)) {
+                return null;
+            }
             $body = wp_remote_retrieve_body($resp);
             unset($resp);
             if ($body) {
                 $body = json_decode($body);
                 $this->cpt = 0;
-                if (isset($body)) {
+                if (is_object($body) && isset($body->translation_sets) && is_array($body->translation_sets)) {
                     foreach ($body->translation_sets as $set) {
                         if ($set->percent_translated >= $this->percent_min) {
                             $this->cpt += 1;
@@ -288,7 +328,7 @@ class Handling {
             }
             return null;
         }
-        catch (\Exception $e) {
+        catch (\Throwable $e) {
             return null;
         }
     }
@@ -305,15 +345,15 @@ class Handling {
         if ($this->translation_exists && is_object($set)) {
             if (array_key_exists($this->locale, $translations)) {
                 $this->locale_native_name = $translations[$this->locale]['native_name'];
-                $this->locale_name = $set->name;
+                $this->locale_name = substr(sanitize_text_field((string)$set->name), 0, 100);
             }
             else {
-                $this->locale_native_name = $set->name;
-                $this->locale_name = $set->name;
+                $this->locale_native_name = substr(sanitize_text_field((string)$set->name), 0, 100);
+                $this->locale_name = $this->locale_native_name;
             }
-            $this->percent_translated = $set->percent_translated;
-            $this->locale_path = $set->locale;
-            $this->last_modified = $set->last_modified;
+            $this->percent_translated = (int)$set->percent_translated;
+            $this->locale_path = substr(sanitize_text_field((string)$set->locale), 0, 20);
+            $this->last_modified = substr(sanitize_text_field((string)$set->last_modified), 0, 40);
         }
         else {
             $this->locale_native_name = $translations[$this->locale]['native_name'];

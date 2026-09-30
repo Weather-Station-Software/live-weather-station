@@ -11,7 +11,7 @@ use WeatherStation\System\Output\Guard;
 
 if (get_option('live_weather_station_windy_apikey') != '') {
     $windy_s = ucfirst(__('a full featured map from Windy.com with many weather layers and animations.', 'live-weather-station'));
-    $windy_l = lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'windy');
+    $windy_l = wp_nonce_url(lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'windy'), 'lws-new-map-windy');
     $windy_t = '_self';
 }
 else {
@@ -22,7 +22,7 @@ else {
 
 if (get_option('live_weather_station_owm_apikey') != '') {
     $owm_s = ucfirst(__('a full featured map from OpenWeatherMap with many weather and agricultural layers.', 'live-weather-station'));
-    $owm_l = lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'openweathermap');
+    $owm_l = wp_nonce_url(lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'openweathermap'), 'lws-new-map-openweathermap');
     $owm_t = '_self';
 }
 else {
@@ -33,7 +33,7 @@ else {
 
 if (get_option('live_weather_station_mapbox_apikey') != '') {
     $mapbox_s = ucfirst(sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Mapbox'));
-    $mapbox_l = lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'mapbox');
+    $mapbox_l = wp_nonce_url(lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'mapbox'), 'lws-new-map-mapbox');
     $mapbox_t = '_self';
 }
 else {
@@ -44,7 +44,7 @@ else {
 
 if (get_option('live_weather_station_maptiler_apikey') != '') {
     $maptiler_s = ucfirst(sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Maptiler'));
-    $maptiler_l = lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'maptiler');
+    $maptiler_l = wp_nonce_url(lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'maptiler'), 'lws-new-map-maptiler');
     $maptiler_t = '_self';
 }
 else {
@@ -55,7 +55,7 @@ else {
 
 if (get_option('live_weather_station_thunderforest_apikey') != '') {
     $thunderforest_s = ucfirst(sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Thunderforest'));
-    $thunderforest_l = lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'thunderforest');
+    $thunderforest_l = wp_nonce_url(lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'thunderforest'), 'lws-new-map-thunderforest');
     $thunderforest_t = '_self';
 }
 else {
@@ -65,12 +65,12 @@ else {
 }
 
 $stamen_s = ucfirst(sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Stamen'));
-$stamen_l = lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'stamen');
+$stamen_l = wp_nonce_url(lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'stamen'), 'lws-new-map-stamen');
 $stamen_t = '_self';
 
 if (get_option('live_weather_station_navionics_apikey') != '') {
     $navionics_s = ucfirst(__('a full featured map from Navionics with nautical, sonar and ski layers.', 'live-weather-station'));
-    $navionics_l = lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'navionics');
+    $navionics_l = wp_nonce_url(lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'navionics'), 'lws-new-map-navionics');
     $navionics_t = '_self';
 }
 else {

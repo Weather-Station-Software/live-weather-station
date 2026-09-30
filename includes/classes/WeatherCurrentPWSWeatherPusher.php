@@ -104,7 +104,7 @@ class Pusher extends Abstract_Pusher {
      * @since   2.5.0
      */
     protected function get_post_url() {
-        return 'http://www.pwsweather.com/pwsupdate/pwsupdate.php';
+        return 'https://www.pwsweather.com/pwsupdate/pwsupdate.php';
     }
 
     /**

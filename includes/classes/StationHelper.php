@@ -154,6 +154,10 @@ class Handling {
         if (strpos($page, 'lws-') === false) {
             return;
         }
+        // This object is built for every admin user: nothing must be read or done without the capability.
+        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+            return;
+        }
         $this->Live_Weather_Station = $Live_Weather_Station;
         $this->version = $version;
         $this->get_args();
@@ -388,10 +392,13 @@ class Handling {
                                     $args['init']['station_id'] = $station['station_id'];
                                     $args['init']['start_date'] = sanitize_text_field($_POST['lws-date-start']);
                                     $args['init']['end_date'] = sanitize_text_field($_POST['lws-date-end']);
-                                    $format = sanitize_text_field(strtolower($_POST['lws-format']));
-                                    $classname = 'Line' . ucfirst($format) . 'Exporter';
-                                    ProcessManager::register($classname, $args);
-                                    $success = true;
+                                    $format = sanitize_key($_POST['lws-format']);
+                                    // The class name is built from the format: only known formats are accepted.
+                                    if (in_array($format, array('csv', 'tsv', 'dsvp', 'dsvs', 'ndjson'), true)) {
+                                        $classname = 'Line' . ucfirst($format) . 'Exporter';
+                                        ProcessManager::register($classname, $args);
+                                        $success = true;
+                                    }
                                 }
                                 if ($success) {
                                     $message = __('Data export for the station %s has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');
@@ -418,7 +425,7 @@ class Handling {
                                     $args['init']['start_date'] = sanitize_text_field($_POST['lws-date-start']);
                                     $args['init']['end_date'] = sanitize_text_field($_POST['lws-date-end']);
                                     $args['init']['force'] = array_key_exists('lws-option-override', $_POST);
-                                    $format = sanitize_text_field(strtolower($_POST['lws-format']));
+                                    $format = sanitize_key($_POST['lws-format']);
                                     if ($format === 'netatmo' && $station['station_type'] == LWS_NETATMOHC_SID) {
                                         $format = 'NetatmoHC';
                                     }
@@ -437,7 +444,8 @@ class Handling {
                                         }
                                         $format = 'LineNdjson';
                                     }
-                                    if ($go) {
+                                    // The class name is built from the format: only known formats are accepted.
+                                    if ($go && in_array($format, array('NetatmoHC', 'NetatmoStation', 'Pioupiou', 'WeatherFlow', 'LineNdjson'), true)) {
                                         $classname = $format . 'Importer';
                                         ProcessManager::register($classname, $args);
                                         $success = true;

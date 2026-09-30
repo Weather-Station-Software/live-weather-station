@@ -1355,7 +1355,7 @@ trait Storage {
                 $t = 'absolute_humidity';
                 break;
             default:
-                $t = $type;
+                $t = sanitize_key($type);
         }
         return get_option('live_weather_station_' . $t . '_' . $opt . '_boundary', 'NaN');
     }
@@ -1702,15 +1702,15 @@ trait Storage {
                 }
             }
             catch (\Exception $ex) {
-                Logger::warning('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
+                Logger::warning('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . substr(print_r($value, true), 0, 1000));
             }
         }
         else {
             try {
-                Logger::warning('Data Manager', null, $value['device_id'], $value['device_name'], $value['module_id'], $value['module_name'], 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
+                Logger::warning('Data Manager', null, $value['device_id'], $value['device_name'], $value['module_id'], $value['module_name'], 500, 'Inconsistent data to insert in data table: ' . substr(print_r($value, true), 0, 1000));
             }
             catch (\Exception $ex) {
-                Logger::warning('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
+                Logger::warning('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . substr(print_r($value, true), 0, 1000));
             }
 
         }
@@ -2061,7 +2061,7 @@ trait Storage {
      */
     protected static function _clean_usermeta($key) {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'usermeta';
+        $table_name = $wpdb->usermeta;
         $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE meta_key LIKE %s AND user_id=%d;", '%' . $wpdb->esc_like('_' . $key) . '%', get_current_user_id());
         return $wpdb->query($sql);
     }
@@ -2074,8 +2074,19 @@ trait Storage {
      */
     protected static function clean_all_usermeta() {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'usermeta';
-        $sql = "DELETE FROM " . $table_name . " WHERE meta_key LIKE \"%\_lws-%\"" . ";";
+        // Exactly the keys written by the plugin: its own welcome-panel flag and the WordPress screen options
+        // (postbox order/visibility, layout, columns, per-page) of its admin screens (screen ids contain 'lws-').
+        $like = array(
+            'show\_lws\_welcome\_panel',
+            'closedpostboxes\_%lws-%',
+            'metaboxhidden\_%lws-%',
+            'meta-box-order\_%lws-%',
+            'screen\_layout\_%lws-%',
+            'manage%lws-%columnshidden',
+            '%lws-%\_per\_page',
+        );
+        $where = implode(' OR ', array_fill(0, count($like), 'meta_key LIKE %s'));
+        $sql = $wpdb->prepare("DELETE FROM " . $wpdb->usermeta . " WHERE " . $where, $like);
         return $wpdb->query($sql);
     }
 }

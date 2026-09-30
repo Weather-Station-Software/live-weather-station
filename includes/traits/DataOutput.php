@@ -1805,7 +1805,6 @@ trait Output {
                             $rows = $wpdb->get_results($sql, ARRAY_A);
                             $yearstr = $yearmin;
                         }
-                        $result['query'] = $sql;
                         $values = array();
                         for ($yy=$yearmin; $yy<=$yearmax; $yy++) {
                             for ($mm=1; $mm<=12; $mm++) {
@@ -6896,6 +6895,10 @@ trait Output {
      */
     public function admin_analytics_shortcodes($attributes) {
         $result = '';
+        // Internal statistics (quota, events, cron, database...) are for administrators only
+        if (!current_user_can(apply_filters('lws_manage_options_capability', 'manage_options'))) {
+            return '';
+        }
         $_attributes = shortcode_atts( array('item' => '', 'metric' => '', 'height' => ''), $attributes );
         $_attributes['item'] = Guard::token($_attributes['item'], '');
         $_attributes['metric'] = Guard::token($_attributes['metric'], '');

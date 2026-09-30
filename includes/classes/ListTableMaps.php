@@ -74,7 +74,7 @@ class Maps extends Base {
 
     protected function column_stations($item){
         $result = '-';
-        $params = unserialize($item['params']);
+        $params = unserialize($item['params'], array('allowed_classes' => false));
         if (!$params['common']['all']) {
             if (array_key_exists('stations', $params)) {
                 $list = $params['stations'];
@@ -98,7 +98,7 @@ class Maps extends Base {
     }
 
     protected function column_zoom($item){
-        $params = unserialize($item['params']);
+        $params = unserialize($item['params'], array('allowed_classes' => false));
         if (array_key_exists('common', $params)) {
             if (array_key_exists('loc_zoom', $params['common'])) {
                 return esc_html($params['common']['loc_zoom']);
@@ -108,7 +108,7 @@ class Maps extends Base {
     }
 
     protected function column_size($item){
-        $params = unserialize($item['params']);
+        $params = unserialize($item['params'], array('allowed_classes' => false));
         $width = '-';
         $height = '-';
         if (array_key_exists('common', $params)) {
@@ -127,7 +127,7 @@ class Maps extends Base {
     }
 
     protected function column_center($item){
-        $params = unserialize($item['params']);
+        $params = unserialize($item['params'], array('allowed_classes' => false));
         $lat = '-';
         $lon = '-';
         if (array_key_exists('common', $params)) {
