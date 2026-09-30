@@ -74,6 +74,7 @@ class Activator {
 	 * @static
 	 */
 	private static function activate_site() {
+		Logger::init();
 		Logger::notice('Activator',null,null,null,null,null,null,'Starting ' . LWS_PLUGIN_NAME . ' installation and initialization.');
 		self::create_tables();
 		self::init_options();
