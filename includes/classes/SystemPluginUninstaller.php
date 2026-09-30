@@ -3,6 +3,7 @@
 namespace WeatherStation\System\Plugin;
 
 use WeatherStation\System\Schedules\Watchdog;
+use WeatherStation\System\Environment\Manager as Env;
 use WeatherStation\System\Options\Handling as Options;
 use WeatherStation\DB\Storage as Storage;
 use WeatherStation\System\Cache\Cache;
@@ -30,16 +31,7 @@ class Uninstaller {
      */
     public static function uninstall() {
         // WordPress runs the uninstaller once, even when the plugin is deleted from the network admin: clean every site.
-        if (is_multisite()) {
-            foreach (get_sites(array('fields' => 'ids', 'number' => 0)) as $site_id) {
-                switch_to_blog($site_id);
-                self::uninstall_site();
-                restore_current_blog();
-            }
-        }
-        else {
-            self::uninstall_site();
-        }
+        Env::run_on_sites(function() { self::uninstall_site(); }, 'all');
     }
 
     /**
@@ -75,6 +67,24 @@ class Uninstaller {
         foreach ($patterns as $pattern) {
             $wpdb->query($wpdb->prepare("DELETE FROM " . $wpdb->options . " WHERE option_name LIKE %s", $pattern));
         }
+    }
+
+    /**
+     * Add the tables of a site to the ones WordPress drops when this site is deleted from the network.
+     * Hooked on wpmu_drop_tables.
+     *
+     * @param array $tables The tables to drop (name => name).
+     * @param int $site_id The id of the deleted site.
+     * @return array The tables to drop.
+     * @since 3.9.0
+     */
+    public static function site_tables($tables, $site_id) {
+        global $wpdb;
+        $like = $wpdb->esc_like($wpdb->get_blog_prefix($site_id) . 'live_weather_station') . '%';
+        foreach ((array)$wpdb->get_col($wpdb->prepare('SHOW TABLES LIKE %s', $like)) as $table) {
+            $tables[$table] = $table;
+        }
+        return $tables;
     }
 
 }

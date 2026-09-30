@@ -106,7 +106,7 @@ You need **WordPress 4.9** and at least **PHP 7.1**. See full [requirements](htt
 
 = Can this plugin work on multisite? =
 
-Yes. You can install it via the network admin plugins page but the plugin **must not be "Network Activated"**, instead you must activate it on a site by site basis.
+Yes. You can install it via the network admin plugins page, then either network activate it or activate it on a site by site basis. When network activated, the plugin is set up on every site, including the ones created afterwards.
 
 = Where can I get support? =
 
