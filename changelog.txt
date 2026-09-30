@@ -1,4 +1,8 @@
 #3.9.0 / xx September 2026
+* Improvement: PHP 8.2 to 8.5 are supported and checked by the continuous integration (syntax check and compatibility scan); the minimum required version is unchanged.
+* Improvement: sunrise and sunset are computed without the PHP functions deprecated since PHP 8.1, with exactly the same times.
+* Bug fix: PHP 8.2 to 8.5 deprecations are fixed (implicit nullable parameters, float to int conversions, `(integer)` cast) and translations are no longer loaded before WordPress is ready.
+* Bug fix: shortcodes and screens no longer raise PHP warnings on missing values (steel meter, gauge, calendar heat map, Netatmo form).
 * Security: SQL queries are now prepared and identifiers validated; the standalone generator validates its input.
 * Security: outputs are escaped and shortcode/widget attributes validated (JS literals, enums, tokens, colors, sizes).
 * Security: import/export, secrets, network requests and authorization checks are hardened.

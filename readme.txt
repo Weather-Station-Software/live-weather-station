@@ -2,7 +2,7 @@
 Contributors: jaz_on
 Tags: weather, openweathermap, netatmo, weatherflow, weatherstation
 Requires at least: 4.9
-Tested up to: 6.3.1
+Tested up to: 7.1
 Requires PHP: 7.1
 Stable tag: 3.9.0
 License: GPLv2 or later
@@ -104,6 +104,8 @@ You can also help by reporting bugs, translating, or sharing the plugin with oth
 
 You need **WordPress 4.9** and at least **PHP 7.1**. See full [requirements](https://weather.station.software/handbook/requirements/).
 
+PHP 8.2 and later are supported and tested with every release. Older versions of PHP may still work but are not supported: please ask your host to upgrade.
+
 = Can this plugin work on multisite? =
 
 Yes. You can install it via the network admin plugins page, then either network activate it or activate it on a site by site basis. When network activated, the plugin is set up on every site, including the ones created afterwards.
@@ -134,6 +136,9 @@ Although it is not free of charge for its maintainer, I'd rather have your help 
 See [full changelog](https://weather.station.software/handbook/changelog/).
 
 == Upgrade Notice ==
+
+= 3.9.0 =
+PHP 8.2 and later are supported and tested. Versions of PHP older than 8.2 are not supported.
 
 Please, see [full changelog](https://weather.station.software/handbook/changelog/) and [requirements](https://weather.station.software/handbook/requirements/).
 

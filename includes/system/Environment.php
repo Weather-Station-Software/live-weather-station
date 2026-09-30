@@ -93,7 +93,7 @@ class Manager {
      * @since 3.1.0
      */
     public static function webserver_api() {
-        return $_SERVER['GATEWAY_INTERFACE'];
+        return (isset($_SERVER['GATEWAY_INTERFACE']) ? $_SERVER['GATEWAY_INTERFACE'] : '');
     }
 
     /**

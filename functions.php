@@ -644,6 +644,78 @@ function lws_iconv($string) {
     return $string;
 }
 
+/**
+ * Compute a sunrise or sunset timestamp without the date_sunrise() / date_sunset() functions (deprecated in PHP 8.1).
+ *
+ * This is a port of the algorithm used by PHP (timelib, astro.c: Paul Schlyter's "sunriset", upper limb
+ * correction, altitude = 90 - zenith, result truncated to the second). It returns exactly the same
+ * timestamp as date_sunrise/date_sunset(..., SUNFUNCS_RET_TIMESTAMP, ...) and false when the sun never
+ * rises or never sets on that day (polar day or night). The day is the one of $time in the default timezone.
+ *
+ * @param int $time The timestamp of any moment of the day.
+ * @param float $lat Latitude in degrees (north positive).
+ * @param float $lon Longitude in degrees (east positive).
+ * @param float $zenith Zenith in degrees (for ex. 90 + 50/60 for sunrise/sunset, 96 civil, 102 nautical, 108 astronomical).
+ * @param boolean $sunset Optional. True to get the sunset, false (default) to get the sunrise.
+ * @return int|boolean The timestamp, or false.
+ * @since 3.9.0
+ */
+function lws_sun_timestamp($time, $lat, $lon, $zenith, $sunset = false) {
+    $lat = (float)$lat;
+    $lon = (float)$lon;
+    $altit = 90 - (float)$zenith;
+    if (is_nan($lat) || is_infinite($lat) || is_nan($lon) || is_infinite($lon)) {
+        return false;
+    }
+    $rad = M_PI / 180.0;
+    $deg = 180.0 / M_PI;
+    $rev = function ($x) {
+        return $x - 360.0 * floor($x * (1.0 / 360.0));
+    };
+    $rev180 = function ($x) {
+        return $x - 360.0 * floor($x * (1.0 / 360.0) + 0.5);
+    };
+    // 00:00 UTC of the current (local, default timezone) day.
+    $utc = gmmktime(0, 0, 0, (int)date('n', (int)$time), (int)date('j', (int)$time), (int)date('Y', (int)$time));
+    // Days since 2000 Jan 0.0 at 12h local mean solar time.
+    $d = ($utc / 86400.0 + 2440587.5) - 2451545 + 2 - $lon / 360.0;
+    // Sun position.
+    $m = $rev(356.0470 + 0.9856002585 * $d);
+    $w = 282.9404 + 4.70935E-5 * $d;
+    $e = 0.016709 - 1.151E-9 * $d;
+    $ea = $m + $e * $deg * sin($m * $rad) * (1.0 + $e * cos($m * $rad));
+    $x = cos($ea * $rad) - $e;
+    $y = sqrt(1.0 - $e * $e) * sin($ea * $rad);
+    $r = sqrt($x * $x + $y * $y);
+    $v = $deg * atan2($y, $x);
+    $slon = $v + $w;
+    if ($slon >= 360.0) {
+        $slon -= 360.0;
+    }
+    $x = $r * cos($slon * $rad);
+    $y = $r * sin($slon * $rad);
+    $obl = 23.4393 - 3.563E-7 * $d;
+    $z = $y * sin($obl * $rad);
+    $y = $y * cos($obl * $rad);
+    $ra = $deg * atan2($y, $x);
+    $dec = $deg * atan2($z, sqrt($x * $x + $y * $y));
+    // Local sidereal time, and time when the sun is at south (hours UT).
+    $sid = $rev($rev((180.0 + 356.0470 + 282.9404) + (0.9856002585 + 4.70935E-5) * $d) + 180.0 + $lon);
+    $tsouth = 12.0 - $rev180($sid - $ra) / 15.0;
+    // Upper limb correction.
+    $altit -= 0.2666 / $r;
+    $den = cos($lat * $rad) * cos($dec * $rad);
+    if ($den == 0) {
+        return false;
+    }
+    $cost = (sin($altit * $rad) - sin($lat * $rad) * sin($dec * $rad)) / $den;
+    if ($cost >= 1.0 || $cost <= -1.0) {
+        return false; // Polar night or polar day.
+    }
+    $t = $deg * acos($cost) / 15.0;
+    return (int)((($sunset ? $tsouth + $t : $tsouth - $t) * 3600) + $utc);
+}
+
 
 /**
  * Fake __() function for debugging / developing purpose.

@@ -311,9 +311,10 @@ class ColorsManipulation {
         }
 
         // Convert to hex
-        $r = dechex($r);
-        $g = dechex($g);
-        $b = dechex($b);
+        // PHP 8.1 compat: explicit truncation (implicit float to int conversion is deprecated).
+        $r = dechex((int)$r);
+        $g = dechex((int)$g);
+        $b = dechex((int)$b);
 
         // Make sure we get 2 digits for decimals
         $r = (strlen("".$r)===1) ? "0".$r:$r;
@@ -373,9 +374,9 @@ class ColorsManipulation {
         }
 
         // Convert RGB to HEX
-        $hex[0] = dechex( $rgb['R'] );
-        $hex[1] = dechex( $rgb['G'] );
-        $hex[2] = dechex( $rgb['B'] );
+        $hex[0] = dechex((int)$rgb['R']);
+        $hex[1] = dechex((int)$rgb['G']);
+        $hex[2] = dechex((int)$rgb['B']);
 
         if (strlen($hex[0]) == 0) {
             $hex[0] = '00';
@@ -468,7 +469,7 @@ class ColorsManipulation {
      */
     public function makeSteppedGradient( $step, $amount = self::DEFAULT_ADJUST ) {
         $result = array();
-        $amount = (integer)(round($amount/($step-1), 0));
+        $amount = (int)(round($amount/($step-1), 0));
         if ($this->isDark()) {
             $this->_hsl = $this->_lighten($this->_hsl, 50);
         }
@@ -494,9 +495,9 @@ class ColorsManipulation {
             $GradientSizeGrn = (hexdec(substr($endcol, 2, 2)) - $GrnOrigin) / $graduations;
             $GradientSizeBlu = (hexdec(substr($endcol, 4, 2)) - $BluOrigin) / $graduations;
             for ($i = 0; $i <= $graduations; $i++) {
-                $RetVal[$i] = strtoupper("#" . str_pad(dechex($RedOrigin + ($GradientSizeRed * $i)), 2, '0', STR_PAD_LEFT) .
-                    str_pad(dechex($GrnOrigin + ($GradientSizeGrn * $i)), 2, '0', STR_PAD_LEFT) .
-                    str_pad(dechex($BluOrigin + ($GradientSizeBlu * $i)), 2, '0', STR_PAD_LEFT));
+                $RetVal[$i] = strtoupper("#" . str_pad(dechex((int)($RedOrigin + ($GradientSizeRed * $i))), 2, '0', STR_PAD_LEFT) .
+                    str_pad(dechex((int)($GrnOrigin + ($GradientSizeGrn * $i))), 2, '0', STR_PAD_LEFT) .
+                    str_pad(dechex((int)($BluOrigin + ($GradientSizeBlu * $i))), 2, '0', STR_PAD_LEFT));
             }
         } elseif ($graduations == 1) { // exactly 2 colors
             $RetVal[] = $from_color;

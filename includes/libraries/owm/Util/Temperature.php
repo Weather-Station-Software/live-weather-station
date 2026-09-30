@@ -111,7 +111,7 @@ class Temperature
      *
      * @internal
      */
-    public function __construct(Unit $now, Unit $min, Unit $max, Unit $day = null, Unit $morning = null, Unit $evening = null, Unit $night = null)
+    public function __construct(Unit $now, Unit $min, Unit $max, ?Unit $day = null, ?Unit $morning = null, ?Unit $evening = null, ?Unit $night = null) // PHP 8.4 compat: explicit nullable types
     {
         $this->now = $now;
         $this->min = $min;
