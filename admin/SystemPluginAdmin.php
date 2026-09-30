@@ -1568,6 +1568,10 @@ class Admin {
                 break;
             case 'lws-stations':
             case 'lws-dashboard':
+                if ($this->station_request_needs_unknown_station_notice($action, $tab, $service, $id)) {
+                    $this->lws_view_unknown_station();
+                    return;
+                }
                 if ($page == 'lws-stations') {
                     $view = 'list-table-stations';
                 }
@@ -2062,6 +2066,53 @@ class Admin {
         elseif ($view === 'map') {
             $this->_map->get();
         }
+    }
+
+    /**
+     * Tell if the request targets an existing station that does not exist.
+     *
+     * The 'add a new station' forms (empty id or 0) and the views which do not target a station are never concerned.
+     *
+     * @param string $action The action of the request.
+     * @param string $tab The tab of the request.
+     * @param string $service The service of the request.
+     * @param string $id The raw station id of the request.
+     * @return boolean True if the request must be replaced by the "unknown station" message.
+     * @since 3.9.0
+     */
+    protected function station_request_needs_unknown_station_notice($action, $tab, $service, $id) {
+        $service = strtolower($service);
+        $targeted = false;
+        if ($action == 'manage' && $service == 'station' && ($tab == 'edit' || $tab == 'view')) {
+            $targeted = true;
+        }
+        elseif ($action == 'shortcode' && in_array($tab, array('current', 'daily', 'yearly', 'climat'), true)) {
+            $targeted = true;
+        }
+        elseif ($action == 'form' && $service != '' && $tab != '') {
+            // Forms to add a new station have no id (or 0); every other form needs an existing station.
+            $targeted = in_array($service, array('station', 'modules', 'data'), true) || ($id !== '' && $id !== '0');
+        }
+        elseif ($action == 'do' && $service == 'station' && $tab == 'delete') {
+            $targeted = ($id !== '' && $id !== '0');
+        }
+        if (!$targeted) {
+            return false;
+        }
+        return (self::get_existing_station_guid($id) === 0);
+    }
+
+    /**
+     * Show the "unknown station" message with a link back to the stations list.
+     *
+     * @since 3.9.0
+     */
+    protected function lws_view_unknown_station() {
+        echo '<div class="wrap">';
+        echo '<h1>' . esc_html__('Station', 'live-weather-station') . '</h1>';
+        echo '<div class="notice notice-error"><p>' . esc_html__('This station does not exist.', 'live-weather-station') . '</p></div>';
+        echo '<p><a class="button button-primary" href="' . esc_url(lws_get_admin_page_url('lws-stations')) . '">' . esc_html__('Back to the stations list', 'live-weather-station') . '</a></p>';
+        echo '</div>';
     }
 
     /**

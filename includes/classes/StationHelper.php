@@ -161,6 +161,10 @@ class Handling {
         $this->Live_Weather_Station = $Live_Weather_Station;
         $this->version = $version;
         $this->get_args();
+        if ($this->station_guid != 0 && self::get_existing_station_guid($this->station_guid) === 0) {
+            // Unknown station (typed by hand, deleted elsewhere, old bookmark): the admin page shows a clear message.
+            $this->station_guid = 0;
+        }
         if ($this->station_guid != 0) {
             $this->edit_station();
             $this->station_information = $this->get_station_information_by_guid($this->station_guid);
