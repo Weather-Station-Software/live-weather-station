@@ -160,7 +160,7 @@ trait HCClient {
             $this->get_measurements(false);
             $measurements = $this->netatmo_measurements ;
             foreach($measurements['devices'] as $device){
-                $result[] = array('device_id' => $device['_id'], 'station_name' => $device['station_name'], 'installed' => false);
+                $result[] = array('device_id' => $device['_id'], 'station_name' => lws_clean_text($device['station_name'], 60), 'installed' => false);
             }
             if ($store) {
                 foreach ($result as &$station) {

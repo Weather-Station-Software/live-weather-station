@@ -6,6 +6,8 @@
  * @since 3.0.0
  */
 
+use WeatherStation\System\Output\Guard;
+
 $cache_warning = sprintf(__('The %s events log will be purged. Is it really what you want?', 'live-weather-station'), LWS_PLUGIN_NAME);
 
 ?>
@@ -25,7 +27,7 @@ $cache_warning = sprintf(__('The %s events log will be purged. Is it really what
 <p>&nbsp;</p>
 <p><?php echo sprintf(__('At last, you can reset some subsystems of %s if something is going wrong.', 'live-weather-station'), LWS_PLUGIN_NAME);?><br/><em><?php echo __('To do it, just click on the corresponding button:', 'live-weather-station'); ?></em></p>
 <p><a class="button button-primary" href="<?php echo esc_url(lws_get_admin_page_url('lws-settings', 'reset-cache', 'maintenance')); ?>"><?php echo __('Invalidate Cache', 'live-weather-station');?></a> &nbsp;&nbsp;&nbsp;
-    <a class="button button-primary" href="<?php echo esc_url(lws_get_admin_page_url('lws-settings', 'purge-log', 'maintenance')); ?>" onclick="lws_purgelog_confirmation = confirm('<?php echo $cache_warning; ?>'); return lws_purgelog_confirmation;"><?php echo __('Purge Events Log', 'live-weather-station');?></a></p>
+    <a class="button button-primary" href="<?php echo esc_url(lws_get_admin_page_url('lws-settings', 'purge-log', 'maintenance')); ?>" onclick="lws_purgelog_confirmation = confirm(<?php echo Guard::js($cache_warning); ?>); return lws_purgelog_confirmation;"><?php echo __('Purge Events Log', 'live-weather-station');?></a></p>
 
 <p>&nbsp;</p>
 <hr />

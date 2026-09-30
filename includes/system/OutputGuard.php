@@ -81,7 +81,23 @@ class Guard {
      * @since 3.8.15
      */
     public static function color($value, $default = '') {
-        if (is_scalar($value) && preg_match('/^(#[0-9A-Fa-f]{3,8}|[A-Za-z]{3,30})$/', (string)$value)) {
+        if (is_scalar($value) && preg_match('/^(#[0-9A-Fa-f]{3,8}|[A-Za-z]{3,30}|(rgb|hsl)a?\(\s*[0-9.%]+\s*(,\s*[0-9.%]+\s*){2,3}\))$/', (string)$value)) {
+            return (string)$value;
+        }
+        return $default;
+    }
+
+    /**
+     * Get a value only if it is a token, or several tokens separated by | (composite sets like avg|mid).
+     *
+     * @param mixed $value The candidate.
+     * @param string $default The value returned if the candidate is not acceptable.
+     * @param int $max_length The max length.
+     * @return string The value or the default.
+     * @since 3.8.15
+     */
+    public static function composite($value, $default = '', $max_length = 128) {
+        if (is_scalar($value) && preg_match('/^[A-Za-z0-9_:.\-|]{1,' . (int)$max_length . '}$/', (string)$value)) {
             return (string)$value;
         }
         return $default;
@@ -96,7 +112,7 @@ class Guard {
      * @since 3.8.15
      */
     public static function css_size($value, $default = '') {
-        if (is_scalar($value) && preg_match('/^\d{1,4}(\.\d{1,2})?(px|%|em|rem|vh|vw)?$/', (string)$value)) {
+        if (is_scalar($value) && preg_match('/^(auto|\d{1,4}(\.\d{1,2})?(px|%|em|rem|vh|vw|vmin|vmax)?)$/', (string)$value)) {
             return (string)$value;
         }
         return $default;

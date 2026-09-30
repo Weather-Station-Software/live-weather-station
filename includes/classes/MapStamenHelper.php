@@ -5,6 +5,7 @@ namespace WeatherStation\UI\Map;
 use WeatherStation\Data\Output;
 use WeatherStation\System\Quota\Quota;
 use WeatherStation\Data\Arrays\Generator;
+use WeatherStation\System\Output\Guard;
 
 /**
  * This class builds elements of the map view for Stamen maps.
@@ -111,15 +112,15 @@ class StamenHandling extends BaseHandling {
      */
     protected function specific_script(){
         $result = '';
-        $result .= "var layer = new L.StamenTileLayer('" . $this->map_params['specific']['options']['overlay'] . "');" . PHP_EOL;
+        $result .= "var layer = new L.StamenTileLayer(" . Guard::js($this->map_params['specific']['options']['overlay']) . ");" . PHP_EOL;
         $result .= "var map = new L.Map('stamen-" . $this->uniq . "', {" . PHP_EOL;
-        $result .= "  center: new L.LatLng(" . $this->map_params['common']['loc_latitude'] . ", " . $this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
+        $result .= "  center: new L.LatLng(" . (float)$this->map_params['common']['loc_latitude'] . ", " . (float)$this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
         $result .= '  maxZoom: ' . $this->maxzoom . ',' . PHP_EOL;
         $result .= '  minZoom: ' . $this->minzoom . ',' . PHP_EOL;
         if (!$this->map_params['specific']['controls']['zoom']) {
             $result .= "  scrollWheelZoom: false," . PHP_EOL;
         }
-        $result .= "  zoom: " . $this->map_params['common']['loc_zoom'] . PHP_EOL;
+        $result .= "  zoom: " . (int)$this->map_params['common']['loc_zoom'] . PHP_EOL;
         $result .= "});" . PHP_EOL;
         $result .= "map.attributionControl.setPrefix('');" . PHP_EOL;
         $result .= "map.addLayer(layer);" . PHP_EOL;

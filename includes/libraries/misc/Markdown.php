@@ -64,7 +64,8 @@ class Markdown
         return $this;
     }
 
-    protected $markupEscaped;
+    # Safe by default: raw HTML is escaped (the class is only used to render the plugin changelog).
+    protected $markupEscaped = true;
 
     function setUrlsLinked($urlsLinked)
     {
@@ -1412,7 +1413,12 @@ class Markdown
                     continue;
                 }
 
-                $markup .= ' '.$name.'="'.$value.'"';
+                if (($name === 'href' || $name === 'src') && preg_match('/^[\s\x00-\x20]*([a-z][a-z0-9+.\-]*):/i', html_entity_decode($value, ENT_QUOTES, 'UTF-8'), $scheme) && !in_array(strtolower($scheme[1]), array('http', 'https', 'mailto'), true))
+                {
+                    $value = '#';
+                }
+
+                $markup .= ' '.preg_replace('/[^A-Za-z0-9_:\-]/', '', $name).'="'.htmlspecialchars($value, ENT_QUOTES, 'UTF-8', false).'"';
             }
         }
 

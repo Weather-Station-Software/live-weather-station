@@ -6,11 +6,11 @@
  * @since 3.1.0
  */
 
-$active_tab = (isset($_GET['tab']) ? $_GET['tab'] : 'general');
+$active_tab = (isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'general');
 $page = LWS_ADMIN_DIR.'partials/Analytics' . ucfirst($active_tab) . '.php';
 $page = str_replace('_short', 'Short', $page);
 $page = str_replace('_long', 'Long', $page);
-if (!file_exists($page) && ($active_tab != 'general')) {
+if ((!in_array($active_tab, array('general', 'quota_short', 'quota_long', 'cache', 'event', 'task', 'database'), true) || !file_exists($page)) && ($active_tab != 'general')) {
     $active_tab = 'general';
     $page = LWS_ADMIN_DIR.'partials/Analytics' . ucfirst($active_tab) . '.php';
 }

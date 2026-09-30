@@ -3,6 +3,7 @@
 namespace WeatherStation\UI\Widget;
 
 use WeatherStation\System\Cache\Cache;
+use WeatherStation\System\Output\Guard;
 
 /**
  * Outdoor weather widget class for Weather Station plugin
@@ -70,7 +71,7 @@ abstract class Base extends \WP_Widget {
                 $jsInitId = md5(random_bytes(18));
                 $result .= lws_print_begin_script($jsInitId) . PHP_EOL;
                 $result .= '  jQuery(document).ready(function($) {'.PHP_EOL;
-                $result .= '    $.post( "' . LWS_AJAX_URL . '", {action: "lws_w_' . $widget . '", ' . str_replace('\'', '\\\'', $this->outputvar($args, $instance)) . '}).done(function(data) {$("#' . $uniq . '").html(data);})';
+                $result .= '    $.post( ' . Guard::js(LWS_AJAX_URL) . ', {action: ' . Guard::js('lws_w_' . $widget) . ', ' . $this->outputvar($args, $instance) . '}).done(function(data) {$("#' . $uniq . '").html(data);})';
                 $result .= '  });' . PHP_EOL;
                 $result .= lws_print_end_script($jsInitId);
                 $result .= $after;
@@ -94,18 +95,113 @@ abstract class Base extends \WP_Widget {
         $excluded = array('name', 'id', 'description', 'widget_id', 'widget_name');
         foreach (array_merge($args, $instance) as $key => $arg) {
             if (!in_array($key, $excluded)) {
+                if (!is_string($key) || !preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $key)) {
+                    continue;
+                }
                 if (is_bool($arg)) {
                     $result .= $key . ':' . ($arg?'true':'false') . ', ';
                     continue;
                 }
-                if (is_numeric($arg)) {
-                    $result .= $key . ':' . $arg . ', ';
+                if (is_numeric($arg) || is_string($arg)) {
+                    $result .= $key . ':' . Guard::js($arg) . ', ';
                     continue;
                 }
-                if (is_string($arg)) {
-                    $result .= $key . ':"' . str_replace('"', '\"', $arg) . '", ';
-                    continue;
-                }
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Sanitize a color setting.
+     *
+     * @param mixed $value The candidate (#rgb, #rrggbb, with or without #).
+     * @param string $default The value returned if the candidate is not acceptable.
+     * @return string The color, with a leading #, or the default.
+     * @since 3.8.15
+     */
+    protected static function sanitize_color($value, $default = '') {
+        if (is_scalar($value) && preg_match('/^#?([0-9A-Fa-f]{3}|[0-9A-Fa-f]{6})$/', trim((string)$value), $m)) {
+            return '#' . $m[1];
+        }
+        return $default;
+    }
+
+    /**
+     * Sanitize a picture URL setting. The special value "self" is kept.
+     * The result can safely be inserted in a CSS url("...") declaration or in an HTML attribute.
+     *
+     * @param mixed $value The candidate.
+     * @return string The URL or an empty string.
+     * @since 3.8.15
+     */
+    protected static function sanitize_url($value) {
+        if (!is_string($value)) {
+            return '';
+        }
+        $value = trim($value);
+        if ($value === 'self') {
+            return $value;
+        }
+        $url = esc_url_raw($value, array('http', 'https'));
+        if ($url === '' || preg_match('/["\\\\\s<>]/', $url)) {
+            return '';
+        }
+        return str_replace(array('(', ')', "'"), array('%28', '%29', '%27'), $url);
+    }
+
+    /**
+     * Get a CSS background-image declaration from a picture URL.
+     *
+     * @param string $url The URL.
+     * @return string The CSS declaration, or an empty string if the URL is not acceptable.
+     * @since 3.8.15
+     */
+    protected static function css_background($url) {
+        $url = self::sanitize_url($url);
+        if ($url === '' || $url === 'self') {
+            return '';
+        }
+        return 'background-image: url("' . $url . '");';
+    }
+
+    /**
+     * Sanitize the settings of a widget instance (same rules as in update() methods), whatever the widget is.
+     *
+     * @param array $instance The settings.
+     * @return array The sanitized settings.
+     * @since 3.8.15
+     */
+    protected static function sanitize_instance($instance) {
+        $result = array();
+        foreach ((array)$instance as $key => $val) {
+            if (!is_string($key) || !preg_match('/^[A-Za-z_][A-Za-z0-9_]*$/', $key)) {
+                continue;
+            }
+            switch ($key) {
+                case 'subtitle':
+                case 'format':
+                case 'mode':
+                case 'bg_opacity':
+                case 'width':
+                    $result[$key] = absint($val);
+                    break;
+                case 'bg_color':
+                    $result[$key] = self::sanitize_color($val, '#444444');
+                    break;
+                case 'txt_color':
+                    $result[$key] = self::sanitize_color($val, '#ffffff');
+                    break;
+                case 'station':
+                case 'module':
+                    $result[$key] = Guard::token($val, 'N/A');
+                    break;
+                default:
+                    if (substr($key, -4) === '_url') {
+                        $result[$key] = self::sanitize_url($val);
+                    }
+                    else {
+                        $result[$key] = is_scalar($val) ? sanitize_text_field((string)$val) : '';
+                    }
             }
         }
         return $result;
@@ -150,9 +246,10 @@ abstract class Base extends \WP_Widget {
         $excluded = array('action', 'before_widget', 'after_widget', 'before_title', 'after_title', 'nonce');
         foreach ($_POST as $key => $val) {
             if (!in_array($key, $excluded)) {
-                $instance[$key] = sanitize_text_field($val);
+                $instance[$key] = $val;
             }
         }
+        $instance = self::sanitize_instance($instance);
         exit ($widget->widget_content($args, $instance));
     }
 }

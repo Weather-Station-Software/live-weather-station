@@ -5,6 +5,7 @@ namespace WeatherStation\UI\Map;
 use WeatherStation\Data\Output;
 use WeatherStation\System\Quota\Quota;
 use WeatherStation\Data\Arrays\Generator;
+use WeatherStation\System\Output\Guard;
 
 /**
  * This class builds elements of the map view for Navionics maps.
@@ -132,7 +133,7 @@ class NavionicsHandling extends BaseHandling {
             if (count($m) === 2) {
                 if (strtolower($m[0]) === 'carto') {
                     $quota = Quota::verify('Carto', 'GET', 20);
-                    $result .= "var bg = new L.tileLayer('https://{s}.basemaps.cartocdn.com/" . $m[1] . "/{z}/{x}/{y}.png', {" . PHP_EOL;
+                    $result .= "var bg = new L.tileLayer(" . Guard::js('https://{s}.basemaps.cartocdn.com/' . rawurlencode($m[1]) . '/{z}/{x}/{y}.png') . ", {" . PHP_EOL;
                     $result .= '  attribution: "Ground maps &copy; <a href=\"https://carto.com/attributions\">CARTO</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
                     $result .= '});' . PHP_EOL;
                 }
@@ -145,15 +146,15 @@ class NavionicsHandling extends BaseHandling {
         }
         $result .= "var map = new L.Map('navionics-" . $this->uniq . "');" . PHP_EOL;
         $result .= "var overlay = new JNC.Leaflet.NavionicsOverlay({" . PHP_EOL;
-        $result .= '  navKey: \'' . get_option('live_weather_station_navionics_apikey') . '\',' . PHP_EOL;
-        $result .= '  chartType: ' . $this->map_params['specific']['options']['overlay'] . ',' . PHP_EOL;
+        $result .= '  navKey: ' . Guard::js(get_option('live_weather_station_navionics_apikey')) . ',' . PHP_EOL;
+        $result .= '  chartType: ' . Guard::enum($this->map_params['specific']['options']['overlay'], array('JNC.NAVIONICS_CHARTS.NAUTICAL', 'JNC.NAVIONICS_CHARTS.SONARCHART', 'JNC.NAVIONICS_CHARTS.SKI'), 'JNC.NAVIONICS_CHARTS.NAUTICAL') . ',' . PHP_EOL;
         if (get_option('live_weather_station_unit_distance') == 1) {
             $result .= '  depthUnit: JNC.DEPTH_UNIT.FEET,' . PHP_EOL;
         }
         else {
             $result .= '  depthUnit: JNC.DEPTH_UNIT.METERS,' . PHP_EOL;
         }
-        $result .= '  depthLevel: ' . $this->map_params['specific']['options']['depth'] . ',' . PHP_EOL;
+        $result .= '  depthLevel: ' . Guard::enum($this->map_params['specific']['options']['depth'], array('JNC.SAFETY_DEPTH_LEVEL.LEVEL0', 'JNC.SAFETY_DEPTH_LEVEL.LEVEL1', 'JNC.SAFETY_DEPTH_LEVEL.LEVEL2', 'JNC.SAFETY_DEPTH_LEVEL.LEVEL3', 'JNC.SAFETY_DEPTH_LEVEL.LEVEL4'), 'JNC.SAFETY_DEPTH_LEVEL.LEVEL1') . ',' . PHP_EOL;
         $result .= '  maxZoom: ' . $this->maxzoom . ',' . PHP_EOL;
         $result .= '  minZoom: ' . $this->minzoom . ',' . PHP_EOL;
         if (!$this->map_params['specific']['controls']['zoom']) {
@@ -162,7 +163,7 @@ class NavionicsHandling extends BaseHandling {
         $result .= '  isTransparent: true,' . PHP_EOL;
         $result .= '  zIndex: 1' . PHP_EOL;
         $result .= "});" . PHP_EOL;
-        $result .= "map.setView([" . $this->map_params['common']['loc_latitude'] . ", " . $this->map_params['common']['loc_longitude'] . "], " . $this->map_params['common']['loc_zoom'] . ");" . PHP_EOL;
+        $result .= "map.setView([" . (float)$this->map_params['common']['loc_latitude'] . ", " . (float)$this->map_params['common']['loc_longitude'] . "], " . (int)$this->map_params['common']['loc_zoom'] . ");" . PHP_EOL;
         $result .= "map.attributionControl.setPrefix('');";
         if ($quota && $this->map_params['specific']['options']['basemap'] != 'none') {
             $result .= "map.addLayer(bg);" . PHP_EOL;

@@ -18,7 +18,7 @@ $logListTable->prepare_items();
     <form id="logs-filter" method="get">
         <input type="hidden" name="page" value="lws-events" />
         <?php if ($logListTable->get_level() != '') : ?>
-            <input type="hidden" name="level" value="<?php echo $logListTable->get_level(); ?>" />
+            <input type="hidden" name="level" value="<?php echo esc_attr($logListTable->get_level()); ?>" />
         <?php endif; ?>
         <?php $logListTable->display(); ?>
     </form>

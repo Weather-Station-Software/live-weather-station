@@ -58,7 +58,7 @@ trait PollutionClient {
             $args['timeout'] = get_option('live_weather_station_collection_http_timeout');
             $content = wp_remote_get($url);
             if (is_wp_error($content)) {
-                throw new \Exception($content->get_error_message());
+                throw new \Exception(lws_clean_text($content->get_error_message(), 200));
             }
             Logger::debug($this->facility, $this->service_name, $st['device_id'], $st['device_name'], $st['_id'], $st['module_name'], 999, 'Raw data: ' . print_r($content,true));
             return $content;
@@ -95,7 +95,7 @@ trait PollutionClient {
         }
         if (array_key_exists('code', $response) && $response['code'] != 200) {
             if (array_key_exists('message', $response)) {
-                throw new \Exception($response['message']);
+                throw new \Exception(lws_clean_text($response['message'], 200));
             }
             else {
                 throw new \Exception('OpenWeatherMap unknown exception');

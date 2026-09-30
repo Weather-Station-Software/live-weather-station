@@ -27,13 +27,13 @@ class File extends Base {
     }
 
     protected function column_default($item, $column_name){
-        return $item[$column_name];
+        return esc_html($item[$column_name]);
     }
 
     protected function column_station($item){
         $result = $this->output_iconic_filetype($item['ext'], 'style="color:#999"', 'fa-lg fa-fw') . '&nbsp;&nbsp;';
-        $result .= $item['station'] . ' - ' . $item['std_size'];
-        $result .= '<br /><span style="color:silver">' . $this->get_extension_description($item['ext']) . '</span>';
+        $result .= esc_html($item['station']) . ' - ' . esc_html($item['std_size']);
+        $result .= '<br /><span style="color:silver">' . esc_html($this->get_extension_description($item['ext'])) . '</span>';
         return $result;
     }
 
@@ -41,19 +41,19 @@ class File extends Base {
         $actions = array();
         if ($item['state'] === 'none') {
             if ($item['ext'] !== 'ukn') {
-                $result = __('Ready', 'live-weather-station');
-                $actions[] = '<a href="' . $item['url'] . '" target="_blank" >' . __('View file', 'live-weather-station').'</a>';
-                $actions[] = '<a href="' . $item['url'] . '" download>' . __('Download file', 'live-weather-station').'</a>';
+                $result = esc_html__('Ready', 'live-weather-station');
+                $actions[] = '<a href="' . esc_url($item['url']) . '" target="_blank" rel="noopener noreferrer">' . esc_html__('View file', 'live-weather-station').'</a>';
+                $actions[] = '<a href="' . esc_url($item['url']) . '" download>' . esc_html__('Download file', 'live-weather-station').'</a>';
                 if ($item['ext'] == 'wsconf.json') {
-                    $actions[] = '<a href="' . lws_get_admin_page_url('lws-files', 'form', 'import', 'configuration', false, null, $item['uuid']) . '">' . __('Import configuration', 'live-weather-station').'</a>';
+                    $actions[] = '<a href="' . esc_url(lws_get_admin_page_url('lws-files', 'form', 'import', 'configuration', false, null, $item['uuid'])) . '">' . esc_html__('Import configuration', 'live-weather-station').'</a>';
                 }
             }
             else {
-                $result = __('Ready', 'live-weather-station');
+                $result = esc_html__('Ready', 'live-weather-station');
             }
         }
         else {
-            $result = __('In progress...', 'live-weather-station') . ' ' . $item['progress'] . '%';
+            $result = esc_html__('In progress...', 'live-weather-station') . ' ' . esc_html($item['progress']) . '%';
         }
         return sprintf('%1$s %2$s', $result, $this->row_actions($actions));
     }
@@ -64,7 +64,7 @@ class File extends Base {
 
     protected function column_to($item){
         if ($item['ext'] !== 'ukn' && $item['ext'] !== 'wsconf.json') {
-            $result = $item['to'];
+            $result = esc_html($item['to']);
         }
         else {
             $result = '';
@@ -93,8 +93,11 @@ class File extends Base {
     }
 
     public function usort_reorder($a,$b){
-        $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'date';
-        $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'desc';
+        $orderby = (!empty($_REQUEST['orderby'])) ? sanitize_key($_REQUEST['orderby']) : 'date';
+        if (!array_key_exists($orderby, $a)) {
+            $orderby = 'date';
+        }
+        $order = (!empty($_REQUEST['order']) && strtolower($_REQUEST['order']) === 'asc') ? 'asc' : 'desc';
         $result = strcmp(strtolower($a[$orderby]), strtolower($b[$orderby]));
         return ($order==='asc') ? $result : -$result;
     }

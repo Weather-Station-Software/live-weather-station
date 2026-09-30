@@ -8,7 +8,7 @@
 
 use WeatherStation\System\Logs\Logger;
 
-$link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), lws_get_admin_page_url('lws-analytics', null, 'event'), __('detailed analytics', 'live-weather-station'));
+$link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), esc_url(lws_get_admin_page_url('lws-analytics', null, 'event')), __('detailed analytics', 'live-weather-station'));
 
 ?>
 <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
@@ -16,7 +16,7 @@ $link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), lws
         <ul>
             <?php foreach ($val as $k=>$v) { ?>
             <?php if ($show_link && $v==0) { continue; }?>
-                <li><i style="color:<?php echo Logger::get_color($k); ?>" class="<?php echo LWS_FAS;?> fa-lg fa-fw <?php echo Logger::get_icon($k) ?>"></i>&nbsp;&nbsp;<?php echo ($v==0?__('no event typed', 'live-weather-station'):sprintf(_n('%s event typed','%s events typed', $v, 'live-weather-station'), $v)); ?> <em><?php echo lws_lcfirst(Logger::get_name($k)); ?></em>.</li>
+                <li><i style="color:<?php echo esc_attr(Logger::get_color($k)); ?>" class="<?php echo LWS_FAS;?> fa-lg fa-fw <?php echo esc_attr(Logger::get_icon($k)) ?>"></i>&nbsp;&nbsp;<?php echo ($v==0?__('no event typed', 'live-weather-station'):sprintf(_n('%s event typed','%s events typed', $v, 'live-weather-station'), $v)); ?> <em><?php echo esc_html(lws_lcfirst(Logger::get_name($k))); ?></em>.</li>
             <?php } ?>
         </ul>
     </div>

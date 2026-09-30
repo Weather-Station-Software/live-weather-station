@@ -8,6 +8,7 @@ use WeatherStation\System\Logs\Logger;
 use WeatherStation\DB\Storage;
 use WeatherStation\System\Schedules\Handling as Schedules;
 use WeatherStation\System\Data\Data;
+use WeatherStation\System\Output\Guard;
 
 /**
  * The class to compute and maintain consistency of performance statistics.
@@ -181,14 +182,14 @@ class Performance {
                     $jsoned[$field . '_' . $aggregate] = json_encode($jsonable[$field . '_' . $aggregate]);
                     $jsoned[$field . '_' . $aggregate] = str_replace('"', '', $jsoned[$field . '_' . $aggregate]);
                     $name = $field_names[$field];
-                    $data_r[$aggregate][] = '{"key":"' . $name . '", "values":' . $jsoned[$field . '_' . $aggregate] . '}';
+                    $data_r[$aggregate][] = '{"key":' . Guard::js($name) . ', "values":' . $jsoned[$field . '_' . $aggregate] . '}';
                 }
                 foreach ($dimensions as $dimension) {
                     foreach ($metrics as $metric) {
                         $jsoned[$field.'_'.$dimension.'_'.$metric] = json_encode($jsonable[$field.'_'.$dimension.'_'.$metric]);
                         $jsoned[$field.'_'.$dimension.'_'.$metric] = str_replace('"', '', $jsoned[$field.'_'.$dimension.'_'.$metric]);
                         $name = $field_names[$field] . ' / ' . $dimension_names[$dimension];
-                        $data_r[$metric][] = '{"key":"' . $name . '", "values":'.$jsoned[$field.'_'.$dimension.'_'.$metric].'}';
+                        $data_r[$metric][] = '{"key":' . Guard::js($name) . ', "values":'.$jsoned[$field.'_'.$dimension.'_'.$metric].'}';
                     }
                 }
             }
@@ -412,15 +413,15 @@ class Performance {
             foreach ($fields as $field) {
                 $jsoned['by_pool'][$field . '_count'] = json_encode($jsonable['by_pool'][$field . '_count']);
                 $jsoned['by_pool'][$field . '_count'] = str_replace('"', '', $jsoned['by_pool'][$field . '_count']);
-                $data_r['by_pool']['count'][] = '{"key":"' . ucfirst(self::get_pool_name($field)) . '", "values":' . $jsoned['by_pool'][$field . '_count'] . '}';
+                $data_r['by_pool']['count'][] = '{"key":' . Guard::js(ucfirst(self::get_pool_name($field))) . ', "values":' . $jsoned['by_pool'][$field . '_count'] . '}';
                 $jsoned['by_pool'][$field . '_time'] = json_encode($jsonable['by_pool'][$field . '_time']);
                 $jsoned['by_pool'][$field . '_time'] = str_replace('"', '', $jsoned['by_pool'][$field . '_time']);
-                $data_r['by_pool']['time'][] = '{"key":"' . ucfirst(self::get_pool_name($field)) . '", "values":' . $jsoned['by_pool'][$field . '_time'] . '}';
+                $data_r['by_pool']['time'][] = '{"key":' . Guard::js(ucfirst(self::get_pool_name($field))) . ', "values":' . $jsoned['by_pool'][$field . '_time'] . '}';
             }
             foreach ($jsonable['by_cron'] as $key=>$cron) {
                 $jsoned['by_cron'][$key] = json_encode($cron);
                 $jsoned['by_cron'][$key] = str_replace('"', '', $jsoned['by_cron'][$key]);
-                $data_r['by_cron'][self::get_cron_pool($key)][] = '{"key":"' . ucfirst(self::get_cron_name($key)) . '", "values":' . $jsoned['by_cron'][$key] . '}';
+                $data_r['by_cron'][self::get_cron_pool($key)][] = '{"key":' . Guard::js(ucfirst(self::get_cron_name($key))) . ', "values":' . $jsoned['by_cron'][$key] . '}';
             }
             $data['count_by_pool'] = '[' . implode(',', $data_r['by_pool']['count']) . ']';
             $data['time_by_pool'] = '[' . implode(',', $data_r['by_pool']['time']) . ']';
@@ -506,7 +507,7 @@ class Performance {
                     }
                 }
                 foreach ($jsoned[$type] as $t=>$v) {
-                    $data_r[$type][] = '{"key":"' . $t . '", "values":[' . implode(',', $jsoned[$type][$t]) . ']}';
+                    $data_r[$type][] = '{"key":' . Guard::js($t) . ', "values":[' . implode(',', $jsoned[$type][$t]) . ']}';
                 }
                 $data[$type] = '[' . implode(',', $data_r[$type]) . ']';
             }
@@ -521,6 +522,17 @@ class Performance {
             $result = array('dat' => $data);
         }
         return $result;
+    }
+
+    /**
+     * Clean a label that will be embedded in hand-built JSON (chars used as delimiters or able to break JS are removed).
+     *
+     * @param mixed $label The label.
+     * @return string The cleaned label.
+     * @since 3.8.15
+     */
+    private static function clean_label($label) {
+        return preg_replace('/[\$"\\\\<>\'&\x00-\x1f]/', '', (string)$label);
     }
 
     /**
@@ -659,14 +671,14 @@ class Performance {
         foreach ($pre_jsonable as $key=>$field) {
             foreach ($field as $level=>$series) {
                 foreach ($series as $element => $cpt) {
-                    $jsonable[$key][$level][] = array('x' => '$' . $element . '$', 'y' => $pre_jsonable[$key][$level][$element]);
+                    $jsonable[$key][$level][] = array('x' => '$' . self::clean_label($element) . '$', 'y' => $pre_jsonable[$key][$level][$element]);
                 }
             }
             foreach (Logger::$ordered_severity as $severity) {
                 $s = json_encode($jsonable[$key][$severity]);
                 $s = str_replace('"', '', $s);
                 $s = str_replace('$', '"', $s);
-                $data_r[$key][] = '{"key":"' . ucfirst(Logger::get_name($severity)) . '", "color":"' . Logger::get_color($severity) . '", "values":' . $s . '}';
+                $data_r[$key][] = '{"key":' . Guard::js(ucfirst(Logger::get_name($severity))) . ', "color":"' . Logger::get_color($severity) . '", "values":' . $s . '}';
             }
             $data[$key] = '[' . implode(',', $data_r[$key]) . ']';
         }
@@ -851,13 +863,13 @@ class Performance {
         foreach ($verbs as $verb) {
             $jsonable = array();
             foreach ($service24 as $service) {
-                $s = json_encode(array('x' => '$' . $service . '$', 'y' => round($values[$verb][$service], 0)));
+                $s = json_encode(array('x' => '$' . self::clean_label($service) . '$', 'y' => round($values[$verb][$service], 0)));
                 $s = str_replace('"', '', $s);
                 $s = str_replace('$', '"', $s);
                 $jsonable[] = $s;
             }
             $s = '[' . implode(',', $jsonable) . ']';
-            $data_r[] = '{"key":"' . strtoupper($verb) . '", "values":' . $s . '}';
+            $data_r[] = '{"key":' . Guard::js(strtoupper($verb)) . ', "values":' . $s . '}';
         }
         $data['count']['service_short'] = '[' . implode(',', $data_r) . ']';
         
@@ -919,7 +931,7 @@ class Performance {
                     $jsonable[] = $s;
                 }
                 $s = '[' . implode(',', $jsonable) . ']';
-                $data_r[] = '{"key":"' . strtoupper($verb) . '", "values":' . $s . '}';
+                $data_r[] = '{"key":' . Guard::js(strtoupper($verb)) . ', "values":' . $s . '}';
             }
             $data['call_short'][$service] = '[' . implode(',', $data_r) . ']';
         }
@@ -933,7 +945,7 @@ class Performance {
                     $jsonable[] = $s;
                 }
                 $s = '[' . implode(',', $jsonable) . ']';
-                $data_r[] = '{"key":"' . strtoupper($verb) . '", "values":' . $s . '}';
+                $data_r[] = '{"key":' . Guard::js(strtoupper($verb)) . ', "values":' . $s . '}';
             }
             $data['rate_short'][$service] = '[' . implode(',', $data_r) . ']';
         }
@@ -1021,9 +1033,9 @@ class Performance {
                     $class_quota = ', "classed":"hidden-line"';
                 }
                 $s = '[' . implode(',', $jsonable['values']) . ']';
-                $data_r[] = '{"key":"' . strtoupper($verb) . '"' . $class_value . ', "values":' . $s . '}';
+                $data_r[] = '{"key":' . Guard::js(strtoupper($verb)) . $class_value . ', "values":' . $s . '}';
                 $s = '[' . implode(',', $jsonable['quotas']) . ']';
-                $data_r[] = '{"key":"' . strtoupper($verb) . ' - quotas"' . $class_quota . ', "strokeWidth":3, "values":' . $s . '}';
+                $data_r[] = '{"key":' . Guard::js(strtoupper($verb) . ' - quotas') . $class_quota . ', "strokeWidth":3, "values":' . $s . '}';
             }
             $data['call_long'][$service] = '[' . implode(',', $data_r) . ']';
         }
@@ -1065,9 +1077,9 @@ class Performance {
                     $class_quota = ', "classed":"hidden-line"';
                 }
                 $s = '[' . implode(',', $jsonable['values']) . ']';
-                $data_r[] = '{"key":"' . strtoupper($verb) . '"' . $class_value . ', "values":' . $s . '}';
+                $data_r[] = '{"key":' . Guard::js(strtoupper($verb)) . $class_value . ', "values":' . $s . '}';
                 $s = '[' . implode(',', $jsonable['quotas']) . ']';
-                $data_r[] = '{"key":"' . strtoupper($verb) . ' - quotas"' . $class_quota . ', "strokeWidth":3, "values":' . $s . '}';
+                $data_r[] = '{"key":' . Guard::js(strtoupper($verb) . ' - quotas') . $class_quota . ', "strokeWidth":3, "values":' . $s . '}';
             }
             $data['rate_long'][$service] = '[' . implode(',', $data_r) . ']';
         }
@@ -1114,13 +1126,13 @@ class Performance {
         foreach ($verbs as $verb) {
             $jsonable = array();
             foreach ($service30 as $service) {
-                $s = json_encode(array('x' => '$' . $service . '$', 'y' => round($values[$verb][$service], 0)));
+                $s = json_encode(array('x' => '$' . self::clean_label($service) . '$', 'y' => round($values[$verb][$service], 0)));
                 $s = str_replace('"', '', $s);
                 $s = str_replace('$', '"', $s);
                 $jsonable[] = $s;
             }
             $s = '[' . implode(',', $jsonable) . ']';
-            $data_r[] = '{"key":"' . strtoupper($verb) . '", "values":' . $s . '}';
+            $data_r[] = '{"key":' . Guard::js(strtoupper($verb)) . ', "values":' . $s . '}';
         }
         $data['count']['service_long'] = '[' . implode(',', $data_r) . ']';
 

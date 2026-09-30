@@ -23,6 +23,9 @@ trait Handling {
      * @since 3.0.0
      */
     public static function get_embed($lat, $lon, $height, $marker=true) {
+        $lat = (float)$lat;
+        $lon = (float)$lon;
+        $height = (int)$height;
         $result = '<iframe style="width:100%%;height:' . $height . 'px;" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=%s&amp;layer=mapnik%s"></iframe>';
         /*
          * @fixme what to do in case of bbox has out of range coordinates?

@@ -175,10 +175,11 @@ abstract class Process {
      * @since 3.6.0
      */
     protected function full_url() {
+        $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
-            $target = ' target="_blank" ';
+            $target = ' target="_blank" rel="noopener noreferrer" ';
         }
-        return '<a href="' . $this->url() . '"' . $target . '>' . __('see details', 'live-weather-station') . '</a>';
+        return '<a href="' . esc_url($this->url()) . '"' . $target . '>' . __('see details', 'live-weather-station') . '</a>';
     }
 
     /**

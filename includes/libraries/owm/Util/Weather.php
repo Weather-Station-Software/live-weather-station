@@ -48,7 +48,7 @@ class Weather
     {
         $this->id = (int)$id;
         $this->description = (string)$description;
-        $this->icon = (string)$icon;
+        $this->icon = preg_replace('/[^A-Za-z0-9_\-]/', '', (string)$icon);
     }
 
     /**

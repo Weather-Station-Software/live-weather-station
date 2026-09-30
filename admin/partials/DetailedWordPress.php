@@ -18,24 +18,24 @@ use WeatherStation\System\Environment\Manager as EnvManager;
                 <tbody>
                 <tr>
                     <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAB;?> fa-lg fa-wordpress"></i></td>
-                    <td><?php echo EnvManager::wordpress_version_text() . ' / ' . EnvManager::php_version_text(); ?></td>
+                    <td><?php echo esc_html(EnvManager::wordpress_version_text() . ' / ' . EnvManager::php_version_text()); ?></td>
                 </tr>
                 <tr>
                     <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-lg fa-microchip"></i></td>
-                    <td><?php echo WP_MAX_MEMORY_LIMIT . ' / ' . WP_MEMORY_LIMIT; ?></td>
+                    <td><?php echo esc_html(WP_MAX_MEMORY_LIMIT . ' / ' . WP_MEMORY_LIMIT); ?></td>
                 </tr>
                 <tr>
                     <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-lg fa-compress"></i></td>
-                    <td><?php echo EnvManager::wordpress_cache_text(); ?></td>
+                    <td><?php echo esc_html(EnvManager::wordpress_cache_text()); ?></td>
                 </tr>
                 <tr>
                     <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-lg fa-bug"></i></td>
-                    <td><?php echo EnvManager::wordpress_debug_text(); ?></td>
+                    <td><?php echo esc_html(EnvManager::wordpress_debug_text()); ?></td>
                 </tr>
                 <?php if (EnvManager::is_multilang_installed()) { ?>
                     <tr>
                         <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-lg fa-language"></i></td>
-                        <td><?php echo EnvManager::get_installed_multilang_name(); ?></td>
+                        <td><?php echo esc_html(EnvManager::get_installed_multilang_name()); ?></td>
                     </tr>
                 <?php } ?>
                 </tbody>

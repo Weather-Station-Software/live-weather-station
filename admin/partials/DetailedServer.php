@@ -25,24 +25,24 @@ if (!$OS || !Env::server_cpu() || !Env::server_core()) {
                 <tbody>
                 <tr>
                     <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-lg fa-server"></i></td>
-                    <td/><?php echo gethostname().' <code>'.Env::server_ip().'</code>'; ?></td>
+                    <td/><?php echo esc_html(gethostname()).' <code>'.esc_html(Env::server_ip()).'</code>'; ?></td>
                 </tr>
                 <?php if ($OS) { ?>
                     <tr>
                         <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-lg fa-cog"></i></td>
-                        <td><?php echo $OS; ?></td>
+                        <td><?php echo esc_html($OS); ?></td>
                     </tr>
                 <?php } ?>
                 <?php if (Env::server_cpu() && Env::server_core()) { ?>
                     <tr>
                         <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-lg fa-microchip"></i></td>
-                        <td><?php echo Env::server_cpu() . ' / ' . Env::server_core() . ' ' . __('cores', 'live-weather-station'); ?></td>
+                        <td><?php echo esc_html(Env::server_cpu() . ' / ' . Env::server_core() . ' ' . __('cores', 'live-weather-station')); ?></td>
                     </tr>
                 <?php } ?>
                 <?php if (Env::server_full_information()) { ?>
                     <tr>
                         <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-<?php echo LWS_FA5?'map-marker-alt':'map-marker';?>"></i></td>
-                        <td><?php echo Env::hoster_name() . ', ' . Env::hoster_location(); ?></td>
+                        <td><?php echo esc_html(Env::hoster_name() . ', ' . Env::hoster_location()); ?></td>
                     </tr>
                 <?php } ?>
                 </tbody>

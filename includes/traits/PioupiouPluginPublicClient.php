@@ -44,7 +44,7 @@ trait PublicClient {
                 if (array_key_exists('data', $weather)) {
                     if (array_key_exists('meta', $weather['data'])) {
                         if (array_key_exists('name', $weather['data']['meta'])) {
-                            $this->detected_station_name = $weather['data']['meta']['name'];
+                            $this->detected_station_name = lws_clean_text($weather['data']['meta']['name']);
                         }
                         else {
                             $this->detected_station_name = '< NO NAME >';
@@ -55,7 +55,7 @@ trait PublicClient {
                 else {
                     $result = 'Pioupiou servers have returned unknown response';
                     if (array_key_exists('error_message', $weather)) {
-                        $result = $weather['error_message'];
+                        $result = lws_clean_text($weather['error_message'], 200);
                         $result = str_replace('{station_id}', 'Station ID', $result);
                     }
                 }
@@ -85,7 +85,7 @@ trait PublicClient {
             if (array_key_exists('data', $weather)) {
                 if (array_key_exists('meta', $weather['data'])) {
                     if (array_key_exists('name', $weather['data']['meta'])) {
-                        $this->detected_station_name = $weather['data']['meta']['name'];
+                        $this->detected_station_name = lws_clean_text($weather['data']['meta']['name']);
                     }
                     else {
                         $this->detected_station_name = '< NO NAME >';
@@ -94,7 +94,7 @@ trait PublicClient {
             }
             else {
                 if (array_key_exists('error_message', $weather)) {
-                    throw new \Exception($weather['error_message']);
+                    throw new \Exception(lws_clean_text($weather['error_message'], 200));
                 }
                 else {
                     throw new \Exception('Pioupiou unknown exception');
@@ -102,7 +102,7 @@ trait PublicClient {
             }
         }
         else {
-            throw new \Exception('JSON / '.(string)$json_weather);
+            throw new \Exception('JSON / '.lws_clean_text($json_weather, 200));
         }
         Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($weather, true));
         if (!empty($weather)) {
@@ -227,14 +227,14 @@ trait PublicClient {
                                 $this->update_data_table($updates, $timezone);
                             }
                             if (array_key_exists('latitude', $location)) {
-                                $station['loc_latitude'] = $location['latitude'];
+                                $station['loc_latitude'] = lws_clean_number($location['latitude']);
                                 $updates['measure_timestamp'] = $locstamp;
                                 $updates['measure_type'] = 'loc_latitude';
                                 $updates['measure_value'] = $station['loc_latitude'];
                                 $this->update_data_table($updates, $timezone);
                             }
                             if (array_key_exists('longitude', $location)) {
-                                $station['loc_longitude'] = $location['longitude'];
+                                $station['loc_longitude'] = lws_clean_number($location['longitude']);
                                 $updates['measure_timestamp'] = $locstamp;
                                 $updates['measure_type'] = 'loc_longitude';
                                 $updates['measure_value'] = $station['loc_longitude'];

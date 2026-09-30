@@ -3,6 +3,7 @@
 namespace WeatherStation\Engine\Module\Current;
 
 use WeatherStation\Data\Output;
+use WeatherStation\System\Output\Guard;
 use WeatherStation\Data\Arrays\Generator;
 
 /**
@@ -110,8 +111,8 @@ class Lcd extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var c' . $this->fingerprint . ' = new lws_lcd.LCDPanel({';
         $content .= 'id: "id' . $this->fingerprint . '",';
         $content .= 'parentId: "' . $this->fingerprint . '",';
-        $content .= 'upperCenterText: "' . $this->station_name . '",';
-        $content .= 'qDevice: "' . $this->station_id . '",';
+        $content .= 'upperCenterText: ' . Guard::js($this->station_name) . ',';
+        $content .= 'qDevice: ' . Guard::js($this->station_id) . ',';
         $content .= 'qModule: "aggregated",';
         $content .= 'qMeasure: "aggregated",';
         $content .= 'qPostUrl: "' . LWS_AJAX_URL . '"});';
@@ -120,7 +121,7 @@ class Lcd extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var js_array_current_lcd_measurement_' . $this->station_guid . ' = js_array_current_lcd_' . $this->station_guid . '[$(this).val()][2];';
         $content .= '$("#current-lcd-measurements-measurement-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_lcd_measurement_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#current-lcd-measurements-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_lcd_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$("#current-lcd-measurements-measurement-' . $this->station_guid . '").append($("<option></option>").attr("value", i).text(js_array_current_lcd_measurement_' . $this->station_guid . '[i][0]));});';
         $content .= '$( "#current-lcd-measurements-measurement-' . $this->station_guid . '" ).change();});';
         
         $content .= '$("#current-lcd-measurements-measurement-' . $this->station_guid . '").change(function() {';
@@ -141,7 +142,7 @@ class Lcd extends \WeatherStation\Engine\Module\Maintainer {
 
         $content .= '$("#current-lcd-measurements-speed-' . $this->station_guid . '").change(function() {';
         $content .= 'c' . $this->fingerprint . '.setCycleSpeed($("#current-lcd-measurements-speed-' . $this->station_guid . '").val());';
-        $content .= 'var sc_device = "' . $this->station_id . '";';
+        $content .= 'var sc_device = ' . Guard::js($this->station_id) . ';';
         $content .= 'var sc_module = js_array_current_lcd_' . $this->station_guid . '[$("#current-lcd-measurements-module-' . $this->station_guid . '").val()][1];';
         $content .= 'var sc_measurement = js_array_current_lcd_' . $this->station_guid . '[$("#current-lcd-measurements-module-' . $this->station_guid . '").val()][2][$("#current-lcd-measurements-measurement-' . $this->station_guid . '").val()][1];';
         $content .= 'var sc_design = $("#current-lcd-measurements-design-' . $this->station_guid . '").val();';
@@ -163,7 +164,7 @@ class Lcd extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_preview() {
         $content = '<div>&nbsp;</div>';
-        $content .= '<div id="' . $this->fingerprint . '" style="padding:0px;"></div>';
+        $content .= '<div id="' . esc_attr($this->fingerprint) . '" style="padding:0px;"></div>';
         $special_footer  = '<span id="current-lcd-info-' . $this->station_guid . '" style="display: none;">';
         $special_footer .= '<div id="major-publishing-actions">';
         $special_footer .= __('This controls will be dynamically resized to fit its parent\'s size.', 'live-weather-station' );

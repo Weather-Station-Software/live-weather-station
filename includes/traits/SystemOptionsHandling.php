@@ -163,7 +163,24 @@ trait Handling {
      * @since 3.6.0
      */
     public static function get_cschemes() {
-        return get_option(self::$live_weather_station_styles_chart_cscheme_key, self::live_weather_station_cshemes());
+        $result = get_option(self::$live_weather_station_styles_chart_cscheme_key, self::live_weather_station_cshemes());
+        // Stored values can be overwritten (import): sanitize names and colors, shape is unchanged.
+        if (is_array($result)) {
+            foreach ($result as $key => $cscheme) {
+                if (!is_array($cscheme)) {
+                    continue;
+                }
+                if (isset($cscheme['name']) && is_scalar($cscheme['name'])) {
+                    $result[$key]['name'] = sanitize_text_field((string)$cscheme['name']);
+                }
+                if (isset($cscheme['colors']) && is_array($cscheme['colors'])) {
+                    foreach ($cscheme['colors'] as $i => $color) {
+                        $result[$key]['colors'][$i] = preg_replace('/[^#0-9a-zA-Z]/', '', (string)$color);
+                    }
+                }
+            }
+        }
+        return $result;
     }
 
     /**

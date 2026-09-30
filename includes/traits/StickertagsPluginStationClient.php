@@ -178,9 +178,9 @@ trait StationClient {
             $updates['measure_value'] = $temperature_ref;
             $this->update_data_table($updates, $timezone);
         }
-        if (isset($weather[5])) {
+        if (isset($weather[5]) && is_numeric($weather[5])) {
             $updates['measure_type'] = 'humidity';
-            $humidity_ref = $weather[5];
+            $humidity_ref = lws_clean_number($weather[5]);
             $updates['measure_value'] = $humidity_ref;
             $this->update_data_table($updates, $timezone);
         }
@@ -294,7 +294,7 @@ trait StationClient {
         $result = '';
         $raw_data = $this->get_data($connection_type, $resource);
         if (strpos($raw_data, 'Err #') !== false) {
-            $result = $raw_data;
+            $result = lws_clean_text($raw_data, 200);
         }
         else {
             $weather = $this->explode_data($raw_data);

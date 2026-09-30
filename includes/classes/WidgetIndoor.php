@@ -2,6 +2,7 @@
 
 namespace WeatherStation\UI\Widget;
 
+use WeatherStation\System\Output\Guard;
 use WeatherStation\Data\Output;
 use WeatherStation\Utilities\ColorsManipulation as Color;
 use WeatherStation\Data\ID\Handling as ID;
@@ -141,12 +142,12 @@ class Indoor extends Base {
         $instance = $this->_get_instance($old_instance);
         $new_instance = $this->_get_instance($new_instance);
         $instance['title'] = strip_tags($new_instance['title']);
-        $instance['subtitle'] = $new_instance['subtitle'];
-        $instance['module'] = $new_instance['module'];
-        $instance['bg_color'] = $new_instance['bg_color'];
-        $instance['bg_opacity'] = $new_instance['bg_opacity'];
-        $instance['width'] = $new_instance['width'];
-        $instance['txt_color'] = $new_instance['txt_color'];
+        $instance['subtitle'] = absint($new_instance['subtitle']);
+        $instance['module'] = Guard::token($new_instance['module'], 'N/A');
+        $instance['bg_color'] = self::sanitize_color($new_instance['bg_color'], '#444444');
+        $instance['bg_opacity'] = absint($new_instance['bg_opacity']);
+        $instance['width'] = absint($new_instance['width']);
+        $instance['txt_color'] = self::sanitize_color($new_instance['txt_color'], '#ffffff');
         $instance['show_tooltip'] = !empty($new_instance['show_tooltip']) ? 1 : 0;
         $instance['show_status'] = !empty($new_instance['show_status']) ? 1 : 0;
         $instance['show_borders'] = !empty($new_instance['show_borders']) ? 1 : 0;
@@ -159,9 +160,9 @@ class Indoor extends Base {
         $instance['flat_design'] = !empty($new_instance['flat_design']) ? 1 : 0;
         $instance['follow_quality'] = !empty($new_instance['follow_quality']) ? 1 : 0;
         $instance['fixed_background'] = !empty($new_instance['fixed_background']) ? 1 : 0;
-        $instance['good_url'] = $new_instance['good_url'];
-        $instance['medium_url'] = $new_instance['medium_url'];
-        $instance['bad_url'] = $new_instance['bad_url'];
+        $instance['good_url'] = self::sanitize_url($new_instance['good_url']);
+        $instance['medium_url'] = self::sanitize_url($new_instance['medium_url']);
+        $instance['bad_url'] = self::sanitize_url($new_instance['bad_url']);
         return $instance;
     }
 
@@ -179,19 +180,20 @@ class Indoor extends Base {
     public function css($instance, $uid, $flat_design, $health_idx, $background='', $attachment='local') {
         lws_font_awesome();
         try {
-            $maxwidth = round ($instance['width']);
+            $maxwidth = is_numeric($instance['width']) ? (int)round($instance['width']) : 0;
 
         }
         catch(\Exception $ex) {
             $maxwidth = 0;
         }
-        $txt_color = $instance['txt_color'];
-        $bg_color = $instance['bg_color'];
+        $txt_color = self::sanitize_color($instance['txt_color'], '');
+        $bg_color = self::sanitize_color($instance['bg_color'], '');
         if (!$txt_color) {
             $txt_color = '#444444';
         }
         if (!$bg_color) {
             $txt_color = '#FFFFFF';
+            $bg_color = '#444444';
         }
         if ($flat_design) {
             $fact = 80;
@@ -207,7 +209,7 @@ class Indoor extends Base {
             $hsl['L'] = $l-0.05;
             $color = new Color(Color::hslToHex($hsl));
         }
-        $opacity = (11 - $instance['bg_opacity'])/11;
+        $opacity = (11 - absint($instance['bg_opacity']))/11;
         if ($opacity < 0.1) {
             $opacity = 0;
         }
@@ -311,9 +313,9 @@ class Indoor extends Base {
         if ($fixed_background) {
             $background_attachment = 'fixed';
         }
-        $good_url = $this->get_picture_url_by_module($instance['module'], $instance['good_url']);
-        $medium_url = $this->get_picture_url_by_module($instance['module'], $instance['medium_url']);
-        $bad_url = $this->get_picture_url_by_module($instance['module'], $instance['bad_url']);
+        $good_url = self::sanitize_url($this->get_picture_url_by_module($instance['module'], $instance['good_url']));
+        $medium_url = self::sanitize_url($this->get_picture_url_by_module($instance['module'], $instance['medium_url']));
+        $bad_url = self::sanitize_url($this->get_picture_url_by_module($instance['module'], $instance['bad_url']));
         $bg_url = '';
         $health_idx = 100;
         $temp_multipart = false;

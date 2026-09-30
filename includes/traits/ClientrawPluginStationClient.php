@@ -106,7 +106,7 @@ trait StationClient {
             $this->update_data_table($updates, $timezone);
             $updates['measure_type'] = 'firmware';
             if (strpos($weather[count($weather)-1], '!!') !== false) {
-                $updates['measure_value'] = str_replace('!!', '', $weather[count($weather)-1]);
+                $updates['measure_value'] = lws_clean_text(str_replace('!!', '', $weather[count($weather)-1]), 60);
             }
             else {
                 $updates['measure_value'] = 0;
@@ -536,7 +536,7 @@ trait StationClient {
         $result = '';
         $raw_data = $this->get_data($connection_type, $resource);
         if (strpos($raw_data, 'Err #') !== false) {
-            $result = $raw_data;
+            $result = lws_clean_text($raw_data, 200);
         }
         elseif (strpos($raw_data, '2345 ') != 1) {
             $result = __('The source you specified is not in the correct format or is corrupted.', 'live-weather-station');

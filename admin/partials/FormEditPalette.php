@@ -16,17 +16,17 @@ wp_enqueue_style( 'wp-color-picker' );
         <input name="service" type="hidden" value="palette" />
         <input name="tab" type="hidden" value="edit" />
         <input name="action" type="hidden" value="do" />
-        <input name="id" type="hidden" value="<?php echo $subject['id'] ?>" />
+        <input name="id" type="hidden" value="<?php echo esc_attr($subject['id']) ?>" />
         <?php wp_nonce_field('edit-palette'); ?>
         <table class="form-table">
             <tr class="form-field">
                 <th scope="row"><label for="palette_name"><?php esc_html_e( 'Name', 'live-weather-station' );?></label></th>
-                <td align="left"><input required name="palette_name" aria-required="true" type="text" id="palette_name" value="<?php echo htmlspecialchars($subject['detail']['name']) ?>" maxlength="60" style="width:25em;" /></td>
+                <td align="left"><input required name="palette_name" aria-required="true" type="text" id="palette_name" value="<?php echo esc_attr($subject['detail']['name']) ?>" maxlength="60" style="width:25em;" /></td>
             </tr>
             <?php for ($i=0 ; $i<8 ; $i++) {?>
                 <tr class="form-field">
                     <th scope="row"><label for="color_<?php echo $i ?>"><?php echo sprintf(__('Color %s','live-weather-station'), $i+1);?></label></th>
-                    <td align="left"><span class="color-picker"><input class="widefat wp-color-picker" id="color_<?php echo $i ?>" name="color_<?php echo $i ?>" type="text" value="#<?php echo htmlspecialchars($subject['detail']['colors'][$i]) ?>" /></span></td>
+                    <td align="left"><span class="color-picker"><input class="widefat wp-color-picker" id="color_<?php echo $i ?>" name="color_<?php echo $i ?>" type="text" value="#<?php echo esc_attr($subject['detail']['colors'][$i]) ?>" /></span></td>
                 </tr>
             <?php }?>
         </table>

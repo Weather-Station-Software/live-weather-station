@@ -121,7 +121,7 @@ trait Handling {
         $result .= '** REQUEST DETAILS **' . PHP_EOL;
         foreach (self::$requestDetail as $req) {
             if (array_key_exists($req, $_SERVER)) {
-                $result .= $req . ' => ' . $_SERVER[$req] . PHP_EOL;
+                $result .= $req . ' => ' . sanitize_text_field(wp_unslash($_SERVER[$req])) . PHP_EOL;
             }
         }
         return $result;

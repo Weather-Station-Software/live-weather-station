@@ -20,7 +20,7 @@ use WeatherStation\System\Environment\Manager as EnvManager;
         <li>
             <?php echo sprintf(__( 'Is %1$s helpful? I would be pleased that you %2$s.', 'live-weather-station'), '<em>' . LWS_PLUGIN_NAME . '</em>', Help::get(-5, '%s', __('write a review', 'live-weather-station')));?>
             <?php if (EnvManager::stat_rating() > 0) { ?>
-                <?php echo ' ' . sprintf(__( 'To date, %1$s users rated %2$s and awarded it %3$s stars out of 5.', 'live-weather-station'), EnvManager::stat_num_ratings(), LWS_PLUGIN_NAME, EnvManager::stat_rating()); ?>
+                <?php echo ' ' . sprintf(__( 'To date, %1$s users rated %2$s and awarded it %3$s stars out of 5.', 'live-weather-station'), esc_html(EnvManager::stat_num_ratings()), LWS_PLUGIN_NAME, esc_html(EnvManager::stat_rating())); ?>
             <?php } ?>
         </li>
         <li>
