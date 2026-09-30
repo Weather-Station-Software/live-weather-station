@@ -16,6 +16,8 @@ use WeatherStation\System\URL\Handling as URL;
  */
 abstract class Framework {
 
+    use URL;
+
     protected $type = 'unknown';
     protected $subformat = 'standard';
     protected $params = array();
@@ -26,7 +28,7 @@ abstract class Framework {
      * @since 3.0.0
      */
     public static function apply_configuration() {
-        URL::apply();
+        self::apply();
     }
 
     /**

@@ -342,6 +342,15 @@ class Handling {
      * @since 3.7.0
      **/
     public function get() {
+        if (!is_array($this->map_information) || count($this->map_information) === 0 || !isset($this->aux_handler)) {
+            // Unknown map id, invalid creation nonce or unknown service: nothing to edit or to preview.
+            echo '<div class="wrap">';
+            echo '<h1>' . esc_html__('Map', 'live-weather-station') . '</h1>';
+            echo '<div class="notice notice-error"><p>' . esc_html__('This map does not exist.', 'live-weather-station') . '</p></div>';
+            echo '<p><a class="button button-primary" href="' . esc_url(lws_get_admin_page_url('lws-maps')) . '">' . esc_html__('Back to the maps list', 'live-weather-station') . '</a></p>';
+            echo '</div>';
+            return;
+        }
         echo '<div class="wrap">';
         echo '<h1>' . esc_html($this->map_name) . '</h1>';
         if ($this->arg_tab === 'add-edit') {
@@ -394,7 +403,7 @@ class Handling {
      * @since 3.7.0
      */
     public function add_metaboxes() {
-        if (isset($this->aux_handler)) {
+        if (isset($this->aux_handler) && is_array($this->map_information) && count($this->map_information) > 0) {
             // Left column
             add_meta_box('lws-maps', __('Map', 'live-weather-station' ), array($this, 'summary_widget'), $this->screen_id, 'advanced', 'default', array('map' => $this->map_information, 'params' => $this->map_params));
             add_meta_box('lws-misc', __('Misc', 'live-weather-station' ), array($this, 'detail_widget'), $this->screen_id, 'advanced', 'default', array('map' => $this->map_information, 'params' => $this->map_params));

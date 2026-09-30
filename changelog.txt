@@ -12,6 +12,9 @@
 * Security: outputs are escaped and shortcode/widget attributes validated (JS literals, enums, tokens, colors, sizes).
 * Security: import/export, secrets, network requests and authorization checks are hardened.
 * Improvement: the changes of 3.8.14, which was never deployed on wordpress.org, are now released.
+* Bug fix: the stations list no longer fails on a station without altitude yet (for instance right after adding a WeatherFlow station).
+* Bug fix: unknown map and palette ids (or an invalid security token) show a clear message with a link back instead of PHP notices and a fatal error.
+* Bug fix: the configuration export no longer raises deprecation notices on PHP 8.3+ (static calls on traits).
 * Bug fix: the plugin header now carries the real version number.
 * Bug fix: wind direction is no longer a fatal error on PHP 8 (the value was not passed to is_numeric()).
 * Bug fix: the automatic update filter no longer raises a notice when WordPress passes an item without slug.

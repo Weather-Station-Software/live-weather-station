@@ -6,6 +6,17 @@
  * @since 3.6.0
  */
 
+if (!is_array($subject) || !isset($subject['id']) || !isset($subject['detail']['name']) || !isset($subject['detail']['colors']) || !is_array($subject['detail']['colors'])) {
+    ?>
+    <div class="wrap">
+        <h1><?php esc_html_e('Modify a custom palette', 'live-weather-station');?></h1>
+        <div class="notice notice-error"><p><?php esc_html_e('This palette does not exist.', 'live-weather-station');?></p></div>
+        <p><a class="button button-primary" href="<?php echo esc_url(lws_get_admin_page_url('lws-settings', null, 'styles')); ?>"><?php esc_html_e('Back to the settings', 'live-weather-station');?></a></p>
+    </div>
+    <?php
+    return;
+}
+
 wp_enqueue_style( 'wp-color-picker' );
 
 ?>

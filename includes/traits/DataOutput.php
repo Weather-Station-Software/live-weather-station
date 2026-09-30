@@ -9779,7 +9779,7 @@ trait Output {
             case 'loc_altitude':
                 $ref = get_option('live_weather_station_unit_altitude');
                 $result = $this->get_altitude($value, $ref);
-                $result .= ($unit ? $this->unit_nbspace.$this->get_altitude_unit($ref) : '');
+                $result .= ($unit && $result !== '' ? $this->unit_nbspace.$this->get_altitude_unit($ref) : '');
                 break;
             case 'cloud_ceiling':
                 $ref = get_option('live_weather_station_unit_altitude');
@@ -10572,6 +10572,10 @@ trait Output {
      * @access   protected
      */
     protected function output_coordinate($value, $type, $mode=0, $html=false) {
+        if (!is_numeric($value)) {
+            // Not collected yet (empty string or null): same output as a null coordinate.
+            $value = 0;
+        }
         switch ($mode) {
             case 1:
                 $result = $value;
