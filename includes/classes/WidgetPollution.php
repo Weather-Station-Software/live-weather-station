@@ -181,7 +181,7 @@ class Pollution extends Base {
      * @param string $attachment Optional. CSS for background-attachment.
      * @since 3.1.0
      */
-    public function css($instance, $uid, $flat_design, $quality=100, $background='', $attachment) {
+    public function css($instance, $uid, $flat_design, $quality, $background, $attachment) {
         lws_font_awesome();
         try
         {

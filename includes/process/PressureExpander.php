@@ -278,15 +278,15 @@ class PressureExpander extends Process {
      */
     private function expand($station_id, $station_spec) {
         $switch = false;
-        if ((integer)$station_spec[0] <= 7) { // All stations from LWS_NETATMO_SID to LWS_TXT_SID must be switched
+        if ((int)$station_spec[0] <= 7) { // All stations from LWS_NETATMO_SID to LWS_TXT_SID must be switched
             $switch = true;
         }
 
         // DAILY DATA
-        $this->process_daily_pressure($station_id, self::live_weather_station_histo_daily_table(), (integer)$station_spec[1], $switch);
+        $this->process_daily_pressure($station_id, self::live_weather_station_histo_daily_table(), (int)$station_spec[1], $switch);
 
         // HISTORICAL DATA
-        $this->process_histo_pressure($station_id, self::live_weather_station_histo_yearly_table(), (integer)$station_spec[1], $switch);
+        $this->process_histo_pressure($station_id, self::live_weather_station_histo_yearly_table(), (int)$station_spec[1], $switch);
     }
 
 }

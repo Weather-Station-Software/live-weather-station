@@ -1107,20 +1107,20 @@ class Admin {
         }
         if ($section == 'display') {
             if (array_key_exists('submit', $_POST)) {
-                update_option('live_weather_station_unit_temperature', (integer)sanitize_text_field($_POST['lws_display_temperature_unit']));
-                update_option('live_weather_station_unit_pressure', (integer)sanitize_text_field($_POST['lws_display_pressure_unit']));
-                update_option('live_weather_station_unit_wind_strength', (integer)sanitize_text_field($_POST['lws_display_wind_strength_unit']));
-                update_option('live_weather_station_unit_gas', (integer)sanitize_text_field($_POST['lws_display_gas_unit']));
-                update_option('live_weather_station_unit_distance', (integer)sanitize_text_field($_POST['lws_display_distance_unit']));
-                update_option('live_weather_station_unit_psychrometry', (integer)sanitize_text_field($_POST['lws_display_density_other']));
-                update_option('live_weather_station_unit_altitude', (integer)sanitize_text_field($_POST['lws_display_altitude_unit']));
-                update_option('live_weather_station_unit_rain_snow', (integer)sanitize_text_field($_POST['lws_display_rain_snow_unit']));
+                update_option('live_weather_station_unit_temperature', (int)sanitize_text_field($_POST['lws_display_temperature_unit']));
+                update_option('live_weather_station_unit_pressure', (int)sanitize_text_field($_POST['lws_display_pressure_unit']));
+                update_option('live_weather_station_unit_wind_strength', (int)sanitize_text_field($_POST['lws_display_wind_strength_unit']));
+                update_option('live_weather_station_unit_gas', (int)sanitize_text_field($_POST['lws_display_gas_unit']));
+                update_option('live_weather_station_unit_distance', (int)sanitize_text_field($_POST['lws_display_distance_unit']));
+                update_option('live_weather_station_unit_psychrometry', (int)sanitize_text_field($_POST['lws_display_density_other']));
+                update_option('live_weather_station_unit_altitude', (int)sanitize_text_field($_POST['lws_display_altitude_unit']));
+                update_option('live_weather_station_unit_rain_snow', (int)sanitize_text_field($_POST['lws_display_rain_snow_unit']));
                 update_option('live_weather_station_measure_only', (!array_key_exists('lws_display_viewing_options', $_POST) ? 1 : 0));
-                update_option('live_weather_station_wind_semantics', (integer)sanitize_text_field($_POST['lws_display_windsemantics']));
-                //update_option('live_weather_station_angle_semantics', (integer)$_POST['lws_display_anglesemantics']);
-                update_option('live_weather_station_moon_icons', (integer)sanitize_text_field($_POST['lws_display_moonicons']));
+                update_option('live_weather_station_wind_semantics', (int)sanitize_text_field($_POST['lws_display_windsemantics']));
+                //update_option('live_weather_station_angle_semantics', (int)$_POST['lws_display_anglesemantics']);
+                update_option('live_weather_station_moon_icons', (int)sanitize_text_field($_POST['lws_display_moonicons']));
                 update_option('live_weather_station_min_max_mode', (array_key_exists('lws_display_minmax', $_POST) ? 1 : 0));
-                update_option('live_weather_station_obsolescence', (integer)sanitize_text_field($_POST['lws_display_obsolescence']));
+                update_option('live_weather_station_obsolescence', (int)sanitize_text_field($_POST['lws_display_obsolescence']));
                 update_option('live_weather_station_force_frontend_styling', (array_key_exists('lws_display_force_frontend_styling', $_POST) ? 1 : 0));
             }
             else {
@@ -1129,7 +1129,7 @@ class Admin {
         }
         if ($section == 'history') {
             if (array_key_exists('submit', $_POST)) {
-                $mode = (integer)sanitize_text_field($_POST['lws_history_collect']);
+                $mode = (int)sanitize_text_field($_POST['lws_history_collect']);
                 if ($mode == 0) {
                     update_option('live_weather_station_collect_history', 0);
                     update_option('live_weather_station_build_history', 0);
@@ -1142,8 +1142,8 @@ class Admin {
                     update_option('live_weather_station_collect_history', 1);
                     update_option('live_weather_station_build_history', 1);
                 }
-                update_option('live_weather_station_full_history', (integer)sanitize_text_field($_POST['lws_history_full']));
-                update_option('live_weather_station_retention_history', (integer)sanitize_text_field($_POST['lws_history_retention']));
+                update_option('live_weather_station_full_history', (int)sanitize_text_field($_POST['lws_history_full']));
+                update_option('live_weather_station_retention_history', (int)sanitize_text_field($_POST['lws_history_retention']));
             }
             else {
                 $result = false;
@@ -1173,12 +1173,12 @@ class Admin {
             $cron = get_option('live_weather_station_cron_speed');
             $override = get_option('live_weather_station_overload_hc');
             if (array_key_exists('submit', $_POST)) {
-                update_option('live_weather_station_logger_level', (integer)sanitize_text_field($_POST['lws_system_log_level']));
-                update_option('live_weather_station_fa_mode', (integer)sanitize_text_field($_POST['lws_system_fa_mode']));
-                update_option('live_weather_station_logger_rotate', (integer)sanitize_text_field($_POST['lws_system_log_rotate']));
-                update_option('live_weather_station_logger_retention', (integer)sanitize_text_field($_POST['lws_system_log_retention']));
-                update_option('live_weather_station_file_retention', (integer)sanitize_text_field($_POST['lws_system_file_retention']));
-                update_option('live_weather_station_retention_notifications', (integer)sanitize_text_field($_POST['lws_system_notif_retention']));
+                update_option('live_weather_station_logger_level', (int)sanitize_text_field($_POST['lws_system_log_level']));
+                update_option('live_weather_station_fa_mode', (int)sanitize_text_field($_POST['lws_system_fa_mode']));
+                update_option('live_weather_station_logger_rotate', (int)sanitize_text_field($_POST['lws_system_log_rotate']));
+                update_option('live_weather_station_logger_retention', (int)sanitize_text_field($_POST['lws_system_log_retention']));
+                update_option('live_weather_station_file_retention', (int)sanitize_text_field($_POST['lws_system_file_retention']));
+                update_option('live_weather_station_retention_notifications', (int)sanitize_text_field($_POST['lws_system_notif_retention']));
                 update_option('live_weather_station_upload_allowed', (array_key_exists('lws_system_upload_allowed', $_POST) ? 1 : 0));
                 update_option('live_weather_station_mutation_observer', (array_key_exists('lws_system_mutation_observer', $_POST) ? 1 : 0));
                 update_option('live_weather_station_ajax_widget', (array_key_exists('lws_system_ajax_widget', $_POST) ? 1 : 0));
@@ -1197,21 +1197,21 @@ class Admin {
                 update_option('live_weather_station_auto_manage_netatmo', (array_key_exists('lws_system_auto_manage_netatmo', $_POST) ? 1 : 0));
                 update_option('live_weather_station_auto_manage_bloomsky', (array_key_exists('lws_system_auto_manage_bloomsky', $_POST) ? 1 : 0));
                 update_option('live_weather_station_auto_update', (array_key_exists('lws_system_auto_update', $_POST) ? 1 : 0));
-                update_option('live_weather_station_time_shift_threshold', (integer)sanitize_text_field($_POST['lws_system_time_shift_threshold']));
+                update_option('live_weather_station_time_shift_threshold', (int)sanitize_text_field($_POST['lws_system_time_shift_threshold']));
                 update_option('live_weather_station_show_technical', (array_key_exists('lws_system_show_technical', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_analytics', (array_key_exists('lws_system_show_analytics', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_tasks', (array_key_exists('lws_system_show_tasks', $_POST) ? 1 : 0));
                 update_option('live_weather_station_plugin_stat', (array_key_exists('lws_system_plugin_stat', $_POST) ? 1 : 0));
                 update_option('live_weather_station_keep_tables', (array_key_exists('lws_system_keep_tables', $_POST) ? 1 : 0));
                 update_option('live_weather_station_overload_hc', (array_key_exists('lws_system_overload_hc', $_POST) ? 1 : 0));
-                update_option('live_weather_station_analytics_cutoff', (integer)sanitize_text_field($_POST['lws_system_analytics_cutoff']));
-                update_option('live_weather_station_quota_mode', (integer)sanitize_text_field($_POST['lws_system_quota']));
-                update_option('live_weather_station_cron_speed', (integer)sanitize_text_field($_POST['lws_system_cron_speed']));
-                update_option('live_weather_station_picture_retention', (integer)sanitize_text_field($_POST['lws_system_picture_retention']));
-                update_option('live_weather_station_video_retention', (integer)sanitize_text_field($_POST['lws_system_video_retention']));
-                update_option('live_weather_station_collection_http_timeout', (integer)sanitize_text_field($_POST['lws_collection_http_timeout']));
-                update_option('live_weather_station_sharing_http_timeout', (integer)sanitize_text_field($_POST['lws_sharing_http_timeout']));
-                update_option('live_weather_station_system_http_timeout', (integer)sanitize_text_field($_POST['lws_system_http_timeout']));
+                update_option('live_weather_station_analytics_cutoff', (int)sanitize_text_field($_POST['lws_system_analytics_cutoff']));
+                update_option('live_weather_station_quota_mode', (int)sanitize_text_field($_POST['lws_system_quota']));
+                update_option('live_weather_station_cron_speed', (int)sanitize_text_field($_POST['lws_system_cron_speed']));
+                update_option('live_weather_station_picture_retention', (int)sanitize_text_field($_POST['lws_system_picture_retention']));
+                update_option('live_weather_station_video_retention', (int)sanitize_text_field($_POST['lws_system_video_retention']));
+                update_option('live_weather_station_collection_http_timeout', (int)sanitize_text_field($_POST['lws_collection_http_timeout']));
+                update_option('live_weather_station_sharing_http_timeout', (int)sanitize_text_field($_POST['lws_sharing_http_timeout']));
+                update_option('live_weather_station_system_http_timeout', (int)sanitize_text_field($_POST['lws_system_http_timeout']));
                 if (!$save_auto && get_option('live_weather_station_auto_manage_netatmo')) {
                     $this->get_netatmo(true);
                     $this->get_netatmohc(true);
@@ -3023,8 +3023,9 @@ class Admin {
             $station = $this->get_station_information_by_guid($guid);
             $service = $this->get_service_name($station['station_type']);
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'delete-station-' . (int)$guid)) {
+                // The outcome is the deletion of the station itself: the operational table may legitimately have no row to remove.
                 if ($res = $this->delete_stations_table(array($guid))) {
-                    $res = $this->delete_operational_stations_table(array($station['station_id']));
+                    $this->delete_operational_stations_table(array($station['station_id']));
                     Cache::flush_query();
                 }
                 if ($res) {
@@ -3208,7 +3209,7 @@ class Admin {
                 }
             }
             else {
-                $message = __('Unable to remove the station %s.', 'live-weather-station');
+                $message = __('Unable to remove the map %s.', 'live-weather-station');
                 $message = sprintf($message, '<em>' . esc_html($map['name']) . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', $service, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');

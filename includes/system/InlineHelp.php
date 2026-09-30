@@ -372,6 +372,9 @@ class InlineHelp {
      * @since 3.0.0
      */
     public static function set_contextual_help($loader, $type) {
+        if (!is_string($type) || !preg_match('/^[a-z_]+$/', $type) || !method_exists(__CLASS__, 'set_contextual_' . $type)) {
+            return;
+        }
         add_action($loader, array('WeatherStation\System\Help\InlineHelp', 'set_contextual_' . $type));
     }
 
@@ -764,9 +767,11 @@ class InlineHelp {
         $service = strtolower((string)self::request_value('service', 'key'));
         $id = self::request_value('id', 'text');
         $tab = self::request_value('tab', 'key');
-        if (is_numeric($id)) {
+        if (is_string($id) && ctype_digit($id)) {
             $station = self::get_station($id);
-            $type = $station['station_type'];
+            if (is_array($station) && isset($station['station_type'])) {
+                $type = $station['station_type'];
+            }
         }
         $tabs = array();
         if (isset($action) && $action == 'shortcode') {

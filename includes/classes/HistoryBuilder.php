@@ -81,7 +81,7 @@ function lws_array_sd($arr, $type) {
         $mean = lws_array_average($arr, $type);
         $carry = 0.0;
         foreach ($arr as $val) {
-            $d = ((double)$val) - $mean;
+            $d = ((float)$val) - $mean;
             $carry += $d * $d;
         }
         $result =  sqrt($carry / $n);
@@ -241,6 +241,16 @@ class Builder
      * @since 3.7.0
      */
     static public function add_record($timestamp, $device_id, $module_id, $module_type, $measure_type, $measure_set, $measure_value, $force=false) {
+        // Imported data is untrusted: values must fit the columns of the table and have the expected shape.
+        if (!is_string($device_id) || !preg_match('/^[A-Za-z0-9:._-]{1,17}$/', $device_id) ||
+            !is_string($module_id) || !preg_match('/^[A-Za-z0-9:._-]{1,17}$/', $module_id) ||
+            !is_string($module_type) || !preg_match('/^[A-Za-z0-9_<>-]{1,12}$/', $module_type) ||
+            !is_string($measure_type) || !preg_match('/^[a-z0-9_]{1,40}$/', $measure_type) ||
+            !is_string($measure_set) || !preg_match('/^[a-z]{1,5}$/', $measure_set) ||
+            !is_numeric($measure_value) || !is_finite((float)$measure_value) ||
+            !is_string($timestamp) || !preg_match('/^\d{4}-\d{2}-\d{2}$/', $timestamp)) {
+            return;
+        }
         $val = array();
         $val['timestamp'] = $timestamp;
         $val['device_id'] = $device_id;
@@ -271,7 +281,13 @@ class Builder
         $full_mode = (bool)get_option('live_weather_station_full_history');
         $no_value = -123456789;
         $result = array(0, 0);
+        if (!is_array($data) || !isset($data['meta']) || !is_array($data['meta']) ||
+            !isset($data['meta']['device_id']) || !isset($data['meta']['module_id']) || !isset($data['meta']['module_type'])) {
+            return $result;
+        }
         $date_control = $date_start;
+        // Bound the loop: one iteration per day, 20 years at most.
+        $date_end = min($date_end, $date_start + 7305 * 86400);
         while ($date_control < $date_end) {
             $start = $date_control;
             $end = $date_control + 86399;
@@ -279,6 +295,9 @@ class Builder
             $count = false;
             if (array_key_exists('values', $data) && is_array($data['values'])) {
                 foreach ($data['values'] as $type => $value) {
+                    if (!is_array($value)) {
+                        continue;
+                    }
                     $d = array();
                     foreach ($value as $ts => $m) {
                         if ($ts >= $start && $ts < $end) {
@@ -287,7 +306,7 @@ class Builder
                     }
                     if (count($d) > 0) {
                         if ($type === 'sum_rain') {
-                            $sets[] = array('SUM' => 'agg');
+                            $sets = array('SUM' => 'agg');
                             $type = 'rain_day_aggregated';
                         } else {
                             $sets = $this->get_measurements_operations_type($type, '', $full_mode);

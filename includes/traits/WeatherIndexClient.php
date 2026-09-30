@@ -64,17 +64,17 @@ trait Client {
                 $pressure_sl_ref = $data['pressure_sl'];
             }
             $place = array();
-            $place['country'] = $data['loc_country'];
-            $place['city'] = $data['loc_city'];
-            $place['altitude'] = $data['loc_altitude'];
-            $place['timezone'] = $data['loc_timezone'];
-            if (array_key_exists('loc_longitude', $measurements) && array_key_exists('loc_latitude', $measurements)) {
+            $place['country'] = isset($data['loc_country']) ? $data['loc_country'] : '';
+            $place['city'] = isset($data['loc_city']) ? $data['loc_city'] : '';
+            $place['altitude'] = isset($data['loc_altitude']) ? $data['loc_altitude'] : 0;
+            $place['timezone'] = isset($data['loc_timezone']) ? $data['loc_timezone'] : '';
+            if (array_key_exists('loc_longitude', $data) && array_key_exists('loc_latitude', $data)) {
                 $place['location'] = array($data['loc_longitude'], $data['loc_latitude']);
             }
             $nm = array();
             $nm['place'] = $place;
             $nm['device_id'] = $id;
-            $nm['device_name'] = $data['name'];
+            $nm['device_name'] = isset($data['name']) ? $data['name'] : '';
             $nm['_id'] = self::get_computed_virtual_id($id);
             $nm['module_name'] = __('[Computed Values]', 'live-weather-station');
             $nm['type'] = 'NAComputed';
@@ -225,13 +225,19 @@ trait Client {
                 $nm['dashboard_data']['time_utc'] = time();
                 $nm['dashboard_data']['zcast_live'] = $zcast;
                 if (array_key_exists('loc_timezone', $data)) {
-                    $datetime = new \DateTime('now', new \DateTimeZone('UTC'));
-                    $datetime->setTimezone(new \DateTimeZone($data['loc_timezone']));
-                    $h = (int)$datetime->format('H');
-                    $m = (int)$datetime->format('i');
-                    if ($h == 9 && $m < 22) {
-                        $nm['data_type'][] = 'zcast_best';
-                        $nm['dashboard_data']['zcast_best'] = $zcast;
+                    try {
+                        $datetime = new \DateTime('now', new \DateTimeZone('UTC'));
+                        // An invalid timezone (vendor data) must not abort the computation of the other stations.
+                        $datetime->setTimezone(new \DateTimeZone($data['loc_timezone']));
+                        $h = (int)$datetime->format('H');
+                        $m = (int)$datetime->format('i');
+                        if ($h == 9 && $m < 22) {
+                            $nm['data_type'][] = 'zcast_best';
+                            $nm['dashboard_data']['zcast_best'] = $zcast;
+                        }
+                    }
+                    catch (\Exception $ex) {
+                        Logger::warning($this->facility, $this->service_name, $id, isset($data['name']) ? $data['name'] : null, null, null, 135, 'Invalid timezone: unable to compute the best forecast of the day.');
                     }
                 }
             }

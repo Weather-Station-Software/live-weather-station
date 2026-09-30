@@ -47,7 +47,7 @@ use WeatherStation\System\Output\Guard;
     </div>
 <?php } ?>
 
-<?php if ($show_files) { ?>
+<?php if (isset($show_files) && $show_files) { ?>
     <?php if (isset($ndjson) && count($ndjson) > 0) { ?>
         <div id="lws-ndjson-div" class="activity-block" style="padding-bottom: 0px;padding-top: 0px;border: none !important;">
             <div style="margin-bottom: 10px;">
@@ -89,7 +89,7 @@ use WeatherStation\System\Output\Guard;
     jQuery(document).ready(function($) {
 
         $("#lws-format").change(function() {
-            <?php foreach($formats as $key => $format) { ?>
+            <?php foreach((isset($formats) ? $formats : array()) as $key => $format) { ?>
                 if ($(this).val() == <?php echo Guard::js($key) ?>) {$("#lws-format-description").html(<?php echo Guard::js($format['description']) ?>);}
             <?php } ?>
             if ($(this).val() == "ndjson") {

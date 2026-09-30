@@ -46,7 +46,7 @@ trait Handling {
      * @since 3.6.0
      */
     public static function compute_unique_bsky_id($hdid) {
-        $st = str_pad($hdid, 12, '0', STR_PAD_LEFT);
+        $st = str_pad((string)$hdid, 12, '0', STR_PAD_LEFT);
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower(substr($result, 0, 17));
     }
@@ -60,7 +60,7 @@ trait Handling {
      * @since 3.8.0
      */
     public static function compute_unique_wlink_id($did) {
-        $st = str_pad($did, 12, '0', STR_PAD_LEFT);
+        $st = str_pad((string)$did, 12, '0', STR_PAD_LEFT);
         $result = self::$wlink_id . ':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower(substr($result, 0, 17));
     }
@@ -74,7 +74,7 @@ trait Handling {
      * @since 2.0.0
      */
     public static function get_unique_owm_id($guid) {
-        $st = self::$owm_id.str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
+        $st = self::$owm_id.str_pad(dechex((int)$guid), 10, '0', STR_PAD_LEFT);
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower($result);
     }
@@ -88,7 +88,7 @@ trait Handling {
      * @since 3.0.0
      */
     public static function get_unique_owm_true_id($guid) {
-        $st = self::$owm_station_id.str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
+        $st = self::$owm_station_id.str_pad(dechex((int)$guid), 10, '0', STR_PAD_LEFT);
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower($result);
     }
@@ -101,7 +101,7 @@ trait Handling {
      * @since 3.0.0
      */
     public static function get_unique_wug_id($guid) {
-        $st = self::$wug_id.str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
+        $st = self::$wug_id.str_pad(dechex((int)$guid), 10, '0', STR_PAD_LEFT);
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower($result);
     }
@@ -114,7 +114,7 @@ trait Handling {
      * @since 3.0.0
      */
     public static function get_unique_clientraw_id($guid) {
-        $st = self::$clientraw_id.str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
+        $st = self::$clientraw_id.str_pad(dechex((int)$guid), 10, '0', STR_PAD_LEFT);
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower($result);
     }
@@ -127,7 +127,7 @@ trait Handling {
      * @since 3.0.0
      */
     public static function get_unique_realtime_id($guid) {
-        $st = self::$realtime_id.str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
+        $st = self::$realtime_id.str_pad(dechex((int)$guid), 10, '0', STR_PAD_LEFT);
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower($result);
     }
@@ -140,7 +140,7 @@ trait Handling {
      * @since 3.3.0
      */
     public static function get_unique_txt_id($guid) {
-        $st = self::$txt_id.str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
+        $st = self::$txt_id.str_pad(dechex((int)$guid), 10, '0', STR_PAD_LEFT);
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower($result);
     }
@@ -153,7 +153,7 @@ trait Handling {
      * @since 3.3.0
      */
     public static function get_unique_wflw_id($guid) {
-        $st = self::$wflw_id.str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
+        $st = self::$wflw_id.str_pad(dechex((int)$guid), 10, '0', STR_PAD_LEFT);
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower($result);
     }
@@ -166,7 +166,7 @@ trait Handling {
      * @since 3.5.0
      */
     public static function get_unique_piou_id($guid) {
-        $st = self::$piou_id.str_pad(dechex($guid), 10, '0', STR_PAD_LEFT);
+        $st = self::$piou_id.str_pad(dechex((int)$guid), 10, '0', STR_PAD_LEFT);
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower($result);
     }
@@ -402,7 +402,7 @@ trait Handling {
      * @since 3.0.0
      */
     public static function get_fake_modulex_id($guid, $id, $cpt=0) {
-        $st = str_replace('x', $id, self::$fake_modulex_id).str_replace('x', $cpt, self::$fake_modulex_cpt).str_pad(dechex($guid), 8, '0', STR_PAD_LEFT);
+        $st = str_replace('x', $id, self::$fake_modulex_id).str_replace('x', $cpt, self::$fake_modulex_cpt).str_pad(dechex((int)$guid), 8, '0', STR_PAD_LEFT);
         $result = $st[0].$st[1].':'.$st[2].$st[3].':'.$st[4].$st[5].':'.$st[6].$st[7].':'.$st[8].$st[9].':'.$st[10].$st[11];
         return strtolower($result);
     }

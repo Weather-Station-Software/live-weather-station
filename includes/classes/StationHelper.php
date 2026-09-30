@@ -360,7 +360,7 @@ class Handling {
                                         if (!array_key_exists($k, $m)) {
                                             $m[$k] = array();
                                         }
-                                        $m[$k]['hidden'] = (integer)stripslashes(htmlspecialchars_decode(sanitize_text_field($p)));
+                                        $m[$k]['hidden'] = (int)stripslashes(htmlspecialchars_decode(sanitize_text_field($p)));
                                     }
                                 }
                                 if (count($m) > 0) {

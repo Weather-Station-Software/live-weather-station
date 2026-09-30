@@ -106,8 +106,8 @@ $station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, 
                         <td align="left">
                             <span class="login">
                                 <select name="<?php echo esc_attr('lws-hidden-' . $module['module_id']) ?>" id="<?php echo esc_attr('lws-hidden-' . $module['module_id']) ?>" style="width:100%;">
-                                    <option value="0" <?php echo ((boolean)$module['hidden']?'':'selected="selected"'); ?>><?php echo esc_html__('visible', 'live-weather-station') ?></option>;
-                                    <option value="1" <?php echo ((boolean)$module['hidden']?'selected="selected"':''); ?>><?php echo esc_html__('hidden', 'live-weather-station') ?></option>;
+                                    <option value="0" <?php echo ((bool)$module['hidden']?'':'selected="selected"'); ?>><?php echo esc_html__('visible', 'live-weather-station') ?></option>;
+                                    <option value="1" <?php echo ((bool)$module['hidden']?'selected="selected"':''); ?>><?php echo esc_html__('hidden', 'live-weather-station') ?></option>;
                                 </select></span>
                         </td>
                     </tr>

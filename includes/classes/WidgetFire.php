@@ -184,7 +184,7 @@ class Fire extends Base {
      * @param string $attachment Optional. CSS for background-attachment.
      * @since 3.1.0
      */
-    public function css($instance, $uid, $flat_design, $cbi=-99999, $background='', $attachment) {
+    public function css($instance, $uid, $flat_design, $cbi, $background, $attachment) {
         lws_font_awesome();
         try
         {

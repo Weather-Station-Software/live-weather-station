@@ -123,6 +123,28 @@ trait Handling {
     }
 
     /**
+     * Take the (re)scheduling lock of a cron. add_option() is atomic (the option name is unique): only one request wins.
+     * A lock older than one minute is considered stale (crashed request) and is taken over.
+     *
+     * @param string $cron_id The cron task identifier.
+     * @return boolean True if the lock has been acquired.
+     *
+     * @since 3.9.0
+     */
+    private static function acquire_cron_lock($cron_id) {
+        $key = 'lws_cron_lock_' . $cron_id;
+        if (add_option($key, time(), '', 'no')) {
+            return true;
+        }
+        $since = (int)get_option($key);
+        if ($since > 0 && (time() - $since) > 60) {
+            update_option($key, time(), 'no');
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Schedule or reschedule a cron.
      *
      * @param string $cron_id The cron task identifier.
@@ -151,24 +173,37 @@ trait Handling {
                 $scheduled = 0;
             }
             if (method_exists(get_called_class(), $launcher)) {
-                if (($d = wp_next_scheduled($cron_id)) && ($system != 'Watchdog')) {
-                    wp_clear_scheduled_hook($cron_id);
+                // Clearing then re-adding the hook is not atomic: concurrent requests (WP-Cron can be triggered by anybody)
+                // must not do it at the same time, or the task would be scheduled twice.
+                // A held lock means another request is rescheduling this very task right now: the reschedule is
+                // already pending, so report success instead of a spurious failure.
+                if (!self::acquire_cron_lock($cron_id)) {
+                    Logger::debug('Core', null, null, null, null, null, null, 'Reschedule of ' . $cron_id . ' skipped: already in progress.');
+                    return true;
                 }
-                $now = time();
-                if (($d > $now) && !$beforeforce){
-                    $dts = $d - $now;
+                try {
+                    if (($d = wp_next_scheduled($cron_id)) && ($system != 'Watchdog')) {
+                        wp_clear_scheduled_hook($cron_id);
+                    }
+                    $now = time();
+                    if (($d > $now) && !$beforeforce){
+                        $dts = $d - $now;
+                    }
+                    else {
+                        $dts = 0;
+                    }
+                    if ($dts < $scheduled) {
+                        $dts += $scheduled;
+                    }
+                    if ($random) {
+                        $dts = random_int(1,180);
+                    }
+                    call_user_func(array(get_called_class(), $launcher), $dts, $system);
+                    $result = true;
                 }
-                else {
-                    $dts = 0;
+                finally {
+                    delete_option('lws_cron_lock_' . $cron_id);
                 }
-                if ($dts < $scheduled) {
-                    $dts += $scheduled;
-                }
-                if ($random) {
-                    $dts = random_int(1,180);
-                }
-                call_user_func(array(get_called_class(), $launcher), $dts, $system);
-                $result = true;
             }
         }
         else {

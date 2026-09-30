@@ -16,6 +16,8 @@ use WeatherStation\System\Logs\Logger;
  */
 class Manager {
 
+    protected $Live_Weather_Station;
+    protected $version;
 
     private static $dir = '';
     private static $url = '';

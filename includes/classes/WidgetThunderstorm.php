@@ -138,7 +138,7 @@ class Thunderstorm extends Base {
      * @param string $attachment Optional. CSS for background-attachment.
      * @since 3.3.0
      */
-    public function css($instance, $uid, $flat_design, $dawndusk=100, $background='', $attachment) {
+    public function css($instance, $uid, $flat_design, $dawndusk, $background, $attachment) {
         lws_font_awesome();
         try
         {

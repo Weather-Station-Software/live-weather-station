@@ -24,6 +24,8 @@ trait PublicClient {
 
     use BaseClient, Conversion;
 
+    protected $devices = array();
+
     protected $facility = 'Weather Collector';
     public $detected_station_name = '';
     private static $dev_key = '42f82f28-44c8-4866-921d-315f53c7bd39';

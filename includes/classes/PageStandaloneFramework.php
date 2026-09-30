@@ -82,9 +82,11 @@ abstract class Framework {
         if (strpos($args, '?') > 0) {
             $args = substr($args, strpos($args, '?') + 1, 2500);
         }
-        $query = new \WP_Query($args);
-        if (sizeof($query->query_vars) > 0) {
-            foreach ($query->query_vars as $key => $val) {
+        // Only parse the query string: running a WP_Query here would execute a full posts query on an anonymous endpoint.
+        $vars = array();
+        wp_parse_str($args, $vars);
+        if (sizeof($vars) > 0) {
+            foreach ($vars as $key => $val) {
                 switch ($key) {
                     case 'type':
                         if (is_string($val) && preg_match('/^[A-Za-z0-9_]{1,40}$/', $val)) {
@@ -159,6 +161,29 @@ abstract class Framework {
     }
 
     /**
+     * Rate limit the logging of this anonymous endpoint (max 60 log rows per minute) to avoid log flooding.
+     *
+     * @return boolean True if a log row may be written now.
+     * @since 3.9.0
+     */
+    private static function may_log($critical=false) {
+        // Fixed window (start timestamp stored, never slid) so sustained traffic cannot mute logging forever.
+        // Critical rows have their own counter and are never muted by informational ones.
+        $key = $critical ? 'lws_standalone_log_rate_c' : 'lws_standalone_log_rate';
+        $now = time();
+        $state = get_transient($key);
+        if (!is_array($state) || !isset($state['s'], $state['c']) || ($now - (int)$state['s']) >= 60) {
+            $state = array('s' => $now, 'c' => 0);
+        }
+        if ((int)$state['c'] >= 60) {
+            return false;
+        }
+        $state['c'] = (int)$state['c'] + 1;
+        set_transient($key, $state, 120);
+        return true;
+    }
+
+    /**
      * Run the logic of the standalone page.
      *
      * @since 3.0.0
@@ -172,11 +197,17 @@ abstract class Framework {
             // For analytics
             //' . ($subformat != 'standard' ? ' for '.$subformat.'_stickertags.txt' : '') . '
 
-            Logger::info('Page Generator', null, null, null, null, null , 0, 'Success while rendering file.' . HTTP::get_request_detail_as_text());
+            if (self::may_log()) {
+                Logger::info('Page Generator', null, null, null, null, null , 0, 'Success while rendering file.' . HTTP::get_request_detail_as_text());
+            }
             exit();
         }
         else {
-            $this->error(503);
+            // WordPress is not loaded: the plugin constants and the logger are not available.
+            http_response_code(503);
+            header('Content-type: text/plain; charset=utf-8');
+            header('X-Content-Type-Options: nosniff');
+            echo 'Service unavailable.';
             exit();
         }
     }
@@ -217,7 +248,9 @@ abstract class Framework {
             $message = 'Error Code ' . $code;
         }
         echo LWS_PLUGIN_NAME . ' / ' . $message;
-        Logger::critical('Page Generator', null, null, null, null, null , $code, 'Unable to generate the requested page. Header "'. $message .'" sent to client.'  . HTTP::get_request_detail_as_text());
+        if (self::may_log(true)) {
+            Logger::critical('Page Generator', null, null, null, null, null , $code, 'Unable to generate the requested page. Header "'. $message .'" sent to client.'  . HTTP::get_request_detail_as_text());
+        }
         exit();
     }
     

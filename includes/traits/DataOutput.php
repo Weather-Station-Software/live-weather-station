@@ -100,7 +100,7 @@ trait Output {
     public function maps_shortcodes($attributes) {
         $_attributes = shortcode_atts( array('id' => 0, 'size' => 'auto'), $attributes );
         $_attributes['size'] = ($_attributes['size'] === 'auto' ? 'auto' : Guard::css_size($_attributes['size'], 'auto'));
-        $mid = $_attributes['id'];
+        $mid = absint($_attributes['id']);
         if ($mid !== 0) {
             $map = $this->get_map_detail($mid);
             if (count($map) > 0) {
@@ -372,6 +372,115 @@ trait Output {
     }
 
     /**
+     * Log a failure of a public query, sparingly: at most one entry per minute (whatever the number of failing requests)
+     * and a truncated message, so that anonymous requests can neither flood the log nor inject long texts in it.
+     *
+     * @param \Throwable $ex The error.
+     * @since 3.9.0
+     */
+    private static function log_graph_error($ex) {
+        $key = 'lws_graph_error_logged';
+        if (get_transient($key) !== false) {
+            return;
+        }
+        set_transient($key, 1, 60);
+        error_log('Weather Station: a graph query failed: ' . substr(preg_replace('/[\r\n\t]+/', ' ', wp_strip_all_tags($ex->getMessage())), 0, 300));
+    }
+
+    /**
+     * Complete a series with the parameters that are not provided: the graph builders read them without checking.
+     *
+     * @param array $item The series.
+     * @return array The series, with all its parameters ('none' if not provided).
+     * @since 3.9.0
+     */
+    private function graph_complete_series($item) {
+        foreach (array('device_id', 'module_id', 'measurement', 'set', 'line_mode', 'dot_style', 'line_style', 'line_size') as $key) {
+            if (!isset($item[$key])) {
+                $item[$key] = 'none';
+            }
+        }
+        return $item;
+    }
+
+    /**
+     * Get the number of sectors (4s, 8s, 16s...) of a line_mode parameter, bounded to a sane range.
+     *
+     * @param mixed $line_mode The line_mode parameter.
+     * @param integer $default Optional. The number of sectors if the parameter is not usable.
+     * @return integer The number of sectors, between 1 and 64.
+     * @since 3.9.0
+     */
+    private static function graph_sectors($line_mode, $default = 8) {
+        $n = is_scalar($line_mode) ? (int)str_replace('s', '', (string)$line_mode) : 0;
+        if ($n < 1) {
+            return $default;
+        }
+        return min(64, $n);
+    }
+
+    /**
+     * Get the number of color steps (color-step-4...) of a line_mode parameter, bounded to a sane range.
+     *
+     * @param mixed $line_mode The line_mode parameter.
+     * @param integer $default Optional. The number of steps if the parameter is not usable.
+     * @return integer The number of steps, between 1 and 20.
+     * @since 3.9.0
+     */
+    private static function graph_steps($line_mode, $default = 4) {
+        $n = is_scalar($line_mode) ? (int)str_replace('color-step-', '', (string)$line_mode) : 0;
+        if ($n < 1) {
+            return $default;
+        }
+        return min(20, $n);
+    }
+
+    /**
+     * Get the resolution, in minutes, of a dot_style parameter (res-10...), bounded to a sane range.
+     *
+     * @param mixed $dot_style The dot_style parameter.
+     * @return integer The resolution, between 1 and 1440.
+     * @since 3.9.0
+     */
+    private static function graph_resolution($dot_style) {
+        if (is_scalar($dot_style) && strpos((string)$dot_style, 'res-') !== false) {
+            $n = (int)substr((string)$dot_style, 4);
+            if ($n >= 1) {
+                return min(1440, $n);
+            }
+        }
+        return 10;
+    }
+
+    /**
+     * Verify that a period parameter is usable: none, a sliding period (rdays-30, month-1...) or a range of dates
+     * (Y-m-d:Y-m-d) that is a valid calendar span of at most 150 years.
+     *
+     * @param mixed $value The period parameter.
+     * @return boolean True if the period is usable.
+     * @since 3.9.0
+     */
+    private static function graph_valid_period($value) {
+        if (!is_scalar($value)) {
+            return false;
+        }
+        $value = (string)$value;
+        if ($value === '' || $value === 'none' || $value === '0') {
+            return true;
+        }
+        if (preg_match('/^[a-z]+-\d{1,4}$/', $value)) {
+            return true;
+        }
+        if (preg_match('/^(\d{4})-(\d{2})-(\d{2}):(\d{4})-(\d{2})-(\d{2})$/', $value, $m)) {
+            if (!checkdate((int)$m[2], (int)$m[3], (int)$m[1]) || !checkdate((int)$m[5], (int)$m[6], (int)$m[4])) {
+                return false;
+            }
+            return ((int)$m[4] - (int)$m[1]) <= 150;
+        }
+        return false;
+    }
+
+    /**
      * Query values for graph.
      *
      * @param array $attributes The type of values queried.
@@ -384,6 +493,19 @@ trait Output {
         $mode = $attributes['mode'];
         $type = $attributes['type'];
         $args = $attributes['args'];
+        // Refuse malformed or oversized periods before anything is computed (or cached).
+        if (isset($attributes['periodvalue']) && !self::graph_valid_period($attributes['periodvalue'])) {
+            return false;
+        }
+        // Fixed and aggregated periods are ranges of dates.
+        if (isset($attributes['periodtype']) && isset($attributes['periodvalue']) && (strpos($attributes['periodtype'], 'ixed-') > 0 || strpos($attributes['periodtype'], 'ggregated-') > 0) && !preg_match('/^\d{4}-\d{2}-\d{2}:\d{4}-\d{2}-\d{2}$/', (string)$attributes['periodvalue'])) {
+            return false;
+        }
+        foreach ($args as $arg) {
+            if (isset($arg['period']) && !self::graph_valid_period($arg['period'])) {
+                return false;
+            }
+        }
         $fingerprint = md5(json_encode($attributes));
         if ($attributes['cache'] != 'no_cache') {
             $result = Cache::get_graph($fingerprint, $attributes['mode']);
@@ -512,6 +634,7 @@ trait Output {
                         $is_mseason = $attributes['periodduration'] == 'mseason';
                         $is_year = $attributes['periodduration'] == 'year';
                         $v = explode('-', $attributes['periodvalue']);
+                        $v[1] = isset($v[1]) ? (int)$v[1] : 0;
                         if (strpos($attributes['periodtype'], 'ixed-') > 0 || strpos($attributes['periodtype'], 'ggregated-') > 0) {
                             $d = explode(':', $attributes['periodvalue']);
                         }
@@ -532,13 +655,13 @@ trait Output {
                             $m = substr($min, 5, 2);
                             $y = substr($min, 0, 4);
                             if ($is_month) {
-                                $util = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                $util = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
                                 $util->setDate($y, $m, 1);
                                 $util->setDate($y, $m, $util->format('t'));
                                 $max = $util->format('Y-m-d');
                             }
                             elseif ($is_year) {
-                                $util = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                $util = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
                                 $util->setDate($y, 12, 31);
                                 $max = $util->format('Y-m-d');
                             }
@@ -640,23 +763,15 @@ trait Output {
                             $res[] = $arg;
                             $first = false;
                         }
+                        // Break the reference left by the loop: it must not silently alias (and alter) an element later on.
+                        unset($arg);
                         $args = $res;
                         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
                     }
                     if ($type == 'valuerc') {
                         if (count($args) == 2) {
-                            if (strpos($args[1]['dot_style'], 'res-') !== false) {
-                                $resolution = substr($args[1]['dot_style'], 4);
-                                try {
-                                    $resolution = (int)$resolution;
-                                } catch (\Exception $ex) {
-                                    $resolution = 10;
-                                }
-                            }
-                            else {
-                                $resolution = 10;
-                            }
-                            $sects = str_replace('s', '', $args[1]['line_mode']);
+                            $resolution = self::graph_resolution(isset($args[1]['dot_style']) ? $args[1]['dot_style'] : '');
+                            $sects = self::graph_sectors(isset($args[1]['line_mode']) ? $args[1]['line_mode'] : '');
                             $angle_val = (int)(360 / $sects);
                             $sectors = array();
                             for ($i = 0; $i < $sects; $i++) {
@@ -892,7 +1007,7 @@ trait Output {
                                         $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
                                         $period_range = 0;
                                     } elseif ($is_month) {
-                                        $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                        $now = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
                                         $now->setDate($year, $month, 1);
                                         $period_name = date_i18n('F Y', $now->getTimestamp());
                                         $period_range = 1;
@@ -935,8 +1050,8 @@ trait Output {
                                     $info['values'] = $set;
                                     $result['values'][] = $info;
                                 }
-                            } catch (\Exception $ex) {
-                                error_log('Oh, no: ' . $ex->getMessage());
+                            } catch (\Throwable $ex) {
+                                self::log_graph_error($ex);
                                 $result = array();
                             }
                         }
@@ -954,22 +1069,9 @@ trait Output {
                             $subyamax = 0;
                             $minbreakdown = 0;
                             $maxbreakdown = 0;
-                            if (strpos($args[1]['dot_style'], 'res-') !== false) {
-                                $resolution = substr($args[1]['dot_style'], 4);
-                                try {
-                                    $resolution = (int)$resolution;
-                                } catch (\Exception $ex) {
-                                    $resolution = 10;
-                                }
-                            }
-                            else {
-                                $resolution = 10;
-                            }
-                            $steps = $args[2]['line_mode'];
-                            if (strpos($steps, 'olor-step-') > 0) {
-                                $steps = str_replace('color-step-', '', $steps);
-                            }
-                            $sects = str_replace('s', '', $args[1]['line_mode']);
+                            $resolution = self::graph_resolution(isset($args[1]['dot_style']) ? $args[1]['dot_style'] : '');
+                            $steps = self::graph_steps(isset($args[2]['line_mode']) ? $args[2]['line_mode'] : '');
+                            $sects = self::graph_sectors(isset($args[1]['line_mode']) ? $args[1]['line_mode'] : '');
                             $angle_val = 360 / $sects;
                             $sectors = array();
                             for ($i = 0; $i < $sects; $i++) {
@@ -1106,7 +1208,9 @@ trait Output {
                                         $__end = self::get_js_date_from_mysql_utc($max, $station['loc_timezone'], 1);
                                     }
                                     $d = $__start;
-                                    while ($d <= $__end) {
+                                    // Bound the number of generated points (steps x sectors): only absurd ranges are truncated.
+                                    $__left = max(1, (int)floor(1000000 / max(1, $sects)));
+                                    while ($d <= $__end && $__left-- > 0) {
                                         if ($mode == 'yearly') {
                                             $__date = date('Y-m-d', $d);
                                         } else {
@@ -1131,7 +1235,7 @@ trait Output {
                                     $mes_typ = $args[2]['measurement'];
                                     $stepval = ($maxbreakdown - $minbreakdown) / $steps;
                                     $step = $this->output_value($stepval, $mes_typ, false, false, $module_type);
-                                    $unit = $this->output_unit($mes_typ, $module_type)['unit'];
+                                    $unit = str_replace(array('"', '\\'), '', $this->output_unit($mes_typ, $module_type)['unit']);
                                     $adjust = ($step > 4);
                                     $breakdown = array();
                                     $breakdownlegend = array();
@@ -1180,7 +1284,8 @@ trait Output {
                                                 }
                                             }
                                         }
-                                        $values[] = array('axis'=>'"' . $this->get_angle_text($key * $angle_val) . '"', 'values'=>$sub);
+                                        // Quotes and backslashes are stripped: the axis text is wrapped in quotes and unescaped below (see $jset).
+                                        $values[] = array('axis'=>'"' . str_replace(array('"', '\\'), '', $this->get_angle_text($key * $angle_val)) . '"', 'values'=>$sub);
                                     }
                                     if ($valuescale === 'fixed') {
                                         $set = array();
@@ -1215,7 +1320,7 @@ trait Output {
                                             $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
                                             $period_range = 0;
                                         } elseif ($is_month) {
-                                            $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                            $now = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
                                             $now->setDate($year, $month, 1);
                                             $period_name = date_i18n('F Y', $now->getTimestamp());
                                             $period_range = 1;
@@ -1317,7 +1422,7 @@ trait Output {
                                                 $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
                                                 $period_range = 0;
                                             } elseif ($is_month) {
-                                                $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                                $now = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
                                                 $now->setDate($year, $month, 1);
                                                 $period_name = date_i18n('F Y', $now->getTimestamp());
                                                 $period_range = 1;
@@ -1368,8 +1473,8 @@ trait Output {
                                         }
                                     }
                                 }
-                            } catch (\Exception $ex) {
-                                error_log('Oh, no: ' . $ex->getMessage());
+                            } catch (\Throwable $ex) {
+                                self::log_graph_error($ex);
                                 if ($type == 'windrose') {
                                     $result = '[]';
                                 }
@@ -1388,18 +1493,8 @@ trait Output {
                     elseif ($type == 'distributionrc') {
                         if (count($args) > 0) {
                             foreach ($args as $arg) {
-                                if (strpos($arg['dot_style'], 'res-') !== false) {
-                                    $resolution = substr($arg['dot_style'], 4);
-                                    try {
-                                        $resolution = (int)$resolution;
-                                    } catch (\Exception $ex) {
-                                        $resolution = 10;
-                                    }
-                                }
-                                else {
-                                    $resolution = 10;
-                                }
-                                $sects = str_replace('s', '', $arg['line_mode']);
+                                $resolution = self::graph_resolution(isset($arg['dot_style']) ? $arg['dot_style'] : '');
+                                $sects = self::graph_sectors(isset($arg['line_mode']) ? $arg['line_mode'] : '');
                                 break;
                             }
                             $angle_val = (int)(360 / $sects);
@@ -1494,7 +1589,7 @@ trait Output {
                                     $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
                                     $period_range = 0;
                                 } elseif ($is_month) {
-                                    $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                    $now = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
                                     $now->setDate($year, $month, 1);
                                     $period_name = date_i18n('F Y', $now->getTimestamp());
                                     $period_range = 1;
@@ -1540,7 +1635,7 @@ trait Output {
                         }
                     }
                     elseif ($type == 'cstick' || $type == 'ccstick') {
-                        if (strpos($args[1]['set'], '|') > 0) {
+                        if (isset($args[1]['set']) && strpos($args[1]['set'], '|') > 0) {
                             $op = explode('|', $args[1]['set']);
                         }
                         else {
@@ -1552,6 +1647,8 @@ trait Output {
                         $subydmax = 0;
                         $subyamin = 0;
                         $subyamax = 0;
+                        // The series used here is the last one (explicit selection, not a stale loop variable).
+                        $arg = end($args);
                         $measure_type = $arg['measurement'];
                         if ($type == 'cstick') {
                             $select = " AND (`measure_set`='min' OR `measure_set`='max' OR `measure_set`='avg' OR `measure_set`='med')";
@@ -1671,7 +1768,7 @@ trait Output {
                                     $period_name = substr($min, 0, 4);
                                 }
                                 if ($is_month) {
-                                    $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                    $now = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
                                     $now->setDate($year, $month, 1);
                                     $p_name = date_i18n('F', $now->getTimestamp()) . ' %s';
                                     $period_range = 1;
@@ -1691,7 +1788,7 @@ trait Output {
                                     $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
                                     $period_range = 0;
                                 } elseif ($is_month) {
-                                    $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                    $now = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
                                     $now->setDate($year, $month, 1);
                                     $period_name = date_i18n('F Y', $now->getTimestamp());
                                     $period_range = 1;
@@ -1765,8 +1862,8 @@ trait Output {
                                 $result['values'][] = $info;
                             }
 
-                        } catch (\Exception $ex) {
-                            error_log('Oh, no: ' . $ex->getMessage());
+                        } catch (\Throwable $ex) {
+                            self::log_graph_error($ex);
                             $result = array();
                         }
                     }
@@ -1916,8 +2013,8 @@ trait Output {
                                 $info['values'] = $set;
                             }
 
-                        } catch (\Exception $ex) {
-                            error_log('Oh, no: ' . $ex->getMessage());
+                        } catch (\Throwable $ex) {
+                            self::log_graph_error($ex);
                             $result = array();
                         }
                     }
@@ -2011,10 +2108,11 @@ trait Output {
                                             $a = (array)$val;
                                             $t[$a['timestamp']] = $a;
                                         }
-                                        $__start = (integer)self::get_js_date_from_mysql_utc($min, $station['loc_timezone'], 1);
-                                        $__end = (integer)self::get_js_date_from_mysql_utc($max, $station['loc_timezone'], 1);
+                                        $__start = (int)self::get_js_date_from_mysql_utc($min, $station['loc_timezone'], 1);
+                                        $__end = (int)self::get_js_date_from_mysql_utc($max, $station['loc_timezone'], 1);
                                         $d = $__start;
-                                        while ($d <= $__end) {
+                                        $__left = 60000;
+                                        while ($d <= $__end && $__left-- > 0) {
                                             $__date = date('Y-m-d', $d);
                                             if (!array_key_exists($__date, $t)) {
                                                 $a = array();
@@ -2229,7 +2327,7 @@ trait Output {
                                         $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
                                         $period_range = 0;
                                     } elseif ($is_month) {
-                                        $now = new \DateTime('now', new \DateTimeZone($station['loc_timezone']));
+                                        $now = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
                                         $now->setDate($year, $month, 1);
                                         $period_name = date_i18n('F Y', $now->getTimestamp());
                                         $period_range = 1;
@@ -2340,7 +2438,7 @@ trait Output {
                         $ymin = $this->output_value($query[0]['min_val'], $arg['measurement']);
                         $ymax = $this->output_value($query[0]['max_val'], $arg['measurement']);
                     }
-                    elseif ($type == 'doubleline' || $type == 'bcline') {
+                    elseif (($type == 'doubleline' || $type == 'bcline') && isset($args[1]) && isset($args[2])) {
                         if ($args[1]['set'] == 'amp') {
                             $sql = "SELECT MIN(T2.amplitude) as min_val, MAX(T2.amplitude) as max_val FROM(SELECT (MAX(`measure_value`)-MIN(`measure_value`)) as amplitude FROM (SELECT `timestamp`, `measure_value` FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . " AND (`measure_set`='min' OR `measure_set`='max')) as T1 GROUP BY T1.timestamp) as T2";
                             $query = $wpdb->get_results($sql, ARRAY_A);
@@ -2376,13 +2474,13 @@ trait Output {
                         elseif ($args[2]['set'] == 'mid') {
                             $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND `measure_set`='min';";
                             $query = $wpdb->get_results($sql, ARRAY_A);
-                            $tm = $query[1]['min_val'];
+                            $tm = $query[0]['min_val'];
                             $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND `measure_set`='max';";
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][1]['ydomain']['min'] = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $args[2]['measurement']);
                             $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND `measure_set`='min';";
                             $query = $wpdb->get_results($sql, ARRAY_A);
-                            $tm = $query[1]['min_val'];
+                            $tm = $query[0]['min_val'];
                             $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND `measure_set`='max';";
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][1]['ydomain']['max'] = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $args[2]['measurement']);
@@ -3141,7 +3239,7 @@ trait Output {
                         }
                     }
                 }
-                $items[$i] = $item;
+                $items[$i] = $this->graph_complete_series($item);
             }
         }
         $value_params = array();
@@ -3440,6 +3538,10 @@ trait Output {
                 default:
                     $titlestyle = '';
                     $clevel=6;
+                    // Free height: a size derived from it (these values are used by the JS below).
+                    $size = max(100, min(600, (int)$inner_height - 40));
+                    $tmargin = 38;
+                    $linewidth = 2;
             }
             $inner_height = $inner_height . 'px';
             $legendColors = array();
@@ -3681,7 +3783,7 @@ trait Output {
             wp_enqueue_script('lws-nvd3');
             wp_enqueue_script('lws-colorbrewer');
             wp_enqueue_script('lws-spin');
-            $cpt = (int)str_replace('s', '', $items[1]['line_mode']);
+            $cpt = self::graph_sectors(isset($items[1]['line_mode']) ? $items[1]['line_mode'] : '', 4);
             if (!is_null($values) && isset($values['extras']) && array_key_exists(0, $values['extras'])) {
                 $unit = $values['extras'][0]['unit']['unit'];
             }
@@ -4222,10 +4324,10 @@ trait Output {
             wp_enqueue_script('lws-spin');
             wp_enqueue_script('lws-bilinechart');
             $forcefactor = 2;
-            if ($height > 300) {
+            if ((int)$height > 300) {
                 $forcefactor = 3;
             }
-            if ($height > 400) {
+            if ((int)$height > 400) {
                 $forcefactor = 4;
             }
             $domain1 = $this->graph_domain_per_domain($values['extras'][0]['ydomain'],$valuescale);
@@ -4458,10 +4560,10 @@ trait Output {
                 }
             }
             $forcefactor = 2;
-            if ($height > 300) {
+            if ((int)$height > 300) {
                 $forcefactor = 3;
             }
-            if ($height > 400) {
+            if ((int)$height > 400) {
                 $forcefactor = 4;
             }
             $domain1 = $this->graph_domain_per_domain($values['extras'][0]['ydomain'],$valuescale);
@@ -4556,10 +4658,10 @@ trait Output {
             $body .= '      nv.addGraph(function() {' . PHP_EOL;
             $body .= '        chart'.$uniq.' = nv.models.linePlusBarChart()' . PHP_EOL;
             if ($label == 'none') {
-                $body .= '               .height(' . ((integer)(str_replace('px', '', $height))-14) . ')' . PHP_EOL;
+                $body .= '               .height(' . ((int)(str_replace('px', '', $height))-14) . ')' . PHP_EOL;
             }
             else {
-                $body .= '               .height(' . ((integer)(str_replace('px', '', $height))-34) . ')' . PHP_EOL;
+                $body .= '               .height(' . ((int)(str_replace('px', '', $height))-34) . ')' . PHP_EOL;
             }
             $body .= '               .x(function(d,i) {return x' . $uniq . ' + d[0]})' . PHP_EOL;
             $body .= '               .y(function(d,i) {return d[1]})' . PHP_EOL;
@@ -4645,7 +4747,7 @@ trait Output {
         }
 
         if ($type == 'calendarhm') {
-            $step = (integer)$interpolation;
+            $step = (int)$interpolation;
             $col = new ColorsManipulation($prop['fg_color']);
             $amplitude = ($domain['max'] - $domain['min']) / $step;
             $legend = array();
@@ -4730,9 +4832,9 @@ trait Output {
             }
             if ($design == 'round') {$cRadius = (int)round($cSize/2);}
             if ($design == 'square') {$cRadius = 0;}
-            $inner_height = ((integer)(str_replace('px', '', $height))-50);
+            $inner_height = ((int)(str_replace('px', '', $height))-50);
             if ($label == 'none') {
-                $inner_height = ((integer)(str_replace('px', '', $height))+0);
+                $inner_height = ((int)(str_replace('px', '', $height))+0);
             }
             if ($label_txt != '') {
                 $label_txt = '<div style="padding-top:' . $ptop . 'px;' . str_replace('fill', 'color', $prop['text']) . '"><text style="' . $prop['nv-axislabel'] . '">' . esc_html($label_txt) . '</text></div>';
@@ -4818,13 +4920,10 @@ trait Output {
             $steps = 4;
             if (array_key_exists(2, $value_params['args'])) {
                 if (array_key_exists('line_mode', $value_params['args'][2])) {
-                    $steps = $value_params['args'][2]['line_mode'];
-                    if (strpos($steps, 'olor-step-') > 0) {
-                        $steps = str_replace('color-step-', '', $steps);
-                    }
+                    $steps = self::graph_steps($value_params['args'][2]['line_mode']);
                 }
             }
-            $steps = (int)$steps;
+            $steps = self::graph_steps($steps);
             if ($valuescale == 'auto') {
                 $valuescale = 'adaptative';
             }
@@ -5101,6 +5200,7 @@ trait Output {
      */
     public function ltgraph_prepare($attributes){
         $attributes = $this->graph_sanitize_attributes($attributes);
+        $attributes = array_merge(array('device_id' => 'none', 'module_id' => 'none', 'measurement' => 'none'), $attributes);
         $items = array();
         for ($i = 1; $i <= 8; $i++) {
             $item = array();
@@ -5114,7 +5214,7 @@ trait Output {
             }
             if (array_key_exists('period', $item)) {
                 if ($item['period']) {
-                    $items[] = $item;
+                    $items[] = $this->graph_complete_series($item);
                 }
             }
         }
@@ -5627,6 +5727,7 @@ trait Output {
      */
     public function radial_prepare($attributes){
         $attributes = $this->graph_sanitize_attributes($attributes);
+        $attributes = array_merge(array('device_id' => 'none', 'period' => 'none'), $attributes);
         $items = array();
         $noned = false;
         global $wpdb;
@@ -6048,7 +6149,14 @@ trait Output {
         if ($device == '' || $module == '' || $measurement == '' || $set == '' || $computed == '' || $periodtype == '' || $periodvalue == '' || !($aggregated || $fixed || $both)) {
             return $result;
         }
+        // The period must be a valid range of dates (Y-m-d:Y-m-d) and the station must exist.
+        if (!self::graph_valid_period($periodvalue) || strpos($periodvalue, ':') === false) {
+            return esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station');
+        }
         $station = $this->get_station_information_by_station_id($device);
+        if (!is_array($station) || !isset($station['loc_timezone']) || count($station) === 0) {
+            return esc_html__('Malformed shortcode. Please verify it!', 'live-weather-station');
+        }
         $modules = DeviceManager::get_modules_details($device);
         $moduletype = 'NAMain';
         foreach ($modules as $m) {
@@ -6068,8 +6176,8 @@ trait Output {
         if (($aggregated || $both)){
             $o_date = $this->get_oldest_data($station);
             $y_date = $this->get_youngest_data($station);
-            $oldest_date = new \DateTime($o_date, new \DateTimeZone($station['loc_timezone']));
-            $youngest_date = new \DateTime($y_date, new \DateTimeZone($station['loc_timezone']));
+            $oldest_date = new \DateTime($o_date, self::safe_timezone($station['loc_timezone']));
+            $youngest_date = new \DateTime($y_date, self::safe_timezone($station['loc_timezone']));
             if ($both) {
                 $min_date = new \DateTime(substr($o_date, 0, 4) . substr($min, 4, 6));
                 $max_date = new \DateTime(substr($y_date, 0, 4) . substr($max, 4, 6));
@@ -6158,6 +6266,8 @@ trait Output {
         $agroup = '';
         $aorder = '';
         $from = '';
+        // Default condition (used if the comparison condition is unknown): matches nothing.
+        $where2 = '1=0';
         try {
             switch ($computed) {
                 case 'simple-val':
@@ -6451,7 +6561,7 @@ trait Output {
                         $where = "`measure_value`>15.5 AND `measure_set`='avg'";
                     }
                     if ($set == 'cdd-fi') {
-                        $select = "`timestamp` as ts, ABS(`measure_value`-17)) as val";
+                        $select = "`timestamp` as ts, ABS(`measure_value`-17) as val";
                         $where = "`measure_value`>17 AND `measure_set`='avg'";
                     }
                     if ($set == 'cdd-ch') {
@@ -6502,7 +6612,7 @@ trait Output {
                         $where = "`measure_value`>15.5 AND `measure_set`='avg'";
                     }
                     if ($set == 'cdd-fi') {
-                        $select = "`timestamp` as ts, ABS(`measure_value`-17)) as val";
+                        $select = "`timestamp` as ts, ABS(`measure_value`-17) as val";
                         $where = "`measure_value`>17 AND `measure_set`='avg'";
                     }
                     if ($set == 'cdd-ch') {
@@ -6669,6 +6779,9 @@ trait Output {
                         $rows = $wpdb->get_results($simple_aggregated_sql, ARRAY_A);
                     }
                     if ($set == 'hell' || $set == 'frst' || $set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
+                        if (!isset($rows[0]['val'])) {
+                            return esc_html__('N/A', 'live-weather-station');
+                        }
                         $result = $this->rebase_value($rows[0]['val'], $measurement);
                     }
                     break;
@@ -6715,6 +6828,9 @@ trait Output {
                             case 'simple-max': $rows[0]['val'] = $max; break;
                         }
                     }
+                    if (!isset($rows[0]['val'])) {
+                        return esc_html__('N/A', 'live-weather-station');
+                    }
                     if ($set == 'hell' || $set == 'frst' || $set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
                         $result = $this->rebase_value($rows[0]['val'], $measurement);
                     }
@@ -6751,6 +6867,9 @@ trait Output {
                     }
 
 
+                    if (!isset($rows[0]['val']) || !isset($ref_rows[0]['val'])) {
+                        return esc_html__('N/A', 'live-weather-station');
+                    }
                     $val = $this->rebase_value($rows[0]['val'] - $ref_rows[0]['val'], $measurement);
                     if ($set == 'hell' || $set == 'frst' || $set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
                         $result = $val;
@@ -6773,6 +6892,8 @@ trait Output {
                     if ($set == 'amp' || $set == 'mid') {
                         $min = 0;
                         $max = 0;
+                        $datemin = '';
+                        $datemax = '';
                         $start = true;
                         foreach ($rows as $row) {
                             if ($start) {
@@ -6798,6 +6919,9 @@ trait Output {
                             case 'date-min': $rows[0]['ts'] = $datemin; break;
                             case 'date-max': $rows[0]['ts'] = $datemax; break;
                         }
+                    }
+                    if (empty($rows[0]['ts'])) {
+                        return esc_html__('N/A', 'live-weather-station');
                     }
                     $date = new \DateTime($rows[0]['ts']);
                     $result = date_i18n(get_option('date_format'), $date->getTimestamp());
@@ -6825,6 +6949,9 @@ trait Output {
                         else {
                             $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
                         }
+                    }
+                    if (!isset($rows[0]['val'])) {
+                        return esc_html__('N/A', 'live-weather-station');
                     }
                     $result = sprintf(_n('%s day', '%s days', $rows[0]['val'], 'live-weather-station'), $rows[0]['val']);
                     break;
@@ -6878,7 +7005,7 @@ trait Output {
                     return $result;
             }
         }
-        catch (\Exception $ex) {
+        catch (\Throwable $ex) {
             return $result;
         }
         if ($_attributes['cache'] != 'no_cache') {
@@ -7647,6 +7774,11 @@ trait Output {
      * @since 1.0.0
      */
     public function lcd_value($attributes) {
+        // The cache key is built from sanitized identifiers only (anonymous callers must not be able to create unbounded entries).
+        $attributes = array(
+            'device_id' => Guard::token(isset($attributes['device_id']) ? $attributes['device_id'] : '', ''),
+            'module_id' => Guard::token(isset($attributes['module_id']) ? $attributes['module_id'] : '', ''),
+            'measure_type' => Guard::token(isset($attributes['measure_type']) ? $attributes['measure_type'] : '', ''));
         $fingerprint = md5(json_encode($attributes));
         $response = Cache::get_frontend($fingerprint);
         if ($response) {
@@ -7675,6 +7807,8 @@ trait Output {
             $raw_measurements = $this->get_module_measurements($module_id, (OWM_Base_Collector::is_owm_pollution_module($module_id) ? false : true));
         }
         $response = array();
+        // Error responses (unknown station / module...) are not cached: their key is chosen by the caller.
+        $cacheable = false;
         if (array_key_exists('condition', $raw_measurements)) {
             $measure['min'] = 0;
             $measure['max'] = 0;
@@ -7686,7 +7820,7 @@ trait Output {
             $measure['show_min_max'] = false;
             $measure['title'] = __( 'Error code ' , 'live-weather-station').$raw_measurements['condition']['value'];
             if ($raw_measurements['condition']['value'] == 3 || $raw_measurements['condition']['value'] == 4) {
-                $save_locale = setlocale(LC_ALL,'');
+                $save_locale = setlocale(LC_ALL, 0);
                 setlocale(LC_ALL, lws_get_display_locale());
                 $measure['title'] = lws_iconv( __('No data', 'live-weather-station'));
                 setlocale(LC_ALL, $save_locale);
@@ -7711,7 +7845,7 @@ trait Output {
                 $measure['show_min_max'] = false;
                 $measure['title'] = __( 'Error code ' , 'live-weather-station').$measurements['condition']['value'];
                 if ($measurements['condition']['value'] == 3 || $measurements['condition']['value'] == 4) {
-                    $save_locale = setlocale(LC_ALL,'');
+                    $save_locale = setlocale(LC_ALL, 0);
                     setlocale(LC_ALL, lws_get_display_locale());
                     $measure['title'] = lws_iconv( __('No data', 'live-weather-station'));
                     setlocale(LC_ALL, $save_locale);
@@ -7725,9 +7859,12 @@ trait Output {
             }
             else {
                 $response = $measurements['measurements'];
+                $cacheable = true;
             }
         }
-        Cache::set_frontend($fingerprint, $response);
+        if ($cacheable) {
+            Cache::set_frontend($fingerprint, $response);
+        }
         return $response;
     }
 
@@ -7739,14 +7876,14 @@ trait Output {
      */
     private function get_txt($source, $val) {
         $r = '';
-        if (count($source) > 0 && $source[0] != 'none') {
+        if (is_array($source) && count($source) > 0 && isset($source[0]) && $source[0] != 'none') {
             foreach ($source as $s) {
                 if (strlen($r) > 0) {
                     if ($s == 'unit') {$b_sep = ' ('; $e_sep = ')';}
                     else { $b_sep = ' - '; $e_sep = '';}
                 }
                 else { $b_sep = ''; $e_sep = '';}
-                $r = $r . $b_sep . $val[$s] . $e_sep;
+                $r = $r . $b_sep . ((isset($val[$s]) && is_scalar($val[$s])) ? $val[$s] : '') . $e_sep;
             }
         }
         return $r;
@@ -7760,7 +7897,10 @@ trait Output {
      */
     public function justgage_value($attributes, $full=false) {
         $_attributes = shortcode_atts(array('device_id' => '', 'module_id' => '', 'measure_type' => '', 'element' => '', 'format' => ''), $attributes);
-        $fingerprint = md5(($full?'full':'partial').json_encode($attributes));
+        foreach (array('device_id', 'module_id', 'measure_type', 'element', 'format') as $_key) {
+            $_attributes[$_key] = Guard::token($_attributes[$_key], '');
+        }
+        $fingerprint = md5(($full?'full':'partial').json_encode($_attributes));
         $result = Cache::get_frontend($fingerprint);
         if ($result) {
             return $result;
@@ -7867,7 +8007,10 @@ trait Output {
         if ($full && substr($result['module'], 0, 1) == '[') {
             $result['module'] = __('Outdoor', 'live-weather-station');
         }
-        Cache::set_frontend($fingerprint, $result);
+        // Nothing is cached for an unknown measurement (the key is chosen by the caller).
+        if (!empty($val)) {
+            Cache::set_frontend($fingerprint, $result);
+        }
         return $result;
     }
 
@@ -7881,6 +8024,9 @@ trait Output {
     public function justgage_attributes($attributes) {
         $result = array();
         $result['id'] = $attributes['id'];
+        // Only the known values are accepted (the others behave as the defaults).
+        $attributes['pointer'] = Guard::enum(isset($attributes['pointer']) ? $attributes['pointer'] : 'none', array('none', 'external', 'internal'), 'none');
+        $attributes['size'] = isset($attributes['size']) && is_scalar($attributes['size']) ? (string)$attributes['size'] : '';
 
         // POINTER
         $pointerOptions = array();
@@ -7964,6 +8110,15 @@ trait Output {
                 $pb['full']['external'] = -65;
                 $pb['full']['internal'] = -41;
                 break;
+        }
+
+        // Sizes without pointer offsets (micro) must not leave undefined indexes.
+        foreach (array('thin', 'standard', 'fat', 'pie', 'full') as $_kind) {
+            foreach (array('external', 'internal') as $_pointer) {
+                if (!isset($pb[$_kind][$_pointer])) {
+                    $pb[$_kind][$_pointer] = 0;
+                }
+            }
         }
 
         // DESIGN
@@ -8243,7 +8398,10 @@ trait Output {
      */
     public function steelmeter_value($attributes, $full=false) {
         $_attributes = shortcode_atts(array('device_id' => '', 'module_id' => '', 'measure_type' => '', 'element' => '', 'format' => ''), $attributes);
-        $fingerprint = md5(($full?'full':'partial').json_encode($attributes));
+        foreach (array('device_id', 'module_id', 'measure_type', 'element', 'format') as $_key) {
+            $_attributes[$_key] = Guard::token($_attributes[$_key], '');
+        }
+        $fingerprint = md5(($full?'full':'partial').json_encode($_attributes));
         $result = Cache::get_frontend($fingerprint);
         if ($result) {
             return $result;
@@ -8401,7 +8559,10 @@ trait Output {
         $result['value_trend'] = in_array($value_trend, array('up', 'down', 'steady'), true) ? $value_trend : 'steady';
         $result['value_aux'] = ($value_aux != -9999 ? $value_aux : $result['value'] );
         $result['alarm'] = $alarm;
-        Cache::set_frontend($fingerprint, $result);
+        // Nothing is cached for an unknown measurement (the key is chosen by the caller).
+        if (!empty($val)) {
+            Cache::set_frontend($fingerprint, $result);
+        }
         return $result;
     }
 
@@ -8911,10 +9072,13 @@ trait Output {
      */
     public function textual_shortcodes($attributes) {
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','element' => '','format' => ''), $attributes );
+        foreach (array('device_id', 'module_id', 'measure_type', 'element', 'format') as $_key) {
+            $_attributes[$_key] = Guard::token($_attributes[$_key], '');
+        }
         if ($_attributes['device_id'] === '') {
             return;
         }
-        $fingerprint = md5(json_encode($attributes));
+        $fingerprint = md5(json_encode($_attributes));
         $result = Cache::get_frontend($fingerprint);
         if ($result) {
             return $result;
@@ -8922,7 +9086,7 @@ trait Output {
         switch ($_attributes['element']) {
             case 'device_model':
                 $info = $this->get_station_information_by_station_id($_attributes['device_id']);
-                $_result['result'][$_attributes['measure_type']] = $info['station_model'];
+                $_result['result'][$_attributes['measure_type']] = isset($info['station_model']) ? $info['station_model'] : '';
                 break;
             case 'module_name':
                 $_result['result'][$_attributes['measure_type']] = DeviceManager::get_module_name($_attributes['device_id'], $_attributes['module_id']);
@@ -8980,7 +9144,14 @@ trait Output {
                 }
             }
         }
+        if (!isset($_result['result']) || !is_array($_result['result']) || !array_key_exists($_attributes['measure_type'], $_result['result'])) {
+            return $err;
+        }
         $result = $_result['result'][$_attributes['measure_type']];
+        // Reference values used to validate the computed measures (null if missing).
+        $_ref = function ($key) use ($_result) {
+            return isset($_result['result'][$key]) ? $_result['result'][$key] : null;
+        };
         if (array_key_exists('module_type', $_result)) {
             $module_type = $_result['module_type'];
         }
@@ -9019,6 +9190,7 @@ trait Output {
                     default:
                         $result = $err ;
                 }
+                break;
             case 'type-unit-full':
                 switch ($_attributes['element']) {
                     case 'measure_type':
@@ -9186,37 +9358,37 @@ trait Output {
                 $test = '';
                 switch ($_attributes['measure_type']) {
                     case 'dew_point':
-                        if (!$this->is_valid_dew_point($_result['result']['temperature_ref'])) {
+                        if (!$this->is_valid_dew_point($_ref('temperature_ref'))) {
                             $test = __('N/A', 'live-weather-station') ;
                         }
                         break;
                     case 'frost_point':
-                        if (!$this->is_valid_frost_point($_result['result']['temperature_ref'])) {
+                        if (!$this->is_valid_frost_point($_ref('temperature_ref'))) {
                             $test = __('N/A', 'live-weather-station') ;
                         }
                         break;
                     case 'heat_index':
-                        if (!$this->is_valid_heat_index($_result['result']['temperature_ref'], $_result['result']['humidity_ref'], $_result['result']['dew_point'])) {
+                        if (!$this->is_valid_heat_index($_ref('temperature_ref'), $_ref('humidity_ref'), $_ref('dew_point'))) {
                             $test = __('N/A', 'live-weather-station') ;
                         }
                         break;
                     case 'humidex':
-                        if (!$this->is_valid_humidex($_result['result']['temperature_ref'], $_result['result']['humidity_ref'], $_result['result']['dew_point'])) {
+                        if (!$this->is_valid_humidex($_ref('temperature_ref'), $_ref('humidity_ref'), $_ref('dew_point'))) {
                             $test = __('N/A', 'live-weather-station') ;
                         }
                         break;
                     case 'summer_simmer':
-                        if (!$this->is_valid_summer_simmer($_result['result']['temperature_ref'], $_result['result']['humidity_ref'])) {
+                        if (!$this->is_valid_summer_simmer($_ref('temperature_ref'), $_ref('humidity_ref'))) {
                             $test = __('N/A', 'live-weather-station') ;
                         }
                         break;
                     case 'steadman':
-                        if (!$this->is_valid_steadman($_result['result']['temperature_ref'], $_result['result']['humidity_ref'])) {
+                        if (!$this->is_valid_steadman($_ref('temperature_ref'), $_ref('humidity_ref'))) {
                             $test = __('N/A', 'live-weather-station') ;
                         }
                         break;
                     case 'wind_chill':
-                        if (!$this->is_valid_wind_chill($_result['result']['temperature_ref'], $result)) {
+                        if (!$this->is_valid_wind_chill($_ref('temperature_ref'), $result)) {
                             $test = __('N/A', 'live-weather-station') ;
                         }
                         break;
@@ -10412,8 +10584,8 @@ trait Output {
             case 6:
                 $abs = abs($value);
                 $floor = floor($abs);
-                $deg = (integer)$floor;
-                $min = (integer)floor(($abs-$deg)*60);
+                $deg = (int)$floor;
+                $min = (int)floor(($abs-$deg)*60);
                 $min_alt = round(($abs-$deg)*60, 1);
                 $sec = round(($abs-$deg-($min/60))*3600,1);
                 $result = $deg.'° '.$min.'\' '.$sec.'"';
@@ -11431,11 +11603,11 @@ trait Output {
      */
     protected function get_country_names() {
 
-        function compareASCII($a, $b) {
+        $compareASCII = function ($a, $b) {
             $at = lws_iconv( $a);
             $bt = lws_iconv( $b);
             return strcmp(strtoupper($at), strtoupper($bt));
-        }
+        };
 
         $result = [];
         $letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -11453,9 +11625,10 @@ trait Output {
                 }
             }
         }
-        $save_locale = setlocale(LC_ALL,'');
+        // Query (0) the current locale, to restore it as it was.
+        $save_locale = setlocale(LC_ALL, 0);
         setlocale(LC_ALL, $locale);
-        uasort($result, 'WeatherStation\Data\compareASCII');
+        uasort($result, $compareASCII);
         setlocale(LC_ALL, $save_locale);
         return $result;
     }
@@ -11771,6 +11944,28 @@ trait Output {
     }
 
     /**
+     * Normalize an angle to the [0, 360) range, in constant time (no loop): a non numeric or infinite value gives 0.
+     *
+     * @param mixed $value The angle, in degrees.
+     * @return float The normalized angle.
+     * @since 3.9.0
+     */
+    protected static function normalize_angle($value) {
+        if (!is_numeric($value)) {
+            return 0.0;
+        }
+        $value = (float)$value;
+        if (is_nan($value) || is_infinite($value)) {
+            return 0.0;
+        }
+        $value = fmod($value, 360.0);
+        if ($value < 0) {
+            $value += 360.0;
+        }
+        return $value;
+    }
+
+    /**
      * Get the wind angle in readable text (i.e. N-NW, S, ...).
      *
      * @deprecated 1.1.0 Angle "translation" is not specific to wind.
@@ -11782,9 +11977,7 @@ trait Output {
      * @access   protected
      */
     protected function get_windangle_text($value) {
-        while ($value < 0) {
-            $value = $value + 360;
-        }
+        $value = self::normalize_angle($value);
         $val = round(($value / 22.5) + 0.5);
         $dir = array();
         $dir[] = __('N', 'live-weather-station') ;
@@ -11814,10 +12007,8 @@ trait Output {
      * @since 1.1.0
      */
     protected function get_angle_text($value) {
-        while ($value < 0) {
-            $value = $value + 360;
-        }
-        $val = round((($value%360) / 22.5) + 0.4);
+        $value = self::normalize_angle($value);
+        $val = round((((int)$value) / 22.5) + 0.4);
         $dir = array();
         $dir[] = __('N', 'live-weather-station') ;
         $dir[] = __('N-NE', 'live-weather-station') ;
@@ -11848,10 +12039,8 @@ trait Output {
      * @access   protected
      */
     protected function get_angle_full_text($value) {
-        while ($value < 0) {
-            $value = $value + 360;
-        }
-        $val = round((($value%360) / 22.5) + 0.4);
+        $value = self::normalize_angle($value);
+        $val = round((((int)$value) / 22.5) + 0.4);
         $dir = array();
         $dir[] = __('North', 'live-weather-station') ;
         $dir[] = __('North-Northeast', 'live-weather-station') ;
@@ -12076,7 +12265,7 @@ trait Output {
                         __('Third Quarter', 'live-weather-station'),
                         __('Waning Crescent', 'live-weather-station'),
                         __('New Moon', 'live-weather-station'));
-        return $names[(int)floor(($value + 0.0625) * 8)];
+        return $names[max(0, min(8, (int)floor(((float)$value + 0.0625) * 8)))];
     }
 
     /**
@@ -12117,7 +12306,7 @@ trait Output {
                     'waning-crescent-6',
                     'new');
         $s = (get_option('live_weather_station_moon_icons')==0 ? '' : 'alt-');
-        return $s . $id[(int)floor(($value + 0.01786) * 28)];
+        return $s . $id[max(0, min(28, (int)floor(((float)$value + 0.01786) * 28)))];
     }
 
     /**
@@ -12356,7 +12545,7 @@ trait Output {
      * @since 1.0.0
      */
     protected function format_lcd_measurements($measurements, $measure_type, $computed=false) {
-        $save_locale = setlocale(LC_ALL,'');
+        $save_locale = setlocale(LC_ALL, 0);
         setlocale(LC_ALL, lws_get_display_locale());
         $result = array();
         $response = array ();
@@ -12455,7 +12644,7 @@ trait Output {
                 $measure['sub_unit'] = $unit['comp'];
                 $measure['show_sub_unit'] = ($unit['comp']!='');
                 $measure['show_min_max'] = false;
-                if ($outdoor || ($data['module_name'][0] == '[' && $aggregated && $outdoor)) {
+                if ($outdoor || (isset($data['module_name']) && substr((string)$data['module_name'], 0, 1) === '[' && $aggregated && $outdoor)) {
                     $measure['title'] = lws_iconv(__('O/DR', 'live-weather-station') . ':' .$this->output_abbreviation($data['measure_type']));
                 }
                 elseif ($pollution || ($data['measure_type'] == 'o3') || ($data['measure_type'] == 'co')) {
@@ -12465,7 +12654,7 @@ trait Output {
                     $measure['title'] = lws_iconv($this->get_measurement_type($data['measure_type']));
                 }
                 else {
-                    if ($data['module_name'][0] == '[') {
+                    if (isset($data['module_name']) && substr((string)$data['module_name'], 0, 1) === '[') {
                         $measure['title'] = lws_iconv(__('O/DR', 'live-weather-station') . ':' .$this->output_abbreviation($data['measure_type']));
                     }
                     else {
@@ -12495,7 +12684,7 @@ trait Output {
                 if (($data['measure_type'] == $measure_type) || (($data['measure_type'] != $measure_type) && $this->is_value_ok($data['measure_type'], $aggregated, $outdoor, $computed, $pollution, $psychrometry))) {
                     $mtype = str_replace(array('_min', '_max', '_trend'), '',  str_replace(array('_day_min', '_day_max', '_day_trend'), '',  $data['measure_type']));
                     if (in_array($mtype, $this->min_max_trend)) {
-                        if (array_key_exists($data['module_id'], $mtrend[$mtype])) {
+                        if (isset($mtrend[$mtype]) && array_key_exists($data['module_id'], $mtrend[$mtype])) {
                             $measure['trend'] = $mtrend[$mtype][$data['module_id']];
                             $measure['show_trend'] = true;
                         }
@@ -13744,7 +13933,7 @@ trait Output {
         $result = '';
         $_attributes = shortcode_atts( array('item' => 'daily', 'mode' => 'current', 'style' => 'icon', 'column' => 3, 'border_color' => '#2D7DD2', 'background_color' => 'rgba(45,125,210,0.1)', 'font_color' => '#FFFFFF'), $attributes );
         $item = \WeatherStation\System\Output\Guard::enum($_attributes['item'], array('daily', 'yearly'), '');
-        $column = max(1, \WeatherStation\System\Output\Guard::int($_attributes['column'], 3));
+        $column = max(1, min(12, \WeatherStation\System\Output\Guard::int($_attributes['column'], 3)));
         $style = \WeatherStation\System\Output\Guard::enum($_attributes['style'], array('icon', 'check'), 'icon');
         // Colors end up in inline style attributes: only #hex, names and rgb()/rgba() are accepted.
         $color_pattern = '/^(#[0-9A-Fa-f]{3,8}|[A-Za-z]{3,30}|rgba?\([0-9 ,.%]+\))$/';
@@ -13923,7 +14112,7 @@ trait Output {
         $_attributes = shortcode_atts( array('min' => 0, 'max' => 100, 'style' => 'multi-icon', 'column' => 2), $attributes );
         $min = (int)$_attributes['min'];
         $max = (int)$_attributes['max'];
-        $column = max(1, \WeatherStation\System\Output\Guard::int($_attributes['column'], 2));
+        $column = max(1, min(12, \WeatherStation\System\Output\Guard::int($_attributes['column'], 2)));
         $style = \WeatherStation\System\Output\Guard::enum($_attributes['style'], array('multi-icon', 'icon'), '');
         $langs = array_values(EnvManager::stat_translation_by_locale($min, $max));
         $cnt = count($langs);

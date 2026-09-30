@@ -45,7 +45,19 @@ trait Client {
                 Logger::warning($this->facility, $this->service_name, $id, $station['device_name'], null, null, 135, 'Can\'t compute ephemeris for a station without coordinates.');
                 continue;
             }
-            $tz = $station['loc_timezone'];
+            $tz = isset($station['loc_timezone']) ? $station['loc_timezone'] : '';
+            // The coordinates and the timezone come from the station (vendor data): an invalid one must skip this station only.
+            if (!is_numeric($lat) || !is_numeric($lon) || abs($lat) > 90 || abs($lon) > 180) {
+                Logger::warning($this->facility, $this->service_name, $id, $station['device_name'], null, null, 135, 'Can\'t compute ephemeris for a station with invalid coordinates.');
+                continue;
+            }
+            try {
+                new \DateTimeZone((string)$tz);
+            }
+            catch (\Exception $ex) {
+                Logger::warning($this->facility, $this->service_name, $id, $station['device_name'], null, null, 135, 'Can\'t compute ephemeris for a station with an invalid timezone.');
+                continue;
+            }
             $place = array();
             $place['country'] = $station['loc_country'];
             $place['city'] = $station['loc_city'];

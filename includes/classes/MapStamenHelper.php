@@ -60,8 +60,10 @@ class StamenHandling extends BaseHandling {
             $result['controls']['zoom'] = ($_POST['controls-zoom'] == 'on');
         }
         if (array_key_exists('options-overlay', $_POST)) {
-            if (in_array($_POST['options-overlay'], array('terrain', 'terrain-background', 'terrain-classic', 'toner', 'toner-background', 'toner-lite', 'watercolor'))) {
-                $result['options']['overlay'] = $_POST['options-overlay'];
+            // The caller (MapHelper::edit_map) has already checked the capability and the nonce.
+            $overlay = is_string($_POST['options-overlay']) ? wp_unslash($_POST['options-overlay']) : '';
+            if (in_array($overlay, array('terrain', 'terrain-background', 'terrain-classic', 'toner', 'toner-background', 'toner-lite', 'watercolor'), true)) {
+                $result['options']['overlay'] = $overlay;
             }
         }
         return $result;

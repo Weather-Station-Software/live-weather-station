@@ -136,6 +136,9 @@ class OpenweathermapHandling extends BaseHandling {
             }
         }
         $layer = explode(':', $this->map_params['specific']['options']['overlay']);
+        if (!isset($layer[1])) {
+            $layer[1] = '';
+        }
         if ($layer[0] === 'vane' && $this->map_params['common']['loc_zoom'] < 6) {
             $this->map_params['common']['loc_zoom'] = 6;
             $this->minzoom = 6;
@@ -146,19 +149,19 @@ class OpenweathermapHandling extends BaseHandling {
         }
         else {
             if ($layer[1] === 'rgb') {
-                $result .= "var layer = new L.tileLayer(" . Guard::js('http://{s}.sat.owm.io/sql/{z}/{x}/{y}?from=s2&overzoom=true&appid=' . rawurlencode(get_option('live_weather_station_owm_apikey'))) . ", {" . PHP_EOL;
+                $result .= "var layer = new L.tileLayer(" . Guard::js('https://{s}.sat.owm.io/sql/{z}/{x}/{y}?from=s2&overzoom=true&appid=' . rawurlencode(get_option('live_weather_station_owm_apikey'))) . ", {" . PHP_EOL;
                 $result .= '});' . PHP_EOL;
             }
             if ($layer[1] === 'nir') {
-                $result .= "var layer = new L.tileLayer(" . Guard::js('http://{s}.sat.owm.io/sql/{z}/{x}/{y}?select=b8,b3,b2&from=s2&overzoom=true&appid=' . rawurlencode(get_option('live_weather_station_owm_apikey'))) . ", {" . PHP_EOL;
+                $result .= "var layer = new L.tileLayer(" . Guard::js('https://{s}.sat.owm.io/sql/{z}/{x}/{y}?select=b8,b3,b2&from=s2&overzoom=true&appid=' . rawurlencode(get_option('live_weather_station_owm_apikey'))) . ", {" . PHP_EOL;
                 $result .= '});' . PHP_EOL;
             }
             if ($layer[1] === 'ndvi') {
-                $result .= "var layer = new L.tileLayer(" . Guard::js('http://{s}.sat.owm.io/sql/{z}/{x}/{y}?from=s2&op=ndvi&overzoom=true&appid=' . rawurlencode(get_option('live_weather_station_owm_apikey'))) . ", {" . PHP_EOL;
+                $result .= "var layer = new L.tileLayer(" . Guard::js('https://{s}.sat.owm.io/sql/{z}/{x}/{y}?from=s2&op=ndvi&overzoom=true&appid=' . rawurlencode(get_option('live_weather_station_owm_apikey'))) . ", {" . PHP_EOL;
                 $result .= '});' . PHP_EOL;
             }
             if ($layer[1] === 'ndwi') {
-                $result .= "var layer = new L.tileLayer(" . Guard::js('http://{s}.sat.owm.io/sql/{z}/{x}/{y}?select=b8,b12&from=s2&overzoom=true&op=ndi&appid=' . rawurlencode(get_option('live_weather_station_owm_apikey'))) . ", {" . PHP_EOL;
+                $result .= "var layer = new L.tileLayer(" . Guard::js('https://{s}.sat.owm.io/sql/{z}/{x}/{y}?select=b8,b12&from=s2&overzoom=true&op=ndi&appid=' . rawurlencode(get_option('live_weather_station_owm_apikey'))) . ", {" . PHP_EOL;
                 $result .= '});' . PHP_EOL;
             }
         }

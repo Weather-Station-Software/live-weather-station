@@ -60,8 +60,8 @@ class Generator extends Framework {
                 $this->error();
             }
         }
-        catch(\Exception $ex) {
-            $code = $ex->getCode();
+        catch(\Throwable $ex) {
+            $code = (int)$ex->getCode();
             $message = $ex->getMessage();
             if ($code != 0) {
                 $this->error($code, $message);

@@ -23,6 +23,8 @@ trait Client {
 
     use BaseClient, HTTP, IDManager;
 
+    protected $last_bloomsky_warning = null;
+
 
     /**
      * Connects to the Netatmo account.

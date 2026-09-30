@@ -354,7 +354,7 @@ class Performance {
             foreach ($fields as $field) {
                 if (count($sum24) > 0) {
                     if (array_key_exists($field, $sum24)) {
-                        $sum24[$field]['avr_time'] = round ($sum24[$field]['time'] / $sum24[$field]['count'], 0);
+                        $sum24[$field]['avr_time'] = ($sum24[$field]['count'] > 0 ? round ($sum24[$field]['time'] / $sum24[$field]['count'], 0) : 0);
                     } else {
                         $sum24[$field]['time'] = 0;
                         $sum24[$field]['count'] = 0;
@@ -369,7 +369,7 @@ class Performance {
                 $sum24[$field]['name'] = self::get_pool_name($field);
                 if (count($sum30) > 0) {
                     if (array_key_exists($field, $sum30)) {
-                        $sum30[$field]['avr_time'] = round ($sum30[$field]['time'] / $sum30[$field]['count'], 0);
+                        $sum30[$field]['avr_time'] = ($sum30[$field]['count'] > 0 ? round ($sum30[$field]['time'] / $sum30[$field]['count'], 0) : 0);
                     } else {
                         $sum30[$field]['time'] = 0;
                         $sum30[$field]['count'] = 0;
@@ -411,14 +411,14 @@ class Performance {
             $data = array();
             $data_r = array();
             foreach ($fields as $field) {
-                $jsoned['by_pool'][$field . '_count'] = json_encode($jsonable['by_pool'][$field . '_count']);
+                $jsoned['by_pool'][$field . '_count'] = json_encode(isset($jsonable['by_pool'][$field . '_count']) ? $jsonable['by_pool'][$field . '_count'] : array());
                 $jsoned['by_pool'][$field . '_count'] = str_replace('"', '', $jsoned['by_pool'][$field . '_count']);
                 $data_r['by_pool']['count'][] = '{"key":' . Guard::js(ucfirst(self::get_pool_name($field))) . ', "values":' . $jsoned['by_pool'][$field . '_count'] . '}';
-                $jsoned['by_pool'][$field . '_time'] = json_encode($jsonable['by_pool'][$field . '_time']);
+                $jsoned['by_pool'][$field . '_time'] = json_encode(isset($jsonable['by_pool'][$field . '_time']) ? $jsonable['by_pool'][$field . '_time'] : array());
                 $jsoned['by_pool'][$field . '_time'] = str_replace('"', '', $jsoned['by_pool'][$field . '_time']);
                 $data_r['by_pool']['time'][] = '{"key":' . Guard::js(ucfirst(self::get_pool_name($field))) . ', "values":' . $jsoned['by_pool'][$field . '_time'] . '}';
             }
-            foreach ($jsonable['by_cron'] as $key=>$cron) {
+            foreach ((isset($jsonable['by_cron']) ? $jsonable['by_cron'] : array()) as $key=>$cron) {
                 $jsoned['by_cron'][$key] = json_encode($cron);
                 $jsoned['by_cron'][$key] = str_replace('"', '', $jsoned['by_cron'][$key]);
                 $data_r['by_cron'][self::get_cron_pool($key)][] = '{"key":' . Guard::js(ucfirst(self::get_cron_name($key))) . ', "values":' . $jsoned['by_cron'][$key] . '}';
@@ -426,7 +426,7 @@ class Performance {
             $data['count_by_pool'] = '[' . implode(',', $data_r['by_pool']['count']) . ']';
             $data['time_by_pool'] = '[' . implode(',', $data_r['by_pool']['time']) . ']';
             foreach ($fields as $field) {
-                if (array_key_exists($field, $data_r['by_cron'])) {
+                if (isset($data_r['by_cron']) && array_key_exists($field, $data_r['by_cron'])) {
                     $data['time_for_'.$field] = '[' . implode(',', $data_r['by_cron'][$field]) . ']';
                 }
                 else {
@@ -909,7 +909,7 @@ class Performance {
                 foreach ($verbs as $verb) {
                     $values['call'][$detail['service']][$verb][$time] = $detail[$verb];
                     $values['call'][$detail['service']][$verb.'_q'][$time] = Quota::get_count_quota($detail['service'], $verb);
-                    $rate = (integer)($detail[$verb] / 10);
+                    $rate = (int)($detail[$verb] / 10);
                     if ($detail[$verb] % 10 > 0) {
                         $rate += 1;
                     }

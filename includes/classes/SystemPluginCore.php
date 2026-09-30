@@ -68,7 +68,7 @@ class Core {
 	 * @since 3.0.0
 	 */
 	private function verify_requirements() {
-	    $reference = (integer)date('i');
+	    $reference = (int)date('i');
 	    // EMERGENCY
 	    if (LWS_PHPVERSION_OK && LWS_JSON_LOADED) {
             if (!defined('REQUIREMENTS_OK')) {

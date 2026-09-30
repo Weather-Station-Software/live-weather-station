@@ -23,6 +23,8 @@ trait Client {
 
     use BaseClient, HTTP, IDManager;
 
+    protected $last_ambient_warning = null;
+
 
     /**
      * Connects to the Netatmo account.
