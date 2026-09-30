@@ -3,6 +3,7 @@
 namespace WeatherStation\System\Plugin;
 
 use WeatherStation\System\Logs\Logger;
+use WeatherStation\System\Environment\Manager as Env;
 use WeatherStation\System\Options\Handling as Options;
 use WeatherStation\System\URL\Handling as Url;
 use WeatherStation\DB\Storage as Storage;
@@ -32,16 +33,7 @@ class Activator {
      * @static
 	 */
 	public static function activate($network_wide=false) {
-		if ($network_wide && is_multisite()) {
-			foreach (get_sites(array('fields' => 'ids', 'number' => 0)) as $site_id) {
-				switch_to_blog($site_id);
-				self::activate_site();
-				restore_current_blog();
-			}
-		}
-		else {
-			self::activate_site();
-		}
+		Env::run_on_sites(function() { self::activate_site(); }, $network_wide ? 'all' : null);
 	}
 
 	/**
@@ -57,13 +49,9 @@ class Activator {
 		if (!function_exists('is_plugin_active_for_network')) {
 			require_once ABSPATH . 'wp-admin/includes/plugin.php';
 		}
-		if (!is_plugin_active_for_network($plugin)) {
-			return;
+		if (is_plugin_active_for_network($plugin)) {
+			Env::run_on_sites(function() { self::activate_site(); }, is_object($site) ? $site->blog_id : $site);
 		}
-		$site_id = is_object($site) ? (int)$site->blog_id : (int)$site;
-		switch_to_blog($site_id);
-		self::activate_site();
-		restore_current_blog();
 	}
 
 	/**

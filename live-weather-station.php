@@ -74,6 +74,7 @@ function uninstall_Live_Weather_Station() {
 
 register_activation_hook( __FILE__, 'activate_Live_Weather_Station' );
 add_action( function_exists('wp_initialize_site') ? 'wp_initialize_site' : 'wpmu_new_blog', 'initialize_site_Live_Weather_Station', 900 );
+add_filter( 'wpmu_drop_tables', array( 'WeatherStation\\System\\Plugin\\Uninstaller', 'site_tables' ), 10, 2 );
 register_deactivation_hook( __FILE__, 'deactivate_Live_Weather_Station' );
 register_uninstall_hook(__FILE__, 'uninstall_Live_Weather_Station');
 run_Live_Weather_Station();

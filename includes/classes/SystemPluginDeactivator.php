@@ -3,6 +3,7 @@
 namespace WeatherStation\System\Plugin;
 
 use WeatherStation\System\Schedules\Watchdog;
+use WeatherStation\System\Environment\Manager as Env;
 use WeatherStation\System\Options\Handling as Options;
 use WeatherStation\DB\Storage as Storage;
 use WeatherStation\System\Cache\Cache;
@@ -30,16 +31,7 @@ class Deactivator {
 	 * @since 1.0.0
 	 */
 	public static function deactivate($network_wide=false) {
-		if ($network_wide && is_multisite()) {
-			foreach (get_sites(array('fields' => 'ids', 'number' => 0)) as $site_id) {
-				switch_to_blog($site_id);
-				self::deactivate_site();
-				restore_current_blog();
-			}
-		}
-		else {
-			self::deactivate_site();
-		}
+		Env::run_on_sites(function() { self::deactivate_site(); }, $network_wide ? 'all' : null);
 	}
 
 	/**
