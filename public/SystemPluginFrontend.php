@@ -409,10 +409,8 @@ class Frontend {
             $shortcode = '[' . $shortcode . ']';
         }
         $allowed = false;
-        foreach ($this->allowed_shortcodes as $allowed_shortcode) {
-            if (strpos($shortcode, '[' . $allowed_shortcode . ' ') === 0) {
-                $allowed = true;
-            }
+        if (substr_count($shortcode, '[') === 1 && preg_match('/^\[([a-z0-9_-]+)\b/i', $shortcode, $tag_match)) {
+            $allowed = in_array($tag_match[1], $this->allowed_shortcodes, true);
         }
         if ($allowed) {
             exit(do_shortcode($shortcode));
