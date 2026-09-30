@@ -90,6 +90,7 @@ class Stations extends Base {
     }
 
     protected function column_title($item){
+        $notice = '';
         $actions['see'] = sprintf('<a href="?page=lws-stations&action=manage&tab=view&service=station&id=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('View', 'live-weather-station').'</a>', rawurlencode($item['station_id']));
         switch ($item['station_type']) {
             case LWS_NETATMO_SID :
@@ -108,11 +109,9 @@ class Stations extends Base {
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
             case LWS_OWM_SID :
-                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=OpenWeatherMap&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['guid']);
-                $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
-                break;
             case LWS_WUG_SID :
-                $actions['edit'] = sprintf('<a href="?page=lws-stations&action=form&tab=add-edit&service=WeatherUnderground&id=%s">'.__('Modify', 'live-weather-station').'</a>', $item['guid']);
+                // Collection services removed: the station can only be viewed or removed.
+                $notice = '<br /><span style="color:#b32d2e">&nbsp;' . esc_html__('Service no longer available', 'live-weather-station') . '</span>';
                 $actions['delete'] = sprintf('<a href="?page=lws-stations&action=form&tab=delete&service=station&id=%s">'.__('Remove', 'live-weather-station').'</a>', $item['guid']);
                 break;
             case LWS_RAW_SID :
@@ -146,7 +145,7 @@ class Stations extends Base {
         }
         $name = sprintf('<a class="row-title" href="?page=lws-stations&action=manage&tab=view&service=station&id=%s"' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>' . $item['station_name'] . '</a>', $item['guid']);
         $actions['log'] = sprintf('<a href="?page=lws-events&station=%s" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>'.__('Browse events', 'live-weather-station').'</a>', rawurlencode($item['station_id']));
-        return $this->get_icon($item['station_type']) . '&nbsp;' . sprintf('%1$s <br /><span style="color:silver">&nbsp;%2$s, %3$s</span>%4$s', $name, $item['loc_city'], $item['country'], $this->row_actions($actions));
+        return $this->get_icon($item['station_type']) . '&nbsp;' . sprintf('%1$s <br /><span style="color:silver">&nbsp;%2$s, %3$s</span>%5$s%4$s', $name, $item['loc_city'], $item['country'], $this->row_actions($actions), $notice);
     }
 
     protected function column_location($item){

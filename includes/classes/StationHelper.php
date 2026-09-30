@@ -675,6 +675,9 @@ class Handling {
         if ($this->station_type == LWS_WUG_SID) {
             $this->wug_warning();
         }
+        elseif ($this->station_type == LWS_OWM_SID) {
+            echo '<div class="settings-error error"><p><strong>' . esc_html__('Service no longer available', 'live-weather-station') . '</strong> &mdash; ' . esc_html__('This station is no longer collected because the OpenWeatherMap station service is no longer supported.', 'live-weather-station') . '</p></div>';
+        }
         include(LWS_ADMIN_DIR.'partials/StationTab.php');
         settings_errors();
         if ($this->arg_action == 'manage') {

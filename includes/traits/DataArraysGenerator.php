@@ -2910,29 +2910,6 @@ trait Generator {
     }
 
     /**
-     * Get plans for WeatherUnderground API access.
-     *
-     * @return array An array containing the available plans for API access.
-     * @since 3.0.0
-     */
-    public function get_wug_plan_array() {
-        $result = array();
-        $result[] = array(0, 'Stratus - Developer (free)');
-        $result[] = array(1, 'Stratus - Drizzle');
-        $result[] = array(2, 'Stratus - Shower');
-        $result[] = array(3, 'Stratus - Downpour');
-        $result[] = array(4, 'Cumulus - Developer (free)');
-        $result[] = array(5, 'Cumulus - Drizzle');
-        $result[] = array(6, 'Cumulus - Shower');
-        $result[] = array(7, 'Cumulus - Downpour');
-        $result[] = array(8, 'Anvil - Developer (free)');
-        $result[] = array(9, 'Anvil - Drizzle');
-        $result[] = array(10, 'Anvil - Shower');
-        $result[] = array(11, 'Anvil - Downpour');
-        return $result;
-    }
-
-    /**
      * Get plans for Windy API access.
      *
      * @return array An array containing the available plans for API access.

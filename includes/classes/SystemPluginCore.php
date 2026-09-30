@@ -159,7 +159,6 @@ class Core {
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Psychrometry', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Ephemeris', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Indoor', 'widget_registering' );
-        //$this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Pollution', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Fire', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Thunderstorm', 'widget_registering' );
         $this->loader->add_action('widgets_init', '\WeatherStation\UI\Widget\Solar', 'widget_registering' );

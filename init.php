@@ -40,7 +40,6 @@ define('LWS_SHOW_CHANGELOG', false);
 
 define('LWS_CHANGELOG', 'https://weather.station.software/handbook/changelog/');
 define('LWS_FULL_NAME', 'Weather Station 3');
-define('LWS_OWM_READY', false);
 define('LWS_MINIMUM_WP_VERSION', '4.9');
 define('LWS_MINIMUM_PHP_VERSION', '7.1');
 define('LWS_PLUGIN_ID', 'live-weather-station');
