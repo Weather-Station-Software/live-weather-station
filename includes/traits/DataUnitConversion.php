@@ -711,7 +711,7 @@ trait Conversion {
     */
     protected function get_wind_angle($windAngle)
     {
-        if (is_numeric()) {
+        if (is_numeric($windAngle)) {
             return sprintf('%d', round($windAngle, 0));
         } else {
             return 'Invalid input';

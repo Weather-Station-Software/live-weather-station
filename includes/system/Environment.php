@@ -840,7 +840,7 @@ class Manager {
      * @since 3.1.3
      */
     public static function lws_auto_update($update, $item) {
-        if (($item->slug == LWS_PLUGIN_SLUG) && self::is_autoupdatable()){
+        if ((is_object($item) && isset($item->slug) && $item->slug == LWS_PLUGIN_SLUG) && self::is_autoupdatable()){
             return true;
         }
         else {

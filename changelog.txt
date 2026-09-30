@@ -4,6 +4,8 @@
 * Security: import/export, secrets, network requests and authorization checks are hardened.
 * Improvement: the changes of 3.8.14, which was never deployed on wordpress.org, are now released.
 * Bug fix: the plugin header now carries the real version number.
+* Bug fix: wind direction is no longer a fatal error on PHP 8 (the value was not passed to is_numeric()).
+* Bug fix: the automatic update filter no longer raises a notice when WordPress passes an item without slug.
 
 #3.8.14 / September 6th, 2023
 * Improvement: full support for WordPress 6.3.x
