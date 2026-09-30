@@ -22,7 +22,7 @@ $show_files = true;
 <div class="wrap">
     <h1><?php echo __('Import historical data', 'live-weather-station');?></h1>
     <form name="import-data" id="import-data" action="<?php echo esc_url(lws_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
-        <input type="hidden" name="guid" value="<?php echo $station['guid']; ?>" />
+        <input type="hidden" name="guid" value="<?php echo esc_attr($station['guid']); ?>" />
         <?php wp_nonce_field('edit-station'); ?>
         <div id="dashboard-widgets" class="metabox-holder" style="width: 100%;clear: both;">
             <div id="postbox-container-1" class="postbox-container">

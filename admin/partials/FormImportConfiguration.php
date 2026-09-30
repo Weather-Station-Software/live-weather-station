@@ -18,7 +18,7 @@
 <?php } else { ?>
     <h1><?php echo __('Import configuration', 'live-weather-station');?></h1>
     <form name="import-configuration" id="import-configuration" action="<?php echo esc_url(lws_get_admin_page_url('lws-files', 'do', 'import', 'configuration', false, null, $configuration['uuid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
-        <input type="hidden" name="xid" value="<?php echo $configuration['uuid']; ?>" />
+        <input type="hidden" name="xid" value="<?php echo esc_attr($configuration['uuid']); ?>" />
         <?php wp_nonce_field('import-configuration'); ?>
         <p><?php echo __('Please, select the elements you want to import:', 'live-weather-station');?></p>
         <table class="form-table">
@@ -27,7 +27,7 @@
                 <tr>
                     <th scope="row"><?php esc_html_e('Settings', 'live-weather-station');?></th>
                     <td disabled>
-                        <fieldset><label><input name="configuration-settings" id="configuration-settings" type="checkbox"><?php echo sprintf(_n('%s element', '%s elements', $configuration['settings'], 'live-weather-station'), $configuration['settings']);?></label>
+                        <fieldset><label><input name="configuration-settings" id="configuration-settings" type="checkbox"><?php echo sprintf(_n('%s element', '%s elements', absint($configuration['settings']), 'live-weather-station'), absint($configuration['settings']));?></label>
                         </fieldset>
                         <p class="description"><?php echo sprintf(__('Check this to import these settings in %s. Note: it will replace current settings.', 'live-weather-station'), LWS_PLUGIN_NAME);?></p>
                     </td>
@@ -38,7 +38,7 @@
                 <tr>
                     <th scope="row"><?php esc_html_e('Stations', 'live-weather-station');?></th>
                     <td disabled>
-                        <fieldset><label><input name="configuration-stations" id="configuration-stations" type="checkbox"><?php echo sprintf(_n('%s element', '%s elements', $configuration['stations'], 'live-weather-station'), $configuration['stations']);?></label>
+                        <fieldset><label><input name="configuration-stations" id="configuration-stations" type="checkbox"><?php echo sprintf(_n('%s element', '%s elements', absint($configuration['stations']), 'live-weather-station'), absint($configuration['stations']));?></label>
                         </fieldset>
                         <p class="description"><?php echo sprintf(__('Check this to import these stations in %s. Note: it will replace all current stations and modules.', 'live-weather-station'), LWS_PLUGIN_NAME);?></p>
                     </td>
@@ -49,7 +49,7 @@
                 <tr>
                     <th scope="row"><?php esc_html_e('Maps', 'live-weather-station');?></th>
                     <td disabled>
-                        <fieldset><label><input name="configuration-maps" id="configuration-maps" type="checkbox"><?php echo sprintf(_n('%s element', '%s elements', $configuration['maps'], 'live-weather-station'), $configuration['maps']);?></label>
+                        <fieldset><label><input name="configuration-maps" id="configuration-maps" type="checkbox"><?php echo sprintf(_n('%s element', '%s elements', absint($configuration['maps']), 'live-weather-station'), absint($configuration['maps']));?></label>
                         </fieldset>
                         <p class="description"><?php echo sprintf(__('Check this to import these maps in %s. Note: it will replace all current maps.', 'live-weather-station'), LWS_PLUGIN_NAME);?></p>
                     </td>

@@ -382,7 +382,7 @@ function Windrose() {
 
             newX =  - ((options.width-250) / 10) - 40 - (options.width / 2);
             newY =  ((options.height-250) / 20) - (options.height / 10) - (options.height / 2);
-            var val = d.key.replace(/ - /gi, '<br/>');
+            var val = String(d.key).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;').replace(/ - /gi, '<br/>');
 
             tooltip
                 .attr('x', newX)

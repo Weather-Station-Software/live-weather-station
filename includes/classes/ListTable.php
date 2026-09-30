@@ -143,8 +143,8 @@ class Base {
             echo '<input type="hidden" name="detached" value="' . esc_attr( $_REQUEST['detached'] ) . '" />';
         ?>
         <p class="search-box">
-            <label class="screen-reader-text" for="<?php echo $input_id ?>"><?php echo $text; ?>:</label>
-            <input type="search" id="<?php echo $input_id ?>" name="s" value="<?php _admin_search_query(); ?>" />
+            <label class="screen-reader-text" for="<?php echo esc_attr( $input_id ); ?>"><?php echo esc_html( $text ); ?>:</label>
+            <input type="search" id="<?php echo esc_attr( $input_id ); ?>" name="s" value="<?php _admin_search_query(); ?>" />
             <?php submit_button( $text, 'button', '', false, array('id' => 'search-submit') ); ?>
         </p>
         <?php
@@ -161,7 +161,7 @@ class Base {
 
         echo "<ul class='subsubsub'>\n";
         foreach ( $views as $class => $view ) {
-            $views[ $class ] = "\t<li class='$class'>$view";
+            $views[ $class ] = "\t<li class='" . esc_attr( $class ) . "'>$view";
         }
         echo implode( " |</li>\n", $views ) . "</li>\n";
         echo "</ul>";
@@ -189,7 +189,7 @@ class Base {
         foreach ( $this->_actions as $name => $title ) {
             $class = 'edit' == $name ? ' class="hide-if-no-js"' : '';
 
-            echo "\t<option value='$name'$class>$title</option>\n";
+            echo "\t<option value='" . esc_attr( $name ) . "'$class>" . esc_html( $title ) . "</option>\n";
         }
 
         echo "</select>\n";
@@ -239,10 +239,10 @@ class Base {
                 if ( $current_mode == $mode )
                     $classes[] = 'current';
                 printf(
-                    "<a href='%s' class='%s' id='view-switch-$mode'><span class='screen-reader-text'>%s</span></a>\n",
+                    "<a href='%s' class='%s' id='view-switch-" . esc_attr( $mode ) . "'><span class='screen-reader-text'>%s</span></a>\n",
                     esc_url( add_query_arg( 'mode', $mode ) ),
-                    implode( ' ', $classes ),
-                    $title
+                    esc_attr( implode( ' ', $classes ) ),
+                    esc_html( $title )
                 );
             }
             ?>

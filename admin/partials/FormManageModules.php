@@ -19,7 +19,7 @@ $buttons = str_replace('</p>', '', get_submit_button(__('Save Changes', 'live-we
 <div class="wrap">
     <h1><?php echo sprintf(__('Manage modules', 'live-weather-station'), LWS_PLUGIN_NAME);?></h1>
     <form name="manage-modules" id="manage-modules" action="<?php echo esc_url(lws_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
-        <input type="hidden" name="guid" value="<?php echo $station['guid']; ?>" />
+        <input type="hidden" name="guid" value="<?php echo esc_attr($station['guid']); ?>" />
         <?php wp_nonce_field('edit-station'); ?>
         <div id="dashboard-widgets" class="metabox-holder" style="width: 100%;clear: both;">
             <div id="postbox-container-1" class="postbox-container">
@@ -34,7 +34,7 @@ $buttons = str_replace('</p>', '', get_submit_button(__('Save Changes', 'live-we
                     <?php foreach($station['module_detail'] as $module) { ?>
                         <div class="postbox " >
                             <button type="button" class="handlediv" aria-expanded="true"><span class="toggle-indicator" aria-hidden="true"></span></button>
-                            <h2 class="hndle ui-sortable-handle"><span><?php echo $module['module_name']; ?></span></h2>
+                            <h2 class="hndle ui-sortable-handle"><span><?php echo esc_html($module['module_name']); ?></span></h2>
                             <div class="inside">
                                 <?php include(LWS_ADMIN_DIR.'partials/StationModule.php'); ?>
                             </div>

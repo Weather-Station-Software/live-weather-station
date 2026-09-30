@@ -119,8 +119,8 @@ class Watchdog {
         global $wpdb;
         $now = date('Y-m-d H:i:s', time() - MONTH_IN_SECONDS);
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_performance_cron_table() . " WHERE ";
-        $sql .= "timestamp<'" . $now . "';";
-        $wpdb->query($sql);
+        $sql .= "timestamp<%s;";
+        $wpdb->query($wpdb->prepare($sql, $now));
     }
 
     /**
@@ -172,20 +172,14 @@ class Watchdog {
         $err_bup = $wpdb->show_errors(false);
         $field_insert = array('timestamp', 'cron', 'count', 'time');
         foreach (self::$stats as $key => $values) {
-            $value_insert = array();
-            $value_update = array();
-            $value_insert[] = "'".$now."'";
-            $value_insert[] = "'".$key."'";
-            $value_insert[] = $values['count'];
-            $value_insert[] = $values['time'];
-            $value_update[] = 'count=count+' . $values['count'];
-            $value_update[] = 'time=time+' . $values['time'];
+            $value_insert = array('%s', '%s', '%d', '%f');
+            $value_update = array('count=count+%d', 'time=time+%f');
             $sql = "INSERT INTO " . $wpdb->prefix.self::live_weather_station_performance_cron_table() . " ";
             $sql .= "(" . implode(',', $field_insert) . ") ";
             $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
             try {
-                $wpdb->query($sql);
+                $wpdb->query($wpdb->prepare($sql, $now, $key, $values['count'], $values['time'], $values['count'], $values['time']));
             }
             catch (\Exception $ex) {
                 Logger::warning('Watchdog',null,null,null,null,null,null,'Table "' . $wpdb->prefix.self::live_weather_station_performance_cron_table() . '" not ready. This is likely a temporary defect.');

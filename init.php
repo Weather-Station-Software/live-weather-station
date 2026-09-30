@@ -9,6 +9,11 @@
  * @since 3.0.0
  */
 
+// Direct access to this file is forbidden.
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 require_once (__DIR__.'/functions.php');
 require_once (__DIR__.'/autoload.php');
 
@@ -29,7 +34,7 @@ define('LWS_FILE_CACHE', false);
 
 //---------------------------------------------------------------------------------------------------
 
-define('LWS_VERSION', '3.8.14');
+define('LWS_VERSION', '3.9.0');
 define('LWS_PREVIEW', false);
 
 define('LWS_CODENAME', '"Danakil"');

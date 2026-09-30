@@ -18,15 +18,15 @@ use WeatherStation\System\Environment\Manager as Env;
                 <tbody>
                 <tr>
                     <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-lg fa-window-maximize"></i></td>
-                    <td><?php echo Env::webserver_software_name().' '.__('with', 'live-weather-station').' '.Env::webserver_api(); ?></td>
+                    <td><?php echo esc_html(Env::webserver_software_name().' '.__('with', 'live-weather-station').' '.Env::webserver_api()); ?></td>
                 </tr>
                 <tr>
                     <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-lg fa-bolt"></i></td>
-                    <td><?php echo Env::webserver_protocol().' '.__('on port', 'live-weather-station').' '.Env::webserver_port(); ?></td>
+                    <td><?php echo esc_html(Env::webserver_protocol().' '.__('on port', 'live-weather-station').' '.Env::webserver_port()); ?></td>
                 </tr>
                 <tr>
                     <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LWS_FAS;?> fa-<?php echo LWS_FA5?'hdd':'hdd-o';?>"></i></td>
-                    <td><?php echo __('Document root', 'live-weather-station').' <code>'.Env::webserver_document_root().'</code>'; ?></td>
+                    <td><?php echo esc_html__('Document root', 'live-weather-station').' <code>'.esc_html(Env::webserver_document_root()).'</code>'; ?></td>
                 </tr>
                 </tbody>
             </table>

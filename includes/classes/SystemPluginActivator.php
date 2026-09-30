@@ -24,17 +24,61 @@ class Activator {
 	/**
 	 * Activates the plugin.
 	 *
-	 * Creates table and initializes options.
+	 * Creates table and initializes options, for the current site or, on a network activation, for every site.
 	 *
+	 * @param boolean $network_wide Optional. True if the plugin is activated for the whole network.
 	 * @since 1.0.0
      * @access public
      * @static
 	 */
-	public static function activate() {
+	public static function activate($network_wide=false) {
+		if ($network_wide && is_multisite()) {
+			foreach (get_sites(array('fields' => 'ids', 'number' => 0)) as $site_id) {
+				switch_to_blog($site_id);
+				self::activate_site();
+				restore_current_blog();
+			}
+		}
+		else {
+			self::activate_site();
+		}
+	}
+
+	/**
+	 * Activates the plugin on a site created after a network activation.
+	 *
+	 * @param \WP_Site|int $site The new site (an object since WP 5.1, the site id before).
+	 * @param string $plugin The basename of the plugin file, used to check the network activation.
+	 * @since 3.9.0
+	 * @access public
+	 * @static
+	 */
+	public static function activate_new_site($site, $plugin) {
+		if (!function_exists('is_plugin_active_for_network')) {
+			require_once ABSPATH . 'wp-admin/includes/plugin.php';
+		}
+		if (!is_plugin_active_for_network($plugin)) {
+			return;
+		}
+		$site_id = is_object($site) ? (int)$site->blog_id : (int)$site;
+		switch_to_blog($site_id);
+		self::activate_site();
+		restore_current_blog();
+	}
+
+	/**
+	 * Creates the tables and initializes the options of the current site.
+	 *
+	 * @since 3.9.0
+	 * @access private
+	 * @static
+	 */
+	private static function activate_site() {
+		Logger::init();
 		Logger::notice('Activator',null,null,null,null,null,null,'Starting ' . LWS_PLUGIN_NAME . ' installation and initialization.');
 		self::create_tables();
-        self::init_options();
-        Logger::notice('Activator',null,null,null,null,null,null,LWS_PLUGIN_NAME.' successfully installed and initialized.');
+		self::init_options();
+		Logger::notice('Activator',null,null,null,null,null,null,LWS_PLUGIN_NAME.' successfully installed and initialized.');
 	}
 
 }

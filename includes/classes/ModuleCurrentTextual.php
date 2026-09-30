@@ -3,6 +3,7 @@
 namespace WeatherStation\Engine\Module\Current;
 
 use WeatherStation\Data\Output;
+use WeatherStation\System\Output\Guard;
 use WeatherStation\Data\Arrays\Generator;
 
 /**
@@ -144,19 +145,19 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var js_array_current_textual_measurement_' . $this->station_guid . ' = js_array_current_textual_' . $this->station_guid . '[$(this).val()][2];';
         $content .= '$("#current-textual-measurements-measurement-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_textual_measurement_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#current-textual-measurements-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_textual_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$("#current-textual-measurements-measurement-' . $this->station_guid . '").append($("<option></option>").attr("value", i).text(js_array_current_textual_measurement_' . $this->station_guid . '[i][0]));});';
         $content .= '$("#current-textual-measurements-measurement-' . $this->station_guid . '" ).change();});';
         $content .= '$("#current-textual-measurements-measurement-' . $this->station_guid . '").change(function() {';
         $content .= 'var js_array_current_textual_element_' . $this->station_guid . ' = js_array_current_textual_' . $this->station_guid . '[$("#current-textual-measurements-module-' . $this->station_guid . '").val()][2][$(this).val()][2];';
         $content .= '$("#current-textual-measurements-element-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_textual_element_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#current-textual-measurements-element-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_textual_element_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$("#current-textual-measurements-element-' . $this->station_guid . '").append($("<option></option>").attr("value", i).text(js_array_current_textual_element_' . $this->station_guid . '[i][0]));});';
         $content .= '$("#current-textual-measurements-element-' . $this->station_guid . '" ).change();});';
         $content .= '$("#current-textual-measurements-element-' . $this->station_guid . '").change(function() {';
         $content .= 'var js_array_current_textual_format_' . $this->station_guid . ' = js_array_current_textual_' . $this->station_guid . '[$("#current-textual-measurements-module-' . $this->station_guid . '").val()][2][$("#current-textual-measurements-measurement-' . $this->station_guid . '").val()][2][$(this).val()][2];';
         $content .= '$("#current-textual-measurements-format-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_textual_format_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#current-textual-measurements-format-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_textual_format_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$("#current-textual-measurements-format-' . $this->station_guid . '").append($("<option></option>").attr("value", i).text(js_array_current_textual_format_' . $this->station_guid . '[i][0]));});';
         $content .= '$("#current-textual-measurements-format-' . $this->station_guid . '" ).change();});';
         $content .= '$("#current-textual-measurements-format-' . $this->station_guid . '").change(function() {';
         $content .= '$("#current-textual-measurements-data-' . $this->station_guid . '" ).change();});';
@@ -173,7 +174,7 @@ class Textual extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var output = js_array_current_textual_' . $this->station_guid . '[$("#current-textual-measurements-module-' . $this->station_guid . '").val()][2][$("#current-textual-measurements-measurement-' . $this->station_guid . '").val()][2][$("#current-textual-measurements-element-' . $this->station_guid . '").val()][2][$("#current-textual-measurements-format-' . $this->station_guid . '").val()][2];';
         $content .= 'var sc_sc = "live-weather-station-textual";';
         $content .= 'if ($("#current-textual-measurements-data-' . $this->station_guid . '").val() == "ajax_refresh") {sc_sc = "live-weather-station-livetextual";}';
-        $content .= 'var sc_device = "' . $this->station_id . '";';
+        $content .= 'var sc_device = ' . Guard::js($this->station_id) . ';';
         $content .= 'var sc_animation = $("#current-textual-measurements-animation-' . $this->station_guid . '").val();';
         $content .= 'var sc_speed = $("#current-textual-measurements-speed-' . $this->station_guid . '").val();';
         $content .= 'var sc_color = "#000000";';

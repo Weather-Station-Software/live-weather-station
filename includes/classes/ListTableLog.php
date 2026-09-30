@@ -37,18 +37,18 @@ class Log extends Base {
     }
 
     protected function column_default($item, $column_name){
-        return $item[$column_name];
+        return esc_html($item[$column_name]);
     }
 
     protected function column_system($item){
         $color = Logger::get_color($item['level']);
         if ($color != '') {
-            $color = 'style="color:' . $color . '"';
+            $color = 'style="color:' . esc_attr($color) . '"';
         }
-        $s = sprintf('?page=%s&view=log-detail&log-entry=%s',$_REQUEST['page'],$item['id']);
+        $s = esc_url(add_query_arg(array('page' => 'lws-events', 'view' => 'log-detail', 'log-entry' => absint($item['id'])), admin_url('admin.php')));
         $result = '<i ' . $color . ' class="' . LWS_FAS . ' fa-fw fa-lg ' . Logger::get_icon($item['level']) . '"></i>&nbsp;';
-        $result .= '&nbsp;<a class="row-title" href="' . $s . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . 'title="'. ucfirst(__('see details', 'live-weather-station')) . '">' . $item['system'] . ' ' . $item['version'] . '</a>';
-        $result .= '<br /><span style="color:silver">Event ' . $item['id'] . ', ' . Logger::get_name($item['level']) . ' ' . __('code', 'live-weather-station') . ' ' . $item['code'] . '</span>';
+        $result .= '&nbsp;<a class="row-title" href="' . $s . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . 'title="'. esc_attr(ucfirst(__('see details', 'live-weather-station'))) . '">' . esc_html($item['system'] . ' ' . $item['version']) . '</a>';
+        $result .= '<br /><span style="color:silver">Event ' . absint($item['id']) . ', ' . esc_html(Logger::get_name($item['level'])) . ' ' . esc_html__('code', 'live-weather-station') . ' ' . esc_html($item['code']) . '</span>';
         return $result;
     }
 
@@ -57,17 +57,17 @@ class Log extends Base {
             return '<span style="color:silver">' . __('N/A', 'live-weather-station') . '</span>';
         }
         else {
-            return $item['service'];
+            return esc_html($item['service']);
         }
     }
 
     protected function column_message($item){
         $trunc = 50;
         if (strlen($item['message']) > $trunc) {
-            return substr($item['message'],0 , $trunc - 1) . '...';
+            return esc_html(substr($item['message'],0 , $trunc - 1)) . '...';
         }
         else {
-            return $item['message'];
+            return esc_html($item['message']);
         }
     }
 
@@ -83,10 +83,10 @@ class Log extends Base {
         }
         else {
             if ($item['module_name'] != 'N/A') {
-                return $item['device_name'] . '<br /><span style="color:silver">' . $item['module_name'] . '</span>';
+                return esc_html($item['device_name']) . '<br /><span style="color:silver">' . esc_html($item['module_name']) . '</span>';
             }
             else {
-                return $item['device_name'];
+                return esc_html($item['device_name']);
             }
         }
     }
@@ -197,11 +197,11 @@ class Log extends Base {
     public function get_views() {
         $filters = $this->filters;
         unset($filters['level']);
-        $s1 = '<a href="' . $this->get_page_url($filters) . '"' . ( $this->level == '' ? ' class="current"' : '') . '>' . __('All', 'live-weather-station') . ' <span class="count">(' . $this->get_log_count($filters) . ')</span></a>';
+        $s1 = '<a href="' . esc_url($this->get_page_url($filters)) . '"' . ( $this->level == '' ? ' class="current"' : '') . '>' . __('All', 'live-weather-station') . ' <span class="count">(' . $this->get_log_count($filters) . ')</span></a>';
         $filters['level'] = 'notice';
-        $s2 = '<a href="' . $this->get_page_url($filters) . '"' . ( $this->level == 'notice' ? ' class="current"' : '') . '>' . __('Notices &amp; beyond', 'live-weather-station') . ' <span class="count">(' . $this->get_log_count($filters) . ')</span></a>';
+        $s2 = '<a href="' . esc_url($this->get_page_url($filters)) . '"' . ( $this->level == 'notice' ? ' class="current"' : '') . '>' . __('Notices &amp; beyond', 'live-weather-station') . ' <span class="count">(' . $this->get_log_count($filters) . ')</span></a>';
         $filters['level'] = 'error';
-        $s3 = '<a href="' . $this->get_page_url($filters) . '"' . ( $this->level == 'error' ? ' class="current"' : '') . '>' . __('Errors &amp; beyond', 'live-weather-station') . ' <span class="count">(' . $this->get_log_count($filters) . ')</span></a>';
+        $s3 = '<a href="' . esc_url($this->get_page_url($filters)) . '"' . ( $this->level == 'error' ? ' class="current"' : '') . '>' . __('Errors &amp; beyond', 'live-weather-station') . ' <span class="count">(' . $this->get_log_count($filters) . ')</span></a>';
         $status_links = array( 'all' => $s1, 'notices' => $s2, 'errors' => $s3);
         return $status_links;
     }
@@ -260,8 +260,8 @@ class Log extends Base {
         $result[] = $l;
         foreach ($this->systems as $system) {
             $l = array();
-            $l['value'] = $system;
-            $l['text'] = $system;
+            $l['value'] = esc_attr($system);
+            $l['text'] = esc_html($system);
             $l['selected'] = ($this->system == $system ? 'selected="selected" ' : '');
             $result[] = $l;
         }
@@ -277,8 +277,8 @@ class Log extends Base {
         $result[] = $l;
         foreach ($this->services as $service) {
             $l = array();
-            $l['value'] = $service;
-            $l['text'] = $service;
+            $l['value'] = esc_attr($service);
+            $l['text'] = esc_html($service);
             $l['selected'] = ($this->service == $service ? 'selected="selected" ' : '');
             $result[] = $l;
         }
@@ -295,8 +295,8 @@ class Log extends Base {
         foreach ($this->stations as $key => $station) {
             if ($key) {
                 $l = array();
-                $l['value'] = $key;
-                $l['text'] = $station;
+                $l['value'] = esc_attr($key);
+                $l['text'] = esc_html($station);
                 $l['selected'] = ($this->station == $key ? 'selected="selected" ' : '');
                 $result[] = $l;
             }

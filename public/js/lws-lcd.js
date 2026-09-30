@@ -98,7 +98,7 @@ var lws_lcd = (function() {
     var textBuffer    = doc.createElement('canvas');
     var iconsBuffer   = doc.createElement('canvas');
 
-    var postAction = "lws_query_lcd_datas";
+    var postAction = "lws_query_lcd_measurements";
     var odatas;
     var cycleCounter = 0;
     var maxCycleCounter = -1;
@@ -1217,7 +1217,7 @@ var lws_lcd = (function() {
           _setTrendVisible(odatas[cycleCounter]['show_trend']);
           _setAlarmVisible(odatas[cycleCounter]['show_alarm']);
           signalStrength = odatas[cycleCounter]['signal'];
-          decimals = odatas[cycleCounter]['decimals'];
+          decimals = clamp(0, 6, parseInt(odatas[cycleCounter]['decimals'], 10) || 0);
           batteryVisible = true;
           lowerCenterTextVisible = true;
           drawIcons();
@@ -1255,14 +1255,20 @@ var lws_lcd = (function() {
       if (qDevice!='') {
         var http = new XMLHttpRequest();
         var params = 'action=' + postAction;
-        params = params+'&device_id='+qDevice;
-        params = params+'&module_id='+qModule;
-        params = params+'&measure_type='+qMeasure;
+        params = params+'&device_id='+encodeURIComponent(qDevice);
+        params = params+'&module_id='+encodeURIComponent(qModule);
+        params = params+'&measure_type='+encodeURIComponent(qMeasure);
         http.open('POST', postUrl, true);
         http.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         http.onreadystatechange = function () {
           if (http.readyState == 4 && http.status == 200) {
-            odatas = JSON.parse(http.responseText);
+            try {
+              odatas = JSON.parse(http.responseText);
+            }
+            catch (e) {
+              // Malformed response: keep the current display
+              return;
+            }
             if ( typeof odatas != 'undefined' && odatas instanceof Array ) {
               maxCycleCounter = odatas.length-1;
               refreshDatas();
@@ -1313,7 +1319,7 @@ var lws_lcd = (function() {
 
     this.getLowerRightText = function() { return lowerRightText; };
     this.setLowerRightText = function(nLowerRightText) {
-      lowerRightText = text;
+      lowerRightText = nLowerRightText;
       drawText();
       repaint();
     };

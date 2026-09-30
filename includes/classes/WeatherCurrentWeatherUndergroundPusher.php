@@ -136,7 +136,7 @@ class Pusher extends Abstract_Pusher {
     protected function process_result($content, $station) {
         $body = $content['body'];
         if (strpos(strtolower($body), 'success') === false) {
-            throw new \Exception($body);
+            throw new \Exception(substr(wp_strip_all_tags($body), 0, 255));
         }
     }
 

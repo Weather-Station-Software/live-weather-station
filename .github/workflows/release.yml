@@ -1,0 +1,75 @@
+name: Draft release
+
+# Pushing a version tag creates a draft GitHub release. Publishing that draft
+# (by hand, after editing the notes) triggers deploy-new-release.yml, which
+# deploys to wordpress.org.
+
+on:
+  push:
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Check that the tag matches every version in the plugin
+        run: |
+          HEADER=$(sed -n 's/^ \* Version: *//p' live-weather-station.php | head -1)
+          CONST=$(sed -n "s/^define('LWS_VERSION', '\(.*\)');/\1/p" init.php)
+          STABLE=$(sed -n 's/^Stable tag: *//p' readme.txt | head -1)
+          TOP=$(sed -n 's|^#\([0-9.]*\) / .*|\1|p' changelog.txt | head -1)
+          for v in "$HEADER" "$CONST" "$STABLE" "$TOP"; do
+            if [ "$v" != "$GITHUB_REF_NAME" ]; then
+              echo "::error::Tag ($GITHUB_REF_NAME) differs from header=$HEADER, LWS_VERSION=$CONST, Stable tag=$STABLE, changelog=$TOP"
+              exit 1
+            fi
+          done
+      - name: Build the release notes
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          PREV_TAG=$(git describe --tags --abbrev=0 "${GITHUB_REF_NAME}^" 2>/dev/null || true)
+
+          # Section of changelog.txt for this version
+          awk -v ver="$GITHUB_REF_NAME" '
+            $0 ~ "^#" ver " / " { found=1; next }
+            found && /^#[0-9]/ { exit }
+            found { print }
+          ' changelog.txt > /tmp/changelog-section.md
+
+          { echo "## Changelog"; echo; cat /tmp/changelog-section.md; } > /tmp/notes.md
+
+          CONTRIBUTORS_FILE=$(mktemp)
+          if [ -n "$PREV_TAG" ]; then
+            PREV_DATE=$(git log -1 --format=%cI "$PREV_TAG")
+            gh issue list --repo "$GITHUB_REPOSITORY" --state closed --limit 200 \
+              --json number,title,url,closedAt,author \
+              --jq "[.[] | select(.closedAt >= \"$PREV_DATE\")] | sort_by(.closedAt) | reverse" \
+              > /tmp/issues.json
+            { echo; echo "## Closed issues"; echo; jq -r '.[] | "- [#\(.number)](\(.url)) \(.title)"' /tmp/issues.json; } >> /tmp/notes.md
+            jq -r '.[].author.login' /tmp/issues.json >> "$CONTRIBUTORS_FILE"
+            gh api "repos/$GITHUB_REPOSITORY/compare/$PREV_TAG...$GITHUB_REF_NAME" \
+              --jq '.commits[].author.login | select(. != null)' >> "$CONTRIBUTORS_FILE"
+          fi
+
+          { echo; echo "## Contributors"; echo; echo "Thanks to everyone who took part in the issues and commits of this version."; echo; } >> /tmp/notes.md
+          if [ -s "$CONTRIBUTORS_FILE" ]; then
+            sort -u "$CONTRIBUTORS_FILE" | sed 's/^/- @/' >> /tmp/notes.md
+          else
+            echo "_No contributor identified._" >> /tmp/notes.md
+          fi
+      - name: Create the draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            --draft \
+            --title "Weather Station $GITHUB_REF_NAME" \
+            --notes-file /tmp/notes.md

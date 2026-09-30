@@ -9,17 +9,26 @@
 if (!($mid = filter_input(INPUT_GET, 'mid'))) {
     $mid = filter_input(INPUT_POST, 'mid');
 }
+$map = array();
 if (isset($mid) && $mid) {
     $map = $this->get_map_detail($mid);
-    $params = unserialize($map['params'], array('allowed_classes' => false));
-    $map_name = $map['name'];
-    $map_location = $this->output_coordinate($params['common']['loc_latitude'], 'loc_latitude', 5, true);
-    $map_location .= ' ⁛ ' . $this->output_coordinate($params['common']['loc_longitude'], 'loc_longitude', 5, true);
-    $map_zoom = $params['common']['loc_zoom'];
-    $map_icn = $this->output_iconic_value(0, 'map', false, false, '#999');
-    $location_icn = $this->output_iconic_value(0, 'location', false, false, '#999');
-    $zoom_icn = $this->output_iconic_value(0, 'zoom', false, false, '#999');
 }
+if (!is_array($map) || empty($map)) {
+    // Unknown map: nothing to show
+    wp_die(esc_html__('This map does not exist.', 'live-weather-station'));
+}
+$params = (isset($map['params']) ? @unserialize($map['params'], array('allowed_classes' => false)) : array());
+if (!is_array($params)) {
+    $params = array();
+}
+$params['common'] = (isset($params['common']) && is_array($params['common']) ? $params['common'] : array());
+$map_name = (isset($map['name']) ? $map['name'] : '');
+$map_location = $this->output_coordinate((isset($params['common']['loc_latitude']) ? $params['common']['loc_latitude'] : 0), 'loc_latitude', 5, true);
+$map_location .= ' ⁛ ' . $this->output_coordinate((isset($params['common']['loc_longitude']) ? $params['common']['loc_longitude'] : 0), 'loc_longitude', 5, true);
+$map_zoom = (isset($params['common']['loc_zoom']) ? $params['common']['loc_zoom'] : 0);
+$map_icn = $this->output_iconic_value(0, 'map', false, false, '#999');
+$location_icn = $this->output_iconic_value(0, 'location', false, false, '#999');
+$zoom_icn = $this->output_iconic_value(0, 'zoom', false, false, '#999');
 
 ?>
 
@@ -29,8 +38,8 @@ if (isset($mid) && $mid) {
         <input name="service" type="hidden" value="map" />
         <input name="tab" type="hidden" value="delete" />
         <input name="action" type="hidden" value="do" />
-        <input name="mid" type="hidden" value="<?php echo $mid; ?>" />
-        <?php wp_nonce_field('delete-map'); ?>
+        <input name="mid" type="hidden" value="<?php echo esc_attr($mid); ?>" />
+        <?php wp_nonce_field('delete-map-' . (int)$mid); ?>
         <div id="dashboard-widgets" class="metabox-holder" style="width: 100%;clear: both;">
             <div id="postbox-container-1" class="postbox-container">
                 <div id="normal-sortables" class="meta-box-sortables" style="margin:0px">

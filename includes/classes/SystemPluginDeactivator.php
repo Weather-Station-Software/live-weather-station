@@ -24,12 +24,33 @@ class Deactivator {
 	/**
 	 * Deactivates the plugin.
 	 *
-	 * Flush caches and stop scheduler.
+	 * Flush caches and stop scheduler, for the current site or, on a network deactivation, for every site.
 	 *
+	 * @param boolean $network_wide Optional. True if the plugin is deactivated for the whole network.
 	 * @since 1.0.0
 	 */
-	public static function deactivate() {
-	    Cache::flush_full(false);
+	public static function deactivate($network_wide=false) {
+		if ($network_wide && is_multisite()) {
+			foreach (get_sites(array('fields' => 'ids', 'number' => 0)) as $site_id) {
+				switch_to_blog($site_id);
+				self::deactivate_site();
+				restore_current_blog();
+			}
+		}
+		else {
+			self::deactivate_site();
+		}
+	}
+
+	/**
+	 * Flush caches and stop scheduler of the current site.
+	 *
+	 * @since 3.9.0
+	 * @access private
+	 * @static
+	 */
+	private static function deactivate_site() {
+		Cache::flush_full(false);
 		Watchdog::stop();
 	}
 

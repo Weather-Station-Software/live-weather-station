@@ -1,4 +1,23 @@
 #3.9.0 / xx September 2026
+* Security: SQL queries are now prepared and identifiers validated; the standalone generator validates its input.
+* Security: outputs are escaped and shortcode/widget attributes validated (JS literals, enums, tokens, colors, sizes).
+* Security: import/export, secrets, network requests and authorization checks are hardened.
+* Improvement: the changes of 3.8.14, which was never deployed on wordpress.org, are now released.
+* Bug fix: the plugin header now carries the real version number.
+* Bug fix: wind direction is no longer a fatal error on PHP 8 (the value was not passed to is_numeric()).
+* Bug fix: the automatic update filter no longer raises a notice when WordPress passes an item without slug.
+* Improvement: on a multisite, a network activation now creates the tables and options of every site, and of each site created afterwards. A network deactivation stops the scheduler of every site and uninstalling the plugin cleans every site.
+* Security: shortcode periods and graph queries are validated and bounded, and the event logger caps its output per request.
+* Improvement: the history retention setting accepts 0 for unlimited retention.
+* Improvement: the events log keeps every error and marks visibly when messages were skipped during a request.
+* Improvement: the Wunderground unshare action now asks for a confirmation.
+* Bug fix: lightning strike distance thresholds are no longer corrupted when saved in the Thresholds tab.
+* Bug fix: the Events page works with MySQL 8.4 (the `system` column is now quoted in SQL queries).
+* Bug fix: climat textual shortcodes and widgets now output their result when called via AJAX.
+* Bug fix: .ndjson files can be uploaded again in Files, whatever mime type the server detects.
+* Bug fix: deleting an unknown map shows a clear message instead of PHP warnings.
+* Bug fix: PHP 8.1 to 8.4 deprecation notices and warnings are fixed (static trait access, null arguments, explicit casts).
+* Bug fix: the rain import, the LCD refresh action and the delete-station message work as expected, and JavaScript guards prevent errors on maps and radar charts.
 * Improvement: removed the unused code of three disabled features (OpenWeatherMap station client, Weather Underground collection client, Pollution widget); no user-visible change, existing stations of these types are kept and flagged as no longer available.
 
 #3.8.14 / September 6th, 2023

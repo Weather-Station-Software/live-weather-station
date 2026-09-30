@@ -11,9 +11,9 @@ use WeatherStation\System\Logs\Logger;
 
 $color = Logger::get_color($log['level']);
 if ($color != '') {
-    $color = 'style="color:' . $color . '"';
+    $color = 'style="color:' . esc_attr($color) . '"';
 }
-$title = '<i ' . $color . ' class="' . LWS_FAS . ' fa-fw ' . Logger::get_icon($log['level']) . '"></i>&nbsp;' . Logger::get_name($log['level']) . ' (#' . $log['id'] . ')';
+$title = '<i ' . $color . ' class="' . LWS_FAS . ' fa-fw ' . esc_attr(Logger::get_icon($log['level'])) . '"></i>&nbsp;' . esc_html(Logger::get_name($log['level'])) . ' (#' . absint($log['id']) . ')';
 
 ?>
 
@@ -37,6 +37,6 @@ $title = '<i ' . $color . ' class="' . LWS_FAS . ' fa-fw ' . Logger::get_icon($l
         <br />
         <strong><?php esc_html_e( 'Full message', 'live-weather-station' );?>&nbsp;:&nbsp;</strong>
         <br />
-        <textarea readonly cols="80" rows="8" style="font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" "><?php echo esc_textarea($log['message']);?></textarea>
+        <textarea readonly cols="80" rows="8" style="font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;"><?php echo esc_textarea($log['message']);?></textarea>
     </p>
 </div>

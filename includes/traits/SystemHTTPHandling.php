@@ -120,8 +120,9 @@ trait Handling {
         $result = PHP_EOL;
         $result .= '** REQUEST DETAILS **' . PHP_EOL;
         foreach (self::$requestDetail as $req) {
-            if (array_key_exists($req, $_SERVER)) {
-                $result .= $req . ' => ' . $_SERVER[$req] . PHP_EOL;
+            if (array_key_exists($req, $_SERVER) && is_scalar($_SERVER[$req])) {
+                // sanitize_text_field() strips the line breaks and the tags; the length is bounded (user-agent and URI are visitor-controlled).
+                $result .= $req . ' => ' . substr(sanitize_text_field(wp_unslash((string)$_SERVER[$req])), 0, 300) . PHP_EOL;
             }
         }
         return $result;

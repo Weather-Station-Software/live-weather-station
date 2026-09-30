@@ -5,6 +5,7 @@ namespace WeatherStation\UI\Map;
 use WeatherStation\Data\Output;
 use WeatherStation\System\Quota\Quota;
 use WeatherStation\Data\Arrays\Generator;
+use WeatherStation\System\Output\Guard;
 
 /**
  * This class builds elements of the map view for Maptiler maps.
@@ -122,7 +123,7 @@ class MaptilerHandling extends BaseHandling {
                 $style[0] = 'tiles';
             }
             $result = '';
-            $result .= "var layer = new L.tileLayer('https://api.maptiler.com/" . $style[0] . "/" . $style[1] . "/{z}/{x}/{y}." . $ext . "?key={accessToken}', {" . PHP_EOL;
+            $result .= "var layer = new L.tileLayer(" . Guard::js('https://api.maptiler.com/' . rawurlencode($style[0]) . '/' . rawurlencode($style[1]) . '/{z}/{x}/{y}.' . $ext . '?key={accessToken}') . ", {" . PHP_EOL;
         }
         else {
             $result = '';
@@ -132,14 +133,14 @@ class MaptilerHandling extends BaseHandling {
         $result .= '  attribution: "Maps &copy; <a href=\"https://www.maptiler.com/\">Maptiler</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>",' . PHP_EOL;
         $result .= '  maxZoom: ' . $this->maxzoom . ',' . PHP_EOL;
         $result .= '  minZoom: ' . $this->minzoom . ',' . PHP_EOL;
-        $result .= '  accessToken: "' . get_option('live_weather_station_maptiler_apikey') . '"' . PHP_EOL;
+        $result .= '  accessToken: ' . Guard::js(get_option('live_weather_station_maptiler_apikey')) . PHP_EOL;
         $result .= '});' . PHP_EOL;
         $result .= "var map = new L.Map('maptiler-" . $this->uniq . "', {" . PHP_EOL;
-        $result .= "  center: new L.LatLng(" . $this->map_params['common']['loc_latitude'] . ", " . $this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
+        $result .= "  center: new L.LatLng(" . (float)$this->map_params['common']['loc_latitude'] . ", " . (float)$this->map_params['common']['loc_longitude'] . ")," . PHP_EOL;
         if (!$this->map_params['specific']['controls']['zoom']) {
             $result .= "  scrollWheelZoom: false," . PHP_EOL;
         }
-        $result .= "  zoom: " . $this->map_params['common']['loc_zoom'] . PHP_EOL;
+        $result .= "  zoom: " . (int)$this->map_params['common']['loc_zoom'] . PHP_EOL;
         $result .= "});" . PHP_EOL;
         $result .= "map.attributionControl.setPrefix('');" . PHP_EOL;
         $result .= "map.addLayer(layer);" . PHP_EOL;

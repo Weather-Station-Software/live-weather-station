@@ -34,8 +34,9 @@ abstract class TXTGenerator {
             header('ETag: "{' . $etag . '}"');
         }
         header($this->content_type);
+        header('X-Content-Type-Options: nosniff');
         if ($filename) {
-            header('Content-Disposition: attachment; filename="' . $filename . '"');
+            header('Content-Disposition: attachment; filename="' . preg_replace('/[^A-Za-z0-9._-]/', '_', (string)$filename) . '"');
         }
     }
 

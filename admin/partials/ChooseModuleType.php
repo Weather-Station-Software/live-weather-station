@@ -7,6 +7,7 @@
  */
 
 use WeatherStation\System\Environment\Manager;
+use WeatherStation\System\Output\Guard;
 
 $colors = Manager::icon_color_scheme();
 $name = '';
@@ -27,14 +28,14 @@ foreach ($modules as $module) {
         <?php if ($this->arg_service == 'station') { ?>
             <h3 style="border-bottom: 1px solid #EEE;cursor:default;"><span><?php esc_html_e('Please, select the type of control you want to set', 'live-weather-station' );?>&hellip;</span></h3>
         <?php } else { ?>
-            <h3 style="border-bottom: 1px solid #EEE;cursor:default;"><span><?php echo sprintf(__('The type of %s currently selected is %s', 'live-weather-station'), $type, '<em>' . $name . '</em>');?>&hellip;</span></h3>
+            <h3 style="border-bottom: 1px solid #EEE;cursor:default;"><span><?php echo sprintf(__('The type of %s currently selected is %s', 'live-weather-station'), esc_html($type), '<em>' . esc_html($name) . '</em>');?>&hellip;</span></h3>
         <?php } ?>
         <div style="width: 100%;text-align: center;padding: 0px;margin-bottom: 0px;" class="inside">
             <div style="padding: 0px 16px 16px 0px;display:flex;flex-direction:row;flex-wrap:wrap;justify-content: center;align-items: center;align-content: center;">
                 <style>
                     .container-actionable {flex:auto;margin: 16px;width: 40px;height: 40px;}
                     .actionable {width:40px;height:40px;padding:10px 10px 13px 10px;font-size:30px;border-radius:6px;cursor:pointer; -moz-transition: all .5s ease-in; -o-transition: all .5s ease-in; -webkit-transition: all .5s ease-in; transition: all .5s ease-in; background: transparent;border:1px solid transparent;}
-                    .actionable-selected {border-radius:6px !important;background: <?php echo $colors['background']; ?> !important;border:1px solid <?php echo $colors['border']; ?> !important;}
+                    .actionable-selected {border-radius:6px !important;background: <?php echo esc_attr($colors['background']); ?> !important;border:1px solid <?php echo esc_attr($colors['border']); ?> !important;}
                     .actionable-selected:hover {border-radius:6px;cursor:pointer; -moz-transition: all .2s ease-in; -o-transition: all .2s ease-in; -webkit-transition: all .2s ease-in; transition: all .2s ease-in; opacity: 0.6 !important;}
                     .actionable:hover {border-radius:6px;cursor:pointer; -moz-transition: all .2s ease-in; -o-transition: all .2s ease-in; -webkit-transition: all .2s ease-in; transition: all .2s ease-in; background: #f5f5f5;border:1px solid #e0e0e0;}
                     <?php if (!LWS_FA5) { ?>
@@ -44,7 +45,7 @@ foreach ($modules as $module) {
                     <?php }?>
                 </style>
                 <?php foreach ($modules as $module) { ?>
-                    <div id="<?php echo $module->get_id(); ?>" class="container-actionable"><span class="actionable<?php echo $module->is_selected()?' actionable-selected':''; ?>"><span style="color:<?php echo $module->is_selected()?$colors['text']:$module->get_icon_color(); ?>;" class="<?php echo $module->get_icon(); ?>"><?php echo $module->get_icon_index() != '' ? '<span style="font-size:12px;">' . $module->get_icon_index() . '</span>':''; ?></span></span></div>
+                    <div id="<?php echo esc_attr($module->get_id()); ?>" class="container-actionable"><span class="actionable<?php echo $module->is_selected()?' actionable-selected':''; ?>"><span style="color:<?php echo esc_attr($module->is_selected()?$colors['text']:$module->get_icon_color()); ?>;" class="<?php echo esc_attr($module->get_icon()); ?>"><?php echo $module->get_icon_index() != '' ? '<span style="font-size:12px;">' . esc_html($module->get_icon_index()) . '</span>':''; ?></span></span></div>
                 <?php } ?>
             </div>
         </div>
@@ -59,16 +60,16 @@ foreach ($modules as $module) {
                 $("#tip-text").html("&nbsp;");
             });
             <?php foreach ($modules as $module) { ?>
-                $("#<?php echo $module->get_id(); ?>").mouseover(function() {
-                    $("#tip-text").html("<?php echo $module->get_hint(); ?>");
+                $("#" + <?php echo Guard::js($module->get_id()); ?>).mouseover(function() {
+                    $("#tip-text").html(<?php echo Guard::js($module->get_hint()); ?>);
                 });
                 <?php if ($module->is_selected()) { ?>
-                    $("#<?php echo $module->get_id(); ?>").click(function() {
-                        document.location.href='<?php echo $module->get_parent_url(); ?>';
+                    $("#" + <?php echo Guard::js($module->get_id()); ?>).click(function() {
+                        document.location.href=<?php echo Guard::js($module->get_parent_url()); ?>;
                     });
                 <?php } else { ?>
-                    $("#<?php echo $module->get_id(); ?>").click(function() {
-                        document.location.href='<?php echo $module->get_module_url(); ?>';
+                    $("#" + <?php echo Guard::js($module->get_id()); ?>).click(function() {
+                        document.location.href=<?php echo Guard::js($module->get_module_url()); ?>;
                     });
                 <?php } ?>
             <?php } ?>

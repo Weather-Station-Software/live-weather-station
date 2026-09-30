@@ -3,6 +3,7 @@
 namespace WeatherStation\Engine\Module\Current;
 
 use WeatherStation\Data\Output;
+use WeatherStation\System\Output\Guard;
 use WeatherStation\Data\Arrays\Generator;
 
 /**
@@ -157,7 +158,7 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var js_array_current_justgage_measurement_' . $this->station_guid . ' = js_array_current_justgage_' . $this->station_guid . '[$(this).val()][2];';
         $content .= '$("#current-justgage-measurements-measurement-' . $this->station_guid . '").html("");';
         $content .= '$(js_array_current_justgage_measurement_' . $this->station_guid . ').each(function (i) {';
-        $content .= '$("#current-justgage-measurements-measurement-' . $this->station_guid . '").append("<option value="+i+">"+js_array_current_justgage_measurement_' . $this->station_guid . '[i][0]+"</option>");});';
+        $content .= '$("#current-justgage-measurements-measurement-' . $this->station_guid . '").append($("<option></option>").attr("value", i).text(js_array_current_justgage_measurement_' . $this->station_guid . '[i][0]));});';
         $content .= '$( "#current-justgage-measurements-measurement-' . $this->station_guid . '" ).change();});';
         $content .= '$("#current-justgage-measurements-measurement-' . $this->station_guid . '").change(function() {';
         $content .= '$("#current-justgage-measurements-design-' . $this->station_guid . '" ).change();});';
@@ -192,7 +193,7 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$("#current-justgage-measurements-title-' . $this->station_guid . '").prop("disabled", false);';
         $content .= '$("#current-justgage-measurements-subtitle-' . $this->station_guid . '").prop("disabled", false);';
         $content .= '$("#current-justgage-measurements-unit-' . $this->station_guid . '").prop("disabled", false);}';
-        $content .= 'var sc_device = "' . $this->station_id . '";';
+        $content .= 'var sc_device = ' . Guard::js($this->station_id) . ';';
         $content .= 'var sc_module = js_array_current_justgage_' . $this->station_guid . '[$("#current-justgage-measurements-module-' . $this->station_guid . '").val()][1];';
         $content .= 'var sc_measurement = js_array_current_justgage_' . $this->station_guid . '[$("#current-justgage-measurements-module-' . $this->station_guid . '").val()][2][$("#current-justgage-measurements-measurement-' . $this->station_guid . '").val()][1];';
         $content .= 'var sc_design = $("#current-justgage-measurements-design-' . $this->station_guid . '").val();';
@@ -227,17 +228,17 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= 'var http = new XMLHttpRequest();';
         $content .= 'var params = "action=lws_query_justgage_config";';
         $content .= 'params = params+"&id=' . $this->fingerprint . '";';
-        $content .= 'params = params+"&device_id="+sc_device;';
-        $content .= 'params = params+"&module_id="+sc_module;';
-        $content .= 'params = params+"&measure_type="+sc_measurement;';
-        $content .= 'params = params+"&design="+sc_design;';
-        $content .= 'params = params+"&color="+sc_color;';
-        $content .= 'params = params+"&force="+sc_force;';
-        $content .= 'params = params+"&pointer="+sc_pointer;';
-        $content .= 'params = params+"&title="+sc_title;';
-        $content .= 'params = params+"&subtitle="+sc_subtitle;';
-        $content .= 'params = params+"&unit="+sc_unit;';
-        $content .= 'params = params+"&size="+sc_size;';
+        $content .= 'params = params+"&device_id="+encodeURIComponent(sc_device);';
+        $content .= 'params = params+"&module_id="+encodeURIComponent(sc_module);';
+        $content .= 'params = params+"&measure_type="+encodeURIComponent(sc_measurement);';
+        $content .= 'params = params+"&design="+encodeURIComponent(sc_design);';
+        $content .= 'params = params+"&color="+encodeURIComponent(sc_color);';
+        $content .= 'params = params+"&force="+encodeURIComponent(sc_force);';
+        $content .= 'params = params+"&pointer="+encodeURIComponent(sc_pointer);';
+        $content .= 'params = params+"&title="+encodeURIComponent(sc_title);';
+        $content .= 'params = params+"&subtitle="+encodeURIComponent(sc_subtitle);';
+        $content .= 'params = params+"&unit="+encodeURIComponent(sc_unit);';
+        $content .= 'params = params+"&size="+encodeURIComponent(sc_size);';
         $content .= 'http.open("POST", "' . LWS_AJAX_URL . '", true);';
         $content .= 'http.setRequestHeader("Content-type", "application/x-www-form-urlencoded");';
         $content .= 'http.onreadystatechange = function () {';
@@ -269,7 +270,7 @@ class Gauge extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '</tbody></table></div>';
         $content .= '<div>&nbsp;</div>';
         $content .= '<div id="current-justgage-bg-' . $this->station_guid . '" style="max-width:350px;border-radius: 5px;margin:0;width: 100%;float: inherit;display:inline-flex;justify-content: center;background-position-x:center;background-position-y:center;">';
-        $content .= '<div id="' . $this->fingerprint . '"></div>';
+        $content .= '<div id="' . esc_attr($this->fingerprint) . '"></div>';
         $content .= '</div>';
         $special_footer  = '<span id="current-justgage-info-' . $this->station_guid . '" style="display: none;">';
         $special_footer .= '<div id="major-publishing-actions">';

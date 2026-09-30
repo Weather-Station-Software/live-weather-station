@@ -68,7 +68,7 @@ class Core {
 	 * @since 3.0.0
 	 */
 	private function verify_requirements() {
-	    $reference = (integer)date('i');
+	    $reference = (int)date('i');
 	    // EMERGENCY
 	    if (LWS_PHPVERSION_OK && LWS_JSON_LOADED) {
             if (!defined('REQUIREMENTS_OK')) {
@@ -149,6 +149,7 @@ class Core {
         $this->loader->add_action('dashboard_glance_items', 'WeatherStation\UI\Dashboard\Handling', 'add_wp_glance_items');
         $this->loader->add_action('admin_init', $plugin_admin, 'init_settings' );
         $this->loader->add_action('admin_init', $plugin_admin, 'force_resync_if_needed' );
+        $this->loader->add_action('admin_init', $plugin_admin, 'add_privacy_policy_content' );
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'register_scripts', 1);
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'register_styles', 1);
         $this->loader->add_action('admin_enqueue_scripts', $plugin_admin, 'enqueue_styles');
@@ -196,8 +197,7 @@ class Core {
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_steelmeter_config', $plugin_public, 'lws_query_steelmeter_config_callback');
         $this->loader->add_action( 'wp_ajax_lws_query_steelmeter_measurements', $plugin_public, 'lws_query_steelmeter_measurements_callback');
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_steelmeter_measurements', $plugin_public, 'lws_query_steelmeter_measurements_callback');
-        $this->loader->add_action( 'wp_ajax_lws_query_steelmeter_measurements', $plugin_public, 'lws_clientraw_test_callback');
-        $this->loader->add_action( 'wp_ajax_nopriv_lws_query_steelmeter_measurements', $plugin_public, 'lws_clientraw_test_callback');
+        $this->loader->add_action( 'wp_ajax_lws_clientraw_test', $plugin_public, 'lws_clientraw_test_callback');
         $this->loader->add_action( 'wp_ajax_lws_query_graph_measurements', $plugin_public, 'lws_graph_data_callback');
         $this->loader->add_action( 'wp_ajax_nopriv_lws_query_graph_measurements', $plugin_public, 'lws_graph_data_callback');
         $this->loader->add_action( 'wp_ajax_lws_query_graph_code', $plugin_public, 'lws_graph_code_callback');

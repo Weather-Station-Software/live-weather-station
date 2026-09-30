@@ -8,13 +8,14 @@
 
 use WeatherStation\System\I18N\Handling as Intl;
 
+$rss = null;
 try {
     $rss = fetch_feed($url);
 } catch (\Exception $ex) {
-    //$rss = null;
+    $rss = null;
 }
 $maxitems = 0;
-if (!is_wp_error($rss)) {
+if (isset($rss) && !is_wp_error($rss)) {
     setlocale(LC_ALL, lws_get_display_locale());
     $maxitems = $rss->get_item_quantity(4);
     if (isset($maxitems)) {
@@ -43,10 +44,10 @@ if (!is_wp_error($rss)) {
         <?php foreach ($rss_items as $item) { ?>
             <li>
                 <?php if ($item->get_id() == $id) { ?>
-                <a class="rsswidget" href="<?php echo $item->get_permalink(); ?>"<?php echo ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" ' : ''); ?>><?php echo $item->get_title(); ?></a><?php echo Intl::get_language_markup(array('en')) ?>
+                <a class="rsswidget" href="<?php echo esc_url($item->get_permalink()); ?>"<?php echo ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" rel="noopener noreferrer" ' : ''); ?>><?php echo esc_html($item->get_title()); ?></a><?php echo Intl::get_language_markup(array('en')) ?>
                 <span class="rss-date"><?php echo date_i18n(get_option('date_format'), strtotime($item->get_date())); ?></span>
                 <div class="rssSummary">
-                    <?php echo $description; ?>
+                    <?php echo esc_html($description); ?>
                 </div>
                 <?php } ?>
             </li>
@@ -60,7 +61,7 @@ if (!is_wp_error($rss)) {
             <?php foreach ($rss_items as $item) { ?>
                 <?php if ($item->get_id() != $id) { ?>
                 <li>
-                    <a class="rsswidget" href="<?php echo $item->get_permalink(); ?>"<?php echo ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" ' : ''); ?>><?php echo $item->get_title(); ?></a><?php echo Intl::get_language_markup(array('en')) ?>
+                    <a class="rsswidget" href="<?php echo esc_url($item->get_permalink()); ?>"<?php echo ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" rel="noopener noreferrer" ' : ''); ?>><?php echo esc_html($item->get_title()); ?></a><?php echo Intl::get_language_markup(array('en')) ?>
                     <span class="rss-date"><?php echo date_i18n(get_option('date_format'), strtotime($item->get_date())); ?></span>
                 </li>
                 <?php } ?>

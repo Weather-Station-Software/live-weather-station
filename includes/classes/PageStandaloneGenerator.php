@@ -37,7 +37,10 @@ class Generator extends Framework {
      */
     protected function generate() {
         try {
-            $classname = ucfirst($this->type);
+            if (!in_array(strtolower($this->type), ['stickertags', 'yowindow'], true)) {
+                $this->error();
+            }
+            $classname = ucfirst(strtolower($this->type));
             $file = LWS_INCLUDES_DIR . 'classes/PageStandalone' . $classname . 'Generator.php';
             if (!file_exists($file)) {
                 $this->error();
@@ -57,8 +60,8 @@ class Generator extends Framework {
                 $this->error();
             }
         }
-        catch(\Exception $ex) {
-            $code = $ex->getCode();
+        catch(\Throwable $ex) {
+            $code = (int)$ex->getCode();
             $message = $ex->getMessage();
             if ($code != 0) {
                 $this->error($code, $message);

@@ -7,6 +7,7 @@ use WeatherStation\Data\History\Builder;
 use WeatherStation\System\Background\ProcessManager;
 use WeatherStation\System\Environment\Manager as Env;
 use WeatherStation\System\Notifications\Notifier;
+use WeatherStation\System\SQL\Guard;
 
 /**
  * Storage management.
@@ -815,7 +816,7 @@ trait Storage {
             // WUG STATION COLLECTED
             $wug = self::wug_stations();
             if (count($wug) > 0) {
-                $st = implode('", "', $wug);
+                $st = implode('", "', array_map('esc_html', $wug));
                 $url = 'https://weather.station.software/blog/weather-underground-closes-its-doors-to-individual-users/';
                 Notifier::error(__('Weather Underground error', 'live-weather-station'),
                     $url,
@@ -924,9 +925,12 @@ trait Storage {
         $table_name = $wpdb->prefix.self::live_weather_station_notifications_table();
         $sql = 'DROP TABLE IF EXISTS '.$table_name;
         $wpdb->query($sql);
-        $table_name = $wpdb->prefix.self::create_live_weather_station_maps_table();
-        $sql = 'DROP TABLE IF EXISTS '.$table_name;
-        $wpdb->query($sql);
+        if ($drop_log) {
+            // The maps are user content: dropped on uninstall only (not when an old version is fully reinstalled).
+            $table_name = $wpdb->prefix.self::live_weather_station_maps_table();
+            $sql = 'DROP TABLE IF EXISTS '.$table_name;
+            $wpdb->query($sql);
+        }
     }
 
     /**
@@ -940,6 +944,10 @@ trait Storage {
         global $wpdb;
         $table_name = $wpdb->prefix . $table;
         foreach ($fields as $field) {
+            $field = Guard::ident($field);
+            if ($field === null) {
+                continue;
+            }
             $sql = "UPDATE " . $table_name . " SET `" . $field . "`=LOWER(`" . $field . "`) WHERE 1";
             $wpdb->query($sql);
         }
@@ -975,7 +983,7 @@ trait Storage {
         $result = array();
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
-        $sql = "SELECT station_name FROM `" . $table_name . "` WHERE `station_type` ='" . LWS_WUG_SID ."' ;";
+        $sql = $wpdb->prepare("SELECT station_name FROM `" . $table_name . "` WHERE `station_type`=%s ;", LWS_WUG_SID);
         foreach ($wpdb->get_results($sql, ARRAY_A) as $station) {
             $result[] = $station['station_name'];
         }
@@ -1046,10 +1054,19 @@ trait Storage {
         $field_insert = array();
         $value_insert = array();
         $value_update = array();
+        $args_insert = array();
+        $args_update = array();
+        $columns = self::get_table_columns($table_name);
         foreach ($value as $k => $v) {
-            $field_insert[] = '`' . esc_sql($k) . '`';
-            $value_insert[] = "'" . esc_sql($v) . "'";
-            $value_update[] = '`' . esc_sql($k) . '`=' . "'" . esc_sql($v) . "'";
+            $field = self::resolve_column($k, $columns);
+            if ($field === null) {
+                return;
+            }
+            $field_insert[] = '`' . $field . '`';
+            $value_insert[] = '%s';
+            $value_update[] = '`' . $field . '`=%s';
+            $args_insert[] = $v;
+            $args_update[] = $v;
         }
         if (count($field_insert) > 0) {
             global $wpdb;
@@ -1057,8 +1074,54 @@ trait Storage {
             $sql .= "(" . implode(',', $field_insert) . ") ";
             $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
-            $wpdb->query($sql);
+            $wpdb->query($wpdb->prepare($sql, array_merge($args_insert, $args_update)));
         }
+    }
+
+    /**
+     * Resolve a key to the real column name (MySQL column names are case insensitive).
+     *
+     * @param mixed $name The candidate column name.
+     * @param array|null $columns The real column names, or null if unknown.
+     * @return string|null The real column name, or null if it is not acceptable.
+     * @since 3.8.15
+     */
+    private static function resolve_column($name, $columns) {
+        if (Guard::ident($name) === null) {
+            return null;
+        }
+        if (!is_array($columns)) {
+            return $name;
+        }
+        foreach ($columns as $column) {
+            if (strcasecmp($column, $name) === 0) {
+                return $column;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the column names of a table (used as an allowlist for identifiers).
+     *
+     * @param string $table_name The table name, without prefix.
+     * @return array|null The column names, or null if they can't be determined.
+     * @since 3.8.15
+     */
+    private static function get_table_columns($table_name) {
+        static $cache = array();
+        global $wpdb;
+        $key = $wpdb->prefix . $table_name;
+        if (!array_key_exists($key, $cache)) {
+            $cache[$key] = null;
+            if (Guard::ident($table_name) !== null) {
+                $cols = $wpdb->get_col("SHOW COLUMNS FROM `" . $wpdb->prefix . $table_name . "`");
+                if (is_array($cols) && count($cols) > 0) {
+                    $cache[$key] = $cols;
+                }
+            }
+        }
+        return $cache[$key];
     }
 
     /**
@@ -1071,16 +1134,23 @@ trait Storage {
     protected static function insert_ignore_table($table_name, $value) {
         $field_insert = array();
         $value_insert = array();
+        $args_insert = array();
+        $columns = self::get_table_columns($table_name);
         foreach ($value as $k => $v) {
-            $field_insert[] = '`' . esc_sql($k) . '`';
-            $value_insert[] = "'" . esc_sql($v) . "'";
+            $field = self::resolve_column($k, $columns);
+            if ($field === null) {
+                return;
+            }
+            $field_insert[] = '`' . $field . '`';
+            $value_insert[] = '%s';
+            $args_insert[] = $v;
         }
         if (count($field_insert) > 0) {
             global $wpdb;
             $sql = "INSERT IGNORE INTO `" . $wpdb->prefix . $table_name . "` ";
             $sql .= "(" . implode(',', $field_insert) . ") ";
             $sql .= "VALUES (" . implode(',', $value_insert) . ");";
-            $wpdb->query($sql);
+            $wpdb->query($wpdb->prepare($sql, $args_insert));
         }
     }
 
@@ -1151,7 +1221,11 @@ trait Storage {
      */
     private function modify_table($table_name, $field, $old_value, $new_value) {
         global $wpdb;
-        $sql = $wpdb->prepare("UPDATE " . $wpdb->prefix.$table_name . " SET " . $field . "=%s WHERE " . $field . "=%s", $new_value, $old_value);
+        $field = Guard::ident($field);
+        if ($field === null) {
+            return;
+        }
+        $sql = $wpdb->prepare("UPDATE " . $wpdb->prefix.$table_name . " SET `" . $field . "`=%s WHERE `" . $field . "`=%s", $new_value, $old_value);
         $wpdb->query($sql);
     }
 
@@ -1189,12 +1263,12 @@ trait Storage {
                 }
                 $now = substr($now, 0, strlen($now) - 1) . $min;
                 $field_insert = array('timestamp', 'device_id', 'module_id', 'module_type', 'measure_type', 'measure_value');
-                $value_insert = array("'" . $now . "'", "'" . $value['device_id'] . "'", "'" . $value['module_id'] . "'", "'" . $value['module_type'] . "'", "'" . $value['measure_type'] . "'", "'" . $value['measure_value'] . "'");
+                $value_insert = array($now, $value['device_id'], $value['module_id'], $value['module_type'], $value['measure_type'], $value['measure_value']);
                 global $wpdb;
                 $sql = "INSERT IGNORE INTO " . $wpdb->prefix . self::live_weather_station_histo_daily_table() . " ";
                 $sql .= "(" . implode(',', $field_insert) . ") ";
-                $sql .= "VALUES (" . implode(',', $value_insert) . ");";
-                $wpdb->query($sql);
+                $sql .= "VALUES (" . Guard::placeholders($value_insert, '%s') . ");";
+                $wpdb->query($wpdb->prepare($sql, $value_insert));
             }
         }
     }
@@ -1289,7 +1363,7 @@ trait Storage {
                 $t = 'absolute_humidity';
                 break;
             default:
-                $t = $type;
+                $t = sanitize_key($type);
         }
         return get_option('live_weather_station_' . $t . '_' . $opt . '_boundary', 'NaN');
     }
@@ -1308,14 +1382,22 @@ trait Storage {
         }
         global $wpdb;
         $where = array();
+        $args = array();
+        $allowed = array('device_id', 'device_name', 'module_id', 'module_type', 'module_name', 'measure_type', 'measure_value');
         foreach ($attributes as $k => $v) {
             if (isset($v)) {
-                $where[] = '`' . $k . '`=' .  "'" . $v . "'";
+                $field = Guard::ident($k, $allowed);
+                if ($field === null) {
+                    return array();
+                }
+                $where[] = '`' . $field . '`=%s';
+                $args[] = $v;
             }
         }
-        $where[] = '`measure_timestamp`>' .  "'" . $after . "'";
+        $where[] = '`measure_timestamp`>%s';
+        $args[] = $after;
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE (" . implode(" AND ", $where) . ");";
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE (" . implode(" AND ", $where) . ");", $args);
         try {
             $result = (array)$wpdb->get_results($sql, ARRAY_A);
         }
@@ -1430,14 +1512,22 @@ trait Storage {
         }
         global $wpdb;
         $where = array();
+        $args = array();
+        $allowed = array('device_id', 'module_id', 'module_type', 'measure_type', 'measure_value');
         foreach ($attributes as $k => $v) {
             if (isset($v)) {
-                $where[] = '`' . $k . '`=' .  "'" . $v . "'";
+                $field = Guard::ident($k, $allowed);
+                if ($field === null) {
+                    return '';
+                }
+                $where[] = '`' . $field . '`=%s';
+                $args[] = $v;
             }
         }
-        $where[] = '`timestamp`>' .  "'" . date('Y-m-d H:i:s', $datetime->getTimestamp()) . "'";
+        $where[] = '`timestamp`>%s';
+        $args[] = date('Y-m-d H:i:s', $datetime->getTimestamp());
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE (" . implode(" AND ", $where) . ") ORDER BY `timestamp` ASC ;";
+        $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE (" . implode(" AND ", $where) . ") ORDER BY `timestamp` ASC ;", $args);
         try {
             $data = (array)$wpdb->get_results($sql, ARRAY_A);
         }
@@ -1620,17 +1710,22 @@ trait Storage {
                 }
             }
             catch (\Exception $ex) {
-                Logger::warning('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
+                Logger::warning('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . substr(print_r($value, true), 0, 1000));
             }
         }
         else {
-            try {
-                Logger::warning('Data Manager', null, $value['device_id'], $value['device_name'], $value['module_id'], $value['module_name'], 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
+            // A rejected value is logged at most once per quarter of an hour for a given measurement (no log flooding).
+            $throttle = 'lws_rejected_' . md5((isset($value['device_id']) ? (string)$value['device_id'] : '') . '|' . (isset($value['module_id']) ? (string)$value['module_id'] : '') . '|' . (isset($value['measure_type']) ? (string)$value['measure_type'] : ''));
+            if (get_transient($throttle) === false) {
+                set_transient($throttle, 1, 900);
+                $detail = 'Inconsistent data to insert in data table: ' . substr(print_r($value, true), 0, 500);
+                try {
+                    Logger::warning('Data Manager', null, isset($value['device_id']) ? $value['device_id'] : null, isset($value['device_name']) ? $value['device_name'] : null, isset($value['module_id']) ? $value['module_id'] : null, isset($value['module_name']) ? $value['module_name'] : null, 500, $detail);
+                }
+                catch (\Exception $ex) {
+                    Logger::warning('Data Manager', null, null, null, null, null, 500, $detail);
+                }
             }
-            catch (\Exception $ex) {
-                Logger::warning('Data Manager', null, null, null, null, null, 500, 'Inconsistent data to insert in data table: ' . print_r($value, true));
-            }
-
         }
     }
 
@@ -1681,7 +1776,7 @@ trait Storage {
             Cache::flush_query();
         }
         else {
-            Logger::error('Data Manager', null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to get guid for this record: ' . print_r($value, true));
+            Logger::error('Data Manager', null, null, null, null, null, 500, 'Inconsistent data in stations table: unable to get guid for this record: ' . substr(print_r($value, true), 0, 1000));
         }
         return $result;
     }
@@ -1698,10 +1793,10 @@ trait Storage {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
         if (isset($station_type)) {
-            $sql = "INSERT IGNORE INTO ".$table_name." (station_id,station_type) VALUES('".$station_id."',".$station_type.");";
+            $sql = $wpdb->prepare("INSERT IGNORE INTO ".$table_name." (station_id,station_type) VALUES(%s,%d);", $station_id, $station_type);
         }
         else {
-            $sql = "INSERT IGNORE INTO ".$table_name." (station_id) VALUES('".$station_id."');";
+            $sql = $wpdb->prepare("INSERT IGNORE INTO ".$table_name." (station_id) VALUES(%s);", $station_id);
         }
         return $wpdb->query($sql);
     }
@@ -1719,7 +1814,20 @@ trait Storage {
     private function delete_table($table_name, $field_name, $value, $sep='') {
         global $wpdb;
         $table_name = $wpdb->prefix . $table_name;
-        $sql = "DELETE FROM ".$table_name." WHERE ".$field_name." IN (" . $sep . implode($sep.','.$sep, $value) . $sep . ")";
+        $field_name = Guard::ident($field_name, array('guid', 'id', 'device_id'));
+        if ($field_name === null) {
+            return false;
+        }
+        $value = array_values((array)$value);
+        if (count($value) === 0) {
+            return false;
+        }
+        if ($sep === '') {
+            $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE `".$field_name."` IN (" . Guard::placeholders($value, '%d') . ")", $value);
+        }
+        else {
+            $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE `".$field_name."` IN (" . Guard::placeholders($value, '%s') . ")", $value);
+        }
         return $wpdb->query($sql);
     }
 
@@ -1735,7 +1843,11 @@ trait Storage {
     private function rotate_table($table_name, $field_name, $limit) {
         global $wpdb;
         $table_name = $wpdb->prefix . $table_name;
-        $sql = "DELETE FROM ".$table_name." ORDER BY ".$field_name." ASC LIMIT ".$limit;
+        $field_name = Guard::ident($field_name);
+        if ($field_name === null) {
+            return false;
+        }
+        $sql = "DELETE FROM ".$table_name." ORDER BY `".$field_name."` ASC LIMIT ".absint($limit);
         return $wpdb->query($sql);
     }
 
@@ -1751,7 +1863,11 @@ trait Storage {
     private function purge_table($table_name, $field_name, $interval) {
         global $wpdb;
         $table_name = $wpdb->prefix . $table_name;
-        $sql = "DELETE FROM ".$table_name." WHERE (" . $field_name . " < NOW() - INTERVAL " . $interval . " HOUR);";
+        $field_name = Guard::ident($field_name);
+        if ($field_name === null) {
+            return false;
+        }
+        $sql = "DELETE FROM ".$table_name." WHERE (`" . $field_name . "` < NOW() - INTERVAL " . absint($interval) . " HOUR);";
         return $wpdb->query($sql);
     }
 
@@ -1804,7 +1920,11 @@ trait Storage {
     protected function clean_owm_from_table($values) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'xx:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
+        $values = array_values((array)$values);
+        if (count($values) === 0) {
+            $values = array('');
+        }
+        $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id like %s AND device_id NOT IN ( " . Guard::placeholders($values, '%s') . " )", array_merge(array("xx:%"), $values));
         return $wpdb->query($sql);
     }
 
@@ -1818,7 +1938,11 @@ trait Storage {
     protected function clean_wflw_from_table($values) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zy:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
+        $values = array_values((array)$values);
+        if (count($values) === 0) {
+            $values = array('');
+        }
+        $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id like %s AND device_id NOT IN ( " . Guard::placeholders($values, '%s') . " )", array_merge(array("zy:%"), $values));
         return $wpdb->query($sql);
     }
 
@@ -1832,7 +1956,11 @@ trait Storage {
     protected function clean_piou_from_table($values) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zz:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
+        $values = array_values((array)$values);
+        if (count($values) === 0) {
+            $values = array('');
+        }
+        $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id like %s AND device_id NOT IN ( " . Guard::placeholders($values, '%s') . " )", array_merge(array("zz:%"), $values));
         return $wpdb->query($sql);
     }
 
@@ -1846,7 +1974,11 @@ trait Storage {
     protected function clean_clientraw_from_table($values) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'yx:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
+        $values = array_values((array)$values);
+        if (count($values) === 0) {
+            $values = array('');
+        }
+        $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id like %s AND device_id NOT IN ( " . Guard::placeholders($values, '%s') . " )", array_merge(array("yx:%"), $values));
         return $wpdb->query($sql);
     }
 
@@ -1860,7 +1992,11 @@ trait Storage {
     protected function clean_realtime_from_table($values) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'yy:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
+        $values = array_values((array)$values);
+        if (count($values) === 0) {
+            $values = array('');
+        }
+        $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id like %s AND device_id NOT IN ( " . Guard::placeholders($values, '%s') . " )", array_merge(array("yy:%"), $values));
         return $wpdb->query($sql);
     }
 
@@ -1874,7 +2010,11 @@ trait Storage {
     protected function clean_stickertags_from_table($values) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
-        $sql = "DELETE FROM ".$table_name." WHERE device_id like 'zx:%' AND device_id NOT IN ( '" . implode("', '", $values) . "' )";
+        $values = array_values((array)$values);
+        if (count($values) === 0) {
+            $values = array('');
+        }
+        $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE device_id like %s AND device_id NOT IN ( " . Guard::placeholders($values, '%s') . " )", array_merge(array("zx:%"), $values));
         return $wpdb->query($sql);
     }
 
@@ -1898,8 +2038,8 @@ trait Storage {
      */
     protected static function _clean_usermeta($key) {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'usermeta';
-        $sql = "DELETE FROM " . $table_name . " WHERE meta_key LIKE \"%\_" . $key . "%\" AND user_id=" . get_current_user_id() . ";";
+        $table_name = $wpdb->usermeta;
+        $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE meta_key LIKE %s AND user_id=%d;", '%' . $wpdb->esc_like('_' . $key) . '%', get_current_user_id());
         return $wpdb->query($sql);
     }
 
@@ -1911,8 +2051,19 @@ trait Storage {
      */
     protected static function clean_all_usermeta() {
         global $wpdb;
-        $table_name = $wpdb->prefix . 'usermeta';
-        $sql = "DELETE FROM " . $table_name . " WHERE meta_key LIKE \"%\_lws-%\"" . ";";
+        // Exactly the keys written by the plugin: its own welcome-panel flag and the WordPress screen options
+        // (postbox order/visibility, layout, columns, per-page) of its admin screens (screen ids contain 'lws-').
+        $like = array(
+            'show\_lws\_welcome\_panel',
+            'closedpostboxes\_%lws-%',
+            'metaboxhidden\_%lws-%',
+            'meta-box-order\_%lws-%',
+            'screen\_layout\_%lws-%',
+            'manage%lws-%columnshidden',
+            '%lws-%\_per\_page',
+        );
+        $where = implode(' OR ', array_fill(0, count($like), 'meta_key LIKE %s'));
+        $sql = $wpdb->prepare("DELETE FROM " . $wpdb->usermeta . " WHERE " . $where, $like);
         return $wpdb->query($sql);
     }
 }

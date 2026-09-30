@@ -54,15 +54,20 @@ invocations to instructions until such tooling actually exists here.
 ## Git workflow
 
 Default branch: `main`. Public repo (Weather-Station-Software org) — no
-issue-first requirement, a direct PR is fine for external or exploratory
-work. PR-as-you-go: push the branch and open a draft PR as soon as a chantier
-produces a commit meant to become one, keep committing to it, and only flip
-it to "ready for review" once it's verified.
+issue-first requirement.
+
+One branch and one draft PR per version: `release/X.Y.Z`, PR titled with
+the branch name. All the work of that version is committed there (no swarm of
+independent PRs; external PRs are folded into it). When everything is ready
+and verified: flip the PR to ready, merge, tag `X.Y.Z` (the `Release` workflow
+creates a draft GitHub release), edit the notes, publish (this triggers the
+wordpress.org deploy). Always check which PR/branch is current before
+assuming `main` is the most advanced code.
 
 ## Pointers
 
-- **Always loaded**: `.claude/rules/security.md`, `.claude/rules/a11y.md` —
-  blocking in review.
+- **Always loaded**: `.claude/rules/security.md`, `.claude/rules/a11y.md`,
+  `.claude/rules/changelog.md`, `.claude/rules/version-bump.md` — blocking.
 - **Architecture**: `.claude/ARCHITECTURE.md`.
 - **Skills** (on demand, add as needed): none yet — list them here as
   they're created, don't duplicate their content in this file.

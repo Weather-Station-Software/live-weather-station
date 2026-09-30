@@ -24,6 +24,8 @@ trait PublicClient {
 
     use BaseClient, Conversion;
 
+    protected $devices = array();
+
     protected $facility = 'Weather Collector';
     public $detected_station_name = '';
     private static $dev_key = '42f82f28-44c8-4866-921d-315f53c7bd39';
@@ -48,15 +50,15 @@ trait PublicClient {
                         if ($weather['status']['status_code'] == 0) {
                             $result = '';
                             if (array_key_exists('public_name', $weather)) {
-                                $this->detected_station_name = $weather['public_name'];
+                                $this->detected_station_name = lws_clean_text($weather['public_name']);
                             }
                             elseif (array_key_exists('station_name', $weather)) {
-                                $this->detected_station_name = $weather['station_name'];
+                                $this->detected_station_name = lws_clean_text($weather['station_name']);
                             }
                         }
                         else {
                             if (array_key_exists('status_message', $weather['status'])) {
-                                $result = $weather['status']['status_message'];
+                                $result = lws_clean_text($weather['status']['status_message'], 200);
                             }
                         }
                     }
@@ -69,7 +71,7 @@ trait PublicClient {
                 $result = 'internal WeatherFlow error';
             }
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
             $result = 'unable to contact WeatherFlow servers';
         }
@@ -125,7 +127,7 @@ trait PublicClient {
                 }
             }
         }
-        catch(\Exception $ex) {
+        catch (\Throwable $ex) {
             $result = array();
         }
         return $result;
@@ -146,7 +148,7 @@ trait PublicClient {
                 if (array_key_exists('status_code', $weather['status'])) {
                     if ($weather['status']['status_code'] != 0) {
                         if (array_key_exists('status_message', $weather['status'])) {
-                            throw new \Exception($weather['status']['status_message'], $weather['status']['status_code']);
+                            throw new \Exception(lws_clean_text($weather['status']['status_message'], 200), (int)$weather['status']['status_code']);
                         }
                         else {
                             throw new \Exception('WeatherFlow unknown exception', 0);
@@ -159,12 +161,12 @@ trait PublicClient {
             }
         }
         else {
-            throw new \Exception('JSON / '.(string)$json_weather);
+            throw new \Exception('JSON / '.lws_clean_text($json_weather, 200));
         }
-        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($weather, true));
+        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
         if (!empty($weather) && array_key_exists('obs', $weather) && is_array($weather['obs'])) {
             if (array_key_exists('timezone', $weather)) {
-                $timezone = $weather['timezone'];
+                $timezone = lws_clean_text($weather['timezone'], 64);
             }
             else {
                 $timezone = $this->get_timezone($station, null, $station['guid'], $station['station_id']);
@@ -175,9 +177,9 @@ trait PublicClient {
                     $observation = array();
                 }
                 if (array_key_exists('public_name', $weather)) {
-                    $station['station_name'] = $weather['public_name'];
+                    $station['station_name'] = lws_clean_text($weather['public_name']);
                 } elseif (array_key_exists('station_name', $weather)) {
-                    $station['station_name'] = $weather['station_name'];
+                    $station['station_name'] = lws_clean_text($weather['station_name']);
                 }
                 if ($station['station_name'] == '') {
                     $station['station_name'] = '< NO NAME >';
@@ -227,25 +229,25 @@ trait PublicClient {
                 $updates['measure_value'] = $station['loc_country_code'];
                 $this->update_data_table($updates, $timezone);
                 if (array_key_exists('timezone', $weather)) {
-                    $station['loc_timezone'] = $weather['timezone'];
+                    $station['loc_timezone'] = lws_clean_text($weather['timezone'], 64);
                     $updates['measure_type'] = 'loc_timezone';
                     $updates['measure_value'] = $station['loc_timezone'];
                     $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('latitude', $weather)) {
-                    $station['loc_latitude'] = $weather['latitude'];
+                    $station['loc_latitude'] = lws_clean_number($weather['latitude']);
                     $updates['measure_type'] = 'loc_latitude';
                     $updates['measure_value'] = $station['loc_latitude'];
                     $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('longitude', $weather)) {
-                    $station['loc_longitude'] = $weather['longitude'];
+                    $station['loc_longitude'] = lws_clean_number($weather['longitude']);
                     $updates['measure_type'] = 'loc_longitude';
                     $updates['measure_value'] = $station['loc_longitude'];
                     $this->update_data_table($updates, $timezone);
                 }
                 if (array_key_exists('elevation', $weather)) {
-                    $station['loc_altitude'] = $weather['elevation'];
+                    $station['loc_altitude'] = lws_clean_number($weather['elevation']);
                     $updates['measure_type'] = 'loc_altitude';
                     $updates['measure_value'] = $station['loc_altitude'];
                     $this->update_data_table($updates, $timezone);
@@ -535,7 +537,7 @@ trait PublicClient {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');
                 }
             }
-            catch(\Exception $ex)
+            catch (\Throwable $ex)
             {
                 if (strpos($ex->getMessage(), 'JSON /') > -1) {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'WeatherFlow servers has returned empty response. Retry will be done shortly.');
@@ -568,8 +570,8 @@ trait PublicClient {
             $ephemeris->compute(LWS_WFLW_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
-            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
         }
         $this->synchronize_modules_count();
         Watchdog::stop_chrono($cron_id);

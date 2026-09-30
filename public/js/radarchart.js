@@ -755,7 +755,7 @@ function RadarChart() {
         return chart;
     }
 
-    chart.margins = function(value) {
+    chart.margins = function(values) {
         if (!arguments.length) return options.margins;
         var vKeys = Object.keys(values);
         var mKeys = Object.keys(options.margins);
@@ -910,7 +910,7 @@ function RadarChart() {
     function tooltip_show(d, i, self) {
         //if (legend_toggles[d._i]) return;
         if (options.width > 200) {
-            var val = d.key.replace(/ - /gi, '<br/>');
+            var val = String(d.key).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;').replace(/ - /gi, '<br/>');
             tooltip
                 .html(val)
                 .style('opacity', '1');

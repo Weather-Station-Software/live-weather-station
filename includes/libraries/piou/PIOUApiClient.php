@@ -91,7 +91,7 @@ class PIOUApiClient
      */
     private function buildUrl($sensor_id) {
         $result = $this->mainnUrl;
-        $result = str_replace('{sensor_id}', $sensor_id, $result);
+        $result = str_replace('{sensor_id}', rawurlencode((string)$sensor_id), $result);
         return $result;
     }
 
@@ -120,9 +120,9 @@ class PIOUApiClient
      */
     private function buildArchiveUrl($sensor_id, $start, $stop) {
         $result = $this->archiveUrl;
-        $result = str_replace('{sensor_id}', $sensor_id, $result);
-        $result = str_replace('{start}', $start, $result);
-        $result = str_replace('{stop}', $stop, $result);
+        $result = str_replace('{sensor_id}', rawurlencode((string)$sensor_id), $result);
+        $result = str_replace('{start}', rawurlencode((string)$start), $result);
+        $result = str_replace('{stop}', rawurlencode((string)$stop), $result);
         return $result;
     }
 

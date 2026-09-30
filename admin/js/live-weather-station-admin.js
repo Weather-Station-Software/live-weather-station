@@ -516,7 +516,7 @@ jQuery(document).ready( function($) {
     });
 
     $('#wug-unshare').click( function() {
-        if (lws_wow_confirmation) {
+        if (lws_wug_confirmation) {
             $('.button').removeClass('button-primary').addClass('button-disabled');
             $('.button').click(function() { return false; });
             $('#wug-span-sync').show();

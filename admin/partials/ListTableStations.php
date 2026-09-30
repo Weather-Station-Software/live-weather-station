@@ -26,7 +26,7 @@ $stationsListTable->prepare_items();
     <form id="logs-filter" method="get">
         <input type="hidden" name="page" value="lws-stations" />
         <?php if ($stationsListTable->get_level() != '') : ?>
-            <input type="hidden" name="level" value="<?php echo $stationsListTable->get_level(); ?>" />
+            <input type="hidden" name="level" value="<?php echo esc_attr($stationsListTable->get_level()); ?>" />
         <?php endif; ?>
         <?php $stationsListTable->display(); ?>
     </form>

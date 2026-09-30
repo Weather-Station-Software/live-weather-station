@@ -124,7 +124,7 @@ class Stats
     private function count_log_errors($interval = 24) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
-        $sql = "SELECT COUNT(*) FROM " . $table_name . " WHERE level IN ('emergency','alert','critical','error') AND (timestamp >= NOW() - INTERVAL " . $interval . " HOUR);";
+        $sql = $wpdb->prepare("SELECT COUNT(*) FROM " . $table_name . " WHERE level IN ('emergency','alert','critical','error') AND (timestamp >= NOW() - INTERVAL %d HOUR);", (int)$interval);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
@@ -147,7 +147,7 @@ class Stats
     private function count_log_emergency($interval = 72) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
-        $sql = "SELECT COUNT(*) FROM " . $table_name . " WHERE level IN ('emergency') AND (timestamp >= NOW() - INTERVAL " . $interval . " HOUR);";
+        $sql = $wpdb->prepare("SELECT COUNT(*) FROM " . $table_name . " WHERE level IN ('emergency') AND (timestamp >= NOW() - INTERVAL %d HOUR);", (int)$interval);
         try {
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;

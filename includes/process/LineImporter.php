@@ -132,7 +132,9 @@ abstract class LineImporter extends Process {
         $args['end_date'] = $this->params['init']['end_date'];
         $args['module'] = array();
         $args['types'] = array();
+        $args['module_types'] = array();
         foreach (DeviceManager::get_modules_details($this->params['init']['station_id']) as $module) {
+            $args['module_types'][] = $module['module_type'];
             if (in_array($module['module_type'], $this->auto)) {
                 $args['module'][$module['module_type']] = $module['module_id'];
             }

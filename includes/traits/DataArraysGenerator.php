@@ -8,7 +8,7 @@ use WeatherStation\SDK\OpenWeatherMap\Plugin\BaseCollector as OWM_Base_Collector
 use WeatherStation\Data\History\Builder as History;
 use WeatherStation\System\Device\Manager as DeviceManager;
 use WeatherStation\System\Environment\Manager as EnvManager;
-use WeatherStation\System\Options\Handling as Options;
+use WeatherStation\System\Plugin\Core as Options;
 use WeatherStation\Data\DateTime\Handling as TimeHandling;
 
 /**
@@ -342,7 +342,7 @@ trait Generator {
         $t = array();
         $t[] = array(__('None', 'live-weather-station'), 'none', $pref . $icon . $suf);
         foreach ($measure[2] as $line) {
-            $t[] = array($line[0], $line[1], $pref . $icon . '<span class="lws-text" style="vertical-align: baseline;"> &nbsp;' . $line[2] . '</span>' . $suf);
+            $t[] = array($line[0], $line[1], $pref . $icon . '<span class="lws-text" style="vertical-align: baseline;"> &nbsp;' . wp_kses_post($line[2]) . '</span>' . $suf);
         }
         $measure[2] = $t;
         return $measure;
@@ -369,7 +369,7 @@ trait Generator {
             $t = array();
             $t[] = array(__('None', 'live-weather-station'), 'none', $pref . $icon . $suf);
             foreach ($measure[2] as $line) {
-                $t[] = array($line[0], $line[1], $pref . $icon . '<span class="lws-text" style="vertical-align: baseline;"> &nbsp;' . $line[2] . '</span>' . $suf);
+                $t[] = array($line[0], $line[1], $pref . $icon . '<span class="lws-text" style="vertical-align: baseline;"> &nbsp;' . wp_kses_post($line[2]) . '</span>' . $suf);
             }
             $measure[2] = $t;
             $result = $measure;
@@ -1214,7 +1214,7 @@ trait Generator {
         $data = $this->get_all_formatted_measurements($guid, false, true);
         $result = array();
         $modules = array();
-        if (count($data) > 0) {
+        if (is_array($data) && count($data) > 0 && isset($data['station']) && is_array($data['station']) && isset($data['station']['station_id'], $data['station']['station_name'])) {
             $result[] = $data['station']['station_name'];
             $result[] = $data['station']['station_id'];
             $netatmo = OWM_Base_Collector::is_netatmo_station($data['station']['station_id']);
@@ -1228,7 +1228,7 @@ trait Generator {
             $ambt = OWM_Base_Collector::is_ambt_station($data['station']['station_id']);
             $wlink = OWM_Base_Collector::is_wlink_station($data['station']['station_id']);
             $mainbase = array();
-            if (count($data['module']) > 0) {
+            if (isset($data['module']) && is_array($data['module']) && count($data['module']) > 0) {
                 foreach ($data['module'] as $module) {
                     if (strtolower($module['module_type']) == 'namain') {
                         $mainbase = $module;
@@ -3546,6 +3546,9 @@ trait Generator {
      */
     protected function get_zoom_js_array($min, $max) {
         $result = array();
+        // Zoom levels are small integers: the range is bounded whatever the caller passes.
+        $min = max(0, (int)$min);
+        $max = min($min + 30, (int)$max);
         for ($i=$min; $i<=$max; $i++) {
             $result[] = array($i,  sprintf(__('Level %s', 'live-weather-station'), $i));
         }

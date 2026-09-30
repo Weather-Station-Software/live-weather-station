@@ -116,11 +116,11 @@ class InlineHelp {
     public static function whats_new() {
         $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
-            $target = ' target="_blank" ';
+            $target = ' target="_blank" rel="noopener noreferrer" ';
         }
         $url = self::whats_new_url();
         if (Manager::is_plugin_in_production_mode()) {
-            return '<a href="' . $url . '"' . $target . '>' . __('See what\'s new', 'live-weather-station') . '&hellip;</a>';
+            return '<a href="' . esc_url($url) . '"' . $target . '>' . __('See what\'s new', 'live-weather-station') . '&hellip;</a>';
         }
         else {
             return '';
@@ -142,7 +142,7 @@ class InlineHelp {
         $path = '';
         $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
-            $target = ' target="_blank" ';
+            $target = ' target="_blank" rel="noopener noreferrer" ';
         }
         if ($number >= 0) {
             $path = self::$links['en'][$number];
@@ -319,7 +319,7 @@ class InlineHelp {
     public static function article($number) {
         $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
-            $target = ' target="_blank" ';
+            $target = ' target="_blank" rel="noopener noreferrer" ';
         }
         $url = '';
         switch ($number) {
@@ -372,6 +372,9 @@ class InlineHelp {
      * @since 3.0.0
      */
     public static function set_contextual_help($loader, $type) {
+        if (!is_string($type) || !preg_match('/^[a-z_]+$/', $type) || !method_exists(__CLASS__, 'set_contextual_' . $type)) {
+            return;
+        }
         add_action($loader, array('WeatherStation\System\Help\InlineHelp', 'set_contextual_' . $type));
     }
 
@@ -389,6 +392,25 @@ class InlineHelp {
     }
 
     /**
+     * Get a sanitized request value (GET first, then POST).
+     *
+     * @param string $name The name of the parameter.
+     * @param string $mode Optional. 'key' (sanitize_key) or 'text' (sanitize_text_field).
+     * @return string|null The sanitized value, null if missing.
+     * @since 3.8.15
+     */
+    private static function request_value($name, $mode='key') {
+        $value = filter_input(INPUT_GET, $name);
+        if (!$value) {
+            $value = filter_input(INPUT_POST, $name);
+        }
+        if (!is_string($value)) {
+            return null;
+        }
+        return ($mode == 'key' ? sanitize_key($value) : sanitize_text_field($value));
+    }
+
+    /**
      * Contextual help for "maps" panel.
      *
      * @see set_contextual_help()
@@ -399,18 +421,10 @@ class InlineHelp {
         $id = null;
         $tabs = array();
         $screen = get_current_screen();
-        if (!($action = filter_input(INPUT_GET, 'action'))) {
-            $action = filter_input(INPUT_POST, 'action');
-        }
-        if (!($service = strtolower(filter_input(INPUT_GET, 'service')))) {
-            $service = strtolower(filter_input(INPUT_POST, 'service'));
-        }
-        if (!($id = filter_input(INPUT_GET, 'mid'))) {
-            $id = filter_input(INPUT_POST, 'mid');
-        }
-        if (!($tab = filter_input(INPUT_GET, 'tab'))) {
-            $tab = filter_input(INPUT_POST, 'tab');
-        }
+        $action = self::request_value('action', 'key');
+        $service = strtolower((string)self::request_value('service', 'key'));
+        $id = self::request_value('mid', 'text');
+        $tab = self::request_value('tab', 'key');
         if (is_numeric($id)) {
             //$station = self::get_station($id);
             //$type = $station['station_type'];
@@ -423,11 +437,11 @@ class InlineHelp {
                 'id' => 'lws-contextual-maps',
                 'content' => '<p>' . $s . '</p>');
             $s1 = sprintf(__('In this version of %s and depending of the API key you have set, you can manage the following types of maps:', 'live-weather-station'), LWS_PLUGIN_NAME);
-            $s6 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_owm_color_logo()) . '" /><strong>' . 'OpenWeatherMap' . '</strong> &mdash; ' . __('a full featured map from OpenWeatherMap with many weather and agricultural layers.', 'live-weather-station') . '</p>';
-            $s2 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_mapbox_color_logo()) . '" /><strong>' . 'Mapbox' . '</strong> &mdash; ' . sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Mapbox') . '</p>';
-            $s3 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_stamen_color_logo()) . '" /><strong>' . 'Stamen' . '</strong> &mdash; ' . sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Stamen') . '</p>';
-            $s4 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_thunderforest_color_logo()) . '" /><strong>' . 'Thunderforest' . '</strong> &mdash; ' . sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Thunderforest') . '</p>';
-            $s5 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_windy_color_logo()) . '" /><strong>' . 'Windy' . '</strong> &mdash; ' . __('a full featured map from Windy.com with many weather layers and animations.', 'live-weather-station') . '</p>';
+            $s6 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_owm_color_logo())) . '" /><strong>' . 'OpenWeatherMap' . '</strong> &mdash; ' . __('a full featured map from OpenWeatherMap with many weather and agricultural layers.', 'live-weather-station') . '</p>';
+            $s2 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_mapbox_color_logo())) . '" /><strong>' . 'Mapbox' . '</strong> &mdash; ' . sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Mapbox') . '</p>';
+            $s3 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_stamen_color_logo())) . '" /><strong>' . 'Stamen' . '</strong> &mdash; ' . sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Stamen') . '</p>';
+            $s4 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_thunderforest_color_logo())) . '" /><strong>' . 'Thunderforest' . '</strong> &mdash; ' . sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Thunderforest') . '</p>';
+            $s5 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_windy_color_logo())) . '" /><strong>' . 'Windy' . '</strong> &mdash; ' . __('a full featured map from Windy.com with many weather layers and animations.', 'live-weather-station') . '</p>';
             $tabs[] = array(
                 'title'    => __('Maps types', 'live-weather-station'),
                 'id'       => 'lws-contextual-maps-types',
@@ -575,9 +589,7 @@ class InlineHelp {
      */
     public static function set_contextual_dashboard() {
         $action = null;
-        if (!($action = filter_input(INPUT_GET, 'action'))) {
-            $action = filter_input(INPUT_POST, 'action');
-        }
+        $action = self::request_value('action', 'key');
         if (!isset($action)) {
             $s = sprintf(__('Welcome to your %1$s Dashboard! This is the screen you will see when you click on %1$s icon in the WordPress left-hand navigation menu. You can get help for any %1$s screen by clicking the Help tab above the screen title.', 'live-weather-station'), LWS_PLUGIN_NAME);
             $screen = get_current_screen();
@@ -739,21 +751,15 @@ class InlineHelp {
         $action = null;
         $id = null;
         $type = -1;
-        if (!($action = filter_input(INPUT_GET, 'action'))) {
-            $action = filter_input(INPUT_POST, 'action');
-        }
-        if (!($service = strtolower(filter_input(INPUT_GET, 'service')))) {
-            $service = strtolower(filter_input(INPUT_POST, 'service'));
-        }
-        if (!($id = filter_input(INPUT_GET, 'id'))) {
-            $id = filter_input(INPUT_POST, 'id');
-        }
-        if (!($tab = filter_input(INPUT_GET, 'tab'))) {
-            $tab = filter_input(INPUT_POST, 'tab');
-        }
-        if (is_numeric($id)) {
+        $action = self::request_value('action', 'key');
+        $service = strtolower((string)self::request_value('service', 'key'));
+        $id = self::request_value('id', 'text');
+        $tab = self::request_value('tab', 'key');
+        if (is_string($id) && ctype_digit($id)) {
             $station = self::get_station($id);
-            $type = $station['station_type'];
+            if (is_array($station) && isset($station['station_type'])) {
+                $type = $station['station_type'];
+            }
         }
         $tabs = array();
         if (isset($action) && $action == 'shortcode') {
@@ -1133,17 +1139,17 @@ class InlineHelp {
                     'id'       => 'lws-contextual-stations',
                     'content'  => '<p>' . $s1 . '</p><p>' . $s2 . '</p><p>' . $s3 . '</p>');
             $s1 = sprintf(__('In this version of %s and depending of the API key you have set, you can add the following types of stations:', 'live-weather-station'), LWS_PLUGIN_NAME);
-            $s2 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_netatmo_color_logo()) . '" /><strong>' . 'Netatmo' . '</strong> &mdash; ' . __('a Netatmo station to which you have access to.', 'live-weather-station') . '</p>';
-            $s3 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_netatmo_hc_color_logo()) . '" /><strong>' . 'Netatmo "Healthy Home Coach"' . '</strong> &mdash; ' . __('a Netatmo "Healthy Home Coach" device to which you have access to.', 'live-weather-station') . '</p>';
-            $s4 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_weatherflow_color_logo()) . '" /><strong>' . 'WeatherFlow' . '</strong> &mdash; ' . __('a public WeatherFlow station.', 'live-weather-station') . '</p>';
-            $s12 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_bloomsky_color_logo()) . '" /><strong>' . 'BloomSky' . '</strong> &mdash; ' . __('a Bloomsky station to which you have access to.', 'live-weather-station') . '</p>';
-            $s5 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_piou_color_logo()) . '" /><strong>' . 'Pioupiou' . '</strong> &mdash; ' . __('a Pioupiou sensor as a station.', 'live-weather-station') . '</p>';
-            $s14 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_weatherlink_color_logo()) . '" /><strong>' . 'WeatherLink' . '</strong> &mdash; ' .__('a personal weather station connected to WeatherLink 2.', 'live-weather-station') . '</p>';
-            $s6 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_loc_color_logo()) . '" /><strong>' . __('Virtual', 'live-weather-station') . '</strong> &mdash; ' . __('a "virtual" weather station where only the coordinates or the city are known.', 'live-weather-station') . '</p>';
-            $s8 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_ambient_color_logo()) . '" /><strong>' .'Ambient Weather Network' . '</strong> &mdash; ' . __('a personal weather station published on Ambient Weather Network.', 'live-weather-station') . '</p>';
-            $s9 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_real_color_logo()) . '" /><strong>' . __('Realtime File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>realtime.txt</em> file (Cumulus, etc.).', 'live-weather-station') . '</p>';
-            $s10 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_raw_color_logo()) . '" /><strong>' . __('Clientraw File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>clientraw.txt</em> file (Weather Display, WeeWX, etc.).', 'live-weather-station') . '</p>';
-            $s11 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . set_url_scheme(SVG::get_base64_txt_color_logo()) . '" /><strong>' . __('Stickertags File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a stickertags file (WeatherLink, WsWin32, MeteoBridge, etc.).', 'live-weather-station') . '</p>';
+            $s2 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_netatmo_color_logo())) . '" /><strong>' . 'Netatmo' . '</strong> &mdash; ' . __('a Netatmo station to which you have access to.', 'live-weather-station') . '</p>';
+            $s3 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_netatmo_hc_color_logo())) . '" /><strong>' . 'Netatmo "Healthy Home Coach"' . '</strong> &mdash; ' . __('a Netatmo "Healthy Home Coach" device to which you have access to.', 'live-weather-station') . '</p>';
+            $s4 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_weatherflow_color_logo())) . '" /><strong>' . 'WeatherFlow' . '</strong> &mdash; ' . __('a public WeatherFlow station.', 'live-weather-station') . '</p>';
+            $s12 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_bloomsky_color_logo())) . '" /><strong>' . 'BloomSky' . '</strong> &mdash; ' . __('a Bloomsky station to which you have access to.', 'live-weather-station') . '</p>';
+            $s5 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_piou_color_logo())) . '" /><strong>' . 'Pioupiou' . '</strong> &mdash; ' . __('a Pioupiou sensor as a station.', 'live-weather-station') . '</p>';
+            $s14 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_weatherlink_color_logo())) . '" /><strong>' . 'WeatherLink' . '</strong> &mdash; ' .__('a personal weather station connected to WeatherLink 2.', 'live-weather-station') . '</p>';
+            $s6 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_loc_color_logo())) . '" /><strong>' . __('Virtual', 'live-weather-station') . '</strong> &mdash; ' . __('a "virtual" weather station where only the coordinates or the city are known.', 'live-weather-station') . '</p>';
+            $s8 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_ambient_color_logo())) . '" /><strong>' .'Ambient Weather Network' . '</strong> &mdash; ' . __('a personal weather station published on Ambient Weather Network.', 'live-weather-station') . '</p>';
+            $s9 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_real_color_logo())) . '" /><strong>' . __('Realtime File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>realtime.txt</em> file (Cumulus, etc.).', 'live-weather-station') . '</p>';
+            $s10 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_raw_color_logo())) . '" /><strong>' . __('Clientraw File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a <em>clientraw.txt</em> file (Weather Display, WeeWX, etc.).', 'live-weather-station') . '</p>';
+            $s11 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_txt_color_logo())) . '" /><strong>' . __('Stickertags File', 'live-weather-station') . '</strong> &mdash; ' . __('a station exporting its data via a stickertags file (WeatherLink, WsWin32, MeteoBridge, etc.).', 'live-weather-station') . '</p>';
             $tabs[] = array(
                 'title'    => __('Stations types', 'live-weather-station'),
                 'id'       => 'lws-contextual-stations-types',
@@ -1206,9 +1212,7 @@ class InlineHelp {
      * @since    3.0.0
      */
     public static function set_contextual_events() {
-        if (!($view = filter_input(INPUT_GET, 'view'))) {
-            $view = filter_input(INPUT_POST, 'view');
-        }
+        $view = self::request_value('view', 'key');
         if (!isset($view) || $view == 'list-table-logs') {
             $s1 = sprintf(__('This screen displays all events generated by %s during its operation. These events can help you to detect or understand issues or troubles when collecting weather data.', 'live-weather-station'), LWS_PLUGIN_NAME);
             $s2 = __('To view the details of an event, just click on its name.', 'live-weather-station');

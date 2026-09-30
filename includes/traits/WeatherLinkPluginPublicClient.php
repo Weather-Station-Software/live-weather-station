@@ -57,43 +57,43 @@ trait PublicClient {
                     $result = 'WeatherLink sent inconsistent data';
                 }
                 if (array_key_exists('station_name', $weather)) {
-                    $this->detected_station_name = $weather['station_name'];
+                    $this->detected_station_name = lws_clean_text($weather['station_name'], 100);
                 }
                 else {
                     $result = 'WeatherLink sent inconsistent data';
                 }
                 if (array_key_exists('station_type', $weather)) {
-                    $this->detected_station_model .= ' - ' . $weather['station_type'];
+                    $this->detected_station_model .= ' - ' . lws_clean_text($weather['station_type'], 100);
                 }
                 else {
                     $result = 'WeatherLink sent inconsistent data';
                 }
                 if (array_key_exists('station_timezone', $weather)) {
-                    $this->detected_timezone = $weather['station_timezone'];
+                    $this->detected_timezone = lws_clean_text($weather['station_timezone'], 64);
                 }
                 else {
                     $result = 'WeatherLink sent inconsistent data';
                 }
                 if (array_key_exists('user_city', $weather)) {
-                    $this->detected_city = $weather['user_city'];
+                    $this->detected_city = lws_clean_text($weather['user_city'], 100);
                 }
                 else {
                     $result = 'WeatherLink sent inconsistent data';
                 }
                 if (array_key_exists('station_latitude', $weather)) {
-                    $this->detected_latitude = $weather['station_latitude'];
+                    $this->detected_latitude = lws_clean_number($weather['station_latitude']);
                 }
                 else {
                     $result = 'WeatherLink sent inconsistent data';
                 }
                 if (array_key_exists('station_longitude', $weather)) {
-                    $this->detected_longitude = $weather['station_longitude'];
+                    $this->detected_longitude = lws_clean_number($weather['station_longitude']);
                 }
                 else {
                     $result = 'WeatherLink sent inconsistent data';
                 }
                 if (array_key_exists('station_elevation_m', $weather)) {
-                    $this->detected_altitude = $weather['station_elevation_m'];
+                    $this->detected_altitude = lws_clean_number($weather['station_elevation_m']);
                 }
                 else {
                     $result = 'WeatherLink sent inconsistent data';
@@ -103,7 +103,7 @@ trait PublicClient {
                 $result = 'no station with this credentials';
             }
         }
-        catch(\Exception $ex)
+        catch (\Throwable $ex)
         {
             $result = 'unable to contact WeatherLink servers';
         }
@@ -123,35 +123,35 @@ trait PublicClient {
         $meta = json_decode($json_meta, true);
         $data = json_decode($json_data, true);
         if (!is_array($meta)) {
-            throw new \Exception('JSON / Meta: '.(string)$meta);
+            throw new \Exception('JSON / Meta: '.lws_clean_text($json_meta, 200));
         }
         if (!is_array($data)) {
-            throw new \Exception('JSON / Data: '.(string)$data);
+            throw new \Exception('JSON / Data: '.lws_clean_text($json_data, 200));
         }
         $weather = array_merge($data, $meta);
-        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, print_r($weather, true));
+        Logger::debug($this->facility, $this->service_name, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
         if (!empty($weather) && is_array($weather)) {
             if (array_key_exists('station_name', $weather)) {
-                $station['station_name'] = $weather['station_name'];
+                $station['station_name'] = lws_clean_text($weather['station_name'], 100);
             }
             if ($station['station_name'] == '') {
                 $station['station_name'] = '< NO NAME >';
             }
             if (array_key_exists('station_timezone', $weather)) {
-                $station['loc_timezone'] = $weather['station_timezone'];
+                $station['loc_timezone'] = lws_clean_text($weather['station_timezone'], 64);
             }
             $timezone = $this->get_timezone($station, null, $station['guid'], $station['station_id']);
             if (array_key_exists('user_city', $weather)) {
-                $station['loc_city'] = $weather['user_city'];
+                $station['loc_city'] = lws_clean_text($weather['user_city'], 100);
             }
             if (array_key_exists('station_latitude', $weather)) {
-                $station['loc_latitude'] = $weather['station_latitude'];
+                $station['loc_latitude'] = lws_clean_number($weather['station_latitude']);
             }
             if (array_key_exists('station_longitude', $weather)) {
-                $station['loc_longitude'] = $weather['station_longitude'];
+                $station['loc_longitude'] = lws_clean_number($weather['station_longitude']);
             }
             if (array_key_exists('station_elevation_m', $weather)) {
-                $station['loc_altitude'] = $weather['station_elevation_m'];
+                $station['loc_altitude'] = lws_clean_number($weather['station_elevation_m']);
             }
 
             if (array_key_exists('observation_time_rfc822', $weather)) {
@@ -226,7 +226,7 @@ trait PublicClient {
             }
             if (array_key_exists('station_firmware', $weather)) {
                 $updates['measure_type'] = 'firmware';
-                $updates['measure_value'] = $weather['station_firmware'];
+                $updates['measure_value'] = lws_clean_text($weather['station_firmware'], 100);
                 $this->update_data_table($updates, $timezone);
             }
             $station['last_refresh'] = date('Y-m-d H:i:s');
@@ -416,7 +416,7 @@ trait PublicClient {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, 0, 'Quota manager has forbidden to retrieve data.');
                 }
             }
-            catch(\Exception $ex)
+            catch (\Throwable $ex)
             {
                 if (strpos($ex->getMessage(), 'JSON /') !== false) {
                     Logger::warning($this->facility, $this->service_name, $device_id, $device_name, null, null, $ex->getCode(), 'WeatherLink servers has returned empty response. Retry will be done shortly.');
@@ -449,8 +449,8 @@ trait PublicClient {
             $ephemeris->compute(LWS_WLINK_SID);
             Logger::info($system, $this->service_name, null, null, null, null, 0, 'Job done: collecting and computing weather and ephemeris data.');
         }
-        catch (\Exception $ex) {
-            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . $ex->getMessage());
+        catch (\Throwable $ex) {
+            Logger::critical($system, $this->service_name, null, null, null, null, $ex->getCode(), 'Error while ' . $err . ' data: ' . substr(sanitize_text_field($ex->getMessage()), 0, 500));
         }
         $this->synchronize_modules_count();
         Watchdog::stop_chrono($cron_id);

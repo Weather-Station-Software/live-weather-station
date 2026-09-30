@@ -18,7 +18,7 @@
                 //    'Data by <a href="http://openstreetmap.org/">OpenStreetMap</a>, ',
                 //    'under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.'
                 //].join("")
-                "attribution":"Maps &copy; <a href=\"http://stamen.com/\">Stamen Design</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>"
+                "attribution":"Maps &copy; <a href=\"https://stamen.com/\">Stamen Design</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>"
             };
         },
         PROVIDERS =  {
@@ -64,7 +64,7 @@
         //    'Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, ',
         //    'under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.'
         //].join("");
-        PROVIDERS[key].attribution = "Maps &copy; <a href=\"http://stamen.com/\">Stamen Design</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>";
+        PROVIDERS[key].attribution = "Maps &copy; <a href=\"https://stamen.com/\">Stamen Design</a>. Data &copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap contributors</a>";
     }
 
     /*

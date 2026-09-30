@@ -95,9 +95,7 @@ abstract class Process {
      * @since 3.7.0
      */
     protected function generate_v4_uuid() {
-        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0x0fff) | 0x4000,
-            mt_rand(0, 0x3fff) | 0x8000, mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff));
+        return wp_generate_uuid4();
     }
 
     /**
@@ -175,10 +173,11 @@ abstract class Process {
      * @since 3.6.0
      */
     protected function full_url() {
+        $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
-            $target = ' target="_blank" ';
+            $target = ' target="_blank" rel="noopener noreferrer" ';
         }
-        return '<a href="' . $this->url() . '"' . $target . '>' . __('see details', 'live-weather-station') . '</a>';
+        return '<a href="' . esc_url($this->url()) . '"' . $target . '>' . __('see details', 'live-weather-station') . '</a>';
     }
 
     /**
@@ -254,7 +253,7 @@ abstract class Process {
     private function _get() {
         global $wpdb;
         $table = $wpdb->prefix . self::live_weather_station_background_process_table();
-        $sql = "SELECT * FROM " . $table . " WHERE `uuid`='" . $this->meta_uuid() . "';";
+        $sql = $wpdb->prepare("SELECT * FROM " . $table . " WHERE `uuid`=%s;", $this->meta_uuid());
         return $wpdb->get_results($sql, ARRAY_A);
     }
 
@@ -398,7 +397,7 @@ abstract class Process {
             $this->class = $row[0]['class'];
             $this->state = $row[0]['state'];
             $this->timestamp = $row[0]['timestamp'];
-            $this->params = unserialize($row[0]['params']);
+            $this->params = unserialize($row[0]['params'], ['allowed_classes' => false]);
             $this->exectime = $row[0]['exec_time'];
             $this->pass = $row[0]['pass'];
             $this->progress = $row[0]['progress'];

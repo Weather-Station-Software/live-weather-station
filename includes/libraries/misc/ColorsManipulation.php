@@ -187,6 +187,9 @@ class ColorsManipulation {
         } else if( strlen($color) != 6 ) {
             throw new \Exception("HEX color needs to be 6 or 3 digits long");
         }
+        if (!ctype_xdigit($color)) {
+            throw new \Exception("HEX color needs to contain only hexadecimal digits");
+        }
 
         $this->_hsl = self::hexToHsl( $color );
         $this->_hex = $color;
@@ -479,6 +482,8 @@ class ColorsManipulation {
 
     public static function colorGradient($from_color, $to_color, $graduations = 10) {
         $graduations--;
+        $from_color = preg_replace('/[^#0-9a-fA-F]/', '', (string)$from_color);
+        $to_color = preg_replace('/[^#0-9a-fA-F]/', '', (string)$to_color);
         $startcol = str_replace("#", "", $from_color);
         $endcol = str_replace("#", "", $to_color);
         $RedOrigin = hexdec(substr($startcol, 0, 2));
@@ -746,6 +751,9 @@ class ColorsManipulation {
             $color = $color[0].$color[0].$color[1].$color[1].$color[2].$color[2];
         } else if( strlen($color) != 6 ) {
             throw new \Exception("HEX color needs to be 6 or 3 digits long");
+        }
+        if (!ctype_xdigit($color)) {
+            throw new \Exception("HEX color needs to contain only hexadecimal digits");
         }
 
         return $color;
