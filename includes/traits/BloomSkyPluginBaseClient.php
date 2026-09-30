@@ -61,7 +61,7 @@ trait BaseClient {
                 // Main base
                 $module_type = 'NAMain';
                 $types = array('pressure', 'pressure_sl');
-                $module_id = ID::get_fake_modulex_id($guid, 0);
+                $module_id = self::get_fake_modulex_id($guid, 0);
                 $module_name = $this->get_fake_module_name($module_type);
                 $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                 Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
@@ -69,7 +69,7 @@ trait BaseClient {
                 // Outdoor module
                 $module_type = 'NAModule1';
                 $types = array('temperature', 'humidity');
-                $module_id = ID::get_fake_modulex_id($guid, 1);
+                $module_id = self::get_fake_modulex_id($guid, 1);
                 $module_name = $this->get_fake_module_name($module_type);
                 $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                 Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
@@ -78,7 +78,7 @@ trait BaseClient {
                 if (array_key_exists('windangle', $device)) {
                     $module_type = 'NAModule2';
                     $types = array('windangle', 'gustangle', 'winddirection', 'gustdirection', 'windstrength', 'guststrength');
-                    $module_id = ID::get_fake_modulex_id($guid, 2);
+                    $module_id = self::get_fake_modulex_id($guid, 2);
                     $module_name = $this->get_fake_module_name($module_type);
                     $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                     Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
@@ -88,7 +88,7 @@ trait BaseClient {
                 if (array_key_exists('rain', $device)) {
                     $module_type = 'NAModule3';
                     $types = array('rain', 'rain_day_aggregated');
-                    $module_id = ID::get_fake_modulex_id($guid, 3);
+                    $module_id = self::get_fake_modulex_id($guid, 3);
                     $module_name = $this->get_fake_module_name($module_type);
                     $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                     Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
@@ -97,7 +97,7 @@ trait BaseClient {
                 // Solar
                 $module_type = 'NAModule5';
                 $types = array('illuminance', 'uv_index');
-                $module_id = ID::get_fake_modulex_id($guid, 5);
+                $module_id = self::get_fake_modulex_id($guid, 5);
                 $module_name = $this->get_fake_module_name($module_type);
                 $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                 Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
@@ -105,7 +105,7 @@ trait BaseClient {
                 // Picture
                 $module_type = 'NAModuleP';
                 $types = array();
-                $module_id = ID::get_fake_modulex_id($guid, 'p');
+                $module_id = self::get_fake_modulex_id($guid, 'p');
                 $module_name = $this->get_fake_module_name($module_type);
                 $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                 Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');
@@ -113,7 +113,7 @@ trait BaseClient {
                 // Video
                 $module_type = 'NAModuleV';
                 $types = array();
-                $module_id = ID::get_fake_modulex_id($guid, 'v');
+                $module_id = self::get_fake_modulex_id($guid, 'v');
                 $module_name = $this->get_fake_module_name($module_type);
                 $this->get_dashboard(LWS_BSKY_SID, $device['device_id'], $device['device_name'], $module_id, $module_name, $module_type, $types, $device, $place);
                 Logger::debug($this->facility, $this->service_name, $device['device_id'], $device['device_name'], $module_id, $module_name, 0, 'Success while collecting module records.');

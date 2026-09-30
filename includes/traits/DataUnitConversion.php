@@ -1370,6 +1370,9 @@ trait Conversion {
      */
     protected function get_cloud_ceiling($value, $id = 0)
     {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $this->get_altitude($value, $id);
         if ($result < 100) {
             $result = 5 * round($result/5, 0);
@@ -1401,6 +1404,9 @@ trait Conversion {
      * @since 3.8.0
      */
     protected function get_alt_pressure_density($value, $id = 0) {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $this->get_altitude($value, $id);
         if (abs($result) < 100) {
             $result = 5 * round($result/5, 0);
@@ -1433,6 +1439,9 @@ trait Conversion {
      */
     protected function get_visibility($value, $id = 0)
     {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $this->get_altitude($value, $id);
         if ($result < 100) {
             $result = 5 * round($result/5, 0);
@@ -1466,6 +1475,9 @@ trait Conversion {
      */
     protected function get_altitude($value, $id = 0)
     {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $value;
         switch ($id) {
             case 1:  // D(ft) = D(m) / 0.3048
@@ -1485,6 +1497,9 @@ trait Conversion {
      */
     protected function get_reverse_altitude($value, $id)
     {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $value;
         switch ($id) {
             case 1:  // D(m) = D(ft) * 0.3048
@@ -1505,6 +1520,9 @@ trait Conversion {
      */
     protected function get_distance_from_kilometers($value, $id = 0)
     {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $value;
         switch ($id) {
             case 1:  // D(mi) = D(km) / 1.609
@@ -1524,6 +1542,9 @@ trait Conversion {
      */
     protected function get_distance_from_meters($value, $id = 0)
     {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $value / 1000;
         switch ($id) {
             case 1:  // D(mi) = D(km) / 1.609
@@ -1548,6 +1569,9 @@ trait Conversion {
      */
     protected function get_reverse_distance_from_meters($value, $id = 0)
     {
+        if (!is_numeric($value)) {
+            return '';
+        }
         $result = $value * 1000;
         switch ($id) {
             case 1:  // D(mi) = D(km) / 1.609

@@ -1,7 +1,7 @@
 <?php
 
 namespace WeatherStation\Process;
-use WeatherStation\DB\Query as DB;
+use WeatherStation\System\Background\ProcessManager as DB;
 use WeatherStation\System\Plugin\Core as Options;
 use WeatherStation\System\Storage\Manager as FS;
 use WeatherStation\System\Logs\Logger;
