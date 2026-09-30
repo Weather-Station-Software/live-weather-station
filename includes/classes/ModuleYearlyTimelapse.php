@@ -127,7 +127,7 @@ class Timelapse extends \WeatherStation\Engine\Module\Maintainer {
      */
     protected function get_preview() {
         $content = '<div id="lws-graph-preview"></div>';
-        $content .= '<div id="' . $this->fingerprint . '" style="padding:0px;"></div>';
+        $content .= '<div id="' . esc_attr($this->fingerprint) . '" style="padding:0px;"></div>';
         $special_footer  = '<span id="yearly-timelapse-info-' . $this->station_guid . '" style="display: none;">';
         $special_footer .= '<div id="major-publishing-actions">';
         $special_footer .= __('This controls will be dynamically resized to fit its parent\'s size.', 'live-weather-station' );

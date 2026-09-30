@@ -38,7 +38,7 @@ $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
                     <span class="select-option">
                         <select class="option-select" name="id">
                             <?php foreach($stations as $station) { ?>
-                                <option value="<?php echo $station['device_id']; ?>"<?php echo ($station['installed'] ? ' disabled' : ''); ?>><?php echo $station['station_name']; ?></option>;
+                                <option value="<?php echo esc_attr($station['device_id']); ?>"<?php echo ($station['installed'] ? ' disabled' : ''); ?>><?php echo esc_html($station['station_name']); ?></option>;
                             <?php } ?>
                         </select>
                     </span>

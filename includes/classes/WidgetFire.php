@@ -2,6 +2,7 @@
 
 namespace WeatherStation\UI\Widget;
 
+use WeatherStation\System\Output\Guard;
 use WeatherStation\Data\Output;
 use WeatherStation\Utilities\ColorsManipulation as Color;
 use WeatherStation\Data\ID\Handling as ID;
@@ -146,12 +147,12 @@ class Fire extends Base {
         $instance = $this->_get_instance($old_instance);
         $new_instance = $this->_get_instance($new_instance);
         $instance['title'] = strip_tags($new_instance['title']);
-        $instance['subtitle'] = $new_instance['subtitle'];
-        $instance['station'] = $new_instance['station'];
-        $instance['bg_color'] = $new_instance['bg_color'];
-        $instance['bg_opacity'] = $new_instance['bg_opacity'];
-        $instance['width'] = $new_instance['width'];
-        $instance['txt_color'] = $new_instance['txt_color'];
+        $instance['subtitle'] = absint($new_instance['subtitle']);
+        $instance['station'] = Guard::token($new_instance['station'], 'N/A');
+        $instance['bg_color'] = self::sanitize_color($new_instance['bg_color'], '#444444');
+        $instance['bg_opacity'] = absint($new_instance['bg_opacity']);
+        $instance['width'] = absint($new_instance['width']);
+        $instance['txt_color'] = self::sanitize_color($new_instance['txt_color'], '#ffffff');
         $instance['show_tooltip'] = !empty($new_instance['show_tooltip']) ? 1 : 0;
         $instance['show_borders'] = !empty($new_instance['show_borders']) ? 1 : 0;
         $instance['hide_obsolete'] = !empty($new_instance['hide_obsolete']) ? 1 : 0;
@@ -164,11 +165,11 @@ class Fire extends Base {
         $instance['flat_design'] = !empty($new_instance['flat_design']) ? 1 : 0;
         $instance['follow_risk'] = !empty($new_instance['follow_risk']) ? 1 : 0;
         $instance['fixed_background'] = !empty($new_instance['fixed_background']) ? 1 : 0;
-        $instance['low_url'] = $new_instance['low_url'];
-        $instance['moderate_url'] = $new_instance['moderate_url'];
-        $instance['high_url'] = $new_instance['high_url'];
-        $instance['very_high_url'] = $new_instance['very_high_url'];
-        $instance['extreme_url'] = $new_instance['extreme_url'];
+        $instance['low_url'] = self::sanitize_url($new_instance['low_url']);
+        $instance['moderate_url'] = self::sanitize_url($new_instance['moderate_url']);
+        $instance['high_url'] = self::sanitize_url($new_instance['high_url']);
+        $instance['very_high_url'] = self::sanitize_url($new_instance['very_high_url']);
+        $instance['extreme_url'] = self::sanitize_url($new_instance['extreme_url']);
         return $instance;
     }
 
@@ -187,20 +188,21 @@ class Fire extends Base {
         lws_font_awesome();
         try
         {
-            $maxwidth = round ($instance['width']);
+            $maxwidth = is_numeric($instance['width']) ? (int)round($instance['width']) : 0;
 
         }
         catch(\Exception $ex)
         {
             $maxwidth = 0;
         }
-        $txt_color = $instance['txt_color'];
-        $bg_color = $instance['bg_color'];
+        $txt_color = self::sanitize_color($instance['txt_color'], '');
+        $bg_color = self::sanitize_color($instance['bg_color'], '');
         if (!$txt_color) {
             $txt_color = '#444444';
         }
         if (!$bg_color) {
             $txt_color = '#FFFFFF';
+            $bg_color = '#444444';
         }
         if ($flat_design) {
             $fact = 80;
@@ -217,7 +219,7 @@ class Fire extends Base {
             $hsl['L'] = $l-0.05;
             $color = new Color(Color::hslToHex($hsl));
         }
-        $opacity = (11 - $instance['bg_opacity'])/11;
+        $opacity = (11 - absint($instance['bg_opacity']))/11;
         if ($opacity < 0.1) {
             $opacity = 0;
         }
@@ -322,11 +324,11 @@ class Fire extends Base {
         if ($fixed_background) {
             $background_attachment = 'fixed';
         }
-        $low_url = $this->get_picture_url($instance['station'], $instance['low_url']);
-        $moderate_url = $this->get_picture_url($instance['station'], $instance['moderate_url']);
-        $high_url = $this->get_picture_url($instance['station'], $instance['high_url']);
-        $very_high_url = $this->get_picture_url($instance['station'], $instance['very_high_url']);
-        $extreme_url = $this->get_picture_url($instance['station'], $instance['extreme_url']);
+        $low_url = self::sanitize_url($this->get_picture_url($instance['station'], $instance['low_url']));
+        $moderate_url = self::sanitize_url($this->get_picture_url($instance['station'], $instance['moderate_url']));
+        $high_url = self::sanitize_url($this->get_picture_url($instance['station'], $instance['high_url']));
+        $very_high_url = self::sanitize_url($this->get_picture_url($instance['station'], $instance['very_high_url']));
+        $extreme_url = self::sanitize_url($this->get_picture_url($instance['station'], $instance['extreme_url']));
         $bg_url = '';
         $cbi = -99999;
         $rain_multipart = false;

@@ -8,6 +8,6 @@
 
 ?>
 <div class="activity-block">
-    <?php echo $message; ?>
+    <?php echo wp_kses_post($message); ?>
 </div>
 

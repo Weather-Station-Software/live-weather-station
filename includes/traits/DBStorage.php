@@ -816,7 +816,7 @@ trait Storage {
             // WUG STATION COLLECTED
             $wug = self::wug_stations();
             if (count($wug) > 0) {
-                $st = implode('", "', $wug);
+                $st = implode('", "', array_map('esc_html', $wug));
                 $url = 'https://weather.station.software/blog/weather-underground-closes-its-doors-to-individual-users/';
                 Notifier::error(__('Weather Underground error', 'live-weather-station'),
                     $url,

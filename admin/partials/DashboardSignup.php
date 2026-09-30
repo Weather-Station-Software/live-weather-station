@@ -20,7 +20,7 @@ $email = get_option('admin_email');
         <?php echo sprintf(esc_attr__('Receive the latest news and updates from %s.', 'live-weather-station'), LWS_PLUGIN_NAME);?>&nbsp;&nbsp;
     </p>
     <p>
-        <input required id="email" name="email" type="email" value="<?php echo $email;?>" style="width:70%">&nbsp;&nbsp;&nbsp;&nbsp;
+        <input required id="email" name="email" type="email" value="<?php echo esc_attr($email);?>" style="width:70%">&nbsp;&nbsp;&nbsp;&nbsp;
         <input type="submit" name="subscribe-submit" id="subscribe-submit" class="button" value="<?php esc_attr_e('Subscribe', 'live-weather-station');?>">
     </p>
     <p>

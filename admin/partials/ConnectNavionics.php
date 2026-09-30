@@ -6,12 +6,14 @@
  * @since 3.8.0
  */
 
+use WeatherStation\System\Output\Guard;
+
 use WeatherStation\System\Help\InlineHelp;
 use WeatherStation\Utilities\Settings;
 
 $settings = new Settings();
 $warning = __('All the maps associated to this service will no longer be displayed.', 'live-weather-station');
-$target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '');
+$target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '');
 ?>
 
 <form action="<?php echo esc_url(lws_get_admin_page_url('lws-settings', null, 'services')); ?>" method="POST">
@@ -35,7 +37,7 @@ $target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' 
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('Status', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(lws_get_admin_page_url('lws-events', null, null, 'Navionics')); ?>"<?php echo $target; ?>><?php echo lws_lcfirst(__('See events log', 'live-weather-station')); ?></a>)</span>
+                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(lws_get_admin_page_url('lws-events', null, null, 'Navionics')); ?>"<?php echo $target; ?>><?php echo esc_html(lws_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
                     </td>
                 </tr>
             <?php } ?>
@@ -59,7 +61,7 @@ $target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' 
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
                     <span id="navionics-span-sync" style="display: none;"><i class="<?php echo LWS_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="disconnect" id="navionics-disconnect" class="button button-primary" onclick="lws_navionics_confirmation = confirm('<?php echo $warning; ?>'); return lws_navionics_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+                <input type="submit" name="disconnect" id="navionics-disconnect" class="button button-primary" onclick="lws_navionics_confirmation = confirm(<?php echo Guard::js($warning); ?>); return lws_navionics_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>
             <div class="clear"></div>
         </div>

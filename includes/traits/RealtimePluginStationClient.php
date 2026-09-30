@@ -393,7 +393,7 @@ trait StationClient {
         $result = '';
         $raw_data = $this->get_data($connection_type, $resource);
         if (strpos($raw_data, 'Err #') !== false) {
-            $result = $raw_data;
+            $result = lws_clean_text($raw_data, 200);
         }
         else {
             $weather = $this->explode_data($raw_data);

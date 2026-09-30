@@ -209,6 +209,7 @@ abstract class Framework {
             $header = 'Content-type: text/plain; charset=utf-8';
         }
         header($header);
+        header('X-Content-Type-Options: nosniff');
         if ($code != 0) {
             $message = HTTP::get_http_status($code);
         }

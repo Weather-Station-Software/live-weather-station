@@ -6,7 +6,10 @@
  * @since 3.0.0
  */
 
-$active_tab = (isset($_GET['tab']) ? $_GET['tab'] : 'general');
+$active_tab = (isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'general');
+if (!in_array($active_tab, array('general', 'services', 'display', 'styles', 'thresholds', 'history', 'system', 'maintenance', 'tasks'), true)) {
+    $active_tab = 'general';
+}
 $buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; ' . str_replace('<p class="submit">', '', get_submit_button(__('Reset to Defaults', 'live-weather-station'), 'secondary', 'reset'));
 
 

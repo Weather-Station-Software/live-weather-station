@@ -45,8 +45,8 @@ else {
         <h1><?php esc_html_e('Edit a station connected to WeatherLink', 'live-weather-station');?></h1>
     <?php } ?>
     <form method="post" name="add-edit-wlink-form" id="add-edit-wlink-form" action="<?php echo esc_url(lws_get_admin_page_url($url)); ?>">
-        <input name="station_id" type="hidden" value="<?php echo $station['station_id']; ?>" />
-        <input name="guid" type="hidden" value="<?php echo $station['guid']; ?>" />
+        <input name="station_id" type="hidden" value="<?php echo esc_attr($station['station_id']); ?>" />
+        <input name="guid" type="hidden" value="<?php echo esc_attr($station['guid']); ?>" />
         <input name="service" type="hidden" value="WeatherLink" />
         <input name="tab" type="hidden" value="add-edit" />
         <input name="action" type="hidden" value="do" />
@@ -60,27 +60,27 @@ else {
                 <td>
                     <select name="loc_country_code" id="loc_country_code" style="width:25em;">
                         <?php foreach ($countries as $key => $val) { ?>
-                            <option value="<?php echo $key ?>"<?php if ($station['loc_country_code']==$key) {?> selected="selected"<?php } ?>><?php echo $val ?></option>;
+                            <option value="<?php echo esc_attr($key) ?>"<?php if ($station['loc_country_code']==$key) {?> selected="selected"<?php } ?>><?php echo esc_html($val); ?></option>;
                         <?php } ?>
                     </select>
                 </td>
             </tr>
             <tr class="form-field form-required">
                 <th scope="row"><label for="service_did"><?php esc_html_e('Device ID', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
-                <td><input required name="service_did" aria-required="true" type="text" id="service_did" value="<?php echo htmlspecialchars($id['service_did']) ?>" maxlength="20" style="width:25em;" /></td>
+                <td><input required name="service_did" aria-required="true" type="text" id="service_did" value="<?php echo esc_attr($id['service_did']) ?>" maxlength="20" style="width:25em;" /></td>
             </tr>
             <tr class="form-field form-required">
                 <th scope="row"><label for="service_apitoken"><?php esc_html_e('API Token', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
-                <td><input required name="service_apitoken" aria-required="true" type="text" id="service_apitoken" value="<?php echo htmlspecialchars($id['service_apitoken']) ?>" maxlength="20" style="width:25em;" /></td>
+                <td><input required name="service_apitoken" aria-required="true" type="text" id="service_apitoken" value="<?php echo esc_attr($id['service_apitoken']) ?>" maxlength="20" style="width:25em;" /></td>
             </tr>
             <tr class="form-field form-required">
                 <th scope="row"><label for="service_ownerpass"><?php esc_html_e('Password', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
-                <td><input required name="service_ownerpass" aria-required="true" type="text" id="service_ownerpass" value="<?php echo htmlspecialchars($id['service_ownerpass']) ?>" maxlength="20" style="width:25em;" /></td>
+                <td><input required name="service_ownerpass" aria-required="true" type="text" id="service_ownerpass" value="<?php echo esc_attr($id['service_ownerpass']) ?>" maxlength="20" style="width:25em;" /></td>
             </tr>
 
         </table>
         <?php if ($error != 0) { ?>
-            <p style="color:red;"><?php echo $errmsg;?></p>
+            <p style="color:red;"><?php echo esc_html($errmsg);?></p>
         <?php } ?>
         <?php if ($station['guid'] == 0) { ?>
             <p class="submit"><input type="submit" name="add-edit-wlink" id="add-edit-wlink" class="button button-primary" value="<?php esc_html_e( 'Add This Station', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;

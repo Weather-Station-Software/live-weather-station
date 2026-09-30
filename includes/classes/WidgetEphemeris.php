@@ -2,6 +2,7 @@
 
 namespace WeatherStation\UI\Widget;
 
+use WeatherStation\System\Output\Guard;
 use WeatherStation\Data\Output;
 use WeatherStation\Utilities\ColorsManipulation as Color;
 use WeatherStation\System\Logs\Logger;
@@ -130,19 +131,20 @@ class Ephemeris extends Base {
         lws_font_awesome();
         try
         {
-            $maxwidth = round ($instance['width']);
+            $maxwidth = is_numeric($instance['width']) ? (int)round($instance['width']) : 0;
         }
         catch(\Exception $ex)
         {
             $maxwidth = 0;
         }
-        $txt_color = $instance['txt_color'];
-        $bg_color = $instance['bg_color'];
+        $txt_color = self::sanitize_color($instance['txt_color'], '');
+        $bg_color = self::sanitize_color($instance['bg_color'], '');
         if (!$txt_color) {
             $txt_color = '#444444';
         }
         if (!$bg_color) {
             $txt_color = '#FFFFFF';
+            $bg_color = '#444444';
         }
         if ($flat_design) {
             $fact = 80;
@@ -157,7 +159,7 @@ class Ephemeris extends Base {
         else {
             $color = $c;
         }
-        $opacity = (11 - $instance['bg_opacity'])/11;
+        $opacity = (11 - absint($instance['bg_opacity']))/11;
         if ($opacity < 0.1) {
             $opacity = 0;
         }
@@ -233,23 +235,23 @@ class Ephemeris extends Base {
         $instance = $this->_get_instance($old_instance);
         $new_instance = $this->_get_instance($new_instance);
         $instance['title'] = strip_tags($new_instance['title']);
-        $instance['subtitle'] = $new_instance['subtitle'];
-        $instance['format'] = $new_instance['format'];
-        $instance['station'] = $new_instance['station'];
-        $instance['bg_color'] = $new_instance['bg_color'];
-        $instance['bg_opacity'] = $new_instance['bg_opacity'];
-        $instance['width'] = $new_instance['width'];
-        $instance['txt_color'] = $new_instance['txt_color'];
+        $instance['subtitle'] = absint($new_instance['subtitle']);
+        $instance['format'] = absint($new_instance['format']);
+        $instance['station'] = Guard::token($new_instance['station'], 'N/A');
+        $instance['bg_color'] = self::sanitize_color($new_instance['bg_color'], '#444444');
+        $instance['bg_opacity'] = absint($new_instance['bg_opacity']);
+        $instance['width'] = absint($new_instance['width']);
+        $instance['txt_color'] = self::sanitize_color($new_instance['txt_color'], '#ffffff');
         $instance['show_tooltip'] = !empty($new_instance['show_tooltip']) ? 1 : 0;
         $instance['show_borders'] = !empty($new_instance['show_borders']) ? 1 : 0;
         $instance['flat_design'] = !empty($new_instance['flat_design']) ? 1 : 0;
         $instance['follow_light'] = !empty($new_instance['follow_light']) ? 1 : 0;
         $instance['fixed_background'] = !empty($new_instance['fixed_background']) ? 1 : 0;
-        $instance['day_url'] = $new_instance['day_url'];
-        $instance['night_url'] = $new_instance['night_url'];
-        $instance['dawn_url'] = $new_instance['dawn_url'];
-        $instance['dusk_url'] = $new_instance['dusk_url'];
-        $instance['mode'] = $new_instance['mode'];
+        $instance['day_url'] = self::sanitize_url($new_instance['day_url']);
+        $instance['night_url'] = self::sanitize_url($new_instance['night_url']);
+        $instance['dawn_url'] = self::sanitize_url($new_instance['dawn_url']);
+        $instance['dusk_url'] = self::sanitize_url($new_instance['dusk_url']);
+        $instance['mode'] = absint($new_instance['mode']);
         return $instance;
     }
 
@@ -279,10 +281,10 @@ class Ephemeris extends Base {
         if ($fixed_background) {
             $background_attachment = 'fixed';
         }
-        $day_url = $this->get_picture_url($instance['station'], $instance['day_url']);
-        $night_url = $this->get_picture_url($instance['station'], $instance['night_url']);
-        $dawn_url = $this->get_picture_url($instance['station'], $instance['dawn_url']);
-        $dusk_url = $this->get_picture_url($instance['station'], $instance['dusk_url']);
+        $day_url = self::sanitize_url($this->get_picture_url($instance['station'], $instance['day_url']));
+        $night_url = self::sanitize_url($this->get_picture_url($instance['station'], $instance['night_url']));
+        $dawn_url = self::sanitize_url($this->get_picture_url($instance['station'], $instance['dawn_url']));
+        $dusk_url = self::sanitize_url($this->get_picture_url($instance['station'], $instance['dusk_url']));
         $bg_url = '';
         $sunrise_a = 0;
         $sunrise = 0;

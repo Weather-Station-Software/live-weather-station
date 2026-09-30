@@ -193,17 +193,17 @@ trait BaseClient {
                 $dat = array();
                 if (array_key_exists('info', $station)) {
                     if (array_key_exists('name', $station['info'])) {
-                        $dat['fixed_device_name'] = $station['info']['name'];
+                        $dat['fixed_device_name'] = lws_clean_text($station['info']['name'], 60);
                     }
                     else {
                         $dat['fixed_device_name'] = '< NO NAME >';
                     }
                     if (array_key_exists('location', $station['info'])) {
-                        $dat['fixed_device_name'] .= ' (' . $station['info']['location'] . ')';
+                        $dat['fixed_device_name'] .= ' (' . lws_clean_text($station['info']['location'], 60) . ')';
                     }
                 }
                 if (array_key_exists('macAddress', $station)) {
-                    $dat['device_id'] = strtolower($station['macAddress']);
+                    $dat['device_id'] = preg_replace('/[^0-9a-f:]/', '', strtolower((string)$station['macAddress']));
                     $st = $this->get_station_information_by_station_id($dat['device_id']);
                     if (array_key_exists('loc_altitude', $st)) {
                         $altitude = $st['loc_altitude'];

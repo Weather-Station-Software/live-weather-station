@@ -69,19 +69,19 @@ use WeatherStation\System\Help\InlineHelp;
 </select>
 <p>
     <label for="<?php echo $this->get_field_id('day_url'); ?>"><?php esc_html_e( 'Image URL for day' , 'live-weather-station'); ?></label><br/>
-    <input type="text" class="widefat" id="<?php echo $this->get_field_id('day_url'); ?>" name="<?php echo $this->get_field_name('day_url'); ?>" value="<?php echo $day_url; ?>" />
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('day_url'); ?>" name="<?php echo $this->get_field_name('day_url'); ?>" value="<?php echo esc_attr($day_url); ?>" />
 </p>
 <p>
     <label for="<?php echo $this->get_field_id('night_url'); ?>"><?php esc_html_e( 'Image URL for night' , 'live-weather-station'); ?></label><br/>
-    <input type="text" class="widefat" id="<?php echo $this->get_field_id('night_url'); ?>" name="<?php echo $this->get_field_name('night_url'); ?>" value="<?php echo $night_url; ?>" />
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('night_url'); ?>" name="<?php echo $this->get_field_name('night_url'); ?>" value="<?php echo esc_attr($night_url); ?>" />
 </p>
 <p>
     <label for="<?php echo $this->get_field_id('dawn_url'); ?>"><?php esc_html_e( 'Image URL for dawn' , 'live-weather-station'); ?></label><br/>
-    <input type="text" class="widefat" id="<?php echo $this->get_field_id('dawn_url'); ?>" name="<?php echo $this->get_field_name('dawn_url'); ?>" value="<?php echo $dawn_url; ?>" />
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('dawn_url'); ?>" name="<?php echo $this->get_field_name('dawn_url'); ?>" value="<?php echo esc_attr($dawn_url); ?>" />
 </p>
 <p>
     <label for="<?php echo $this->get_field_id('dusk_url'); ?>"><?php esc_html_e( 'Image URL for dusk' , 'live-weather-station'); ?></label><br/>
-    <input type="text" class="widefat" id="<?php echo $this->get_field_id('dusk_url'); ?>" name="<?php echo $this->get_field_name('dusk_url'); ?>" value="<?php echo $dusk_url; ?>" />
+    <input type="text" class="widefat" id="<?php echo $this->get_field_id('dusk_url'); ?>" name="<?php echo $this->get_field_name('dusk_url'); ?>" value="<?php echo esc_attr($dusk_url); ?>" />
 </p>
 <p>
     <input type="checkbox" class="checkbox" id="<?php echo $this->get_field_id('fixed_background'); ?>" name="<?php echo $this->get_field_name('fixed_background'); ?>"<?php checked( $fixed_background ); ?> />

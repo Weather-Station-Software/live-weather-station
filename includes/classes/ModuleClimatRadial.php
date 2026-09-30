@@ -3,6 +3,7 @@
 namespace WeatherStation\Engine\Module\Climat;
 
 use WeatherStation\Data\Output;
+use WeatherStation\System\Output\Guard;
 
 /**
  * Class to generate parameter climat radial form.
@@ -110,7 +111,7 @@ class Radial extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '    if (js_array_' . $js_name . '_period_' . $this->station_guid . '[i][0] == $("#' . $name . '-measurements-period-type-' . $this->station_guid . '").val()) {js_array_' . $js_name . '_p_' . $this->station_guid . '=js_array_' . $js_name . '_period_' . $this->station_guid . '[i][1]};});';
         $content .= '  $("#' . $name . '-measurements-period-value-' . $this->station_guid . '").html("");';
         $content .= '  $(js_array_' . $js_name . '_p_' . $this->station_guid . ').each(function (i) {';
-        $content .= '    $("#' . $name . '-measurements-period-value-' . $this->station_guid . '").append("<option value="+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]+">"+js_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]+"</option>");});';
+        $content .= '    $("#' . $name . '-measurements-period-value-' . $this->station_guid . '").append($("<option></option>").attr("value", js_array_' . $js_name . '_p_' . $this->station_guid . '[i][0]).text(js_array_' . $js_name . '_p_' . $this->station_guid . '[i][1]));});';
         $content .= '$("#' . $name . '-measurements-period-value-' . $this->station_guid . '" ).change();';
         $content .= '});';
         $content .= '$("#' . $name . '-measurements-period-value-' . $this->station_guid . '").change(function() {';
@@ -124,7 +125,7 @@ class Radial extends \WeatherStation\Engine\Module\Maintainer {
         $content .= '$("#' . $name . '-measurements-valuescale-' . $this->station_guid . '").change(function() {';
         $content .= '$("#' . $name . '-measurements-data-' . $this->station_guid . '" ).change();});';
         $content .= '$("#' . $name . '-measurements-data-' . $this->station_guid . '").change(function() {';
-        $content .= '  var sc_device = "' . $this->station_id . '";';
+        $content .= '  var sc_device = ' . Guard::js($this->station_id) . ';';
         $content .= '  var sc_period_type = $("#' . $name . '-measurements-period-type-' . $this->station_guid . '").val();';
         $content .= '  var sc_period = $("#' . $name . '-measurements-period-value-' . $this->station_guid . '").val();';
         $content .= '  var sc_values = $("#' . $name . '-measurements-values-' . $this->station_guid . '").val();';

@@ -24,9 +24,9 @@ if (!isset($station['station_model'])) {
         <h1><?php echo sprintf(__('Edit a weather station published on %s', 'live-weather-station'), 'Weather Underground');?></h1>
     <?php } ?>
     <form method="post" name="add-edit-wug-form" id="add-edit-wug-form" action="<?php echo esc_url(lws_get_admin_page_url($url)); ?>">
-        <input name="guid" type="hidden" value="<?php echo $station['guid']; ?>" />
+        <input name="guid" type="hidden" value="<?php echo esc_attr($station['guid']); ?>" />
         <?php if ($edit) { ?>
-            <input name="service_id" type="hidden" value="<?php echo $station['service_id']; ?>" />
+            <input name="service_id" type="hidden" value="<?php echo esc_attr($station['service_id']); ?>" />
         <?php } ?>
         <input name="service" type="hidden" value="WeatherUnderground" />
         <input name="tab" type="hidden" value="add-edit" />
@@ -38,21 +38,21 @@ if (!isset($station['station_model'])) {
         <table class="form-table">
             <tr class="form-field">
                 <th scope="row"><label for="station_name"><?php esc_html_e('Station name', 'live-weather-station' );?></label></th>
-                <td><input name="station_name" aria-required="false" type="text" id="station_name" value="<?php echo htmlspecialchars($station['station_name']) ?>" maxlength="60" style="width:25em;" /></td>
+                <td><input name="station_name" aria-required="false" type="text" id="station_name" value="<?php echo esc_attr($station['station_name']) ?>" maxlength="60" style="width:25em;" /></td>
             </tr>
             <tr class="form-field form-required">
                 <th scope="row"><label for="station_model"><?php esc_html_e('Station model', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
                 <td>
                     <select name="station_model" id="station_model" style="width:25em;">
                         <?php foreach ($models as $val) { ?>
-                            <option value="<?php echo $val ?>"<?php if ($station['station_model']==$val) {?> selected="selected"<?php } ?>><?php echo $val; ?></option>;
+                            <option value="<?php echo esc_attr($val) ?>"<?php if ($station['station_model']==$val) {?> selected="selected"<?php } ?>><?php echo esc_html($val); ?></option>;
                         <?php } ?>
                     </select>
                 </td>
             </tr>
             <tr class="form-field form-required">
                 <th scope="row"><label for="service_id"><?php esc_html_e('Station ID', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
-                <td><input required <?php echo ($edit ? 'disabled="disabled" ' : ''); ?>name="service_id" type="text" id="service_id" value="<?php echo htmlspecialchars($station['service_id']) ?>" maxlength="20" style="width:25em;" /><?php echo InlineHelp::article(2)?></td>
+                <td><input required <?php echo ($edit ? 'disabled="disabled" ' : ''); ?>name="service_id" type="text" id="service_id" value="<?php echo esc_attr($station['service_id']) ?>" maxlength="20" style="width:25em;" /><?php echo InlineHelp::article(2)?></td>
             </tr>
         </table>
         <?php if ($station['guid'] == 0) { ?>

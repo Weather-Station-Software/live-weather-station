@@ -7,6 +7,7 @@ use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\Arrays\Generator;
 use WeatherStation\Data\ID\Handling as IDHandling;
 use WeatherStation\System\Help\InlineHelp;
+use WeatherStation\System\Output\Guard;
 
 
 
@@ -136,7 +137,7 @@ class Handling {
                 $mid = 0;
             }
         }
-        $this->map_id = $mid;
+        $this->map_id = absint($mid);
         if (!($tab = filter_input(INPUT_POST, 'tab'))) {
             $this->arg_tab = filter_input(INPUT_GET, 'tab');
         }
@@ -206,7 +207,7 @@ class Handling {
         $result .= "    jQuery(document).ready( function($) {";
         $result .= "        $('.if-js-closed').removeClass('if-js-closed').addClass('closed');";
         $result .= "        if(typeof postboxes !== 'undefined')";
-        $result .= "            postboxes.add_postbox_toggles('" . $this->screen_id . "');";
+        $result .= "            postboxes.add_postbox_toggles(" . Guard::js($this->screen_id) . ");";
         $result .= "        $('#common-station-selector').change(function() {";
         $result .= "            $('#stations-selector').prop('disabled', $('#common-station-selector').val() == 'all');";
         $result .= "        });";
@@ -254,9 +255,9 @@ class Handling {
                         }
                     }
                     $box_id = $box['id'];
-                    $result .= '<label for="' . $box_id . '-hide">';
-                    $result .= '<input class="hide-postbox-tog" name="' . $box_id . '-hide" type="checkbox" id="' . $box_id . '-hide" value="' . $box_id . '"' . (!in_array($box_id, $hidden) ? ' checked="checked"' : '') . ' />';
-                    $result .= $box['title'] . '</label>';
+                    $result .= '<label for="' . esc_attr($box_id) . '-hide">';
+                    $result .= '<input class="hide-postbox-tog" name="' . esc_attr($box_id) . '-hide" type="checkbox" id="' . esc_attr($box_id) . '-hide" value="' . esc_attr($box_id) . '"' . (!in_array($box_id, $hidden) ? ' checked="checked"' : '') . ' />';
+                    $result .= wp_kses_post($box['title']) . '</label>';
                 }
             }
         }
@@ -277,9 +278,9 @@ class Handling {
     protected function get_box($id, $title, $content, $footer='', $special_footer='') {
         $result = '';
         $result .= '<div class="meta-box-sortables" style="width:100%;">';
-        $result .= '<div class="postbox" id="' . $id . '" style="min-width:300px;">';
-        $result .= '<button type="button" class="handlediv" aria-expanded="true"><span class="screen-reader-text">' . __('Click to toggle', 'live-weather-station') . '</span><span class="toggle-indicator" aria-hidden="true"></span></button>';
-        $result .= '<h3 class="hndle" style="cursor:default"><span>' . $title . '</span><span class="' . $id . '-spinner" style ="float: initial;margin-top:-4px;margin-bottom:-1px;"></span></h3>';
+        $result .= '<div class="postbox" id="' . esc_attr($id) . '" style="min-width:300px;">';
+        $result .= '<button type="button" class="handlediv" aria-expanded="true"><span class="screen-reader-text">' . esc_html__('Click to toggle', 'live-weather-station') . '</span><span class="toggle-indicator" aria-hidden="true"></span></button>';
+        $result .= '<h3 class="hndle" style="cursor:default"><span>' . wp_kses_post($title) . '</span><span class="' . esc_attr($id) . '-spinner" style ="float: initial;margin-top:-4px;margin-bottom:-1px;"></span></h3>';
         $result .= '<div class="inside" style="text-align:center;">';
         $result .= $content;
         $result .= '</div>';
@@ -315,8 +316,8 @@ class Handling {
         $result .= '});';
         $result .= lws_print_end_script($jsInitId);
         $title = __('Shortcode', 'live-weather-station');
-        $content = '<textarea readonly rows="1" style="width:100%;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="' . $id . '">[live-weather-station-map id="' . $this->map_id . '"]</textarea>';
-        $footer = '<button data-clipboard-target="#' . $id . '" class="button button-primary copy-sc-map-button">' . __('Copy', 'live-weather-station'). '</button>';
+        $content = '<textarea readonly rows="1" style="width:100%;font-family:Consolas,Monaco,Lucida Console,Liberation Mono,DejaVu Sans Mono,Bitstream Vera Sans Mono,Courier New, monospace;" id="' . esc_attr($id) . '">[live-weather-station-map id="' . esc_textarea($this->map_id) . '"]</textarea>';
+        $footer = '<button data-clipboard-target="#' . esc_attr($id) . '" class="button button-primary copy-sc-map-button">' . esc_html__('Copy', 'live-weather-station'). '</button>';
         return $result . $this->get_box('lws-shortcode-id', $title, $content, $footer);
     }
 
@@ -327,7 +328,7 @@ class Handling {
      **/
     public function get() {
         echo '<div class="wrap">';
-        echo '<h1>' . $this->map_name . '</h1>';
+        echo '<h1>' . esc_html($this->map_name) . '</h1>';
         if ($this->arg_tab === 'add-edit') {
             settings_errors();
             echo '<form name="lws-map" id="lws-map" method="post">';
@@ -335,7 +336,7 @@ class Handling {
             wp_nonce_field('closedpostboxes', 'closedpostboxesnonce', false);
             wp_nonce_field('meta-box-order', 'meta-box-order-nonce', false);
             wp_nonce_field('lws-map-' . $this->map_id, 'lws-map-' . $this->map_id . '-nonce', false);
-            echo '<input name="mid" type="hidden" value="' . $this->map_id . '" />';
+            echo '<input name="mid" type="hidden" value="' . esc_attr($this->map_id) . '" />';
             echo '    <div id="dashboard-widgets" class="metabox-holder">';
             echo '        <div id="postbox-container-1" class="postbox-container">';
             do_meta_boxes($this->screen_id, 'advanced', null);
@@ -358,7 +359,7 @@ class Handling {
         echo '<div class="main-boxes-container">';
         echo '<div class="row-boxes-container">';
         echo '<div class="item-boxes-container" id="lws-preview">';
-        echo $this->get_box('map-preview', __('Preview (without size constraints)', 'live-weather-station'), $this->aux_handler->output());
+        echo $this->get_box('map-preview', esc_html__('Preview (without size constraints)', 'live-weather-station'), $this->aux_handler->output());
         echo '</div>';
         echo '</div>';
         echo '<div class="row-boxes-container">';
@@ -402,11 +403,11 @@ class Handling {
      */
     public function summary_widget($n, $args) {
         if (array_key_exists('map', $args['args']) && array_key_exists('params', $args['args'])) {
-            $map_name = $args['args']['map']['name'];
+            $map_name = esc_html($args['args']['map']['name']);
             $map_location = $this->output_coordinate($args['args']['params']['common']['loc_latitude'], 'loc_latitude', 5, true);
             $map_location .= ' ⁛ ' . $this->output_coordinate($args['args']['params']['common']['loc_longitude'], 'loc_longitude', 5, true);
             $map_location = str_replace(' ', '&nbsp;', $map_location);
-            $map_zoom = $args['args']['params']['common']['loc_zoom'];
+            $map_zoom = (int)$args['args']['params']['common']['loc_zoom'];
             $map_icn = $this->output_iconic_value(0, 'map', false, false, '#999');
             $location_icn = $this->output_iconic_value(0, 'location', false, false, '#999');
             $zoom_icn = $this->output_iconic_value(0, 'zoom', false, false, '#999');
@@ -420,7 +421,7 @@ class Handling {
      * @since 3.7.0
      */
     public function action_widget($n, $args) {
-        echo '<div style="text-align:center;"><input type="submit" name="save-map" id="save-map" class="button button-primary" value="' . __('Save & Refresh Preview', 'live-weather-station') . '"  /></div>';
+        echo '<div style="text-align:center;"><input type="submit" name="save-map" id="save-map" class="button button-primary" value="' . esc_attr__('Save & Refresh Preview', 'live-weather-station') . '"  /></div>';
     }
 
     /**

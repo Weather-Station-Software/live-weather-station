@@ -75,9 +75,9 @@ class Notifier {
         $values = array();
         $values['timestamp'] = date('Y-m-d H:i:s', ($shift?time()+1:time()));
         $values['level'] = $level;
-        $values['name'] = substr($name, 0, 99);
-        $values['description'] = substr($description, 0, 1999);
-        $values['url'] = substr($url, 0, 199);
+        $values['name'] = substr(sanitize_text_field($name), 0, 99);
+        $values['description'] = substr(wp_kses_post($description), 0, 1999);
+        $values['url'] = substr(esc_url_raw($url), 0, 199);
         self::insert_table(self::live_weather_station_notifications_table(), $values);
         Cache::invalidate_backend(self::$cacheid);
     }

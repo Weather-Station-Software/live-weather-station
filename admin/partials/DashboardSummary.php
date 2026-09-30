@@ -23,7 +23,7 @@ if (REQUIREMENTS_OK) {
         $show_processes = true;
         $de = array();
         foreach ($p as $d) {
-            $de[] = $d['name'] . ' (' . $d['progress'] . '%)';
+            $de[] = esc_html($d['name']) . ' (' . esc_html($d['progress']) . '%)';
         }
         $processes_str = __('Currently running:', 'live-weather-station') . ' ' . implode(', ', $de) . '.';
     }
@@ -64,7 +64,7 @@ if (REQUIREMENTS_OK) {
         $services_str = implode(', ', $services);
     }
     $services_str = __('Connected services:', 'live-weather-station') . ' ' . $services_str . '.';
-    $log_url = '<a href="' . LWS_ADMIN_PHP_URL . '?page=lws-events&level=error" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>' . lws_lcfirst(__('Events log', 'live-weather-station')) . '</a>';
+    $log_url = '<a href="' . esc_url(LWS_ADMIN_PHP_URL . '?page=lws-events&level=error') . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>' . lws_lcfirst(__('Events log', 'live-weather-station')) . '</a>';
     $a = $stats->get_log();
     if ($a['emergency'] > 0) {
         $run_str = sprintf(__('%1$s has encountered operating issues in the last 3 days. You should check the %2$s to know the cause of this problem.', 'live-weather-station'), LWS_PLUGIN_NAME, $log_url);
@@ -77,7 +77,7 @@ if (REQUIREMENTS_OK) {
     }
 }
 else {
-    $req_url = '<a href="' . LWS_ADMIN_PHP_URL . '?page=lws-requirements" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>' . lcfirst(__('see why', 'live-weather-station')) . '</a>';
+    $req_url = '<a href="' . esc_url(LWS_ADMIN_PHP_URL . '?page=lws-requirements') . '" ' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>' . lcfirst(__('see why', 'live-weather-station')) . '</a>';
     $run_str = sprintf(__('%1$s can\'t run: %2$s', 'live-weather-station'), LWS_PLUGIN_NAME, $req_url) . '&hellip;';
 }
 $quota = get_transient('live_weather_station_quota_alert');

@@ -28,7 +28,7 @@ class Maps extends Base {
     }
 
     protected function column_default($item, $column_name){
-        return $item[$column_name];
+        return esc_html($item[$column_name]);
     }
 
     private function get_icon($type) {
@@ -62,11 +62,13 @@ class Maps extends Base {
 
     protected function column_map($item){
         $type = strtolower($this->get_service_name(100 + $item['type']));
-        $actions['view'] = sprintf('<a href="?page=lws-maps&action=form&tab=view&service=' . $type . '&mid=%s">'.__('View', 'live-weather-station').'</a>', $item['id']);
-        $actions['edit'] = sprintf('<a href="?page=lws-maps&action=form&tab=add-edit&service=' . $type . '&mid=%s">'.__('Modify', 'live-weather-station').'</a>', $item['id']);
-        $actions['delete'] = sprintf('<a href="?page=lws-maps&action=form&tab=delete&service=map&mid=%s">'.__('Remove', 'live-weather-station').'</a>', $item['id']);
-        $id = sprintf(__('Map ID #%s'), $item['id']);
-        $name = sprintf('<a class="row-title" href="?page=lws-maps&action=form&tab=add-edit&service=' . $type . '&mid=%s"' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" ' : '') . '>' . $item['name'] . '</a>', $item['id']);
+        $mid = absint($item['id']);
+        $type = sanitize_key($type);
+        $actions['view'] = '<a href="' . esc_url('?page=lws-maps&action=form&tab=view&service=' . $type . '&mid=' . $mid) . '">' . esc_html__('View', 'live-weather-station') . '</a>';
+        $actions['edit'] = '<a href="' . esc_url('?page=lws-maps&action=form&tab=add-edit&service=' . $type . '&mid=' . $mid) . '">' . esc_html__('Modify', 'live-weather-station') . '</a>';
+        $actions['delete'] = '<a href="' . esc_url('?page=lws-maps&action=form&tab=delete&service=map&mid=' . $mid) . '">' . esc_html__('Remove', 'live-weather-station') . '</a>';
+        $id = esc_html(sprintf(__('Map ID #%s'), $mid));
+        $name = '<a class="row-title" href="' . esc_url('?page=lws-maps&action=form&tab=add-edit&service=' . $type . '&mid=' . $mid) . '"' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>' . esc_html($item['name']) . '</a>';
         return $this->get_icon($type) . '&nbsp;' . sprintf('%1$s <br /><span style="color:silver">&nbsp;%2$s</span>%3$s', $name, $id, $this->row_actions($actions));
     }
 
@@ -80,7 +82,7 @@ class Maps extends Base {
                     $r = array();
                     foreach ($this->stations as $station) {
                         if (in_array($station['guid'], $list)) {
-                            $r[] = $station['station_name'];
+                            $r[] = esc_html($station['station_name']);
                         }
                     }
                     if (count($r) > 0) {
@@ -90,7 +92,7 @@ class Maps extends Base {
             }
         }
         else {
-            $result = '- ' . __('all', 'live-weather-station') . ' -';
+            $result = '- ' . esc_html__('all', 'live-weather-station') . ' -';
         }
         return $result;
     }
@@ -99,7 +101,7 @@ class Maps extends Base {
         $params = unserialize($item['params']);
         if (array_key_exists('common', $params)) {
             if (array_key_exists('loc_zoom', $params['common'])) {
-                return $params['common']['loc_zoom'];
+                return esc_html($params['common']['loc_zoom']);
             }
         }
         return '-';
@@ -111,21 +113,23 @@ class Maps extends Base {
         $height = '-';
         if (array_key_exists('common', $params)) {
             if (array_key_exists('width', $params['common'])) {
-                $width = $params['common']['width'];
+                $width = esc_html($params['common']['width']);
             }
         }
         if (array_key_exists('common', $params)) {
             if (array_key_exists('height', $params['common'])) {
-                $height = $params['common']['height'];
+                $height = esc_html($params['common']['height']);
             }
         }
-        $s = '<span style="color:silver">' . __('Width:', 'live-weather-station') . '</span>&nbsp;' . $width . '<br/>';
-        $s .= '<span style="color:silver">' . __('Height:', 'live-weather-station') . '</span>&nbsp;' . $height;
+        $s = '<span style="color:silver">' . esc_html__('Width:', 'live-weather-station') . '</span>&nbsp;' . $width . '<br/>';
+        $s .= '<span style="color:silver">' . esc_html__('Height:', 'live-weather-station') . '</span>&nbsp;' . $height;
         return $s;
     }
 
     protected function column_center($item){
         $params = unserialize($item['params']);
+        $lat = '-';
+        $lon = '-';
         if (array_key_exists('common', $params)) {
             if (array_key_exists('loc_latitude', $params['common'])) {
                 $lat = $this->output_coordinate($params['common']['loc_latitude'], 'loc_latitude', 6);
@@ -140,7 +144,7 @@ class Maps extends Base {
                 $lon = '-';
             }
         }
-        return $lat . ' ⁛ ' . $lon;
+        return esc_html($lat . ' ⁛ ' . $lon);
     }
 
     public function get_columns(){
@@ -158,8 +162,11 @@ class Maps extends Base {
     }
 
     public function usort_reorder($a,$b){
-        $orderby = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby'] : 'name';
-        $order = (!empty($_REQUEST['order'])) ? $_REQUEST['order'] : 'asc';
+        $orderby = (!empty($_REQUEST['orderby'])) ? sanitize_key($_REQUEST['orderby']) : 'name';
+        if (!array_key_exists($orderby, $a)) {
+            $orderby = 'name';
+        }
+        $order = (!empty($_REQUEST['order']) && strtolower($_REQUEST['order']) === 'desc') ? 'desc' : 'asc';
         $result = strcmp(strtolower($a[$orderby]), strtolower($b[$orderby]));
         return ($order==='asc') ? $result : -$result;
     }

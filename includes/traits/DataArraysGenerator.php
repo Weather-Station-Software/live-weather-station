@@ -342,7 +342,7 @@ trait Generator {
         $t = array();
         $t[] = array(__('None', 'live-weather-station'), 'none', $pref . $icon . $suf);
         foreach ($measure[2] as $line) {
-            $t[] = array($line[0], $line[1], $pref . $icon . '<span class="lws-text" style="vertical-align: baseline;"> &nbsp;' . $line[2] . '</span>' . $suf);
+            $t[] = array($line[0], $line[1], $pref . $icon . '<span class="lws-text" style="vertical-align: baseline;"> &nbsp;' . wp_kses_post($line[2]) . '</span>' . $suf);
         }
         $measure[2] = $t;
         return $measure;
@@ -369,7 +369,7 @@ trait Generator {
             $t = array();
             $t[] = array(__('None', 'live-weather-station'), 'none', $pref . $icon . $suf);
             foreach ($measure[2] as $line) {
-                $t[] = array($line[0], $line[1], $pref . $icon . '<span class="lws-text" style="vertical-align: baseline;"> &nbsp;' . $line[2] . '</span>' . $suf);
+                $t[] = array($line[0], $line[1], $pref . $icon . '<span class="lws-text" style="vertical-align: baseline;"> &nbsp;' . wp_kses_post($line[2]) . '</span>' . $suf);
             }
             $measure[2] = $t;
             $result = $measure;

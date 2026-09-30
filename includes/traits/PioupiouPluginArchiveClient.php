@@ -95,7 +95,7 @@ trait ArchiveClient {
                     Logger::notice($this->facility, 'Pioupiou', $station_id, $station_name, null, null, 0, 'Data retrieved.');
                 }
                 else {
-                    Logger::warning($this->facility, 'Pioupiou', $station_id, $station_name, null, null, 1, 'Pioupiou servers has returned unrecognized response: ' . $response);
+                    Logger::warning($this->facility, 'Pioupiou', $station_id, $station_name, null, null, 1, 'Pioupiou servers has returned unrecognized response: ' . lws_clean_text($response, 200));
                 }
             }
             else {

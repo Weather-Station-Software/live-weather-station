@@ -35,17 +35,17 @@ $station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, 
     <div class="activity-block" style="padding-bottom: 0px;">
         <?php if (array_key_exists('last_seen', $module)) { ?>
             <div style="margin-bottom: 10px;">
-                <span style="width:100%;cursor: default;"><?php echo $last_seen_icn; ?>&nbsp;<?php echo $module['last_seen_txt']; ?></span><span style="color:silver"> (<?php echo $module['last_seen_diff_txt']; ?>)</span>
+                <span style="width:100%;cursor: default;"><?php echo wp_kses_post($last_seen_icn); ?>&nbsp;<?php echo esc_html($module['last_seen_txt']); ?></span><span style="color:silver"> (<?php echo esc_html($module['last_seen_diff_txt']); ?>)</span>
             </div>
         <?php } ?>
         <?php if (array_key_exists('firmware', $module)) { ?>
             <div style="margin-bottom: 10px;">
-                <span style="width:1000%;cursor: default;"><?php echo $firmware_icn; ?>&nbsp;<?php echo $module['firmware_txt']; ?></span>
+                <span style="width:1000%;cursor: default;"><?php echo wp_kses_post($firmware_icn); ?>&nbsp;<?php echo esc_html($module['firmware_txt']); ?></span>
             </div>
         <?php } ?>
         <?php if (array_key_exists('last_setup', $module)) { ?>
             <div style="margin-bottom: 10px;">
-                <span style="width:100%;cursor: default;"><?php echo $setup_icn; ?>&nbsp;<?php echo $module['last_setup_txt']; ?></span><span style="color:silver"> (<?php echo $module['last_setup_diff_txt']; ?>)</span>
+                <span style="width:100%;cursor: default;"><?php echo wp_kses_post($setup_icn); ?>&nbsp;<?php echo esc_html($module['last_setup_txt']); ?></span><span style="color:silver"> (<?php echo esc_html($module['last_setup_diff_txt']); ?>)</span>
             </div>
         <?php } ?>
     </div>
@@ -55,22 +55,22 @@ $station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, 
         <div class="activity-block" style="padding-bottom: 0px;">
             <?php if (array_key_exists('last_seen', $module)) { ?>
                 <div style="margin-bottom: 10px;">
-                    <span style="width:100%;cursor: default;"><?php echo $last_seen_icn; ?>&nbsp;<?php echo $module['last_seen_txt']; ?></span><span style="color:silver"> (<?php echo $module['last_seen_diff_txt']; ?>)</span>
+                    <span style="width:100%;cursor: default;"><?php echo wp_kses_post($last_seen_icn); ?>&nbsp;<?php echo esc_html($module['last_seen_txt']); ?></span><span style="color:silver"> (<?php echo esc_html($module['last_seen_diff_txt']); ?>)</span>
                 </div>
             <?php } ?>
             <?php if (array_key_exists('firmware', $module) && array_key_exists('last_upgrade', $module)) { ?>
                 <div style="margin-bottom: 10px;">
-                    <span style="width:100%;cursor: default;"><?php echo $firmware_icn; ?>&nbsp;<?php echo $module['firmware_txt']; ?> <?php echo __('installed on', 'live-weather-station'); ?> <?php echo $module['last_upgrade_txt']; ?></span>
+                    <span style="width:100%;cursor: default;"><?php echo wp_kses_post($firmware_icn); ?>&nbsp;<?php echo esc_html($module['firmware_txt']); ?> <?php echo esc_html__('installed on', 'live-weather-station'); ?> <?php echo esc_html($module['last_upgrade_txt']); ?></span>
                 </div>
             <?php } ?>
             <?php if (array_key_exists('firmware', $module) && !array_key_exists('last_upgrade', $module)) { ?>
                 <div style="margin-bottom: 10px;">
-                    <span style="width:100%;cursor: default;"><?php echo $firmware_icn; ?>&nbsp;<?php echo $module['firmware_txt']; ?></span>
+                    <span style="width:100%;cursor: default;"><?php echo wp_kses_post($firmware_icn); ?>&nbsp;<?php echo esc_html($module['firmware_txt']); ?></span>
                 </div>
             <?php } ?>
             <?php if (array_key_exists('first_setup', $module)) { ?>
                 <div style="margin-bottom: 10px;">
-                    <span style="width:100%;cursor: default;"><?php echo $setup_icn; ?>&nbsp;<?php echo $module['first_setup_txt']; ?></span><span style="color:silver"> (<?php echo $module['first_setup_diff_txt']; ?>)</span>
+                    <span style="width:100%;cursor: default;"><?php echo wp_kses_post($setup_icn); ?>&nbsp;<?php echo esc_html($module['first_setup_txt']); ?></span><span style="color:silver"> (<?php echo esc_html($module['first_setup_diff_txt']); ?>)</span>
                 </div>
             <?php } ?>
         </div>
@@ -81,7 +81,7 @@ $station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, 
             <div class="activity-block" style="padding-bottom: 0px;">
                 <div style="margin-bottom: 10px;">
                     <?php foreach ($module['measure'] as $measure) { ?>
-                        <span title="<?php echo $measure['measure_type_txt']; ?>" style="white-space: nowrap;margin-right: 20px;line-height: 2.2em;cursor: default;"><?php echo $measure['measure_value_icn']; ?>&nbsp;<?php echo $measure['measure_value_txt']; ?></span>
+                        <span title="<?php echo esc_attr($measure['measure_type_txt']); ?>" style="white-space: nowrap;margin-right: 20px;line-height: 2.2em;cursor: default;"><?php echo wp_kses_post($measure['measure_value_icn']); ?>&nbsp;<?php echo wp_kses_post($measure['measure_value_txt']); ?></span>
                     <?php } ?>
                 </div>
             </div>
@@ -91,13 +91,13 @@ $station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, 
     <?php if ($manage_modules) { ?>
         <div class="activity-block" style="padding-bottom: 0px;padding-top: 0px;">
             <div style="margin-bottom: 10px;">
-                <span style="width:100%;cursor: default;"><?php echo $module_icn; ?>&nbsp;<?php echo $this->get_module_type($module['module_type'], false);; ?></span>
+                <span style="width:100%;cursor: default;"><?php echo wp_kses_post($module_icn); ?>&nbsp;<?php echo esc_html($this->get_module_type($module['module_type'], false)); ?></span>
                 <table cellspacing="0" class="lws-settings" style="margin-top:8px;">
                     <tr>
                         <th class="lws-login" width="38%" align="left" scope="row"><?php esc_html_e('Displayed name', 'live-weather-station' );?></th>
                         <td width="2%"/>
                         <td align="left">
-                            <span class="login"><input id="<?php echo 'lws-name-' . $module['module_id'] ?>" name="<?php echo 'lws-name-' . $module['module_id'] ?>" type="text" size="60" value="<?php echo htmlspecialchars($module['screen_name']) ?>" class="regular-text" /></span>
+                            <span class="login"><input id="<?php echo esc_attr('lws-name-' . $module['module_id']) ?>" name="<?php echo esc_attr('lws-name-' . $module['module_id']) ?>" type="text" size="60" value="<?php echo esc_attr($module['screen_name']) ?>" class="regular-text" /></span>
                         </td>
                     </tr>
                     <tr>
@@ -105,9 +105,9 @@ $station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, 
                         <td width="2%"/>
                         <td align="left">
                             <span class="login">
-                                <select name="<?php echo 'lws-hidden-' . $module['module_id'] ?>" id="<?php echo 'lws-hidden-' . $module['module_id'] ?>" style="width:100%;">
-                                    <option value="0" <?php echo ((boolean)$module['hidden']?'':'selected="selected"'); ?>><?php echo __('visible', 'live-weather-station') ?></option>;
-                                    <option value="1" <?php echo ((boolean)$module['hidden']?'selected="selected"':''); ?>><?php echo __('hidden', 'live-weather-station') ?></option>;
+                                <select name="<?php echo esc_attr('lws-hidden-' . $module['module_id']) ?>" id="<?php echo esc_attr('lws-hidden-' . $module['module_id']) ?>" style="width:100%;">
+                                    <option value="0" <?php echo ((boolean)$module['hidden']?'':'selected="selected"'); ?>><?php echo esc_html__('visible', 'live-weather-station') ?></option>;
+                                    <option value="1" <?php echo ((boolean)$module['hidden']?'selected="selected"':''); ?>><?php echo esc_html__('hidden', 'live-weather-station') ?></option>;
                                 </select></span>
                         </td>
                     </tr>

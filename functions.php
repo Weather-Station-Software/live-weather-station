@@ -51,11 +51,11 @@ function lws_re_get_admin_page_url($params) {
     $set = array('page', 'tab', 'action', 'service', 'id');
     $args = array();
     foreach ($set as $arg) {
-        if (isset($_POST[$arg])) {
-            $args[$arg] = $_POST[$arg];
+        if (isset($_POST[$arg]) && is_scalar($_POST[$arg])) {
+            $args[$arg] = ($arg == 'id' ? sanitize_text_field(wp_unslash($_POST[$arg])) : sanitize_key(wp_unslash($_POST[$arg])));
         }
-        if (isset($_GET[$arg])) {
-            $args[$arg] = $_GET[$arg];
+        if (isset($_GET[$arg]) && is_scalar($_GET[$arg])) {
+            $args[$arg] = ($arg == 'id' ? sanitize_text_field(wp_unslash($_GET[$arg])) : sanitize_key(wp_unslash($_GET[$arg])));
         }
         if (array_key_exists($arg, $params)) {
             $args[$arg] = $params[$arg];
@@ -476,6 +476,50 @@ function lws_send_alert_message() {
 }
 
 /**
+ * Sanitize a free-text value coming from a remote source (vendor API, feed) before storing or displaying it.
+ *
+ * @param mixed $value The raw value.
+ * @param int $max_length Optional. The max length in characters.
+ * @return string The sanitized value.
+ * @since 3.8.15
+ */
+function lws_clean_text($value, $max_length=100) {
+    if (!is_scalar($value)) {
+        return '';
+    }
+    return mb_substr(sanitize_text_field((string)$value), 0, $max_length);
+}
+
+/**
+ * Sanitize a numeric value coming from a remote source (vendor API, feed) before storing it.
+ *
+ * @param mixed $value The raw value.
+ * @param int|float|null $default Optional. The value returned if the raw value is not numeric (null and '' are returned unchanged).
+ * @return int|float|string|null The numeric value.
+ * @since 3.8.15
+ */
+function lws_clean_number($value, $default=null) {
+    if ($value === null || $value === '') {
+        return $value;
+    }
+    return is_numeric($value) ? $value + 0 : $default;
+}
+
+/**
+ * Sanitize an URL coming from a remote source (vendor API, feed) before storing it.
+ *
+ * @param mixed $value The raw value.
+ * @return string The sanitized URL, empty string if not acceptable.
+ * @since 3.8.15
+ */
+function lws_clean_url($value) {
+    if (!is_scalar($value)) {
+        return '';
+    }
+    return esc_url_raw((string)$value, array('http', 'https'));
+}
+
+/**
  * Print the beginning of the script tag.
  *
  * @param string $jsInitId Optional. The uid of the init function.
@@ -483,6 +527,7 @@ function lws_send_alert_message() {
  * @since 3.7.0
  */
 function lws_print_begin_script($jsInitId='') {
+    $jsInitId = preg_replace('/[^A-Za-z0-9_]/', '', (string)$jsInitId);
     $result = '<script language="javascript" type="text/javascript">';
     if ((bool)get_option('live_weather_station_wait_for_dom', 1) && !is_admin()) {
         if ($jsInitId == '') {
@@ -504,6 +549,7 @@ function lws_print_begin_script($jsInitId='') {
  * @since 3.7.0
  */
 function lws_print_end_script($jsInitId='') {
+    $jsInitId = preg_replace('/[^A-Za-z0-9_]/', '', (string)$jsInitId);
     $result = '';
     if ((bool)get_option('live_weather_station_wait_for_dom', 1) && !is_admin()) {
         if ($jsInitId == '') {
@@ -637,7 +683,7 @@ function lws_n($single, $plural, $number, $domain = 'default' ) {
  * @return string Translated text.
  */
 function esc_html_lws__($text, $domain='default') {
-    return $text;
+    return esc_html($text);
 }
 
 /**
@@ -650,7 +696,7 @@ function esc_html_lws__($text, $domain='default') {
  * @return string Translated text.
  */
 function esc_html_e_lws__($text, $domain='default') {
-    echo $text;
+    echo esc_html($text);
 }
 
 /**

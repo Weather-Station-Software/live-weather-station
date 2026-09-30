@@ -167,13 +167,13 @@ trait BaseClient {
                 $dat = array();
                 $device_model = '';
                 if (array_key_exists('DeviceName', $station)) {
-                    $dat['device_name'] = $station['DeviceName'];
+                    $dat['device_name'] = lws_clean_text($station['DeviceName'], 60);
                 }
                 else {
                     $dat['device_name'] = '< NO NAME >';
                 }
                 if (array_key_exists('DeviceID', $station)) {
-                    $dat['device_id'] = self::compute_unique_bsky_id($station['DeviceID']);
+                    $dat['device_id'] = self::compute_unique_bsky_id(preg_replace('/[^0-9A-Za-z]/', '', (string)$station['DeviceID']));
                     $st = $this->get_station_information_by_station_id($dat['device_id']);
                     if (array_key_exists('loc_altitude', $st)) {
                         $altitude = $st['loc_altitude'];
@@ -186,8 +186,8 @@ trait BaseClient {
                     $videos = $station['VideoList'];
                     if (count($videos) > 0) {
                         $dat['video_imperial'] = array();
-                        foreach ($videos as $video) {
-                            $dat['video_imperial'][] = $video;
+                        foreach ((array)$videos as $video) {
+                            $dat['video_imperial'][] = lws_clean_url($video);
                         }
 
                     }
@@ -196,8 +196,8 @@ trait BaseClient {
                     $videos = $station['VideoList_C'];
                     if (count($videos) > 0) {
                         $dat['video_metric'] = array();
-                        foreach ($videos as $video) {
-                            $dat['video_metric'][] = $video;
+                        foreach ((array)$videos as $video) {
+                            $dat['video_metric'][] = lws_clean_url($video);
                         }
 
                     }
@@ -228,7 +228,7 @@ trait BaseClient {
                         $dat['TS_image'] = $data['ImageTS'];
                     }
                     if (array_key_exists('DeviceType', $data)) {
-                        $device_model = 'BloomSky - ' . ucfirst($data['DeviceType']);
+                        $device_model = 'BloomSky - ' . ucfirst(lws_clean_text($data['DeviceType'], 30));
                     }
                     if (array_key_exists('Voltage', $data)) {
                         $dat['battery'] = $data['Voltage'];
@@ -237,7 +237,7 @@ trait BaseClient {
                         $dat['time_pct'] = $data['ImageTS'];
                     }
                     if (array_key_exists('ImageURL', $data)) {
-                        $dat['url_pct'] = $data['ImageURL'];
+                        $dat['url_pct'] = lws_clean_url($data['ImageURL']);
                     }
                 }
                 if (array_key_exists('Storm', $station)) {
@@ -288,11 +288,11 @@ trait BaseClient {
                 }
                 if (array_key_exists('FullAddress', $station)) {
                     if (strlen($station['FullAddress']) > 1) {
-                        $dat['place']['country'] = strtoupper(substr($station['FullAddress'], -2));
+                        $dat['place']['country'] = strtoupper(lws_clean_text(substr($station['FullAddress'], -2), 2));
                     }
                 }
                 if (array_key_exists('CityName', $station)) {
-                    $dat['place']['city'] = $station['CityName'];
+                    $dat['place']['city'] = lws_clean_text($station['CityName'], 60);
                 }
                 if (array_key_exists('ALT', $station)) {
                     $dat['place']['altitude'] = round($station['ALT']);

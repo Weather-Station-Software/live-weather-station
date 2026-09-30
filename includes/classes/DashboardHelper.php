@@ -155,9 +155,9 @@ class Handling {
                         continue;
                     }
                     $box_id = $box['id'];
-                    $result .= '<label for="' . $box_id . '-hide">';
-                    $result .= '<input class="hide-postbox-tog" name="' . $box_id . '-hide" type="checkbox" id="' . $box_id . '-hide" value="' . $box_id . '"' . (!in_array($box_id, $hidden) ? ' checked="checked"' : '') . ' />';
-                    $result .= $box['title'] . '</label>';
+                    $result .= '<label for="' . esc_attr($box_id) . '-hide">';
+                    $result .= '<input class="hide-postbox-tog" name="' . esc_attr($box_id) . '-hide" type="checkbox" id="' . esc_attr($box_id) . '-hide" value="' . esc_attr($box_id) . '"' . (!in_array($box_id, $hidden) ? ' checked="checked"' : '') . ' />';
+                    $result .= wp_kses_post($box['title']) . '</label>';
                 }
             }
         }
@@ -208,7 +208,7 @@ class Handling {
      **/
     public function get() {
         echo '<div class="wrap">';
-        echo '<h1>' . sprintf(__('%s Dashboard', 'live-weather-station'), LWS_PLUGIN_NAME) . '</h1>';
+        echo '<h1>' . esc_html(sprintf(__('%s Dashboard', 'live-weather-station'), LWS_PLUGIN_NAME)) . '</h1>';
         settings_errors();
         echo '<form name="lws_dashboard" method="post">';
         $this->welcome_panel();
@@ -242,7 +242,7 @@ class Handling {
     public function add_metaboxes() {
         $count = Notifier::count();
         if ($count > 0) {
-            $bubble = ' <span class="lws-notification count-' . $count . '"><span class="plugin-count">' . number_format_i18n($count) . '</span></span>';
+            $bubble = ' <span class="lws-notification count-' . (int)$count . '"><span class="plugin-count">' . number_format_i18n($count) . '</span></span>';
         }
         else {
             $bubble = '';

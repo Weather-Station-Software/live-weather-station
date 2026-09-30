@@ -1338,7 +1338,7 @@ class Admin {
                     if ($this->reload) {
                         $current_url = lws_get_admin_page_url('lws-settings', null, $section);
                         $submessage = __('In order for the main menu to reflect the updated settings, please <a href="%s">refresh</a> the page', 'live-weather-station').'&hellip;';
-                        $message .= '<br/>' . sprintf($submessage, $current_url);
+                        $message .= '<br/>' . sprintf($submessage, esc_url($current_url));
                         $this->reload = false;
                     }
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
@@ -1468,7 +1468,7 @@ class Admin {
      * @since 3.0.0
      */
     public function lws_load_admin_page() {
-        $page = filter_input(INPUT_GET, 'page');
+        $page = sanitize_text_field((string)filter_input(INPUT_GET, 'page'));
         if (strpos($page, 'lws-') === false) {
             return;
         }
@@ -1494,12 +1494,18 @@ class Admin {
         if (!($xid = filter_input(INPUT_GET, 'xid'))) {
             $xid = filter_input(INPUT_POST, 'xid');
         }
-        $email = filter_input(INPUT_POST, 'email');
+        $tab = sanitize_text_field((string)$tab);
+        $action = sanitize_text_field((string)$action);
+        $service = sanitize_text_field((string)$service);
+        $id = sanitize_text_field((string)$id);
+        $mid = absint($mid);
+        $xid = sanitize_text_field((string)$xid);
+        $email = sanitize_email((string)filter_input(INPUT_POST, 'email'));
         $args = array();
 
         switch ($page) {
             case 'lws-events':
-                $log_entry = filter_input(INPUT_GET, 'log-entry');
+                $log_entry = absint(filter_input(INPUT_GET, 'log-entry'));
                 if (isset($log_entry) && $log_entry != 0) {
                     $view = 'log-detail';
                     $log_array = $this->get_log_detail($log_entry);
@@ -2061,6 +2067,9 @@ class Admin {
         foreach ($args as $key => $val) {
             $$key = $val;
         }
+        if (!preg_match('/^[A-Za-z0-9_-]+$/', (string)$name)) {
+            $name = '404';
+        }
         $n = explode('-', $name);
         $f = '';
         if (count($n) > 0) {
@@ -2545,10 +2554,10 @@ class Admin {
         }
         if ($done) {
             if ($op == 'reschedule') {
-                add_settings_error('lws_nonce_success', 200, sprintf(__('The task %s has been rescheduled.', 'live-weather-station'), '<em>'.$name.'</em>'), 'updated');
+                add_settings_error('lws_nonce_success', 200, sprintf(__('The task %s has been rescheduled.', 'live-weather-station'), '<em>'.esc_html($name).'</em>'), 'updated');
             }
             else {
-                add_settings_error('lws_nonce_success', 200, sprintf(__('The task %s has been executed.', 'live-weather-station'), '<em>'.$name.'</em>'), 'updated');
+                add_settings_error('lws_nonce_success', 200, sprintf(__('The task %s has been executed.', 'live-weather-station'), '<em>'.esc_html($name).'</em>'), 'updated');
             }
             Logger::info('Backend', null, null, null, null, null, null, sprintf('The operation "%s" has been done for the task named "%s".', $op, $name));
         }
@@ -2647,8 +2656,8 @@ class Admin {
             $colors = self::get_cschemes_palette($id);
             for ($i=0 ; $i<8 ; $i++) {
                 if (array_key_exists('color_'.$i, $_POST)) {
-                    $c = str_replace('#', '', sanitize_text_field($_POST['color_'.$i]));
-                    if ($c !== '') {
+                    $c = sanitize_hex_color_no_hash(str_replace('#', '', sanitize_text_field(wp_unslash($_POST['color_'.$i]))));
+                    if (!empty($c)) {
                         $colors[$i] = $c;
                     }
                 }
@@ -2812,15 +2821,15 @@ class Admin {
                 }
                 if ($s == '') {
                     $message = __('%s is now connected to %s.', 'live-weather-station');
-                    $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . $service . '</em>');
+                    $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . esc_html($service) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::info($this->service, null, null, null, null, null, 0, 'Connection to '. $service . ' has been correctly done by an admin.');
                 }
                 else {
                     $message = __('Unable to connect %s to %s. Please try again.', 'live-weather-station');
-                    $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . $service . '</em>');
+                    $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . esc_html($service) . '</em>');
                     $message .= '<br/>' . __('The error message is "%s".', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . $s . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($s) . '</em>');
                     add_settings_error('lws_nonce_error', 200, $message, 'error');
                     Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to correctly connect ' . LWS_PLUGIN_NAME . ' to '. $service . '.');
                 }
@@ -2872,13 +2881,13 @@ class Admin {
                 }
                 if ($result) {
                     $message = __('%s is now disconnected from %s.', 'live-weather-station');
-                    $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . $service . '</em>');
+                    $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . esc_html($service) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::info($this->service, null, null, null, null, null, 0, 'Disconnection from '. $service . ' has been correctly done by an admin.');
                 }
                 else {
                     $message = __('Unable to disconnect %s from %s. Please try again.', 'live-weather-station');
-                    $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . $service . '</em>');
+                    $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . esc_html($service) . '</em>');
                     add_settings_error('lws_nonce_error', 200, $message, 'error');
                     Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to correctly disconnect ' . LWS_PLUGIN_NAME . ' from '. $service . '.');
                 }
@@ -2931,13 +2940,13 @@ class Admin {
                 if ($result) {
                     $message = __('%s is now disconnected from %s.', 'live-weather-station');
                     $message .= ' ' . __('You can set your new credentials.', 'live-weather-station');
-                    $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . $service . '</em>');
+                    $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . esc_html($service) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::info($this->service, null, null, null, null, null, 0, 'Disconnection from '. $service . ' has been correctly done by an admin.');
                 }
                 else {
                     $message = __('Unable to disconnect %s from %s. Please try again.', 'live-weather-station');
-                    $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . $service . '</em>');
+                    $message = sprintf($message, LWS_PLUGIN_NAME, '<em>' . esc_html($service) . '</em>');
                     add_settings_error('lws_nonce_error', 200, $message, 'error');
                     Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to correctly disconnect ' . LWS_PLUGIN_NAME . ' from '. $service . '.');
                 }
@@ -2945,7 +2954,7 @@ class Admin {
         }
         else {
             $message = __('Connection to %s has not been updated. Please try again.', 'live-weather-station');
-            $message = sprintf($message, '<em>' . $service . '</em>');
+            $message = sprintf($message, '<em>' . esc_html($service) . '</em>');
             add_settings_error('lws_nonce_error', 403, $message, 'error');
             Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
             Logger::error($this->service, null, null, null, null, null, 0, 'It was not possible to securely update connection to '. $service . ' service.');
@@ -2959,24 +2968,29 @@ class Admin {
      * @since 3.0.0
      */
     protected function subscribe_email($email) {
-        // Email subscription doesn't need capability check (public action)
-        
+        // Check user capabilities
+        if (!current_user_can($this->get_manage_options_cap())) {
+            add_settings_error('lws_nonce_error', 403, __('You do not have sufficient permissions to subscribe.', 'live-weather-station'), 'error');
+            Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized attempt to subscribe to newsletter.');
+            return;
+        }
+
         if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'subscribe')) {
             $subscribed = new Subscription($email);
             if ($subscribed->is_done()) {
                 $message = __('An email has been sent to %s to confirm subscription to %s news.', 'live-weather-station');
-                $message = sprintf($message, '<em>' . $email . '</em>', LWS_PLUGIN_NAME);
+                $message = sprintf($message, '<em>' . esc_html($email) . '</em>', LWS_PLUGIN_NAME);
                 add_settings_error('lws_nonce_success', 200, $message, 'updated');
             }
             else {
                 $message = __('Unable to subscribe the email %s to %s news.', 'live-weather-station');
-                $message = sprintf($message, '<em>' . $email . '</em>', LWS_PLUGIN_NAME);
+                $message = sprintf($message, '<em>' . esc_html($email) . '</em>', LWS_PLUGIN_NAME);
                 add_settings_error('lws_nonce_error', 500, $message, 'error');
             }
         }
         else {
             $message = __('Unable to subscribe the email %s to %s news.', 'live-weather-station');
-            $message = sprintf($message, '<em>' . $email . '</em>', LWS_PLUGIN_NAME);
+            $message = sprintf($message, '<em>' . esc_html($email) . '</em>', LWS_PLUGIN_NAME);
             add_settings_error('lws_nonce_error', 403, $message, 'error');
             Logger::critical('Security', null, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
         }
@@ -3006,20 +3020,20 @@ class Admin {
                 }
                 if ($res) {
                     $message = __('The station %s has been correctly removed.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, $service, $station['station_id'], $station['station_name'], null, null, null, 'Station removed.');
                 }
                 else {
                     $message = __('Unable to remove the station %s.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::error($this->service, $service, $station['station_id'], $station['station_name'], null, null, null, 'Unable to remove this station.');
                 }
             }
             else {
                 $message = __('Unable to remove the station %s.', 'live-weather-station');
-                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', $service, $station['station_id'], $station['station_name'], null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                 Logger::error($this->service, $service, $station['station_id'], $station['station_name'], null, null, 0, 'It was not possible to securely delete this station.');
@@ -3115,7 +3129,7 @@ class Admin {
         
         if ((bool)get_option('live_weather_station_upload_allowed')) {
             if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-file')) {
-                $success = false;
+                $success = array('done' => false, 'error' => '');
                 if (array_key_exists('do-add-file', $_POST)) {
                     $success = FS::upload_file();
                 }
@@ -3125,7 +3139,7 @@ class Admin {
                     Logger::notice($this->service, null, null, null, null, null, null, 'The file has been correctly added.');
                 }
                 else {
-                    $message = __('Unable to add this file: ', 'live-weather-station') . $success['error'];
+                    $message = __('Unable to add this file: ', 'live-weather-station') . esc_html($success['error']);
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::error($this->service, null, null, null, null, null, null, 'Unable to add this file: ' . $success['error']);
                 }
@@ -3166,20 +3180,20 @@ class Admin {
                 $res = $this->delete_maps_table(array($mid));
                 if ($res) {
                     $message = __('The map %s has been correctly removed.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . $map['name'] . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($map['name']) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, $service, null, null, null, null, null, 'Map removed.');
                 }
                 else {
                     $message = __('Unable to remove the map %s.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . $map['name'] . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($map['name']) . '</em>');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::error($this->service, $service, null, null, null, null, null, 'Unable to remove this map.');
                 }
             }
             else {
                 $message = __('Unable to remove the station %s.', 'live-weather-station');
-                $message = sprintf($message, '<em>' . $map['name'] . '</em>');
+                $message = sprintf($message, '<em>' . esc_html($map['name']) . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', $service, null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                 Logger::error($this->service, $service, null, null, null, null, 0, 'It was not possible to securely delete this map.');
@@ -3731,7 +3745,9 @@ class Admin {
                 $nonce = 'add-netatmo';
                 $station_type = LWS_NETATMO_SID;
             }
-            $stations = $n->detect_stations();
+            $nonce_ok = wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), $nonce);
+            // No remote call before the security token is verified
+            $stations = ($nonce_ok ? $n->detect_stations() : array());
             $station['station_name'] = '<unnamed>';
             $station['station_type'] = $station_type;
             $station['station_id'] = $device_id;
@@ -3740,10 +3756,10 @@ class Admin {
                     $station = $item;
                 }
             }
-            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), $nonce)) {
+            if ($nonce_ok) {
                 if ($this->insert_ignore_stations_table($device_id, $station_type)) {
                     $message = __('The station %s has been correctly added.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, 'Netatmo', $device_id, $station['station_name'], null, null, null, 'Station added.');
                     if ($is_hc) {
@@ -3755,14 +3771,14 @@ class Admin {
                 }
                 else {
                     $message = __('Unable to add the station %s.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::error($this->service, 'Netatmo', $device_id, $station['station_name'], null, null, null, 'Unable to add this station.');
                 }
             }
             else {
                 $message = __('Unable to add the station %s.', 'live-weather-station');
-                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', 'Netatmo', $device_id, $station['station_name'], null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                 Logger::error($this->service, 'Netatmo', $device_id, $station['station_name'], null, null, 0, 'It was not possible to securely add this station.');
@@ -3792,7 +3808,9 @@ class Admin {
             $n = new Bloomsky_Station_Initiator(LWS_PLUGIN_ID, LWS_VERSION);
             $nonce = 'add-bloomsky';
             $station_type = LWS_BSKY_SID;
-            $stations = $n->detect_stations();
+            $nonce_ok = wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), $nonce);
+            // No remote call before the security token is verified
+            $stations = ($nonce_ok ? $n->detect_stations() : array());
             $station['station_name'] = '<unnamed>';
             $station['station_type'] = $station_type;
             $station['station_id'] = $device_id;
@@ -3801,24 +3819,24 @@ class Admin {
                     $station = $item;
                 }
             }
-            if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), $nonce)) {
+            if ($nonce_ok) {
                 if ($this->insert_ignore_stations_table($device_id, $station_type)) {
                     $message = __('The station %s has been correctly added.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, 'Bloomsky', $device_id, $station['station_name'], null, null, null, 'Station added.');
                     $this->get_bloomsky();
                 }
                 else {
                     $message = __('Unable to add the station %s.', 'live-weather-station');
-                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::error($this->service, 'Bloomsky', $device_id, $station['station_name'], null, null, null, 'Unable to add this station.');
                 }
             }
             else {
                 $message = __('Unable to add the station %s.', 'live-weather-station');
-                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', 'Bloomsky', $device_id, $station['station_name'], null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                 Logger::error($this->service, 'Bloomsky', $device_id, $station['station_name'], null, null, 0, 'It was not possible to securely add this station.');
@@ -3916,7 +3934,7 @@ class Admin {
                             $message = __('The station %s has been correctly added.', 'live-weather-station');
                             $log = 'Station added.';
                         }
-                        $message = sprintf($message, '<em>' . $station_name . '</em>');
+                        $message = sprintf($message, '<em>' . esc_html($station_name) . '</em>');
                         add_settings_error('lws_nonce_success', 200, $message, 'updated');
                         Logger::notice($this->service, 'Ambient', $station_id, $station_name, null, null, null, $log);
                         $this->get_ambient();
@@ -3934,7 +3952,7 @@ class Admin {
                             $station_id = null;
                             $station_name = null;
                         }
-                        $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                        $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                         add_settings_error('lws_nonce_error', 403, $message, 'error');
                         Logger::error($this->service, 'Ambient', $station_id, $station_name, null, null, null, $log);
                     }
@@ -3951,7 +3969,7 @@ class Admin {
                     $station_id = null;
                     $station_name = null;
                 }
-                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', 'Ambient', $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                 Logger::error($this->service, 'Ambient', $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
@@ -3961,6 +3979,49 @@ class Admin {
             add_settings_error('lws_nonce_error', 403, 'No station to add.', 'error');
             Logger::error('Security', 'Ambient', null, null, null, null, null, 'An attempt was made to add a station without ID.');
         }
+    }
+
+    /**
+     * Handle a station add/edit request whose security token is invalid.
+     * No input is processed, no remote call is done: only a neutral error is returned.
+     *
+     * @param string $service Optional. The service name for the log.
+     * @param boolean $with_message Optional. Add an empty 'message' key to the returned array.
+     * @return array The station array to return to the caller (no error code, nothing to redisplay).
+     * @since 3.8.4
+     */
+    private function reject_insecure_station_request($service=null, $with_message=true) {
+        $guid = 0;
+        if (array_key_exists('guid', $_POST)) {
+            $guid = sanitize_text_field(wp_unslash($_POST['guid']));
+        }
+        $name = '';
+        if (array_key_exists('station_name', $_POST)) {
+            $name = sanitize_text_field(wp_unslash($_POST['station_name']));
+        }
+        $sid = '';
+        if (array_key_exists('station_id', $_POST)) {
+            $sid = sanitize_text_field(wp_unslash($_POST['station_id']));
+        }
+        if ($guid == 0) {
+            $message = __('Unable to add the station %s.', 'live-weather-station');
+            $station_id = null;
+            $station_name = null;
+        }
+        else {
+            $message = __('Unable to update the station %s.', 'live-weather-station');
+            $station_id = $sid;
+            $station_name = $name;
+        }
+        $message = sprintf($message, '<em>' . esc_html($name) . '</em>');
+        add_settings_error('lws_nonce_error', 403, $message, 'error');
+        Logger::critical('Security', $service, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
+        Logger::error($this->service, $service, $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
+        $station = array('guid' => 0, 'error' => 0);
+        if ($with_message) {
+            $station['message'] = '';
+        }
+        return $station;
     }
 
     /**
@@ -3976,6 +4037,11 @@ class Admin {
             return;
         }
         
+        // Verify the security token before any input processing or remote call
+        if (!wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-loc')) {
+            return $this->reject_insecure_station_request('OpenWeatherMap', false);
+        }
+
         $station = array();
         $error = 0;
         if (array_key_exists('guid', $_POST) &&
@@ -4070,7 +4136,7 @@ class Admin {
                         $message = __('The station %s has been correctly added.', 'live-weather-station');
                         $log = 'Station added.';
                     }
-                    $message = sprintf($message, '<em>' . $station_name . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station_name) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, 'OpenWeatherMap', $station_id, $station_name, null, null, null, $log);
                     $this->get_current_and_pollution();
@@ -4090,7 +4156,7 @@ class Admin {
                         $station_id = null;
                         $station_name = null;
                     }
-                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::error($this->service, 'OpenWeatherMap', $station_id, $station_name, null, null, null, $log);
                 }
@@ -4106,7 +4172,7 @@ class Admin {
                     $station_id = null;
                     $station_name = null;
                 }
-                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', 'OpenWeatherMap', $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                 Logger::error($this->service, 'OpenWeatherMap', $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
@@ -4135,6 +4201,11 @@ class Admin {
             return $station;
         }
         
+        // Verify the security token before any input processing or remote call
+        if (!wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-raw')) {
+            return $this->reject_insecure_station_request(null);
+        }
+
         $station = array();
         $error = 0;
         $message = '';
@@ -4207,7 +4278,7 @@ class Admin {
                         $message = __('The station %s has been correctly added.', 'live-weather-station');
                         $log = 'Station added.';
                     }
-                    $message = sprintf($message, '<em>' . $station_name . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station_name) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
                     $this->get_raw();
@@ -4227,7 +4298,7 @@ class Admin {
                         $station_id = null;
                         $station_name = null;
                     }
-                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::error($this->service, null, $station_id, $station_name, null, null, null, $log);
                 }
@@ -4243,7 +4314,7 @@ class Admin {
                     $station_id = null;
                     $station_name = null;
                 }
-                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', null, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                 Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
@@ -4273,6 +4344,11 @@ class Admin {
             return $station;
         }
         
+        // Verify the security token before any input processing or remote call
+        if (!wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-piou')) {
+            return $this->reject_insecure_station_request(null);
+        }
+
         $station = array();
         $error = 0;
         $message = '';
@@ -4336,7 +4412,7 @@ class Admin {
                         $message = __('The station %s has been correctly added.', 'live-weather-station');
                         $log = 'Station added.';
                     }
-                    $message = sprintf($message, '<em>' . $station_name . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station_name) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
                     $this->get_piou();
@@ -4356,7 +4432,7 @@ class Admin {
                         $station_id = null;
                         $station_name = null;
                     }
-                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::error($this->service, null, $station_id, $station_name, null, null, null, $log);
                 }
@@ -4372,7 +4448,7 @@ class Admin {
                     $station_id = null;
                     $station_name = null;
                 }
-                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', null, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                 Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
@@ -4402,6 +4478,11 @@ class Admin {
             return $station;
         }
         
+        // Verify the security token before any input processing or remote call
+        if (!wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-real')) {
+            return $this->reject_insecure_station_request(null);
+        }
+
         $station = array();
         $error = 0;
         $message = '';
@@ -4482,7 +4563,7 @@ class Admin {
                         $message = __('The station %s has been correctly added.', 'live-weather-station');
                         $log = 'Station added.';
                     }
-                    $message = sprintf($message, '<em>' . $station_name . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station_name) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
                     $this->get_real();
@@ -4502,7 +4583,7 @@ class Admin {
                         $station_id = null;
                         $station_name = null;
                     }
-                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::error($this->service, null, $station_id, $station_name, null, null, null, $log);
                 }
@@ -4518,7 +4599,7 @@ class Admin {
                     $station_id = null;
                     $station_name = null;
                 }
-                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', null, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                 Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
@@ -4548,6 +4629,11 @@ class Admin {
             return $station;
         }
         
+        // Verify the security token before any input processing or remote call
+        if (!wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-txt')) {
+            return $this->reject_insecure_station_request(null);
+        }
+
         $station = array();
         $error = 0;
         $message = '';
@@ -4628,7 +4714,7 @@ class Admin {
                         $message = __('The station %s has been correctly added.', 'live-weather-station');
                         $log = 'Station added.';
                     }
-                    $message = sprintf($message, '<em>' . $station_name . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station_name) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
                     $this->get_txt();
@@ -4648,7 +4734,7 @@ class Admin {
                         $station_id = null;
                         $station_name = null;
                     }
-                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::error($this->service, null, $station_id, $station_name, null, null, null, $log);
                 }
@@ -4664,7 +4750,7 @@ class Admin {
                     $station_id = null;
                     $station_name = null;
                 }
-                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', null, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                 Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
@@ -4703,7 +4789,7 @@ class Admin {
             array_key_exists('station_model', $_POST)) {
                 $guid = 0;
                 if (wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-wug')) {
-                    if (($guid = stripslashes(htmlspecialchars_decode($_POST['guid']))) != 0) { // UPDATE
+                    if (($guid = absint($_POST['guid'])) != 0) { // UPDATE
                         $station = $this->get_wug_station($guid);
                         if (array_key_exists('station_id', $station)) {
                             $station_id = $station['station_id'];
@@ -4713,36 +4799,36 @@ class Admin {
                         }
                         if (!empty($station)) {
                             if (array_key_exists('station_name', $_POST)) {
-                                $station['station_name'] = substr(stripslashes(htmlspecialchars_decode($_POST['station_name'])), 0, 59);
+                                $station['station_name'] = substr(sanitize_text_field(wp_unslash($_POST['station_name'])), 0, 59);
                             }
                             else {
                                 $station['station_name'] = '';
                             }
-                            $station['station_model'] = stripslashes(htmlspecialchars_decode($_POST['station_model']));
+                            $station['station_model'] = sanitize_text_field(wp_unslash($_POST['station_model']));
                             $this->update_table(self::live_weather_station_stations_table(), $station);
                             $message = __('The station %s has been correctly updated.', 'live-weather-station');
-                            $message = sprintf($message, '<em>' . $station_name . '</em>');
+                            $message = sprintf($message, '<em>' . esc_html($station_name) . '</em>');
                             add_settings_error('lws_nonce_success', 200, $message, 'updated');
                             Logger::notice($this->service, 'Weather Underground', $station_id, $station_name, null, null, null, 'Station updated.');
                             $this->get_wug();
                         }
                         else {
                             $message = __('Unable to update the station %s.', 'live-weather-station');
-                            $message = sprintf($message, '<em>' . $station_name . '</em>');
+                            $message = sprintf($message, '<em>' . esc_html($station_name) . '</em>');
                             add_settings_error('lws_nonce_error', 403, $message, 'error');
                             Logger::error($this->service, 'Weather Underground', $station_id, $station_name, null, null, null, 'Unable to add this station.');
                         }
                     }
                     else { // ADD NEW
                         $station = $this->get_wug_station();
-                        $station['service_id'] = substr(stripslashes(htmlspecialchars_decode($_POST['service_id'])), 0, 19);
+                        $station['service_id'] = substr(sanitize_text_field(wp_unslash($_POST['service_id'])), 0, 19);
                         if (array_key_exists('station_name', $_POST)) {
-                            $station['station_name'] = substr(stripslashes(htmlspecialchars_decode($_POST['station_name'])), 0, 59);
+                            $station['station_name'] = substr(sanitize_text_field(wp_unslash($_POST['station_name'])), 0, 59);
                         }
                         else {
                             $station['station_name'] = '';
                         }
-                        $station['station_model'] = substr(stripslashes(htmlspecialchars_decode($_POST['station_model'])), 0, 200);
+                        $station['station_model'] = substr(sanitize_text_field(wp_unslash($_POST['station_model'])), 0, 200);
                         unset($station['guid']);
                         $WUG_test = WUG_Station_Collector::test_station($station['service_id']);
                         if ($WUG_test == '') {
@@ -4754,7 +4840,7 @@ class Admin {
                             }
                             if ($guid = $this->update_stations_table($station, true)) {
                                 $message = __('The station %s has been correctly updated.', 'live-weather-station');
-                                $message = sprintf($message, '<em>' . $station_name . '</em>');
+                                $message = sprintf($message, '<em>' . esc_html($station_name) . '</em>');
                                 add_settings_error('lws_nonce_success', 200, $message, 'updated');
                                 Logger::notice($this->service, 'Weather Underground', $station_id, $station_name, null, null, null, 'Station added.');
                                 $this->get_wug();
@@ -4763,14 +4849,14 @@ class Admin {
                             }
                             else {
                                 $message = __('Unable to add the station %s.', 'live-weather-station');
-                                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                                $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                                 Logger::error($this->service, 'Weather Underground', null, null, null, null, null, 'Unable to add a station, service says: unknown station ID.');
                             }
                         }
                         else {
                             $message = __('Unable to add the station %s.', 'live-weather-station');
-                            $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                            $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                             add_settings_error('lws_nonce_error', 403, $message, 'error');
                             Logger::error($this->service, 'Weather Underground', null, null, null, null, null, sprintf('Unable to add a station, error message: %s.', $WUG_test));
                         }
@@ -4779,7 +4865,7 @@ class Admin {
                 else {
                     if ($guid == 0) {
                         $message = __('Unable to add the station %s.', 'live-weather-station');
-                        $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                        $message = sprintf($message, '<em>' . esc_html(array_key_exists('station_name', $_POST) ? sanitize_text_field(wp_unslash($_POST['station_name'])) : '') . '</em>');
                         add_settings_error('lws_nonce_error', 403, $message, 'error');
                         Logger::critical('Security', 'Weather Underground', null, null, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                         Logger::error($this->service, 'Weather Underground', null, null, null, null, 0, 'It was not possible to securely add a station.');
@@ -4787,7 +4873,7 @@ class Admin {
                     }
                     else {
                         $message = __('Unable to update the station %s.', 'live-weather-station');
-                        $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                        $message = sprintf($message, '<em>' . esc_html(array_key_exists('station_name', $_POST) ? sanitize_text_field(wp_unslash($_POST['station_name'])) : '') . '</em>');
                         add_settings_error('lws_nonce_error', 403, $message, 'error');
                         Logger::critical('Security', 'Weather Underground', $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                         Logger::error($this->service, 'Weather Underground', $station_id, $station_name, null, null, 0, 'It was not possible to securely update this station.');
@@ -4809,6 +4895,11 @@ class Admin {
             return $station;
         }
         
+        // Verify the security token before any input processing or remote call
+        if (!wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-wflw')) {
+            return $this->reject_insecure_station_request(null);
+        }
+
         $station = array();
         $error = 0;
         $message = '';
@@ -4871,7 +4962,7 @@ class Admin {
                         $message = __('The station %s has been correctly added.', 'live-weather-station');
                         $log = 'Station added.';
                     }
-                    $message = sprintf($message, '<em>' . $station_name . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station_name) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
                     $this->get_wflw();
@@ -4891,7 +4982,7 @@ class Admin {
                         $station_id = null;
                         $station_name = null;
                     }
-                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::error($this->service, null, $station_id, $station_name, null, null, null, $log);
                 }
@@ -4907,7 +4998,7 @@ class Admin {
                     $station_id = null;
                     $station_name = null;
                 }
-                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', null, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                 Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');
@@ -4937,6 +5028,11 @@ class Admin {
             return $station;
         }
         
+        // Verify the security token before any input processing or remote call
+        if (!wp_verify_nonce((array_key_exists('_wpnonce', $_POST) ? $_POST['_wpnonce'] : ''), 'add-edit-wlink')) {
+            return $this->reject_insecure_station_request(null);
+        }
+
         $station = array();
         $error = 0;
         $message = '';
@@ -5007,7 +5103,7 @@ class Admin {
                         $message = __('The station %s has been correctly added.', 'live-weather-station');
                         $log = 'Station added.';
                     }
-                    $message = sprintf($message, '<em>' . $station_name . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station_name) . '</em>');
                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                     Logger::notice($this->service, null, $station_id, $station_name, null, null, null, $log);
                     $this->get_wlink();
@@ -5027,7 +5123,7 @@ class Admin {
                         $station_id = null;
                         $station_name = null;
                     }
-                    $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                    $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                     add_settings_error('lws_nonce_error', 403, $message, 'error');
                     Logger::error($this->service, null, $station_id, $station_name, null, null, null, $log);
                 }
@@ -5043,7 +5139,7 @@ class Admin {
                     $station_id = null;
                     $station_name = null;
                 }
-                $message = sprintf($message, '<em>' . $station['station_name'] . '</em>');
+                $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                 add_settings_error('lws_nonce_error', 403, $message, 'error');
                 Logger::critical('Security', null, $station_id, $station_name, null, null, 0, 'Inconsistent or inexistent security token in a backend form submission via HTTP/POST.');
                 Logger::error($this->service, null, $station_id, $station_name, null, null, 0, 'It was not possible to securely add or update this station.');

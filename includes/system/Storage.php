@@ -302,11 +302,11 @@ class Manager {
                 if (count($d) === 2) {
                     $UUIDv4 = '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
                     if (preg_match($UUIDv4, $d[0]) !== false) {
-                        $station = ucwords(str_replace('-', ' ', $e[0]));
-                        $uuid = $d[0];
-                        $from = $e[1];
-                        $to = $e[2];
-                        $ext = $d[1];
+                        $station = sanitize_text_field(ucwords(str_replace('-', ' ', $e[0])));
+                        $uuid = sanitize_text_field($d[0]);
+                        $from = sanitize_text_field($e[1]);
+                        $to = sanitize_text_field($e[2]);
+                        $ext = sanitize_text_field($d[1]);
                         $valid = true;
                     }
                 }

@@ -6,6 +6,7 @@
  * @since 3.7.0
  */
 
+use WeatherStation\System\Output\Guard;
 
 ?>
 
@@ -18,7 +19,7 @@
                         <span class="login">
                             <select id="lws-format" name="lws-format" style="width:100%;">
                                 <?php foreach($formats as $key => $format) { ?>
-                                    <option value="<?php echo $key ?>" <?php echo ($key==='ndjson'?'SELECTED':''); ?>><?php echo $format['name'] ?></option>
+                                    <option value="<?php echo esc_attr($key) ?>" <?php echo ($key==='ndjson'?'SELECTED':''); ?>><?php echo esc_html($format['name']) ?></option>
                                 <?php } ?>
                             </select>
                         </span>
@@ -56,7 +57,7 @@
                             <span class="login">
                                 <select id="lws-ndjson" name="lws-ndjson" style="width:100%;">
                                     <?php foreach($ndjson as $file) { ?>
-                                        <option value="<?php echo $file['uuid'] ?>"><?php echo $file['station'] ?> (<?php echo $file['from'] ?> ⇥ <?php echo $file['to'] ?>). <?php echo $file['std_size'] . ', ' . sprintf(__('exported %s ago.', 'live-weather-station'), human_time_diff($file['date'])) ?></option>
+                                        <option value="<?php echo esc_attr($file['uuid']) ?>"><?php echo esc_html($file['station']) ?> (<?php echo esc_html($file['from']) ?> ⇥ <?php echo esc_html($file['to']) ?>). <?php echo esc_html($file['std_size'] . ', ' . sprintf(__('exported %s ago.', 'live-weather-station'), human_time_diff($file['date']))) ?></option>
                                     <?php } ?>
                                 </select>
                             </span>
@@ -89,7 +90,7 @@
 
         $("#lws-format").change(function() {
             <?php foreach($formats as $key => $format) { ?>
-                if ($(this).val() == "<?php echo $key ?>") {$("#lws-format-description").html("<?php echo $format['description'] ?>");}
+                if ($(this).val() == <?php echo Guard::js($key) ?>) {$("#lws-format-description").html(<?php echo Guard::js($format['description']) ?>);}
             <?php } ?>
             if ($(this).val() == "ndjson") {
                 $("#lws-ndjson-div").show();
