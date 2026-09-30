@@ -1,4 +1,7 @@
 #3.9.0 / xx September 2026
+* Security: SQL queries are now prepared and identifiers validated; the standalone generator validates its input.
+* Security: outputs are escaped and shortcode/widget attributes validated (JS literals, enums, tokens, colors, sizes).
+* Security: import/export, secrets, network requests and authorization checks are hardened.
 * Improvement: the changes of 3.8.14, which was never deployed on wordpress.org, are now released.
 * Bug fix: the plugin header now carries the real version number.
 
