@@ -51,6 +51,9 @@ if (REQUIREMENTS_OK) {
     if (get_option('live_weather_station_owm_apikey') != '') {
         $services[] = 'OpenWeatherMap';
     }
+    if (get_option('live_weather_station_stadia_apikey') != '') {
+        $services[] = 'Stadia Maps';
+    }
     if (get_option('live_weather_station_thunderforest_apikey') != '') {
         $services[] = 'ThunderForest';
     }

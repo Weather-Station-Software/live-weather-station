@@ -25,6 +25,11 @@
 * Bug fix: the rain import, the LCD refresh action and the delete-station message work as expected, and JavaScript guards prevent errors on maps and radar charts.
 * Improvement: removed the unused code of three disabled features (OpenWeatherMap station client, Weather Underground collection client, Pollution widget); no user-visible change, existing stations of these types are kept and flagged as no longer available.
 * Bug fix: the standalone pages (generator, clientraw, realtime) no longer raise a deprecation notice on recent WordPress and PHP versions.
+* Bug fix: Stamen maps load again: the tiles are now served by Stadia Maps, which needs an API key (new "Stadia Maps (Stamen)" box in the Services settings); the Toner Hybrid and Terrain (classical) styles, which have no raster version anymore, are removed.
+* Improvement: Stamen maps without a Stadia Maps API key, or saved with a removed style, are displayed with OpenStreetMap and show a short notice to administrators.
+* Removed: the Navionics map type and its API key setting, as the Navionics Web API v2 is retired; existing Navionics maps are displayed with OpenStreetMap and the stored key is deleted on update.
+* Bug fix: Windy maps use the current loader URL of the Windy Map Forecast API.
+* Improvement: the Windy settings and help now state that a Windy Professional key is required in production (the free Testing version is not allowed).
 
 #3.8.14 / September 6th, 2023
 * Improvement: full support for WordPress 6.3.x

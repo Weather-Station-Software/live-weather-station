@@ -794,6 +794,20 @@ trait Storage {
             update_option('live_weather_station_rain_day_aggregated_max_boundary', 300);
             update_option('live_weather_station_rain_month_aggregated_max_boundary', 1000);
 
+            // VERSION 3.9.0
+            // Navionics Web API v2 is retired: its API key is removed (idempotent, explicit list of options).
+            delete_option('live_weather_station_navionics_apikey');
+            if (version_compare($oldversion, '3.9.0', '<')) {
+                // Saved Stamen maps (and retired Navionics maps) are now displayed with OpenStreetMap until a Stadia Maps key is set.
+                $table_name = $wpdb->prefix . self::live_weather_station_maps_table();
+                $count = (int)$wpdb->get_var($wpdb->prepare('SELECT COUNT(*) FROM `' . $table_name . '` WHERE type IN (%d, %d)', 2, 7));
+                if ($count > 0 && (string)get_option('live_weather_station_stadia_apikey', '') === '') {
+                    Notifier::warning(__('Stamen maps need a Stadia Maps API key', 'live-weather-station'),
+                        lws_get_admin_page_url('lws-settings', null, 'services'),
+                        __('The former Stamen tile servers are closed and Navionics Web API v2 is retired. Your Stamen and Navionics maps are displayed with OpenStreetMap until you enter a Stadia Maps API key in the Services settings.', 'live-weather-station'));
+                }
+            }
+
 
             // ALL VERSION
 

@@ -49,9 +49,6 @@ class Maps extends Base {
             case 'maptiler' :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_maptiler_grey_logo()) . '" />';
                 break;
-            case 'navionics' :
-                $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_navionics_grey_logo()) . '" />';
-                break;
             case 'openweathermap' :
                 $result = '<img style="width:34px;float:left;padding-right:6px;" src="' . set_url_scheme(SVG::get_base64_owm_grey_logo()) . '" />';
                 break;

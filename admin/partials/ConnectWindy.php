@@ -72,6 +72,7 @@ $warning = __('All the maps associated to this service will no longer be display
             <?php } ?>
             </tbody>
         </table>
+        <p class="description" style="margin-top:10px;"><?php esc_html_e('A Windy Professional key is required for a site in production: the free "Testing" version of the Windy API is not allowed in production.', 'live-weather-station');?></p>
     </div>
     <?php if (get_option('live_weather_station_windy_apikey') == '') { ?>
         <div id="major-publishing-actions">

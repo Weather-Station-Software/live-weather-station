@@ -104,7 +104,7 @@ class Handling {
         add_meta_box('lws-connect-owm', 'OpenWeatherMap', array($this, 'owm_box'), 'lws-settings', 'side');
         add_meta_box('lws-connect-mapbox', 'Mapbox', array($this, 'mapbox_box'), 'lws-settings', 'column3');
         add_meta_box('lws-connect-maptiler', 'MapTiler', array($this, 'maptiler_box'), 'lws-settings', 'column3');
-        add_meta_box('lws-connect-navionics', 'Navionics', array($this, 'navionics_box'), 'lws-settings', 'column3');
+        add_meta_box('lws-connect-stadia', 'Stadia Maps (Stamen)', array($this, 'stadia_box'), 'lws-settings', 'column3');
         add_meta_box('lws-connect-thunderforest', 'Thunderforest', array($this, 'thunderforest_box'), 'lws-settings', 'column3');
         add_meta_box('lws-connect-windy', 'Windy', array($this, 'windy_box'), 'lws-settings', 'column3');
     }
@@ -173,12 +173,12 @@ class Handling {
     }
 
     /**
-     * Get content of the Navionics box.
+     * Get content of the Stadia Maps box.
      *
-     * @since 3.8.0
+     * @since 3.9.0
      */
-    public function navionics_box() {
-        include(LWS_ADMIN_DIR.'partials/ConnectNavionics.php');
+    public function stadia_box() {
+        include(LWS_ADMIN_DIR.'partials/ConnectStadia.php');
     }
 
     /**

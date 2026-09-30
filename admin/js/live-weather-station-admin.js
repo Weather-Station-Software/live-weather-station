@@ -379,17 +379,17 @@ jQuery(document).ready( function($) {
         }
     });
 
-    $('#navionics-connect').click( function() {
+    $('#stadia-connect').click( function() {
         $('.button').removeClass('button-primary').addClass('button-disabled');
         $('.button').click(function() { return false; });
-        $('#navionics-span-sync').show();
+        $('#stadia-span-sync').show();
     });
 
-    $('#navionics-disconnect').click( function() {
-        if (lws_navionics_confirmation) {
+    $('#stadia-disconnect').click( function() {
+        if (lws_stadia_confirmation) {
             $('.button').removeClass('button-primary').addClass('button-disabled');
             $('.button').click(function() { return false; });
-            $('#navionics-span-sync').show();
+            $('#stadia-span-sync').show();
         }
     });
 

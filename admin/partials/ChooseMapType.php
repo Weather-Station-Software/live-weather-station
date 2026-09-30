@@ -64,19 +64,15 @@ else {
     $thunderforest_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
 
-$stamen_s = ucfirst(sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Stamen'));
-$stamen_l = wp_nonce_url(lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'stamen'), 'lws-new-map-stamen');
-$stamen_t = '_self';
-
-if (get_option('live_weather_station_navionics_apikey') != '') {
-    $navionics_s = ucfirst(__('a full featured map from Navionics with nautical, sonar and ski layers.', 'live-weather-station'));
-    $navionics_l = wp_nonce_url(lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'navionics'), 'lws-new-map-navionics');
-    $navionics_t = '_self';
+if (get_option('live_weather_station_stadia_apikey') != '') {
+    $stamen_s = ucfirst(sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Stamen'));
+    $stamen_l = wp_nonce_url(lws_get_admin_page_url('lws-maps', 'form', 'add-edit', 'stamen'), 'lws-new-map-stamen');
+    $stamen_t = '_self';
 }
 else {
-    $navionics_s = __('To add a map of this type, you need to set a Navionics API key. To set it, click on this logo to be redirected to the services settings.', 'live-weather-station');
-    $navionics_l = lws_get_admin_page_url('lws-settings', null, 'services');
-    $navionics_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
+    $stamen_s = __('To add a map of this type, you need to set a Stadia Maps API key. To set it, click on this logo to be redirected to the services settings.', 'live-weather-station');
+    $stamen_l = lws_get_admin_page_url('lws-settings', null, 'services');
+    $stamen_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
 
 ?>
@@ -93,7 +89,6 @@ else {
                 <div style="flex:auto;padding:14px;"><img id="owm" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_owm_color_logo()));?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="mapbox" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_mapbox_color_logo()));?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="maptiler" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_maptiler_color_logo()));?>" /></div>
-                <div style="flex:auto;padding:14px;"><img id="navionics" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_navionics_color_logo()));?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="stamen" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_stamen_color_logo()));?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="thunderforest" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_thunderforest_color_logo()));?>" /></div>
                 <div style="flex:auto;padding:14px;"><img id="windy" class="actionable" style="width:80px;" src="<?php echo esc_attr(set_url_scheme(SVG::get_base64_windy_color_logo()));?>" /></div>
@@ -114,12 +109,6 @@ else {
             });
             $("#windy").click(function() {
                 window.open(<?php echo Guard::js($windy_l); ?>, <?php echo Guard::js($windy_t); ?>);
-            });
-            $("#navionics").mouseover(function() {
-                $("#tip-text").html(<?php echo Guard::js($navionics_s); ?>);
-            });
-            $("#navionics").click(function() {
-                window.open(<?php echo Guard::js($navionics_l); ?>, <?php echo Guard::js($navionics_t); ?>);
             });
             $("#stamen").mouseover(function() {
                 $("#tip-text").html(<?php echo Guard::js($stamen_s); ?>);
