@@ -723,6 +723,20 @@ class Manager {
     }
 
     /**
+     * Is the WP update system enabled?
+     *
+     * @return boolean True if the WP update system is enabled, false otherwise.
+     * @since 3.1.3
+     */
+    public static function is_updatable() {
+        $result = true;
+        if (defined('AUTOMATIC_UPDATER_DISABLED')) {
+            $result = !AUTOMATIC_UPDATER_DISABLED;
+        }
+        return $result;
+    }
+
+    /**
      * Checks if the plugin's auto-update is enabled.
      *
      * @since 3.1.3
