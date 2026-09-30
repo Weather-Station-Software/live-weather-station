@@ -7,7 +7,7 @@ Requires PHP: 7.1
 Stable tag: 3.9.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Donate link: https://ko-fi.com/jasonrouet
+Donate link: https://buymeacoffee.com/jasonrouet
 
 Display on your WordPress site, in many elegant ways, the meteorological data collected by public or personal weather stations.
 
@@ -73,8 +73,7 @@ Your sponsorship enables:
 - Better documentation and user support
 - Optional external contributors for specialized tasks
 
-- GitHub Sponsors: https://github.com/sponsors/jaz_on
-- Ko-fi: https://ko-fi.com/jasonrouet
+- Buy Me a Coffee: https://buymeacoffee.com/jasonrouet
 
 You can also help by reporting bugs, translating, or sharing the plugin with others.
 

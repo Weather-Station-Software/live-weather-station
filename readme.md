@@ -12,7 +12,7 @@
 - Stable tag: 3.8.14
 - License: GPLv2 or later
 - License URI: http://www.gnu.org/licenses/gpl-2.0.html
-- Donate link: https://ko-fi.com/jasonrouet
+- Donate link: https://buymeacoffee.com/jasonrouet
 
 Display on your WordPress site, in many elegant ways, the meteorological data collected by public or personal weather stations.
 
@@ -81,8 +81,7 @@ Your sponsorship enables me to:
 - (Optionally) Hire external contributors for specialized tasks
 
 ### Ways to Support
-- **[GitHub Sponsors](https://github.com/sponsors/jaz_on)** - Recurring monthly support
-- **[Ko-fi](https://ko-fi.com/jasonrouet)** - One-time donations
+- **[Buy Me a Coffee](https://buymeacoffee.com/jasonrouet)** - One-time or recurring support
 
 ### You can also contribute to the project in other valuable ways:
 - [Reporting bugs](https://github.com/Weather-Station-Software/live-weather-station/issues)
