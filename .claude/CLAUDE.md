@@ -56,8 +56,8 @@ invocations to instructions until such tooling actually exists here.
 Default branch: `main`. Public repo (Weather-Station-Software org) — no
 issue-first requirement.
 
-One branch and one draft PR per version: `release/X.Y.Z`, PR titled
-"WIP X.Y.Z". All the work of that version is committed there (no swarm of
+One branch and one draft PR per version: `release/X.Y.Z`, PR titled with
+the branch name. All the work of that version is committed there (no swarm of
 independent PRs; external PRs are folded into it). When everything is ready
 and verified: flip the PR to ready, merge, tag `X.Y.Z` (the `Release` workflow
 creates a draft GitHub release), edit the notes, publish (this triggers the

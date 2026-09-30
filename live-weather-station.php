@@ -56,8 +56,8 @@ function initialize_site_Live_Weather_Station($site) {
  *
  * @since 1.0.0
  */
-function deactivate_Live_Weather_Station() {
-    Deactivator::deactivate();
+function deactivate_Live_Weather_Station($network_wide = false) {
+    Deactivator::deactivate($network_wide);
 }
 
 /**

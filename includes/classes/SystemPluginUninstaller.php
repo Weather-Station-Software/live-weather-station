@@ -29,6 +29,25 @@ class Uninstaller {
      * @since 3.8.0
      */
     public static function uninstall() {
+        // WordPress runs the uninstaller once, even when the plugin is deleted from the network admin: clean every site.
+        if (is_multisite()) {
+            foreach (get_sites(array('fields' => 'ids', 'number' => 0)) as $site_id) {
+                switch_to_blog($site_id);
+                self::uninstall_site();
+                restore_current_blog();
+            }
+        }
+        else {
+            self::uninstall_site();
+        }
+    }
+
+    /**
+     * Uninstall the plugin on the current site.
+     *
+     * @since 3.9.0
+     */
+    private static function uninstall_site() {
         // Stop the scheduler first, then drop tables BEFORE deleting options: drop_tables() reads the
         // 'keep_tables' option to know if the historical tables must be kept.
         Watchdog::stop();
