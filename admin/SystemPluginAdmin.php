@@ -235,6 +235,61 @@ class Admin {
     }
 
     /**
+     * Notices about services that changed or stopped: WOW (new platform, one-time dismissible notice), WeatherFlow
+     * stations without personal access token and BloomSky stations (only on the plugin screens).
+     *
+     * @since 3.9.0
+     */
+    public function admin_notice_dead_services() {
+        if (!current_user_can($this->get_manage_options_cap())) {
+            return;
+        }
+        global $wpdb;
+        $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+        if (get_option('live_weather_station_wow_be_notice', '') !== 'hidden') {
+            $count = (int)$wpdb->get_var("SELECT COUNT(*) FROM " . $table_name . " WHERE wow_sync=1");
+            if ($count > 0) {
+                $nonce = wp_create_nonce('lws-wow-be-nonce');
+                $s = '<strong>' . esc_html__('WOW Met Office has been replaced by WOW-BE.', 'live-weather-station') . '</strong> ';
+                $s .= esc_html__('The Met Office website was closed on 1 December 2025 and the service is now run by the Royal Meteorological Institute of Belgium. Your data are no longer received: please register again on wow.meteo.be, create a new site, then enter its new site ID and PIN in the sharing box of your station.', 'live-weather-station');
+                $s .= ' <a href="' . esc_url('https://wow.meteo.be/') . '">wow.meteo.be</a>';
+                print('<div id="lws-wow-be-notice" class="notice notice-warning is-dismissible" data-nonce="' . esc_attr($nonce) . '"><p>' . $s . '</p></div>');
+                print('<script>jQuery(function($){$(document).on("click","#lws-wow-be-notice .notice-dismiss",function(){$.post(ajaxurl,{action:"hide_lws_wow_be_notice",lwswowbenonce:$("#lws-wow-be-notice").data("nonce")});});});</script>');
+            }
+        }
+        if (isset($_GET['page']) && strpos(sanitize_key($_GET['page']), 'lws-') === 0) {
+            $no_token = false;
+            foreach ($this->get_all_stations_by_type(LWS_WFLW_SID) as $station) {
+                $parts = WeatherFlowCollector::split_wflw_service_id($station['service_id']);
+                if ($parts[1] === '') {
+                    $no_token = true;
+                    break;
+                }
+            }
+            if ($no_token) {
+                print('<div class="notice notice-error"><p><strong>' . esc_html__('Some WeatherFlow stations are no longer updated.', 'live-weather-station') . '</strong> ' . esc_html__('Since 27 March 2025, WeatherFlow only lets you read the stations of your own account. Edit these stations and enter the personal access token of their owner.', 'live-weather-station') . '</p></div>');
+            }
+            if ((int)$wpdb->get_var("SELECT COUNT(*) FROM " . $table_name . " WHERE station_type=" . (int)LWS_BSKY_SID) > 0) {
+                print('<div class="notice notice-warning"><p><strong>' . esc_html__('Service no longer available', 'live-weather-station') . '</strong> &mdash; ' . esc_html__('BloomSky stopped its service in 2022: its stations are no longer updated, but their stored data are kept.', 'live-weather-station') . '</p></div>');
+            }
+        }
+    }
+
+    /**
+     * Ajax handler for dismissing the WOW-BE notice.
+     *
+     * @since 3.9.0
+     */
+    public static function hide_lws_wow_be_notice_callback() {
+        if (!current_user_can('manage_options')) {
+            wp_die(-1);
+        }
+        check_ajax_referer('lws-wow-be-nonce', 'lwswowbenonce');
+        update_option('live_weather_station_wow_be_notice', 'hidden');
+        wp_die(1);
+    }
+
+    /**
      * Ajax handler for updating whether to display the what's new notice.
      *
      * @since 3.3.0
@@ -4814,9 +4869,18 @@ class Admin {
             if (array_key_exists('service_id', $_POST)) {
                 $station['service_id'] = sanitize_text_field($_POST['service_id']);
             }
+            $wflw_token = array_key_exists('service_token', $_POST) ? sanitize_text_field($_POST['service_token']) : '';
+            if ($wflw_token === '' && $station['guid'] != 0) {
+                // Secrets are never re-displayed: an empty field means "keep the stored value".
+                $stored = $this->get_station_information_by_guid($station['guid']);
+                if (is_array($stored) && array_key_exists('service_id', $stored)) {
+                    $stored_parts = WeatherFlowCollector::split_wflw_service_id($stored['service_id']);
+                    $wflw_token = $stored_parts[1];
+                }
+            }
             $station['station_model'] = 'WeatherFlow - Smart Weather Station';
             $collector = new WeatherFlowCollector();
-            if ($message = $collector->test_station($station['service_id'])) {
+            if ($message = $collector->test_station($station['service_id'], $wflw_token)) {
                 $error = 1;
             }
             else {
@@ -4826,6 +4890,7 @@ class Admin {
                 else {
                     $station['station_name'] = __('no name', 'live-weather-station');
                 }
+                $station['service_id'] .= LWS_SERVICE_SEPARATOR . $wflw_token;
             }
         }
         else {

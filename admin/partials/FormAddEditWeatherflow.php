@@ -8,6 +8,8 @@
 
 use WeatherStation\System\Help\InlineHelp;
 
+$wflw_parts = \WeatherStation\SDK\WeatherFlow\Plugin\StationCollector::split_wflw_service_id(isset($station['service_id']) ? $station['service_id'] : '');
+$wflw_has_token = ($wflw_parts[1] !== '');
 $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
 $message = __('Adding this station, please wait', 'live-weather-station');
 if ($error_message == '') {
@@ -22,10 +24,10 @@ else {
 
 <div class="wrap">
     <?php if ($station['guid'] == 0) { ?>
-        <h1><?php _e('Add a public WeatherFlow station', 'live-weather-station');?></h1>
+        <h1><?php _e('Add a WeatherFlow station', 'live-weather-station');?></h1>
     <?php } ?>
     <?php if ($station['guid'] != 0) { ?>
-        <h1><?php _e('Edit a public WeatherFlow station', 'live-weather-station');?></h1>
+        <h1><?php _e('Edit a WeatherFlow station', 'live-weather-station');?></h1>
     <?php } ?>
     <form method="post" name="add-edit-wflw-form" id="add-edit-wflw-form" action="<?php echo esc_url(lws_get_admin_page_url($url)); ?>">
         <input name="station_id" type="hidden" value="<?php echo esc_attr($station['station_id']); ?>" />
@@ -54,10 +56,17 @@ else {
             </tr>
             <tr class="form-field form-required">
                 <th scope="row"><label for="service_id"><?php esc_html_e('Station ID', 'live-weather-station' );?> <span class="description"><?php esc_html_e( '(required)', 'live-weather-station' );?></span></label></th>
-                <td><input required name="service_id" aria-required="true" type="text" id="service_id" value="<?php echo esc_attr($station['service_id']) ?>" maxlength="20" style="width:25em;" /></td>
+                <td><input required name="service_id" aria-required="true" type="text" id="service_id" value="<?php echo esc_attr($wflw_parts[0]) ?>" maxlength="20" style="width:25em;" /></td>
+            </tr>
+            <tr class="form-field form-required">
+                <th scope="row"><label for="service_token"><?php esc_html_e('Personal access token', 'live-weather-station' );?> <span class="description"><?php echo ($wflw_has_token ? esc_html__('(leave empty to keep the current token)', 'live-weather-station') : esc_html__('(required)', 'live-weather-station')); ?></span></label></th>
+                <td><input <?php echo ($wflw_has_token ? '' : 'required aria-required="true"'); ?> name="service_token" type="password" id="service_token" value="" maxlength="100" autocomplete="off" style="width:25em;" /></td>
             </tr>
         </table>
-        <p><?php echo sprintf(__('You can find public stations on %s.', 'live-weather-station'), InlineHelp::get(-42, '%s', __('the official WeatherFlow map', 'live-weather-station')));?></p>
+        <p><?php esc_html_e('Since 27 March 2025, WeatherFlow only lets you read the stations of your own account: the station must be yours, and the token is a personal access token created at tempestwx.com (Settings, Data Authorizations, Create Token).', 'live-weather-station');?></p>
+        <?php if ($station['guid'] != 0 && !$wflw_has_token) { ?>
+            <p class="notice notice-error" style="padding:8px 12px;"><strong><?php esc_html_e('This station can no longer be updated: it was saved without a personal access token.', 'live-weather-station');?></strong> <?php esc_html_e('Enter the token of the station owner and save to resume the collection.', 'live-weather-station');?></p>
+        <?php } ?>
         <?php if ($error != 0) { ?>
             <p style="color:red;"><?php echo esc_html($errmsg);?></p>
         <?php } ?>

@@ -1,4 +1,8 @@
 #3.9.0 / xx September 2026
+* Bug fix: WOW uploads now target WOW-BE (wow.meteo.be), which replaced the Met Office WOW closed on 1 December 2025; a notice asks you to register your station again and enter the new site ID and PIN.
+* Bug fix: WeatherFlow stations are read with the personal access token of their owner (WeatherFlow no longer lets you read the stations of other people); stations saved without a token show a clear message.
+* Improvement: the personal access token of a WeatherFlow station is kept secret and is excluded from the exports.
+* Bug fix: BloomSky, stopped in 2022, is no longer offered when adding a station; existing BloomSky stations are marked as no longer available, are no longer requested and keep their stored data.
 * Improvement: PHP 8.2 to 8.5 are supported and checked by the continuous integration (syntax check and compatibility scan); the minimum required version is unchanged.
 * Improvement: sunrise and sunset are computed without the PHP functions deprecated since PHP 8.1, with exactly the same times.
 * Bug fix: an unknown station id in an admin URL now shows a clear message with a link back to the stations list instead of hundreds of PHP warnings.

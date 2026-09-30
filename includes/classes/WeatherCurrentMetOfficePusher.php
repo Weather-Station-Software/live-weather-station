@@ -7,7 +7,7 @@ use WeatherStation\System\Schedules\Watchdog;
 use WeatherStation\System\Logs\Logger;
 
 /**
- * Class to push data to WOW Met Office.
+ * Class to push data to WOW (WOW-BE, formerly the Met Office WOW).
  *
  * @package Includes\Classes
  * @author Jason Rouet <https://www.jasonrouet.com/>.
@@ -106,7 +106,14 @@ class Pusher extends Abstract_Pusher {
      * @since   2.5.0
      */
     protected function get_post_url() {
-        return 'https://wow.metoffice.gov.uk/automaticreading';
+        // The Met Office hub was closed on 1 December 2025: WOW is now run by RMI Belgium (WOW-BE).
+        // UNVERIFIED: the parameter names are still the ones of the former "automaticreading" protocol.
+        $default = 'https://wow.meteo.be/api/v2/send';
+        $url = apply_filters('lws_wow_endpoint', $default);
+        if (!is_string($url) || strpos($url, 'https://') !== 0 || !wp_http_validate_url($url)) {
+            return $default;
+        }
+        return $url;
     }
 
     /**

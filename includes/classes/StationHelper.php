@@ -688,6 +688,15 @@ class Handling {
         if ($this->station_type == LWS_WUG_SID) {
             $this->wug_warning();
         }
+        elseif ($this->station_type == LWS_BSKY_SID) {
+            echo '<div class="settings-error error"><p><strong>' . esc_html__('Service no longer available', 'live-weather-station') . '</strong> &mdash; ' . esc_html__('BloomSky stopped its service in 2022: this station is no longer updated, but its stored data are kept.', 'live-weather-station') . '</p></div>';
+        }
+        elseif ($this->station_type == LWS_WFLW_SID) {
+            $wflw_parts = explode(LWS_SERVICE_SEPARATOR, (is_array($this->station_information) && isset($this->station_information['service_id'])) ? (string)$this->station_information['service_id'] : '', 2);
+            if (count($wflw_parts) < 2 || $wflw_parts[1] === '') {
+                echo '<div class="settings-error error"><p><strong>' . esc_html__('This station is no longer updated.', 'live-weather-station') . '</strong> &mdash; ' . esc_html__('WeatherFlow only lets you read the stations of your own account: edit this station and enter the personal access token of its owner.', 'live-weather-station') . '</p></div>';
+            }
+        }
         elseif ($this->station_type == LWS_OWM_SID) {
             echo '<div class="settings-error error"><p><strong>' . esc_html__('Service no longer available', 'live-weather-station') . '</strong> &mdash; ' . esc_html__('This station is no longer collected because the OpenWeatherMap station service is no longer supported.', 'live-weather-station') . '</p></div>';
         }
@@ -766,7 +775,7 @@ class Handling {
                 add_meta_box('lws-datapublishing', __('Data publishing', 'live-weather-station' ), array($this, 'publishing_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station));
             }
             if (in_array($station['station_type'], $this->sharable)) {
-                add_meta_box('lws-sharing-wow', __('Sharing with Met Office', 'live-weather-station'), array($this, 'sharing_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station, 'service' => 'wow'));
+                add_meta_box('lws-sharing-wow', __('Sharing with WOW-BE', 'live-weather-station'), array($this, 'sharing_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station, 'service' => 'wow'));
                 add_meta_box('lws-sharing-pws', __('Sharing with PWS Weather', 'live-weather-station'), array($this, 'sharing_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station, 'service' => 'pws'));
                 if (LWS_WU_ACTIVE) {
                     add_meta_box('lws-sharing-wug', __('Sharing with Weather Underground', 'live-weather-station'), array($this, 'sharing_widget'), $this->screen_id, 'advanced', 'default', array('station' => $station, 'service' => 'wug'));
@@ -889,9 +898,9 @@ class Handling {
         $password = $station[$service.'_password'];
         switch ($service) {
             case 'wow':
-                $f1 = __('Site ID', 'live-weather-station');
-                $f2 = __('Authentication key', 'live-weather-station');
-                $url = 'http://wow.metoffice.gov.uk/weather/view?siteID=' . rawurlencode($station['wow_user']);
+                $f1 = __('Site ID (WOW-BE UUID)', 'live-weather-station');
+                $f2 = __('Authentication key (PIN)', 'live-weather-station');
+                $url = 'https://wow.meteo.be/';
                 break;
             case 'pws':
                 $f1 = __('Station ID', 'live-weather-station');

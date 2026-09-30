@@ -188,13 +188,13 @@ class InlineHelp {
             $result = sprintf($message, '<a href="https://www.wunderground.com/weather/api/d/pricing.html"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -12) {
-            $result = sprintf($message, '<a href="https://register.metoffice.gov.uk/WaveRegistrationClient/public/register.do?service=weatherobservations"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://wow.meteo.be/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -13) {
-            $result = sprintf($message, '<a href="http://wow.metoffice.gov.uk/sites/create"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://wow.meteo.be/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -14) {
-            $result = sprintf($message, '<a href="http://wow.metoffice.gov.uk/weather/view?siteID=966476001"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
+            $result = sprintf($message, '<a href="https://wow.meteo.be/"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
         }
         if ($number == -15) {
             $result = sprintf($message, '<a href="http://www.pwsweather.com/register.php"' . $target . '>' . $anchor . '</a>' . Intl::get_language_markup(array('en')));
@@ -822,13 +822,13 @@ class InlineHelp {
                     'content'  => '<p>' . $s1 . '</p><p><em>' . $s2 . '</em></p>');
 
 
-                $s1 = __('To obtain site ID and authentication key from Met Office please, follow these steps:', 'live-weather-station' );
-                $s2 = self::get(-12, __('%s on the Weather Observations Website from Met Office.', 'live-weather-station'), __('Create an account', 'live-weather-station'));
+                $s1 = __('The Met Office WOW website was closed on 1 December 2025 and replaced by WOW-BE, run by the Royal Meteorological Institute of Belgium. Even if you had a Met Office site, you need a new account and a new site. To obtain the site ID (a UUID) and the PIN, please follow these steps:', 'live-weather-station' );
+                $s2 = self::get(-12, __('%s on WOW-BE.', 'live-weather-station'), __('Create an account', 'live-weather-station'));
                 $s3 = self::get(-13, __('After registration, log in and %s.', 'live-weather-station'), __('create a site', 'live-weather-station'));
-                $s4 = __('Then, copy and paste <em>Site ID</em> and <em>Authentication Key</em> in the corresponding fields of the "WOW Met Office" box, and click on the "connect" button.', 'live-weather-station');
+                $s4 = __('Then, copy and paste <em>Site ID</em> and <em>Authentication Key</em> (the PIN) in the corresponding fields of the "WOW-BE" box, and click on the "connect" button.', 'live-weather-station');
                 $s5 = self::get(-14, __('After a few hours you\'ll get something %s', 'live-weather-station'), __('like this!', 'live-weather-station'));
                 $tabs[] = array(
-                    'title'    => 'Met Office',
+                    'title'    => 'WOW-BE',
                     'id'       => 'lws-contextual-station-sharing-wow',
                     'content'  => '<p>' . $s1 . '</p><ol><li>' . $s2 . '</li><li>' . $s3 . '</li><li>' . $s4 . '</li></ol><p>' . $s5 .'</p>');
 
@@ -926,7 +926,7 @@ class InlineHelp {
                     'content'  => '<p>' . $s1 . '</p>');
             }
             if (isset($service) && $service == 'weatherflow') {
-                $s1 = __('In this screen, you can add or edit:', 'live-weather-station') . ' ' . __('a public WeatherFlow station.', 'live-weather-station');
+                $s1 = __('In this screen, you can add or edit:', 'live-weather-station') . ' ' . __('your own WeatherFlow station (personal access token).', 'live-weather-station');
                 $tabs[] = array(
                     'title'    => __('Overview', 'live-weather-station'),
                     'id'       => 'lws-contextual-' . $service . '-overview',
@@ -1147,7 +1147,7 @@ class InlineHelp {
             $s1 = sprintf(__('In this version of %s and depending of the API key you have set, you can add the following types of stations:', 'live-weather-station'), LWS_PLUGIN_NAME);
             $s2 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_netatmo_color_logo())) . '" /><strong>' . 'Netatmo' . '</strong> &mdash; ' . __('a Netatmo station to which you have access to.', 'live-weather-station') . '</p>';
             $s3 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_netatmo_hc_color_logo())) . '" /><strong>' . 'Netatmo "Healthy Home Coach"' . '</strong> &mdash; ' . __('a Netatmo "Healthy Home Coach" device to which you have access to.', 'live-weather-station') . '</p>';
-            $s4 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_weatherflow_color_logo())) . '" /><strong>' . 'WeatherFlow' . '</strong> &mdash; ' . __('a public WeatherFlow station.', 'live-weather-station') . '</p>';
+            $s4 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_weatherflow_color_logo())) . '" /><strong>' . 'WeatherFlow' . '</strong> &mdash; ' . __('your own WeatherFlow station (personal access token).', 'live-weather-station') . '</p>';
             $s12 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_bloomsky_color_logo())) . '" /><strong>' . 'BloomSky' . '</strong> &mdash; ' . __('a Bloomsky station to which you have access to.', 'live-weather-station') . '</p>';
             $s5 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_piou_color_logo())) . '" /><strong>' . 'Pioupiou' . '</strong> &mdash; ' . __('a Pioupiou sensor as a station.', 'live-weather-station') . '</p>';
             $s14 = '<p><img style="width:26px;float:left;margin-top: -4px;padding-right: 6px;" src="' . esc_attr(set_url_scheme(SVG::get_base64_weatherlink_color_logo())) . '" /><strong>' . 'WeatherLink' . '</strong> &mdash; ' .__('a personal weather station connected to WeatherLink 2.', 'live-weather-station') . '</p>';

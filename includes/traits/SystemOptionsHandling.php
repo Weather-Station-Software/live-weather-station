@@ -846,6 +846,7 @@ trait Handling {
         delete_option('live_weather_station_force_frontend_styling');
         delete_option('live_weather_station_cron_speed');
         delete_option('live_weather_station_show_update');
+        delete_option('live_weather_station_wow_be_notice');
         delete_option('live_weather_station_plugin_stat');
         delete_option('live_weather_station_keep_tables');
         delete_option('live_weather_station_ajax_widget');
