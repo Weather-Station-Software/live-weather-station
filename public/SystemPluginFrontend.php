@@ -404,7 +404,8 @@ class Frontend {
      */
     public function lws_shortcode_callback() {
         $shortcode = wp_kses($_POST['sc'], array());
-        $shortcode = str_replace('\\', '', $shortcode);
+        // Magic quotes add backslashes before quotes: remove them so the shortcode parser works. Values are never trusted by the SQL layer.
+        $shortcode = wp_unslash($shortcode);
         if (strpos($shortcode, '[') === false) {
             $shortcode = '[' . $shortcode . ']';
         }
