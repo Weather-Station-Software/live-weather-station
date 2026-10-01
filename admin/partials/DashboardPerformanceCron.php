@@ -35,7 +35,7 @@ foreach ($fields as $field) {
     $color2 = 154 + $quality;
     $values[$field]['clr'] = 'rgb('.$color1.', '.$color1.', '.$color2.')';
     $values[$field]['txt'] = ucfirst($val[$field]['name']);
-    $values[$field]['txt'] .= ' - ' .  sprintf(__('tasks executed %s times in an average time of %s ms.', 'live-weather-station'), $val[$field]['count'], $val[$field]['avr_time']);
+    $values[$field]['txt'] .= ' - ' .  sprintf(/* translators: 1: Number of executions, 2: Average execution time in milliseconds. */ __('tasks executed %1$s times in an average time of %2$s ms.', 'live-weather-station'), $val[$field]['count'], $val[$field]['avr_time']);
 }
 
 $link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), esc_url(live_weather_station_get_admin_page_url('lws-analytics', null, 'cron')), __('detailed analytics', 'live-weather-station'));
@@ -45,13 +45,13 @@ $link = sprintf('%s <a href="%s">%s</a>', __('See', 'live-weather-station'), esc
     <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
         <ul>
             <?php foreach ($fields as $field) { ?>
-                <li><i style="color:<?php echo esc_attr($values[$field]['clr']); ?>" class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-lg fa-fw fa-circle"></i>&nbsp;&nbsp;<?php echo esc_html($values[$field]['txt']); ?></li>
+                <li><i style="color:<?php echo esc_attr($values[$field]['clr']); ?>" class="<?php echo esc_attr( LIVE_WEATHER_STATION_FAS );?> fa-lg fa-fw fa-circle"></i>&nbsp;&nbsp;<?php echo esc_html($values[$field]['txt']); ?></li>
             <?php } ?>
         </ul>
     </div>
     <?php if ((bool)get_option('live_weather_station_show_analytics') && $show_link) { ?>
         <div class="activity-block" style="padding-bottom: 0px;">
-            <i style="color:#999;" class="<?php echo LIVE_WEATHER_STATION_FAR;?> fa-<?php echo LIVE_WEATHER_STATION_FA5?'chart-bar':'bar-chart';?>"></i>&nbsp;&nbsp;<?php echo $link ?>
+            <i style="color:#999;" class="<?php echo esc_attr( LIVE_WEATHER_STATION_FAR );?> fa-<?php echo LIVE_WEATHER_STATION_FA5?'chart-bar':'bar-chart';?>"></i>&nbsp;&nbsp;<?php echo wp_kses_post($link); ?>
         </div>
     <?php } ?>
 </div>

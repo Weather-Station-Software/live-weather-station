@@ -21,7 +21,7 @@ if (get_option('live_weather_station_netatmo_connected')) {
     $netatmo_t = '_self';
 }
 else {
-    $netatmo_s = sprintf(__('To add a station of this type, you need to connect %s to your Netatmo account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
+    $netatmo_s = sprintf(/* translators: %s: Name of the plugin. */ __('To add a station of this type, you need to connect %s to your Netatmo account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
     $netatmo_l = live_weather_station_get_admin_page_url('lws-settings', null, 'services');
     $netatmo_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
@@ -32,7 +32,7 @@ if (get_option('live_weather_station_netatmohc_connected')) {
     $netatmo_hc_t = '_self';
 }
 else {
-    $netatmo_hc_s = sprintf(__('To add a station of this type, you need to connect %s to your Netatmo account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
+    $netatmo_hc_s = sprintf(/* translators: %s: Name of the plugin. */ __('To add a station of this type, you need to connect %s to your Netatmo account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
     $netatmo_hc_l = live_weather_station_get_admin_page_url('lws-settings', null, 'services');
     $netatmo_hc_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
@@ -77,7 +77,7 @@ if (get_option('live_weather_station_ambient_connected')) {
     $ambient_t = '_self';
 }
 else {
-    $ambient_s = sprintf(__('To add a station of this type, you need to connect %s to your Ambient account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
+    $ambient_s = sprintf(/* translators: %s: Name of the plugin. */ __('To add a station of this type, you need to connect %s to your Ambient account. To do it, click on this logo to be redirected to the services settings.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
     $ambient_l = live_weather_station_get_admin_page_url('lws-settings', null, 'services');
     $ambient_t = ((bool)get_option('live_weather_station_redirect_internal_links') ? '_blank' : '_self');
 }
@@ -125,64 +125,64 @@ $wlink_t = '_self';
                 $("#tip-text").html("&nbsp;");
             });
             $("#netatmo").mouseover(function() {
-                $("#tip-text").html(<?php echo Guard::js($netatmo_s); ?>);
+                $("#tip-text").html(<?php echo Guard::js($netatmo_s); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#netatmo").click(function() {
-                window.open(<?php echo Guard::js($netatmo_l); ?>, <?php echo Guard::js($netatmo_t); ?>);
+                window.open(<?php echo Guard::js($netatmo_l); ?>, <?php echo Guard::js($netatmo_t); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#netatmohc").mouseover(function() {
-                $("#tip-text").html(<?php echo Guard::js($netatmo_hc_s); ?>);
+                $("#tip-text").html(<?php echo Guard::js($netatmo_hc_s); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#netatmohc").click(function() {
-                window.open(<?php echo Guard::js($netatmo_hc_l); ?>, <?php echo Guard::js($netatmo_hc_t); ?>);
+                window.open(<?php echo Guard::js($netatmo_hc_l); ?>, <?php echo Guard::js($netatmo_hc_t); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#weatherflow").mouseover(function() {
-                $("#tip-text").html(<?php echo Guard::js($wflw_s); ?>);
+                $("#tip-text").html(<?php echo Guard::js($wflw_s); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#weatherflow").click(function() {
-                window.open(<?php echo Guard::js($wflw_l); ?>, <?php echo Guard::js($wflw_t); ?>);
+                window.open(<?php echo Guard::js($wflw_l); ?>, <?php echo Guard::js($wflw_t); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#pioupiou").mouseover(function() {
-                $("#tip-text").html(<?php echo Guard::js($piou_s); ?>);
+                $("#tip-text").html(<?php echo Guard::js($piou_s); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#pioupiou").click(function() {
-                window.open(<?php echo Guard::js($piou_l); ?>, <?php echo Guard::js($piou_t); ?>);
+                window.open(<?php echo Guard::js($piou_l); ?>, <?php echo Guard::js($piou_t); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#ambient").mouseover(function() {
-                $("#tip-text").html(<?php echo Guard::js($ambient_s); ?>);
+                $("#tip-text").html(<?php echo Guard::js($ambient_s); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#ambient").click(function() {
-                window.open(<?php echo Guard::js($ambient_l); ?>, <?php echo Guard::js($ambient_t); ?>);
+                window.open(<?php echo Guard::js($ambient_l); ?>, <?php echo Guard::js($ambient_t); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#loc").mouseover(function() {
-                $("#tip-text").html(<?php echo Guard::js($loc_s); ?>);
+                $("#tip-text").html(<?php echo Guard::js($loc_s); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#loc").click(function() {
-                window.open(<?php echo Guard::js($loc_l); ?>, <?php echo Guard::js($loc_t); ?>);
+                window.open(<?php echo Guard::js($loc_l); ?>, <?php echo Guard::js($loc_t); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#real").mouseover(function() {
-                $("#tip-text").html(<?php echo Guard::js($real_s); ?>);
+                $("#tip-text").html(<?php echo Guard::js($real_s); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#real").click(function() {
-                window.open(<?php echo Guard::js($real_l); ?>, <?php echo Guard::js($real_t); ?>);
+                window.open(<?php echo Guard::js($real_l); ?>, <?php echo Guard::js($real_t); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#raw").mouseover(function() {
-                $("#tip-text").html(<?php echo Guard::js($raw_s); ?>);
+                $("#tip-text").html(<?php echo Guard::js($raw_s); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#raw").click(function() {
-                window.open(<?php echo Guard::js($raw_l); ?>, <?php echo Guard::js($raw_t); ?>);
+                window.open(<?php echo Guard::js($raw_l); ?>, <?php echo Guard::js($raw_t); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#txt").mouseover(function() {
-                $("#tip-text").html(<?php echo Guard::js($txt_s); ?>);
+                $("#tip-text").html(<?php echo Guard::js($txt_s); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#txt").click(function() {
-                window.open(<?php echo Guard::js($txt_l); ?>, <?php echo Guard::js($txt_t); ?>);
+                window.open(<?php echo Guard::js($txt_l); ?>, <?php echo Guard::js($txt_t); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#weatherlink").mouseover(function() {
-                $("#tip-text").html(<?php echo Guard::js($wlink_s); ?>);
+                $("#tip-text").html(<?php echo Guard::js($wlink_s); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
             $("#weatherlink").click(function() {
-                window.open(<?php echo Guard::js($wlink_l); ?>, <?php echo Guard::js($wlink_t); ?>);
+                window.open(<?php echo Guard::js($wlink_l); ?>, <?php echo Guard::js($wlink_t); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>);
             });
         });
     </script>

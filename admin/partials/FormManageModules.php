@@ -21,7 +21,7 @@ $buttons = str_replace('</p>', '', get_submit_button(__('Save Changes', 'live-we
 ?>
 
 <div class="wrap">
-    <h1><?php echo sprintf(__('Manage modules', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?></h1>
+    <h1><?php echo esc_html(sprintf(__('Manage modules', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));?></h1>
     <form name="manage-modules" id="manage-modules" action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
         <input type="hidden" name="guid" value="<?php echo esc_attr($station['guid']); ?>" />
         <?php wp_nonce_field('edit-station'); ?>
@@ -48,7 +48,7 @@ $buttons = str_replace('</p>', '', get_submit_button(__('Save Changes', 'live-we
             </div>
         </div>
         <div style="width: 100%;clear: both;">
-            <?php echo $buttons;?>
+            <?php echo $buttons; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $buttons only contains core get_submit_button() markup (escaped by core) and translated button labels; wp_kses_post() would remove the input elements. ?>
             <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations', 'manage', 'view', 'station', false, $station['guid']), null, 'url'); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a></p>
         </div>
     </form>

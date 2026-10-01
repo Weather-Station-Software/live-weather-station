@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $map = ' ('.sprintf('<a href="https://www.openstreetmap.org/?mlat=%1$s&mlon=%2$s#map=%3$s/%1$s/%2$s"' . ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" rel="noopener noreferrer"' : '') . '>'.lcfirst(__('Verify on a map', 'live-weather-station')).'</a>',esc_attr(rawurlencode($station['loc_latitude'])), esc_attr(rawurlencode($station['loc_longitude'])), esc_attr(rawurlencode(get_option('live_weather_station_map_zoom')))).')';
-$confirm = sprintf(__('Here are the coordinates we\'ve found %s. You can confirm it by clicking again on the button <em>%s</em>!', 'live-weather-station'),$map, ($station['station_id'] == 0 ? __( 'Add This Station', 'live-weather-station' ) : __( 'Save Changes', 'live-weather-station' )));
+$confirm = sprintf(/* translators: 1: Link to a map to verify the coordinates, 2: Label of the button (Add This Station or Save Changes). */ __('Here are the coordinates we\'ve found %1$s. You can confirm it by clicking again on the button <em>%2$s</em>!', 'live-weather-station'),$map, ($station['station_id'] == 0 ? __( 'Add This Station', 'live-weather-station' ) : __( 'Save Changes', 'live-weather-station' )));
 $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
 
 ?>
@@ -68,8 +68,8 @@ $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
             <script language="javascript" type="text/javascript">
                 jQuery(document).ready(function($) {
 
-                    var js_array_tz_all = <?php echo Guard::js($timezones); ?>;
-                    var actual_tz = <?php echo Guard::js($station['loc_timezone']); ?>;
+                    var js_array_tz_all = <?php echo Guard::js($timezones); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>;
+                    var actual_tz = <?php echo Guard::js($station['loc_timezone']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>;
                     var selected = "";
 
                     $("#loc_country_code").change(function() {
@@ -131,7 +131,7 @@ $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
             <?php } else { ?>
                 <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
             <?php } ?>
-                <span id="span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo $message;?>&hellip;</strong></span></p>
+                <span id="span-sync" style="display: none;"><i class="<?php echo esc_attr( LIVE_WEATHER_STATION_FAS );?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo esc_html($message);?>&hellip;</strong></span></p>
         <?php } ?>
         <?php if ($station['guid'] != 0) { ?>
             <p class="submit"><input type="submit" name="add-edit-loc" id="add-edit-loc" class="button button-primary" value="<?php esc_html_e( 'Save Changes', 'live-weather-station' );?>"  /> &nbsp;&nbsp;&nbsp;
@@ -140,7 +140,7 @@ $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
             <?php } else { ?>
                 <a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-stations')); ?>" class="button" ><?php esc_html_e( 'Cancel', 'live-weather-station' );?></a>
             <?php } ?>
-                <span id="span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Updating this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                <span id="span-sync" style="display: none;"><i class="<?php echo esc_attr( LIVE_WEATHER_STATION_FAS );?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo esc_html__('Updating this station, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
         <?php } ?>
     </form>
 </div>

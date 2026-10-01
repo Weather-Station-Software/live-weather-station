@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '');
-$warning = sprintf(__('All stations associated to this service will be removed from %s.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
+$warning = sprintf(/* translators: %s: Name of the plugin. */ __('All stations associated to this service will be removed from %s.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
 
 ?>
 
@@ -38,7 +38,7 @@ $warning = sprintf(__('All stations associated to this service will be removed f
                     <th class="lws-login" width="35%" align="left" scope="row"><?php esc_html_e('Status', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-events', null, null, 'Bloomsky')); ?>"<?php echo $target; ?>><?php echo esc_html(live_weather_station_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
+                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-events', null, null, 'Bloomsky')); ?>"<?php echo $target; ?>><?php echo esc_html(live_weather_station_lcfirst(__('See events log', 'live-weather-station'))); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $target is either an empty string or the literal ' target="_blank" rel="noopener noreferrer" ' set at the top of this template. ?></a>)</span>
                     </td>
                 </tr>
             <?php } ?>
@@ -49,7 +49,7 @@ $warning = sprintf(__('All stations associated to this service will be removed f
         <div id="major-publishing-actions">
             <div id="publishing-action">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="bloomsky-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="bloomsky-span-sync" style="display: none;"><i class="<?php echo esc_attr( LIVE_WEATHER_STATION_FAS );?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo esc_html__('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
                 <input type="submit" name="connect" id="bloomsky-connect" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
             </div>
@@ -60,9 +60,9 @@ $warning = sprintf(__('All stations associated to this service will be removed f
             <div id="publishing-action">
                 <input type="submit" name="reconnect" id="bloomsky-reconnect" class="button button-primary" value="<?php esc_attr_e('Change', 'live-weather-station');?>">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="bloomsky-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="bloomsky-span-sync" style="display: none;"><i class="<?php echo esc_attr( LIVE_WEATHER_STATION_FAS );?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo esc_html__('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="disconnect" id="bloomsky-disconnect" class="button button-primary" onclick="lws_bloomsky_confirmation = confirm(<?php echo Guard::js($warning); ?>); return lws_bloomsky_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+                <input type="submit" name="disconnect" id="bloomsky-disconnect" class="button button-primary" onclick="lws_bloomsky_confirmation = confirm(<?php echo Guard::js($warning); ?>); return lws_bloomsky_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station'); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a JSON encoded JS literal (wp_json_encode with the HEX_TAG, HEX_AMP, HEX_APOS and HEX_QUOT flags), safe inside an inline script or an HTML attribute. ?>">
             </div>
             <div class="clear"></div>
         </div>

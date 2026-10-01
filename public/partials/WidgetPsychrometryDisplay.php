@@ -40,7 +40,7 @@ if (!defined('ABSPATH')) {
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo esc_attr($id) ?>"><?php echo wp_kses_post($measurements['temperature']['unit']); ?></div>
                     </div>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo esc_attr($id) ?>">
-                        <?php echo $measurements['temperature']['icon']; ?>
+                        <?php echo $measurements['temperature']['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the icon markup is built by output_iconic_value() (DataOutput), which restricts the color and the CSS class with a regular expression and only outputs font icon elements. ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo esc_attr($id) ?>">
@@ -65,7 +65,7 @@ if (!defined('ABSPATH')) {
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo esc_attr($id) ?>"><?php echo wp_kses_post($measurements['wet_bulb']['unit']); ?></div>
                     </div>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo esc_attr($id) ?>">
-                        <?php echo $measurements['wet_bulb']['icon']; ?>
+                        <?php echo $measurements['wet_bulb']['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the icon markup is built by output_iconic_value() (DataOutput), which restricts the color and the CSS class with a regular expression and only outputs font icon elements. ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo esc_attr($id) ?>">
@@ -85,7 +85,7 @@ if (!defined('ABSPATH')) {
                 <!-- PRESSURE -->
                 <div class="lws-widget-row lws-widget-row-single-<?php echo esc_attr($id) ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Atmospheric pressure', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo esc_attr($id) ?>">
-                        <?php echo $measurements['pressure']['icon']; ?>
+                        <?php echo $measurements['pressure']['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the icon markup is built by output_iconic_value() (DataOutput), which restricts the color and the CSS class with a regular expression and only outputs font icon elements. ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
@@ -102,7 +102,7 @@ if (!defined('ABSPATH')) {
                 <!-- HUMIDITY -->
                 <div class="lws-widget-row lws-widget-row-single-<?php echo esc_attr($id) ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Relative humidity', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo esc_attr($id) ?>">
-                        <?php echo $measurements['humidity']['icon']; ?>
+                        <?php echo $measurements['humidity']['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the icon markup is built by output_iconic_value() (DataOutput), which restricts the color and the CSS class with a regular expression and only outputs font icon elements. ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
@@ -123,7 +123,7 @@ if (!defined('ABSPATH')) {
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo esc_attr($id) ?>"><?php echo wp_kses_post($measurements['partial_absolute_humidity']['unit']); ?></div>
                     </div>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo esc_attr($id) ?>">
-                        <?php echo $measurements['partial_absolute_humidity']['icon']; ?>
+                        <?php echo $measurements['partial_absolute_humidity']['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the icon markup is built by output_iconic_value() (DataOutput), which restricts the color and the CSS class with a regular expression and only outputs font icon elements. ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo esc_attr($id) ?>">
@@ -144,7 +144,7 @@ if (!defined('ABSPATH')) {
                 <!-- DEW POINT -->
                 <div class="lws-widget-row lws-widget-row-single-<?php echo esc_attr($id) ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Dew point', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo esc_attr($id) ?>">
-                        <?php echo $measurements['dew']['icon']; ?>
+                        <?php echo $measurements['dew']['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the icon markup is built by output_iconic_value() (DataOutput), which restricts the color and the CSS class with a regular expression and only outputs font icon elements. ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
@@ -165,7 +165,7 @@ if (!defined('ABSPATH')) {
                         <div class="lws-widget-big-unit lws-widget-big-unit-<?php echo esc_attr($id) ?>"><?php echo wp_kses_post($measurements['partial_vapor_pressure']['unit']); ?></div>
                     </div>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo esc_attr($id) ?>">
-                        <?php echo $measurements['partial_vapor_pressure']['icon']; ?>
+                        <?php echo $measurements['partial_vapor_pressure']['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the icon markup is built by output_iconic_value() (DataOutput), which restricts the color and the CSS class with a regular expression and only outputs font icon elements. ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
                         <div class="lws-widget-small-row lws-widget-small-row-<?php echo esc_attr($id) ?>">
@@ -186,7 +186,7 @@ if (!defined('ABSPATH')) {
                 <!-- AIR DENSITY -->
                 <div class="lws-widget-row lws-widget-row-single-<?php echo esc_attr($id) ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Air density', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo esc_attr($id) ?>">
-                        <?php echo $measurements['air_density']['icon']; ?>
+                        <?php echo $measurements['air_density']['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the icon markup is built by output_iconic_value() (DataOutput), which restricts the color and the CSS class with a regular expression and only outputs font icon elements. ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
@@ -203,7 +203,7 @@ if (!defined('ABSPATH')) {
                 <!-- SPECIFIC ENTHALPY -->
                 <div class="lws-widget-row lws-widget-row-single-<?php echo esc_attr($id) ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Specific enthalpy', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo esc_attr($id) ?>">
-                        <?php echo $measurements['specific_enthalpy']['icon']; ?>
+                        <?php echo $measurements['specific_enthalpy']['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the icon markup is built by output_iconic_value() (DataOutput), which restricts the color and the CSS class with a regular expression and only outputs font icon elements. ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
@@ -220,7 +220,7 @@ if (!defined('ABSPATH')) {
                 <!-- EMC -->
                 <div class="lws-widget-row lws-widget-row-single-<?php echo esc_attr($id) ?>"<?php echo ($show_tooltip ? ' title="'.esc_html__('Equilibrium moisture content', 'live-weather-station').'"' : ''); ?>>
                     <div class="lws-widget-column lws-widget-column-icon-<?php echo esc_attr($id) ?>">
-                        <?php echo $measurements['wood_emc']['icon']; ?>
+                        <?php echo $measurements['wood_emc']['icon']; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the icon markup is built by output_iconic_value() (DataOutput), which restricts the color and the CSS class with a regular expression and only outputs font icon elements. ?>
                     </div>
                     <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
                         <div class="lws-widget-column lws-widget-column-<?php echo esc_attr($id) ?>">
