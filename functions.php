@@ -54,11 +54,11 @@ function live_weather_station_re_get_admin_page_url($params) {
     $set = array('page', 'tab', 'action', 'service', 'id');
     $args = array();
     foreach ($set as $arg) {
-        if (isset($_POST[$arg]) && is_scalar($_POST[$arg])) {
-            $args[$arg] = ($arg == 'id' ? sanitize_text_field(wp_unslash($_POST[$arg])) : sanitize_key(wp_unslash($_POST[$arg])));
+        if (isset($_POST[$arg]) && is_scalar($_POST[$arg])) { // phpcs:ignore WordPress.Security.NonceVerification.Missing -- only builds a navigation URL (page, tab, action, service, id) from sanitized values, nothing is modified
+            $args[$arg] = ($arg == 'id' ? sanitize_text_field(wp_unslash($_POST[$arg])) : sanitize_key(wp_unslash($_POST[$arg]))); // phpcs:ignore WordPress.Security.NonceVerification.Missing -- navigation URL only, values are sanitized and nothing is modified
         }
-        if (isset($_GET[$arg]) && is_scalar($_GET[$arg])) {
-            $args[$arg] = ($arg == 'id' ? sanitize_text_field(wp_unslash($_GET[$arg])) : sanitize_key(wp_unslash($_GET[$arg])));
+        if (isset($_GET[$arg]) && is_scalar($_GET[$arg])) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- only builds a navigation URL (page, tab, action, service, id) from sanitized values, nothing is modified
+            $args[$arg] = ($arg == 'id' ? sanitize_text_field(wp_unslash($_GET[$arg])) : sanitize_key(wp_unslash($_GET[$arg]))); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- navigation URL only, values are sanitized and nothing is modified
         }
         if (array_key_exists($arg, $params)) {
             $args[$arg] = $params[$arg];
@@ -188,7 +188,7 @@ function live_weather_station_array_super_unique($array, $key){
  * @return string The capability.
  */
 function live_weather_station_manage_capability() {
-    $capability = apply_filters('lws_manage_options_capability', 'manage_options');
+    $capability = apply_filters('lws_manage_options_capability', 'manage_options'); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- legacy filter name of release 3.8.13 kept so existing customizations keep working, the prefixed filter is applied right after
     return apply_filters('live_weather_station_manage_options_capability', $capability);
 }
 
@@ -757,7 +757,7 @@ function live_weather_station__($text, $domain='default') {
  * @return string Translated text.
  */
 function live_weather_station_n($single, $plural, $number, $domain = 'default' ) {
-    return _n($single, $plural, $number, $domain);
+    return _n($single, $plural, $number, $domain); // phpcs:ignore WordPress.WP.I18n.NonSingularStringLiteralSingle, WordPress.WP.I18n.NonSingularStringLiteralPlural, WordPress.WP.I18n.NonSingularStringLiteralDomain -- thin debugging wrapper: callers pass literal strings and the text domain themselves
 }
 
 /**
@@ -993,7 +993,7 @@ function live_weather_station_public_rate_limit($action) {
         return;
     }
     $window = max(1, (int)apply_filters('live_weather_station_public_rate_window', 60, $action));
-    $ip = isset($_SERVER['REMOTE_ADDR']) ? (string)$_SERVER['REMOTE_ADDR'] : '';
+    $ip = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
     $ip = (string)apply_filters('live_weather_station_public_rate_limit_ip', $ip, $action);
     $key = 'lws_rl_' . md5($ip . '|' . $action . '|' . (int)floor(time() / $window));
     if (function_exists('wp_using_ext_object_cache') && wp_using_ext_object_cache()) {
@@ -1006,7 +1006,7 @@ function live_weather_station_public_rate_limit($action) {
         // average every $step hits, so the options table is not written on every request. Precision ~ +/- $step.
         $step = max(1, (int)floor($limit / 10));
         $count = (int)get_transient($key);
-        if ($count === 0 || mt_rand(1, $step) === 1) {
+        if ($count === 0 || wp_rand(1, $step) === 1) {
             set_transient($key, $count + ($count === 0 ? 1 : $step), $window * 2);
         }
     }
