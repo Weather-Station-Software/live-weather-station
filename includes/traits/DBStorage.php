@@ -1766,7 +1766,7 @@ trait Storage {
                                                     $trend = 'down';
                                                 }
                                                 if ($v > $oldval[0]['measure_value'] * 1.02) {
-                                                    $trend = 'down';
+                                                    $trend = 'up';
                                                 }
                                         }
                                         $value['measure_value'] = $trend;

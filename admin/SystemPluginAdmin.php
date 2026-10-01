@@ -169,7 +169,7 @@ class Admin {
         live_weather_station_register_script('lws-scale-radial', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/d3-scale-radial.min.js');
         live_weather_station_register_script('lws-windrose', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/windrose.min.js', array('lws-d3', 'lws-scale-radial'));
         live_weather_station_register_script('lws-windrose-debug', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/windrose.js', array('lws-d3', 'lws-scale-radial'));
-        live_weather_station_register_script('lws-clipboard', LIVE_WEATHER_STATION_ADMIN_URL , 'js/clipboard.min.js', array('jquery'));
+        wp_register_script('lws-clipboard', false, array('clipboard', 'jquery'), LIVE_WEATHER_STATION_VERSION, false); // the copy of clipboard.js shipped with WordPress is used (the plugin no longer bundles its own)
         live_weather_station_register_script('lws-raphael', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/raphael.min.js', array('jquery'));
         live_weather_station_register_script('lws-justgage', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/justgage.min.js', array('lws-raphael'));
         live_weather_station_register_script('lws-d3', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/d3.v3.min.js', array('jquery'));
@@ -643,10 +643,6 @@ class Admin {
             'id' => 'lws_system_wait_for_dom',
             'checked' => (bool)get_option('live_weather_station_wait_for_dom'),
             'description' => __('Force script loader to wait the DOM is fully loaded before activating.', 'live-weather-station'));
-        $cbxs[] = array('text' => __('Use public CDN', 'live-weather-station'),
-            'id' => 'lws_system_use_cdn',
-            'checked' => (bool)get_option('live_weather_station_use_cdn'),
-            'description' => __('Use CDN (jsDelivr) to serve common scripts and stylesheets.', 'live-weather-station'));
         echo $this->field_multi_checkbox($cbxs); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the Forms trait builder (includes/traits/Forms.php) returns a complete form control whose dynamic parts are escaped there with esc_attr(), esc_html() and wp_kses_post().
     }
 
@@ -771,10 +767,6 @@ class Admin {
      * @since 3.0.0
      */
     public function lws_system_auto_manage_callback($args) {
-        $description = sprintf(/* translators: %s: name of the plugin */ __('Check this to let %s manage its own updates (strongly recommended).', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
-        if (!Manager::is_updatable()) {
-            $description .= '<br/>' . __('Note that your WordPress configuration does not allow you to use this option.', 'live-weather-station');
-        }
         $cbxs = array();
         $cbxs[] = array('text' => __('Netatmo provisioning', 'live-weather-station'),
             'id' => 'lws_system_auto_manage_netatmo',
@@ -784,11 +776,6 @@ class Admin {
             'id' => 'lws_system_auto_manage_bloomsky',
             'checked' => (bool)get_option('live_weather_station_auto_manage_bloomsky'),
             'description' => sprintf(/* translators: %s: name of the plugin */ __('Check this to let %s manage BloomSky stations for you (add, remove, etc.).', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));
-        $cbxs[] = array('text' => __('Plugin updates', 'live-weather-station'),
-            'id' => 'lws_system_auto_update',
-            'checked' => (bool)get_option('live_weather_station_auto_update'),
-            'more' => (Manager::is_updatable()?'':'disabled'),
-            'description' => $description . InlineHelp::article(1));
         echo $this->field_multi_checkbox($cbxs); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the Forms trait builder (includes/traits/Forms.php) returns a complete form control whose dynamic parts are escaped there with esc_attr(), esc_html() and wp_kses_post().
     }
 
@@ -1247,7 +1234,6 @@ class Admin {
                 update_option('live_weather_station_upload_allowed', (array_key_exists('lws_system_upload_allowed', $_POST) ? 1 : 0));
                 update_option('live_weather_station_mutation_observer', (array_key_exists('lws_system_mutation_observer', $_POST) ? 1 : 0));
                 update_option('live_weather_station_ajax_widget', (array_key_exists('lws_system_ajax_widget', $_POST) ? 1 : 0));
-                update_option('live_weather_station_use_cdn', (array_key_exists('lws_system_use_cdn', $_POST) ? 1 : 0));
                 update_option('live_weather_station_footer_scripts', (array_key_exists('lws_system_footer_scripts', $_POST) ? 1 : 0));
                 update_option('live_weather_station_wait_for_dom', (array_key_exists('lws_system_wait_for_dom', $_POST) ? 1 : 0));
                 update_option('live_weather_station_txt_cache_bypass', (array_key_exists('lws_system_txt_cache_bypass', $_POST) ? 1 : 0));
@@ -1261,7 +1247,6 @@ class Admin {
                 update_option('live_weather_station_redirect_external_links', (array_key_exists('lws_system_redirect_external_links', $_POST) ? 1 : 0));
                 update_option('live_weather_station_auto_manage_netatmo', (array_key_exists('lws_system_auto_manage_netatmo', $_POST) ? 1 : 0));
                 update_option('live_weather_station_auto_manage_bloomsky', (array_key_exists('lws_system_auto_manage_bloomsky', $_POST) ? 1 : 0));
-                update_option('live_weather_station_auto_update', (array_key_exists('lws_system_auto_update', $_POST) ? 1 : 0));
                 update_option('live_weather_station_time_shift_threshold', $this->posted_int('lws_system_time_shift_threshold'));
                 update_option('live_weather_station_show_technical', (array_key_exists('lws_system_show_technical', $_POST) ? 1 : 0));
                 update_option('live_weather_station_show_analytics', (array_key_exists('lws_system_show_analytics', $_POST) ? 1 : 0));
@@ -1467,7 +1452,7 @@ class Admin {
             return;
         }
         $content = '<h2>' . esc_html__('Weather data and external services', 'live-weather-station') . '</h2>';
-        $content .= '<p>' . esc_html__('Weather Station does not collect, store or share personal data about visitors of your site, and does not store personal data tied to WordPress user accounts.', 'live-weather-station') . '</p>';
+        $content .= '<p>' . esc_html__('Weather Station does not collect, store or share personal data about visitors of your site, and does not store personal data tied to WordPress user accounts. The only exception: when a request to one of the public feed addresses (for example the YoWindow feed) is refused or fails, the event log keeps the requested address and the IP address of the visitor with its last part cleared (anonymized). Event log entries are deleted after the retention period set in the plugin settings (14 days by default).', 'live-weather-station') . '</p>';
         $content .= '<p>' . esc_html__('The plugin stores in your database the station settings you enter (names, locations and coordinates of stations, and the credentials needed to query or feed the weather services you connect) as well as the collected measurements. Station credentials are only used server-side and are never displayed on the public pages.', 'live-weather-station') . '</p>';
         $content .= '<p>' . esc_html__('Depending on the stations you configure, your server sends requests (and, for the publishing features, station measurements) to third-party services such as Netatmo, WeatherFlow, WeatherLink, Ambient Weather, BloomSky, Pioupiou, Weather Underground, OpenWeatherMap or PWS/WOW-type services. Your server address is visible to these services. Your server may also query ip-api.com to guess its own geographical position when you ask for it.', 'live-weather-station') . '</p>';
         $content .= '<p>' . esc_html__('Maps displayed on your pages load tiles and scripts from the tile provider you select (OpenStreetMap, Thunderforest, Mapbox, MapTiler, Stadia Maps, Windy, OpenWeatherMap...). The browser of your visitors therefore sends its IP address and user agent to this provider. Please refer to their privacy policies.', 'live-weather-station') . '</p>';

@@ -30,7 +30,6 @@ use WeatherStation\System\Storage\Manager as FS;
 
 //--- E X P E R I M E N T A L -----------------------------------------------------------------------
 
-define('LIVE_WEATHER_STATION_FILE_CACHE', false);
 
 //---------------------------------------------------------------------------------------------------
 

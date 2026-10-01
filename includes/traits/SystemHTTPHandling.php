@@ -109,7 +109,7 @@ trait Handling {
 
     );
 
-    private static $requestDetail = array('REQUEST_URI', 'REQUEST_METHOD', 'REMOTE_ADDR', 'REMOTE_HOST', 'HTTP_USER_AGENT');
+    private static $requestDetail = array('REQUEST_URI', 'REQUEST_METHOD', 'REMOTE_ADDR');
 
     /**
      * Get http request detail.
@@ -121,8 +121,13 @@ trait Handling {
         $result .= '** REQUEST DETAILS **' . PHP_EOL;
         foreach (self::$requestDetail as $req) {
             if (array_key_exists($req, $_SERVER) && is_scalar($_SERVER[$req])) {
-                // sanitize_text_field() strips the line breaks and the tags; the length is bounded (user-agent and URI are visitor-controlled).
-                $result .= $req . ' => ' . substr(sanitize_text_field(wp_unslash((string)$_SERVER[$req])), 0, 300) . PHP_EOL;
+                // sanitize_text_field() strips the line breaks and the tags; the length is bounded (the URI is visitor-controlled).
+                $value = substr(sanitize_text_field(wp_unslash((string)$_SERVER[$req])), 0, 300);
+                if ($req === 'REMOTE_ADDR') {
+                    // Personal data: only the anonymized address is kept (last IPv4 octet / last 80 IPv6 bits cleared).
+                    $value = function_exists('wp_privacy_anonymize_ip') ? wp_privacy_anonymize_ip($value) : '';
+                }
+                $result .= $req . ' => ' . $value . PHP_EOL;
             }
         }
         return $result;

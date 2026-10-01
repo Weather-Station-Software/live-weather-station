@@ -43,12 +43,6 @@ if (!$OS || !Env::server_cpu() || !Env::server_core()) {
                         <td><?php echo esc_html(Env::server_cpu() . ' / ' . Env::server_core() . ' ' . __('cores', 'live-weather-station')); ?></td>
                     </tr>
                 <?php } ?>
-                <?php if (Env::server_full_information()) { ?>
-                    <tr>
-                        <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-<?php echo esc_attr(LIVE_WEATHER_STATION_FA5 ? 'map-marker-alt' : 'map-marker');?>"></i></td>
-                        <td><?php echo esc_html(Env::hoster_name() . ', ' . Env::hoster_location()); ?></td>
-                    </tr>
-                <?php } ?>
                 </tbody>
             </table>
         </div>

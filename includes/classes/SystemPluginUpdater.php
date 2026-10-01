@@ -57,6 +57,7 @@ class Updater {
             Watchdog::stop();
             self::create_tables();
             self::update_tables($oldversion);
+            self::migrate_options($oldversion);
             Logger::notice('Updater',null,null,null,null,null,null,'Restarting ' . LIVE_WEATHER_STATION_PLUGIN_NAME . '.', $oldversion);
             Logger::notice('Updater',null,null,null,null,null,null, LIVE_WEATHER_STATION_PLUGIN_NAME . ' successfully updated from version ' . $oldversion . ' to version ' . LIVE_WEATHER_STATION_VERSION . '.');
         }
@@ -75,5 +76,31 @@ class Updater {
             }
             Notifier::info(sprintf(/* translators: %s: plugin name */ __('%s has been updated.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME), InlineHelp::whats_new_url(), sprintf(/* translators: %s: plugin version number */ __('Your site now uses version %s.', 'live-weather-station'), LIVE_WEATHER_STATION_VERSION));
         }
+    }
+
+    /**
+     * Migrates the options removed or replaced by a new version.
+     *
+     * @param string $oldversion Version id before migration.
+     * @since 3.9.0
+     */
+    private static function migrate_options($oldversion) {
+        if (version_compare((string)$oldversion, '3.9.0', '>=')) {
+            return;
+        }
+        // The public CDN option (jsDelivr) and the hoster lookup (ip-api.com) were removed.
+        delete_option('live_weather_station_use_cdn');
+        delete_option('live_weather_station_hoster_lookup');
+        // The plugin no longer forces its own automatic update: the sites that relied on it (the default) are added to the
+        // list of WordPress itself, where the setting is visible and can be changed on the Plugins screen.
+        if (get_option('live_weather_station_auto_update')) {
+            $basename = plugin_basename(LIVE_WEATHER_STATION_PLUGIN_DIR . 'live-weather-station.php');
+            $enabled = (array)get_site_option('auto_update_plugins', array());
+            if (!in_array($basename, $enabled, true)) {
+                $enabled[] = $basename;
+                update_site_option('auto_update_plugins', $enabled);
+            }
+        }
+        delete_option('live_weather_station_auto_update');
     }
 }

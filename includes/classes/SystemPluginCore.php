@@ -166,7 +166,6 @@ class Core {
         $this->loader->add_action('wp_ajax_update_lws_welcome_panel', 'WeatherStation\UI\Dashboard\Handling', 'update_lws_welcome_panel_callback' );
         $this->loader->add_action('wp_ajax_delete_notification', 'WeatherStation\UI\Dashboard\Handling', 'delete_notification_callback' );
         $this->loader->add_action('shutdown', '\WeatherStation\System\Analytics\Performance', 'store' );
-        $this->loader->add_action('auto_update_plugin', '\WeatherStation\System\Environment\Manager', 'lws_auto_update', 10, 2 );
         $this->loader->add_action('admin_notices', $plugin_admin, 'admin_notice_dead_services');
         $this->loader->add_action('wp_ajax_hide_lws_wow_be_notice', $plugin_admin, 'hide_lws_wow_be_notice_callback');
         if (((bool)get_option('live_weather_station_show_update', 1))) {
