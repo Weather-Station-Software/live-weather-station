@@ -76,7 +76,7 @@ class DoubleLine extends \WeatherStation\Engine\Module\Maintainer {
             $group .= $this->get_key_value_option_select('daily-doubleline-measurements-dot-style-' . $i . '-' . $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none');
             $group .= $this->get_key_value_option_select('daily-doubleline-measurements-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid');
             $group .= $this->get_key_value_option_select('daily-doubleline-measurements-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular');
-            $a_group[] = array('content' => $group, 'name' => sprintf(__('Measurement %s', 'live-weather-station'), $i));
+            $a_group[] = array('content' => $group, 'name' => sprintf(/* translators: %s: number of the measurement */ __('Measurement %s', 'live-weather-station'), $i));
         }
         $content .= $this->get_group('daily-doubleline-measurements-measure-group-', $a_group);
         $content .= $this->get_placeholder_option_select();

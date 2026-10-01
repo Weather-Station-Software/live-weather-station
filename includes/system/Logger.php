@@ -85,7 +85,7 @@ class Logger {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_log_table();
         $sql = 'TRUNCATE TABLE '.$table_name;
-        $wpdb->query($sql);
+        $wpdb->query($sql); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- TRUNCATE of the plugin log table (name built from $wpdb->prefix and a constant), no variable value, purge must act on the live table
         self::notice('Logger',null,null,null,null,null,null,'Events log has been purged.');
     }
 

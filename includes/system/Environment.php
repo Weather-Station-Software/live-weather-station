@@ -84,7 +84,7 @@ class Manager {
      * @since 3.1.0
      */
     public static function webserver_software_name() {
-        return $_SERVER['SERVER_SOFTWARE'];
+        return (isset($_SERVER['SERVER_SOFTWARE']) ? sanitize_text_field(wp_unslash($_SERVER['SERVER_SOFTWARE'])) : '');
     }
 
     /**
@@ -93,7 +93,7 @@ class Manager {
      * @since 3.1.0
      */
     public static function webserver_api() {
-        return (isset($_SERVER['GATEWAY_INTERFACE']) ? $_SERVER['GATEWAY_INTERFACE'] : '');
+        return (isset($_SERVER['GATEWAY_INTERFACE']) ? sanitize_text_field(wp_unslash($_SERVER['GATEWAY_INTERFACE'])) : '');
     }
 
     /**
@@ -102,7 +102,7 @@ class Manager {
      * @since 3.1.0
      */
     public static function webserver_protocol() {
-        return $_SERVER['SERVER_PROTOCOL'];
+        return (isset($_SERVER['SERVER_PROTOCOL']) ? sanitize_text_field(wp_unslash($_SERVER['SERVER_PROTOCOL'])) : '');
     }
 
     /**
@@ -111,7 +111,7 @@ class Manager {
      * @since 3.1.0
      */
     public static function webserver_port() {
-        return $_SERVER['SERVER_PORT'];
+        return (isset($_SERVER['SERVER_PORT']) ? sanitize_text_field(wp_unslash($_SERVER['SERVER_PORT'])) : '');
     }
 
     /**
@@ -120,7 +120,7 @@ class Manager {
      * @since 3.1.0
      */
     public static function webserver_document_root() {
-        return $_SERVER['DOCUMENT_ROOT'];
+        return (isset($_SERVER['DOCUMENT_ROOT']) ? sanitize_text_field(wp_unslash($_SERVER['DOCUMENT_ROOT'])) : '');
     }
 
     /**
@@ -921,7 +921,7 @@ class Manager {
      */
     public static function mysql_total_size() {
         global $wpdb;
-        $query = $wpdb->get_results('SHOW TABLE STATUS', ARRAY_A);
+        $query = $wpdb->get_results('SHOW TABLE STATUS', ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- constant query without any parameter: live database size for the system information screen, must not be cached
         $result = 0;
         if ($wpdb->num_rows > 0) {
             foreach ($query as $row) {
@@ -938,7 +938,7 @@ class Manager {
      */
     public static function mysql_lws_size() {
         global $wpdb;
-        $query = $wpdb->get_results('SHOW TABLE STATUS', ARRAY_A);
+        $query = $wpdb->get_results('SHOW TABLE STATUS', ARRAY_A); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- constant query without any parameter: live database size for the system information screen, must not be cached
         $result = 0;
         if ($wpdb->num_rows > 0) {
             foreach ($query as $row) {
@@ -1082,7 +1082,7 @@ class Manager {
         else {
             return array(
                 'key' => 'default',
-                'name' =>  _x( 'Default', 'admin color scheme' ),
+                'name' =>  _x( 'Default', 'admin color scheme' ), // phpcs:ignore WordPress.WP.I18n.MissingArgDomain -- deliberately the WordPress core string (default text domain) to label the core admin color scheme
                 'url' => false,
                 'colors' => array( '#222', '#333', '#0073aa', '#00a0d2' ),
                 'icon_colors' => array( 'base' => '#82878c', 'focus' => '#00a0d2', 'current' => '#fff' ));

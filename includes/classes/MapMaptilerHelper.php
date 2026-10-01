@@ -56,14 +56,16 @@ class MaptilerHandling extends BaseHandling {
         $result = array();
         $result['controls'] = $this->map_params['specific']['controls'];
         $result['options'] = $this->map_params['specific']['options'];
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- Only called by MapBaseHelper::save_map(), itself called by MapHelper::edit_map() after wp_verify_nonce() and the capability check.
         if (array_key_exists('controls-zoom', $_POST)) {
             $result['controls']['zoom'] = ($_POST['controls-zoom'] == 'on');
         }
         if (array_key_exists('options-overlay', $_POST)) {
             if (in_array($_POST['options-overlay'], array('styles:basic', 'styles:bright', 'styles:darkmatter', 'styles:hybrid', 'styles:positron', 'styles:streets', 'styles:topo', 'styles:voyager', 'data:hillshades', 'data:terrain-rgb'))) {
-                $result['options']['overlay'] = $_POST['options-overlay'];
+                $result['options']['overlay'] = sanitize_text_field(wp_unslash($_POST['options-overlay']));
             }
         }
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         return $result;
     }
 

@@ -248,7 +248,7 @@ abstract class Framework {
         if ($message == '') {
             $message = 'Error Code ' . $code;
         }
-        echo LIVE_WEATHER_STATION_PLUGIN_NAME . ' / ' . $message;
+        echo esc_html(LIVE_WEATHER_STATION_PLUGIN_NAME . ' / ' . $message);
         if (self::may_log(true)) {
             Logger::critical('Page Generator', null, null, null, null, null , $code, 'Unable to generate the requested page. Header "'. $message .'" sent to client.'  . HTTP::get_request_detail_as_text());
         }

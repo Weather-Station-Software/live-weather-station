@@ -129,7 +129,7 @@ class Pusher extends Abstract_Pusher {
     protected function process_result($content, $station) {
         $body = $content['body'];
         if (strpos(strtolower($body), 'error:') > 0) {
-            throw new \Exception(substr(trim(substr($body, 6 + strpos(strtolower($body), '<body>'), 255)), 7, 255));
+            throw new \Exception(substr(trim(substr($body, 6 + strpos(strtolower($body), '<body>'), 255)), 7, 255)); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- text of the remote response, length-capped; the exception is caught in WeatherCurrentAbstractPusher::push_data() and passed through sanitize_remote_message() before being logged or returned
         }
     }
 

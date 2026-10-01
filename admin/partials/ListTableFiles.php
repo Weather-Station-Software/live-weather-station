@@ -18,9 +18,9 @@ $fileListTable->prepare_items();
 ?>
 <div class="wrap">
     <?php if ((bool)get_option('live_weather_station_upload_allowed')) { ?>
-        <h2><?php echo __('Export/Import files', 'live-weather-station');?> <a href="#" class="page-title-action add-trigger"><?php echo __('Add', 'live-weather-station'); ?></a></h2>
+        <h2><?php esc_html_e('Export/Import files', 'live-weather-station');?> <a href="#" class="page-title-action add-trigger"><?php esc_html_e('Add', 'live-weather-station'); ?></a></h2>
     <?php } else { ?>
-        <h2><?php echo __('Export/Import files', 'live-weather-station');?> </h2>
+        <h2><?php esc_html_e('Export/Import files', 'live-weather-station');?> </h2>
     <?php } ?>
     <?php settings_errors(); ?>
     <?php if ((bool)get_option('live_weather_station_upload_allowed')) { ?>

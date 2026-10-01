@@ -268,9 +268,9 @@ class Handling {
         if ($this->arg_service == 'station' && $this->arg_tab == 'view' && $this->arg_action == 'manage') {
             $station = array();
             if (array_key_exists('_wpnonce', $_POST)) {
-                if (wp_verify_nonce($_POST['_wpnonce'], 'edit-station')) {
+                if (wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'edit-station')) {
                     if (array_key_exists('guid', $_POST)) {
-                        $guid = stripslashes(htmlspecialchars_decode($_POST['guid'], ENT_COMPAT | ENT_HTML401));
+                        $guid = sanitize_text_field(wp_unslash($_POST['guid']));
                         $save = false;
                         $reset = false;
                         $connect = false;
@@ -294,7 +294,7 @@ class Handling {
                             if (array_key_exists('submit-pages', $_POST)) {
                                 for ($i=1; $i<=3; $i++) {
                                     if (array_key_exists('st-link' . $i, $_POST)) {
-                                        $station['link_' . $i] = (is_scalar($_POST['st-link' . $i]) ? esc_url_raw(trim(wp_unslash((string)$_POST['st-link' . $i]))) : '');
+                                        $station['link_' . $i] = (is_scalar($_POST['st-link' . $i]) ? esc_url_raw(trim(wp_unslash($_POST['st-link' . $i]))) : ''); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- the value is unslashed, trimmed and then sanitized by esc_url_raw(); sanitize_text_field() would damage encoded URLs
                                     }
                                     else {
                                         $station['link_' . $i] = '';
@@ -322,8 +322,8 @@ class Handling {
                             }
                             if (array_key_exists('wow-share', $_POST)) {
                                 if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
-                                    $station['wow_user'] = stripslashes(htmlspecialchars_decode($_POST['user'], ENT_COMPAT | ENT_HTML401));
-                                    $station['wow_password'] = stripslashes(htmlspecialchars_decode($_POST['password'], ENT_COMPAT | ENT_HTML401));
+                                    $station['wow_user'] = htmlspecialchars_decode(wp_unslash($_POST['user']), ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
+                                    $station['wow_password'] = htmlspecialchars_decode(wp_unslash($_POST['password']), ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
                                     $station['wow_sync'] = 1;
                                     $wow = true;
                                     $connect = true;
@@ -331,8 +331,8 @@ class Handling {
                             }
                             if (array_key_exists('pws-share', $_POST)) {
                                 if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
-                                    $station['pws_user'] = stripslashes(htmlspecialchars_decode($_POST['user'], ENT_COMPAT | ENT_HTML401));
-                                    $station['pws_password'] = stripslashes(htmlspecialchars_decode($_POST['password'], ENT_COMPAT | ENT_HTML401));
+                                    $station['pws_user'] = htmlspecialchars_decode(wp_unslash($_POST['user']), ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
+                                    $station['pws_password'] = htmlspecialchars_decode(wp_unslash($_POST['password']), ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
                                     $station['pws_sync'] = 1;
                                     $pws = true;
                                     $connect = true;
@@ -340,8 +340,8 @@ class Handling {
                             }
                             if (array_key_exists('wug-share', $_POST)) {
                                 if (array_key_exists('user', $_POST) && array_key_exists('password', $_POST)) {
-                                    $station['wug_user'] = stripslashes(htmlspecialchars_decode($_POST['user'], ENT_COMPAT | ENT_HTML401));
-                                    $station['wug_password'] = stripslashes(htmlspecialchars_decode($_POST['password'], ENT_COMPAT | ENT_HTML401));
+                                    $station['wug_user'] = htmlspecialchars_decode(wp_unslash($_POST['user']), ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
+                                    $station['wug_password'] = htmlspecialchars_decode(wp_unslash($_POST['password']), ENT_COMPAT | ENT_HTML401); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- credential of an external weather service: sanitize_text_field() would alter passwords, the nonce is verified above, the value is only stored and sent to that service
                                     $station['wug_sync'] = 1;
                                     $wug = true;
                                     $connect = true;
@@ -394,9 +394,9 @@ class Handling {
                                     $args = array();
                                     $args['init'] = array();
                                     $args['init']['station_id'] = $station['station_id'];
-                                    $args['init']['start_date'] = sanitize_text_field($_POST['lws-date-start']);
-                                    $args['init']['end_date'] = sanitize_text_field($_POST['lws-date-end']);
-                                    $format = sanitize_key($_POST['lws-format']);
+                                    $args['init']['start_date'] = sanitize_text_field(wp_unslash($_POST['lws-date-start']));
+                                    $args['init']['end_date'] = sanitize_text_field(wp_unslash($_POST['lws-date-end']));
+                                    $format = sanitize_key(wp_unslash($_POST['lws-format']));
                                     // The class name is built from the format: only known formats are accepted.
                                     if (in_array($format, array('csv', 'tsv', 'dsvp', 'dsvs', 'ndjson'), true)) {
                                         $classname = 'Line' . ucfirst($format) . 'Exporter';
@@ -405,12 +405,14 @@ class Handling {
                                     }
                                 }
                                 if ($success) {
+                                    /* translators: %s: station name */
                                     $message = __('Data export for the station %s has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');
                                     $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                                     Logger::notice('Export Manager', null, $station['station_id'], $station['station_name'], null, null, null, 'Data export launched.');
                                 }
                                 else {
+                                    /* translators: %s: station name */
                                     $message = __('Unable to launch data export for the station %s.', 'live-weather-station');
                                     $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                                     add_settings_error('lws_nonce_error', 200, $message, 'error');
@@ -426,10 +428,10 @@ class Handling {
                                     $args = array();
                                     $args['init'] = array();
                                     $args['init']['station_id'] = $station['station_id'];
-                                    $args['init']['start_date'] = sanitize_text_field($_POST['lws-date-start']);
-                                    $args['init']['end_date'] = sanitize_text_field($_POST['lws-date-end']);
+                                    $args['init']['start_date'] = sanitize_text_field(wp_unslash($_POST['lws-date-start']));
+                                    $args['init']['end_date'] = sanitize_text_field(wp_unslash($_POST['lws-date-end']));
                                     $args['init']['force'] = array_key_exists('lws-option-override', $_POST);
-                                    $format = sanitize_key($_POST['lws-format']);
+                                    $format = sanitize_key(wp_unslash($_POST['lws-format']));
                                     if ($format === 'netatmo' && $station['station_type'] == LIVE_WEATHER_STATION_NETATMOHC_SID) {
                                         $format = 'NetatmoHC';
                                     }
@@ -441,7 +443,7 @@ class Handling {
                                     }
                                     if ($format === 'ndjson') {
                                         if (array_key_exists('lws-ndjson', $_POST)) {
-                                            $args['init']['uuid'] = sanitize_text_field($_POST['lws-ndjson']);
+                                            $args['init']['uuid'] = sanitize_text_field(wp_unslash($_POST['lws-ndjson']));
                                         }
                                         else {
                                             $go = false;
@@ -457,12 +459,14 @@ class Handling {
 
                                 }
                                 if ($success) {
+                                    /* translators: %s: station name */
                                     $message = __('Data import for the station %s has been launched. You will be notified by email of the end of treatment.', 'live-weather-station');
                                     $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                                     add_settings_error('lws_nonce_success', 200, $message, 'updated');
                                     Logger::notice('Import Manager', null, $station['station_id'], $station['station_name'], null, null, null, 'Data import launched.');
                                 }
                                 else {
+                                    /* translators: %s: station name */
                                     $message = __('Unable to launch data import for the station %s.', 'live-weather-station');
                                     $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                                     add_settings_error('lws_nonce_error', 200, $message, 'error');
@@ -520,6 +524,7 @@ class Handling {
                                         }
                                     }
                                     if (!$save) {
+                                        /* translators: %s: name of the weather service */
                                         $message = __('Unable to activate data sharing with %s.', 'live-weather-station');
                                         $message = sprintf($message, '<em>' . esc_html($service_name) . '</em>');
                                         add_settings_error('lws_nonce_error', 403, $message, 'error');
@@ -532,18 +537,21 @@ class Handling {
                             if ($update) {
                                 if ($this->update_stations_table($station)) {
                                     if ($save || $reset) {
+                                        /* translators: %s: station name */
                                         $message = __('The station %s has been correctly updated.', 'live-weather-station');
                                         $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                                         add_settings_error('lws_nonce_success', 200, $message, 'updated');
                                         Logger::notice($this->service, null, $station['station_id'], $station['station_name'], null, null, null, 'Station updated.');
                                         Framework::apply_configuration();
                                     } else {
+                                        /* translators: %s: station name */
                                         $message = __('Unable to update the station %s.', 'live-weather-station');
                                         $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                                         add_settings_error('lws_nonce_error', 403, $message, 'error');
                                         Logger::error($this->service, null, $station['station_id'], $station['station_name'], null, null, null, 'Unable to update the station.');
                                     }
                                 } else {
+                                    /* translators: %s: station name */
                                     $message = __('Unable to update the station %s.', 'live-weather-station');
                                     $message = sprintf($message, '<em>' . esc_html($station['station_name']) . '</em>');
                                     add_settings_error('lws_nonce_error', 403, $message, 'error');
@@ -586,7 +594,7 @@ class Handling {
         $result .= "            postboxes.add_postbox_toggles(" . Guard::js($this->screen_id) . ");";
         $result .= "    });";
         $result .= live_weather_station_print_end_script($jsInitId);
-        echo $result;
+        echo $result; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- script built by live_weather_station_print_begin_script() / _end_script() (fixed markup) around constant JS, the screen id goes through Guard::js()
     }
 
     /**
@@ -751,10 +759,12 @@ class Handling {
      */
     public function wug_warning() {
         $result = '<div class="settings-error error"><p><strong>%s</strong></p></div>';
-        $s = sprintf(__('This station is no longer collected by %s because Weather Underground no longer provides the corresponding service.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
+        /* translators: %s: name of this plugin */
+        $s = esc_html(sprintf(__('This station is no longer collected by %s because Weather Underground no longer provides the corresponding service.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));
         $l = InlineHelp::get(-34, '%s', 'Weather Underground closes its doors to individual users') . '.';
-        $a = sprintf(__('To know the reasons for this, and discover alternative methods to collect weather data with %s, please read the following article:', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
-        echo sprintf($result, $s . ' ' . $a . ' ' . $l);
+        /* translators: %s: name of this plugin */
+        $a = esc_html(sprintf(__('To know the reasons for this, and discover alternative methods to collect weather data with %s, please read the following article:', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));
+        echo sprintf($result, $s . ' ' . $a . ' ' . $l); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $s and $a are escaped above, $l is a link built by InlineHelp::get() from a constant URL (it carries the language marker span)
     }
 
     /**

@@ -1398,7 +1398,7 @@ trait Handling {
     public static function get_all_options($include_credentials=false) {
         $result = array();
         global $wpdb;
-        foreach ($wpdb->get_col("SELECT option_name FROM " . $wpdb->options . " WHERE option_name LIKE 'live\_weather\_station%'") as $name) {
+        foreach ($wpdb->get_col("SELECT option_name FROM " . $wpdb->options . " WHERE option_name LIKE 'live\_weather\_station%'") as $name) { // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- constant query on the core options table to list the plugin's own options (export/reset), it must reflect the live state
             $type = self::get_exportable_option_type($name);
             if ($type === false) {
                 continue;
