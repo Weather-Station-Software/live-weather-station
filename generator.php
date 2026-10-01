@@ -12,5 +12,6 @@
 require_once(dirname(__FILE__) . '/includes/classes/PageStandaloneGenerator.php');
 use WeatherStation\Engine\Page\Standalone\Generator;
 
+// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- standalone entry point file, the variable lives only for this request.
 $generator = new Generator();
 $generator->run();

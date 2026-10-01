@@ -14,19 +14,19 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <div id="normal-sortables" class="meta-box-sortables ui-sortable">
     <div id="daily-histo" class="postbox ">
-        <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
-        <h3 class="hndle"><span><?php echo __('Daily data', 'live-weather-station' );?></span></h3>
+        <div class="handlediv" title="<?php echo esc_html__('Click to toggle', 'live-weather-station'); ?>"><br></div>
+        <h3 class="hndle"><span><?php echo esc_html__('Daily data', 'live-weather-station' );?></span></h3>
         <div class="inside">
             <?php if ((bool)get_option('live_weather_station_collect_history')) { ?>
-            <p><strong><?php echo __('Depending on the capabilities of the collected stations, the daily data - compiled at a frequency ranging from 5 to 15 minutes depending on the type of the station - are:', 'live-weather-station');?></strong></p>
+            <p><strong><?php echo esc_html__('Depending on the capabilities of the collected stations, the daily data - compiled at a frequency ranging from 5 to 15 minutes depending on the type of the station - are:', 'live-weather-station');?></strong></p>
             <?php echo do_shortcode('[live-weather-station-historical-capabilities item="daily" mode="current" style="icon" column="3"]'); ?>
             <?php } else { ?>
-                <p><strong><?php echo __('No data currently compiled.', 'live-weather-station');?></strong></p>
+                <p><strong><?php echo esc_html__('No data currently compiled.', 'live-weather-station');?></strong></p>
             <?php } ?>
         </div>
         <div id="major-publishing-actions">
             <div>
-                <?php echo InlineHelp::get(6, __('You can find detailed specifications on historical data on %s.', 'live-weather-station'), __('this page', 'live-weather-station'));?>
+                <?php echo InlineHelp::get(6, /* translators: %s: link to the page describing the historical data */ __('You can find detailed specifications on historical data on %s.', 'live-weather-station'), __('this page', 'live-weather-station')); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- InlineHelp::get() builds an anchor from a fixed plugin URL; message and anchor text are plugin translated strings ?>
             </div>
             <div class="clear"></div>
         </div>

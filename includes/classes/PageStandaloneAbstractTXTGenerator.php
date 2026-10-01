@@ -47,6 +47,7 @@ abstract class TXTGenerator {
      * @since   3.0.0
      */
     private function send_content($content) {
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- standalone plain text/XML/JSON feed (Content-type header sent by the generator, never HTML): HTML escaping would corrupt the feed.
         echo $content;
     }
 

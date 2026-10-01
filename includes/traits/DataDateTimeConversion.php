@@ -33,7 +33,7 @@ trait Conversion {
         if ($rolling) {
             $period = array();
             foreach (array(7, 15, 30, 60, 90) as $i) {
-                $period[] = array('rdays-' . $i, sprintf(__('Last %s days', 'live-weather-station'), $i));
+                $period[] = array('rdays-' . $i, sprintf(/* translators: %s: number of days */ __('Last %s days', 'live-weather-station'), $i));
             }
             $result[] = array('rolling-days', $period);
         }
@@ -660,10 +660,10 @@ trait Conversion {
             return __('N/A', 'live-weather-station');
         }
         if ($from < time()) {
-            return sprintf( __('%s ago', 'live-weather-station'), human_time_diff($from));
+            return sprintf( /* translators: %s: human readable time difference, e.g. "3 hours" */ __('%s ago', 'live-weather-station'), human_time_diff($from));
         }
         else {
-            return sprintf( __('in %s', 'live-weather-station'), human_time_diff($from));
+            return sprintf( /* translators: %s: human readable time difference, e.g. "3 hours" */ __('in %s', 'live-weather-station'), human_time_diff($from));
         }
     }
 
@@ -676,7 +676,7 @@ trait Conversion {
      */
     public static function get_positive_time_diff_from_mysql_utc($from) {
         if (strtotime($from) < time()) {
-            return sprintf( __('%s ago', 'live-weather-station'), human_time_diff(strtotime($from)));
+            return sprintf( /* translators: %s: human readable time difference, e.g. "3 hours" */ __('%s ago', 'live-weather-station'), human_time_diff(strtotime($from)));
         }
         else {
             return __('currently', 'live-weather-station');
@@ -692,10 +692,10 @@ trait Conversion {
      */
     public static function get_time_diff_from_mysql_utc($from) {
         if (strtotime($from) < time()) {
-            return sprintf( __('%s ago', 'live-weather-station'), human_time_diff(strtotime($from)));
+            return sprintf( /* translators: %s: human readable time difference, e.g. "3 hours" */ __('%s ago', 'live-weather-station'), human_time_diff(strtotime($from)));
         }
         else {
-            return sprintf( __('in %s', 'live-weather-station'), human_time_diff(strtotime($from)));
+            return sprintf( /* translators: %s: human readable time difference, e.g. "3 hours" */ __('in %s', 'live-weather-station'), human_time_diff(strtotime($from)));
         }
     }
 

@@ -103,9 +103,11 @@ class Cache {
             global $wpdb;
             $result = 0;
             if ($expired) {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WordPress options table: expired transients of this plugin are purged live (a cached list would defeat the purge); the LIKE pattern and the timestamp go through $wpdb->prepare()
                 $delete = $wpdb->get_col($wpdb->prepare("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s AND option_value < %d;", $wpdb->esc_like('_transient_timeout_' . $pref) . '%', time()));
             }
             else {
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WordPress options table: expired transients of this plugin are purged live (a cached list would defeat the purge); the LIKE pattern and the timestamp go through $wpdb->prepare()
                 $delete = $wpdb->get_col($wpdb->prepare("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE %s;", $wpdb->esc_like('_transient_timeout_' . $pref) . '%'));
             }
             foreach($delete as $transient) {
@@ -779,6 +781,7 @@ class Cache {
             $sql .= "(" . implode(',', $field_insert) . ") ";
             $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_performance_cache: column names are checked by Guard::ident(), values are bound through the %d/%f placeholders of $wpdb->prepare(); write path, cannot be cached
             $wpdb->query($wpdb->prepare($sql, array_merge($args_insert, $args_update)));
         }
         $wpdb->show_errors($err_bup);
@@ -794,6 +797,7 @@ class Cache {
         $now = gmdate('Y-m-d H:i:s', time() - MONTH_IN_SECONDS);
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_performance_cache_table() . " WHERE ";
         $sql .= "timestamp<%s;";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table live_weather_station_performance_cache: table name from self::live_weather_station_performance_cache_table(), the date is bound by $wpdb->prepare(); write path, cannot be cached
         $wpdb->query($wpdb->prepare($sql, $now));
     }
 }

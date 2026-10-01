@@ -12,16 +12,16 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 
 <div style="padding:20px;">
-    <h2><?php echo __('API calls: daily distribution', 'live-weather-station'); ?></h2>
+    <h2><?php echo esc_html__('API calls: daily distribution', 'live-weather-station'); ?></h2>
     <?php echo do_shortcode('[live-weather-station-admin-analytics item="quota" metric="call_long"]'); ?>
 </div>
 
 <div style="padding:20px;">
-    <h2><?php echo __('API max rate: daily distribution', 'live-weather-station'); ?></h2>
+    <h2><?php echo esc_html__('API max rate: daily distribution', 'live-weather-station'); ?></h2>
     <?php echo do_shortcode('[live-weather-station-admin-analytics item="quota" metric="rate_long"]'); ?>
 </div>
 
 <div style="padding:20px;">
-    <h2><?php echo __('Methods: daily services breakdown', 'live-weather-station'); ?></h2>
+    <h2><?php echo esc_html__('Methods: daily services breakdown', 'live-weather-station'); ?></h2>
     <?php echo do_shortcode('[live-weather-station-admin-analytics item="quota" metric="service_long"]'); ?>
 </div>

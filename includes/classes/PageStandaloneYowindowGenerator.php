@@ -29,6 +29,7 @@ class Yowindow extends TXTGenerator {
      */
     protected function get_data($params, $subformat='standard') {
         $this->content_type = 'Content-type: application/xml; charset=utf-8';
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r( $params, true ) only builds the text handed to the plugin Logger::debug(), nothing is printed.
         Logger::debug('YoWindow XML Renderer', null, null, null, null, null, null, print_r($params, true));
         if (is_array($params) && !empty($params) && array_key_exists('station', $params)) {
             try {
@@ -38,6 +39,7 @@ class Yowindow extends TXTGenerator {
                 }
             }
             catch (\Exception $e) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- constant message; LoggableException is only logged and answered as text/plain through PageStandaloneFramework::error(), which replaces it by the HTTP status text.
                 throw new LoggableException('error', 'YoWindow XML Renderer', null, $params['station'], null, null, null , 400, 'Not a valid station ID.');
             }
             if (array_key_exists('yow_sync', $station) && $station['yow_sync'] == 1) {
@@ -47,6 +49,7 @@ class Yowindow extends TXTGenerator {
                 Logger::info('YoWindow XML Renderer', null, $station['station_id'], $station['station_name'], null, null , 0, 'Success while rendering data.');
             }
             else {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- constant message; LoggableException is only logged and answered as text/plain through PageStandaloneFramework::error(), which replaces it by the HTTP status text.
                 throw new LoggableException('error', 'YoWindow XML Renderer', null, $station['station_id'], $station['station_name'], null, null , 405, 'The station does not publish its data via this method/format.');
             }
         }
