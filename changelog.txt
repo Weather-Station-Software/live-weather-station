@@ -1,4 +1,5 @@
 #3.9.0 / xx September 2026
+* Bug fix: WeatherLink (Davis) station forms accept the full length of the API token and of the account password (they were cut at 20 characters).
 * Bug fix: WOW uploads now target WOW-BE (wow.meteo.be), which replaced the Met Office WOW closed on 1 December 2025; X
 * Bug fix: WeatherFlow stations are read with the personal access token of their owner (WeatherFlow no longer lets you read the stations of other people); stations saved without a token show a clear message.
 * Improvement: the personal access token of a WeatherFlow station is kept secret and is excluded from the exports.

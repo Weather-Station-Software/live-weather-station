@@ -28,6 +28,59 @@ class WLINKApiClient
     private $mainnUrl = "https://api.weatherlink.com/v1/{command}.json?user={service_did}&pass={service_ownerpass}&apiToken={service_apitoken}";
     
     /**
+     * @var int Maximum length of the device ID. The three values joined by the separator must fit in the 250 characters of the service_id column.
+     * @since 3.9.0
+     */
+    const MAX_DID_LENGTH = 40;
+
+    /**
+     * @var int Maximum length of the API token (v1 tokens have 32 or 33 characters).
+     * @since 3.9.0
+     */
+    const MAX_TOKEN_LENGTH = 64;
+
+    /**
+     * @var int Maximum length of the account password (40 + 64 + 120 + 2 separators of 11 characters = 246 <= 250).
+     * @since 3.9.0
+     */
+    const MAX_PASS_LENGTH = 120;
+
+    /**
+     * Join the three WeatherLink credentials in a service id, after having checked them.
+     *
+     * Nothing is ever truncated: a value that is too long, or that contains the separator, is refused.
+     *
+     * @param string $did The device ID.
+     * @param string $token The API token.
+     * @param string $pass The account password.
+     * @return array An array with 'service_id' (string, empty on error) and 'error' (string, empty on success).
+     * @since 3.9.0
+     */
+    public static function join_credentials($did, $token, $pass) {
+        $did = (string)$did;
+        $token = (string)$token;
+        $pass = (string)$pass;
+        $fields = array(
+            array($did, self::MAX_DID_LENGTH, __('Device ID', 'live-weather-station')),
+            array($token, self::MAX_TOKEN_LENGTH, __('API Token', 'live-weather-station')),
+            array($pass, self::MAX_PASS_LENGTH, __('Password', 'live-weather-station')));
+        foreach ($fields as $field) {
+            if (mb_strlen($field[0], 'UTF-8') > $field[1]) {
+                return array('service_id' => '', 'error' => sprintf(__('%1$s is too long (%2$d characters maximum).', 'live-weather-station'), $field[2], $field[1]));
+            }
+            if (strpos($field[0], LWS_SERVICE_SEPARATOR) !== false) {
+                return array('service_id' => '', 'error' => sprintf(__('%s contains a forbidden character sequence.', 'live-weather-station'), $field[2]));
+            }
+        }
+        $joined = $did . LWS_SERVICE_SEPARATOR . $token . LWS_SERVICE_SEPARATOR . $pass;
+        // A value ending or starting with part of the separator could shift the split: the round trip must be exact.
+        if (explode(LWS_SERVICE_SEPARATOR, $joined) !== array($did, $token, $pass)) {
+            return array('service_id' => '', 'error' => __('Unable to save these WeatherLink credentials: they contain a forbidden character sequence.', 'live-weather-station'));
+        }
+        return array('service_id' => $joined, 'error' => '');
+    }
+
+    /**
      * @var \WeatherStation\SDK\WeatherLink\AbstractCache|bool $cacheClass The cache class.
      */
     private $cacheClass = false;

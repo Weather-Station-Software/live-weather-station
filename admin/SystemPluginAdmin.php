@@ -5016,9 +5016,14 @@ class Admin {
                     }
                 }
             }
-            $station['service_id'] = sanitize_text_field($_POST['service_did']) . LWS_SERVICE_SEPARATOR . $wl_token . LWS_SERVICE_SEPARATOR . $wl_pass;
+            $joined = \WeatherStation\SDK\WeatherLink\WLINKApiClient::join_credentials(sanitize_text_field($_POST['service_did']), $wl_token, $wl_pass);
+            $station['service_id'] = $joined['service_id'];
             $collector = new WeatherLinkCollector();
-            if ($message = $collector->test_station($station['service_id'])) {
+            if ($joined['error'] !== '') {
+                $message = $joined['error'];
+                $error = 1;
+            }
+            elseif ($message = $collector->test_station($station['service_id'])) {
                 $error = 1;
             }
             else {
