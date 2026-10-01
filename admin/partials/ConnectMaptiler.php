@@ -63,14 +63,14 @@ $warning = __('All the maps associated to this service will no longer be display
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('Status', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-events', null, null, 'Maptiler')); ?>"<?php echo $target; ?>><?php echo esc_html(live_weather_station_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
+                        <span><?php esc_html_e('Up and running' ,'live-weather-station');?> (<a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-events', null, null, 'Maptiler')); ?>"<?php echo $target; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- the target attribute is the fixed string chosen at the top of this file (target blank with noopener noreferrer, or empty), never user data ?>><?php echo esc_html(live_weather_station_lcfirst(__('See events log', 'live-weather-station'))); ?></a>)</span>
                     </td>
                 </tr>
                 <tr>
                     <th class="lws-login" width="20%" align="left" scope="row"><?php esc_html_e('API plan', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
-                        <span><?php echo esc_html($plan_name) ?> (<?php echo InlineHelp::get(-45, '%s', __('get details', 'live-weather-station'));?>)</span>
+                        <span><?php echo esc_html($plan_name) ?> (<?php echo wp_kses_post(InlineHelp::get(-45, '%s', __('get details', 'live-weather-station')));?>)</span>
                     </td>
                 </tr>
             <?php } ?>
@@ -81,7 +81,7 @@ $warning = __('All the maps associated to this service will no longer be display
         <div id="major-publishing-actions">
             <div id="publishing-action">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="maptiler-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="maptiler-span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php esc_html_e('Connecting to service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
                 <input type="submit" name="connect" id="maptiler-connect" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
             </div>
@@ -92,9 +92,9 @@ $warning = __('All the maps associated to this service will no longer be display
             <div id="publishing-action">
                 <input type="submit" name="reconnect" id="maptiler-reconnect" class="button button-primary" value="<?php esc_attr_e('Change', 'live-weather-station');?>">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="maptiler-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="maptiler-span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php esc_html_e('Disconnecting from service, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="disconnect" id="maptiler-disconnect" class="button button-primary" onclick="lws_maptiler_confirmation = confirm(<?php echo Guard::js($warning); ?>); return lws_maptiler_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+                <input type="submit" name="disconnect" id="maptiler-disconnect" class="button button-primary" onclick="lws_maptiler_confirmation = confirm(<?php echo Guard::js($warning); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() encodes with JSON_HEX_QUOT, JSON_HEX_AMP, JSON_HEX_APOS and JSON_HEX_TAG, so the literal is safe inside an HTML attribute and no quote can end it ?>); return lws_maptiler_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>
             <div class="clear"></div>
         </div>

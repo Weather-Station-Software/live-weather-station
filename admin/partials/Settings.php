@@ -10,6 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
+// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only tab selection restricted to an allowlist just below, no state change
 $active_tab = (isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'general');
 if (!in_array($active_tab, array('general', 'services', 'display', 'styles', 'thresholds', 'history', 'system', 'maintenance', 'tasks'), true)) {
     $active_tab = 'general';
@@ -21,19 +22,19 @@ $buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; '
 
 <div class="wrap">
 
-    <h2><?php echo __('Settings', 'live-weather-station');?></h2>
+    <h2><?php esc_html_e('Settings', 'live-weather-station');?></h2>
     <?php settings_errors(); ?>
 
     <h2 class="nav-tab-wrapper">
-        <a href="?page=lws-settings&tab=general" class="nav-tab <?php echo $active_tab == 'general' ? 'nav-tab-active' : ''; ?>"><?php echo __('General', 'live-weather-station');?></a>
-        <a href="?page=lws-settings&tab=services" class="nav-tab <?php echo $active_tab == 'services' ? 'nav-tab-active' : ''; ?>"><?php echo __('Services', 'live-weather-station');?></a>
+        <a href="?page=lws-settings&tab=general" class="nav-tab <?php echo $active_tab == 'general' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('General', 'live-weather-station');?></a>
+        <a href="?page=lws-settings&tab=services" class="nav-tab <?php echo $active_tab == 'services' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Services', 'live-weather-station');?></a>
         <?php if ((bool)get_option('live_weather_station_advanced_mode')) { ?>
-            <a href="?page=lws-settings&tab=display" class="nav-tab <?php echo $active_tab == 'display' ? 'nav-tab-active' : ''; ?>"><?php echo __('Display', 'live-weather-station');?></a>
-            <a href="?page=lws-settings&tab=styles" class="nav-tab <?php echo $active_tab == 'styles' ? 'nav-tab-active' : ''; ?>"><?php echo __('Styles', 'live-weather-station');?></a>
-            <a href="?page=lws-settings&tab=thresholds" class="nav-tab <?php echo $active_tab == 'thresholds' ? 'nav-tab-active' : ''; ?>"><?php echo __('Thresholds', 'live-weather-station');?></a>
-            <a href="?page=lws-settings&tab=history" class="nav-tab <?php echo $active_tab == 'history' ? 'nav-tab-active' : ''; ?>"><?php echo __('History', 'live-weather-station');?></a>
-            <a href="?page=lws-settings&tab=system" class="nav-tab <?php echo $active_tab == 'system' ? 'nav-tab-active' : ''; ?>"><?php echo __('System', 'live-weather-station');?></a>
-            <a href="?page=lws-settings&tab=maintenance" class="nav-tab <?php echo $active_tab == 'maintenance' ? 'nav-tab-active' : ''; ?>"><?php echo __('Maintenance', 'live-weather-station');?></a>
+            <a href="?page=lws-settings&tab=display" class="nav-tab <?php echo $active_tab == 'display' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Display', 'live-weather-station');?></a>
+            <a href="?page=lws-settings&tab=styles" class="nav-tab <?php echo $active_tab == 'styles' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Styles', 'live-weather-station');?></a>
+            <a href="?page=lws-settings&tab=thresholds" class="nav-tab <?php echo $active_tab == 'thresholds' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Thresholds', 'live-weather-station');?></a>
+            <a href="?page=lws-settings&tab=history" class="nav-tab <?php echo $active_tab == 'history' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('History', 'live-weather-station');?></a>
+            <a href="?page=lws-settings&tab=system" class="nav-tab <?php echo $active_tab == 'system' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('System', 'live-weather-station');?></a>
+            <a href="?page=lws-settings&tab=maintenance" class="nav-tab <?php echo $active_tab == 'maintenance' ? 'nav-tab-active' : ''; ?>"><?php esc_html_e('Maintenance', 'live-weather-station');?></a>
         <?php } ?>
     </h2>
 
@@ -44,7 +45,7 @@ $buttons = str_replace('</p>', '', get_submit_button()) . ' &nbsp;&nbsp;&nbsp; '
             <?php if ($active_tab === 'styles') { ?>
                 <?php include(LIVE_WEATHER_STATION_ADMIN_DIR.'partials/SettingsStyles.php'); ?>
             <?php } ?>
-            <?php echo $buttons;?>
+            <?php echo $buttons; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- buttons HTML built from the WordPress core function that renders submit buttons (escaped by core), the Reset label is a translated string ?>
         <?php } ?>
     </form>
     <?php if ($active_tab === 'general') { ?>

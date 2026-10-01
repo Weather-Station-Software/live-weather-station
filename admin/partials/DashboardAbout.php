@@ -17,18 +17,18 @@ if ( ! defined( 'ABSPATH' ) ) {
 <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
     <ul>
         <li>
-            <?php echo sprintf(__( '%s is a free and open source plugin for WordPress. It integrates other free and open source works (as-is or modified) like Weather Icons project by Erik Flowers, EnzoJS and SteelSeries by Gerrit Grunwald, JustGage by Bojan Đuričić, OpenWeatherMap PHP API by Christian Flach, phpcolors by Arlo Carreon, moonrise/moonset calculation from Matt "dxprog" Hackmann and moon phase calculation from Samir Shah.', 'live-weather-station'), '<em>' . LIVE_WEATHER_STATION_PLUGIN_NAME . '</em>');?>
-            <?php echo sprintf(__( 'Data manipulation and visualization tools included with %s are free and open source too. Notable tools are d3.js from Mike Bostock, nvd3.js from Novus Partners, Inc. and Cal-heatmap from Wan Qi Chen.', 'live-weather-station'), '<em>' . LIVE_WEATHER_STATION_PLUGIN_NAME . '</em>');?>
+            <?php echo wp_kses_post(sprintf(/* translators: %s: plugin name */ __( '%s is a free and open source plugin for WordPress. It integrates other free and open source works (as-is or modified) like Weather Icons project by Erik Flowers, EnzoJS and SteelSeries by Gerrit Grunwald, JustGage by Bojan Đuričić, OpenWeatherMap PHP API by Christian Flach, phpcolors by Arlo Carreon, moonrise/moonset calculation from Matt "dxprog" Hackmann and moon phase calculation from Samir Shah.', 'live-weather-station'), '<em>' . LIVE_WEATHER_STATION_PLUGIN_NAME . '</em>'));?>
+            <?php echo wp_kses_post(sprintf(/* translators: %s: plugin name */ __( 'Data manipulation and visualization tools included with %s are free and open source too. Notable tools are d3.js from Mike Bostock, nvd3.js from Novus Partners, Inc. and Cal-heatmap from Wan Qi Chen.', 'live-weather-station'), '<em>' . LIVE_WEATHER_STATION_PLUGIN_NAME . '</em>'));?>
         </li>
         <li>
-            <?php echo sprintf(__( 'Is %1$s helpful? I would be pleased that you %2$s.', 'live-weather-station'), '<em>' . LIVE_WEATHER_STATION_PLUGIN_NAME . '</em>', Help::get(-5, '%s', __('write a review', 'live-weather-station')));?>
+            <?php echo wp_kses_post(sprintf(/* translators: 1: plugin name, 2: link to the plugin reviews page, labelled "write a review" */ __( 'Is %1$s helpful? I would be pleased that you %2$s.', 'live-weather-station'), '<em>' . LIVE_WEATHER_STATION_PLUGIN_NAME . '</em>', Help::get(-5, '%s', __('write a review', 'live-weather-station'))));?>
             <?php if (EnvManager::stat_rating() > 0) { ?>
-                <?php echo ' ' . sprintf(__( 'To date, %1$s users rated %2$s and awarded it %3$s stars out of 5.', 'live-weather-station'), esc_html(EnvManager::stat_num_ratings()), LIVE_WEATHER_STATION_PLUGIN_NAME, esc_html(EnvManager::stat_rating())); ?>
+                <?php echo ' ' . wp_kses_post(sprintf(/* translators: 1: number of users who rated the plugin, 2: plugin name, 3: average rating */ __( 'To date, %1$s users rated %2$s and awarded it %3$s stars out of 5.', 'live-weather-station'), esc_html(EnvManager::stat_num_ratings()), LIVE_WEATHER_STATION_PLUGIN_NAME, esc_html(EnvManager::stat_rating()))); ?>
             <?php } ?>
         </li>
         <li>
-            <?php echo sprintf(__( 'Thanks to %1$s for his tools and his reactivity, to %2$s for Netatmo tests and kindness from Austria, to %5$s for WeatherLink tests from Chile, to %4$s and to %3$s for advice, patience and benevolence in testing.', 'live-weather-station'), Help::get(-6), Help::get(-7), Help::get(-8),Help::get(-32),Help::get(-50));?>
-            <?php echo sprintf(__( 'Also, many thanks to all the translation editors and contributors for making %s available and maintained in many languages: girls and guys, you\'re awesome!', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?>
+            <?php echo wp_kses_post(sprintf(/* translators: 1 to 5: names of contributors, each one with a link to a personal page */ __( 'Thanks to %1$s for his tools and his reactivity, to %2$s for Netatmo tests and kindness from Austria, to %5$s for WeatherLink tests from Chile, to %4$s and to %3$s for advice, patience and benevolence in testing.', 'live-weather-station'), Help::get(-6), Help::get(-7), Help::get(-8), Help::get(-32), Help::get(-50)));?>
+            <?php echo wp_kses_post(sprintf(/* translators: %s: plugin name */ __( 'Also, many thanks to all the translation editors and contributors for making %s available and maintained in many languages: girls and guys, you\'re awesome!', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));?>
         </li>
     </ul>
 </div>

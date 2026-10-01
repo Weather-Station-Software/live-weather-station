@@ -17,7 +17,7 @@ $stationsListTable->prepare_items();
 
 ?>
 <div class="wrap">
-    <h2><?php echo __('Stations', 'live-weather-station');?> <a href="#" class="page-title-action add-trigger"><?php echo __('Add', 'live-weather-station'); ?></a></h2>
+    <h2><?php esc_html_e('Stations', 'live-weather-station');?> <a href="#" class="page-title-action add-trigger"><?php esc_html_e('Add', 'live-weather-station'); ?></a></h2>
     <?php settings_errors(); ?>
     <div class="add-text" style="display:none;">
         <div id="wpcom-stats-meta-box-container" class="metabox-holder">

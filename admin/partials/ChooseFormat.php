@@ -61,7 +61,7 @@ if ( ! defined( 'ABSPATH' ) ) {
                             <span class="login">
                                 <select id="lws-ndjson" name="lws-ndjson" style="width:100%;">
                                     <?php foreach($ndjson as $file) { ?>
-                                        <option value="<?php echo esc_attr($file['uuid']) ?>"><?php echo esc_html($file['station']) ?> (<?php echo esc_html($file['from']) ?> ⇥ <?php echo esc_html($file['to']) ?>). <?php echo esc_html($file['std_size'] . ', ' . sprintf(__('exported %s ago.', 'live-weather-station'), human_time_diff($file['date']))) ?></option>
+                                        <option value="<?php echo esc_attr($file['uuid']) ?>"><?php echo esc_html($file['station']) ?> (<?php echo esc_html($file['from']) ?> ⇥ <?php echo esc_html($file['to']) ?>). <?php echo esc_html($file['std_size'] . ', ' . sprintf(/* translators: %s: time elapsed since the file was exported, like "3 hours" */ __('exported %s ago.', 'live-weather-station'), human_time_diff($file['date']))) ?></option>
                                     <?php } ?>
                                 </select>
                             </span>
@@ -94,7 +94,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
         $("#lws-format").change(function() {
             <?php foreach((isset($formats) ? $formats : array()) as $key => $format) { ?>
-                if ($(this).val() == <?php echo Guard::js($key) ?>) {$("#lws-format-description").html(<?php echo Guard::js($format['description']) ?>);}
+                if ($(this).val() == <?php echo Guard::js($key) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns wp_json_encode() with the JSON_HEX_TAG, JSON_HEX_AMP, JSON_HEX_APOS and JSON_HEX_QUOT flags, a safe JavaScript literal; the description is a translated string defined by the plugin ?>) {$("#lws-format-description").html(<?php echo Guard::js($format['description']) // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns wp_json_encode() with the JSON_HEX_TAG, JSON_HEX_AMP, JSON_HEX_APOS and JSON_HEX_QUOT flags, a safe JavaScript literal; the description is a translated string defined by the plugin ?>);}
             <?php } ?>
             if ($(this).val() == "ndjson") {
                 $("#lws-ndjson-div").show();
