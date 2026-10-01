@@ -938,39 +938,39 @@ trait Description {
         if ($meaning) {
             if ($spec) {
                 if (strpos(strtolower($type),'_max') !== false) {
-                    $result = sprintf(__('%s (max)', 'live-weather-station'), $result);
+                    $result = sprintf(/* translators: %s: name of a measurement */ __('%s (max)', 'live-weather-station'), $result);
                 }
                 if (strpos(strtolower($type),'_min') !== false) {
-                    $result = sprintf(__('%s (min)', 'live-weather-station'), $result);
+                    $result = sprintf(/* translators: %s: name of a measurement */ __('%s (min)', 'live-weather-station'), $result);
                 }
                 if (strpos(strtolower($type),'_trend') !== false) {
-                    $result = sprintf(__('%s (trend)', 'live-weather-station'), $result);
+                    $result = sprintf(/* translators: %s: name of a measurement */ __('%s (trend)', 'live-weather-station'), $result);
                 }
             }
             if ($type == 'max_temp') {
-                $result = sprintf(__('%s (max)', 'live-weather-station'), $result);
+                $result = sprintf(/* translators: %s: name of a measurement */ __('%s (max)', 'live-weather-station'), $result);
             }
             if ($type == 'min_temp') {
-                $result = sprintf(__('%s (min)', 'live-weather-station'), $result);
+                $result = sprintf(/* translators: %s: name of a measurement */ __('%s (min)', 'live-weather-station'), $result);
             }
         }
         else {
             if ($spec && !$abbr) {
                 if (strpos(strtolower($type),'_max') !== false) {
-                    $result = sprintf(__('%s, maximum value for today', 'live-weather-station'), $result);
+                    $result = sprintf(/* translators: %s: name of a measurement */ __('%s, maximum value for today', 'live-weather-station'), $result);
                 }
                 if (strpos(strtolower($type),'_min') !== false) {
-                    $result = sprintf(__('%s, minimum value for today', 'live-weather-station'), $result);
+                    $result = sprintf(/* translators: %s: name of a measurement */ __('%s, minimum value for today', 'live-weather-station'), $result);
                 }
                 if (strpos(strtolower($type),'_trend') !== false) {
-                    $result = sprintf(__('%s, trend', 'live-weather-station'), $result);
+                    $result = sprintf(/* translators: %s: name of a measurement */ __('%s, trend', 'live-weather-station'), $result);
                 }
             }
             if ($type == 'max_temp') {
-                $result = sprintf(__('%s, maximum value for today', 'live-weather-station'), $result);
+                $result = sprintf(/* translators: %s: name of a measurement */ __('%s, maximum value for today', 'live-weather-station'), $result);
             }
             if ($type == 'min_temp') {
-                $result = sprintf(__('%s, minimum value for today', 'live-weather-station'), $result);
+                $result = sprintf(/* translators: %s: name of a measurement */ __('%s, minimum value for today', 'live-weather-station'), $result);
             }
         }
         return $result;

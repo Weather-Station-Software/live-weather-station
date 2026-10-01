@@ -384,6 +384,7 @@ trait Output {
             return;
         }
         set_transient($key, 1, 60);
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- deliberate production log of a failed public graph query, rate limited to one entry per minute by log_graph_error() and sanitised (tags and line breaks stripped, 300 characters max)
         error_log('Weather Station: a graph query failed: ' . substr(preg_replace('/[\r\n\t]+/', ' ', wp_strip_all_tags($ex->getMessage())), 0, 300));
     }
 
@@ -808,7 +809,9 @@ trait Output {
                                 $sql_value = "SELECT `timestamp`, `module_type`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . "  ORDER BY `timestamp` ASC;";
                             }
                             try {
+                                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                                 $angles = $wpdb->get_results($sql_angle, ARRAY_A);
+                                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                                 $values = $wpdb->get_results($sql_value, ARRAY_A);
                                 $measures = array();
                                 foreach ($values as $val) {
@@ -1005,7 +1008,7 @@ trait Output {
                                 $period_range = 0;
                                 if ($mode == 'yearly') {
                                     if ($is_rdays) {
-                                        $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
+                                        $period_name = sprintf(/* translators: %s: number of days */ __('Last %s days', 'live-weather-station'), $v[1]);
                                         $period_range = 0;
                                     } elseif ($is_month) {
                                         $now = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
@@ -1013,7 +1016,7 @@ trait Output {
                                         $period_name = date_i18n('F Y', $now->getTimestamp());
                                         $period_range = 1;
                                     } elseif ($is_year) {
-                                        $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
+                                        $period_name = sprintf(/* translators: %s: year, like 2024 */ __('Year %s', 'live-weather-station'), $year);
                                         $period_range = 12;
                                     } elseif ($is_mseason) {
                                         $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
@@ -1116,7 +1119,9 @@ trait Output {
                             $sql_angle = "SELECT `timestamp`, `module_type`, " . $val0 . " FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . "" . $set0 . " ORDER BY `timestamp` ASC;";
                             $sql_value = "SELECT `timestamp`, `module_type`, " . $val1 . " FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . "" . $set1 . " ORDER BY `timestamp` ASC;";
                             try {
+                                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                                 $angles = $wpdb->get_results($sql_angle, ARRAY_A);
+                                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                                 $values = $wpdb->get_results($sql_value, ARRAY_A);
                                 $measures = array();
                                 foreach ($values as $val) {
@@ -1318,7 +1323,7 @@ trait Output {
                                     $period_range = 0;
                                     if ($mode == 'yearly') {
                                         if ($is_rdays) {
-                                            $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
+                                            $period_name = sprintf(/* translators: %s: number of days */ __('Last %s days', 'live-weather-station'), $v[1]);
                                             $period_range = 0;
                                         } elseif ($is_month) {
                                             $now = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
@@ -1326,7 +1331,7 @@ trait Output {
                                             $period_name = date_i18n('F Y', $now->getTimestamp());
                                             $period_range = 1;
                                         } elseif ($is_year) {
-                                            $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
+                                            $period_name = sprintf(/* translators: %s: year, like 2024 */ __('Year %s', 'live-weather-station'), $year);
                                             $period_range = 12;
                                         } elseif ($is_mseason) {
                                             $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
@@ -1420,7 +1425,7 @@ trait Output {
                                         $period_range = 0;
                                         if ($mode == 'yearly') {
                                             if ($is_rdays) {
-                                                $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
+                                                $period_name = sprintf(/* translators: %s: number of days */ __('Last %s days', 'live-weather-station'), $v[1]);
                                                 $period_range = 0;
                                             } elseif ($is_month) {
                                                 $now = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
@@ -1428,7 +1433,7 @@ trait Output {
                                                 $period_name = date_i18n('F Y', $now->getTimestamp());
                                                 $period_range = 1;
                                             } elseif ($is_year) {
-                                                $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
+                                                $period_name = sprintf(/* translators: %s: year, like 2024 */ __('Year %s', 'live-weather-station'), $year);
                                                 $period_range = 12;
                                             } elseif ($is_mseason) {
                                                 $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
@@ -1523,6 +1528,7 @@ trait Output {
                                     $val = 'AVG(`measure_value`) as computed_value';
                                 }
                                 $sql_angle = "SELECT `timestamp`, `module_type`, " . $val . " FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . "" . $set . " ORDER BY `timestamp` ASC;";
+                                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                                 $angles = $wpdb->get_results($sql_angle, ARRAY_A);
                                 if (count($angles) > 0) {
                                     $module_type = $angles[0]['module_type'];
@@ -1587,7 +1593,7 @@ trait Output {
                             $period_range = 0;
                             if ($mode == 'yearly') {
                                 if ($is_rdays) {
-                                    $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
+                                    $period_name = sprintf(/* translators: %s: number of days */ __('Last %s days', 'live-weather-station'), $v[1]);
                                     $period_range = 0;
                                 } elseif ($is_month) {
                                     $now = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
@@ -1595,7 +1601,7 @@ trait Output {
                                     $period_name = date_i18n('F Y', $now->getTimestamp());
                                     $period_range = 1;
                                 } elseif ($is_year) {
-                                    $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
+                                    $period_name = sprintf(/* translators: %s: year, like 2024 */ __('Year %s', 'live-weather-station'), $year);
                                     $period_range = 12;
                                 } elseif ($is_mseason) {
                                     $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
@@ -1654,6 +1660,7 @@ trait Output {
                         if ($type == 'cstick') {
                             $select = " AND (`measure_set`='min' OR `measure_set`='max' OR `measure_set`='avg' OR `measure_set`='med')";
                             $sql = "SELECT `timestamp`, `module_type`, `measure_type`, `measure_set`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . "" . $select . " ORDER BY `timestamp` ASC;";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $rows = $wpdb->get_results($sql, ARRAY_A);
                         }
                         elseif ($type == 'ccstick') {
@@ -1681,6 +1688,7 @@ trait Output {
                             }
                             $select = " AND (`measure_set`='min' OR `measure_set`='max' OR `measure_set`='avg' OR `measure_set`='med')";
                             $sql = "SELECT `timestamp`, MONTH(`timestamp`) as t_month, DAY(`timestamp`) as t_day, `module_type`, `measure_type`, `measure_set`, `measure_value`, AVG(`measure_value`) as v_avg FROM " . $table_name . " WHERE " . $where . "`timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . "" . $select . " GROUP BY t_month, t_day, measure_set ORDER BY " . $order . " ASC;";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $rows = $wpdb->get_results($sql, ARRAY_A);
                         }
                         $values = array();
@@ -1775,7 +1783,7 @@ trait Output {
                                     $period_range = 1;
                                 }
                                 elseif ($is_year) {
-                                    $p_name = _n('Year %s', 'Years %s', 10, 'live-weather-station');
+                                    $p_name = /* translators: %s: year or number of years */ _n('Year %s', 'Years %s', 10, 'live-weather-station');
                                     $period_range = 12;
                                 }
                                 elseif ($is_mseason) {
@@ -1786,7 +1794,7 @@ trait Output {
                             }
                             if ($mode == 'yearly') {
                                 if ($is_rdays) {
-                                    $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
+                                    $period_name = sprintf(/* translators: %s: number of days */ __('Last %s days', 'live-weather-station'), $v[1]);
                                     $period_range = 0;
                                 } elseif ($is_month) {
                                     $now = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
@@ -1794,7 +1802,7 @@ trait Output {
                                     $period_name = date_i18n('F Y', $now->getTimestamp());
                                     $period_range = 1;
                                 } elseif ($is_year) {
-                                    $period_name = sprintf(_n('Year %s', 'Years %s', 1, 'live-weather-station'), $year);
+                                    $period_name = sprintf(/* translators: %s: year or number of years */ _n('Year %s', 'Years %s', 1, 'live-weather-station'), $year);
                                     $period_range = 12;
                                 } elseif ($is_mseason) {
                                     $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
@@ -1895,11 +1903,13 @@ trait Output {
                         $yearmax = substr($max, 0, 4);
                         if ($aggregated) {
                             $sql = "SELECT `timestamp`, YEAR(`timestamp`) as t_year, MONTH(`timestamp`) as t_month, DAY(`timestamp`) as t_day, `module_type`, `measure_type`, `measure_set`, `measure_value`, AVG(`measure_value`) as avg_value FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND (" . $select . ") GROUP BY t_month, t_day, measure_type, measure_set ORDER BY `timestamp` ASC;";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $rows = $wpdb->get_results($sql, ARRAY_A);
                             $yearstr = $yearmin . '~' . $yearmax;
                         }
                         else {
                             $sql = "SELECT `timestamp`, YEAR(`timestamp`) as t_year, MONTH(`timestamp`) as t_month, DAY(`timestamp`) as t_day, `module_type`, `measure_type`, `measure_set`, `measure_value` FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND (" . $select . ") GROUP BY t_year, t_month, t_day, measure_type, measure_set ORDER BY YEAR(`timestamp`), MONTH(`timestamp`), DAY(`timestamp`) ASC;";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $rows = $wpdb->get_results($sql, ARRAY_A);
                             $yearstr = $yearmin;
                         }
@@ -2046,6 +2056,7 @@ trait Output {
                                         $aux_set = " AND `measure_set`=" . self::sql_literal($arg['set']) . " GROUP BY MONTH(`timestamp`), DAY(`timestamp`)";
                                         $aux_val = 'AVG(`measure_value`) as aux_val';
                                         $aux_sql = "SELECT `timestamp`, " . $aux_val . " FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . "" . $aux_set . " ORDER BY `timestamp` ASC;";
+                                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                                         $aux_query = $wpdb->get_results($aux_sql, ARRAY_A);
                                         foreach ($aux_query as $a) {
                                             $aux[substr($a['timestamp'], 5, 5)] = $a['aux_val'];
@@ -2059,6 +2070,7 @@ trait Output {
                                         $aux_set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY MONTH(`timestamp`), DAY(`timestamp`)";
                                         $aux_val = 'ABS(MAX(`measure_value`)-MIN(`measure_value`)) as aux_val';
                                         $aux_sql = "SELECT `timestamp`, " . $aux_val . " FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . "" . $aux_set . " ORDER BY `timestamp` ASC;";
+                                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                                         $aux_query = $wpdb->get_results($aux_sql, ARRAY_A);
                                         foreach ($aux_query as $a) {
                                             $aux[substr($a['timestamp'], 5, 5)] = $a['aux_val'];
@@ -2072,6 +2084,7 @@ trait Output {
                                         $aux_set = " AND (`measure_set`='min' OR `measure_set`='max') GROUP BY MONTH(`timestamp`), DAY(`timestamp`)";
                                         $aux_val = 'MIN(`measure_value`) + ((MAX(`measure_value`)-MIN(`measure_value`))/2) as aux_val';
                                         $aux_sql = "SELECT `timestamp`, " . $aux_val . " FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . "" . $aux_set . " ORDER BY `timestamp` ASC;";
+                                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                                         $aux_query = $wpdb->get_results($aux_sql, ARRAY_A);
                                         foreach ($aux_query as $a) {
                                             $aux[substr($a['timestamp'], 5, 5)] = $a['aux_val'];
@@ -2080,6 +2093,7 @@ trait Output {
                                 }
                                 $sql = "SELECT `timestamp`, `module_type`, " . $val . " FROM " . $table_name . " WHERE `timestamp`>=" . self::sql_literal($min) . " AND `timestamp`<=" . self::sql_literal($max) . " AND `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . "" . $set . " ORDER BY `timestamp` ASC;";
                                 try {
+                                    // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                                     $query = (array)$wpdb->get_results($sql);
                                     $query_a = (array)$query;
                                     if ((($type == 'bcline' && $i == 1) || $type == 'bar' || $type == 'bars' || $type == 'sareas') && $mode == 'yearly' && $timescale != 'adaptative') {
@@ -2325,7 +2339,7 @@ trait Output {
                                 $period_range = 0;
                                 if ($mode == 'yearly' || $mode == 'climat') {
                                     if ($is_rdays) {
-                                        $period_name = sprintf(__('Last %s days', 'live-weather-station'), $v[1]);
+                                        $period_name = sprintf(/* translators: %s: number of days */ __('Last %s days', 'live-weather-station'), $v[1]);
                                         $period_range = 0;
                                     } elseif ($is_month) {
                                         $now = new \DateTime('now', self::safe_timezone($station['loc_timezone']));
@@ -2333,7 +2347,7 @@ trait Output {
                                         $period_name = date_i18n('F Y', $now->getTimestamp());
                                         $period_range = 1;
                                     } elseif ($is_year) {
-                                        $period_name = sprintf(__('Year %s', 'live-weather-station'), $year);
+                                        $period_name = sprintf(/* translators: %s: year, like 2024 */ __('Year %s', 'live-weather-station'), $year);
                                         $period_range = 12;
                                     } elseif ($is_mseason) {
                                         $period_name = ucfirst(Calculator::meteorologicalSeasonName($month, $station['loc_latitude'] > 0)) . ' ' . $year;
@@ -2428,6 +2442,7 @@ trait Output {
                             }
                         }
                         $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($dev) . " AND `module_id`=" . self::sql_literal($mod) . " AND `measure_type`='temperature' AND `measure_set`='avg';";
+                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                         $query = $wpdb->get_results($sql, ARRAY_A);
                         $ymin = $this->output_value($query[0]['min_val'], 'temperature');
                         $ymax = $this->output_value($query[0]['max_val'], 'temperature');
@@ -2435,6 +2450,7 @@ trait Output {
                     elseif ($type == 'cstick' || $type == 'ccstick') {
                         $arg = array_values($args)[0];
                         $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND (`measure_set`='min' OR `measure_set`='max');";
+                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                         $query = $wpdb->get_results($sql, ARRAY_A);
                         $ymin = $this->output_value($query[0]['min_val'], $arg['measurement']);
                         $ymax = $this->output_value($query[0]['max_val'], $arg['measurement']);
@@ -2442,52 +2458,64 @@ trait Output {
                     elseif (($type == 'doubleline' || $type == 'bcline') && isset($args[1]) && isset($args[2])) {
                         if ($args[1]['set'] == 'amp') {
                             $sql = "SELECT MIN(T2.amplitude) as min_val, MAX(T2.amplitude) as max_val FROM(SELECT (MAX(`measure_value`)-MIN(`measure_value`)) as amplitude FROM (SELECT `timestamp`, `measure_value` FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . " AND (`measure_set`='min' OR `measure_set`='max')) as T1 GROUP BY T1.timestamp) as T2";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][0]['ydomain']['min'] = $query[0]['min_val'];
                             $result['extras'][0]['ydomain']['max'] = $query[0]['max_val'];
                         }
                         elseif ($args[1]['set'] == 'mid') {
                             $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . " AND `measure_set`='min';";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $tm = $query[0]['min_val'];
                             $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . " AND `measure_set`='max';";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][0]['ydomain']['min'] = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $args[1]['measurement']);
                             $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . " AND `measure_set`='min';";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $tm = $query[0]['min_val'];
                             $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . " AND `measure_set`='max';";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][0]['ydomain']['max'] = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $args[1]['measurement']);
                         }
                         else {
                             $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[1]['device_id']) . " AND `module_id`=" . self::sql_literal($args[1]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[1]['measurement']) . " AND `measure_set`=" . self::sql_literal($args[1]['set']) . ";";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][0]['ydomain']['min'] = $this->output_value($query[0]['min_val'], $args[1]['measurement']);
                             $result['extras'][0]['ydomain']['max'] = $this->output_value($query[0]['max_val'], $args[1]['measurement']);
                         }
                         if ($args[2]['set'] == 'amp') {
                             $sql = "SELECT MIN(T2.amplitude) as min_val, MAX(T2.amplitude) as max_val FROM(SELECT (MAX(`measure_value`)-MIN(`measure_value`)) as amplitude FROM (SELECT `timestamp`, `measure_value` FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND (`measure_set`='min' OR `measure_set`='max')) as T1 GROUP BY T1.timestamp) as T2";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][1]['ydomain']['min'] = $query[0]['min_val'];
                             $result['extras'][1]['ydomain']['max'] = $query[0]['max_val'];
                         }
                         elseif ($args[2]['set'] == 'mid') {
                             $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND `measure_set`='min';";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $tm = $query[0]['min_val'];
                             $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND `measure_set`='max';";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][1]['ydomain']['min'] = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $args[2]['measurement']);
                             $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND `measure_set`='min';";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $tm = $query[0]['min_val'];
                             $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND `measure_set`='max';";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][1]['ydomain']['max'] = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $args[2]['measurement']);
                         }
                         else {
                             $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($args[2]['device_id']) . " AND `module_id`=" . self::sql_literal($args[2]['module_id']) . " AND `measure_type`=" . self::sql_literal($args[2]['measurement']) . " AND `measure_set`=" . self::sql_literal($args[2]['set']) . ";";
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $query = $wpdb->get_results($sql, ARRAY_A);
                             $result['extras'][1]['ydomain']['min'] = $this->output_value($query[0]['min_val'], $args[2]['measurement']);
                             $result['extras'][1]['ydomain']['max'] = $this->output_value($query[0]['max_val'], $args[2]['measurement']);
@@ -2499,26 +2527,32 @@ trait Output {
                                 try {
                                     if ($arg['set'] == 'amp') {
                                         $sql = "SELECT MIN(T2.amplitude) as min_val, MAX(T2.amplitude) as max_val FROM(SELECT (MAX(`measure_value`)-MIN(`measure_value`)) as amplitude FROM (SELECT `timestamp`, `measure_value` FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND (`measure_set`='min' OR `measure_set`='max')) as T1 GROUP BY T1.timestamp) as T2";
+                                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                                         $query = $wpdb->get_results($sql, ARRAY_A);
                                         $min = $this->rebase_value($query[0]['min_val'], $arg['measurement']);
                                         $max = $this->rebase_value($query[0]['max_val'], $arg['measurement']);
                                     }
                                     elseif ($arg['set'] == 'mid') {
                                         $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND `measure_set`='min';";
+                                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                                         $query = $wpdb->get_results($sql, ARRAY_A);
                                         $tm = $query[0]['min_val'];
                                         $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND `measure_set`='max';";
+                                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                                         $query = $wpdb->get_results($sql, ARRAY_A);
                                         $min = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $arg['measurement']);
                                         $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as min_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND `measure_set`='min';";
+                                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                                         $query = $wpdb->get_results($sql, ARRAY_A);
                                         $tm = $query[0]['min_val'];
                                         $sql = "SELECT MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND `measure_set`='max';";
+                                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                                         $query = $wpdb->get_results($sql, ARRAY_A);
                                         $max = $this->output_value($tm + (($query[0]['max_val'] - $tm) / 2), $arg['measurement']);
                                     }
                                     else {
                                         $sql = "SELECT MIN(CAST(`measure_value` AS DECIMAL(20,10))) as min_val, MAX(CAST(`measure_value` AS DECIMAL(20,10))) as max_val FROM " . $table_name . " WHERE `device_id`=" . self::sql_literal($arg['device_id']) . " AND `module_id`=" . self::sql_literal($arg['module_id']) . " AND `measure_type`=" . self::sql_literal($arg['measurement']) . " AND `measure_set`=" . self::sql_literal($arg['set']) . ";";
+                                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                                         $query = $wpdb->get_results($sql, ARRAY_A);
                                         $min = $this->output_value($query[0]['min_val'], $arg['measurement']);
                                         $max = $this->output_value($query[0]['max_val'], $arg['measurement']);
@@ -4901,10 +4935,10 @@ trait Output {
                 $body .= '          displayLegend: false,' . PHP_EOL;
             }
             if ($dimension1 == 'duration') {
-                $body .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(__('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>')) . '", filled: "' . self::js_str(sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s</strong>', '{date}', esc_html($values['extras'][0]['measurement_type'] . ' - ' . ($values['extras'][0]['set_name'] ?? '')), '{count}')) . '"},' . PHP_EOL;
+                $body .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(/* translators: %s: date, shown in a tooltip */ __('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>')) . '", filled: "' . self::js_str(sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s</strong>', '{date}', esc_html($values['extras'][0]['measurement_type'] . ' - ' . ($values['extras'][0]['set_name'] ?? '')), '{count}')) . '"},' . PHP_EOL;
             }
             else {
-                $body .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(__('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>')) . '", filled: "' . self::js_str(sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s %s</strong>', '{date}', esc_html($values['extras'][0]['measurement_type'] . ' - ' . ($values['extras'][0]['set_name'] ?? '')), '{count}', esc_html($values['legend']['unit']['unit']))) . '"},' . PHP_EOL;
+                $body .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(/* translators: %s: date, shown in a tooltip */ __('%s <br/>No data', 'live-weather-station'), '<strong>{date}</strong>')) . '", filled: "' . self::js_str(sprintf('<strong>%s</strong> <br/>%s&nbsp; <strong>%s %s</strong>', '{date}', esc_html($values['extras'][0]['measurement_type'] . ' - ' . ($values['extras'][0]['set_name'] ?? '')), '{count}', esc_html($values['legend']['unit']['unit']))) . '"},' . PHP_EOL;
             }
             $body .= '          i18nDomainDateFormat: {' . $i18n . '},' . PHP_EOL;
             $body .= '          legendTitleFormat: {lower: "",inner: "",upper: ""}' . PHP_EOL;
@@ -5734,6 +5768,7 @@ trait Output {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
         $sql = "SELECT DISTINCT module_id, module_type FROM " . $table_name . " WHERE device_id = " . self::sql_literal($attributes['device_id']) . "";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
         $rows = $wpdb->get_results($sql, ARRAY_A);
         $temp = array();
         $rain = array();
@@ -6774,9 +6809,11 @@ trait Output {
             switch ($computed) {
                 case 'simple-val':
                     if ($fixed) {
+                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                         $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
                     }
                     if ($aggregated) {
+                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                         $rows = $wpdb->get_results($simple_aggregated_sql, ARRAY_A);
                     }
                     if ($set == 'hell' || $set == 'frst' || $set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
@@ -6791,9 +6828,11 @@ trait Output {
                 case 'simple-min':
                 case 'simple-max':
                     if ($fixed) {
+                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                         $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
                     }
                     if ($aggregated) {
+                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                         $rows = $wpdb->get_results($simple_aggregated_sql, ARRAY_A);
                     }
                     if ($set == 'amp' || $set == 'mid') {
@@ -6840,7 +6879,9 @@ trait Output {
                     }
                     break;
                 case 'simple-dev':
+                    // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                     $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
+                    // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                     $ref_rows = $wpdb->get_results($simple_aggregated_sql, ARRAY_A);
 
 
@@ -6885,9 +6926,11 @@ trait Output {
                 case 'date-min':
                 case 'date-max':
                     if ($fixed) {
+                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                         $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
                     }
                     if ($aggregated) {
+                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                         $rows = $wpdb->get_results($simple_aggregated_sql, ARRAY_A);
                     }
                     if ($set == 'amp' || $set == 'mid') {
@@ -6929,6 +6972,7 @@ trait Output {
                     break;
                 case 'count-day':
                     if ($set == 'amp' || $set == 'mid') {
+                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                         $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
                         $count = 0;
                         foreach ($rows as $row) {
@@ -6945,23 +6989,27 @@ trait Output {
                     }
                     else {
                         if ($set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $rows = $wpdb->get_results($nested_fixed_sql, ARRAY_A);
                         }
                         else {
+                            // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                             $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
                         }
                     }
                     if (!isset($rows[0]['val'])) {
                         return esc_html__('N/A', 'live-weather-station');
                     }
-                    $result = sprintf(_n('%s day', '%s days', $rows[0]['val'], 'live-weather-station'), $rows[0]['val']);
+                    $result = sprintf(/* translators: %s: number of days */ _n('%s day', '%s days', $rows[0]['val'], 'live-weather-station'), $rows[0]['val']);
                     break;
                 case 'duration-day':
                 case 'duration-dates':
                     if ($set == 'cdd-da' || $set == 'cdd-eu' || $set == 'cdd-fi' || $set == 'cdd-ch' || $set == 'cdd-us' || $set == 'hdd-da' || $set == 'hdd-eu' || $set == 'hdd-fi' || $set == 'hdd-ch' || $set == 'hdd-us') {
+                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                         $rows = $wpdb->get_results($nested_fixed_sql, ARRAY_A);
                     }
                     else {
+                        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin history table, read-only query for the chosen period, not cached on purpose; table is prefix plus the histo daily/yearly table name from internal methods, every value goes through self::sql_literal() (wpdb->prepare with %s), the rest of the SQL is fixed text or integers
                         $rows = $wpdb->get_results($simple_fixed_sql, ARRAY_A);
                     }
                     if ($set == 'amp' || $set == 'mid') {
@@ -6981,7 +7029,7 @@ trait Output {
                     //return print_r($rows, true);
                     if ($computed == 'duration-day') {
                         if ($period['length'] != 0) {
-                            $result = sprintf(_n('%s day', '%s days', $period['length'], 'live-weather-station'), $period['length']);
+                            $result = sprintf(/* translators: %s: number of days */ _n('%s day', '%s days', $period['length'], 'live-weather-station'), $period['length']);
                         }
                         else {
                             $result = esc_html__('N/A', 'live-weather-station');
@@ -6995,7 +7043,7 @@ trait Output {
                         elseif ($period['length'] > 1) {
                             $start = new \DateTime($period['start']);
                             $end = new \DateTime($period['end']);
-                            $result = sprintf(__('%s to %s', 'live-weather-station'), date_i18n(get_option('date_format'), $start->getTimestamp()), date_i18n(get_option('date_format'), $end->getTimestamp()));
+                            $result = sprintf(/* translators: 1: start date, 2: end date */ __('%1$s to %2$s', 'live-weather-station'), date_i18n(get_option('date_format'), $start->getTimestamp()), date_i18n(get_option('date_format'), $end->getTimestamp()));
                         }
                         else {
                             $result = esc_html__('N/A', 'live-weather-station');
@@ -7254,16 +7302,16 @@ trait Output {
                 if ($_attributes['metric'] == 'density') {
                     $result .= '          considerMissingDataAsZero: false,' . PHP_EOL;
                     $result .= '          legendColors: ["#BBCCDD", "#122448"],' . PHP_EOL;
-                    $result .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(__('%s <br/>No event', 'live-weather-station'), '{date}')) . '", filled: "' . sprintf('%s <br/>%s %s', '{date}', '{count}', '{name}'). '"},' . PHP_EOL;
+                    $result .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(/* translators: %s: date, shown in a tooltip */ __('%s <br/>No event', 'live-weather-station'), '{date}')) . '", filled: "' . sprintf('%s <br/>%s %s', '{date}', '{count}', '{name}'). '"},' . PHP_EOL;
                     $result .= '          itemName: ["' . self::js_str(mb_strtolower(__('Event', 'live-weather-station'))) . '", "' . self::js_str(mb_strtolower(__('Events', 'live-weather-station'))) . '"],' . PHP_EOL;
-                    $result .= '          legendTitleFormat: {lower: "' . self::js_str(sprintf(__('Less than %s %s.', 'live-weather-station'), '{min}', '{name}')) . '",inner: "' . self::js_str(sprintf(__('Between %s and %s %s.', 'live-weather-station'), '{down}', '{up}', '{name}')) . '",upper: "' . self::js_str(sprintf(__('More than %s %s.', 'live-weather-station'), '{max}', '{name}')) . '"}' . PHP_EOL;
+                    $result .= '          legendTitleFormat: {lower: "' . self::js_str(sprintf(/* translators: 1: minimum value, 2: unit name */ __('Less than %1$s %2$s.', 'live-weather-station'), '{min}', '{name}')) . '",inner: "' . self::js_str(sprintf(/* translators: 1: lower value, 2: upper value, 3: unit name */ __('Between %1$s and %2$s %3$s.', 'live-weather-station'), '{down}', '{up}', '{name}')) . '",upper: "' . self::js_str(sprintf(/* translators: 1: maximum value, 2: unit name */ __('More than %1$s %2$s.', 'live-weather-station'), '{max}', '{name}')) . '"}' . PHP_EOL;
                 }
                 else {
                     $result .= '          considerMissingDataAsZero: true,' . PHP_EOL;
                     $result .= '          legendColors: ["#D2DE76", "#AD001D"],' . PHP_EOL;
-                    $result .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(__('%s <br/>No data', 'live-weather-station'), '{date}')) . '", filled: "' . self::js_str(sprintf(__('%s <br/>%s at %s', 'live-weather-station'), '{date}', '{name}', '{count}')) . '"},' . PHP_EOL;
+                    $result .= '          subDomainTitleFormat: {empty: "' . self::js_str(sprintf(/* translators: %s: date, shown in a tooltip */ __('%s <br/>No data', 'live-weather-station'), '{date}')) . '", filled: "' . self::js_str(sprintf(/* translators: 1: date, 2: measurement name, 3: value */ __('%1$s <br/>%2$s at %3$s', 'live-weather-station'), '{date}', '{name}', '{count}')) . '"},' . PHP_EOL;
                     $result .= '          itemName: ["' . self::js_str(__('Criticality', 'live-weather-station')) . '", "' . self::js_str(__('Criticality', 'live-weather-station')) . '"],' . PHP_EOL;
-                    $result .= '          legendTitleFormat: {lower: "' . self::js_str(sprintf(__('%s lower than %s.', 'live-weather-station'), '{name}', '{min}')) . '",inner: "' . self::js_str(sprintf(__('%s between %s and %s.', 'live-weather-station'), '{name}', '{down}', '{up}')) . '",upper: "' . self::js_str(sprintf(__('%s greater than %s.', 'live-weather-station'), '{name}', '{max}')) . '"}' . PHP_EOL;
+                    $result .= '          legendTitleFormat: {lower: "' . self::js_str(sprintf(/* translators: 1: measurement name, 2: value */ __('%1$s lower than %2$s.', 'live-weather-station'), '{name}', '{min}')) . '",inner: "' . self::js_str(sprintf(/* translators: 1: measurement name, 2: lower value, 3: upper value */ __('%1$s between %2$s and %3$s.', 'live-weather-station'), '{name}', '{down}', '{up}')) . '",upper: "' . self::js_str(sprintf(/* translators: 1: measurement name, 2: value */ __('%1$s greater than %2$s.', 'live-weather-station'), '{name}', '{max}')) . '"}' . PHP_EOL;
                 }
                 $result .= '      });' . PHP_EOL;
                 $result .= '  });' . PHP_EOL;
@@ -7614,7 +7662,7 @@ trait Output {
         }
         $idx = 1;
         if ($_attributes['debug'] === 'yes') {
-            $idx = rand(1, 2000);
+            $idx = wp_rand(1, 2000);
         }
         $photourl = self::get_picture($_attributes['device_id'], $idx);
         if (isset($photourl) and !empty($photourl)) {
@@ -7680,7 +7728,7 @@ trait Output {
         $_attributes['speed'] = (string)Guard::int($_attributes['speed'], 0);
         $_attributes['mode'] = Guard::enum($_attributes['mode'], array('full', 'url'), 'full');
         $uniq = $_attributes['uid'];
-        $time = 1000 * (120 + rand(-20, 20));
+        $time = 1000 * (120 + wp_rand(-20, 20));
         $shortcode = '[live-weather-station-snapshot device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' size=\'' . $_attributes['size'] . '\' fx=\'' . $_attributes['fx'] . '\' speed=\'' . $_attributes['speed'] . '\' mode=\'url\']';
         $result = $this->snapshot_shortcodes($_attributes);
         $jsInitId = md5(random_bytes(18));
@@ -7741,7 +7789,7 @@ trait Output {
             $scalable='true';
         }
         if (is_array($name)) {
-            return __(LIVE_WEATHER_STATION_PLUGIN_NAME, 'live-weather-station').' - '.$name['condition']['message'];
+            return __('Weather Station', 'live-weather-station').' - '.$name['condition']['message'];
         }
         $name = function_exists('mb_substr') ? mb_substr($name, 0, 20) : substr($name, 0, 20);
         wp_enqueue_style('lws-lcd');
@@ -8333,7 +8381,7 @@ trait Output {
     public function justgage_shortcodes($attributes) {
         $fingerprint = uniqid('', true);
         $uniq = 'jgg'.substr ($fingerprint, strlen($fingerprint)-6, 80);
-        $time = 1000 * (120 + rand(-20, 20));
+        $time = 1000 * (120 + wp_rand(-20, 20));
         $_attributes = shortcode_atts( array('id' => $uniq,'device_id' => '','module_id' => '','measure_type' => '','design' => '','color' => '','force' => '','pointer' => '','title' => '','subtitle' => '','unit' => '','size' => ''), $attributes );
         foreach (array('id', 'device_id', 'module_id', 'measure_type', 'design', 'color', 'title', 'subtitle', 'unit', 'size') as $_key) {
             $_attributes[$_key] = \WeatherStation\System\Output\Guard::token($_attributes[$_key], '');
@@ -8889,7 +8937,7 @@ trait Output {
         $result = '';
         $fingerprint = uniqid('', true);
         $uniq = 'ssm'.substr ($fingerprint, strlen($fingerprint)-6, 80);
-        $time = 1000 * (120 + rand(-20, 20));
+        $time = 1000 * (120 + wp_rand(-20, 20));
         $_attributes = shortcode_atts( array('device_id' => '','module_id' => '','measure_type' => '','design' => '',
             'frame' => '','background' => '','orientation' => '','main_pointer_type' => '','main_pointer_color' => '',
             'aux_pointer_type' => '','aux_pointer_color' => '','knob' => '','lcd' => '','alarm' => '','trend' => '',
@@ -9451,7 +9499,7 @@ trait Output {
         $fingerprint = uniqid('', true);
         $uuid = substr ($fingerprint, strlen($fingerprint)-6, 80);
         $uniq = 'live-textual-' . $uuid;
-        $time = 1000 * (120 + rand(-20, 20));
+        $time = 1000 * (120 + wp_rand(-20, 20));
         $speed = (int)$_attributes['speed'] / 2;
         $shortcode = 'live-weather-station-textual device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' element=\'' . $_attributes['element'] . '\' format=\'' . $_attributes['format'] . '\'';
         $result = '<span id="' . $uniq . '" class="lws-livetextual lws-measurement-type-' . esc_attr(str_replace('_', '-', $_attributes['measure_type'])) . '">' . do_shortcode('[' . $shortcode . ']') . '</span>';
@@ -9531,7 +9579,7 @@ trait Output {
         $fingerprint = uniqid('', true);
         $uuid = substr ($fingerprint, strlen($fingerprint)-6, 80);
         $uniq = 'live-icon-' . $uuid;
-        $time = 1000 * (120 + rand(-20, 20));
+        $time = 1000 * (120 + wp_rand(-20, 20));
         $speed = (int)$_attributes['speed'] / 2;
         $shortcode = 'live-weather-station-icon device_id=\'' . $_attributes['device_id'] . '\' module_id=\'' . $_attributes['module_id'] . '\' measure_type=\'' . $_attributes['measure_type'] . '\' element=\'' . $_attributes['element'] . '\' format=\'' . $_attributes['format'] . '\'';
         $result = '<span id="' . $uniq . '" class="lws-liveicon-value lws-measurement-type-' . esc_attr(str_replace('_', '-', $_attributes['measure_type'])) . '">' . do_shortcode('[' . $shortcode . ']') . '</span>';
@@ -14159,7 +14207,7 @@ trait Output {
         wp_enqueue_style('lws-table');
         if ($style == 'icon' || $style == 'multi-icon') {
             if (EnvManager::is_home_server()) {
-                wp_enqueue_style('flags', 'https://media.station.software/flags/css/flag-icon.min.css');
+                wp_enqueue_style('flags', 'https://media.station.software/flags/css/flag-icon.min.css', array(), LIVE_WEATHER_STATION_VERSION);
             }
             else {
                 wp_enqueue_style('flags', 'https://weather.station.software/extra/flags/css/flag-icon.min.css', null, true);

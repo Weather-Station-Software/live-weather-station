@@ -120,6 +120,7 @@ class Watchdog {
         $now = gmdate('Y-m-d H:i:s', time() - MONTH_IN_SECONDS);
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_performance_cron_table() . " WHERE ";
         $sql .= "timestamp<%s;";
+        // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_performance_cron, a write-only statistics table (cleanup or upsert), nothing to cache; the table name is the prefix plus performance_cron table name from an internal method, the only variable parts are the %s, %d and %f placeholders of the SQL string and all values are passed to prepare()
         $wpdb->query($wpdb->prepare($sql, $now));
     }
 
@@ -179,6 +180,7 @@ class Watchdog {
             $sql .= "VALUES (" . implode(',', $value_insert) . ") ";
             $sql .= "ON DUPLICATE KEY UPDATE " . implode(',', $value_update) . ";";
             try {
+                // phpcs:ignore PluginCheck.Security.DirectDB.UnescapedDBParameter, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table live_weather_station_performance_cron, a write-only statistics table (cleanup or upsert), nothing to cache; the table name is the prefix plus performance_cron table name from an internal method, the only variable parts are the %s, %d and %f placeholders of the SQL string and all values are passed to prepare()
                 $wpdb->query($wpdb->prepare($sql, $now, $key, $values['count'], $values['time'], $values['count'], $values['time']));
             }
             catch (\Exception $ex) {
