@@ -70,6 +70,7 @@ class Handling {
             $error = true;
         }
         if ($error) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- the message comes from sanitize_text_field() output (line 65) and is only caught at line 107 of this class and written to the Logger, it is never printed
             throw new \Exception($message, (int)$code);
         }
     }

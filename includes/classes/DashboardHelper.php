@@ -73,6 +73,7 @@ class Handling {
         $result .= "            postboxes.add_postbox_toggles('lws-dashboard');";
         $result .= "    });";
         $result .= live_weather_station_print_end_script($jsInitId);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $result is built by live_weather_station_print_begin_script()/print_end_script() (literal script wrapper, id reduced to [A-Za-z0-9_] by preg_replace) and literal JavaScript; it is an inline script block that must not go through kses
         echo $result;
     }
 
@@ -109,7 +110,7 @@ class Handling {
         $result .= '<legend>' . __('Boxes', 'live-weather-station') . '</legend>';
         $result .= $this->meta_box_prefs('lws-dashboard');
         // The welcome panel state can be changed by GET only with a valid nonce and capability.
-        if (isset($_GET['welcome']) && current_user_can(live_weather_station_manage_capability()) && isset($_GET['_wpnonce']) && is_string($_GET['_wpnonce']) && wp_verify_nonce($_GET['_wpnonce'], 'lws-welcome-toggle')) {
+        if (isset($_GET['welcome']) && current_user_can(live_weather_station_manage_capability()) && isset($_GET['_wpnonce']) && is_string($_GET['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'lws-welcome-toggle')) {
             $welcome_checked = (empty($_GET['welcome']) ? 0 : 1);
             update_user_meta(get_current_user_id(), 'show_lws_welcome_panel', $welcome_checked);
         }
@@ -211,7 +212,7 @@ class Handling {
      **/
     public function get() {
         echo '<div class="wrap">';
-        echo '<h1>' . esc_html(sprintf(__('%s Dashboard', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME)) . '</h1>';
+        echo '<h1>' . esc_html(sprintf(/* translators: %s: plugin name */ __('%s Dashboard', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME)) . '</h1>';
         settings_errors();
         echo '<form name="lws_dashboard" method="post">';
         $this->welcome_panel();
@@ -273,7 +274,7 @@ class Handling {
         if ($intl->is_translatable()) {
             add_meta_box('lws-translation', __('Translation', 'live-weather-station'), array($this, 'translation_widget'), 'lws-dashboard', 'side', 'high', array('message' => $intl->get_message()));
         }
-        add_meta_box('lws-news', sprintf(__('%s News', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME), array($this, 'news_widget'), 'lws-dashboard', 'side');
+        add_meta_box('lws-news', sprintf(/* translators: %s: plugin name */ __('%s News', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME), array($this, 'news_widget'), 'lws-dashboard', 'side');
         add_meta_box('lws-signup', sprintf(__('Subscribe', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME), array($this, 'signup_widget'), 'lws-dashboard', 'side');
         add_meta_box('lws-about', __('About', 'live-weather-station'), array($this, 'about_widget'), 'lws-dashboard', 'side');
         add_meta_box('lws-licenses', __('Licenses', 'live-weather-station'), array($this, 'licenses_widget'), 'lws-dashboard', 'side');
@@ -298,21 +299,21 @@ class Handling {
         wp_enqueue_style('lws-admin');
         $stations = self::get_stations_count();
         if ($stations > 0) {
-            $s = sprintf( '<a class="lws-station-count" href="admin.php?page=lws-stations">%s</a>', sprintf(_n('%s Weather station', '%s Weather stations', $stations, 'live-weather-station'),$stations)) . "\n";
+            $s = sprintf( '<a class="lws-station-count" href="admin.php?page=lws-stations">%s</a>', sprintf(/* translators: %s: number of weather stations */ _n('%s Weather station', '%s Weather stations', $stations, 'live-weather-station'),$stations)) . "\n";
         }
         else {
             $s = sprintf( '<span class="lws-station-count">%s</span>', __('No weather station', 'live-weather-station') ) . "\n";
         }
-        echo '<li class="lws-station-count">' . $s . '</li>';
+        echo wp_kses_post('<li class="lws-station-count">' . $s . '</li>');
 
         $maps = self::get_maps_count();
         if ($maps > 0) {
-            $s = sprintf( '<a class="lws-map-count" href="admin.php?page=lws-maps">%s</a>', sprintf(_n('%s Weather map', '%s Weather maps', $maps, 'live-weather-station'),$maps)) . "\n";
+            $s = sprintf( '<a class="lws-map-count" href="admin.php?page=lws-maps">%s</a>', sprintf(/* translators: %s: number of weather maps */ _n('%s Weather map', '%s Weather maps', $maps, 'live-weather-station'),$maps)) . "\n";
         }
         else {
             $s = sprintf( '<span class="lws-map-count">%s</span>', __('No weather map', 'live-weather-station') ) . "\n";
         }
-        echo '<li class="lws-map-count">' . $s . '</li>';
+        echo wp_kses_post('<li class="lws-map-count">' . $s . '</li>');
     }
 
     /**

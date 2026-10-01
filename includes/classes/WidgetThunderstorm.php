@@ -39,7 +39,7 @@ class Thunderstorm extends Base {
         parent::__construct(
             'Live_Weather_Station_Widget_Thunderstorm',
             '<>⚡ ' . __( 'Thunderstorm' , 'live-weather-station'),
-            array( 'description' => sprintf(__('Display thunderstorm conditions recorded by a station added to %s.' , 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME))
+            array( 'description' => sprintf(/* translators: %s: plugin name */ __('Display thunderstorm conditions recorded by a station added to %s.' , 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME))
         );
         if ( is_admin() || is_blog_admin()) {
             add_action( 'admin_enqueue_scripts', function () {wp_enqueue_script( 'wp-color-picker' );});
@@ -251,7 +251,7 @@ class Thunderstorm extends Base {
     public function update($new_instance, $old_instance) {
         $instance = $this->_get_instance($old_instance);
         $new_instance = $this->_get_instance($new_instance);
-        $instance['title'] = strip_tags($new_instance['title']);
+        $instance['title'] = wp_strip_all_tags($new_instance['title']);
         $instance['subtitle'] = absint($new_instance['subtitle']);
         $instance['station'] = Guard::token($new_instance['station'], 'N/A');
         $instance['bg_color'] = self::sanitize_color($new_instance['bg_color'], '#444444');

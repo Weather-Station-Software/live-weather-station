@@ -55,14 +55,17 @@ class ThunderforestHandling extends BaseHandling {
         $result = array();
         $result['controls'] = $this->map_params['specific']['controls'];
         $result['options'] = $this->map_params['specific']['options'];
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- The nonce 'lws-map-<id>' is verified with wp_verify_nonce() in MapHelper::edit_map() before MapBaseHelper::save_map() calls this method.
         if (array_key_exists('controls-zoom', $_POST)) {
-            $result['controls']['zoom'] = ($_POST['controls-zoom'] == 'on');
+            $result['controls']['zoom'] = (sanitize_text_field(wp_unslash($_POST['controls-zoom'])) == 'on');
         }
         if (array_key_exists('options-overlay', $_POST)) {
-            if (in_array($_POST['options-overlay'], array('cycle', 'transport', 'landscape', 'outdoors', 'transport-dark', 'spinal-map', 'pioneer', 'mobile-atlas', 'neighbourhood'))) {
-                $result['options']['overlay'] = $_POST['options-overlay'];
+            $overlay = sanitize_text_field(wp_unslash($_POST['options-overlay']));
+            if (in_array($overlay, array('cycle', 'transport', 'landscape', 'outdoors', 'transport-dark', 'spinal-map', 'pioneer', 'mobile-atlas', 'neighbourhood'), true)) {
+                $result['options']['overlay'] = $overlay;
             }
         }
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         return $result;
     }
 
