@@ -20,21 +20,21 @@ if ( ! defined( 'ABSPATH' ) ) {
             <table cellspacing="0" class="lws-settings">
                 <tbody>
                 <tr>
-                    <th class="lws-link1" width="38%" align="left" scope="row"><?php echo __('Link 1', 'live-weather-station');?></th>
+                    <th class="lws-link1" width="38%" align="left" scope="row"><?php echo esc_html__('Link 1', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
                         <span class="login"><input id="st-link1" name="st-link1" type="text" size="500" value="<?php echo esc_attr($station['link_1']);?>" class="regular-text"></span>
                     </td>
                 </tr>
                 <tr>
-                    <th class="lws-link2" width="38%" align="left" scope="row"><?php echo __('Link 2', 'live-weather-station');?></th>
+                    <th class="lws-link2" width="38%" align="left" scope="row"><?php echo esc_html__('Link 2', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
                         <span class="login"><input id="st-link2" name="st-link2" type="text" size="500" value="<?php echo esc_attr($station['link_2']);?>" class="regular-text"></span>
                     </td>
                 </tr>
                 <tr>
-                    <th class="lws-link3" width="38%" align="left" scope="row"><?php echo __('Link 3', 'live-weather-station');?></th>
+                    <th class="lws-link3" width="38%" align="left" scope="row"><?php echo esc_html__('Link 3', 'live-weather-station');?></th>
                     <td width="2%"/>
                     <td align="left">
                         <span class="login"><input id="st-link3" name="st-link3" type="text" size="500" value="<?php echo esc_attr($station['link_3']);?>" class="regular-text"></span>
@@ -46,7 +46,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     </div>
     <div id="major-publishing-actions">
         <div id="publishing-action">
-            <?php echo get_submit_button('', 'primary large', 'submit-pages'); ?>
+            <?php submit_button('', 'primary large', 'submit-pages'); ?>
         </div>
         <div class="clear"></div>
     </div>

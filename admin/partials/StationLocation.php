@@ -18,5 +18,5 @@ if ( ! defined( 'ABSPATH' ) ) {
         <span style="width:50%;float: left;"><?php echo wp_kses_post($location_icn); ?>&nbsp;<?php echo wp_kses_post($station['txt_coordinates']); ?></span>
         <span style="width:50%;"><?php echo wp_kses_post($altitude_icn); ?>&nbsp;<?php echo wp_kses_post($station['txt_altitude']); ?></span>
     </div>
-    <?php echo Mapping::get_embed($station['loc_latitude'], $station['loc_longitude'], 300); ?>
+    <?php echo Mapping::get_embed($station['loc_latitude'], $station['loc_longitude'], 300); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Mapping::get_embed() builds an OpenStreetMap iframe whose size and coordinates are cast to int/float; wp_kses_post() would remove the iframe. ?>
 </div>

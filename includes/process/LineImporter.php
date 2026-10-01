@@ -98,11 +98,11 @@ abstract class LineImporter extends Process {
      */
     protected function message() {
         if ($this->is_in_error()) {
-            $result = sprintf(__('Unable to import the specified file in the station "%s".', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
-            $result .= "\r\n" . sprintf(__('Check the events log to see what\'s going on: %s', 'live-weather-station'), live_weather_station_get_admin_page_url('lws-events')) . "\r\n";
+            $result = sprintf(/* translators: %s: Name of the station. */ __('Unable to import the specified file in the station "%s".', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
+            $result .= "\r\n" . sprintf(/* translators: %s: Address (URL) of the events log page. */ __('Check the events log to see what\'s going on: %s', 'live-weather-station'), live_weather_station_get_admin_page_url('lws-events')) . "\r\n";
         }
         else {
-            $result = sprintf(__('Historical data has been correctly imported in "%s" for the period from %s to %s.', 'live-weather-station'), $this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date']) . "\r\n";
+            $result = sprintf(/* translators: 1: Name of the station, 2: Start date, 3: End date. */ __('Historical data has been correctly imported in "%1$s" for the period from %2$s to %3$s.', 'live-weather-station'), $this->params['init']['station_name'], $this->params['init']['start_date'], $this->params['init']['end_date']) . "\r\n";
         }
         return $result;
     }

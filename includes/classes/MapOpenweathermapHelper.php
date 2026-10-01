@@ -54,6 +54,7 @@ class OpenweathermapHandling extends BaseHandling {
      * @return array The specific parameters.
      * @since 3.7.0
      */
+// phpcs:disable WordPress.Security.NonceVerification.Missing -- Only called by MapBaseHelper::save_map(), itself reached from MapHelper::edit_map() after wp_verify_nonce() on the map form nonce.
     public function get_specific_post_values() {
         $result = array();
         $result['controls'] = $this->map_params['specific']['controls'];
@@ -63,16 +64,17 @@ class OpenweathermapHandling extends BaseHandling {
         }
         if (array_key_exists('options-overlay', $_POST)) {
             if (in_array($_POST['options-overlay'], array('owm:rain', 'owm:snow', 'owm:clouds_new', 'owm:precipitation_new', 'owm:pressure_new', 'owm:wind_new', 'owm:temp_new', 'vane:rgb', 'vane:nir', 'vane:ndvi', 'vane:ndwi'))) {
-                $result['options']['overlay'] = $_POST['options-overlay'];
+                $result['options']['overlay'] = sanitize_text_field(wp_unslash($_POST['options-overlay']));
             }
         }
         if (array_key_exists('options-basemap', $_POST)) {
             if (in_array($_POST['options-basemap'], array('none', 'carto:light_all', 'carto:light_nolabels', 'carto:light_only_labels', 'carto:dark_all', 'carto:dark_nolabels', 'carto:dark_only_labels'))) {
-                $result['options']['basemap'] = $_POST['options-basemap'];
+                $result['options']['basemap'] = sanitize_text_field(wp_unslash($_POST['options-basemap']));
             }
         }
         return $result;
     }
+// phpcs:enable WordPress.Security.NonceVerification.Missing
 
     /**
      * Output the specific resources.

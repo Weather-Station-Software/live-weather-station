@@ -38,7 +38,7 @@ class Outdoor extends Base {
         parent::__construct(
             'Live_Weather_Station_Widget_Outdoor',
             '<>🌤 ' . __( 'Outdoor weather summary' , 'live-weather-station'),
-            array( 'description' => sprintf(__('Display outdoor measurements of a station added to %s.' , 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME))
+            array( 'description' => sprintf(/* translators: %s: Name of the plugin. */ __('Display outdoor measurements of a station added to %s.' , 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME))
         );
         if ( is_admin() || is_blog_admin()) {
             add_action( 'admin_enqueue_scripts', function () {wp_enqueue_script( 'wp-color-picker' );});
@@ -297,7 +297,7 @@ class Outdoor extends Base {
     public function update($new_instance, $old_instance) {
         $instance = $this->_get_instance($old_instance);
         $new_instance = $this->_get_instance($new_instance);
-        $instance['title'] = strip_tags($new_instance['title']);
+        $instance['title'] = wp_strip_all_tags($new_instance['title']);
         $instance['subtitle'] = absint($new_instance['subtitle']);
         $instance['station'] = Guard::token($new_instance['station'], 'N/A');
         $instance['bg_color'] = self::sanitize_color($new_instance['bg_color'], '#444444');

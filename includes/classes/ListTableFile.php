@@ -2,6 +2,8 @@
 
 namespace WeatherStation\UI\ListTable;
 
+// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only display filters of the exported files list (sorting and limit): nothing is modified.
+
 use WeatherStation\System\Logs\Logger;
 use WeatherStation\Data\Output;
 use WeatherStation\System\Storage\Manager as FS;
@@ -93,11 +95,11 @@ class File extends Base {
     }
 
     public function usort_reorder($a,$b){
-        $orderby = (!empty($_REQUEST['orderby'])) ? sanitize_key($_REQUEST['orderby']) : 'date';
+        $orderby = (!empty($_REQUEST['orderby'])) ? sanitize_key(wp_unslash($_REQUEST['orderby'])) : 'date';
         if (!array_key_exists($orderby, $a)) {
             $orderby = 'date';
         }
-        $order = (!empty($_REQUEST['order']) && strtolower($_REQUEST['order']) === 'asc') ? 'asc' : 'desc';
+        $order = (!empty($_REQUEST['order']) && strtolower(sanitize_key(wp_unslash($_REQUEST['order']))) === 'asc') ? 'asc' : 'desc';
         $result = strcmp(strtolower($a[$orderby]), strtolower($b[$orderby]));
         return ($order==='asc') ? $result : -$result;
     }
@@ -114,7 +116,7 @@ class File extends Base {
     protected function init_values() {
         $this->filters = array();
         if (isset($_GET['limit'])) {
-            $this->limit = intval($_GET['limit']);
+            $this->limit = intval(sanitize_text_field(wp_unslash($_GET['limit'])));
             if (!$this->limit) {
                 $this->limit = 25;
             }
@@ -170,7 +172,7 @@ class File extends Base {
         foreach ($_disp as $d) {
             $l = array();
             $l['value'] = $d;
-            $l['text'] = sprintf(esc_html__('Show %d lines per page', 'live-weather-station'), $d);
+            $l['text'] = sprintf(/* translators: %d: Number of lines displayed per page. */ esc_html__('Show %d lines per page', 'live-weather-station'), $d);
             $l['selected'] = ($d == $this->limit ? 'selected="selected" ' : '');
             $result[] = $l;
         }

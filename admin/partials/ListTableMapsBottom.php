@@ -15,7 +15,7 @@ if ( ! defined( 'ABSPATH' ) ) {
     <label for="limit-selector-bottom" class="screen-reader-text"><?php esc_html_e('Number of lines to display', 'live-weather-station');?></label>
     <select name="limit" id="limit-selector-bottom">
         <?php foreach ($list->get_line_number_select() as $line) { ?>
-            <option <?php echo $line['selected']; ?>value="<?php echo esc_attr($line['value']); ?>"><?php echo esc_html($line['text']); ?></option>
+            <option <?php echo $line['selected']; ?>value="<?php echo esc_attr($line['value']); ?>"><?php echo esc_html($line['text']); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $line['selected'] is either 'selected="selected" ' or an empty string (ListTableMaps::get_line_number_select()). ?></option>
         <?php } ?>
     </select>
     <input type="submit" class="button action" value="<?php esc_html_e('Apply', 'live-weather-station');?>"  />

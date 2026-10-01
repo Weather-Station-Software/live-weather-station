@@ -166,6 +166,7 @@ class Pusher extends Abstract_Pusher {
             $message = '';
         }
         if ($error) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- The exception is caught by the caller and its message only goes to the plugin events log (Logger), where it is escaped on display; it is never printed directly. The message is a fixed string or the remote message, which the caller cleans with sanitize_remote_message() before logging or returning it.
             throw new \Exception($message, $code);
         }
         if ($id != 0) {

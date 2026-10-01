@@ -88,9 +88,11 @@ abstract class Base extends \WP_Widget {
                 $result .= $after;
                 Cache::set_widget($cache_id, $result);
             }
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $result was assembled above from the sidebar wrappers (before_widget/after_widget, set by the theme), a generated id, and a script whose URL and action name go through Guard::js(); the widget number is cast with (int).
             echo $result;
         }
         else {
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- widget markup (it can hold script and canvas elements) built by widget_content() of the widget classes, which escape their own values; before_widget/after_widget come from the theme sidebar definition, as for any WordPress widget.
             echo $this->widget_content($args, $instance);
         }
     }
@@ -232,6 +234,7 @@ abstract class Base extends \WP_Widget {
     public static function lws_widget_callback() {
         live_weather_station_public_rate_limit('lws_widget_' . static::class);
         $widget = new static;
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- Public read-only endpoint (see the docblock above): the number of the widget instance is the only value read, cast with absint(), and the settings come from the saved widget option; no state is modified.
         $number = (isset($_POST['wnum']) && is_scalar($_POST['wnum'])) ? absint($_POST['wnum']) : 0;
         $options = get_option('widget_' . $widget->id_base);
         if ($number < 1 || !is_array($options) || !isset($options[$number]) || !is_array($options[$number])) {
@@ -240,6 +243,7 @@ abstract class Base extends \WP_Widget {
         }
         $args = array('before_widget' => '', 'after_widget' => '', 'before_title' => '', 'after_title' => '');
         $instance = self::sanitize_instance($options[$number]);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- widget markup (it can hold script and canvas elements) built by widget_content() of the widget classes, which escape their own values; before_widget/after_widget come from the theme sidebar definition, as for any WordPress widget.
         echo $widget->widget_content($args, $instance);
         exit;
     }

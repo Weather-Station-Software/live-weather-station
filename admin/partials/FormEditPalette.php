@@ -40,8 +40,8 @@ wp_enqueue_style( 'wp-color-picker' );
             </tr>
             <?php for ($i=0 ; $i<8 ; $i++) {?>
                 <tr class="form-field">
-                    <th scope="row"><label for="color_<?php echo $i ?>"><?php echo sprintf(__('Color %s','live-weather-station'), $i+1);?></label></th>
-                    <td align="left"><span class="color-picker"><input class="widefat wp-color-picker" id="color_<?php echo $i ?>" name="color_<?php echo $i ?>" type="text" value="#<?php echo esc_attr($subject['detail']['colors'][$i]) ?>" /></span></td>
+                    <th scope="row"><label for="color_<?php echo (int)$i; ?>"><?php echo esc_html(sprintf(/* translators: %s: Number of the color in the palette. */ __('Color %s','live-weather-station'), $i+1));?></label></th>
+                    <td align="left"><span class="color-picker"><input class="widefat wp-color-picker" id="color_<?php echo (int)$i; ?>" name="color_<?php echo (int)$i; ?>" type="text" value="#<?php echo esc_attr($subject['detail']['colors'][$i]) ?>" /></span></td>
                 </tr>
             <?php }?>
         </table>

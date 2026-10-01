@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <div class="wrap">
-    <h2><?php echo __('Server Configuration', 'live-weather-station');?></h2>
+    <h2><?php echo esc_html__('Server Configuration', 'live-weather-station');?></h2>
     <div>
         <div id="wpcom-stats-meta-box-container" class="metabox-holder">
             <?php
