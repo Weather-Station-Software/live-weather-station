@@ -135,6 +135,7 @@ class Data {
     private function delete_orphaned_stations() {
         global $wpdb;
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_measurements_table() . " WHERE device_id=''";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from self::live_weather_station_measurements_table() prefixed by $wpdb->prefix), static DELETE without external value; write operation so no caching applies
         $wpdb->query($sql);
     }
 
@@ -146,6 +147,7 @@ class Data {
     private function delete_orphaned_modules() {
         global $wpdb;
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_measurements_table() . " WHERE module_id=''";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from self::live_weather_station_measurements_table() prefixed by $wpdb->prefix), static DELETE without external value; write operation so no caching applies
         $wpdb->query($sql);
     }
 

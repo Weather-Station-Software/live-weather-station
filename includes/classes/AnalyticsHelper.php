@@ -59,6 +59,7 @@ class Handling {
         $result .= "            postboxes.add_postbox_toggles('lws-analytics');";
         $result .= "    });";
         $result .= live_weather_station_print_end_script($jsInitId);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $result is built by live_weather_station_print_begin_script()/print_end_script() (literal script wrapper, id reduced to [A-Za-z0-9_] by preg_replace) and literal JavaScript; it is an inline script block that must not go through kses
         echo $result;
     }
 

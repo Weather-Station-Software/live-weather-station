@@ -204,6 +204,7 @@ trait Query {
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name ;
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); static SQL without external value; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -213,7 +214,7 @@ trait Query {
             return $result;
         }
         catch(\Exception $ex) {
-            return array('device_name' => __(LIVE_WEATHER_STATION_PLUGIN_NAME, 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
+            return array('device_name' => __('Weather Station', 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
         }
     }
 
@@ -234,11 +235,13 @@ trait Query {
         }
         global $wpdb;
         if (count($ids) > 0) {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- IN() list built by Guard::placeholders() (one %s per id), ids are bound by prepare()
             $main = $wpdb->prepare("OR (module_type='NAMain' AND device_id IN (" . Guard::placeholders($ids, '%s') . "))", $ids);
         }
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_id, device_name, module_id, module_name FROM " . $table_name . " WHERE (module_type='NAModule4') OR (module_type='NAModule9') " . $main . ";";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); $main is built by prepare() above; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -247,7 +250,7 @@ trait Query {
             }
             return $result;
         } catch (\Exception $ex) {
-            return array('device_name' => __(LIVE_WEATHER_STATION_PLUGIN_NAME, 'live-weather-station') . ' ' . __('is not running...', 'live-weather-station'), 'device_id' => 'N/A');
+            return array('device_name' => __('Weather Station', 'live-weather-station') . ' ' . __('is not running...', 'live-weather-station'), 'device_id' => 'N/A');
         }
     }
 
@@ -262,6 +265,7 @@ trait Query {
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name . " WHERE module_type='NAModule7'";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); static SQL without external value; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -271,7 +275,7 @@ trait Query {
             return $result;
         }
         catch(\Exception $ex) {
-            return array('device_name' => __(LIVE_WEATHER_STATION_PLUGIN_NAME, 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
+            return array('device_name' => __('Weather Station', 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
         }
     }
 
@@ -286,6 +290,7 @@ trait Query {
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name . " WHERE module_type='NAModule5'";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); static SQL without external value; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -295,7 +300,7 @@ trait Query {
             return $result;
         }
         catch(\Exception $ex) {
-            return array('device_name' => __(LIVE_WEATHER_STATION_PLUGIN_NAME, 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
+            return array('device_name' => __('Weather Station', 'live-weather-station').' '.__('is not running...', 'live-weather-station'), 'device_id' => 'N/A') ;
         }
     }
 
@@ -310,6 +315,7 @@ trait Query {
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT device_id, module_type FROM `" . $table_name . "` WHERE module_id in (SELECT DISTINCT module_id FROM `" . $table_name . "`) GROUP BY module_id;" ;
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); static SQL without external value; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $qresult = array();
@@ -397,6 +403,7 @@ trait Query {
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name ;
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); static SQL without external value; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -414,10 +421,12 @@ trait Query {
             $rq_ids[] = $res['device_id'];
         }
         if (count($rq_ids) > 0) {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- IN() list built by Guard::placeholders() (one %s per id), ids are bound by prepare()
             $rq = $wpdb->prepare(" AND (device_id IN (" . Guard::placeholders($rq_ids, '%s') . "))", $rq_ids);
         }
         $sql = "SELECT device_id, device_name, measure_type, measure_value FROM ".$table_name." WHERE (module_type='NAMain') AND (measure_type LIKE 'loc_%')".$rq ;
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); $rq is built by prepare() above; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -448,6 +457,7 @@ trait Query {
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT device_id, device_name, module_type, measure_timestamp, measure_type, measure_value FROM ".$table_name." WHERE (module_type='NAMain' OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NACurrent') AND (measure_type='temperature' OR measure_type='humidity' OR measure_type='windstrength' OR measure_type='winddirection' OR measure_type='pressure' OR measure_type='pressure_trend' OR measure_type='pressure_sl' OR measure_type LIKE 'loc_%')" ;
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); static SQL without external value; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -525,10 +535,12 @@ trait Query {
                         $old = \DateTime::createFromFormat('Y-m-d', $station['oldest_data']);
                         if ($old !== false && time() - $old->getTimestamp() > 60 * 60 * 24 * 365) {
                             $table_name = $wpdb->prefix.self::live_weather_station_histo_yearly_table();
+                            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
                             $sql = $wpdb->prepare("SELECT module_type, MAX(measure_value) as max_pressure, MIN(measure_value) as min_pressure FROM " . $table_name . " WHERE device_id=%s AND (module_type='NAMain' OR module_type='NACurrent') AND measure_type='pressure_sl' AND measure_set='avg' GROUP BY module_type", $device_id);
                             $cache_id = 'get_min_max_pressure_'.$device_id;
                             $value = Cache::get_query($cache_id);
                             if ($value === false) {
+                                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table yearly history (name from the internal self::live_weather_station_histo_yearly_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; result cached by Cache::get_query()/set_query()
                                 $query = $wpdb->get_results($sql, ARRAY_A);
                                 $min = null;
                                 $max = null;
@@ -575,8 +587,10 @@ trait Query {
     protected function get_operational_station_name($device_id) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT DISTINCT device_name FROM ".$table_name. " WHERE device_id=%s", $device_id);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             if (!isset($query_a[0])) {
@@ -602,8 +616,10 @@ trait Query {
     protected function get_module_measurements($module_id, $obsolescence_filtering=false) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM ".$table_name. " WHERE module_id=%s", $module_id);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -630,8 +646,10 @@ trait Query {
     protected function get_outdoor_measurements($device_id, $obsolescence_filtering=false, $strict_filtering=false) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM ".$table_name. " WHERE device_id=%s AND (module_type='NAMain' OR module_type='NAEphemer' OR module_type='NAComputed' OR module_type='NAPollution' " . ($strict_filtering ? "" : "OR module_type='NACurrent' ") . "OR module_type='NAModule1' OR module_type='NAModule2' OR module_type='NAModule3' OR module_type='NAModule5' OR module_type='NAModule6' OR module_type='NAModule7') ORDER BY module_id ASC", $device_id);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -656,8 +674,10 @@ trait Query {
     protected function get_thunderstorm_measurements($device_id, $obsolescence_filtering=false) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM ".$table_name. " WHERE device_id=%s AND (module_type='NAMain' OR module_type='NAEphemer' OR module_type='NAModule7') ORDER BY module_id ASC", $device_id);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -682,8 +702,10 @@ trait Query {
     protected function get_solar_measurements($device_id, $obsolescence_filtering=false) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM ".$table_name. " WHERE device_id=%s AND (module_type='NAMain' OR module_type='NAEphemer' OR module_type='NACurrent' OR module_type='NAModule5') ORDER BY module_id ASC", $device_id);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -727,8 +749,10 @@ trait Query {
     protected function get_pollution_measurements($device_id, $obsolescence_filtering=false) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM ".$table_name. " WHERE device_id=%s AND (module_type='NAPollution')", $device_id);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -753,8 +777,10 @@ trait Query {
     protected function get_computed_measurements($device_id, $obsolescence_filtering=false) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM ".$table_name. " WHERE device_id=%s AND (module_type='NAComputed')", $device_id);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -779,8 +805,10 @@ trait Query {
     protected function get_ephemeris_measurements($device_id) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM ".$table_name. " WHERE device_id=%s AND (module_type='NAMain' OR module_type='NAEphemer') ORDER BY module_id ASC", $device_id);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -807,11 +835,13 @@ trait Query {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $order = " ORDER BY CASE module_type WHEN 'NAMain' THEN 1 WHEN 'NAModule1' THEN 2 WHEN 'NAModule2' THEN 3 WHEN 'NAModule3' THEN 4 WHEN 'NAModule5' THEN 5 WHEN 'NAModule7' THEN 6 WHEN 'NAModule6' THEN 7 WHEN 'NAComputed' THEN 8 WHEN 'NAModule4' THEN 9 WHEN 'NAEphemer' THEN 10 WHEN 'NACurrent' THEN 11 ELSE 12 END";
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $order is a constant ORDER BY CASE clause without external value, device id is bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE device_id=%s" . $order, $device_id);
         try {
             $cache_id = 'get_all_measurements_'.$device_id;
             $query = Cache::get_query($cache_id);
             if ($query === false) {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; result cached by Cache::get_query()/set_query()
                 $query = (array)$wpdb->get_results($sql);
                 Cache::set_query($cache_id, $query);
             }
@@ -913,8 +943,10 @@ trait Query {
         $sub_attributes = $this->get_sub_attributes($attributes, $full_mode);
         $sub_attributes = array_values($sub_attributes);
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- IN() list built by Guard::placeholders(), the merged array holds exactly one value per placeholder
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE device_id=%s AND module_id=%s AND (measure_type IN (" . Guard::placeholders($sub_attributes, '%s') . "))", array_merge(array($attributes['device_id'], $attributes['module_id']), $sub_attributes));
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -947,8 +979,10 @@ trait Query {
         if ($element === null) {
             return $result;
         }
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- column validated by Guard::ident() against an allowlist, IN() list built by Guard::placeholders(), the merged array holds exactly one value per placeholder
         $sql = $wpdb->prepare("SELECT " . $element . ", module_type" . ($element!="measure_type"?", measure_type":"") . " FROM " . $table_name . " WHERE device_id=%s AND module_id=%s AND (measure_type IN (" . Guard::placeholders($sub_attributes, '%s') . "))", array_merge(array($attributes['device_id'], $attributes['module_id']), $sub_attributes));
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $i = 0;
             foreach ($query as $q) {
@@ -1013,8 +1047,10 @@ trait Query {
     private function _get_oldest_data($station) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT DISTINCT(`timestamp`) FROM ".$table_name. " WHERE device_id=%s ORDER BY `timestamp` ASC LIMIT 3", $station['station_id']);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table yearly history (name from the internal self::live_weather_station_histo_yearly_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $data = array();
@@ -1038,8 +1074,10 @@ trait Query {
     private function _get_youngest_data($station) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT DISTINCT(`timestamp`) FROM ".$table_name. " WHERE device_id=%s ORDER BY `timestamp` DESC LIMIT 3", $station['station_id']);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table yearly history (name from the internal self::live_weather_station_histo_yearly_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $data = array();
@@ -1064,7 +1102,9 @@ trait Query {
         global $wpdb;
         $result = 0;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT COUNT(*) as val FROM " . $table_name . " WHERE measure_type=%s", $type);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table yearly history (name from the internal self::live_weather_station_histo_yearly_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
         $count = $wpdb->get_results($sql, ARRAY_A);
         if ($count) {
             if (is_array($count)) {
@@ -1104,8 +1144,10 @@ trait Query {
     protected function get_station_information_by_station_id($station_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE station_id=%s", $station_id);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -1156,8 +1198,10 @@ trait Query {
     protected function get_station_guid_by_station_id($station_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT guid FROM " . $table_name . " WHERE station_id=%s", $station_id);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -1186,6 +1230,7 @@ trait Query {
         $table_name = $wpdb->prefix . self::live_weather_station_maps_table();
         $sql = "SELECT * FROM " . $table_name . ";";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table maps (name from the internal self::live_weather_station_maps_table() method prefixed by $wpdb->prefix); static SQL without external value; uncached, configuration must be current
             return $wpdb->get_results($sql, ARRAY_A);
 
         } catch (\Exception $ex) {
@@ -1246,8 +1291,10 @@ trait Query {
     protected function get_map_detail($id) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_maps_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE id=%d;", intval($id));
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table maps (name from the internal self::live_weather_station_maps_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
             $result = $wpdb->get_results($sql, ARRAY_A);
             if (count($result) > 0) {
                 return $result[0];
@@ -1292,11 +1339,13 @@ trait Query {
     protected static function get_station($guid) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE guid=%s", $guid);
         try {
             $cache_id = 'get_station'.$guid;
             $query = Cache::get_query($cache_id);
             if ($query === false) {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; result cached by Cache::get_query()/set_query()
                 $query = (array)$wpdb->get_results($sql);
                 Cache::set_query($cache_id, $query);
             }
@@ -1337,6 +1386,7 @@ trait Query {
         }
         if (strpos($id, ':') > 0) {
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); static SQL without external value; uncached, configuration must be current
             $guid = $wpdb->get_var($wpdb->prepare("SELECT guid FROM " . $table_name . " WHERE station_id=%s", $id));
             return ($guid === null ? 0 : (int)$guid);
         }
@@ -1363,6 +1413,7 @@ trait Query {
         }
         else {
             $sql = "SELECT AVG(loc_latitude) as latitude, AVG(loc_longitude) as longitude FROM " . $table_name . " WHERE guid IN (" . Guard::placeholders($guids, '%d') . ");";
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- IN() list built by Guard::placeholders( $guids, %d ) and bound as integers
             $sql = $wpdb->prepare($sql, array_map('intval', array_values($guids)));
             $cache_id = 'stations_barycenter_' . implode('', $guids);
         }
@@ -1370,6 +1421,7 @@ trait Query {
 
             $query = Cache::get_query($cache_id);
             if ($query === false) {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; result cached by Cache::get_query()/set_query()
                 $query = $wpdb->get_results($sql, ARRAY_A);
                 if (count($query) > 0 && isset($query[0]['latitude']) && isset($query[0]['longitude'])) {
                     Cache::set_query($cache_id, $query);
@@ -1397,8 +1449,10 @@ trait Query {
     protected static function get_picture($device_id, $rank=1) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_media_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE device_id=%s AND module_type='NAModuleP' ORDER BY `timestamp` DESC LIMIT %d,1", $device_id, max(0, (int)($rank-1)));
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table media (name from the internal self::live_weather_station_media_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
             $query = $wpdb->get_results($sql, ARRAY_A);
             if (is_array($query) && !empty($query)) {
                 return $query[0];
@@ -1423,11 +1477,13 @@ trait Query {
     protected static function get_video($device_id, $type='none', $rank=1) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_media_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE device_id=%s AND item_type=%s AND module_type='NAModuleV' ORDER BY `timestamp` DESC LIMIT %d,1", $device_id, $type, max(0, (int)($rank-1)));
         try {
             $cache_id = 'get_video_'.$type . '_' . $device_id;
             $query = Cache::get_query($cache_id);
             if ($query === false) {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table media (name from the internal self::live_weather_station_media_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; result cached by Cache::get_query()/set_query()
                 $query = $wpdb->get_results($sql, ARRAY_A);
                 Cache::set_query($cache_id, $query);
             }
@@ -1454,11 +1510,13 @@ trait Query {
     protected static function get_video_by_date($device_id, $date, $type='none') {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_media_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE device_id=%s AND item_type=%s AND `timestamp`=%s AND module_type='NAModuleV'", $device_id, $type, $date);
         try {
             $cache_id = 'get_video_by_date_'.$type . '_' . $device_id;
             $query = Cache::get_query($cache_id);
             if ($query === false) {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table media (name from the internal self::live_weather_station_media_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; result cached by Cache::get_query()/set_query()
                 $query = $wpdb->get_results($sql, ARRAY_A);
                 Cache::set_query($cache_id, $query);
             }
@@ -1483,8 +1541,10 @@ trait Query {
     protected static function get_video_dates($device_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_media_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT DISTINCT `timestamp` FROM " . $table_name . " WHERE device_id=%s AND module_type='NAModuleV' ORDER BY `timestamp` DESC", $device_id);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table media (name from the internal self::live_weather_station_media_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
             $query = $wpdb->get_results($sql, ARRAY_A);
             if (is_array($query) && !empty($query)) {
                 return $query;
@@ -1507,11 +1567,13 @@ trait Query {
     protected static function get_modules_information($device_id) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_module_detail_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE device_id=%s", $device_id);
         try {
             $cache_id = 'get_modules'.$device_id;
             $query = Cache::get_query($cache_id);
             if ($query === false) {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table module details (name from the internal self::live_weather_station_module_detail_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; result cached by Cache::get_query()/set_query()
                 $query = (array)$wpdb->get_results($sql);
                 Cache::set_query($cache_id, $query);
             }
@@ -1547,7 +1609,9 @@ trait Query {
         }
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_background_process_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- IN() list built by Guard::placeholders() (one %s per state), states are bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE state IN (" . Guard::placeholders($states, '%s') . ") ORDER BY priority ASC", $states);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table background_process (name from the internal self::live_weather_station_background_process_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
         return $wpdb->get_results($sql, ARRAY_A);
     }
 
@@ -1561,7 +1625,9 @@ trait Query {
         $states = array('init', 'pause', 'schedule', 'running');
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_background_process_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- IN() list built by Guard::placeholders() (one %s per state), states are bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE state IN (" . Guard::placeholders($states, '%s') . ") ORDER BY priority ASC", $states);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table background_process (name from the internal self::live_weather_station_background_process_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
         return $wpdb->get_results($sql, ARRAY_A);
     }
 
@@ -1601,6 +1667,7 @@ trait Query {
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
         $sql = "SELECT * FROM " . $table_name ;
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); static SQL without external value; uncached, configuration must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -1623,8 +1690,10 @@ trait Query {
     protected function get_infos_station_name_by_guid($guid) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_stations_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT DISTINCT station_name FROM ".$table_name. " WHERE guid=%s", $guid);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             if (!isset($query_a[0])) {
@@ -1648,8 +1717,9 @@ trait Query {
     protected function get_owm_stations_list() {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_stations_table();
-        $sql = "SELECT * FROM " . $table_name . " WHERE station_type=".LIVE_WEATHER_STATION_LOC_SID;
+        $sql = "SELECT * FROM " . $table_name . " WHERE station_type=" . (int)LIVE_WEATHER_STATION_LOC_SID;
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); static SQL without external value; uncached, configuration must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -1685,6 +1755,7 @@ trait Query {
             $cache_id = 'get_stations_list'.$id;
             $query = Cache::get_query($cache_id);
             if ($query === false) {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); $limit is built by prepare() above; result cached by Cache::get_query()/set_query()
                 $query = (array)$wpdb->get_results($sql);
                 Cache::set_query($cache_id, $query);
             }
@@ -1715,9 +1786,11 @@ trait Query {
         }
         else {
             $sql = "SELECT * FROM " . $table_name . " WHERE guid IN (" . Guard::placeholders($guids, '%d') . ") ORDER BY station_name ASC;";
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- IN() list built by Guard::placeholders( $guids, %d ) and bound as integers
             $sql = $wpdb->prepare($sql, array_map('intval', array_values($guids)));
         }
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
             return $wpdb->get_results($sql, ARRAY_A);
         }
         catch(\Exception $ex) {
@@ -1755,8 +1828,10 @@ trait Query {
         else {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
             $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE guid=%s", $guid);
             try {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 $result = array();
@@ -1802,8 +1877,10 @@ trait Query {
         else {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
             $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE guid=%s", $guid);
             try {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 $result = array();
@@ -1848,8 +1925,10 @@ trait Query {
         else {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
             $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE guid=%s", $guid);
             try {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 $result = array();
@@ -1895,8 +1974,10 @@ trait Query {
         else {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
             $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE guid=%s", $guid);
             try {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 $result = array();
@@ -1941,8 +2022,10 @@ trait Query {
         else {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
             $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE guid=%s", $guid);
             try {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 $result = array();
@@ -1987,8 +2070,10 @@ trait Query {
         else {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
             $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE guid=%s", $guid);
             try {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 $result = array();
@@ -2034,8 +2119,10 @@ trait Query {
         else {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
             $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE guid=%s", $guid);
             try {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 $result = array();
@@ -2081,8 +2168,10 @@ trait Query {
         else {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
             $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE guid=%s", $guid);
             try {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 $result = array();
@@ -2108,8 +2197,10 @@ trait Query {
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
             $sql = "SELECT * FROM " . $table_name . " WHERE guid IN (" . Guard::placeholders($guids, '%d') . ")";
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- IN() list built by Guard::placeholders( $guids, %d ) and bound as integers
             $sql = $wpdb->prepare($sql, array_map('intval', array_values($guids)));
             try {
+                // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
                 $query = (array)$wpdb->get_results($sql);
                 $query_a = (array)$query;
                 $result = array();
@@ -2136,8 +2227,10 @@ trait Query {
     protected function get_all_id_by_type($type) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT station_id FROM " . $table_name . " WHERE station_type=%d", $type);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -2160,8 +2253,10 @@ trait Query {
     protected function get_all_stations_by_type($type) {
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE station_type=%d", $type);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal self::live_weather_station_stations_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, configuration must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -2436,6 +2531,7 @@ trait Query {
                         }
                     }
                     if (count($l) > 0) {
+                        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- column validated by Guard::ident() against an allowlist, IN() list built by Guard::placeholders(), values bound by prepare()
                         $w[] = '`' . $column . '` IN (' . $wpdb->prepare(Guard::placeholders($l, '%s'), $l) . ')';
                     }
                     else {
@@ -2443,6 +2539,7 @@ trait Query {
                     }
                 }
                 else {
+                    // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- column validated by Guard::ident() against an allowlist, value bound by prepare()
                     $w[] = $wpdb->prepare('`' . $column . '`=%s', $filter);
                 }
             }
@@ -2468,6 +2565,7 @@ trait Query {
         $table_name = $wpdb->prefix.self::live_weather_station_measurements_table();
         $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name ;
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements (name from the internal self::live_weather_station_measurements_table() method prefixed by $wpdb->prefix); static SQL without external value; uncached, live measurements must be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $query_t = array();
@@ -2484,6 +2582,7 @@ trait Query {
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
         $sql = "SELECT DISTINCT device_id, device_name FROM ".$table_name ;
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table log (name from the internal self::live_weather_station_log_table() method prefixed by $wpdb->prefix); static SQL without external value; uncached, the log must always be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $query_t = array();
@@ -2525,6 +2624,7 @@ trait Query {
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
         $sql = "SELECT * FROM " . $table_name . " " . $this->get_log_where_clause($filters) . " ORDER BY id DESC " . $limit;
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table log (name from the internal self::live_weather_station_log_table() method prefixed by $wpdb->prefix); where clause built by get_log_where_clause() (columns allowlisted by Guard::ident, values prepared), LIMIT prepared; uncached, the log must always be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -2554,6 +2654,7 @@ trait Query {
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
         $sql = "SELECT COUNT(*) FROM " . $table_name . " " . $this->get_log_where_clause($filters);
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table log (name from the internal self::live_weather_station_log_table() method prefixed by $wpdb->prefix); where clause built by get_log_where_clause() (columns allowlisted by Guard::ident, values prepared), LIMIT prepared; uncached, the log must always be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $query_t = isset($query_a[0]) ? (array)$query_a[0] : array();
@@ -2575,8 +2676,10 @@ trait Query {
     protected function get_log_detail($log_entry) {
         global $wpdb;
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- custom plugin table, name from the internal self::live_weather_station_*_table() method prefixed by $wpdb->prefix, values bound by prepare()
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE id=%d", intval($log_entry));
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table log (name from the internal self::live_weather_station_log_table() method prefixed by $wpdb->prefix); SQL prepared above with bound values; uncached, the log must always be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $result = array();
@@ -2603,6 +2706,7 @@ trait Query {
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
         $sql = "SELECT DISTINCT service FROM ".$table_name . " ORDER BY service ASC";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table log (name from the internal self::live_weather_station_log_table() method prefixed by $wpdb->prefix); static SQL without external value; uncached, the log must always be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $query_t = array();
@@ -2633,6 +2737,7 @@ trait Query {
         $table_name = $wpdb->prefix.self::live_weather_station_log_table();
         $sql = "SELECT DISTINCT `system` FROM ".$table_name . " ORDER BY `system` ASC";
         try {
+            // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table log (name from the internal self::live_weather_station_log_table() method prefixed by $wpdb->prefix); static SQL without external value; uncached, the log must always be current
             $query = (array)$wpdb->get_results($sql);
             $query_a = (array)$query;
             $query_t = array();
@@ -2659,6 +2764,7 @@ trait Query {
     private static function get_table($table) {
         global $wpdb;
         $sql = "SELECT * FROM " . $wpdb->prefix . $table;
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table, name passed by internal callers only (self::live_weather_station_*_table() constants), prefixed by $wpdb->prefix; static SQL without external value; uncached because used for backup/export
         return $wpdb->get_results($sql, ARRAY_A);
     }
 
@@ -2673,6 +2779,7 @@ trait Query {
         $result = 0;
         global $wpdb;
         $sql = "SELECT COUNT(*) as val FROM " . $wpdb->prefix . $table;
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table, name passed by internal callers only (self::live_weather_station_*_table() constants), prefixed by $wpdb->prefix; static SQL without external value; uncached because used for backup/export
         $count = $wpdb->get_results($sql, ARRAY_A);
         if ($count) {
             if (is_array($count)) {
@@ -2861,6 +2968,7 @@ trait Query {
         }
         $table_name = $wpdb->prefix . self::live_weather_station_maps_table();
         $sql = 'TRUNCATE TABLE `' . $table_name . '`';
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table maps (name from the internal ..._table() method, quoted with backticks), static TRUNCATE without external value, write operation so no caching
         $wpdb->query($sql);
         foreach ($rows as $row) {
             self::insert_update_table(self::live_weather_station_maps_table(), $row);
@@ -2885,6 +2993,7 @@ trait Query {
         }
         $table_name = $wpdb->prefix . self::live_weather_station_module_detail_table();
         $sql = 'TRUNCATE TABLE `' . $table_name . '`';
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table module_detail (name from the internal ..._table() method, quoted with backticks), static TRUNCATE without external value, write operation so no caching
         $wpdb->query($sql);
         foreach ($rows as $row) {
             self::insert_update_table(self::live_weather_station_module_detail_table(), $row);
@@ -2918,6 +3027,7 @@ trait Query {
         }
         $table_name = $wpdb->prefix . self::live_weather_station_stations_table();
         $sql = 'TRUNCATE TABLE `' . $table_name . '`';
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table stations (name from the internal ..._table() method, quoted with backticks), static TRUNCATE without external value, write operation so no caching
         $wpdb->query($sql);
         foreach ($rows as $row) {
             unset($row['last_refresh']);

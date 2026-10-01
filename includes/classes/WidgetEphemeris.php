@@ -39,7 +39,7 @@ class Ephemeris extends Base {
         parent::__construct(
             'Live_Weather_Station_Widget_Ephemeris',
             '<>🌒 ' .  __( 'Ephemeris' , 'live-weather-station'),
-            array( 'description' => sprintf(__('Display ephemeris for sun and moon at the location of a station added to %s.' , 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME))
+            array( 'description' => sprintf(/* translators: %s: plugin name */ __('Display ephemeris for sun and moon at the location of a station added to %s.' , 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME))
         );
         if ( is_admin() || is_blog_admin()) {
             add_action( 'admin_enqueue_scripts', function () {wp_enqueue_script( 'wp-color-picker' );});
@@ -234,7 +234,7 @@ class Ephemeris extends Base {
     public function update($new_instance, $old_instance) {
         $instance = $this->_get_instance($old_instance);
         $new_instance = $this->_get_instance($new_instance);
-        $instance['title'] = strip_tags($new_instance['title']);
+        $instance['title'] = wp_strip_all_tags($new_instance['title']);
         $instance['subtitle'] = absint($new_instance['subtitle']);
         $instance['format'] = absint($new_instance['format']);
         $instance['station'] = Guard::token($new_instance['station'], 'N/A');

@@ -63,7 +63,7 @@ class WeatherFlowWindFixer extends Process {
      * @since 3.8.0
      */
     protected function description() {
-        return sprintf(__('This fix allows %s to correctly handle current, daily and historical wind & gust strength with WeatherFlow stations.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
+        return sprintf(/* translators: %s: plugin name */ __('This fix allows %s to correctly handle current, daily and historical wind & gust strength with WeatherFlow stations.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
     }
 
     /**
@@ -166,7 +166,9 @@ class WeatherFlowWindFixer extends Process {
      */
     private function fix_table($station_id, $table_name) {
         global $wpdb;
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name passed by fix_table() callers from self::live_weather_station_histo_daily_table() and ..._yearly_table(), prefixed by $wpdb->prefix, device id bound by prepare()
         $sql = $wpdb->prepare("UPDATE " . $wpdb->prefix . $table_name . " SET measure_value=measure_value * 3.6 WHERE device_id=%s AND module_type ='NAModule2' AND (measure_type='windstrength' OR measure_type='guststrength')", $station_id);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin history table, SQL prepared above; this is a write (UPDATE) so no caching applies
         $wpdb->query($sql);
     }
 

@@ -38,7 +38,7 @@ if ($tables == '' || !$okinfo) {
 <?php if ($okinfo) { ?>
     <div id="normal-sortables" class="meta-box-sortables ui-sortable">
         <div id="referrers" class="postbox ">
-            <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
+            <div class="handlediv" title="<?php echo esc_attr__('Click to toggle', 'live-weather-station'); ?>"><br></div>
             <h3 class="hndle"><span><?php esc_html_e('PHP configuration', 'live-weather-station' );?></span></h3>
             <div class="inside">
                 <div class='phpinfodisplay'>

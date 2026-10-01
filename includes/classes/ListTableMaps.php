@@ -64,7 +64,7 @@ class Maps extends Base {
         $actions['view'] = '<a href="' . esc_url('?page=lws-maps&action=form&tab=view&service=' . $type . '&mid=' . $mid) . '">' . esc_html__('View', 'live-weather-station') . '</a>';
         $actions['edit'] = '<a href="' . esc_url('?page=lws-maps&action=form&tab=add-edit&service=' . $type . '&mid=' . $mid) . '">' . esc_html__('Modify', 'live-weather-station') . '</a>';
         $actions['delete'] = '<a href="' . esc_url('?page=lws-maps&action=form&tab=delete&service=map&mid=' . $mid) . '">' . esc_html__('Remove', 'live-weather-station') . '</a>';
-        $id = esc_html(sprintf(__('Map ID #%s'), $mid));
+        $id = esc_html(sprintf(/* translators: %s: map ID */ __('Map ID #%s', 'live-weather-station'), $mid));
         $name = '<a class="row-title" href="' . esc_url('?page=lws-maps&action=form&tab=add-edit&service=' . $type . '&mid=' . $mid) . '"' . ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '') . '>' . esc_html($item['name']) . '</a>';
         return $this->get_icon($type) . '&nbsp;' . sprintf('%1$s <br /><span style="color:silver">&nbsp;%2$s</span>%3$s', $name, $id, $this->row_actions($actions));
     }
@@ -159,11 +159,13 @@ class Maps extends Base {
     }
 
     public function usort_reorder($a,$b){
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only sort parameter of the list table (sanitize_key), it changes no state
         $orderby = (!empty($_REQUEST['orderby'])) ? sanitize_key($_REQUEST['orderby']) : 'name';
         if (!array_key_exists($orderby, $a)) {
             $orderby = 'name';
         }
-        $order = (!empty($_REQUEST['order']) && strtolower($_REQUEST['order']) === 'desc') ? 'desc' : 'asc';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only sort direction of the list table, reduced to 'asc' or 'desc', it changes no state
+        $order = (!empty($_REQUEST['order']) && strtolower(sanitize_key(wp_unslash($_REQUEST['order']))) === 'desc') ? 'desc' : 'asc';
         $result = strcmp(strtolower($a[$orderby]), strtolower($b[$orderby]));
         return ($order==='asc') ? $result : -$result;
     }
@@ -179,7 +181,9 @@ class Maps extends Base {
 
     protected function init_values() {
         $this->filters = array();
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only pagination parameter of the list table (intval), it changes no state
         if (isset($_GET['limit'])) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- read-only pagination parameter of the list table (intval), it changes no state
             $this->limit = intval($_GET['limit']);
             if (!$this->limit) {
                 $this->limit = 25;
@@ -237,7 +241,7 @@ class Maps extends Base {
         foreach ($_disp as $d) {
             $l = array();
             $l['value'] = $d;
-            $l['text'] = sprintf(esc_html__('Show %d lines per page', 'live-weather-station'), $d);
+            $l['text'] = sprintf(/* translators: %d: number of lines per page */ esc_html__('Show %d lines per page', 'live-weather-station'), $d);
             $l['selected'] = ($d == $this->limit ? 'selected="selected" ' : '');
             $result[] = $l;
         }

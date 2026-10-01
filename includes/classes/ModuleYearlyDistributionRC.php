@@ -80,7 +80,7 @@ class DistributionRC extends \WeatherStation\Engine\Module\Maintainer {
             $group .= $this->get_key_value_option_select('yearly-distributionrc-measurements-dot-style-' . $i . '-' . $this->station_guid, __('Values display', 'live-weather-station'), $this->get_dot_style_js_array(), true, 'none', true, false);
             $group .= $this->get_key_value_option_select('yearly-distributionrc-measurements-line-style-' . $i . '-' . $this->station_guid, __('Line style', 'live-weather-station'), $this->get_line_style_js_array(), true, 'solid', true, false);
             $group .= $this->get_key_value_option_select('yearly-distributionrc-measurements-line-size-' . $i . '-' . $this->station_guid, __('Line size', 'live-weather-station'), $this->get_line_size_js_array(), true, 'regular', true, false);
-            $a_group[] = array('content' => $group, 'name' => sprintf(__('Angle %s', 'live-weather-station'), $i));
+            $a_group[] = array('content' => $group, 'name' => sprintf(/* translators: %s: angle value */ __('Angle %s', 'live-weather-station'), $i));
         }
         $content .= $this->get_group('yearly-distributionrc-measurements-measure-group-', $a_group);
         $content .= '</tbody></table>';

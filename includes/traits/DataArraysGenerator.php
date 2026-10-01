@@ -2028,7 +2028,7 @@ trait Generator {
         // Sliding day
         $period = array();
         for ($i=1; $i<=14; $i++) {
-            $period[] = array( 'timelapse-'.$i, sprintf(_n('%s day back', '%s days back', $i, 'live-weather-station'), $i));
+            $period[] = array( 'timelapse-'.$i, sprintf(/* translators: %s: number of days */ _n('%s day back', '%s days back', $i, 'live-weather-station'), $i));
         }
         $result[] = array('sliding-timelapse',  $period);
 
@@ -2333,7 +2333,7 @@ trait Generator {
         $result = array();
         $time = array (5, 10, 15, 20, 25, 30);
         foreach ($time as $t) {
-            $result[] = array('res-'.$t,  sprintf(__('%s minutes', 'live-weather-station'), $t));
+            $result[] = array('res-'.$t,  sprintf(/* translators: %s: number of minutes */ __('%s minutes', 'live-weather-station'), $t));
         }
         return $result;
     }
@@ -2408,7 +2408,7 @@ trait Generator {
         for ($i = 0; $i < 5; $i++) {
             if ($level > $i) {
                 $n = pow(2, $i + 2) ;
-                $result[] = array($n . 's',  sprintf(_n('%s sector', '%s sectors', $n,  'live-weather-station'), $n));
+                $result[] = array($n . 's',  sprintf(/* translators: %s: number of sectors */ _n('%s sector', '%s sectors', $n,  'live-weather-station'), $n));
             }
         }
         return $result;
@@ -2592,7 +2592,7 @@ trait Generator {
     protected function get_color_threshold_js_array() {
         $result = array();
         for ($i=3; $i<9; $i++) {
-            $result[] = array('color-step-' . $i,  sprintf(_n('%s step', '%s steps', $i, 'live-weather-station'), $i));
+            $result[] = array('color-step-' . $i,  sprintf(/* translators: %s: number of color steps */ _n('%s step', '%s steps', $i, 'live-weather-station'), $i));
         }
         return $result;
     }
@@ -2842,12 +2842,12 @@ trait Generator {
     protected function get_fa_mode_js_array() {
         $theme = wp_get_theme();
         $result = array();
-        $result[] = array(0, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, 4));
-        $result[] = array(1, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, 5, 'CSS'));
-        $result[] = array(2, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, 5, 'JS+SVG'));
-        $result[] = array(3, sprintf(__('%1$s outputs Font Awesome %2$s', 'live-weather-station'), $theme->name, 4));
-        $result[] = array(4, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), $theme->name, 5, 'CSS'));
-        $result[] = array(5, sprintf(__('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), $theme->name, 5, 'JS+SVG'));
+        $result[] = array(0, sprintf(/* translators: 1: plugin name, 2: Font Awesome major version number */ __('%1$s outputs Font Awesome %2$s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, 4));
+        $result[] = array(1, sprintf(/* translators: 1: plugin name, 2: Font Awesome major version number, 3: output technology (CSS) */ __('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, 5, 'CSS'));
+        $result[] = array(2, sprintf(/* translators: 1: plugin name, 2: Font Awesome major version number, 3: output technology (JS+SVG) */ __('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME, 5, 'JS+SVG'));
+        $result[] = array(3, sprintf(/* translators: 1: theme name, 2: Font Awesome major version number */ __('%1$s outputs Font Awesome %2$s', 'live-weather-station'), $theme->name, 4));
+        $result[] = array(4, sprintf(/* translators: 1: theme name, 2: Font Awesome major version number, 3: output technology (CSS) */ __('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), $theme->name, 5, 'CSS'));
+        $result[] = array(5, sprintf(/* translators: 1: theme name, 2: Font Awesome major version number, 3: output technology (JS+SVG) */ __('%1$s outputs Font Awesome %2$s as %3$s', 'live-weather-station'), $theme->name, 5, 'JS+SVG'));
         return $result;
     }
 
@@ -3155,7 +3155,7 @@ trait Generator {
         $result['csv'] = array('name' => 'CSV', 'description' => __('A text file format, presenting the data as lines of comma-separated values. This type of format can be read by the majority of spreadsheet software (Calc, Excel, Numbers, etc.) and allows all the data manipulation you want.', 'live-weather-station'));
         $result['dsvp'] = array('name' => 'DSV (pipe)', 'description' => __('A text file format, presenting the data as lines of pipe-separated values. You can use it for plain text processing.', 'live-weather-station'));
         $result['dsvs'] = array('name' => 'DSV (semicolon)', 'description' => __('A text file format, presenting the data as lines of semicolon-separated values. You can use it for plain text processing.', 'live-weather-station'));
-        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(__('A standard format used by %s to allow export/import between different WordPress instances. If you want to save your historical data so you can import it into another WordPress site (or another station), this is the ideal format.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));
+        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(/* translators: %s: plugin name */ __('A standard format used by %s to allow export/import between different WordPress instances. If you want to save your historical data so you can import it into another WordPress site (or another station), this is the ideal format.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));
         $result['tsv'] = array('name' => 'TSV', 'description' => __('A text file format, presenting the data as lines of tab-separated values. You can use it for plain text processing.', 'live-weather-station'));
         return $result;
     }
@@ -3179,7 +3179,7 @@ trait Generator {
      */
     public static function _get_import_formats_array($service = 'none') {
         $result = array();
-        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(__('Import from a file previously exported by %s.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));
+        $result['ndjson'] = array('name' => 'ND-JSON', 'description' => sprintf(/* translators: %s: plugin name */ __('Import from a file previously exported by %s.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));
         if ($service === 'all' || $service === 'netatmo' || $service === 'netatmohc') {
             $result['netatmo'] = array('name' => __('Netatmo cloud services', 'live-weather-station'), 'description' => __('Import data stored by Netatmo for your station or device.', 'live-weather-station'));
         }
@@ -3519,7 +3519,7 @@ trait Generator {
         $min = max(0, (int)$min);
         $max = min($min + 30, (int)$max);
         for ($i=$min; $i<=$max; $i++) {
-            $result[] = array($i,  sprintf(__('Level %s', 'live-weather-station'), $i));
+            $result[] = array($i,  sprintf(/* translators: %s: level number */ __('Level %s', 'live-weather-station'), $i));
         }
         return $result;
     }

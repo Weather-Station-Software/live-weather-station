@@ -192,7 +192,9 @@ abstract class NetatmoImporter extends Process {
         $old_dates = array();
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_measurements_table();
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- table name from self::live_weather_station_measurements_table() prefixed by $wpdb->prefix, station id bound by prepare()
         $sql = $wpdb->prepare("SELECT DISTINCT device_name, module_id, module_type, module_name FROM " . $table_name . " WHERE device_id = %s ORDER BY module_type ASC", $this->params['init']['station_id']);
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, PluginCheck.Security.DirectDB.UnescapedDBParameter -- custom plugin table measurements, SQL prepared above; uncached because the import must list the current modules
         $rows = $wpdb->get_results($sql, ARRAY_A);
         $this->params['todo_ext'] = array();
         $this->params['todo_int'] = array();

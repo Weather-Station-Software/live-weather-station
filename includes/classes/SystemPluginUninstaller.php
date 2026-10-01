@@ -65,6 +65,7 @@ class Uninstaller {
             '\_site\_transient\_timeout\_lws\_rl\_%',
         );
         foreach ($patterns as $pattern) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- WordPress options table (core $wpdb->options) cleanup at uninstall, pattern bound by prepare(); write operation, so no caching applies
             $wpdb->query($wpdb->prepare("DELETE FROM " . $wpdb->options . " WHERE option_name LIKE %s", $pattern));
         }
     }
@@ -81,6 +82,7 @@ class Uninstaller {
     public static function site_tables($tables, $site_id) {
         global $wpdb;
         $like = $wpdb->esc_like($wpdb->get_blog_prefix($site_id) . 'live_weather_station') . '%';
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- schema lookup (SHOW TABLES) of the plugin tables of a deleted site on wpmu_drop_tables, pattern bound by prepare(); runs once per site deletion, so caching is pointless
         foreach ((array)$wpdb->get_col($wpdb->prepare('SHOW TABLES LIKE %s', $like)) as $table) {
             $tables[$table] = $table;
         }
