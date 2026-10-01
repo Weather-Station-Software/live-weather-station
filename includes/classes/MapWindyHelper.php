@@ -63,6 +63,7 @@ class WindyHandling extends BaseHandling {
         $result = array();
         $result['controls'] = $this->map_params['specific']['controls'];
         $result['options'] = $this->map_params['specific']['options'];
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- Only called by MapBaseHelper::save_map(), itself called by MapHelper::edit_map() after wp_verify_nonce() and the capability check.
         if (array_key_exists('controls-zoom', $_POST)) {
             $result['controls']['zoom'] = ($_POST['controls-zoom'] == 'on');
         }
@@ -74,17 +75,17 @@ class WindyHandling extends BaseHandling {
         }
         if (array_key_exists('controls-footer', $_POST)) {
             if (in_array($_POST['controls-footer'], array('none', 'legend', 'calendar', 'both'))) {
-                $result['controls']['footer'] = $_POST['controls-footer'];
+                $result['controls']['footer'] = sanitize_text_field(wp_unslash($_POST['controls-footer']));
             }
         }
         if (array_key_exists('options-overlay', $_POST)) {
             if (in_array($_POST['options-overlay'], array('wind', 'temp', 'rain', 'clouds', 'pressure', 'currents', 'waves'))) {
-                $result['options']['overlay'] = $_POST['options-overlay'];
+                $result['options']['overlay'] = sanitize_text_field(wp_unslash($_POST['options-overlay']));
             }
         }
         if (array_key_exists('options-isolines', $_POST)) {
             if (in_array($_POST['options-isolines'], array('none', 'pressure', 'temp', 'deg0', 'gh'))) {
-                $result['options']['isolines'] = $_POST['options-isolines'];
+                $result['options']['isolines'] = sanitize_text_field(wp_unslash($_POST['options-isolines']));
             }
         }
         if (array_key_exists('options-animation', $_POST)) {
@@ -93,6 +94,7 @@ class WindyHandling extends BaseHandling {
         if (array_key_exists('options-graticule', $_POST)) {
             $result['options']['graticule'] = ($_POST['options-graticule'] == 'on');
         }
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         return $result;
     }
 

@@ -707,7 +707,8 @@ abstract class Maintainer {
         $title = __('No data compilation', 'live-weather-station');
         $url = live_weather_station_get_admin_page_url('lws-settings', null, 'history');
         $s = sprintf('<a href="%s">%s</a>', esc_url($url), esc_html__('right option', 'live-weather-station'));
-        $content = sprintf(__('%s is not set to compile daily data and, for this reason, it is not possible to generate shortcodes for these data. To compile daily data, please set the %s.', 'live-weather-station' ), LIVE_WEATHER_STATION_PLUGIN_NAME, $s);
+        /* translators: 1: name of this plugin, 2: link to the history settings */
+        $content = sprintf(__('%1$s is not set to compile daily data and, for this reason, it is not possible to generate shortcodes for these data. To compile daily data, please set the %2$s.', 'live-weather-station' ), LIVE_WEATHER_STATION_PLUGIN_NAME, $s);
         return $this->get_box('lws-error-id', $title, $content);
     }
 
@@ -721,7 +722,8 @@ abstract class Maintainer {
         $title = __('No data compilation', 'live-weather-station');
         $url = live_weather_station_get_admin_page_url('lws-settings', null, 'history');
         $s = sprintf('<a href="%s">%s</a>', esc_url($url), esc_html__('right option', 'live-weather-station'));
-        $content = sprintf(__('%s is not set to compile historical data and, for this reason, it is not possible to generate shortcodes for these data. To compile historical data, please set the %s.', 'live-weather-station' ), LIVE_WEATHER_STATION_PLUGIN_NAME, $s);
+        /* translators: 1: name of this plugin, 2: link to the history settings */
+        $content = sprintf(__('%1$s is not set to compile historical data and, for this reason, it is not possible to generate shortcodes for these data. To compile historical data, please set the %2$s.', 'live-weather-station' ), LIVE_WEATHER_STATION_PLUGIN_NAME, $s);
         return $this->get_box('lws-error-id', $title, $content);
     }
 
@@ -733,6 +735,7 @@ abstract class Maintainer {
      */
     private function get_no_history_box() {
         $title = __('No data yet', 'live-weather-station');
+        /* translators: %s: name of this plugin */
         $content = sprintf(__('%s collects and compiles weather data for this station but, for now, there is not enough historical data to display graphs. Please, come back in 24-36 hours', 'live-weather-station' ), LIVE_WEATHER_STATION_PLUGIN_NAME);
         return $this->get_box('lws-error-id', $title, $content);
     }
@@ -764,7 +767,7 @@ abstract class Maintainer {
         $result .= '</div>';
         $result .= '</div>';
         $result .= '</div>';
-        echo $result;
+        echo $result; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- markup built by get_box() (id, title, text escaped there) around translated texts whose dynamic parts (plugin name, link) are escaped above; not run through kses because get_box() contains a button
     }
 
     /**
@@ -843,7 +846,7 @@ abstract class Maintainer {
                 $result .= '</div>';
         }
         $result .= '</div>';
-        echo $result;
+        echo $result; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- layout markup around the abstract get_datasource()/get_parameters()/get_script()/get_preview() builders of the Module* subclasses, which escape their own parts and print inline script and form controls, so kses cannot be used here
     }
 
     /**

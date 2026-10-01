@@ -82,16 +82,18 @@ class StamenHandling extends BaseHandling {
         $result = array();
         $result['controls'] = $this->map_params['specific']['controls'];
         $result['options'] = $this->map_params['specific']['options'];
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- Only called by MapBaseHelper::save_map(), itself called by MapHelper::edit_map() after wp_verify_nonce() and the capability check.
         if (array_key_exists('controls-zoom', $_POST)) {
             $result['controls']['zoom'] = ($_POST['controls-zoom'] == 'on');
         }
         if (array_key_exists('options-overlay', $_POST)) {
             // The caller (MapHelper::edit_map) has already checked the capability and the nonce.
-            $overlay = is_string($_POST['options-overlay']) ? wp_unslash($_POST['options-overlay']) : '';
+            $overlay = is_string($_POST['options-overlay']) ? sanitize_text_field(wp_unslash($_POST['options-overlay'])) : '';
             if (in_array($overlay, self::$overlays, true)) {
                 $result['options']['overlay'] = $overlay;
             }
         }
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         return $result;
     }
 

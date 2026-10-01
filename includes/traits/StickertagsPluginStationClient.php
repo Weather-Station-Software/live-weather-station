@@ -43,7 +43,7 @@ trait StationClient {
         if (!$weather) {
             throw new \Exception('Bad file format.');
         }
-        Logger::debug($this->facility, $this->service, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
+        Logger::debug($this->facility, $this->service, null, null, null, null, null, substr(print_r($weather, true), 0, 4000)); // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r() with the return flag only builds a string for Logger::debug(), nothing is printed
         $ttime = strtolower($weather[0]);
         foreach (array('am', 'a') as $ampm) {
             if (strpos($ttime, $ampm) !== false) {
