@@ -16,8 +16,6 @@ use WeatherStation\System\URL\Handling as URL;
  */
 abstract class Framework {
 
-    use URL;
-
     protected $type = 'unknown';
     protected $subformat = 'standard';
     protected $params = array();
@@ -28,7 +26,8 @@ abstract class Framework {
      * @since 3.0.0
      */
     public static function apply_configuration() {
-        self::apply();
+        // The trait is declared at call time: generator.php loads this class before WordPress (and so the autoloader) exists.
+        (new class { use URL; })::apply();
     }
 
     /**
