@@ -112,6 +112,22 @@ class Handling {
     }
 
     /**
+     * Get the directory where the partial translation files are stored (in uploads: the plugin directory is replaced at each update).
+     *
+     * @param bool $create Optional. Create the directory if it does not exist.
+     * @return string The directory, with a trailing slash.
+     * @since 3.9.0
+     */
+    public static function get_languages_dir($create = false) {
+        $upload = wp_upload_dir(null, false);
+        $dir = trailingslashit($upload['basedir']) . LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN . '/languages/';
+        if ($create && !is_dir($dir)) {
+            wp_mkdir_p($dir);
+        }
+        return $dir;
+    }
+
+    /**
      * Get the mo file for current translation.
      *
      * @return string The full filename for current mo file.
@@ -122,7 +138,7 @@ class Handling {
         if (!EnvManager::is_plugin_in_production_mode()) {
             $branch = 'dev';
         }
-        return LIVE_WEATHER_STATION_LANGUAGES_DIR . LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . live_weather_station_get_display_locale() . '.mo';
+        return self::get_languages_dir() . LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . live_weather_station_get_display_locale() . '.mo';
     }
 
     /**
@@ -136,20 +152,17 @@ class Handling {
         if (!EnvManager::is_plugin_in_production_mode()) {
             $branch = 'dev';
         }
-        $target = LIVE_WEATHER_STATION_LANGUAGES_DIR . LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-??_??.mo';
+        $target = self::get_languages_dir() . LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-??_??.mo';
         $files = glob($target);
-        $result = array_map('unlink', (is_array($files) ? $files : array()));
         $ok = true;
-        if (count($result) > 0) {
-            foreach ($result as $r) {
-                if (!$r) {
-                    $ok = false;
-                    break;
-                }
+        foreach ((is_array($files) ? $files : array()) as $file) {
+            wp_delete_file($file);
+            if (file_exists($file)) {
+                $ok = false;
             }
         }
         if (!$ok) {
-            Logger::error($this->service_name, null, null, null, null, null, 1, 'Unable to delete old translation files in /languages.');
+            Logger::error($this->service_name, null, null, null, null, null, 1, 'Unable to delete old translation files in the uploads directory.');
         }
         Cache::invalidate_i18n('last_modified_' . $this->locale);
         return $ok;
@@ -166,7 +179,11 @@ class Handling {
     public function download_mo_file($target, $branch = 'stable') {
         if ($url = $this->get_mo_file_url($branch)) {
             if (!function_exists('download_url')) {
-                Logger::alert('Core', null, null, null, null, null, 666, 'Unable to use download_url function. Your server lacks of free memory or disk space, or is overloaded.');
+                // Not loaded in cron or front-end requests.
+                require_once ABSPATH . 'wp-admin/includes/file.php';
+            }
+            if (!function_exists('download_url')) {
+                Logger::alert('Core', null, null, null, null, null, 666, 'Unable to load the WordPress file download functions (download_url).');
                 Logger::error($this->service_name, null, null, null, null, null, 666, $this->locale_name . ' translation file can not be downloaded from WordPress.org.');
                 return false;
             }
@@ -177,6 +194,11 @@ class Handling {
                 return false;
             }
             $file = download_url($url, 30);
+            if (!wp_mkdir_p($target)) {
+                Logger::error($this->service_name, null, null, null, null, null, 1, 'Unable to create the translation files directory in uploads.');
+                wp_delete_file($file);
+                return false;
+            }
             $target .= LIVE_WEATHER_STATION_PLUGIN_TEXT_DOMAIN . '-' . $branch . '-' . $this->locale . '.mo';
             if (is_wp_error($file)) {
                 Logger::error($this->service_name, null, null, null, null, null, 300, 'Unable to download ' . $this->locale_name . ' translation file from WordPress.org. Error was: ' . substr(sanitize_text_field(implode(' / ', $file->get_error_messages())), 0, 300));
@@ -191,7 +213,7 @@ class Handling {
                     return false;
                 }
                 if (!copy($file, $target)) {
-                    Logger::error($this->service_name, null, null, null, null, null, 1, 'Unable to copy ' . $this->locale_name . ' translation file to /languages directory.');
+                    Logger::error($this->service_name, null, null, null, null, null, 1, 'Unable to copy ' . $this->locale_name . ' translation file to the uploads directory.');
                     wp_delete_file($file);
                     return false;
                 }
@@ -217,7 +239,7 @@ class Handling {
                 if (!EnvManager::is_plugin_in_production_mode()) {
                     $branch = 'dev';
                 }
-                if ($this->download_mo_file(LIVE_WEATHER_STATION_LANGUAGES_DIR, $branch)) {
+                if ($this->download_mo_file(self::get_languages_dir(), $branch)) {
                     Cache::set_i18n('last_modified_' . $this->locale, $this->last_modified);
                 }
             }

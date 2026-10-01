@@ -34,7 +34,6 @@ class Outdoor extends Base {
      * @since 1.0.0
      */
     public function __construct() {
-        load_plugin_textdomain( 'live-weather-station' );
         parent::__construct(
             'Live_Weather_Station_Widget_Outdoor',
             '<>🌤 ' . __( 'Outdoor weather summary' , 'live-weather-station'),

@@ -34,7 +34,6 @@ class Fire extends Base {
      * @since 3.1.0
      */
     public function __construct() {
-        load_plugin_textdomain( 'live-weather-station' );
         parent::__construct(
             'Live_Weather_Station_Widget_Fire',
             '<>🔥 ' . __( 'Fire weather' , 'live-weather-station'),

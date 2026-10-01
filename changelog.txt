@@ -46,6 +46,8 @@
 * Improvement: the event log of a refused or failed public feed request keeps an anonymized IP address and no browser identification.
 * Improvement: the copy buttons use the clipboard.js shipped with WordPress instead of an own copy.
 * Bug fix: a measurement trend reported a decrease when the value had risen by more than 2 percent.
+* Improvement: translations are loaded by WordPress itself, and the partial translation files downloaded by the plugin are stored in the uploads folder instead of the plugin folder (they survive plugin updates).
+* Bug fix: the automatic download of the partial translation works again when run by WP-Cron.
 
 #3.8.14 / September 6th, 2023
 * Improvement: full support for WordPress 6.3.x

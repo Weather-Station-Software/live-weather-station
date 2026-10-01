@@ -35,7 +35,6 @@ class Psychrometry extends Base {
      * @since 3.3.0
      */
     public function __construct() {
-        load_plugin_textdomain( 'live-weather-station' );
         parent::__construct(
             'Live_Weather_Station_Widget_Psychrometry',
             '<>🌡 ' .__( 'Psychrometry' , 'live-weather-station'),

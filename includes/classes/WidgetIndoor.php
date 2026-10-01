@@ -34,7 +34,6 @@ class Indoor extends Base {
      * @since 3.1.0
      */
     public function __construct() {
-        load_plugin_textdomain( 'live-weather-station' );
         parent::__construct(
             'Live_Weather_Station_Widget_Indoor',
             '<>🛏 ' . __( 'Indoor comfort' , 'live-weather-station'),
