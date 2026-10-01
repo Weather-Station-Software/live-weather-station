@@ -6,6 +6,9 @@
  * @since 3.1.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div style="padding:20px;">

@@ -8,6 +8,9 @@
 
 use WeatherStation\System\Storage\Manager;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div id="normal-sortables" class="meta-box-sortables ui-sortable" style="overflow: hidden;">

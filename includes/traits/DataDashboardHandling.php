@@ -60,13 +60,13 @@ trait Handling {
                 $updates['module_type'] = $module_type;
                 $updates['module_name'] = $module_name;
                 if (array_key_exists('TS_'.$type, $measurements)) {
-                    $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['TS_'.$type]);
+                    $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['TS_'.$type]);
                 }
                 elseif (array_key_exists('time_utc', $measurements)){
-                    $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+                    $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
                 }
                 else {
-                    $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                    $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
                 }
                 $updates['measure_type'] = strtolower($type);
                 $updates['measure_value'] = $measurements[$type];
@@ -89,7 +89,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             $updates['measure_type'] = 'absolute_humidity';
             $updates['measure_value'] = $this->compute_partial_absolute_humidity($temperature_ref, 100 * $pressure_ref, $humidity_ref);
             $this->update_data_table($updates, $timezone);
@@ -100,22 +100,22 @@ trait Handling {
         $updates['module_id'] = $module_id;
         $updates['module_type'] = $module_type;
         $updates['module_name'] = $module_name;
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $updates['measure_value'] = gmdate('Y-m-d H:i:s');
         $this->update_data_table($updates, $timezone);
         if ($last_seen) {
             if (!is_array($measurements)) {
                 $measurements = array();
             }
             if (array_key_exists('TS_'.$type, $measurements)) {
-                $updates['measure_value'] = date('Y-m-d H:i:s', $measurements['TS_'.$type]);
+                $updates['measure_value'] = gmdate('Y-m-d H:i:s', $measurements['TS_'.$type]);
             }
             elseif (array_key_exists('time_utc', $measurements)){
-                $updates['measure_value'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+                $updates['measure_value'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             }
             else {
-                $updates['measure_value'] = date('Y-m-d H:i:s');
+                $updates['measure_value'] = gmdate('Y-m-d H:i:s');
             }
             $updates['measure_type'] = 'last_seen';
             $this->update_data_table($updates, $timezone);
@@ -128,10 +128,10 @@ trait Handling {
         $updates['module_type'] = $module_type;
         $updates['module_name'] = $module_name;
         if (array_key_exists('time_utc', $measurements)){
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
         }
         else {
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         }
         $updates['measure_type'] = 'signal';
         if (array_key_exists('signal', $measurements)){
@@ -148,10 +148,10 @@ trait Handling {
         $updates['module_type'] = $module_type;
         $updates['module_name'] = $module_name;
         if (array_key_exists('time_utc', $measurements)){
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
         }
         else {
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         }
         $updates['measure_type'] = 'battery';
         if (array_key_exists('battery', $measurements)){
@@ -168,10 +168,10 @@ trait Handling {
         $updates['module_type'] = $module_type;
         $updates['module_name'] = $module_name;
         if (array_key_exists('time_utc', $measurements)){
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
         }
         else {
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         }
         $updates['measure_type'] = 'firmware';
         $updates['measure_value'] = LIVE_WEATHER_STATION_VERSION ;
@@ -185,10 +185,10 @@ trait Handling {
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
             if (array_key_exists('time_utc', $measurements)){
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             }
             else {
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             }
             $updates['measure_type'] = 'loc_country';
             $updates['measure_value'] = '';
@@ -203,10 +203,10 @@ trait Handling {
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
             if (array_key_exists('time_utc', $measurements)){
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             }
             else {
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             }
             $updates['measure_type'] = 'loc_city';
             $updates['measure_value'] = '';
@@ -221,10 +221,10 @@ trait Handling {
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
             if (array_key_exists('time_utc', $measurements)){
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             }
             else {
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             }
             $updates['measure_type'] = 'loc_altitude';
             $updates['measure_value'] = 0;
@@ -239,10 +239,10 @@ trait Handling {
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
             if (array_key_exists('time_utc', $measurements)){
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             }
             else {
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             }
             $updates['measure_type'] = 'loc_latitude';
             $updates['measure_value'] = 0;
@@ -257,10 +257,10 @@ trait Handling {
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
             if (array_key_exists('time_utc', $measurements)){
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             }
             else {
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             }
             $updates['measure_type'] = 'loc_longitude';
             $updates['measure_value'] = 0;
@@ -275,10 +275,10 @@ trait Handling {
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
             if (array_key_exists('time_utc', $measurements)){
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             }
             else {
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             }
             $updates['measure_type'] = 'loc_timezone';
             $updates['measure_value'] = 'UTC';
@@ -295,13 +295,13 @@ trait Handling {
                 $updates['module_id'] = $module_id;
                 $updates['module_type'] = $module_type;
                 $updates['module_name'] = $module_name;
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_pct']);
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_pct']);
                 $updates['measure_type'] = 'picture';
                 if ($station_type === LIVE_WEATHER_STATION_BSKY_SID) {
                     $updates['measure_value'] = substr(__('View from station', 'live-weather-station'), 0, 50);
                     $this->update_data_table($updates, $timezone);
                     $media = array();
-                    $media['timestamp'] = date('Y-m-d H:i:s', $measurements['time_pct']);
+                    $media['timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_pct']);
                     $media['device_id'] = $device_id;
                     $media['module_id'] = $module_id;
                     $media['module_type'] = $module_type;
@@ -422,7 +422,7 @@ trait Handling {
                 $updates['module_id'] = $module_id;
                 $updates['module_type'] = $module_type;
                 $updates['module_name'] = $module_name;
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
                 $updates['measure_type'] = strtolower($type);
                 $updates['measure_value'] = $measurements[$type];
                 if ($type === 'WindAngle') {
@@ -440,7 +440,7 @@ trait Handling {
                     $updates['measure_value'] = $wind;
                 }
                 if ($type === 'wind_chill' || $type === 'wind_ref') {
-                    $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['wind_time_utc']);
+                    $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['wind_time_utc']);
                 }
                 if ($type === 'Pressure') {
                     $updates['measure_type'] = 'pressure_sl';
@@ -474,9 +474,9 @@ trait Handling {
                 }
             }
         }
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $updates['measure_value'] = gmdate('Y-m-d H:i:s');
         $this->update_data_table($updates, $timezone);
 
         // place measurements from device
@@ -487,7 +487,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             $updates['measure_type'] = 'loc_country';
             $updates['measure_value'] = '';
             if (array_key_exists('country', $place)) {
@@ -503,7 +503,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             $updates['measure_type'] = 'loc_city';
             $updates['measure_value'] = '';
             if (array_key_exists('city', $place)) {
@@ -519,7 +519,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             $updates['measure_type'] = 'loc_altitude';
             $updates['measure_value'] = 0;
             if (array_key_exists('altitude', $place)) {
@@ -535,7 +535,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             $updates['measure_type'] = 'loc_latitude';
             $updates['measure_value'] = 0;
             if (isset($place['location']) && is_array($place['location']) && count($place['location'])>1) {
@@ -551,7 +551,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             $updates['measure_type'] = 'loc_longitude';
             $updates['measure_value'] = 0;
             if (isset($place['location']) && is_array($place['location']) && count($place['location'])>0) {
@@ -567,7 +567,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             $updates['measure_type'] = 'loc_timezone';
             $updates['measure_value'] = 'UTC';
             if (array_key_exists('timezone', $place)) {
@@ -586,9 +586,9 @@ trait Handling {
         $updates['module_id'] = $module_id;
         $updates['module_type'] = $module_type;
         $updates['module_name'] = $module_name;
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_seen';
-        $updates['measure_value'] = date('Y-m-d H:i:s', $lastseen);
+        $updates['measure_value'] = gmdate('Y-m-d H:i:s', $lastseen);
         $this->update_data_table($updates, $timezone);
         if (isset($firstsetup)) {
             $updates = array();
@@ -597,9 +597,9 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             $updates['measure_type'] = 'first_setup';
-            $updates['measure_value'] = date('Y-m-d H:i:s', $firstsetup);
+            $updates['measure_value'] = gmdate('Y-m-d H:i:s', $firstsetup);
             $this->update_data_table($updates, $timezone);
         }
         if (isset($lastsetup)) {
@@ -609,9 +609,9 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             $updates['measure_type'] = 'last_setup';
-            $updates['measure_value'] = date('Y-m-d H:i:s', $lastsetup);
+            $updates['measure_value'] = gmdate('Y-m-d H:i:s', $lastsetup);
             $this->update_data_table($updates, $timezone);
         }
         if (isset($lastupgrade)) {
@@ -621,9 +621,9 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
             $updates['measure_type'] = 'last_upgrade';
-            $updates['measure_value'] = date('Y-m-d H:i:s', $lastupgrade);
+            $updates['measure_value'] = gmdate('Y-m-d H:i:s', $lastupgrade);
             $this->update_data_table($updates, $timezone);
         }
         $updates = array();
@@ -632,7 +632,7 @@ trait Handling {
         $updates['module_id'] = $module_id;
         $updates['module_type'] = $module_type;
         $updates['module_name'] = $module_name;
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
         $updates['measure_type'] = 'signal';
         $updates['measure_value'] =$signal ;
         $this->update_data_table($updates, $timezone);
@@ -642,7 +642,7 @@ trait Handling {
         $updates['module_id'] = $module_id;
         $updates['module_type'] = $module_type;
         $updates['module_name'] = $module_name;
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
         $updates['measure_type'] = 'battery';
         $updates['measure_value'] =$battery ;
         $this->update_data_table($updates, $timezone);
@@ -652,7 +652,7 @@ trait Handling {
         $updates['module_id'] = $module_id;
         $updates['module_type'] = $module_type;
         $updates['module_name'] = $module_name;
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
         $updates['measure_type'] = 'firmware';
         $updates['measure_value'] = (is_numeric($firmware) ? $firmware : live_weather_station_clean_text($firmware, 60));
         $this->update_data_table($updates, $timezone);
@@ -669,7 +669,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['date_min_temp']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['date_min_temp']);
             $updates['measure_type'] = 'temperature_min';
             $updates['measure_value'] = $measurements['min_temp'] ;
             $this->update_data_table($updates, $timezone);
@@ -679,7 +679,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['date_max_temp']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['date_max_temp']);
             $updates['measure_type'] = 'temperature_max';
             $updates['measure_value'] = $measurements['max_temp'] ;
             $this->update_data_table($updates, $timezone);
@@ -693,7 +693,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             $updates['measure_type'] = 'temperature_trend';
             $updates['measure_value'] = $measurements['temp_trend'] ;
             $this->update_data_table($updates, $timezone);
@@ -707,7 +707,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             $updates['measure_type'] = 'pressure_trend';
             $updates['measure_value'] = $measurements['pressure_trend'] ;
             $this->update_data_table($updates, $timezone);
@@ -723,7 +723,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             $updates['measure_type'] = 'rain_hour_aggregated';
             $updates['measure_value'] =$measurements['sum_rain_1'] ;
             $this->update_data_table($updates, $timezone);
@@ -736,7 +736,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             $updates['measure_type'] = 'rain_day_aggregated';
             $updates['measure_value'] =$measurements['sum_rain_24'] ;
             $this->update_data_table($updates, $timezone);
@@ -759,7 +759,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $wdmax);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $wdmax);
             $updates['measure_type'] = 'windangle_hour_max';
             $updates['measure_value'] = $wamax ;
             $this->update_data_table($updates, $timezone);
@@ -772,7 +772,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $wdmax);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $wdmax);
             $updates['measure_type'] = 'windstrength_hour_max';
             $updates['measure_value'] = $wsmax ;
             $this->update_data_table($updates, $timezone);
@@ -789,7 +789,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['date_max_wind_str']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['date_max_wind_str']);
             $updates['measure_type'] = 'windangle_day_max';
             $updates['measure_value'] = $measurements['max_wind_angle'] ;
             $this->update_data_table($updates, $timezone);
@@ -802,7 +802,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['date_max_wind_str']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['date_max_wind_str']);
             $updates['measure_type'] = 'windstrength_day_max';
             $updates['measure_value'] =$measurements['max_wind_str'] ;
             $this->update_data_table($updates, $timezone);
@@ -816,7 +816,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             $health = $this->compute_health_index($hi_tmp, $hi_hmd, $hi_co2, $hi_nse);
             if ($is_hc && !get_option('live_weather_station_overload_hc')) {
                 $updates['measure_type'] = 'health_idx';
@@ -839,7 +839,7 @@ trait Handling {
             $updates['module_id'] = $module_id;
             $updates['module_type'] = $module_type;
             $updates['module_name'] = $module_name;
-            $updates['measure_timestamp'] = date('Y-m-d H:i:s', $measurements['time_utc']);
+            $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s', $measurements['time_utc']);
             if (isset($hi_tmp) && isset($this->pressure_ref) && isset($hi_hmd)) {
                 $updates['measure_type'] = 'absolute_humidity';
                 $updates['measure_value'] = $this->compute_partial_absolute_humidity($hi_tmp, 100 * $this->pressure_ref, $hi_hmd);
@@ -847,8 +847,8 @@ trait Handling {
             }
         }
         if ($is_station) {
-            $station['last_refresh'] = date('Y-m-d H:i:s');
-            $station['last_seen'] = date('Y-m-d H:i:s', $lastseen);
+            $station['last_refresh'] = gmdate('Y-m-d H:i:s');
+            $station['last_seen'] = gmdate('Y-m-d H:i:s', $lastseen);
             $this->update_stations_table($station, true);
         }
     }

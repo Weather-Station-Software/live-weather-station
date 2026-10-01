@@ -8,6 +8,10 @@
 
 use WeatherStation\SDK\BloomSky\Plugin\StationInitiator as Bloomsky_Initiator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $n = new Bloomsky_Initiator(LIVE_WEATHER_STATION_PLUGIN_ID, LIVE_WEATHER_STATION_VERSION);
 $stations = $n->detect_stations();
 $can_add = false;

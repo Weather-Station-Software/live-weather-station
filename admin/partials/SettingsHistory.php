@@ -7,6 +7,9 @@
  */
 
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <p>&nbsp;</p>

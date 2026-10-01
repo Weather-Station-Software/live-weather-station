@@ -312,7 +312,7 @@ trait Conversion {
      * @since 3.0.0
      */
     public static function get_date_from_tz($ts, $tz) {
-        $datetime = new \DateTime(date('Y-m-d H:i:s', $ts), self::safe_timezone($tz));
+        $datetime = new \DateTime(gmdate('Y-m-d H:i:s', $ts), self::safe_timezone($tz));
         $datetime->setTimezone(new \DateTimeZone('UTC'));
         return $datetime->getTimestamp();
     }
@@ -335,12 +335,12 @@ trait Conversion {
             $format = get_option('date_format');
         }
         if ($tz != '') {
-            $datetime = new \DateTime(date('Y-m-d H:i:s', $ts), new \DateTimeZone('UTC'));
+            $datetime = new \DateTime(gmdate('Y-m-d H:i:s', $ts), new \DateTimeZone('UTC'));
             $datetime->setTimezone(self::safe_timezone($tz));
             return date_i18n($format, strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
-            return date_i18n($format, strtotime(get_date_from_gmt(date('Y-m-d H:i:s',$ts))) );
+            return date_i18n($format, strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s',$ts))) );
         }
     }
 
@@ -613,12 +613,12 @@ trait Conversion {
             $format = get_option('time_format');
         }
         if ($tz != '') {
-            $datetime = new \DateTime(date('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
+            $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
             $datetime->setTimezone(self::safe_timezone($tz));
             return date_i18n($format, strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
-            return date_i18n($format, strtotime(get_date_from_gmt(date('Y-m-d H:i:s',$ts))));
+            return date_i18n($format, strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s',$ts))));
         }
     }
 
@@ -708,7 +708,7 @@ trait Conversion {
      * @access   protected
      */
     public static function get_minute_diff_from_utc($from) {
-        return round ((abs( strtotime(get_date_from_gmt(date('Y-m-d H:i:s'))) - $from ))/60);
+        return round ((abs( strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s'))) - $from ))/60);
     }
 
     /**
@@ -720,7 +720,7 @@ trait Conversion {
      * @access   protected
      */
     public static function get_minute_diff_from_mysql_utc($from) {
-        return round ((abs( strtotime(get_date_from_gmt(date('Y-m-d H:i:s'))) - strtotime(get_date_from_gmt($from))))/60);
+        return round ((abs( strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s'))) - strtotime(get_date_from_gmt($from))))/60);
     }
 
     /**
@@ -744,23 +744,23 @@ trait Conversion {
         $now = time();
         if ($comp) {
             if ( $tz != '') {
-                $datetime = new \DateTime(date('Y-m-d H:i:s',$now), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$now), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(self::safe_timezone($tz));
                 $today = $datetime->format('Ymd');
-                $datetime = new \DateTime(date('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(self::safe_timezone($tz));
                 $timestamp = $datetime->format('Ymd');
                 if ($timestamp != $today) {
-                    $datetime = new \DateTime(date('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
+                    $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
                     $datetime->setTimezone(self::safe_timezone($tz));
                     $result = $result.' ('.date_i18n('D', strtotime($datetime->format('Y-m-d H:i:s'))).')';
                 }
             }
             else {
-                $today = date('Ymd', strtotime(get_date_from_gmt(date('Y-m-d H:i:s', $now))));
-                $timestamp = date('Ymd', strtotime(get_date_from_gmt(date('Y-m-d H:i:s', $ts))));
+                $today = gmdate('Ymd', strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s', $now))));
+                $timestamp = gmdate('Ymd', strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s', $ts))));
                 if ($timestamp != $today) {
-                    $result = $result.' ('.date_i18n( 'D', strtotime( get_date_from_gmt(date('Y-m-d H:i:s',$ts)))).')';
+                    $result = $result.' ('.date_i18n( 'D', strtotime( get_date_from_gmt(gmdate('Y-m-d H:i:s',$ts)))).')';
                 }
             }
         }
@@ -777,12 +777,12 @@ trait Conversion {
      */
     public static function get_rise_set_long_from_utc($ts, $tz='') {
         if ( $tz != '') {
-            $datetime = new \DateTime(date('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
+            $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$ts), new \DateTimeZone('UTC'));
             $datetime->setTimezone(self::safe_timezone($tz));
             return date_i18n(get_option('date_format').', '.get_option('time_format'), strtotime($datetime->format('Y-m-d H:i:s')));
         }
         else {
-            return date_i18n(get_option('date_format').', '.get_option('time_format'), strtotime(get_date_from_gmt(date('Y-m-d H:i:s',$ts))));
+            return date_i18n(get_option('date_format').', '.get_option('time_format'), strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s',$ts))));
         }
     }
 

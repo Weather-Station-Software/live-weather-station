@@ -60,7 +60,7 @@ trait StationClient {
         $weather[0] = str_replace(' ', '0', $ttime);
         $timezone = $station['loc_timezone'];
         $locat_ts = gmmktime($weather[0][0].$weather[0][1], $weather[0][3].$weather[0][4], '00', $weather[1][3].$weather[1][4], $weather[1][0].$weather[1][1], '20'.$weather[1][strlen($weather[1])-2].$weather[1][strlen($weather[1])-1]);
-        $timestamp = date('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $timezone));
+        $timestamp = gmdate('Y-m-d H:i:s', $this->get_date_from_tz($locat_ts, $timezone));
         $units = explode('|', strtolower($weather[17]));
         $wind_unit = 0;
         $temperature_unit = 0;
@@ -110,9 +110,9 @@ trait StationClient {
         $updates['module_id'] = $station['station_id'];
         $updates['module_type'] = $type;
         $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $updates['measure_value'] = gmdate('Y-m-d H:i:s');
         $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
@@ -151,7 +151,7 @@ trait StationClient {
             $updates['measure_value'] = $pressure_ref;
             $this->update_data_table($updates, $timezone);
         }
-        $station['last_refresh'] = date('Y-m-d H:i:s');
+        $station['last_refresh'] = gmdate('Y-m-d H:i:s');
         $station['last_seen'] = $timestamp;
         $this->update_table(self::live_weather_station_stations_table(), $station);
         Logger::debug($this->facility, $this->service, $updates['device_id'], $updates['device_name'], $updates['module_id'], $updates['module_name'], 0, 'Success while collecting current weather data.');
@@ -164,9 +164,9 @@ trait StationClient {
         $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 1);
         $updates['module_type'] = $type;
         $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $updates['measure_value'] = gmdate('Y-m-d H:i:s');
         $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
@@ -199,9 +199,9 @@ trait StationClient {
         $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 2);
         $updates['module_type'] = $type;
         $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $updates['measure_value'] = gmdate('Y-m-d H:i:s');
         $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;
@@ -245,9 +245,9 @@ trait StationClient {
         $updates['module_id'] = $this->get_fake_modulex_id($station['guid'], 3);
         $updates['module_type'] = $type;
         $updates['module_name'] = $this->get_fake_module_name($type);
-        $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+        $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
         $updates['measure_type'] = 'last_refresh';
-        $updates['measure_value'] = date('Y-m-d H:i:s');
+        $updates['measure_value'] = gmdate('Y-m-d H:i:s');
         $this->update_data_table($updates, $timezone);
         $updates['measure_type'] = 'last_seen';
         $updates['measure_value'] = $timestamp;

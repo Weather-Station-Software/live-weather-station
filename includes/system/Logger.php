@@ -12,6 +12,9 @@ use WeatherStation\System\Schedules\Watchdog;
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 2.8.0
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 class Logger {
 
     use \WeatherStation\DB\Query;
@@ -161,7 +164,7 @@ class Logger {
             self::$rows_written++;
             $values = array();
             $values['level'] = $level;
-            $values['timestamp'] = date('Y-m-d H:i:s');
+            $values['timestamp'] = gmdate('Y-m-d H:i:s');
             $values['plugin'] = LIVE_WEATHER_STATION_PLUGIN_NAME;
             $values['version'] = substr($version, 0, 11);
             if (!is_null($system)) {
@@ -203,7 +206,7 @@ class Logger {
             self::$suppressed = 0;
             $values = array();
             $values['level'] = self::$suppressed_level;
-            $values['timestamp'] = date('Y-m-d H:i:s');
+            $values['timestamp'] = gmdate('Y-m-d H:i:s');
             $values['plugin'] = LIVE_WEATHER_STATION_PLUGIN_NAME;
             $values['version'] = substr(LIVE_WEATHER_STATION_VERSION, 0, 11);
             $values['system'] = 'Logger';

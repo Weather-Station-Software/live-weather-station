@@ -73,7 +73,7 @@ class Notifier {
      */
     private static function _notify($level = 'error', $name='', $url='', $description='', $shift=false) {
         $values = array();
-        $values['timestamp'] = date('Y-m-d H:i:s', ($shift?time()+1:time()));
+        $values['timestamp'] = gmdate('Y-m-d H:i:s', ($shift?time()+1:time()));
         $values['level'] = $level;
         $values['name'] = substr(sanitize_text_field($name), 0, 99);
         $values['description'] = substr(wp_kses_post($description), 0, 1999);

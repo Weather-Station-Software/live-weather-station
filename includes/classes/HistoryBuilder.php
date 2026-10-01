@@ -18,6 +18,9 @@ use WeatherStation\Data\DateTime\Conversion;
  * @since 3.3.2
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 function live_weather_station_array_average($arr, $type) {
     $result = 0;
     if (count($arr) > 0) {
@@ -291,7 +294,7 @@ class Builder
         while ($date_control < $date_end) {
             $start = $date_control;
             $end = $date_control + 86399;
-            $index = date('Y-m-d', $start + (86400/2));
+            $index = gmdate('Y-m-d', $start + (86400/2));
             $count = false;
             if (array_key_exists('values', $data) && is_array($data['values'])) {
                 foreach ($data['values'] as $type => $value) {
@@ -495,8 +498,8 @@ class Builder
      * @since 3.3.2
      */
     private function count_daily_values($device_id, $tz) {
-        $min = date('Y-m-d H:i:s', self::get_local_today_midnight($tz));
-        $max = date('Y-m-d H:i:s', self::get_local_today_noon($tz));
+        $min = gmdate('Y-m-d H:i:s', self::get_local_today_midnight($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_today_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
         $sql = $wpdb->prepare("SELECT COUNT(*) FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s;", $min, $max, $device_id);
@@ -521,8 +524,8 @@ class Builder
      * @since 3.3.2
      */
     private function get_available_measurements($device_id, $tz) {
-        $min = date('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
-        $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
+        $min = gmdate('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
         $sql = $wpdb->prepare("SELECT DISTINCT `module_id`, `module_type`, `measure_type` FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s;", $min, $max, $device_id);
@@ -558,8 +561,8 @@ class Builder
         }
         $sub_result = false;
         $date = self::get_local_date($tz);
-        $min = date('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
-        $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
+        $min = gmdate('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         $selects = array();
         foreach ($operations as $operation=>$name) {
             if (($operation == 'FQC_MIN') || ($operation == 'FQC_MAX')) {
@@ -620,9 +623,9 @@ class Builder
      * @since 3.4.0
      */
     private function perform_frequency_aggregation($device_id, $module_id, $module_type, $measure_type, $tz, $operation, $name) {
-        $date = date('Y-m-d', self::get_local_yesterday_midnight($tz));
-        $min = date('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
-        $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
+        $date = gmdate('Y-m-d', self::get_local_yesterday_midnight($tz));
+        $min = gmdate('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         $select = '`measure_value` as v_val, COUNT(*) as v_fqc';
         $order = 'DESC';
         if ($operation == 'FQC_MIN') {
@@ -666,9 +669,9 @@ class Builder
      * @since 3.4.0
      */
     private function perform_max_per_hour($device_id, $module_id, $module_type, $measure_type, $tz, $operation, $factor, $name) {
-        $date = date('Y-m-d', self::get_local_yesterday_midnight($tz));
-        $min = date('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
-        $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
+        $date = gmdate('Y-m-d', self::get_local_yesterday_midnight($tz));
+        $min = gmdate('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
         $sql = $wpdb->prepare("SELECT MAX(`measure_value`) as v_max FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s AND `module_id`=%s AND `measure_type`=%s;", $min, $max, $device_id, $module_id, $measure_type);
@@ -705,9 +708,9 @@ class Builder
      * @since 3.4.0
      */
     private function perform_median_computation($device_id, $module_id, $module_type, $measure_type, $tz, $name) {
-        $date = date('Y-m-d', self::get_local_yesterday_midnight($tz));
-        $min = date('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
-        $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
+        $date = gmdate('Y-m-d', self::get_local_yesterday_midnight($tz));
+        $min = gmdate('Y-m-d H:i:s', self::get_local_yesterday_midnight($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
         $sql = $wpdb->prepare("SELECT `measure_value` as v_val FROM ".$table_name." WHERE `timestamp`>=%s AND `timestamp`<=%s AND `device_id`=%s AND `module_id`=%s AND `measure_type`=%s ORDER BY v_val ASC;", $min, $max, $device_id, $module_id, $measure_type);
@@ -760,7 +763,7 @@ class Builder
      * @since 3.4.0
      */
     private function delete_daily_values($device_id, $module_id, $measure_type, $tz) {
-        $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
         $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE `timestamp`<=%s AND `device_id`=%s AND `module_id`=%s AND `measure_type`=%s;", $max, $device_id, $module_id, $measure_type);
@@ -776,7 +779,7 @@ class Builder
      * @since 3.4.0
      */
     private function delete_remaining_daily_values($device_id, $tz) {
-        $max = date('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
+        $max = gmdate('Y-m-d H:i:s', self::get_local_yesterday_noon($tz));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
         $sql = $wpdb->prepare("DELETE FROM ".$table_name." WHERE `timestamp`<=%s AND `device_id`=%s;", $max, $device_id);

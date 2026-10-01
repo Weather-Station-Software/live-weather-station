@@ -9,6 +9,10 @@
 use WeatherStation\UI\SVG\Handling as SVG;
 use WeatherStation\System\Output\Guard;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 if (get_option('live_weather_station_windy_apikey') != '') {
     $windy_s = ucfirst(__('a full featured map from Windy.com with many weather layers and animations.', 'live-weather-station'));
     $windy_l = wp_nonce_url(live_weather_station_get_admin_page_url('lws-maps', 'form', 'add-edit', 'windy'), 'lws-new-map-windy');

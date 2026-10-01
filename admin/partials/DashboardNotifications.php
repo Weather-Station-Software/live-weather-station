@@ -10,6 +10,10 @@ use WeatherStation\System\Notifications\Notifier;
 use WeatherStation\System\Output\Guard;
 use WeatherStation\System\I18N\Handling as Intl;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $boxes = '';
 $d = '<i style="font-size:80%" class="' . LIVE_WEATHER_STATION_FAS . ' fa-chevron-circle-down fa-fw"></i>&nbsp;';
 $c = '<i style="font-size:80%" class="' . LIVE_WEATHER_STATION_FAS . ' fa-chevron-circle-up fa-fw"></i>&nbsp;';

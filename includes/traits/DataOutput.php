@@ -616,8 +616,8 @@ trait Output {
                         $oldest_data = $this->get_oldest_data($station);
                     }
                     if ($mode == 'daily') {
-                        $min = date('Y-m-d H:i:s', self::get_local_today_midnight($station['loc_timezone']));
-                        $max = date('Y-m-d H:i:s', self::get_local_today_noon($station['loc_timezone']));
+                        $min = gmdate('Y-m-d H:i:s', self::get_local_today_midnight($station['loc_timezone']));
+                        $max = gmdate('Y-m-d H:i:s', self::get_local_today_noon($station['loc_timezone']));
                         $result['xdomain']['min'] = self::get_js_datetime_from_mysql_utc($min, $station['loc_timezone']);
                         $result['xdomain']['04'] = $result['xdomain']['min'] + 14400000;
                         $result['xdomain']['08'] = $result['xdomain']['min'] + 14400000*2;
@@ -680,9 +680,9 @@ trait Output {
                         $month = substr($min, 5, 2);
                         $year = substr($min, 0, 4);
                         if ($is_rdays) {
-                            $result['xdomain']['01'] = self::get_js_date_from_mysql_utc(date('Y-m-d', strtotime(sprintf('-%s days', 1 + 2 * (int)round($v[1] / 3)))), $station['loc_timezone']);
-                            $result['xdomain']['02'] = self::get_js_date_from_mysql_utc(date('Y-m-d', strtotime(sprintf('-%s days', 1 + 1 * (int)round($v[1] / 3)))), $station['loc_timezone']);
-                            $result['xdomain']['03'] = self::get_js_date_from_mysql_utc(date('Y-m-d', strtotime(sprintf('-%s days', 1 + 1 * (int)round($v[1] / 3)))), $station['loc_timezone']);
+                            $result['xdomain']['01'] = self::get_js_date_from_mysql_utc(gmdate('Y-m-d', strtotime(sprintf('-%s days', 1 + 2 * (int)round($v[1] / 3)))), $station['loc_timezone']);
+                            $result['xdomain']['02'] = self::get_js_date_from_mysql_utc(gmdate('Y-m-d', strtotime(sprintf('-%s days', 1 + 1 * (int)round($v[1] / 3)))), $station['loc_timezone']);
+                            $result['xdomain']['03'] = self::get_js_date_from_mysql_utc(gmdate('Y-m-d', strtotime(sprintf('-%s days', 1 + 1 * (int)round($v[1] / 3)))), $station['loc_timezone']);
                         }
                         if ($is_month) {
                             $result['xdomain']['01'] = self::get_js_date_from_mysql_utc($year.'-' . $month .'-08', $station['loc_timezone']);
@@ -1213,9 +1213,9 @@ trait Output {
                                     $__left = max(1, (int)floor(1000000 / max(1, $sects)));
                                     while ($d <= $__end && $__left-- > 0) {
                                         if ($mode == 'yearly') {
-                                            $__date = date('Y-m-d', $d);
+                                            $__date = gmdate('Y-m-d', $d);
                                         } else {
-                                            $__date = date('Y-m-d H:i:s', $d);
+                                            $__date = gmdate('Y-m-d H:i:s', $d);
                                         }
                                         for ($i = 0; $i < $sects; $i++) {
                                             if (!array_key_exists($__date, $t[$i])) {
@@ -1890,7 +1890,7 @@ trait Output {
                                 $select .= " OR " . $s . ")";
                             }
                         }
-                        $step['end_prepare'] = date('H:i:s');
+                        $step['end_prepare'] = gmdate('H:i:s');
                         $yearmin = substr($min, 0, 4);
                         $yearmax = substr($max, 0, 4);
                         if ($aggregated) {
@@ -2114,7 +2114,7 @@ trait Output {
                                         $d = $__start;
                                         $__left = 60000;
                                         while ($d <= $__end && $__left-- > 0) {
-                                            $__date = date('Y-m-d', $d);
+                                            $__date = gmdate('Y-m-d', $d);
                                             if (!array_key_exists($__date, $t)) {
                                                 $a = array();
                                                 $a['timestamp'] = $__date;
@@ -7555,7 +7555,7 @@ trait Output {
                 $d = explode('-', $_attributes['periodvalue']);
                 if (!empty($d) && count($d) === 2) {
                     $station = $this->get_station_information_by_station_id($_attributes['device_id_1']);
-                    $date = self::get_date_from_mysql_utc(date('Y-m-d', strtotime(sprintf('-%s days', (int)$d[1]))), $station['loc_timezone'], 'Y-m-d') . ' 12:00:00';
+                    $date = self::get_date_from_mysql_utc(gmdate('Y-m-d', strtotime(sprintf('-%s days', (int)$d[1]))), $station['loc_timezone'], 'Y-m-d') . ' 12:00:00';
                 }
                 break;
             case 'fixed-timelapse':

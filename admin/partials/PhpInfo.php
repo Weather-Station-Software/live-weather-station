@@ -8,6 +8,10 @@
 
 use WeatherStation\System\Logs\Logger;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $okinfo = false;
 $phpinfo = '';
 $tables = '';

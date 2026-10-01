@@ -8,6 +8,10 @@
 
 use WeatherStation\UI\ListTable\Maps;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $mapsListTable = new Maps();
 $mapsListTable->prepare_items();
 

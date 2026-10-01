@@ -64,8 +64,8 @@ class Quota {
             foreach ($verbs as $v) {
                     $fields[] = 'sum(`' . $v . '`) as ' . 'sum_' . $v;
             }
-            $cutoff['rolling'] = date('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
-            $cutoff['strict'] = date('Y-m-d',time()) . ' 00:00:00';
+            $cutoff['rolling'] = gmdate('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
+            $cutoff['strict'] = gmdate('Y-m-d',time()) . ' 00:00:00';
             foreach ($modes as $mode) {
                 $select = "service, " . implode(', ', $fields);
                 $where = "timestamp>=%s";
@@ -133,8 +133,8 @@ class Quota {
             $actual_rolling = round($values['rolling'] + $max_potential_consumption + $delta, 0) + $count;
             $warning = ($actual_rolling > $quota);
             $error = ($actual_rolling > $quota);
-            $d1 = new \DateTime(date('Y-m-d H:i:s',time()));
-            $d2 = new \DateTime(date('Y-m-d',time()) . ' 00:00:00');
+            $d1 = new \DateTime(gmdate('Y-m-d H:i:s',time()));
+            $d2 = new \DateTime(gmdate('Y-m-d',time()) . ' 00:00:00');
             $t = $d2->diff($d1, true);
             $diff = $t->s + MINUTE_IN_SECONDS * $t->i + HOUR_IN_SECONDS * $t->h;
             $ratio = $diff / DAY_IN_SECONDS;
@@ -431,7 +431,7 @@ class Quota {
      * @since 3.2.0
      */
     public static function write_stats(){
-        $now = date('Y-m-d H:i');
+        $now = gmdate('Y-m-d H:i');
         $now = substr($now, 0, strlen($now)-1);
         $now .= '0:00';
         global $wpdb;
@@ -480,8 +480,8 @@ class Quota {
         global $wpdb;
         $time = time();
         for ($i=0; $i<3; $i++) {
-            $time_min = date('Y-m-d', $time - $i * DAY_IN_SECONDS) . ' 00:00:00';
-            $time_max = date('Y-m-d', $time - $i * DAY_IN_SECONDS) . ' 23:59:59';
+            $time_min = gmdate('Y-m-d', $time - $i * DAY_IN_SECONDS) . ' 00:00:00';
+            $time_max = gmdate('Y-m-d', $time - $i * DAY_IN_SECONDS) . ' 23:59:59';
             $where = "timestamp>=%s AND timestamp<=%s";
             $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ";
             $sql .= $wpdb->prepare($where, $time_min, $time_max) . " GROUP BY service;";
@@ -523,11 +523,11 @@ class Quota {
     public static function rotate() {
         self::compile();
         global $wpdb;
-        $now = date('Y-m-d', time() - 4 * DAY_IN_SECONDS) . ' 00:00:00';
+        $now = gmdate('Y-m-d', time() - 4 * DAY_IN_SECONDS) . ' 00:00:00';
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ";
         $sql .= "timestamp<%s;";
         $wpdb->query($wpdb->prepare($sql, $now));
-        $now = date('Y-m-d', time() - YEAR_IN_SECONDS - DAY_IN_SECONDS) . ' 00:00:00';
+        $now = gmdate('Y-m-d', time() - YEAR_IN_SECONDS - DAY_IN_SECONDS) . ' 00:00:00';
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ";
         $sql .= "timestamp<%s;";
         $wpdb->query($wpdb->prepare($sql, $now));

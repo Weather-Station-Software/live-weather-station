@@ -4,6 +4,9 @@
  * Dummy class autoloader for OpenWeatherMap SDK
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 require_once(__DIR__. '/OWMApiClient.php');
 require_once(__DIR__. '/Exception.php');
 require_once(__DIR__. '/CurrentWeather.php');

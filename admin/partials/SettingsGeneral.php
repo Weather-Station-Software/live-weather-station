@@ -9,6 +9,10 @@
 use WeatherStation\System\Help\InlineHelp;
 use WeatherStation\System\I18N\Handling as i18n;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $i18n = new i18n();
 
 

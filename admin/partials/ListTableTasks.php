@@ -8,6 +8,10 @@
 
 use WeatherStation\UI\ListTable\Tasks;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $tasksListTable = new Tasks();
 $tasksListTable->prepare_items();
 

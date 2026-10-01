@@ -749,7 +749,7 @@ class Cache {
      * @since 3.1.0
      */
     public static function write_stats(){
-        $now = date('Y-m-d H') . ':00:00';
+        $now = gmdate('Y-m-d H') . ':00:00';
         global $wpdb;
         $err_bup = $wpdb->show_errors(false);
         $fields = array ('hit_count', 'hit_time', 'miss_count', 'miss_time');
@@ -791,7 +791,7 @@ class Cache {
      */
     public static function rotate() {
         global $wpdb;
-        $now = date('Y-m-d H:i:s', time() - MONTH_IN_SECONDS);
+        $now = gmdate('Y-m-d H:i:s', time() - MONTH_IN_SECONDS);
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_performance_cache_table() . " WHERE ";
         $sql .= "timestamp<%s;";
         $wpdb->query($wpdb->prepare($sql, $now));

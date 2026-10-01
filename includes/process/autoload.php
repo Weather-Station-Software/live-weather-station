@@ -9,6 +9,9 @@
  * @return void
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 spl_autoload_register(function($class)
 {
     //project-specific namespace prefix

@@ -8,6 +8,10 @@
 
 use WeatherStation\SDK\Netatmo\Plugin\HCInitiator as Netatmo_HCInitiator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $n = new Netatmo_HCInitiator(LIVE_WEATHER_STATION_PLUGIN_ID, LIVE_WEATHER_STATION_VERSION);
 $stations = $n->detect_stations();
 $can_add = false;

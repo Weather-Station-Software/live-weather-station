@@ -9,6 +9,10 @@
 use WeatherStation\UI\SVG\Handling as SVG;
 use WeatherStation\System\Help\InlineHelp as Help;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $welcome_checked = get_user_meta(get_current_user_id(), 'show_lws_welcome_panel', true);
 $welcome = true;
 

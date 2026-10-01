@@ -8,6 +8,10 @@
 
 use WeatherStation\UI\ListTable\Log;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $logListTable = new Log();
 $logListTable->prepare_items();
 

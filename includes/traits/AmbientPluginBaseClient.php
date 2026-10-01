@@ -63,9 +63,9 @@ trait BaseClient {
                 $place['location'] = array();
                 $place['location'][0] = $s['loc_longitude'];
                 $place['location'][1] = $s['loc_latitude'];
-                $s['last_refresh'] = date('Y-m-d H:i:s');
+                $s['last_refresh'] = gmdate('Y-m-d H:i:s');
                 if (array_key_exists('time_utc', $device)) {
-                    $s['last_seen'] = date('Y-m-d H:i:s', $device['time_utc']);
+                    $s['last_seen'] = gmdate('Y-m-d H:i:s', $device['time_utc']);
                 }
                 $device['device_name'] = $s['station_name'];
 

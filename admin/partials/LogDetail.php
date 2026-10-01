@@ -9,6 +9,10 @@ use WeatherStation\System\Logs\Logger;
  * @since 2.0.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $color = Logger::get_color($log['level']);
 if ($color != '') {
     $color = 'style="color:' . esc_attr($color) . '"';

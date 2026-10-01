@@ -6,6 +6,10 @@
  * @since 3.1.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $fields = array('frontend', 'widget', 'backend', 'dgraph', 'ygraph', 'cgraph');
 $names = array(__('controls', 'live-weather-station'), __('widgets', 'live-weather-station'), __('backend', 'live-weather-station'), __('daily graph', 'live-weather-station'), __('historical graph', 'live-weather-station'), __('climatological data', 'live-weather-station'));
 $values = array();

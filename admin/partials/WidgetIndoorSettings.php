@@ -9,6 +9,10 @@
 use WeatherStation\System\Help\InlineHelp;
 use WeatherStation\System\Device\Manager as DeviceManager;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 ?>
 <p>
     <label for="<?php echo $this->get_field_id('module'); ?>"><?php esc_html_e('Module to display', 'live-weather-station'); ?></label>

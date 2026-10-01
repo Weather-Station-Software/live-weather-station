@@ -12,6 +12,9 @@ use WeatherStation\SDK\Netatmo\Exceptions\NANotLoggedErrorType;
 use WeatherStation\SDK\Netatmo\Common\NARestErrorCode;
 use WeatherStation\System\Logs\Logger;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 define('BACKEND_BASE_URI', "https://api.netatmo.com/");
 define('BACKEND_SERVICES_URI', "https://api.netatmo.com/api");
 define('BACKEND_ACCESS_TOKEN_URI', "https://api.netatmo.com/oauth2/token");

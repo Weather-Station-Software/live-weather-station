@@ -6,6 +6,10 @@
  * @since 3.5.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $station_name_icn = $this->output_iconic_value(0, 'station_name', false, false, '#999');
 $location_icn = $this->output_iconic_value(0, 'city', false, false, '#999');
 $timezone_icn = $this->output_iconic_value(0, 'timezone', false, false, '#999');

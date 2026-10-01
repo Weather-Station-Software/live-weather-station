@@ -1790,9 +1790,9 @@ class Admin {
                             }
                             else {
                                 $station['oldest_data_txt'] = false;
-                                $station['oldest_data'] = date('Y-m-d');
+                                $station['oldest_data'] = gmdate('Y-m-d');
                             }
-                            $station['newest_data'] = date('Y-m-d', time() - 86400);
+                            $station['newest_data'] = gmdate('Y-m-d', time() - 86400);
                             $station['module_detail'] = DeviceManager::get_modules_details($station['station_id']);
                             $export_formats = self::_get_export_formats_array();
                             $import_formats = self::_get_import_formats_array(strtolower($this->get_service_name($station['station_type'])));

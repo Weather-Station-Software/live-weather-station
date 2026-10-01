@@ -35,8 +35,8 @@ trait ArchiveClient {
      * @since 3.7.0
      */
     public function get_archive($service_id, $station_id, $station_name, $tz, $start_date, $end_date) {
-        $start = self::sub_days_to_mysql_date(date('Y-m-d',$start_date), 1);
-        $stop = self::add_days_to_mysql_date(date('Y-m-d',$end_date), 1);
+        $start = self::sub_days_to_mysql_date(gmdate('Y-m-d',$start_date), 1);
+        $stop = self::add_days_to_mysql_date(gmdate('Y-m-d',$end_date), 1);
         $offset = 0;//$date->getOffset();
         $result = array();
         try {
@@ -46,8 +46,8 @@ trait ArchiveClient {
                 $raw_data = json_decode($response, true);
                 if (is_array($raw_data) && !array_key_exists('error_code', $raw_data)) {
                     if (array_key_exists('data', $raw_data) && is_array($raw_data['data'])) {
-                        //$start_date = date('Y-m-d',$start_date);
-                        //$end_date = date('Y-m-d',$end_date);
+                        //$start_date = gmdate('Y-m-d',$start_date);
+                        //$end_date = gmdate('Y-m-d',$end_date);
                         foreach ($raw_data['data'] as $line) {
                             if (is_array($line) && count($line) === 8) {
                                 try {
@@ -60,7 +60,7 @@ trait ArchiveClient {
                                 catch(\Throwable $ex) {
                                     continue;
                                 }
-                                //if (self::mysql_is_ordered($start_date, date('Y-m-d',$ts)) && self::mysql_is_ordered(date('Y-m-d',$ts), $end_date)) {
+                                //if (self::mysql_is_ordered($start_date, gmdate('Y-m-d',$ts)) && self::mysql_is_ordered(gmdate('Y-m-d',$ts), $end_date)) {
                                 if (($start_date <= $ts) && ($ts <= $end_date)){
                                     if (is_numeric($line[4])) {
                                         if (!array_key_exists('windstrength', $result)) {

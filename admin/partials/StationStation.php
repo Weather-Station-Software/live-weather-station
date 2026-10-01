@@ -6,6 +6,10 @@
  * @since 3.0.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $tech = (bool)get_option('live_weather_station_show_technical');
 $histo = (bool)get_option('live_weather_station_build_history');
 ?>

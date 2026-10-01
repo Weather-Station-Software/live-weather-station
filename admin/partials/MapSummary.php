@@ -6,6 +6,9 @@
  * @since 3.7.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div class="activity-block" style="padding-bottom: 0px;padding-top: 0px;">

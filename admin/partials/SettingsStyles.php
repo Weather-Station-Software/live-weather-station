@@ -9,6 +9,10 @@
 use WeatherStation\System\Help\InlineHelp;
 use WeatherStation\UI\ListTable\ColorSchemes;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $csListTable = new ColorSchemes();
 $csListTable->prepare_items();
 

@@ -9,6 +9,10 @@
 use WeatherStation\System\Environment\Manager;
 use WeatherStation\System\Output\Guard;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $colors = Manager::icon_color_scheme();
 $name = '';
 $type = __('graph', 'live-weather-station');
