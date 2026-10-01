@@ -14,26 +14,26 @@ if ( ! defined( 'ABSPATH' ) ) {
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer"' : '');
 
-$url = site_url('/get-weather/' . strtolower($station['station_id']) . '/stickertags/');
+$url = live_weather_station_get_feed_url($station['station_id'], 'stickertags');
 $s = '<a href="' . esc_url($url) . '"' . $target . '>' . __('this URL', 'live-weather-station') . '</a>';
 $message_txt = sprintf( /* translators: %s: link to the file URL */ __('This file can be accessed at %s, or at many alternates URLs.', 'live-weather-station'), $s);
 $message_txt .= InlineHelp::get(16, ' ' . /* translators: %s: link to the documentation */ __('See %s for detailed information.', 'live-weather-station'),  __('documentation', 'live-weather-station'));
 
-$url = site_url('/get-weather/' . strtolower($station['station_id']) . '/yowindow/');
+$url = live_weather_station_get_feed_url($station['station_id'], 'yowindow');
 $s1 = '<a href="' . esc_url($url) . '"' . $target . '>' . __('this URL', 'live-weather-station') . '</a>';
-$url = site_url('/get-weather/' . strtolower($station['station_id']) . '/YoWindow.xml');
+$url = live_weather_station_get_feed_url($station['station_id'], 'YoWindow.xml');
 $s2 = '<a href="' . esc_url($url) . '"' . $target . '>' . __('this URL', 'live-weather-station') . '</a>';
 $message_yow = sprintf( /* translators: 1: link to the first URL of the file, 2: link to the second URL of the file */ __('This file can be accessed at %1$s or at %2$s.', 'live-weather-station'), $s1, $s2);
 
-$url = site_url('/get-weather/' . strtolower($station['station_id']) . '/clientraw/');
+$url = live_weather_station_get_feed_url($station['station_id'], 'clientraw');
 $s1 = '<a href="' . esc_url($url) . '"' . $target . '>' . __('this URL', 'live-weather-station') . '</a>';
-$url = site_url('/get-weather/' . strtolower($station['station_id']) . '/clientraw.txt');
+$url = live_weather_station_get_feed_url($station['station_id'], 'clientraw.txt');
 $s2 = '<a href="' . esc_url($url) . '"' . $target . '>' . __('this URL', 'live-weather-station') . '</a>';
 $message_raw = sprintf( /* translators: 1: link to the first URL of the file, 2: link to the second URL of the file */ __('This file can be accessed at %1$s or at %2$s.', 'live-weather-station'), $s1, $s2);
 
-$url = site_url('/get-weather/' . strtolower($station['station_id']) . '/realtime/');
+$url = live_weather_station_get_feed_url($station['station_id'], 'realtime');
 $s1 = '<a href="' . esc_url($url) . '"' . $target . '>' . __('this URL', 'live-weather-station') . '</a>';
-$url = site_url('/get-weather/' . strtolower($station['station_id']) . '/realtime.txt');
+$url = live_weather_station_get_feed_url($station['station_id'], 'realtime.txt');
 $s2 = '<a href="' . esc_url($url) . '"' . $target . '>' . __('this URL', 'live-weather-station') . '</a>';
 $message_real = sprintf( /* translators: 1: link to the first URL of the file, 2: link to the second URL of the file */ __('This file can be accessed at %1$s or at %2$s.', 'live-weather-station'), $s1, $s2);
 

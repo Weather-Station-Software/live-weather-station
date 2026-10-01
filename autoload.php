@@ -69,7 +69,6 @@ spl_autoload_register(
         case 'WeatherStation\Engine\Module\Climat\Textual': $file = LIVE_WEATHER_STATION_INCLUDES_DIR.'classes/ModuleClimatTextual.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\TXTGenerator': $file = LIVE_WEATHER_STATION_INCLUDES_DIR.'classes/PageStandaloneAbstractTXTGenerator.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Framework': $file = LIVE_WEATHER_STATION_INCLUDES_DIR.'classes/PageStandaloneFramework.php'; break;
-        case 'WeatherStation\Engine\Page\Standalone\Generator': $file = LIVE_WEATHER_STATION_INCLUDES_DIR.'classes/PageStandaloneGenerator.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Stickertags': $file = LIVE_WEATHER_STATION_INCLUDES_DIR.'classes/PageStandaloneStickertagsGenerator.php'; break;
         case 'WeatherStation\Engine\Page\Standalone\Yowindow': $file = LIVE_WEATHER_STATION_INCLUDES_DIR.'classes/PageStandaloneYowindowGenerator.php'; break;
         case 'WeatherStation\DB\Query': $file = LIVE_WEATHER_STATION_INCLUDES_DIR.'traits/DBQuery.php'; break;
