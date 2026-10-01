@@ -26,5 +26,6 @@ jobs:
         env:
           SLUG: live-weather-station
           DRY_RUN: ${{ github.event_name == 'release' && 'false' || 'true' }}
+          VERSION: ${{ github.event_name == 'release' && github.event.release.tag_name || 'dry-run' }}
           SVN_PASSWORD: ${{ secrets.SVN_PASSWORD }}
           SVN_USERNAME: ${{ secrets.SVN_USERNAME }}
