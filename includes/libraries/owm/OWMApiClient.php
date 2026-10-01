@@ -156,6 +156,7 @@ class OWMApiClient
             // OpenWeatherMap always uses json for errors, even if one specifies xml as format.
             $error = json_decode($answer, true);
             if (isset($error['message'])) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
                 throw new OWMException(substr(sanitize_text_field((string)$error['message']), 0, 200), isset($error['cod']) ? (int)$error['cod'] : 0);
             } else {
                 throw new OWMException('Unknown fatal error: OpenWeatherMap returned an unexpected answer.');
@@ -226,6 +227,7 @@ class OWMApiClient
             // OpenWeatherMap always uses json for errors, even if one specifies xml as format.
             $error = json_decode($answer, true);
             if (isset($error['message'])) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
                 throw new OWMException(substr(sanitize_text_field((string)$error['message']), 0, 200), isset($error['cod']) ? (int)$error['cod'] : 0);
             } else {
                 throw new OWMException('Unknown fatal error: OpenWeatherMap returned an unexpected answer.');
@@ -289,6 +291,7 @@ class OWMApiClient
             throw new OWMException('Unknown fatal error: OpenWeatherMap returned an unexpected answer.');
         }
         if ($xml['cod'] != 200) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
             throw new OWMException(isset($xml['message']) ? substr(sanitize_text_field((string)$xml['message']), 0, 200) : 'Unknown error', (int)$xml['cod']);
         }
 

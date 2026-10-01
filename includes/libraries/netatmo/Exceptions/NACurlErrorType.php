@@ -12,7 +12,7 @@ class NAWPErrorType extends NAClientException
 {
     function __construct($code, $message)
     {
-        parent::__construct($code, $message, WP_ERROR_TYPE);
+        parent::__construct($code, $message, LIVE_WEATHER_STATION_NETATMO_WP_ERROR_TYPE);
     }
 }
 

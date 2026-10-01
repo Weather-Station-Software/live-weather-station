@@ -66,9 +66,11 @@ class WLINKApiClient
             array($pass, self::MAX_PASS_LENGTH, __('Password', 'live-weather-station')));
         foreach ($fields as $field) {
             if (mb_strlen($field[0], 'UTF-8') > $field[1]) {
+                /* translators: 1: name of a field (Device ID, API Token or Password). 2: maximum number of characters. */
                 return array('service_id' => '', 'error' => sprintf(__('%1$s is too long (%2$d characters maximum).', 'live-weather-station'), $field[2], $field[1]));
             }
             if (strpos($field[0], LWS_SERVICE_SEPARATOR) !== false) {
+                /* translators: %s: name of a field (Device ID, API Token or Password). */
                 return array('service_id' => '', 'error' => sprintf(__('%s contains a forbidden character sequence.', 'live-weather-station'), $field[2]));
             }
         }

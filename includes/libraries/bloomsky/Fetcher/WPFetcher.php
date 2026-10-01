@@ -43,6 +43,7 @@ class WPFetcher implements FetcherInterface
         }
         $response = wp_remote_get($url, $args);
         if (is_wp_error($response)) {
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
             throw new \Exception(substr(sanitize_text_field($response->get_error_message()), 0, 200), 999);
         }
         if (wp_remote_retrieve_response_code($response) != 200) {
@@ -54,6 +55,7 @@ class WPFetcher implements FetcherInterface
             if ($code === '') {
                 $code = 999;
             }
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Plugin Check: exception messages are never echoed (they are caught and logged by the plugin), and they are either fixed strings or already sanitized.
             throw new \Exception($message, $code);
         }
         return wp_remote_retrieve_body($response);
