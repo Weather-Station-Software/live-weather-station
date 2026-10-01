@@ -118,7 +118,7 @@ abstract class BaseHandling {
         $params['marker']['shadow'] = 'medium';
         $params['marker']['page'] = 'none';
         $params['specific'] = $this->specific_params();
-        return $this->add_new_map($this->type, sprintf(__('New %s map', 'live-weather-station'), $this->service), $params);
+        return $this->add_new_map($this->type, sprintf(/* translators: %s: map service name, like Maptiler */ __('New %s map', 'live-weather-station'), $this->service), $params);
     }
 
     /**
@@ -127,18 +127,19 @@ abstract class BaseHandling {
      * @since 3.7.0
      */
     public function save_map() {
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- the 'lws-map-<id>' nonce and the manage capability are verified by MapHelper::edit_map() before it calls save_map()
         $params = $this->map_params;
         if (array_key_exists('common-name', $_POST)) {
-            $this->map_name = sanitize_text_field($_POST['common-name']);
+            $this->map_name = sanitize_text_field(wp_unslash($_POST['common-name']));
         }
         if (array_key_exists('common-width', $_POST)) {
-            $params['common']['width'] = live_weather_station_sanitize_width_field($_POST['common-width']);
+            $params['common']['width'] = live_weather_station_sanitize_width_field(sanitize_text_field(wp_unslash($_POST['common-width'])));
         }
         if (array_key_exists('common-height', $_POST)) {
-            $params['common']['height'] = live_weather_station_sanitize_height_field($_POST['common-height']);
+            $params['common']['height'] = live_weather_station_sanitize_height_field(sanitize_text_field(wp_unslash($_POST['common-height'])));
         }
         if (array_key_exists('common-loc_zoom', $_POST)) {
-            $i = (int)sanitize_text_field($_POST['common-loc_zoom']);
+            $i = (int)sanitize_text_field(wp_unslash($_POST['common-loc_zoom']));
             if ($i < $this->minzoom) {
                 $i = $this->minzoom;
             }
@@ -148,14 +149,14 @@ abstract class BaseHandling {
             $params['common']['loc_zoom'] = $i;
         }
         if (array_key_exists('common-station-selector', $_POST)) {
-            if (in_array($_POST['common-station-selector'], array('all', 'select'))) {
-                $params['common']['all'] = $_POST['common-station-selector'] == 'all';
+            if (in_array(sanitize_text_field(wp_unslash($_POST['common-station-selector'])), array('all', 'select'))) {
+                $params['common']['all'] = sanitize_text_field(wp_unslash($_POST['common-station-selector'])) == 'all';
             }
         }
         if (array_key_exists('stations-selector', $_POST) && is_array($_POST['stations-selector'])) {
             try {
                 $tab = array();
-                foreach ($_POST['stations-selector'] as $sid) {
+                foreach (array_map('sanitize_text_field', wp_unslash($_POST['stations-selector'])) as $sid) {
                     if (is_numeric($sid)) {
                         $tab[] = (int)round($sid);
                     }
@@ -167,36 +168,37 @@ abstract class BaseHandling {
             }
         }
         if (array_key_exists('marker-type', $_POST)) {
-            if (in_array($_POST['marker-type'], array('none', 'pin', 'old', 'logo', 'brand', 'weather:current', 'weather:temp', 'weather:colortemp', 'weather:wind'))) {
-                $params['marker']['type'] = $_POST['marker-type'];
+            if (in_array(sanitize_text_field(wp_unslash($_POST['marker-type'])), array('none', 'pin', 'old', 'logo', 'brand', 'weather:current', 'weather:temp', 'weather:colortemp', 'weather:wind'))) {
+                $params['marker']['type'] = sanitize_text_field(wp_unslash($_POST['marker-type']));
             }
         }
         if (array_key_exists('marker-data', $_POST)) {
-            if (in_array($_POST['marker-data'], array('current', 'calendar', 'station'))) {
-                $params['marker']['data'] = $_POST['marker-data'];
+            if (in_array(sanitize_text_field(wp_unslash($_POST['marker-data'])), array('current', 'calendar', 'station'))) {
+                $params['marker']['data'] = sanitize_text_field(wp_unslash($_POST['marker-data']));
             }
         }
         if (array_key_exists('marker-style', $_POST)) {
-            if (in_array($_POST['marker-style'], array('minimalist', 'standard', 'extended'))) {
-                $params['marker']['style'] = $_POST['marker-style'];
+            if (in_array(sanitize_text_field(wp_unslash($_POST['marker-style'])), array('minimalist', 'standard', 'extended'))) {
+                $params['marker']['style'] = sanitize_text_field(wp_unslash($_POST['marker-style']));
             }
         }
         if (array_key_exists('marker-contrast', $_POST)) {
-            if (in_array($_POST['marker-contrast'], array('light', 'medium', 'dark'))) {
-                $params['marker']['contrast'] = $_POST['marker-contrast'];
+            if (in_array(sanitize_text_field(wp_unslash($_POST['marker-contrast'])), array('light', 'medium', 'dark'))) {
+                $params['marker']['contrast'] = sanitize_text_field(wp_unslash($_POST['marker-contrast']));
             }
         }
         if (array_key_exists('marker-shadow', $_POST)) {
-            if (in_array($_POST['marker-shadow'], array('none', 'medium', 'dark'))) {
-                $params['marker']['shadow'] = $_POST['marker-shadow'];
+            if (in_array(sanitize_text_field(wp_unslash($_POST['marker-shadow'])), array('none', 'medium', 'dark'))) {
+                $params['marker']['shadow'] = sanitize_text_field(wp_unslash($_POST['marker-shadow']));
             }
         }
         if (array_key_exists('marker-page', $_POST)) {
-            if (in_array($_POST['marker-page'], array('none', 'link1', 'link2', 'link3'))) {
-                $params['marker']['page'] = $_POST['marker-page'];
+            if (in_array(sanitize_text_field(wp_unslash($_POST['marker-page'])), array('none', 'link1', 'link2', 'link3'))) {
+                $params['marker']['page'] = sanitize_text_field(wp_unslash($_POST['marker-page']));
             }
         }
         $params['specific'] = $this->get_specific_post_values();
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         $this->update_map($this->map_id, $this->type, $this->map_name, $params);
     }
 
@@ -755,11 +757,6 @@ abstract class BaseHandling {
                 $url = '&nbsp;';
             }
             $content .= '<div class="update">' . $lr . '</div><div class="page">' . $url . '</div>';
-            if (array_key_exists('marker-style', $_POST)) {
-                if (in_array($_POST['marker-style'], array('minimalist', 'standard', 'extended'))) {
-                    $params['marker']['style'] = $_POST['marker-style'];
-                }
-            }
             $s['content'] = str_replace('"', '\'', $content);
             $st[] = $s;
         }

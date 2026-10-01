@@ -57,6 +57,7 @@ class Handling {
         $result .= "            postboxes.add_postbox_toggles('lws-settings');";
         $result .= "    });";
         $result .= live_weather_station_print_end_script($jsInitId);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- static JavaScript written in this method plus the script tags of live_weather_station_print_begin_script() and live_weather_station_print_end_script(), which sanitise the init id; no dynamic value
         echo $result;
     }
 

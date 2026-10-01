@@ -109,15 +109,16 @@ class Manager {
     private static function check_for_write() {
         if (!file_exists(self::$dir)) {
             try {
-                mkdir(self::$dir, 0755, true);
+                wp_mkdir_p(self::$dir);
             }
             catch (\Exception $ex) {
                 Logger::alert(self::$service,null, null, null, null, null, $ex->getCode(), 'Unable to create persistent storage root: ' . $ex->getMessage());
                 return false;
             }
         }
-        if (!is_writable(self::$dir)) {
+        if (!wp_is_writable(self::$dir)) {
             try {
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod -- single chmod of the plugin storage directory, WP_Filesystem has no credentials here (also called outside admin screens) and the path is the plugin own storage root
                 chmod(self::$dir, 0755);
             }
             catch (\Exception $ex) {
@@ -125,7 +126,7 @@ class Manager {
                 return false;
             }
         }
-        if (is_writable(self::$dir)) {
+        if (wp_is_writable(self::$dir)) {
             self::protect_dir();
             return true;
         }
@@ -183,11 +184,13 @@ class Manager {
      */
     public static function download_file() {
         // The nonce is bound to the raw name given in the listing: verify it on the raw requested name.
+        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- the nonce is bound to the raw name so it cannot be altered by sanitize_text_field(); the name is then validated strictly below (basename, no control character or slash, 255 characters max)
         $file = isset($_GET['file']) ? rawurldecode(wp_unslash((string)$_GET['file'])) : '';
         if ($file !== basename(str_replace('\\', '/', $file)) || preg_match('/[\x00-\x1f\x7f\/\\\\]/', $file) === 1 || strlen($file) > 255) {
             $file = '';
         }
-        $nonce = isset($_GET['_wpnonce']) ? (string)$_GET['_wpnonce'] : '';
+        // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- this line only reads the nonce, wp_verify_nonce() checks it on the next statement
+        $nonce = isset($_GET['_wpnonce']) ? sanitize_text_field(wp_unslash((string)$_GET['_wpnonce'])) : '';
         if (!current_user_can(live_weather_station_manage_capability()) || $file === '' || !wp_verify_nonce($nonce, 'lws-download-' . $file)) {
             Logger::critical('Security', null, null, null, null, null, 0, 'Unauthorized or forged attempt to download a file.');
             wp_die(esc_html__('You do not have sufficient permissions to download this file.', 'live-weather-station'), '', array('response' => 403));
@@ -204,6 +207,7 @@ class Manager {
         header('Content-Type: ' . self::$managed_extension[$ext] . '; charset=utf-8');
         header('Content-Disposition: ' . (isset($_GET['inline']) ? 'inline' : 'attachment') . '; filename="' . str_replace(array('"', "\r", "\n"), '', $file) . '"');
         header('Content-Length: ' . filesize($real));
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_readfile -- streams a file to the browser, WP_Filesystem cannot stream; $real is a file of the plugin storage root checked just above (realpath, same directory, managed extension)
         readfile($real);
         exit;
     }
@@ -312,6 +316,7 @@ class Manager {
             try {
                 $created = (false !== file_put_contents(self::$dir . $filename, ''));
                 if ($created) {
+                    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod -- restricts a file just created by the plugin in its own storage root, WP_Filesystem has no credentials here (also called outside admin screens)
                     @chmod(self::$dir . $filename, 0600);
                 }
                 return $created;
@@ -671,6 +676,7 @@ class Manager {
             $result['error'] = __('You do not have sufficient permissions to add files.', 'live-weather-station');
             return $result;
         }
+        // phpcs:disable WordPress.Security.NonceVerification.Missing -- the 'add-file' nonce is verified by SystemPluginAdmin::add_file() before it calls upload_file(), which also checks the manage capability
         if(!empty($_FILES['file-to-upload'])) {
             if (!isset($_FILES['file-to-upload']['size']) || (int)$_FILES['file-to-upload']['size'] > self::$max_upload_size || (int)$_FILES['file-to-upload']['size'] <= 0) {
                 $result['error'] = __('invalid file size', 'live-weather-station');
@@ -704,6 +710,7 @@ class Manager {
             remove_filter('upload_mimes', array(get_called_class(), 'change_upload_mimes'));
             remove_filter('wp_check_filetype_and_ext', array(get_called_class(), 'recheck_filetype_and_ext'), 10);
         }
+        // phpcs:enable WordPress.Security.NonceVerification.Missing
         return $result;
     }
 
@@ -726,6 +733,7 @@ class Manager {
             return is_array($content);
         }
         if ($ext === 'ndjson') {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- reads the file line by line to validate ND-JSON without loading it all, WP_Filesystem cannot stream; $real is a file of the plugin storage root checked at the top of this method
             $handle = fopen($real, 'r');
             if ($handle === false) {
                 return false;
@@ -743,6 +751,7 @@ class Manager {
                 }
                 $count++;
             }
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closes the handle opened with fopen() above
             fclose($handle);
             return $valid && $count > 0;
         }

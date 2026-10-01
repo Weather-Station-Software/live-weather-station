@@ -56,17 +56,17 @@ class NetatmoStationImporter extends NetatmoImporter {
      * @since 3.7.0
      */
     protected function message() {
-        $result = sprintf(__('Here are the details of importing old data from the station "%s":', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
+        $result = sprintf(/* translators: %s: station name */ __('Here are the details of importing old data from the station "%s":', 'live-weather-station'), $this->params['init']['station_name']) . "\r\n";
         foreach ($this->params['summary'] as $module) {
             if ($module['measurements'] === 0 || $module['days_done'] === 0) {
-                $result .= '     - ' . sprintf(__('"%s": no measurements.', 'live-weather-station'), $module['name']) . "\r\n";
+                $result .= '     - ' . sprintf(/* translators: %s: module name */ __('"%s": no measurements.', 'live-weather-station'), $module['name']) . "\r\n";
             }
             else {
-                $result .= '     - ' . sprintf(__('"%s": %s measurements spread over %s days.', 'live-weather-station'), $module['name'], $module['measurements'], $module['days_done']) . "\r\n";
+                $result .= '     - ' . sprintf(/* translators: 1: module name, 2: number of measurements, 3: number of days */ __('"%1$s": %2$s measurements spread over %3$s days.', 'live-weather-station'), $module['name'], $module['measurements'], $module['days_done']) . "\r\n";
             }
         }
-        $result .= "\r\n" . sprintf(__('These measurements were compiled in %s.', 'live-weather-station'), $this->get_age_hours_from_seconds($this->exectime)) . ' ';
-        $result .= "\r\n" . sprintf(__('Historical data has been updated and is now usable in %s controls.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
+        $result .= "\r\n" . sprintf(/* translators: %s: duration, like "2 hours, 3 minutes" */ __('These measurements were compiled in %s.', 'live-weather-station'), $this->get_age_hours_from_seconds($this->exectime)) . ' ';
+        $result .= "\r\n" . sprintf(/* translators: %s: plugin name */ __('Historical data has been updated and is now usable in %s controls.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
         return $result;
     }
 }

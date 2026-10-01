@@ -124,7 +124,7 @@ class Frontend {
         live_weather_station_register_script('lws-fa-solid', LIVE_WEATHER_STATION_PUBLIC_URL , 'js/fa-solid.min.js', array('lws-fa-loader'));
         live_weather_station_register_script('lws-leaflet', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/leaflet-140.min.js');
         live_weather_station_register_script('lws-stamen-boot', LIVE_WEATHER_STATION_PUBLIC_URL, 'js/stamen.min.js');
-        wp_register_script('lws-windy-boot', 'https://api.windy.com/assets/map-forecast/libBoot.js');
+        wp_register_script('lws-windy-boot', 'https://api.windy.com/assets/map-forecast/libBoot.js', array(), LIVE_WEATHER_STATION_VERSION, (bool)get_option('live_weather_station_footer_scripts', false));
 
     }
 
@@ -137,14 +137,17 @@ class Frontend {
         $this->lws_rate_limit('lws_graph_data_callback');
         $attributes = array();
         foreach ($this->graph_allowed_parameter as $param) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists($param, $_POST)) {
                 $attributes[$param] = $this->lws_post_value($param);
             }
         }
         for ($i = 1; $i <= 8; $i++) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists('device_id_'.$i, $_POST)) {
                 $attributes['device_id_'.$i] = $this->lws_post_value('device_id_'.$i);
                 foreach ($this->graph_allowed_series as $param) {
+                    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
                     if (array_key_exists($param.'_'.$i, $_POST)) {
                         $attributes[$param.'_'.$i] = $this->lws_post_value($param.'_'.$i);
                     }
@@ -152,6 +155,7 @@ class Frontend {
             }
         }
         $result = $this->graph_query($this->graph_prepare($attributes), true);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response read as JSON by the script: lws_result_values() returns the JSON series built by DataOutput (wp_json_encode) or '[]'
         echo $this->lws_result_values($result);
         exit;
     }
@@ -165,18 +169,21 @@ class Frontend {
         $this->lws_rate_limit('lws_ltgraph_data_callback');
         $attributes = array();
         foreach ($this->ltgraph_allowed_parameter as $param) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists($param, $_POST)) {
                 $attributes[$param] = $this->lws_post_value($param);
             }
         }
         for ($i = 1; $i <= 8; $i++) {
             foreach ($this->ltgraph_allowed_series as $param) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
                 if (array_key_exists($param.'_'.$i, $_POST)) {
                     $attributes[$param.'_'.$i] = $this->lws_post_value($param.'_'.$i);
                 }
             }
         }
         $result = $this->graph_query($this->ltgraph_prepare($attributes), true);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response read as JSON by the script: lws_result_values() returns the JSON series built by DataOutput (wp_json_encode) or '[]'
         echo $this->lws_result_values($result);
         exit;
     }
@@ -190,11 +197,13 @@ class Frontend {
         $this->lws_rate_limit('lws_radial_data_callback');
         $attributes = array();
         foreach ($this->radial_allowed_parameter as $param) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists($param, $_POST)) {
                 $attributes[$param] = $this->lws_post_value($param);
             }
         }
         $result = $this->graph_query($this->radial_prepare($attributes), true);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response read as JSON by the script: lws_result_values() returns the JSON series built by DataOutput (wp_json_encode) or '[]'
         echo $this->lws_result_values($result);
         exit;
     }
@@ -208,20 +217,24 @@ class Frontend {
         $this->lws_rate_limit('lws_graph_code_callback');
         $attributes = array();
         foreach ($this->graph_allowed_parameter as $param) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists($param, $_POST)) {
                 $attributes[$param] = $this->lws_post_value($param);
             }
         }
         for ($i = 1; $i <= 8; $i++) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists('device_id_'.$i, $_POST)) {
                 $attributes['device_id_'.$i] = $this->lws_post_value('device_id_'.$i);
                 foreach ($this->graph_allowed_series as $param) {
+                    // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
                     if (array_key_exists($param.'_'.$i, $_POST)) {
                         $attributes[$param.'_'.$i] = $this->lws_post_value($param.'_'.$i);
                     }
                 }
             }
         }
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response: the JavaScript and markup of the chart is generated by DataOutput::graph_shortcodes(), whose dynamic values go through Guard::js(), js_str() or esc_html(); the attributes were filtered by lws_post_value() and the allowed parameter lists
         echo $this->graph_shortcodes($attributes);
         exit;
     }
@@ -235,17 +248,20 @@ class Frontend {
         $this->lws_rate_limit('lws_ltgraph_code_callback');
         $attributes = array();
         foreach ($this->ltgraph_allowed_parameter as $param) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists($param, $_POST)) {
                 $attributes[$param] = $this->lws_post_value($param);
             }
         }
         for ($i = 1; $i <= 8; $i++) {
             foreach ($this->ltgraph_allowed_series as $param) {
+                // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
                 if (array_key_exists($param.'_'.$i, $_POST)) {
                     $attributes[$param.'_'.$i] = $this->lws_post_value($param.'_'.$i);
                 }
             }
         }
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response: the JavaScript and markup of the chart is generated by DataOutput::ltgraph_shortcodes(), whose dynamic values go through Guard::js(), js_str() or esc_html(); the attributes were filtered by lws_post_value() and the allowed parameter lists
         echo $this->ltgraph_shortcodes($attributes);
         exit;
     }
@@ -259,10 +275,12 @@ class Frontend {
         $this->lws_rate_limit('lws_lttextual_code_callback');
         $attributes = array();
         foreach ($this->lttextual_allowed_parameter as $param) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists($param, $_POST)) {
                 $attributes[$param] = $this->lws_post_value($param);
             }
         }
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response: the JavaScript and markup of the chart is generated by DataOutput::lttextual_shortcodes(), whose dynamic values go through Guard::js(), js_str() or esc_html(); the attributes were filtered by lws_post_value() and the allowed parameter lists
         echo $this->lttextual_shortcodes($attributes);
         exit;
     }
@@ -276,10 +294,12 @@ class Frontend {
         $this->lws_rate_limit('lws_radial_code_callback');
         $attributes = array();
         foreach ($this->radial_allowed_parameter as $param) {
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
             if (array_key_exists($param, $_POST)) {
                 $attributes[$param] = $this->lws_post_value($param);
             }
         }
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- AJAX response: the JavaScript and markup of the chart is generated by DataOutput::radial_shortcodes(), whose dynamic values go through Guard::js(), js_str() or esc_html(); the attributes were filtered by lws_post_value() and the allowed parameter lists
         echo $this->radial_shortcodes($attributes);
         exit;
     }
@@ -318,6 +338,7 @@ class Frontend {
         $_attributes['subtitle'] = $this->lws_post_value('subtitle');
         $_attributes['unit'] = $this->lws_post_value('unit');
         $_attributes['size'] = $this->lws_post_value('size');
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
         if (array_key_exists('force', $_POST)) {
             $_attributes['force'] = $this->lws_post_value('force');
         }
@@ -446,7 +467,9 @@ class Frontend {
      * @since 3.8.15
      */
     private function lws_post_value($key) {
+        // phpcs:ignore WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching
         if (isset($_POST[$key]) && is_scalar($_POST[$key])) {
+            // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.NonceVerification.Missing -- public read-only AJAX endpoint (wp_ajax_nopriv): it only reads published weather data for anonymous visitors, changes no state, and a nonce would break full page caching; unslash: kept as received on purpose, callers that need unslashed text (lws_shortcode_callback) unslash it themselves, so unslashing here would unslash twice
             $value = wp_kses($_POST[$key], array());
             // Anonymous visitors must not bypass the cache: only administrators may force a fresh computation.
             if ($key === 'cache' && $value === 'no_cache' && !current_user_can(live_weather_station_manage_capability())) {

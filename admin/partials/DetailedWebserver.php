@@ -14,21 +14,21 @@ if ( ! defined( 'ABSPATH' ) ) {
 ?>
 <div id="normal-sortables" class="meta-box-sortables ui-sortable">
     <div id="referrers" class="postbox ">
-        <div class="handlediv" title="<?php echo __('Click to toggle', 'live-weather-station'); ?>"><br></div>
-        <h3 class="hndle"><span><?php echo __('Webserver', 'live-weather-station' );?></span></h3>
+        <div class="handlediv" title="<?php esc_attr_e('Click to toggle', 'live-weather-station'); ?>"><br></div>
+        <h3 class="hndle"><span><?php esc_html_e('Webserver', 'live-weather-station');?></span></h3>
         <div class="inside">
             <table cellspacing="10" width="99%">
                 <tbody>
                 <tr>
-                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-lg fa-window-maximize"></i></td>
+                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-lg fa-window-maximize"></i></td>
                     <td><?php echo esc_html(Env::webserver_software_name().' '.__('with', 'live-weather-station').' '.Env::webserver_api()); ?></td>
                 </tr>
                 <tr>
-                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-lg fa-bolt"></i></td>
+                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-lg fa-bolt"></i></td>
                     <td><?php echo esc_html(Env::webserver_protocol().' '.__('on port', 'live-weather-station').' '.Env::webserver_port()); ?></td>
                 </tr>
                 <tr>
-                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-<?php echo LIVE_WEATHER_STATION_FA5?'hdd':'hdd-o';?>"></i></td>
+                    <td width="10%"/><td width="20px"><i style="color:#999999" class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-<?php echo esc_attr(LIVE_WEATHER_STATION_FA5 ? 'hdd' : 'hdd-o');?>"></i></td>
                     <td><?php echo esc_html__('Document root', 'live-weather-station').' <code>'.esc_html(Env::webserver_document_root()).'</code>'; ?></td>
                 </tr>
                 </tbody>

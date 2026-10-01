@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $service = Guard::token($service, '');
-$warning = sprintf(__('%s will stop sending data from the station to this service.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
+$warning = sprintf(/* translators: %s: plugin name */ __('%s will stop sending data from the station to this service.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
 
 ?>
 
@@ -42,7 +42,7 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
             </table>
         <?php } else {?>
             <div style="margin-bottom: 10px;">
-                <span><i style="color:#999" class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-lg fa-fw fa-share-alt" aria-hidden="true"></i>&nbsp;<?php echo wp_kses_post($shared); ?></span>
+                <span><i style="color:#999" class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-lg fa-fw fa-share-alt" aria-hidden="true"></i>&nbsp;<?php echo wp_kses_post($shared); ?></span>
             </div>
         <?php } ?>
     </div>
@@ -50,7 +50,7 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
         <div id="major-publishing-actions">
             <div id="publishing-action">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="<?php echo esc_attr($service); ?>-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Activating data sharing, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="<?php echo esc_attr($service); ?>-span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php esc_html_e('Activating data sharing, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
                 <input type="submit" name="<?php echo esc_attr($service); ?>-share" id="<?php echo esc_attr($service); ?>-share" class="button button-primary" value="<?php esc_attr_e('Connect', 'live-weather-station');?>">
             </div>
@@ -60,9 +60,9 @@ $warning = sprintf(__('%s will stop sending data from the station to this servic
         <div id="major-publishing-actions">
             <div id="publishing-action">
                 <div id="delete-action" style="text-align: right; padding-right: 14px;height: 0px;">
-                    <span id="<?php echo esc_attr($service); ?>-span-sync" style="display: none;"><i class="<?php echo LIVE_WEATHER_STATION_FAS;?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php echo __('Deactivating data sharing, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
+                    <span id="<?php echo esc_attr($service); ?>-span-sync" style="display: none;"><i class="<?php echo esc_attr(LIVE_WEATHER_STATION_FAS);?> fa-cog fa-spin fa-lg fa-fw"></i>&nbsp;<strong><?php esc_html_e('Deactivating data sharing, please wait', 'live-weather-station');?>&hellip;</strong></span></p>
                 </div>
-                <input type="submit" name="<?php echo esc_attr($service); ?>-unshare" id="<?php echo esc_attr($service); ?>-unshare" class="button button-primary" onclick="lws_<?php echo esc_attr($service); ?>_confirmation = confirm(<?php echo Guard::js($warning); ?>); return lws_<?php echo esc_attr($service); ?>_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
+                <input type="submit" name="<?php echo esc_attr($service); ?>-unshare" id="<?php echo esc_attr($service); ?>-unshare" class="button button-primary" onclick="lws_<?php echo esc_attr($service); ?>_confirmation = confirm(<?php echo Guard::js($warning); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() encodes with JSON_HEX_QUOT, JSON_HEX_AMP, JSON_HEX_APOS and JSON_HEX_TAG, so the literal is safe inside an HTML attribute and no quote can end it ?>); return lws_<?php echo esc_attr($service); ?>_confirmation;" value="<?php esc_attr_e('Disconnect', 'live-weather-station');?>">
             </div>
             <div class="clear"></div>
         </div>

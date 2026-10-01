@@ -73,7 +73,7 @@ class Updater {
                     update_option('live_weather_station_show_update', 0);
                 }
             }
-            Notifier::info(sprintf(__('%s has been updated.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME), InlineHelp::whats_new_url(), sprintf(__('Your site now uses version %s.', 'live-weather-station'), LIVE_WEATHER_STATION_VERSION));
+            Notifier::info(sprintf(/* translators: %s: plugin name */ __('%s has been updated.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME), InlineHelp::whats_new_url(), sprintf(/* translators: %s: plugin version number */ __('Your site now uses version %s.', 'live-weather-station'), LIVE_WEATHER_STATION_VERSION));
         }
     }
 }

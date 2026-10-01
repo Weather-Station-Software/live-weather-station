@@ -15,24 +15,24 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 <div class="wrap">
 <?php if ($configuration['uuid'] == 'error') { ?>
-    <h1><?php echo __('Unable to import this file', 'live-weather-station');?></h1>
-    <p><?php echo sprintf(__('There\'s something wrong with this file, %s can\'t read it.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?></p>
+    <h1><?php esc_html_e('Unable to import this file', 'live-weather-station');?></h1>
+    <p><?php echo wp_kses_post(sprintf(/* translators: %s: plugin name */ __('There\'s something wrong with this file, %s can\'t read it.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));?></p>
     <p><a href="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-files'), null, 'url'); ?>" class="button" ><?php esc_html_e('Cancel', 'live-weather-station');?></a></p>
 <?php } else { ?>
-    <h1><?php echo __('Import configuration', 'live-weather-station');?></h1>
+    <h1><?php esc_html_e('Import configuration', 'live-weather-station');?></h1>
     <form name="import-configuration" id="import-configuration" action="<?php echo esc_url(live_weather_station_get_admin_page_url('lws-files', 'do', 'import', 'configuration', false, null, $configuration['uuid']), null, 'url'); ?>" method="POST" style="margin:0px;padding:0px;">
         <input type="hidden" name="xid" value="<?php echo esc_attr($configuration['uuid']); ?>" />
         <?php wp_nonce_field('import-configuration'); ?>
-        <p><?php echo __('Please, select the elements you want to import:', 'live-weather-station');?></p>
+        <p><?php esc_html_e('Please, select the elements you want to import:', 'live-weather-station');?></p>
         <table class="form-table">
             <tbody>
             <?php if (array_key_exists('settings', $configuration)) { ?>
                 <tr>
                     <th scope="row"><?php esc_html_e('Settings', 'live-weather-station');?></th>
                     <td disabled>
-                        <fieldset><label><input name="configuration-settings" id="configuration-settings" type="checkbox"><?php echo sprintf(_n('%s element', '%s elements', absint($configuration['settings']), 'live-weather-station'), absint($configuration['settings']));?></label>
+                        <fieldset><label><input name="configuration-settings" id="configuration-settings" type="checkbox"><?php echo wp_kses_post(sprintf(/* translators: %s: number of elements */ _n('%s element', '%s elements', absint($configuration['settings']), 'live-weather-station'), absint($configuration['settings'])));?></label>
                         </fieldset>
-                        <p class="description"><?php echo sprintf(__('Check this to import these settings in %s. Note: it will replace current settings.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?></p>
+                        <p class="description"><?php echo wp_kses_post(sprintf(/* translators: %s: plugin name */ __('Check this to import these settings in %s. Note: it will replace current settings.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));?></p>
                     </td>
                 </tr>
             <?php }  ?>
@@ -41,9 +41,9 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <tr>
                     <th scope="row"><?php esc_html_e('Stations', 'live-weather-station');?></th>
                     <td disabled>
-                        <fieldset><label><input name="configuration-stations" id="configuration-stations" type="checkbox"><?php echo sprintf(_n('%s element', '%s elements', absint($configuration['stations']), 'live-weather-station'), absint($configuration['stations']));?></label>
+                        <fieldset><label><input name="configuration-stations" id="configuration-stations" type="checkbox"><?php echo wp_kses_post(sprintf(/* translators: %s: number of elements */ _n('%s element', '%s elements', absint($configuration['stations']), 'live-weather-station'), absint($configuration['stations'])));?></label>
                         </fieldset>
-                        <p class="description"><?php echo sprintf(__('Check this to import these stations in %s. Note: it will replace all current stations and modules.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?></p>
+                        <p class="description"><?php echo wp_kses_post(sprintf(/* translators: %s: plugin name */ __('Check this to import these stations in %s. Note: it will replace all current stations and modules.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));?></p>
                     </td>
                 </tr>
             <?php }  ?>
@@ -52,9 +52,9 @@ if ( ! defined( 'ABSPATH' ) ) {
                 <tr>
                     <th scope="row"><?php esc_html_e('Maps', 'live-weather-station');?></th>
                     <td disabled>
-                        <fieldset><label><input name="configuration-maps" id="configuration-maps" type="checkbox"><?php echo sprintf(_n('%s element', '%s elements', absint($configuration['maps']), 'live-weather-station'), absint($configuration['maps']));?></label>
+                        <fieldset><label><input name="configuration-maps" id="configuration-maps" type="checkbox"><?php echo wp_kses_post(sprintf(/* translators: %s: number of elements */ _n('%s element', '%s elements', absint($configuration['maps']), 'live-weather-station'), absint($configuration['maps'])));?></label>
                         </fieldset>
-                        <p class="description"><?php echo sprintf(__('Check this to import these maps in %s. Note: it will replace all current maps.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);?></p>
+                        <p class="description"><?php echo wp_kses_post(sprintf(/* translators: %s: plugin name */ __('Check this to import these maps in %s. Note: it will replace all current maps.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME));?></p>
                     </td>
                 </tr>
             <?php }  ?>
