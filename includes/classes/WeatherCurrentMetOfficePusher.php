@@ -42,9 +42,6 @@ class Pusher extends Abstract_Pusher {
         if (array_key_exists('pressure', $data)) {
             $result['baromin'] = $this->get_pressure($data['pressure'], 1);
         }
-        if (array_key_exists('abs_pressure', $data)) {
-            $result['absbaromin'] = $this->get_pressure($data['abs_pressure'], 1);
-        }
         if (array_key_exists('temperature', $data)) {
             $result['tempf'] = $this->get_temperature($data['temperature'], 1);
         }
@@ -109,7 +106,7 @@ class Pusher extends Abstract_Pusher {
      * @since   2.5.0
      */
     protected function get_post_url() {
-        // The Met Office hub was closed on 1 December 2025: WOW is now run by RMI Belgium (WOW-BE).
+        // WOW Met Office is discontinued at the end of 2026: WOW is now run by RMI Belgium (WOW-BE).
         // Same parameter names as the former protocol (siteid accepts the station ID, siteAuthenticationKey the authentication key).
         $default = 'https://wow.meteo.be/api/v2/send';
         $url = apply_filters('lws_wow_endpoint', $default);
