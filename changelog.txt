@@ -39,6 +39,7 @@
 * Bug fix: Windy maps use the current loader URL of the Windy Map Forecast API.
 * Improvement: the Windy settings and help now state that a Windy Professional key is required in production (the free Testing version is not allowed).
 * Improvement: global functions, constants and hooks now carry the unique prefix `live_weather_station_` (wordpress.org naming rules). The filter `lws_manage_options_capability` is renamed `live_weather_station_manage_options_capability`; the old name is still honoured.
+* Bug fix: the public feed addresses /get-weather/... work on every web server (they were rewritten to a PHP file, which only Apache handled, and even there the parameters were lost). The standalone generator.php no longer searches for wp-load.php: the feeds are served by WordPress itself, and the plugin shows the address that matches the permalink setting of the site (a query string address when the permalinks are plain).
 
 #3.8.14 / September 6th, 2023
 * Improvement: full support for WordPress 6.3.x

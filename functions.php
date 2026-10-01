@@ -44,6 +44,31 @@ function live_weather_station_get_admin_page_url($page='lws-dashboard', $action=
 }
 
 /**
+ * Get the public address of a station feed, working with the permalink setting of the site.
+ *
+ * With pretty permalinks the address is /get-weather/[station]/[format]/ (or the file form: YoWindow.xml, clientraw.txt, realtime.txt),
+ * with plain permalinks it is the query string address /?live_weather_station_station=[station]&live_weather_station_type=[format].
+ *
+ * @param string $station_id The station id (MAC address).
+ * @param string $format The format: stickertags, yowindow, clientraw, realtime, or the file form YoWindow.xml, clientraw.txt, realtime.txt.
+ * @return string The full url of the feed.
+ * @since 3.9.0
+ */
+function live_weather_station_get_feed_url($station_id, $format) {
+    global $wp_rewrite;
+    $station_id = strtolower((string)$station_id);
+    $format = (string)$format;
+    $files = array('YoWindow.xml' => 'yowindow', 'clientraw.txt' => 'clientraw', 'realtime.txt' => 'realtime');
+    $type = strtolower(isset($files[$format]) ? $files[$format] : $format);
+    if ((bool)get_option('permalink_structure')) {
+        $root = (is_object($wp_rewrite) && $wp_rewrite->using_index_permalinks()) ? 'index.php/' : '';
+        $path = array_key_exists($format, $files) ? $format : $type . '/';
+        return home_url($root . 'get-weather/' . $station_id . '/' . $path);
+    }
+    return add_query_arg(array('live_weather_station_station' => $station_id, 'live_weather_station_type' => $type), home_url('/'));
+}
+
+/**
  * Get and admin page url based on the current one.
  *
  * @param array $params The params to override.

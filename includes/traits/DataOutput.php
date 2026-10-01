@@ -13832,11 +13832,11 @@ trait Output {
         $result = array();
         $target = ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" rel="noopener noreferrer"' : '');
         if ($data['txt_sync']) {
-            $url = site_url('/get-weather/' . strtolower($data['station_id']) . '/stickertags/');
+            $url = live_weather_station_get_feed_url($data['station_id'], 'stickertags');
             $result[] = '<a href="' . esc_url($url) . '"' . $target . '>Stickertags</a>';
         }
         if ($data['yow_sync']) {
-            $url = site_url('/get-weather/' . strtolower($data['station_id']) . '/yowindow/');
+            $url = live_weather_station_get_feed_url($data['station_id'], 'yowindow');
             $result[] = '<a href="' . esc_url($url) . '"' . $target . '>YoWindow</a>';
         }
         return $result;
