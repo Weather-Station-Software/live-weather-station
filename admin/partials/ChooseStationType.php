@@ -9,6 +9,10 @@
 use WeatherStation\UI\SVG\Handling as SVG;
 use WeatherStation\System\Output\Guard;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $dashboard = (isset($welcome) && $welcome);
 
 if (get_option('live_weather_station_netatmo_connected')) {

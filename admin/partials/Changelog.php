@@ -6,6 +6,9 @@
  * @since 3.0.7
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 <div class="wrap">
     <h2><?php echo ucfirst(__('changelog', 'live-weather-station')); ?></h2>

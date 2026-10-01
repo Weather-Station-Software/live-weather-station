@@ -10,6 +10,9 @@ use WeatherStation\System\Help\InlineHelp as Help;
 use WeatherStation\System\Environment\Manager as EnvManager;
 
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
     <ul>

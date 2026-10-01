@@ -10,11 +10,15 @@ use WeatherStation\UI\SVG\Handling as SVG;
 use WeatherStation\System\Environment\Manager as EnvManager;
 
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $wp_str = EnvManager::wordpress_version_text() . ' (' . EnvManager::php_version_text() . ' / ' . EnvManager::mysql_version_text() . ').';
 $lws_str = EnvManager::weatherstation_version_text();
 if (get_option('live_weather_station_last_update')) {
     $format = get_option('date_format') ;//. ', ' . get_option('time_format');
-    $update = date_i18n($format, strtotime(get_date_from_gmt(date('Y-m-d H:i:s',get_option('live_weather_station_last_update')))) );
+    $update = date_i18n($format, strtotime(get_date_from_gmt(gmdate('Y-m-d H:i:s',get_option('live_weather_station_last_update')))) );
     $lws_str .= ' - ' . $update;
 }
 $dev = EnvManager::is_plugin_in_dev_mode();

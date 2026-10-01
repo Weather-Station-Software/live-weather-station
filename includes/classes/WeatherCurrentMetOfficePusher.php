@@ -35,7 +35,7 @@ class Pusher extends Abstract_Pusher {
      */
     protected function process_data($data) {
         $result = array();
-        $result['dateutc'] = date('Y-m-d H:i:s', time()-60);
+        $result['dateutc'] = gmdate('Y-m-d H:i:s', time()-60);
         /*if (array_key_exists('timestamp', $data)) {
             $result['dateutc'] = $data['timestamp'];
         }*/

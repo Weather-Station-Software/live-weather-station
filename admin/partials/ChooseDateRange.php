@@ -7,6 +7,9 @@
  */
 
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <?php if (isset($constraint_range) && $constraint_range) { ?>

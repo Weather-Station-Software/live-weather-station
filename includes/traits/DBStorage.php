@@ -18,6 +18,9 @@ use WeatherStation\System\SQL\Guard;
  * @since 1.0.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 define('LIVE_WEATHER_STATION_NETATMO_SID', 0);
 define('LIVE_WEATHER_STATION_LOC_SID', 1);
 define('LIVE_WEATHER_STATION_OWM_SID', 2);
@@ -1269,7 +1272,7 @@ trait Storage {
                 if ($sec > (86400 - 150)) {         //if near midnight (less than 2'30")
                     $ts = $ts + 1 + 86400 - $sec;   //jump to tomorrow midnight + 1 second
                 }
-                $now = date('Y-m-d H:i', $ts);
+                $now = gmdate('Y-m-d H:i', $ts);
                 if (in_array(substr($now, -1), array('8', '9', '0', '1', '2'))) {
                     $min = '0:00';
                 } else {
@@ -1519,7 +1522,7 @@ trait Storage {
                 $sensibility = 0.005;
         }
         try {
-            $datetime = new \DateTime(date('Y-m-d H:i:s', time()-$shift), new \DateTimeZone($tz));
+            $datetime = new \DateTime(gmdate('Y-m-d H:i:s', time()-$shift), new \DateTimeZone($tz));
         }
         catch(\Exception $ex) {
             return '';
@@ -1539,7 +1542,7 @@ trait Storage {
             }
         }
         $where[] = '`timestamp`>%s';
-        $args[] = date('Y-m-d H:i:s', $datetime->getTimestamp());
+        $args[] = gmdate('Y-m-d H:i:s', $datetime->getTimestamp());
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
         $sql = $wpdb->prepare("SELECT * FROM " . $table_name . " WHERE (" . implode(" AND ", $where) . ") ORDER BY `timestamp` ASC ;", $args);
         try {
@@ -1637,13 +1640,13 @@ trait Storage {
                             }
                             if (!$trend) {
                                 $datetime = new \DateTime('today midnight', new \DateTimeZone($tz));
-                                $oldval = $this->get_measurements_rows_after($value, date('Y-m-d H:i:s', $datetime->getTimestamp()));
+                                $oldval = $this->get_measurements_rows_after($value, gmdate('Y-m-d H:i:s', $datetime->getTimestamp()));
                             }
                         }
                         unset ($value['measure_value']);
                         $value['measure_type'] = $type . '_' . $c;
                         $datetime = new \DateTime('today midnight', new \DateTimeZone($tz));
-                        $val = $this->get_measurements_rows_after($value, date('Y-m-d H:i:s', $datetime->getTimestamp()));
+                        $val = $this->get_measurements_rows_after($value, gmdate('Y-m-d H:i:s', $datetime->getTimestamp()));
                         if (count($val) > 0) {
                             switch ($i) {
                                 case 0:

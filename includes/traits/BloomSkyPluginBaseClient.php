@@ -143,9 +143,9 @@ trait BaseClient {
                         $s['loc_latitude'] = $place['location'][1];
                     }
                 }
-                $s['last_refresh'] = date('Y-m-d H:i:s');
+                $s['last_refresh'] = gmdate('Y-m-d H:i:s');
                 if (array_key_exists('time_utc', $device)) {
-                    $s['last_seen'] = date('Y-m-d H:i:s', $device['time_utc']);
+                    $s['last_seen'] = gmdate('Y-m-d H:i:s', $device['time_utc']);
                 }
                 $this->update_stations_table($s);
             }

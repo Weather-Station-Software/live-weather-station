@@ -549,8 +549,8 @@ class Performance {
         $counts = array(24, 30);
         $values = array();
         $cutoff = array();
-        $cutoff[24] = date('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
-        $cutoff[30] = date('Y-m-d H:i:s',time() - (30*DAY_IN_SECONDS));
+        $cutoff[24] = gmdate('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
+        $cutoff[30] = gmdate('Y-m-d H:i:s',time() - (30*DAY_IN_SECONDS));
         $sum = array();
         $sum[24] = array();
         $sum[30] = array();
@@ -748,7 +748,7 @@ class Performance {
             }
         }
         $select = "service, " . implode(', ', $fields);
-        $cutoff = date('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
+        $cutoff = gmdate('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
         $where = "timestamp>='" . $cutoff . "'";
         $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ";
         $sql .= $where . " GROUP BY service ORDER BY `timestamp` ASC;";
@@ -797,8 +797,8 @@ class Performance {
             $fields[] = '(if (`' . $verb . '_rate_q`=0,0,1)) as max_' . $verb . '_rate_has_quota' ;
         }
         $select = "service, " . implode(', ', $fields);
-        $cutoff = date('Y-m-d',time() - (31*DAY_IN_SECONDS)) . ' 00:00:00';
-        $today = date('Y-m-d') . ' 00:00:00';
+        $cutoff = gmdate('Y-m-d',time() - (31*DAY_IN_SECONDS)) . ' 00:00:00';
+        $today = gmdate('Y-m-d') . ' 00:00:00';
         $where = "timestamp>='" . $cutoff . "' AND timestamp<'" . $today . "'";
         $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ";
         $sql .= $where . " GROUP BY service ORDER BY `timestamp` ASC;";
@@ -875,7 +875,7 @@ class Performance {
         
         // 24H CALLS & RATES
         $values = array();
-        $cutoff = date('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
+        $cutoff = gmdate('Y-m-d H:i:s',time() - (DAY_IN_SECONDS));
         $where = "timestamp>='" . $cutoff . "'";
         $sql = "SELECT DISTINCT(timestamp) FROM " . $wpdb->prefix.self::live_weather_station_quota_day_table() . " WHERE ". $where . " ORDER BY `timestamp` ASC;";
         try {
@@ -952,7 +952,7 @@ class Performance {
 
         // 30H CALLS & RATES
         $values = array();
-        $cutoff = date('Y-m-d',time()). ' 00:00:00';
+        $cutoff = gmdate('Y-m-d',time()). ' 00:00:00';
         $where = "timestamp<'" . $cutoff . "'";
         $sql = "SELECT DISTINCT(timestamp) FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where. " ORDER BY `timestamp` ASC;";
         try {
@@ -975,7 +975,7 @@ class Performance {
         catch (\Exception $ex) {
             //
         }
-        $cutoff = date('Y-m-d',time()). ' 00:00:00';
+        $cutoff = gmdate('Y-m-d',time()). ' 00:00:00';
         $where = "timestamp<'" . $cutoff . "'";
         $sql = "SELECT * FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where. " ORDER BY `timestamp` ASC;";
         try {
@@ -1106,7 +1106,7 @@ class Performance {
                 $values[$verb][$service] = 0;
             }
         }
-        $cutoff = date('Y-m-d',time()). ' 00:00:00';
+        $cutoff = gmdate('Y-m-d',time()). ' 00:00:00';
         $where = "timestamp<'" . $cutoff . "'";
         $select = "service, " . implode(', ', $fields);
         $sql = "SELECT " . $select . " FROM " . $wpdb->prefix.self::live_weather_station_quota_year_table() . " WHERE ". $where . " GROUP BY service ORDER BY `timestamp` ASC;";

@@ -5,6 +5,10 @@
  * @license http://www.gnu.org/licenses/gpl-2.0.html GPLv2 or later
  * @since 3.2.0
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $values = array();
 foreach ($val as $k => $v) {
     if ($v['get']['has_quota']) {

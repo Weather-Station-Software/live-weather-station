@@ -117,7 +117,7 @@ class Watchdog {
      */
     public static function rotate() {
         global $wpdb;
-        $now = date('Y-m-d H:i:s', time() - MONTH_IN_SECONDS);
+        $now = gmdate('Y-m-d H:i:s', time() - MONTH_IN_SECONDS);
         $sql = "DELETE FROM " . $wpdb->prefix.self::live_weather_station_performance_cron_table() . " WHERE ";
         $sql .= "timestamp<%s;";
         $wpdb->query($wpdb->prepare($sql, $now));
@@ -167,7 +167,7 @@ class Watchdog {
      * @since 3.2.0
      */
     public static function write_stats(){
-        $now = date('Y-m-d H') . ':00:00';
+        $now = gmdate('Y-m-d H') . ':00:00';
         global $wpdb;
         $err_bup = $wpdb->show_errors(false);
         $field_insert = array('timestamp', 'cron', 'count', 'time');

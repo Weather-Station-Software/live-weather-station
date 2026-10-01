@@ -11,6 +11,9 @@
 
 use WeatherStation\System\Logs\Logger;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 spl_autoload_register(
 /**
  * @param $class

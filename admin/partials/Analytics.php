@@ -6,6 +6,10 @@
  * @since 3.1.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $active_tab = (isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'general');
 $page = LIVE_WEATHER_STATION_ADMIN_DIR.'partials/Analytics' . ucfirst($active_tab) . '.php';
 $page = str_replace('_short', 'Short', $page);

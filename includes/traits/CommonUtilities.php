@@ -46,7 +46,7 @@ trait Utilities {
         }
         $dir = array('N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW', 'N');
         $w = $dir[(int)round((($w % 360) / 22.5) + 0.4)];
-        $month = date('n');
+        $month = gmdate('n');
         $summer = (($month >= 4) && ($month <= 9));
         $range = ($pressure_max - $pressure_min);
         $constant = round(($range / 22), 3);

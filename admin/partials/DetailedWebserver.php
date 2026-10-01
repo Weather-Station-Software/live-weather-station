@@ -8,6 +8,9 @@
 
 use WeatherStation\System\Environment\Manager as Env;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 <div id="normal-sortables" class="meta-box-sortables ui-sortable">
     <div id="referrers" class="postbox ">

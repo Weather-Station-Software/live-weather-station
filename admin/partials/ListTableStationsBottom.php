@@ -6,6 +6,10 @@
  * @since 3.0.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 ?>
 <div class="alignleft actions bulkactions">
     <label for="limit-selector-bottom" class="screen-reader-text"><?php esc_html_e('Number of lines to display', 'live-weather-station');?></label>

@@ -8,6 +8,9 @@
 
 use WeatherStation\System\Help\InlineHelp;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 <div id="normal-sortables" class="meta-box-sortables ui-sortable">
     <div id="daily-histo" class="postbox ">

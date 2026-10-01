@@ -6,6 +6,10 @@
  * @since 3.7.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 if (!($mid = filter_input(INPUT_GET, 'mid'))) {
     $mid = filter_input(INPUT_POST, 'mid');
 }

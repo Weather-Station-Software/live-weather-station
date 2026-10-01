@@ -8,6 +8,10 @@
 
 use WeatherStation\System\Output\Guard;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $cache_warning = sprintf(__('The %s events log will be purged. Is it really what you want?', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
 
 ?>

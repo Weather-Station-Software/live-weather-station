@@ -8,6 +8,10 @@
 
 use WeatherStation\System\Output\Guard;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $service = Guard::token($service, '');
 $warning = sprintf(__('%s will stop sending data from the station to this service.', 'live-weather-station'), LIVE_WEATHER_STATION_PLUGIN_NAME);
 

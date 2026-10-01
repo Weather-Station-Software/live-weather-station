@@ -8,6 +8,10 @@
 
 use WeatherStation\System\Help\InlineHelp;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');
 $message = __('Adding this station, please wait', 'live-weather-station');
 if ($error_message == '') {

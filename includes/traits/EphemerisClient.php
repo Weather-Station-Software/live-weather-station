@@ -164,39 +164,39 @@ trait Client {
                 $dashboard['dusk_length_c'] = $dashboard['sunset_c'] - $dashboard['sunset'];
             }
             try {
-                $datetime = new \DateTime(date('Y-m-d H:i:s',time()), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',time()), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
                 $month = $datetime->format('m');
                 $day = $datetime->format('d');
                 $moon = MoonRiseSet::calculateMoonTimes($datetime->format('m'), $datetime->format('d'), $datetime->format('Y'), $lat, $lon);
                 $moonrise = $moon->moonrise;
                 $moonset = $moon->moonset;
-                $datetime = new \DateTime(date('Y-m-d H:i:s',time()-86400), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',time()-86400), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
                 $moon = MoonRiseSet::calculateMoonTimes($datetime->format('m'), $datetime->format('d'), $datetime->format('Y'), $lat, $lon);
                 $moonrise_yesterday = $moon->moonrise;
                 $moonset_yesterday = $moon->moonset;
-                $datetime = new \DateTime(date('Y-m-d H:i:s',time()+86400), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',time()+86400), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
                 $moon = MoonRiseSet::calculateMoonTimes($datetime->format('m'), $datetime->format('d'), $datetime->format('Y'), $lat, $lon);
                 $moonrise_tomorrow = $moon->moonrise;
                 $moonset_tomorrow = $moon->moonset;
-                $datetime = new \DateTime(date('Y-m-d H:i:s',$moonrise_yesterday), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$moonrise_yesterday), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
                 if ($month == $datetime->format('m') && $day == $datetime->format('d')) {
                     $moonrise = $moonrise_yesterday;
                 }
-                $datetime = new \DateTime(date('Y-m-d H:i:s',$moonset_yesterday), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$moonset_yesterday), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
                 if ($month == $datetime->format('m') && $day == $datetime->format('d')) {
                     $moonset = $moonset_yesterday;
                 }
-                $datetime = new \DateTime(date('Y-m-d H:i:s',$moonrise_tomorrow), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$moonrise_tomorrow), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
                 if ($month == $datetime->format('m') && $day == $datetime->format('d')) {
                     $moonrise = $moonrise_tomorrow;
                 }
-                $datetime = new \DateTime(date('Y-m-d H:i:s',$moonset_tomorrow), new \DateTimeZone('UTC'));
+                $datetime = new \DateTime(gmdate('Y-m-d H:i:s',$moonset_tomorrow), new \DateTimeZone('UTC'));
                 $datetime->setTimezone(new \DateTimeZone($tz));
                 if ($month == $datetime->format('m') && $day == $datetime->format('d')) {
                     $moonset = $moonset_tomorrow;

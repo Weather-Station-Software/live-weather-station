@@ -6,6 +6,10 @@
  * @since 3.2.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $fields = array('pull', 'push', 'system', 'history');
 $values = array();
 foreach ($fields as $field) {

@@ -82,7 +82,7 @@ trait BaseClient {
                 $device_id = self::get_unique_owm_id($station['guid']);
                 $s = $this->get_station_information_by_guid($station['guid']);
                 $s['station_id'] = $device_id;
-                $s['last_refresh'] = date('Y-m-d H:i:s');
+                $s['last_refresh'] = gmdate('Y-m-d H:i:s');
                 $this->update_stations_table($s);
                 $updates = array() ;
                 $updates['device_id'] = $device_id;
@@ -90,7 +90,7 @@ trait BaseClient {
                 $updates['module_id'] = $device_id;
                 $updates['module_type'] = 'NAMain';
                 $updates['module_name'] = $station['station_name'];
-                $updates['measure_timestamp'] = date('Y-m-d H:i:s');
+                $updates['measure_timestamp'] = gmdate('Y-m-d H:i:s');
                 $updates['measure_type'] = 'loc_altitude';
                 $updates['measure_value'] = $station['loc_altitude'];
                 $this->update_data_table($updates, null);
@@ -110,7 +110,7 @@ trait BaseClient {
                 $updates['measure_value'] = $station['loc_city'];
                 $this->update_data_table($updates, null);
                 $updates['measure_type'] = 'last_refresh';
-                $updates['measure_value'] = date('Y-m-d H:i:s');
+                $updates['measure_value'] = gmdate('Y-m-d H:i:s');
                 $this->update_data_table($updates, null);
                 $list[] = $device_id;
             }

@@ -6,6 +6,10 @@
  * @since 3.6.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 if (!is_array($subject) || !isset($subject['id']) || !isset($subject['detail']['name']) || !isset($subject['detail']['colors']) || !is_array($subject['detail']['colors'])) {
     ?>
     <div class="wrap">

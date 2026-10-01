@@ -8,6 +8,10 @@
 
 use WeatherStation\System\Output\Guard;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $map = ' ('.sprintf('<a href="https://www.openstreetmap.org/?mlat=%1$s&mlon=%2$s#map=%3$s/%1$s/%2$s"' . ((bool)get_option('live_weather_station_redirect_external_links') ? ' target="_blank" rel="noopener noreferrer"' : '') . '>'.lcfirst(__('Verify on a map', 'live-weather-station')).'</a>',esc_attr(rawurlencode($station['loc_latitude'])), esc_attr(rawurlencode($station['loc_longitude'])), esc_attr(rawurlencode(get_option('live_weather_station_map_zoom')))).')';
 $confirm = sprintf(__('Here are the coordinates we\'ve found %s. You can confirm it by clicking again on the button <em>%s</em>!', 'live-weather-station'),$map, ($station['station_id'] == 0 ? __( 'Add This Station', 'live-weather-station' ) : __( 'Save Changes', 'live-weather-station' )));
 $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');

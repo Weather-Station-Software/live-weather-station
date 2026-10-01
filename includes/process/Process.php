@@ -71,7 +71,7 @@ abstract class Process {
      */
     protected function change_state($new_state='init') {
         $this->state = $new_state;
-        $this->timestamp = date('Y-m-d H:i:s');
+        $this->timestamp = gmdate('Y-m-d H:i:s');
         if ($new_state === $this->state_end) {
             $this->set_progress(100);
             Cache::reset();

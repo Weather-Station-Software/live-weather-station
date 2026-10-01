@@ -8,6 +8,10 @@
 
 use WeatherStation\System\Help\InlineHelp;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $wflw_parts = \WeatherStation\SDK\WeatherFlow\Plugin\StationCollector::split_wflw_service_id(isset($station['service_id']) ? $station['service_id'] : '');
 $wflw_has_token = ($wflw_parts[1] !== '');
 $url = ($dashboard ? 'lws-dashboard' : 'lws-stations');

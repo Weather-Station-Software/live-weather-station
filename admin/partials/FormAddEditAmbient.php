@@ -9,6 +9,10 @@
 use WeatherStation\System\Output\Guard;
 use WeatherStation\SDK\Ambient\Plugin\StationInitiator as Ambient_Initiator;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $n = new Ambient_Initiator(LIVE_WEATHER_STATION_PLUGIN_ID, LIVE_WEATHER_STATION_VERSION);
 $stationlist = $n->detect_stations();
 $can_add = false;

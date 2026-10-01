@@ -11,6 +11,10 @@ use WeatherStation\System\Output\Guard;
 use WeatherStation\System\Help\InlineHelp;
 use WeatherStation\Utilities\Settings;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $settings = new Settings();
 $warning = __('All the maps associated to this service will no longer be displayed.', 'live-weather-station');
 $target = ((bool)get_option('live_weather_station_redirect_internal_links') ? ' target="_blank" rel="noopener noreferrer" ' : '');

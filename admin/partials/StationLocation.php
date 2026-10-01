@@ -8,6 +8,9 @@
 
 use WeatherStation\UI\Mapping\Helper as Mapping;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 
 <div class="activity-block" style="padding-bottom: 0px;padding-top: 0px;">

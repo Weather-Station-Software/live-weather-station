@@ -9,6 +9,10 @@
 use WeatherStation\DB\Stats;
 use WeatherStation\System\Help\InlineHelp;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 if (LIVE_WEATHER_STATION_REQUIREMENTS_OK) {
     $stats = new Stats();
     $a = $stats->get_operational();

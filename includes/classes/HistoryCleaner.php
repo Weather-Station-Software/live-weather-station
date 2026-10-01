@@ -84,14 +84,14 @@ class Cleaner
     private function delete_old_medias() {
         $result = false;
         if ((int)get_option('live_weather_station_picture_retention') > 0) {
-            $max = date('Y-m-d H:i:s', self::get_local_n_days_ago_midnight(1 + (int)get_option('live_weather_station_picture_retention')));
+            $max = gmdate('Y-m-d H:i:s', self::get_local_n_days_ago_midnight(1 + (int)get_option('live_weather_station_picture_retention')));
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_media_table();
             $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE `timestamp`<=%s AND `module_type`='NAModuleP';", $max);
             $result = $result || $wpdb->query($sql);
         }
         if ((int)get_option('live_weather_station_video_retention') > 0) {
-            $max = date('Y-m-d H:i:s', self::get_local_n_days_ago_midnight(1 + (int)get_option('live_weather_station_video_retention')));
+            $max = gmdate('Y-m-d H:i:s', self::get_local_n_days_ago_midnight(1 + (int)get_option('live_weather_station_video_retention')));
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_media_table();
             $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE `timestamp`<=%s AND `module_type`='NAModuleV';", $max);
@@ -107,7 +107,7 @@ class Cleaner
      * @since 3.4.0
      */
     private function delete_old_daily_values() {
-        $max = date('Y-m-d', self::get_local_n_days_ago_midnight(3, 'UTC'));
+        $max = gmdate('Y-m-d', self::get_local_n_days_ago_midnight(3, 'UTC'));
         global $wpdb;
         $table_name = $wpdb->prefix . self::live_weather_station_histo_daily_table();
         $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE `timestamp`<=%s;", $max);
@@ -124,7 +124,7 @@ class Cleaner
      */
     private function delete_old_yearly_values($device_id, $tz) {
         if (get_option('live_weather_station_retention_history') > 0) {
-            $max = date('Y-m-d', self::get_local_n_days_ago_midnight(7 * get_option('live_weather_station_retention_history'), $tz));
+            $max = gmdate('Y-m-d', self::get_local_n_days_ago_midnight(7 * get_option('live_weather_station_retention_history'), $tz));
             global $wpdb;
             $table_name = $wpdb->prefix . self::live_weather_station_histo_yearly_table();
             $sql = $wpdb->prepare("DELETE FROM " . $table_name . " WHERE `timestamp`<=%s AND `device_id`=%s;", $max, $device_id);

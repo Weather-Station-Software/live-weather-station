@@ -68,7 +68,7 @@ class Core {
 	 * @since 3.0.0
 	 */
 	private function verify_requirements() {
-	    $reference = (int)date('i');
+	    $reference = (int)gmdate('i');
 	    // EMERGENCY
 	    if (LIVE_WEATHER_STATION_PHPVERSION_OK && LIVE_WEATHER_STATION_JSON_LOADED) {
             if (!defined('LIVE_WEATHER_STATION_REQUIREMENTS_OK')) {

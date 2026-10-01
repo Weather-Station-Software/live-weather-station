@@ -18,6 +18,9 @@
  * @return string The full url of the admin page.
  * @since 3.0.0
  */
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 function live_weather_station_get_admin_page_url($page='lws-dashboard', $action=null, $tab=null, $service=null, $dashboard=false, $id=null, $xid=null) {
     $args = array('page' => $page);
     if (isset($tab)) {
@@ -688,7 +691,7 @@ function live_weather_station_sun_timestamp($time, $lat, $lon, $zenith, $sunset 
         return $x - 360.0 * floor($x * (1.0 / 360.0) + 0.5);
     };
     // 00:00 UTC of the current (local, default timezone) day.
-    $utc = gmmktime(0, 0, 0, (int)date('n', (int)$time), (int)date('j', (int)$time), (int)date('Y', (int)$time));
+    $utc = gmmktime(0, 0, 0, (int)gmdate('n', (int)$time), (int)gmdate('j', (int)$time), (int)gmdate('Y', (int)$time));
     // Days since 2000 Jan 0.0 at 12h local mean solar time.
     $d = ($utc / 86400.0 + 2440587.5) - 2451545 + 2 - $lon / 360.0;
     // Sun position.

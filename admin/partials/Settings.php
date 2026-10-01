@@ -6,6 +6,10 @@
  * @since 3.0.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $active_tab = (isset($_GET['tab']) ? sanitize_key(wp_unslash($_GET['tab'])) : 'general');
 if (!in_array($active_tab, array('general', 'services', 'display', 'styles', 'thresholds', 'history', 'system', 'maintenance', 'tasks'), true)) {
     $active_tab = 'general';

@@ -9,6 +9,10 @@
 use WeatherStation\System\Environment\Manager as Env;
 use WeatherStation\System\Logs\Logger;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template included from a function scope: its variables are local.
 $OS = Env::server_os();
 
 if (!$OS || !Env::server_cpu() || !Env::server_core()) {

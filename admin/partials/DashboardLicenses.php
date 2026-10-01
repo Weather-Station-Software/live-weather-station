@@ -8,6 +8,9 @@
 
 use WeatherStation\System\Help\InlineHelp as Help;
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 <div class="activity-block" style="padding-bottom: 0px; padding-top: 0px;">
     <ul>

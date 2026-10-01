@@ -6,6 +6,9 @@
  * @since 3.0.0
  */
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 ?>
 <div class="activity-block">
     <?php echo wp_kses_post($message); ?>
