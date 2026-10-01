@@ -52,6 +52,7 @@ class MapboxHandling extends BaseHandling {
      * @return array The specific parameters.
      * @since 3.7.0
      */
+// phpcs:disable WordPress.Security.NonceVerification.Missing -- Only called by MapBaseHelper::save_map(), itself reached from MapHelper::edit_map() after wp_verify_nonce() on the map form nonce.
     public function get_specific_post_values() {
         $result = array();
         $result['controls'] = $this->map_params['specific']['controls'];
@@ -61,11 +62,12 @@ class MapboxHandling extends BaseHandling {
         }
         if (array_key_exists('options-overlay', $_POST)) {
             if (in_array($_POST['options-overlay'], array('streets', 'light', 'dark', 'satellite', 'streets-satellite', 'wheatpaste', 'streets-basic', 'comic', 'outdoors', 'run-bike-hike', 'pencil', 'pirates', 'emerald', 'high-contrast', 'terrain-rgb'))) {
-                $result['options']['overlay'] = $_POST['options-overlay'];
+                $result['options']['overlay'] = sanitize_text_field(wp_unslash($_POST['options-overlay']));
             }
         }
         return $result;
     }
+// phpcs:enable WordPress.Security.NonceVerification.Missing
 
     /**
      * Output the specific resources.

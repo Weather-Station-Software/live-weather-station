@@ -42,6 +42,7 @@ trait StationClient {
         if ($weather === false) {
             throw new \Exception('Bad file format.');
         }
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- print_r( ..., true ) only builds the string sent to the plugin debug log (Logger::debug, truncated to 4000 characters), nothing is printed.
         Logger::debug($this->facility, $this->service, null, null, null, null, null, substr(print_r($weather, true), 0, 4000));
         $timezone = $station['loc_timezone'];
         $locat_ts = gmmktime($weather[1][0].$weather[1][1], $weather[1][3].$weather[1][4], $weather[1][6].$weather[1][7], $weather[0][3].$weather[0][4], $weather[0][0].$weather[0][1], '20'.$weather[0][strlen($weather[0])-2].$weather[0][strlen($weather[0])-1]);

@@ -107,10 +107,12 @@ class Handling {
         // A map is created only with a valid nonce (bound to the map service) and never on a plain navigation.
         $creation_nonce = '';
         if (isset($_POST['_wpnonce']) && is_string($_POST['_wpnonce'])) {
-            $creation_nonce = $_POST['_wpnonce'];
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended -- This reads the nonce itself, it is verified by wp_verify_nonce() a few lines below.
+            $creation_nonce = sanitize_text_field(wp_unslash($_POST['_wpnonce']));
         }
         elseif (isset($_GET['_wpnonce']) && is_string($_GET['_wpnonce'])) {
-            $creation_nonce = $_GET['_wpnonce'];
+            // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.NonceVerification.Recommended -- This reads the nonce itself, it is verified by wp_verify_nonce() a few lines below.
+            $creation_nonce = sanitize_text_field(wp_unslash($_GET['_wpnonce']));
         }
         if ($this->map_id === 0 && $this->arg_action === 'form' && $this->arg_tab === 'add-edit' && $this->map_type != 0 && isset($this->aux_handler) && wp_verify_nonce($creation_nonce, 'lws-new-map-' . $this->arg_service)) {
             $barycenter = self::get_all_stations_barycenter();
@@ -175,7 +177,7 @@ class Handling {
        }
        if ($this->arg_service != 'map' && $this->arg_tab == 'add-edit' && $this->arg_action == 'form') {
             if (array_key_exists('lws-map-' . $this->map_id . '-nonce', $_POST)) {
-                if (wp_verify_nonce($_POST['lws-map-' . $this->map_id . '-nonce'], 'lws-map-' . $this->map_id)) {
+                if (wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['lws-map-' . $this->map_id . '-nonce'])), 'lws-map-' . $this->map_id)) {
                     if (array_key_exists('save-map', $_POST)) {
                         if (isset($this->aux_handler)) {
                             $this->aux_handler->set_map($this->get_map_detail($this->map_id), 'auto');
@@ -229,6 +231,7 @@ class Handling {
         $result .= "        $('#common-station-selector').change()";
         $result .= "    });";
         $result .= live_weather_station_print_end_script($jsInitId);
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $result is only made of the fixed script fragments written above, wrapped by live_weather_station_print_begin_script()/end_script(); the screen id is passed through Guard::js().
         echo $result;
     }
 
@@ -383,11 +386,13 @@ class Handling {
         echo '<div class="main-boxes-container">';
         echo '<div class="row-boxes-container">';
         echo '<div class="item-boxes-container" id="lws-preview">';
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete map block (form controls, script and style elements) built by the map handler classes (output*() of MapBaseHelper and of the per-provider helpers), which escape their dynamic values themselves; wp_kses_post() would strip the form controls and scripts. The title is escaped here.
         echo $this->get_box('map-preview', esc_html__('Preview (without size constraints)', 'live-weather-station'), $this->aux_handler->output());
         echo '</div>';
         echo '</div>';
         echo '<div class="row-boxes-container">';
         echo '<div class="item-boxes-container" id="lws-shortcode">';
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- get_shortcode_box() builds a script block plus a textarea and a button, using esc_attr(), esc_textarea() and esc_html__() for every dynamic or translated part; kses would strip the script.
         echo $this->get_shortcode_box();
         echo '</div>';
         echo '</div>';
@@ -454,6 +459,7 @@ class Handling {
      * @since 3.7.0
      */
     public function detail_widget($n, $args) {
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete map block (form controls, script and style elements) built by the map handler classes (output*() of MapBaseHelper and of the per-provider helpers), which escape their dynamic values themselves; wp_kses_post() would strip the form controls and scripts.
         echo $this->aux_handler->output_detail();
     }
 
@@ -463,6 +469,7 @@ class Handling {
      * @since 3.7.0
      */
     public function station_widget($n, $args) {
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete map block (form controls, script and style elements) built by the map handler classes (output*() of MapBaseHelper and of the per-provider helpers), which escape their dynamic values themselves; wp_kses_post() would strip the form controls and scripts.
         echo $this->aux_handler->output_stations();
     }
 
@@ -472,6 +479,7 @@ class Handling {
      * @since 3.7.0
      */
     public function feature_widget($n, $args) {
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete map block (form controls, script and style elements) built by the map handler classes (output*() of MapBaseHelper and of the per-provider helpers), which escape their dynamic values themselves; wp_kses_post() would strip the form controls and scripts.
         echo $this->aux_handler->output_feature();
     }
 
@@ -481,6 +489,7 @@ class Handling {
      * @since 3.7.0
      */
     public function control_widget($n, $args) {
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- complete map block (form controls, script and style elements) built by the map handler classes (output*() of MapBaseHelper and of the per-provider helpers), which escape their dynamic values themselves; wp_kses_post() would strip the form controls and scripts.
         echo $this->aux_handler->output_control();
     }
 }
