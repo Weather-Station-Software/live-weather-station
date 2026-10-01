@@ -48,7 +48,6 @@
 * Bug fix: a measurement trend reported a decrease when the value had risen by more than 2 percent.
 * Improvement: translations are loaded by WordPress itself, and the partial translation files downloaded by the plugin are stored in the uploads folder instead of the plugin folder (they survive plugin updates).
 * Bug fix: the automatic download of the partial translation works again when run by WP-Cron.
-||||||| 49633b5
 * Bug fix: the public feed addresses /get-weather/... work on every web server (they were rewritten to a PHP file, which only Apache handled, and even there the parameters were lost). The standalone generator.php no longer searches for wp-load.php: the feeds are served by WordPress itself, and the plugin shows the address that matches the permalink setting of the site (a query string address when the permalinks are plain).
 
 #3.8.14 / September 6th, 2023
