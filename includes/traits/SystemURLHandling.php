@@ -22,7 +22,7 @@ trait Handling {
      * @since 3.0.0
      */
     public static function add_url_station_id_format() {
-        add_rewrite_rule('^get-weather\/([A-Za-z0-9:%._-]{1,64})\/([A-Za-z0-9_]{1,40})\/$', 'index.php?live_weather_station_type=$matches[2]&live_weather_station_station=$matches[1]', 'top');
+        add_rewrite_rule('^get-weather\/([A-Za-z0-9:%._-]{1,64})\/([A-Za-z0-9_]{1,40})\/?$', 'index.php?live_weather_station_type=$matches[2]&live_weather_station_station=$matches[1]', 'top');
     }
 
     /**
