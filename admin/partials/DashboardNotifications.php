@@ -22,16 +22,16 @@ foreach (Notifier::get() as $notification) {
     $id = (int)$notification['id'];
     $level = Guard::token($notification['level'], 'info');
     $url = '';
-    $delete = '<a onclick="jQuery.post( ajaxurl, {action: \'delete_notification\',nonce: \'' . esc_js(wp_create_nonce('lws-delete-notification')) . '\',id: ' . $id . '});jQuery(\'#notification-' . $id . '\').animate({opacity: 0}, 500, function() {jQuery(\'#notification-' . $id . '\').hide();var i = parseInt(jQuery(\'.lws-notification .plugin-count\').html(),10)-1;if (i>0){jQuery(\'.lws-notification .plugin-count\').html(i.toString())}else{jQuery(\'.lws-notification\').hide()}});return false;" href="">' . $t . __('delete', 'live-weather-station') . '</a>';
-    $expand = '<span id="ex-' . $id . '"><a onclick="jQuery(\'#dx-' . $id . '\').show();jQuery(\'#ex-' . $id . '\').hide();jQuery(\'#co-' . $id . '\').show();return false;" style="cursor:pointer">' . $d . __('expand', 'live-weather-station') . '</a></span>';
-    $collapse = '<span id="co-' . $id . '" style="display:none;"><a onclick="jQuery(\'#dx-' . $id . '\').hide();jQuery(\'#ex-' . $id . '\').show();jQuery(\'#co-' . $id . '\').hide();return false;" style="cursor:pointer">' . $c . __('collapse', 'live-weather-station') . '</a></span>';
-    $ago = '<span style="float:left;">' . sprintf( __('%s ago', 'live-weather-station'), human_time_diff(strtotime($notification['timestamp']))) . '</span>';
+    $delete = '<a onclick="jQuery.post( ajaxurl, {action: \'delete_notification\',nonce: \'' . esc_js(wp_create_nonce('lws-delete-notification')) . '\',id: ' . $id . '});jQuery(\'#notification-' . $id . '\').animate({opacity: 0}, 500, function() {jQuery(\'#notification-' . $id . '\').hide();var i = parseInt(jQuery(\'.lws-notification .plugin-count\').html(),10)-1;if (i>0){jQuery(\'.lws-notification .plugin-count\').html(i.toString())}else{jQuery(\'.lws-notification\').hide()}});return false;" href="">' . $t . esc_html__('delete', 'live-weather-station') . '</a>';
+    $expand = '<span id="ex-' . $id . '"><a onclick="jQuery(\'#dx-' . $id . '\').show();jQuery(\'#ex-' . $id . '\').hide();jQuery(\'#co-' . $id . '\').show();return false;" style="cursor:pointer">' . $d . esc_html__('expand', 'live-weather-station') . '</a></span>';
+    $collapse = '<span id="co-' . $id . '" style="display:none;"><a onclick="jQuery(\'#dx-' . $id . '\').hide();jQuery(\'#ex-' . $id . '\').show();jQuery(\'#co-' . $id . '\').hide();return false;" style="cursor:pointer">' . $c . esc_html__('collapse', 'live-weather-station') . '</a></span>';
+    $ago = '<span style="float:left;">' . esc_html(sprintf( /* translators: %s: elapsed time, for example 3 hours */ __('%s ago', 'live-weather-station'), human_time_diff(strtotime($notification['timestamp'])))) . '</span>';
     $links = '<span style="text-align:right;float:right">' . $collapse . $expand . '&nbsp; &nbsp; &nbsp; &nbsp;' . $delete . '</span>';
     if ($notification['url'] !== '') {
         $target = '';
         if ((bool)get_option('live_weather_station_redirect_external_links')) {
             $target = ' target="_blank" rel="noopener noreferrer" ';
-            $url = ' - <a href="' . esc_url($notification['url']) . '"' . $target . '>' . __('see details', 'live-weather-station') . '</a>' . Intl::get_language_markup(array('en'));
+            $url = ' - <a href="' . esc_url($notification['url']) . '"' . $target . '>' . esc_html__('see details', 'live-weather-station') . '</a>' . Intl::get_language_markup(array('en'));
         }
     }
     $content = '<div style="display:inline-block; width:100%">' . esc_html($notification['name']) . $url . '</div>';
@@ -43,6 +43,7 @@ foreach (Notifier::get() as $notification) {
 ?>
 
 <div class="activity-block" style="padding-bottom: 0px;">
+    <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- $boxes is assembled above from escaped parts only: (int) ids, Guard::token() + esc_attr() levels, esc_html() names, esc_url() urls, wp_kses_post() descriptions, esc_js() nonce and esc_html__() labels; it contains inline onclick handlers that wp_kses_post() would strip ?>
     <?php echo $boxes; ?>
 </div>
 

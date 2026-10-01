@@ -10,6 +10,6 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 ?>
 <div class="wrap">
-    <h2><?php echo __('This view does not exist', 'live-weather-station');?></h2>
+    <h2><?php echo esc_html__('This view does not exist', 'live-weather-station');?></h2>
     
 </div>

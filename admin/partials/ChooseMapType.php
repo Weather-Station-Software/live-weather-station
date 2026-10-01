@@ -36,7 +36,7 @@ else {
 }
 
 if (get_option('live_weather_station_mapbox_apikey') != '') {
-    $mapbox_s = ucfirst(sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Mapbox'));
+    $mapbox_s = ucfirst(sprintf(/* translators: %s: name of the map provider, Mapbox */ __('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Mapbox'));
     $mapbox_l = wp_nonce_url(live_weather_station_get_admin_page_url('lws-maps', 'form', 'add-edit', 'mapbox'), 'lws-new-map-mapbox');
     $mapbox_t = '_self';
 }
@@ -47,7 +47,7 @@ else {
 }
 
 if (get_option('live_weather_station_maptiler_apikey') != '') {
-    $maptiler_s = ucfirst(sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Maptiler'));
+    $maptiler_s = ucfirst(sprintf(/* translators: %s: name of the map provider, Maptiler */ __('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Maptiler'));
     $maptiler_l = wp_nonce_url(live_weather_station_get_admin_page_url('lws-maps', 'form', 'add-edit', 'maptiler'), 'lws-new-map-maptiler');
     $maptiler_t = '_self';
 }
@@ -58,7 +58,7 @@ else {
 }
 
 if (get_option('live_weather_station_thunderforest_apikey') != '') {
-    $thunderforest_s = ucfirst(sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Thunderforest'));
+    $thunderforest_s = ucfirst(sprintf(/* translators: %s: name of the map provider, Thunderforest */ __('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Thunderforest'));
     $thunderforest_l = wp_nonce_url(live_weather_station_get_admin_page_url('lws-maps', 'form', 'add-edit', 'thunderforest'), 'lws-new-map-thunderforest');
     $thunderforest_t = '_self';
 }
@@ -69,7 +69,7 @@ else {
 }
 
 if (get_option('live_weather_station_stadia_apikey') != '') {
-    $stamen_s = ucfirst(sprintf(__('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Stamen'));
+    $stamen_s = ucfirst(sprintf(/* translators: %s: name of the map provider, Stamen */ __('a beautiful static map from %s, powered by OpenStreetMap, with many overlays to choose from.', 'live-weather-station'), 'Stamen'));
     $stamen_l = wp_nonce_url(live_weather_station_get_admin_page_url('lws-maps', 'form', 'add-edit', 'stamen'), 'lws-new-map-stamen');
     $stamen_t = '_self';
 }
@@ -109,39 +109,51 @@ else {
                 $("#tip-text").html("&nbsp;");
             });
             $("#windy").mouseover(function() {
+                <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a wp_json_encode() literal with JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT, safe inside an inline script ?>
                 $("#tip-text").html(<?php echo Guard::js($windy_s); ?>);
             });
             $("#windy").click(function() {
+                <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a wp_json_encode() literal with JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT, safe inside an inline script ?>
                 window.open(<?php echo Guard::js($windy_l); ?>, <?php echo Guard::js($windy_t); ?>);
             });
             $("#stamen").mouseover(function() {
+                <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a wp_json_encode() literal with JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT, safe inside an inline script ?>
                 $("#tip-text").html(<?php echo Guard::js($stamen_s); ?>);
             });
             $("#stamen").click(function() {
+                <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a wp_json_encode() literal with JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT, safe inside an inline script ?>
                 window.open(<?php echo Guard::js($stamen_l); ?>, <?php echo Guard::js($stamen_t); ?>);
             });
             $("#thunderforest").mouseover(function() {
+                <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a wp_json_encode() literal with JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT, safe inside an inline script ?>
                 $("#tip-text").html(<?php echo Guard::js($thunderforest_s); ?>);
             });
             $("#thunderforest").click(function() {
+                <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a wp_json_encode() literal with JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT, safe inside an inline script ?>
                 window.open(<?php echo Guard::js($thunderforest_l); ?>, <?php echo Guard::js($thunderforest_t); ?>);
             });
             $("#mapbox").mouseover(function() {
+                <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a wp_json_encode() literal with JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT, safe inside an inline script ?>
                 $("#tip-text").html(<?php echo Guard::js($mapbox_s); ?>);
             });
             $("#mapbox").click(function() {
+                <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a wp_json_encode() literal with JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT, safe inside an inline script ?>
                 window.open(<?php echo Guard::js($mapbox_l); ?>, <?php echo Guard::js($mapbox_t); ?>);
             });
             $("#maptiler").mouseover(function() {
+                <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a wp_json_encode() literal with JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT, safe inside an inline script ?>
                 $("#tip-text").html(<?php echo Guard::js($maptiler_s); ?>);
             });
             $("#maptiler").click(function() {
+                <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a wp_json_encode() literal with JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT, safe inside an inline script ?>
                 window.open(<?php echo Guard::js($maptiler_l); ?>, <?php echo Guard::js($maptiler_t); ?>);
             });
             $("#owm").mouseover(function() {
+                <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a wp_json_encode() literal with JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT, safe inside an inline script ?>
                 $("#tip-text").html(<?php echo Guard::js($owm_s); ?>);
             });
             $("#owm").click(function() {
+                <?php // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Guard::js() returns a wp_json_encode() literal with JSON_HEX_TAG|JSON_HEX_AMP|JSON_HEX_APOS|JSON_HEX_QUOT, safe inside an inline script ?>
                 window.open(<?php echo Guard::js($owm_l); ?>, <?php echo Guard::js($owm_t); ?>);
             });
         });

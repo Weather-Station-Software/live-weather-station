@@ -17,7 +17,7 @@ $logListTable->prepare_items();
 
 ?>
 <div class="wrap">
-    <h2><?php echo __('Events log', 'live-weather-station');?></h2>
+    <h2><?php echo esc_html__('Events log', 'live-weather-station');?></h2>
     <?php $logListTable->views(); ?>
     <form id="logs-filter" method="get">
         <input type="hidden" name="page" value="lws-events" />
